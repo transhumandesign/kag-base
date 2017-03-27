@@ -1,0 +1,10 @@
+WARNING!
+Don't put files here or modify any. 
+They will be updated by the autoupdater.
+In case there is an old or non-game file here it will be moved to ../old/ directory.
+This is with the exception of the Maps/ folder where you can put your maps.
+Please use the ../Mods/ folder if you wan to add any custom files.
+Copy existing ones there if you want to edit them.
+Read the HowToMods.txt file there for instructions how to do it properly.
+Use custom autostart.as scripts by placing them in your Mods directory or just anywhere else /Base
+ and running them with param eg. KAG.exe autostart Mods/My/myAutostart.as

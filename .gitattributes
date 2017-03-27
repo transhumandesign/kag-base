@@ -1,0 +1,8 @@
+# files that will always have CRLF line endings on checkout.
+*.json text eol=crlf
+*.irrst text eol=crlf
+*.as text eol=crlf
+*.cfg text eol=crlf
+*.txt text eol=crlf
+*.vert text eol=crlf
+*.frag text eol=crlf

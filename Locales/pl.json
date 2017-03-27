@@ -1,0 +1,14 @@
+{
+	//common
+	"Respawning in:":"Wskrzesić w",
+	//war
+	"No spawns available!":"Nie żyje dostępne!",
+	//tdm
+	"WARMUP":"PRZERWA",
+	"KILLS":"ZABIJA",
+	"SUDDEN DEATH":"NAGŁA ŚMIERĆ",
+	"In Queue to Respawn...":"W Kolejce do Wskrzesić...",
+	"No Respawning - Wait for the Game to End.":"Nie Ożywienie - Poczekaj aż Gra się Kończy.",
+	//end
+	"":""
+}

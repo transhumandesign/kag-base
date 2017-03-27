@@ -1,0 +1,6 @@
+# KAG mapcycle;
+# used when defined in variable sv_mapcycle - see autoconfig.cfg for details
+# loads .PNG, .KAG and .AS files
+
+mapcycle = Maps/WARDraft.png; Maps/Custom.kag; ../Mods/My/mymap_script.as
+
