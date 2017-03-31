@@ -39,8 +39,6 @@ void onInit(CBlob@ this)
 	this.set_u8(MINE_TIMER, 0);
 	this.addCommandID(MINE_PRIMED);
 
-	this.getShape().getConsts().collideWhenAttached = true;
-
 	this.getCurrentScript().tickIfTag = MINE_PRIMING;
 }
 
