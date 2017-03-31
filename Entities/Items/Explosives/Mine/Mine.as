@@ -32,9 +32,26 @@ void onInit(CBlob@ this)
 
 	this.Tag(MINE_PRIMING);
 
-	//sync?
-	if(!this.exists(MINE_STATE))
+	if (this.exists(MINE_STATE))
+	{
+		if (getNet().isClient())
+		{
+			CSprite@ sprite = this.getSprite();
+
+			if (this.get_u8(MINE_STATE) == PRIMED)
+			{
+				sprite.SetFrameIndex(1);
+			}
+			else
+			{
+				sprite.SetFrameIndex(0);
+			}
+		}
+	}
+	else
+	{
 		this.set_u8(MINE_STATE, NONE);
+	}
 
 	this.set_u8(MINE_TIMER, 0);
 	this.addCommandID(MINE_PRIMED);
