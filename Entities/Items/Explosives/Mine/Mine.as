@@ -64,8 +64,6 @@ void onTick(CBlob@ this)
 		{
 			this.set_u8(MINE_TIMER, 0);
 		}
-
-		this.Sync(MINE_STATE, true);
 	}
 }
 
