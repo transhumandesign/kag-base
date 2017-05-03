@@ -13,8 +13,8 @@ s32 cost_meal = 10;
 s32 cost_egg = 30;
 s32 cost_burger = 20;
 
-const f32 beer_ammount = 1.0f;
-const f32 heal_ammount = 0.25f;
+const f32 beer_amount = 1.0f;
+const f32 heal_amount = 0.25f;
 const u8 heal_rate = 30;
 
 void onInit(CSprite@ this)
@@ -130,7 +130,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	// TODO: Add stage based sleeping, rest(2 * 30) | sleep(heal_ammount * (patient.getHealth() - patient.getInitialHealth())) | awaken(1 * 30)
+	// TODO: Add stage based sleeping, rest(2 * 30) | sleep(heal_amount * (patient.getHealth() - patient.getInitialHealth())) | awaken(1 * 30)
 	// TODO: Add SetScreenFlash(rest_time, 19, 13, 29) to represent the player gradually falling asleep
 	bool isServer = getNet().isServer();
 	AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
@@ -156,7 +156,7 @@ void onTick(CBlob@ this)
 					}
 					if (isServer)
 					{
-						patient.server_Heal(heal_ammount);
+						patient.server_Heal(heal_amount);
 					}
 				}
 				else
@@ -217,7 +217,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				// TODO: gulp gulp sound
 				if (isServer)
 				{
-					callerBlob.server_Heal(beer_ammount);
+					callerBlob.server_Heal(beer_amount);
 				}
 			}
 			else if (name == "meal")
