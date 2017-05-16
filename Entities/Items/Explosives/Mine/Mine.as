@@ -32,14 +32,29 @@ void onInit(CBlob@ this)
 
 	this.Tag(MINE_PRIMING);
 
-	//sync?
-	if(!this.exists(MINE_STATE))
+	if (this.exists(MINE_STATE))
+	{
+		if (getNet().isClient())
+		{
+			CSprite@ sprite = this.getSprite();
+
+			if (this.get_u8(MINE_STATE) == PRIMED)
+			{
+				sprite.SetFrameIndex(1);
+			}
+			else
+			{
+				sprite.SetFrameIndex(0);
+			}
+		}
+	}
+	else
+	{
 		this.set_u8(MINE_STATE, NONE);
+	}
 
 	this.set_u8(MINE_TIMER, 0);
 	this.addCommandID(MINE_PRIMED);
-
-	this.getShape().getConsts().collideWhenAttached = true;
 
 	this.getCurrentScript().tickIfTag = MINE_PRIMING;
 }
@@ -66,8 +81,6 @@ void onTick(CBlob@ this)
 		{
 			this.set_u8(MINE_TIMER, 0);
 		}
-
-		this.Sync(MINE_STATE, true);
 	}
 }
 
@@ -75,6 +88,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if(cmd == this.getCommandID(MINE_PRIMED))
 	{
+		if (this.isAttached()) return;
+
+		if (this.isInInventory()) return;
+
 		this.set_u8(MINE_STATE, PRIMED);
 		this.getShape().checkCollisionsAgain = true;
 
