@@ -559,6 +559,8 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	}
 	else if(detached.getName() == "seed")
 	{
+		if (not detached.hasTag('temp blob placed')) return;
+
 		CBlob@ anotherBlob = this.getInventory().getItem(detached.getName());
 		if(anotherBlob !is null)
 		{
