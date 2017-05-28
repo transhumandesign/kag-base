@@ -436,6 +436,10 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 			{
 				ArrowHitMap(this, worldPoint, velocity, damage, Hitters::arrow);
 			}
+			else
+			{
+				this.server_Die();
+			}
 		}
 	}
 
