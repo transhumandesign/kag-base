@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("reload menu");
 	AddIconToken("$" + this.getName() + "$", "TradingPost.png", Vec2f(16, 16), 15);
 	AddIconToken("$parachute$", "Crate.png", Vec2f(32, 32), 4);
-	AddIconToken("$trade$", "MaterialIcons.png", Vec2f(16, 16), 5);
+	AddIconToken("$trade$", "Coins.png", Vec2f(16, 16), 1);
 
 	AddIconToken("$MENU_INDUSTRY$", "TradingMenuIndustry.png", Vec2f(72, 24), 0);
 	AddIconToken("$MENU_SIEGE$", "TradingMenuSiege.png", Vec2f(72, 24), 0);
@@ -466,7 +466,7 @@ void onRender(CSprite@ this)
 		Vec2f dim;
 		int secs = 1 + (nextDropTime - gameTime + 60) / getTicksASecond();
 		string label = "Next drop in " + secs + "s";
-		GUI::SetFont("menu");		
+		GUI::SetFont("menu");
 		GUI::GetTextDimensions(label , dim);
 		dim.x += margin;
 		dim.y += margin;

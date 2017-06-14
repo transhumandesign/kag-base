@@ -54,8 +54,8 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 
 	//check height + edge proximity
 	if (p.y < 2 * map.tilesize ||
-	        p.x < 2 * map.tilesize ||
-	        p.x > (map.tilemapwidth - 2.0f)*map.tilesize)
+			p.x < 2 * map.tilesize ||
+			p.x > (map.tilemapwidth - 2.0f)*map.tilesize)
 	{
 		return false;
 	}
@@ -77,7 +77,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 	}
 
 	if ((buildTile == CMap::tile_wood && backtile.type >= CMap::tile_wood_d1 && backtile.type <= CMap::tile_wood_d0) ||
-	        (buildTile == CMap::tile_castle && backtile.type >= CMap::tile_castle_d1 && backtile.type <= CMap::tile_castle_d0))
+			(buildTile == CMap::tile_castle && backtile.type >= CMap::tile_castle_d1 && backtile.type <= CMap::tile_castle_d0))
 	{
 		//repair like tiles
 	}
@@ -106,13 +106,13 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 	bool canPlaceOnBackground = ((blob is null) || (blob.getShape().getConsts().support > 0));   // if this is a blob it has to do support - so spikes cant be placed on back
 
 	if (
-	    (!canPlaceOnBackground || !map.isTileBackgroundNonEmpty(backtile)) &&      // can put against background
-	    !(                                              // can put sticking next to something
-	        canPlaceNextTo(map, left) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(left))  ||
-	        canPlaceNextTo(map, right) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(right)) ||
-	        canPlaceNextTo(map, up)   || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(up))    ||
-	        canPlaceNextTo(map, down) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(down))
-	    )
+		(!canPlaceOnBackground || !map.isTileBackgroundNonEmpty(backtile)) &&      // can put against background
+		!(                                              // can put sticking next to something
+			canPlaceNextTo(map, left) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(left))  ||
+			canPlaceNextTo(map, right) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(right)) ||
+			canPlaceNextTo(map, up)   || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(up))    ||
+			canPlaceNextTo(map, down) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(down))
+		)
 	)
 	{
 		return false;
@@ -151,39 +151,29 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 				{
 					if (blob !is null || buildSolid)
 					{
-						if (b is this)					// this is me
+						if (b is this && isSpikes) continue;
+
+						Vec2f bpos = b.getPosition();
+
+						const string bname = b.getName();
+
+						bool cantBuild = isBlocking(b);
+
+						// cant place on any other blob
+						if (cantBuild &&
+							!b.hasTag("dead") &&
+							!b.hasTag("material") &&
+							!b.hasTag("projectile") &&
+							bname != "bush")
 						{
-							if (!isSpikes && (b.getPosition() - middle).getLength() <= radius)
+							f32 angle_decomp = Maths::FMod(Maths::Abs(b.getAngleDegrees()), 180.0f);
+							bool rotated = angle_decomp > 45.0f && angle_decomp < 135.0f;
+							f32 width = rotated ? b.getHeight() : b.getWidth();
+							f32 height = rotated ? b.getWidth() : b.getHeight();
+							if ((middle.x > bpos.x - width * 0.5f) && (middle.x < bpos.x + width * 0.5f)
+								&& (middle.y > bpos.y - height * 0.5f) && (middle.y < bpos.y + height * 0.5f))
 							{
 								return false;
-
-							}
-
-						}
-						else
-						{
-							Vec2f bpos = b.getPosition();
-
-							const string bname = b.getName();
-
-							bool cantBuild = isBlocking(b);
-
-							// cant place on any other blob
-							if (cantBuild &&
-							        !b.hasTag("dead") &&
-							        !b.hasTag("material") &&
-							        !b.hasTag("projectile") &&
-							        bname != "bush")
-							{
-								f32 angle_decomp = Maths::FMod(Maths::Abs(b.getAngleDegrees()), 180.0f);
-								bool rotated = angle_decomp > 45.0f && angle_decomp < 135.0f;
-								f32 width = rotated ? b.getHeight() : b.getWidth();
-								f32 height = rotated ? b.getWidth() : b.getHeight();
-								if ((middle.x > bpos.x - width * 0.5f) && (middle.x < bpos.x + width * 0.5f)
-								        && (middle.y > bpos.y - height * 0.5f) && (middle.y < bpos.y + height * 0.5f))
-								{
-									return false;
-								}
 							}
 						}
 					}
@@ -198,7 +188,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 bool isBlocking(CBlob@ blob)
 {
 	string name = blob.getName();
-	if (name == "heart" || name == "log" || name == "food" || name == "fishy" || name == "steak" || name == "grain") 
+	if (name == "heart" || name == "log" || name == "food" || name == "fishy" || name == "steak" || name == "grain")
 		return false;
 
 	return blob.isCollidable() || blob.getShape().isStatic();
@@ -267,8 +257,8 @@ bool isBuildRayBlocked(Vec2f pos, Vec2f target, Vec2f &out point)
 	f32 halfsize = map.tilesize * 0.5f;
 
 	return map.rayCastSolid(pos + Vec2f(0, halfsize), target, point) &&
-	       map.rayCastSolid(pos + Vec2f(halfsize, 0), target, point) &&
-	       map.rayCastSolid(pos + Vec2f(0, -halfsize), target, point) &&
-	       map.rayCastSolid(pos + Vec2f(-halfsize, 0), target, point);
+		   map.rayCastSolid(pos + Vec2f(halfsize, 0), target, point) &&
+		   map.rayCastSolid(pos + Vec2f(0, -halfsize), target, point) &&
+		   map.rayCastSolid(pos + Vec2f(-halfsize, 0), target, point);
 }
 

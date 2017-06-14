@@ -1,8 +1,44 @@
 // generic character head script
 
+#include "PixelOffsets.as"
+#include "RunnerTextures.as"
+
 const s32 NUM_HEADFRAMES = 4;
 const s32 NUM_UNIQUEHEADS = 30;
 const int FRAMES_WIDTH = 8 * NUM_HEADFRAMES;
+
+//handling DLCs
+
+class HeadsDLC {
+	string filename;
+	bool do_teamcolour;
+	bool do_skincolour;
+
+	HeadsDLC(string file, bool team, bool skin) {
+		filename = file;
+		do_teamcolour = team;
+		do_skincolour = skin;
+	}
+};
+
+const array<HeadsDLC> dlcs = {
+	//vanilla
+	HeadsDLC("Entities/Characters/Sprites/Heads.png", true, true),
+	//flags of the world
+	HeadsDLC("Entities/Characters/Sprites/Heads2.png", false, false)
+};
+
+const int dlcs_count = dlcs.length;
+
+int get_dlc_number(int headIndex)
+{
+	if (headIndex > 255) {
+		if ((headIndex % 256) > NUM_UNIQUEHEADS) {
+			return Maths::Min(dlcs_count - 1, Maths::Floor(headIndex / 255.0f));
+		}
+	}
+	return 0;
+}
 
 int getHeadFrame(CBlob@ blob, int headIndex)
 {
@@ -63,19 +99,29 @@ int getHeadFrame(CBlob@ blob, int headIndex)
 	        (blob.getSexNum() == 0 ? 0 : 1)) * NUM_HEADFRAMES;
 }
 
-CSpriteLayer@ LoadHead(CSprite@ this, u8 headIndex)
+string getHeadTexture(int headIndex)
+{
+	return dlcs[get_dlc_number(headIndex)].filename;
+}
+
+void onPlayerInfoChanged(CSprite@ this)
+{
+	LoadHead(this, this.getBlob().getHeadNum());
+}
+
+CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 {
 	this.RemoveSpriteLayer("head");
 	// add head
-	string texname = "Entities/Characters/Sprites/Heads.png";
-	CSpriteLayer@ head = this.addSpriteLayer("head", texname, 16, 16,
-	                     this.getBlob().getTeamNum(),
-	                     this.getBlob().getSkinNum());
+	HeadsDLC dlc = dlcs[get_dlc_number(headIndex)];
+	CSpriteLayer@ head = this.addSpriteLayer("head", dlc.filename, 16, 16,
+	                     (dlc.do_teamcolour ? this.getBlob().getTeamNum() : 0),
+	                     (dlc.do_skincolour ? this.getBlob().getSkinNum() : 0));
 	CBlob@ blob = this.getBlob();
 
 	// set defaults
+	headIndex = headIndex % 256; // DLC heads
 	s32 headFrame = getHeadFrame(blob, headIndex);
-
 
 	blob.set_s32("head index", headFrame);
 	if (head !is null)
@@ -108,7 +154,7 @@ void onGib(CSprite@ this)
 		Vec2f pos = blob.getPosition();
 		Vec2f vel = blob.getVelocity();
 		f32 hp = Maths::Min(Maths::Abs(blob.getHealth()), 2.0f) + 1.5;
-		makeGibParticle("Entities/Characters/Sprites/Heads.png",
+		makeGibParticle(getHeadTexture(blob.getHeadNum()),
 		                pos, vel + getRandomVelocity(90, hp , 30),
 		                framex, framey, Vec2f(16, 16),
 		                2.0f, 20, "/BodyGibFall", blob.getTeamNum());
@@ -144,54 +190,53 @@ void onTick(CSprite@ this)
 
 	if (head !is null)
 	{
+		Vec2f offset;
+
+		// pixeloffset from script
 		// set the head offset and Z value according to the pink/yellow pixels
-		PixelOffset @po = getDriver().getPixelOffset(this.getFilename(), this.getFrame());
+		int layer = 0;
+		Vec2f head_offset = getHeadOffset(blob, -1, layer);
 
-		if (po !is null)
+		// behind, in front or not drawn
+		if (layer == 0)
 		{
-			// behind, in front or not drawn
-			if (po.level == 0)
-			{
-				head.SetVisible(false);
-			}
-			else
-			{
-				head.SetVisible(this.isVisible());
-				head.SetRelativeZ(po.level * 0.25f);
-			}
-
-			// set the proper offset
-			Vec2f headoffset(this.getFrameWidth() / 2, -this.getFrameHeight() / 2);
-			headoffset += this.getOffset();
-			headoffset += Vec2f(-po.x, po.y);
-			headoffset += Vec2f(0, -2);
-			head.SetOffset(headoffset);
-
-			if (blob.hasTag("dead") || blob.hasTag("dead head"))
-			{
-				head.animation.frame = 2;
-
-				// sparkle blood if cut throat
-				if (getNet().isClient() && getGameTime() % 2 == 0 && blob.hasTag("cutthroat"))
-				{
-					Vec2f vel = getRandomVelocity(90.0f, 1.3f * 0.1f * XORRandom(40), 2.0f);
-					ParticleBlood(blob.getPosition() + Vec2f(this.isFacingLeft() ? headoffset.x : -headoffset.x, headoffset.y), vel, SColor(255, 126, 0, 0));
-					if (XORRandom(100) == 0)
-						blob.Untag("cutthroat");
-				}
-			}
-			else if (blob.hasTag("attack head"))
-			{
-				head.animation.frame = 1;
-			}
-			else
-			{
-				head.animation.frame = 0;
-			}
+			head.SetVisible(false);
 		}
 		else
 		{
-			head.SetVisible(false);
+			head.SetVisible(this.isVisible());
+			head.SetRelativeZ(layer * 0.25f);
+		}
+
+		offset = head_offset;
+
+		// set the proper offset
+		Vec2f headoffset(this.getFrameWidth() / 2, -this.getFrameHeight() / 2);
+		headoffset += this.getOffset();
+		headoffset += Vec2f(-offset.x, offset.y);
+		headoffset += Vec2f(0, -2);
+		head.SetOffset(headoffset);
+
+		if (blob.hasTag("dead") || blob.hasTag("dead head"))
+		{
+			head.animation.frame = 2;
+
+			// sparkle blood if cut throat
+			if (getNet().isClient() && getGameTime() % 2 == 0 && blob.hasTag("cutthroat"))
+			{
+				Vec2f vel = getRandomVelocity(90.0f, 1.3f * 0.1f * XORRandom(40), 2.0f);
+				ParticleBlood(blob.getPosition() + Vec2f(this.isFacingLeft() ? headoffset.x : -headoffset.x, headoffset.y), vel, SColor(255, 126, 0, 0));
+				if (XORRandom(100) == 0)
+					blob.Untag("cutthroat");
+			}
+		}
+		else if (blob.hasTag("attack head"))
+		{
+			head.animation.frame = 1;
+		}
+		else
+		{
+			head.animation.frame = 0;
 		}
 	}
 }

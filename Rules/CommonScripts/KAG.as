@@ -1,5 +1,6 @@
 #include "Default/DefaultGUI.as"
 #include "Default/DefaultLoaders.as"
+#include "PrecacheTextures.as"
 #include "EmotesCommon.as"
 
 void onInit(CRules@ this)
@@ -16,6 +17,8 @@ void onInit(CRules@ this)
 	s_effects = false;
 
 	sv_max_localplayers = 1;
+
+	PrecacheTextures();
 
 	//smooth shader
 	Driver@ driver = getDriver();

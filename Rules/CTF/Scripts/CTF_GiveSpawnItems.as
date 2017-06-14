@@ -22,12 +22,16 @@ bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity)
 	//otherwise...
 	inv.server_RemoveItems(name, quantity); //shred any old ones
 
-	CBlob@ mat = server_CreateBlob(name);
+	CBlob@ mat = server_CreateBlobNoInit(name);
+
 	if (mat !is null)
 	{
-		mat.Tag("do not set materials");
+		mat.Tag('custom quantity');
+		mat.Init();
+
 		mat.server_SetQuantity(quantity);
-		if (!blob.server_PutInInventory(mat))
+
+		if (not blob.server_PutInInventory(mat))
 		{
 			mat.setPosition(blob.getPosition());
 		}
@@ -46,7 +50,7 @@ bool GiveSpawnResources(CRules@ this, CBlob@ blob, CPlayer@ player, CTFPlayerInf
 		{
 			ret = SetMaterials(blob, "mat_wood", 300) || ret;
 			ret = SetMaterials(blob, "mat_stone", 100) || ret;
-            
+
 		}
 		else
 		{

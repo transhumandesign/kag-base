@@ -1,37 +1,51 @@
-#include "DecayCommon.as";
 
-#define SERVER_ONLY
+#define SERVER_ONLY;
 
-u8 team0count = 0;
+// Use `.set_u8('decay step', ..)` to
+// define the quantity that should be
+// discarded each step
+
+const uint16 FREQUENCY = 2000;
+const uint16 QUARTER = FREQUENCY / 4;
 
 void onInit(CBlob@ this)
 {
-	this.getCurrentScript().tickFrequency = 800;
-	team0count = getRules().get_u8("team 0 count"); // global
+  ScriptData@ script = this.getCurrentScript();
+  script.runFlags |= Script::tick_not_attached;
+  script.runFlags |= Script::tick_not_ininventory;
+  script.tickFrequency = FREQUENCY;
 }
 
 void onTick(CBlob@ this)
 {
-	if (dissalowDecaying(this) || this.isAttached() || this.getTickSinceCreated() < 1000)
-		return;
+  if (this.getTickSinceCreated() < FREQUENCY) return;
 
-	int quantity = this.getQuantity();
-	if (quantity > 100)
-		quantity -= 10;
-	else if (quantity > 0)
-		quantity -= 20;
+  uint8 step = this.get_u8('decay step');
+  uint16 quantity = this.getQuantity();
 
-	if (quantity <= 0)
-	{
-		this.server_Die();
-		return;
+  if (step >= quantity)
+  {
+    this.server_Die();
+    return;
+  }
 
-	}
+  this.server_SetQuantity(quantity - step);
 
-	this.server_SetQuantity(quantity);
+  ScriptData@ script = this.getCurrentScript();
 
-	if (team0count > 9) // faster decay with many players
-	{
-		this.getCurrentScript().tickFrequency = 400;
-	}
+  // Halve the frequency up to 2 times
+  if (script.tickFrequency > QUARTER)
+  {
+    script.tickFrequency /= 2;
+  }
+}
+
+void onAttach(CBlob@ this, CBlob@ blob, AttachmentPoint@ point)
+{
+  this.getCurrentScript().tickFrequency = FREQUENCY;
+}
+
+void onThisAddToInventory(CBlob@ this, CBlob@ blob)
+{
+  this.getCurrentScript().tickFrequency = FREQUENCY;
 }

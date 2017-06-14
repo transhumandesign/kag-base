@@ -62,33 +62,20 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		}
 		else if (text_in == "!stones")
 		{
-			CBlob@ b = server_CreateBlob("Entities/Materials/MaterialStone.cfg", team, pos);
-
-			if (b !is null)
-			{
-				b.server_SetQuantity(320);
-			}
+			CBlob@ b = server_CreateBlob('mat_stone', -1, pos);
 		}
 		else if (text_in == "!arrows")
 		{
 			for (int i = 0; i < 3; i++)
 			{
-				CBlob@ b = server_CreateBlob("Entities/Materials/MaterialArrows.cfg", team, pos);
-
-				if (b !is null)
-				{
-					b.server_SetQuantity(30);
-				}
+				CBlob@ b = server_CreateBlob('mat_arrows', -1, pos);
 			}
 		}
 		else if (text_in == "!bombs")
 		{
-			//  for (int i = 0; i < 3; i++)
-			CBlob@ b = server_CreateBlob("Entities/Materials/MaterialBombs.cfg", team, pos);
-
-			if (b !is null)
+			for (int i = 0; i < 3; i++)
 			{
-				b.server_SetQuantity(30);
+				CBlob@ b = server_CreateBlob('mat_bombs', -1, pos);
 			}
 		}
 		else if (text_in == "!spawnwater" && player.isMod())

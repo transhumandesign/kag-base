@@ -855,7 +855,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID("pickup arrow"))
 	{
 		CBlob@ arrow = getPickupArrow(this);
-		bool spriteArrow = canPickSpriteArrow(this, false);
+		bool spriteArrow = canPickSpriteArrow(this, false); // unnecessary
+
 		if (arrow !is null || spriteArrow)
 		{
 			if (arrow !is null)
@@ -874,22 +875,33 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 			}
 
-			CBlob@ mat_arrows = server_CreateBlob("mat_arrows", this.getTeamNum(), this.getPosition());
-			if (mat_arrows !is null)
+			if (getNet().isServer())
 			{
-				mat_arrows.server_SetQuantity(fletch_num_arrows);
-				mat_arrows.Tag("do not set materials");
-				this.server_PutInInventory(mat_arrows);
+				CBlob@ mat_arrows = server_CreateBlobNoInit('mat_arrows');
 
-				if (arrow !is null)
+				if (mat_arrows !is null)
 				{
-					arrow.server_Die();
-				}
-				else
-				{
-					canPickSpriteArrow(this, true);
+					mat_arrows.Tag('custom quantity');
+					mat_arrows.Init();
+
+					mat_arrows.server_SetQuantity(1); // unnecessary
+
+					if (not this.server_PutInInventory(mat_arrows))
+					{
+						mat_arrows.setPosition(this.getPosition());
+					}
+
+					if (arrow !is null)
+					{
+						arrow.server_Die();
+					}
+					else
+					{
+						canPickSpriteArrow(this, true);
+					}
 				}
 			}
+
 			this.getSprite().PlaySound("Entities/Items/Projectiles/Sounds/ArrowHitGround.ogg");
 		}
 	}
@@ -1046,12 +1058,18 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 			{
 				if (getNet().isServer())
 				{
-					CBlob@ mat_arrows = server_CreateBlob("mat_arrows", this.getTeamNum(), this.getPosition());
+					CBlob@ mat_arrows = server_CreateBlobNoInit('mat_arrows');
 					if (mat_arrows !is null)
 					{
+						mat_arrows.Tag('custom quantity');
+						mat_arrows.Init();
+
 						mat_arrows.server_SetQuantity(fletch_num_arrows);
-						mat_arrows.Tag("do not set materials");
-						this.server_PutInInventory(mat_arrows);
+
+						if (not this.server_PutInInventory(mat_arrows))
+						{
+							mat_arrows.setPosition(this.getPosition());
+						}
 					}
 				}
 				this.getSprite().PlaySound("Entities/Items/Projectiles/Sounds/ArrowHitGround.ogg");

@@ -370,7 +370,7 @@ bool canUnpackHere(CBlob@ this)
 		{
 			Vec2f temp = (Vec2f(step_x + 0.5, step_y + 0.5) * map.tilesize);
 			Vec2f v = offsetPos + temp;
-			if (map.isTileSolid(v))
+			if (v.y < map.tilesize || map.isTileSolid(v))
 			{
 				return false;
 			}
@@ -378,6 +378,15 @@ bool canUnpackHere(CBlob@ this)
 	}
 
 	string packed = this.get_string("packed");
+	//required vertical buffer for siege engines and boats
+	if(packed == "ballista" || packed == "catapult" || packed == "longboat" || packed == "warboat")
+	{
+		if(pos.y < 32)
+		{
+			return false;
+		}
+	}
+
 	bool water = packed == "longboat" || packed == "warboat";
 	if (this.isAttached())
 	{

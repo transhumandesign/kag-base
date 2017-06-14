@@ -3,20 +3,25 @@
 #include "BuilderCommon.as"
 #include "FireCommon.as"
 #include "Requirements.as"
-#include "RunnerAnimCommon.as";
-#include "RunnerCommon.as";
-#include "Knocked.as";
+#include "RunnerAnimCommon.as"
+#include "RunnerCommon.as"
+#include "Knocked.as"
+#include "PixelOffsets.as"
+#include "RunnerTextures.as"
+
+//
 
 void onInit(CSprite@ this)
 {
-	const string texname = this.getBlob().getSexNum() == 0 ?
-	                       "Entities/Characters/Builder/BuilderMale.png" :
-	                       "Entities/Characters/Builder/BuilderFemale.png";
-	this.ReloadSprite(texname);
+	addRunnerTextures(this, "builder", "Builder");
 
 	this.getCurrentScript().runFlags |= Script::tick_not_infire;
 }
 
+void onPlayerInfoChanged(CSprite@ this)
+{
+	ensureCorrectRunnerTexture(this, "builder", "Builder");
+}
 
 void onTick(CSprite@ this)
 {
@@ -42,7 +47,6 @@ void onTick(CSprite@ this)
 		}
 		return;
 	}
-
 	// animations
 
 	const u8 knocked = getKnocked(blob);

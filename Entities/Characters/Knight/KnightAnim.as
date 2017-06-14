@@ -4,16 +4,15 @@
 #include "RunnerAnimCommon.as";
 #include "RunnerCommon.as";
 #include "Knocked.as";
+#include "PixelOffsets.as"
+#include "RunnerTextures.as"
 
 const string shiny_layer = "shiny bit";
 
 void onInit(CSprite@ this)
 {
-	string texname = this.getBlob().getSexNum() == 0 ?
-	                 "Entities/Characters/Knight/KnightMale.png" :
-	                 "Entities/Characters/Knight/KnightFemale.png";
-	this.ReloadSprite(texname, this.getConsts().frameWidth, this.getConsts().frameHeight,
-	                  this.getBlob().getTeamNum(), this.getBlob().getSkinNum());
+	addRunnerTextures(this, "knight", "Knight");
+
 	// add blade
 	this.RemoveSpriteLayer("chop");
 	CSpriteLayer@ chop = this.addSpriteLayer("chop");
@@ -40,6 +39,11 @@ void onInit(CSprite@ this)
 		shiny.SetVisible(false);
 		shiny.SetRelativeZ(1.0f);
 	}
+}
+
+void onPlayerInfoChanged(CSprite@ this)
+{
+	ensureCorrectRunnerTexture(this, "knight", "Knight");
 }
 
 void onTick(CSprite@ this)

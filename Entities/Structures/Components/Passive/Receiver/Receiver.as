@@ -84,6 +84,8 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	if(getNet().isServer())
 	{
+		CMap@ map = getMap();
+
 		MapPowerGrid@ grid;
 		if(!getRules().get("power grid", @grid)) return;
 
@@ -101,6 +103,12 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		for(u8 i = 1; i < signal_strength; i++)
 		{
 			const Vec2f TARGET = offset * i + POSITION;
+
+			if(TARGET.x < 0 || TARGET.y < 0 ||
+				TARGET.x >= map.tilemapwidth || TARGET.y >= map.tilemapheight)
+			{
+				break;
+			}
 
 			CBlob@ blob = getBlobByNetworkID(grid.getID(TARGET.x, TARGET.y));
 			if(blob is null || blob.getName() != EMITTER) continue;

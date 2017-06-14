@@ -2,6 +2,8 @@
 
 #include "Hitters.as";
 #include "BuilderHittable.as";
+#include "ParticleSparks.as";
+#include "MaterialCommon.as";
 
 const f32 speed_thresh = 2.4f;
 const f32 speed_hard_thresh = 2.6f;
@@ -217,7 +219,6 @@ void onTick(CBlob@ this)
 				Vec2f attackVel = direction * attack_distance;
 
 				const f32 distance = 20.0f;
-				const f32 attack_dam = 1.0f;
 
 				bool hitsomething = false;
 				bool hitblob = false;
@@ -231,6 +232,7 @@ void onTick(CBlob@ this)
 						bool hit_ground = false;
 						for (uint i = 0; i < hitInfos.length; i++)
 						{
+							f32 attack_dam = 1.0f;
 							HitInfo@ hi = hitInfos[i];
 							bool hit_constructed = false;
 							if (hi.blob !is null) // blob
@@ -248,11 +250,22 @@ void onTick(CBlob@ this)
 									continue;
 								}
 
-								holder.server_Hit(hi.blob, hi.hitpos, attackVel, attack_dam, Hitters::drill);
-								if (int(heat) > heat_max * 0.5f)
+								//
+
+								if (getNet().isServer())
 								{
-									holder.server_Hit(hi.blob, hi.hitpos, attackVel, 1.0f, Hitters::drill);   //extra burn damage
+									// Deal extra damage if hot
+									if (int(heat) > heat_max * 0.5f)
+									{
+										attack_dam += 1.0f;
+									}
+
+									this.server_Hit(hi.blob, hi.hitpos, attackVel, attack_dam, Hitters::drill);
+
+									// Yield half
+									Material::fromBlob(holder, hi.blob, attack_dam * 0.5f);
 								}
+
 								hitsomething = true;
 								hitblob = true;
 							}
@@ -262,7 +275,24 @@ void onTick(CBlob@ this)
 									continue;
 
 								TileType tile = hi.tile;
-								this.server_HitMap(hi.hitpos, attackVel, 1.0f, Hitters::drill);
+
+								if (getNet().isServer())
+								{
+									map.server_DestroyTile(hi.hitpos, 1.0f, this);
+									map.server_DestroyTile(hi.hitpos, 1.0f, this);
+
+									Material::fromTile(holder, tile, 1.0f);
+								}
+
+								if (getNet().isClient())
+								{
+									if (map.isTileBedrock(tile))
+									{
+										sprite.PlaySound("/metal_stone.ogg");
+										sparks(hi.hitpos, attackVel.Angle(), 1.0f);
+									}
+								}
+
 								//only counts as hitting something if its not mats, so you can drill out veins quickly
 								if (!map.isTileStone(tile) || !map.isTileGold(tile))
 								{
@@ -342,11 +372,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 
 	return damage;
-}
-
-void onHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 customData)
-{
-	getMap().server_DestroyTile(worldPoint, damage, this);
 }
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
