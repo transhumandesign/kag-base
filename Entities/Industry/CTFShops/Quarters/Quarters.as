@@ -1,4 +1,4 @@
-﻿// Quarters.as
+// Quarters.as
 
 #include "Requirements.as";
 #include "ShopCommon.as";
@@ -6,7 +6,6 @@
 #include "CheckSpam.as";
 #include "StandardControlsCommon.as";
 #include "CTFShopCommon.as";
-#include "RunnerHead.as";
 
 s32 cost_beer = 5;
 s32 cost_meal = 10;
@@ -268,6 +267,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 	attached.AddScript("WakeOnHit.as");
 
 	string texName = default_head_path;
+	u16 frame = 0;
 	CSprite@ attached_sprite = attached.getSprite();
 	if (attached_sprite !is null && getNet().isClient())
 	{
@@ -277,6 +277,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 		if (head !is null)
 		{
 			texName = head.getFilename();
+			frame = head.getFrame();
 		}
 	}
 
@@ -299,7 +300,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 
 				if (texName == default_head_path)
 				{
-					anim.AddFrame(getHeadFrame(attached, attached.getHeadNum()) + 2);
+					anim.AddFrame(frame + 2);
 				}
 				else
 				{
