@@ -86,13 +86,8 @@ void onInit(CBlob@ this)
 	AddIconToken("$rest$", "InteractionIcons.png", Vec2f(32, 32), 29);
 
 	//load config
-	if (getRules().exists("ctf_costs_config"))
-	{
-		cost_config_file = getRules().get_string("ctf_costs_config");
-	}
-
 	ConfigFile cfg = ConfigFile();
-	cfg.loadFile(cost_config_file);
+	cfg.loadFile("Entities/Industry/CTFShops/CTFShopCosts.cfg");
 
 	cost_beer = cfg.read_s32("cost_beer", cost_beer);
 	cost_meal = cfg.read_s32("cost_meal", cost_meal);
