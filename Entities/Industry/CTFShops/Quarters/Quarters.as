@@ -258,7 +258,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 }
 
-const string default_head_path = "Entities/Characters/Sprites/Heads.png";
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 {
@@ -297,16 +296,8 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 			if (bed_head !is null)
 			{
 				Animation@ anim = bed_head.addAnimation("default", 0, false);
-
-				if (texName == default_head_path)
-				{
-					anim.AddFrame(frame + 2);
-				}
-				else
-				{
-					anim.AddFrame(2);
-				}
-
+				anim.AddFrame(frame + 2);
+				
 				bed_head.SetAnimation(anim);
 				bed_head.SetFacingLeft(true);
 				bed_head.RotateBy(80, Vec2f_zero);
