@@ -1,4 +1,4 @@
-﻿// Quarters.as
+// Quarters.as
 
 #include "Requirements.as";
 #include "ShopCommon.as";
@@ -6,7 +6,6 @@
 #include "CheckSpam.as";
 #include "StandardControlsCommon.as";
 #include "CTFShopCommon.as";
-#include "RunnerHead.as";
 
 s32 cost_beer = 5;
 s32 cost_meal = 10;
@@ -259,7 +258,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 }
 
-const string default_head_path = "Entities/Characters/Sprites/Heads.png";
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 {
@@ -268,6 +266,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 	attached.AddScript("WakeOnHit.as");
 
 	string texName = default_head_path;
+	u16 frame = 0;
 	CSprite@ attached_sprite = attached.getSprite();
 	if (attached_sprite !is null && getNet().isClient())
 	{
@@ -277,6 +276,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 		if (head !is null)
 		{
 			texName = head.getFilename();
+			frame = head.getFrame();
 		}
 	}
 
@@ -296,16 +296,8 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 			if (bed_head !is null)
 			{
 				Animation@ anim = bed_head.addAnimation("default", 0, false);
-
-				if (texName == default_head_path)
-				{
-					anim.AddFrame(getHeadFrame(attached, attached.getHeadNum()) + 2);
-				}
-				else
-				{
-					anim.AddFrame(2);
-				}
-
+				anim.AddFrame(frame + 2);
+				
 				bed_head.SetAnimation(anim);
 				bed_head.SetFacingLeft(true);
 				bed_head.RotateBy(80, Vec2f_zero);
