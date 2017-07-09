@@ -7,9 +7,6 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 	CMap@ map = this.getMap();
 	Sound::Play("SplashSlow.ogg", this.getPosition(), 3.0f);
 
-
-    //bool raycast = this.hasTag("splash ray cast");
-
 	if (map !is null)
 	{
 		bool is_server = getNet().isServer();
@@ -48,9 +45,6 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 
 		u8 hitter = shouldStun ? Hitters::water_stun : Hitters::water;
 
-		Vec2f offset = Vec2f(splash_halfwidth * map.tilesize + map.tilesize, splash_halfheight * map.tilesize + map.tilesize);
-		Vec2f tl = pos - offset * 0.5f;
-		Vec2f br = pos + offset * 0.5f;
 		if (is_server)
 		{
 			CBlob@ ownerBlob;
@@ -61,18 +55,15 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 			}
 
 			CBlob@[] blobs;
-			map.getBlobsInBox(tl, br, @blobs);
+			map.getBlobsInRadius(pos, radius, @blobs);
 			for (uint i = 0; i < blobs.length; i++)
 			{
 				CBlob@ blob = blobs[i];
-                /*if(raycast
-                    && blob.getPlayer() !is null
+                if (blob.getPlayer() !is null
                     && map.rayCastSolidNoBlobs(this.getPosition(), blob.getPosition()))
                 {
                     continue;
-
-                }*/
-
+                }
 
 				bool hitHard = blob.getTeamNum() != this.getTeamNum() || ownerBlob is blob;
 

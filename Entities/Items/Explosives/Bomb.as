@@ -100,8 +100,6 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	return true;
 }
 
-
-
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (!solid)
@@ -113,11 +111,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	const u8 hitter = this.get_u8("custom_hitter");
 	if (vellen > 1.7f)
 	{
-		Sound::Play(!isExplosionHitter(hitter) ? "/WaterBubble" :
+		Sound::Play((hitter == Hitters::water) ? "/WaterBubble" :
 		            "/BombBounce.ogg", this.getPosition(), Maths::Min(vellen / 8.0f, 1.1f));
 	}
 
-	if (!isExplosionHitter(hitter) && !this.isAttached())
+	if (hitter == Hitters::water && !this.isAttached())
 	{
 		Boom(this);
 		if (!this.hasTag("_hit_water") && blob !is null) //smack that mofo
@@ -128,4 +126,3 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		}
 	}
 }
-
