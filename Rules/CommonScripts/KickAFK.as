@@ -6,7 +6,7 @@
 bool warned = false;
 
 const uint checkInterval = 90;
-const uint idleToWarnSeconds = 60 * 4;
+const uint idleToWarnSeconds = 60 * 1 + 30;
 const uint warnToKickSeconds = 60;
 uint warnTime;
 

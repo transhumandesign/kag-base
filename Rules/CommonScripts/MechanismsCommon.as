@@ -61,7 +61,7 @@ const u8 signal_strength = 20;
 
 //////////////////////////////////////
 // Components, the blob to grid
-// interface that decides 
+// interface that decides
 // functionality based on it's
 // sub classes
 //////////////////////////////////////

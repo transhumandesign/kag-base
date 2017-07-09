@@ -1,3 +1,5 @@
+#include "PixelOffsets.as"
+#include "RunnerTextures.as"
 
 void onInit(CSprite@ this)
 {
@@ -23,14 +25,14 @@ void onTick(CSprite@ this)
 	{
 		stars.SetVisible(true);
 
-		PixelOffset @po = getDriver().getPixelOffset(this.getFilename(), this.getFrame());
+		int layer = 0;
+		Vec2f head_offset = getHeadOffset(blob, -1, layer);
 
-		Vec2f off;
-		if (po !is null)
+		if (layer != 0)
 		{
-			off.Set(this.getFrameWidth() / 2, -this.getFrameHeight() / 2);
+			Vec2f off = Vec2f(this.getFrameWidth() / 2, -this.getFrameHeight() / 2);
 			off += this.getOffset();
-			off += Vec2f(-po.x, po.y);
+			off += Vec2f(-head_offset.x, head_offset.y);
 
 			off += Vec2f(Maths::Round(Maths::Sin(getGameTime() * 0.2f) * 3 + 1), Maths::Round(-3 - Maths::Abs(Maths::Cos(getGameTime() * 0.15f) * 3)));
 

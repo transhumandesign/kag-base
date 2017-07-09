@@ -13,8 +13,7 @@ void LoadDefaultGUI()
 		string interaction = "/GUI/InteractionIcons.png";
 		AddIconToken("$NONE$", interaction, Vec2f(32, 32), 9);
 		AddIconToken("$TIME$", interaction, Vec2f(32, 32), 0);
-		AddIconToken("$COIN$", "GUI/MaterialIcons.png", Vec2f(16, 16), 5);
-		AddIconToken("$GOLD$", "GUI/MaterialIcons.png", Vec2f(16, 16), 2);
+		AddIconToken("$COIN$", "Sprites/coins.png", Vec2f(16, 16), 1);
 		AddIconToken("$TEAMS$", "GUI/MenuItems.png", Vec2f(32, 32), 1);
 		AddIconToken("$SPECTATOR$", "GUI/MenuItems.png", Vec2f(32, 32), 19);
 		AddIconToken("$FLAG$", CFileMatcher("flag.png").getFirst(), Vec2f(32, 16), 0);

@@ -1,9 +1,20 @@
+#include "PixelOffsets.as"
+#include "RunnerTextures.as"
+
 void onInit(CSprite@ this)
 {
-	const string texname = this.getBlob().getSexNum() == 0 ?
-	                       "Entities/Characters/Migrant/MigrantMale.png" :
-	                       "Entities/Characters/Migrant/MigrantFemale.png";
-	this.ReloadSprite(texname);
+	RunnerTextures@ runner_tex = addRunnerTextures(this, "migrant", "Migrant");
+	LoadSprites(this);
+}
+
+void onPlayerInfoChanged(CSprite@ this)
+{
+	LoadSprites(this);
+}
+
+void LoadSprites(CSprite@ this)
+{
+	ensureCorrectRunnerTexture(this, "migrant", "Migrant");
 }
 
 void onTick(CSprite@ this)
@@ -20,6 +31,7 @@ void onTick(CSprite@ this)
 	{
 		Vec2f vel = blob.getVelocity();
 		this.SetAnimation("dead");
+		this.SetOffset(Vec2f(0,1));
 
 		if (vel.y < -1.0f)
 		{

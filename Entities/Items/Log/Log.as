@@ -5,15 +5,23 @@ const bool dangerous_logs = false;
 void onInit(CSprite@ this)
 {
 	this.animation.frame = XORRandom(4);
-	this.getBlob().server_setTeamNum(-1);
-	this.getCurrentScript().runFlags |= Script::remove_after_this;
-	this.getBlob().server_SetTimeToDie(60 * 5); // timeout
 
+	this.getCurrentScript().runFlags |= Script::remove_after_this;
 }
 
-// void onInit( CBlob@ this ){
-// this.Tag("tree");
-// }
+void onInit(CBlob@ this)
+{
+	if (getNet().isServer())
+	{
+		this.server_SetTimeToDie(240 + XORRandom(60));
+
+		this.server_setTeamNum(-1);
+
+		dictionary harvest;
+		harvest.set('mat_wood', 10);
+		this.set('harvest', harvest);
+	}
+}
 
 //collide with vehicles and structures	- hit stuff if thrown
 

@@ -5,11 +5,12 @@
 #include "BuilderCommon.as";
 #include "ThrowCommon.as";
 #include "RunnerCommon.as";
-#include "MakeMat.as";
 #include "Help.as";
 #include "Requirements.as"
 #include "BuilderHittable.as";
 #include "PlacementCommon.as";
+#include "ParticleSparks.as";
+#include "MaterialCommon.as";
 
 //can't be <2 - needs one frame less for gathering infos
 const s32 hit_frame = 2;
@@ -145,7 +146,23 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 		{
 			if(map.getSectorAtPosition(tilepos, "no build") is null)
 			{
-				this.server_HitMap(tilepos, attackVel, 1.0f, Hitters::builder);
+				uint16 type = map.getTile(tilepos).type;
+
+				if (getNet().isServer())
+				{
+					map.server_DestroyTile(tilepos, 1.0f, this);
+
+					Material::fromTile(this, type, 1.0f);
+				}
+
+				if (getNet().isClient())
+				{
+					if (map.isTileBedrock(type))
+					{
+						this.getSprite().PlaySound("/metal_stone.ogg");
+						sparks(tilepos, attackVel.Angle(), 1.0f);
+					}
+				}
 			}
 		}
 	}
@@ -162,7 +179,13 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 			}
 
 			const bool teamHurt = !blob.hasTag("flesh") || isdead;
-			this.server_Hit(blob, tilepos, attackVel, attack_power, Hitters::builder, teamHurt);
+
+			if (getNet().isServer())
+			{
+				this.server_Hit(blob, tilepos, attackVel, attack_power, Hitters::builder, teamHurt);
+
+				Material::fromBlob(this, blob, attack_power);
+			}
 		}
 	}
 
@@ -171,10 +194,12 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if(cmd == this.getCommandID("pickaxe"))
+	if (cmd == this.getCommandID("pickaxe"))
 	{
 		if(!RecdHitCommand(this, params))
+		{
 			warn("error when recieving pickaxe command");
+		}
 	}
 }
 

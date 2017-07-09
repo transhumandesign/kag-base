@@ -6,6 +6,7 @@
 #include "CheckSpam.as";
 #include "GameplayEvents.as";
 #include "Requirements.as"
+#include "RunnerTextures.as"
 
 //server-only
 void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
@@ -83,14 +84,16 @@ void PositionCarried(CBlob@ this, CBlob@ carryBlob)
 		{
 			// set the pickup offset according to the pink pixel
 			CSprite@ sprite = this.getSprite();
-			PixelOffset @po = getDriver().getPixelOffset(sprite.getFilename(), sprite.getFrame());
-			if (po !is null)
+
+			int layer = 0;
+			Vec2f head_offset = getHeadOffset(this, -1, layer);
+			if (layer != 0)
 			{
 				// set the proper offset
-				Vec2f headoffset(sprite.getFrameWidth() / 2, -sprite.getFrameHeight() / 2);
-				headoffset += Vec2f(-po.x, po.y);
-				headoffset.x *= -1.0f;
-				hands.offset = headoffset;
+				Vec2f off(sprite.getFrameWidth() / 2, -sprite.getFrameHeight() / 2);
+				off += Vec2f(-head_offset.x, head_offset.y);
+				off.x *= -1.0f;
+				hands.offset = off;
 			}
 			else
 			{
@@ -203,9 +206,9 @@ void onTick(CBlob@ this)
 	bc.buildable = false;
 	bc.supported = false;
 	bc.hasReqs = true;
-	
+
 	u8 blockIndex = this.get_u8("buildblob");
-	BuildBlock @block = getBlockByIndex(this, blockIndex); 
+	BuildBlock @block = getBlockByIndex(this, blockIndex);
 	if (block !is null) {
 		bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing);
 	}

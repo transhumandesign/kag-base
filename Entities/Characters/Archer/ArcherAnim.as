@@ -5,24 +5,32 @@
 #include "RunnerAnimCommon.as";
 #include "RunnerCommon.as";
 #include "Knocked.as";
+#include "PixelOffsets.as"
+#include "RunnerTextures.as"
 
 const f32 config_offset = -4.0f;
 const string shiny_layer = "shiny bit";
 
 void onInit(CSprite@ this)
 {
+	RunnerTextures@ runner_tex = addRunnerTextures(this, "archer", "Archer");
+
+	LoadSprites(this);
+}
+
+void onPlayerInfoChanged(CSprite@ this)
+{
 	LoadSprites(this);
 }
 
 void LoadSprites(CSprite@ this)
 {
-	string texname = this.getBlob().getSexNum() == 0 ?
-	                 "Entities/Characters/Archer/ArcherMale.png" :
-	                 "Entities/Characters/Archer/ArcherFemale.png";
-	this.ReloadSprite(texname, this.getConsts().frameWidth, this.getConsts().frameHeight,
-	                  this.getBlob().getTeamNum(), this.getBlob().getSkinNum());
+	ensureCorrectRunnerTexture(this, "archer", "Archer");
+
+	string texname = getRunnerTextureName(this);
+
 	this.RemoveSpriteLayer("frontarm");
-	CSpriteLayer@ frontarm = this.addSpriteLayer("frontarm", texname , 32, 16, this.getBlob().getTeamNum(), this.getBlob().getSkinNum());
+	CSpriteLayer@ frontarm = this.addTexturedSpriteLayer("frontarm", texname , 32, 16);
 
 	if (frontarm !is null)
 	{
@@ -40,7 +48,7 @@ void LoadSprites(CSprite@ this)
 	}
 
 	this.RemoveSpriteLayer("backarm");
-	CSpriteLayer@ backarm = this.addSpriteLayer("backarm", texname , 32, 16, this.getBlob().getTeamNum(), this.getBlob().getSkinNum());
+	CSpriteLayer@ backarm = this.addTexturedSpriteLayer("backarm", texname , 32, 16);
 
 	if (backarm !is null)
 	{
@@ -52,7 +60,7 @@ void LoadSprites(CSprite@ this)
 	}
 
 	this.RemoveSpriteLayer("held arrow");
-	CSpriteLayer@ arrow = this.addSpriteLayer("held arrow", "Arrow.png" , 16, 8, this.getBlob().getTeamNum(), this.getBlob().getSkinNum());
+	CSpriteLayer@ arrow = this.addSpriteLayer("held arrow", "Arrow.png" , 16, 8, this.getBlob().getTeamNum(), 0);
 
 	if (arrow !is null)
 	{
@@ -68,7 +76,7 @@ void LoadSprites(CSprite@ this)
 
 	//quiver
 	this.RemoveSpriteLayer("quiver");
-	CSpriteLayer@ quiver = this.addSpriteLayer("quiver", texname , 16, 16, this.getBlob().getTeamNum(), this.getBlob().getSkinNum());
+	CSpriteLayer@ quiver = this.addTexturedSpriteLayer("quiver", texname , 16, 16);
 
 	if (quiver !is null)
 	{
@@ -81,7 +89,7 @@ void LoadSprites(CSprite@ this)
 
 	//grapple
 	this.RemoveSpriteLayer("hook");
-	CSpriteLayer@ hook = this.addSpriteLayer("hook", texname , 16, 8, this.getBlob().getTeamNum(), this.getBlob().getSkinNum());
+	CSpriteLayer@ hook = this.addTexturedSpriteLayer("hook", texname , 16, 8);
 
 	if (hook !is null)
 	{
@@ -92,7 +100,7 @@ void LoadSprites(CSprite@ this)
 	}
 
 	this.RemoveSpriteLayer("rope");
-	CSpriteLayer@ rope = this.addSpriteLayer("rope", texname , 32, 8, this.getBlob().getTeamNum(), this.getBlob().getSkinNum());
+	CSpriteLayer@ rope = this.addTexturedSpriteLayer("rope", texname , 32, 8);
 
 	if (rope !is null)
 	{
@@ -104,7 +112,7 @@ void LoadSprites(CSprite@ this)
 
 	// add shiny
 	this.RemoveSpriteLayer(shiny_layer);
-	CSpriteLayer@ shiny = this.addSpriteLayer(shiny_layer, "AnimeShiny.png", 16, 16);
+	CSpriteLayer@ shiny = this.addSpriteLayer(shiny_layer, "AnimeShiny.png", 16, 16, this.getBlob().getTeamNum(), 0);
 
 	if (shiny !is null)
 	{
@@ -514,6 +522,7 @@ void doRopeUpdate(CSprite@ this, CBlob@ blob, ArcherInfo@ archer)
 	hook.RotateBy(archer.cache_angle , Vec2f());
 
 	hook.TranslateBy(off);
+	hook.SetIgnoreParentFacing(true);
 	hook.SetFacingLeft(false);
 
 	//GUI::DrawLine(blob.getPosition(), archer.grapple_pos, SColor(255,255,255,255));
@@ -522,6 +531,7 @@ void doRopeUpdate(CSprite@ this, CBlob@ blob, ArcherInfo@ archer)
 void doQuiverUpdate(CSprite@ this, bool has_arrows, bool quiver)
 {
 	CSpriteLayer@ quiverLayer = this.getSpriteLayer("quiver");
+	CBlob@ blob = this.getBlob();
 
 	if (quiverLayer !is null)
 	{
@@ -535,17 +545,22 @@ void doQuiverUpdate(CSprite@ this, bool has_arrows, bool quiver)
 				quiverangle *= -1.0f;
 			}
 
-			PixelOffset @po = getDriver().getPixelOffset(this.getFilename(), this.getFrame());
+			//face the same way (force)
+			quiverLayer.SetIgnoreParentFacing(true);
+			quiverLayer.SetFacingLeft(this.isFacingLeft());
+
+			int layer = 0;
+			Vec2f head_offset = getHeadOffset(blob, -1, layer);
 
 			bool down = (this.isAnimation("crouch") || this.isAnimation("dead"));
 			bool easy = false;
 			Vec2f off;
-			if (po !is null)
+			if (layer != 0)
 			{
 				easy = true;
 				off.Set(this.getFrameWidth() / 2, -this.getFrameHeight() / 2);
 				off += this.getOffset();
-				off += Vec2f(-po.x, po.y);
+				off += Vec2f(-head_offset.x, head_offset.y);
 
 
 				f32 y = (down ? 3.0f : 7.0f);

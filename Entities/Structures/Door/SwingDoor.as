@@ -17,19 +17,32 @@ void onInit(CBlob@ this)
 	// this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().tickFrequency = 0;
 
-
 	//block knight sword
 	this.Tag("blocks sword");
 
-	//HACK
+	// disgusting HACK
 	// for DefaultNoBuild.as
 	if (this.getName() == "stone_door")
 	{
 		this.set_TileType("background tile", CMap::tile_castle_back);
+
+		if (getNet().isServer())
+		{
+			dictionary harvest;
+			harvest.set('mat_stone', 10);
+			this.set('harvest', harvest);
+		}
 	}
 	else
 	{
 		this.set_TileType("background tile", CMap::tile_wood_back);
+
+		if (getNet().isServer())
+		{
+			dictionary harvest;
+			harvest.set('mat_wood', 10);
+			this.set('harvest', harvest);
+		}
 	}
 	this.Tag("door");
 	this.Tag("blocks water");

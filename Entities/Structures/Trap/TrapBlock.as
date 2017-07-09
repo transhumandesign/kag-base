@@ -18,6 +18,13 @@ void onInit(CBlob@ this)
 
 	this.set_TileType("background tile", CMap::tile_castle_back);
 
+	if (getNet().isServer())
+	{
+		dictionary harvest;
+		harvest.set('mat_stone', 4);
+		this.set('harvest', harvest);
+	}
+
 	MakeDamageFrame(this);
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 }
