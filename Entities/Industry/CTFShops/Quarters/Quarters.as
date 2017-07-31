@@ -6,7 +6,6 @@
 #include "CheckSpam.as";
 #include "StandardControlsCommon.as";
 #include "CTFShopCommon.as";
-#include "RunnerHead.as";
 
 s32 cost_beer = 5;
 s32 cost_meal = 10;
@@ -259,62 +258,57 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 }
 
-const string default_head_path = "Entities/Characters/Sprites/Heads.png";
-
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 {
 	attached.getShape().getConsts().collidable = false;
 	attached.SetFacingLeft(true);
 	attached.AddScript("WakeOnHit.as");
 
-	string texName = default_head_path;
-	CSprite@ attached_sprite = attached.getSprite();
-	if (attached_sprite !is null && getNet().isClient())
-	{
-		attached_sprite.SetVisible(false);
-		attached_sprite.PlaySound("GetInVehicle.ogg");
-		CSpriteLayer@ head = attached_sprite.getSpriteLayer("head");
-		if (head !is null)
-		{
-			texName = head.getFilename();
-		}
-	}
+	if (not getNet().isClient()) return;
 
 	CSprite@ sprite = this.getSprite();
-	if (sprite !is null)
-	{
-		updateLayer(sprite, "bed", 1, true, false);
-		updateLayer(sprite, "zzz", 0, true, false);
-		updateLayer(sprite, "backpack", 0, true, false);
 
-		sprite.SetEmitSoundPaused(false);
-		sprite.RewindEmitSound();
+	if (sprite is null) return;
 
-		if (getNet().isClient())
-		{
-			CSpriteLayer@ bed_head = sprite.addSpriteLayer("bed head", texName, 16, 16, attached.getTeamNum(), attached.getSkinNum());
-			if (bed_head !is null)
-			{
-				Animation@ anim = bed_head.addAnimation("default", 0, false);
+	updateLayer(sprite, "bed", 1, true, false);
+	updateLayer(sprite, "zzz", 0, true, false);
+	updateLayer(sprite, "backpack", 0, true, false);
 
-				if (texName == default_head_path)
-				{
-					anim.AddFrame(getHeadFrame(attached, attached.getHeadNum()) + 2);
-				}
-				else
-				{
-					anim.AddFrame(2);
-				}
+	sprite.SetEmitSoundPaused(false);
+	sprite.RewindEmitSound();
 
-				bed_head.SetAnimation(anim);
-				bed_head.SetFacingLeft(true);
-				bed_head.RotateBy(80, Vec2f_zero);
-				bed_head.SetRelativeZ(2);
-				bed_head.SetOffset(Vec2f(1, 2));
-				bed_head.SetVisible(true);
-			}
-		}
-	}
+	CSprite@ attached_sprite = attached.getSprite();
+
+	if (attached_sprite is null) return;
+
+	attached_sprite.SetVisible(false);
+	attached_sprite.PlaySound("GetInVehicle.ogg");
+
+	CSpriteLayer@ head = attached_sprite.getSpriteLayer("head");
+
+	if (head is null) return;
+
+	Animation@ head_animation = head.getAnimation("default");
+
+	if (head_animation is null) return;
+
+	CSpriteLayer@ bed_head = sprite.addSpriteLayer("bed head", head.getFilename(),
+		16, 16, attached.getTeamNum(), attached.getSkinNum());
+
+	if (bed_head is null) return;
+
+	Animation@ bed_head_animation = bed_head.addAnimation("default", 0, false);
+
+	if (bed_head_animation is null) return;
+
+	bed_head_animation.AddFrame(head_animation.getFrame(2));
+
+	bed_head.SetAnimation(bed_head_animation);
+	bed_head.RotateBy(80, Vec2f_zero);
+	bed_head.SetOffset(Vec2f(1, 2));
+	bed_head.SetFacingLeft(true);
+	bed_head.SetVisible(true);
+	bed_head.SetRelativeZ(2);
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
