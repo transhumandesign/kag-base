@@ -107,7 +107,7 @@ void MakeBlocksMenu(CInventory@ this, const Vec2f &in INVENTORY_CE)
 			button.selectOneOnClick = true;
 
 			CBitStream missing;
-			if(hasRequirements(this, b.reqs, missing))
+			if(hasRequirements(this, b.reqs, missing, not b.buildOnGround))
 			{
 				button.hoverText = b.description + "\n" + getButtonRequirementsText(b.reqs, false);
 			}

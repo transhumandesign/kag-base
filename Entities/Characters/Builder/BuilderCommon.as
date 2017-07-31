@@ -183,7 +183,7 @@ bool canBuild(CBlob@ this, BuildBlock[]@ blocks, uint index)
 	}
 
 	bc.missing.Clear();
-	bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing);
+	bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
 
 	return bc.hasReqs;
 }
