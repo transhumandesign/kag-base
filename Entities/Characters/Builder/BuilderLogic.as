@@ -573,7 +573,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 				CInventory@ inv = this.getInventory();
 
 				CBitStream missing;
-				if(hasRequirements(inv, b.reqs, missing))
+				if(hasRequirements(inv, b.reqs, missing, not b.buildOnGround))
 				{
 					server_TakeRequirements(inv, b.reqs);
 				}

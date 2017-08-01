@@ -86,7 +86,7 @@ void onTick(CBlob@ this)
 		if (block !is null)
 		{
 			bc.missing.Clear();
-			bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing);
+			bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
 		}
 
 		if (bc.cursorClose)
