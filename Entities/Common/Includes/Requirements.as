@@ -129,7 +129,7 @@ bool ReadRequirement(CBitStream &inout bs, string &out req, string &out blobName
 	return true;
 }
 
-bool hasRequirements(CInventory@ inv1, CInventory@ inv2, CBitStream &inout bs, CBitStream &inout missingBs)
+bool hasRequirements(CInventory@ inv1, CInventory@ inv2, CBitStream &inout bs, CBitStream &inout missingBs, bool &in inventoryOnly = false)
 {
 	string req, blobName, friendlyName;
 	u16 quantity = 0;
@@ -143,7 +143,18 @@ bool hasRequirements(CInventory@ inv1, CInventory@ inv2, CBitStream &inout bs, C
 
 		if (req == "blob")
 		{
-			int sum = (inv1 !is null ? inv1.getBlob().getBlobCount(blobName) : 0) + (inv2 !is null ? inv2.getBlob().getBlobCount(blobName) : 0);
+			uint sum;
+
+			if (inventoryOnly)
+			{
+				sum = (inv1 !is null ? inv1.getCount(blobName) : 0) + (inv2 !is null ? inv2.getCount(blobName) : 0);
+			}
+			else
+			{
+				sum = (inv1 !is null ? inv1.getBlob().getBlobCount(blobName) : 0) + (inv2 !is null ? inv2.getBlob().getBlobCount(blobName) : 0);
+			}
+
+
 			if (sum < quantity)
 			{
 				AddRequirement(missingBs, req, blobName, friendlyName, quantity);
@@ -192,9 +203,9 @@ bool hasRequirements(CInventory@ inv1, CInventory@ inv2, CBitStream &inout bs, C
 	return has;
 }
 
-bool hasRequirements(CInventory@ inv, CBitStream &inout bs, CBitStream &inout missingBs)
+bool hasRequirements(CInventory@ inv, CBitStream &inout bs, CBitStream &inout missingBs, bool &in inventoryOnly = false)
 {
-	return (hasRequirements(inv, null, bs, missingBs));
+	return hasRequirements(inv, null, bs, missingBs, inventoryOnly);
 }
 
 void server_TakeRequirements(CInventory@ inv1, CInventory@ inv2, CBitStream &inout bs)
