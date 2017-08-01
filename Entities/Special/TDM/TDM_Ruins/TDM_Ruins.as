@@ -8,6 +8,7 @@ void onInit(CBlob@ this)
 	this.CreateRespawnPoint("ruins", Vec2f(0.0f, 16.0f));
 	AddIconToken("$knight_class_icon$", "GUI/MenuItems.png", Vec2f(32, 32), 12);
 	AddIconToken("$archer_class_icon$", "GUI/MenuItems.png", Vec2f(32, 32), 16);
+	AddIconToken("$change_class$", "/GUI/InteractionIcons.png", Vec2f(32, 32), 12, 2);
 	//TDM classes
 	addPlayerClass(this, "Knight", "$knight_class_icon$", "knight", "Hack and Slash.");
 	addPlayerClass(this, "Archer", "$archer_class_icon$", "archer", "The Ranged Advantage.");

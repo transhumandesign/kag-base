@@ -186,3 +186,7 @@ void onRender(CRules@ this)
 	}
 }
 
+void onNewPlayerJoin( CRules@ this, CPlayer@ player )
+{
+	this.SyncToPlayer("ctf_serialised_team_hud", player);
+}

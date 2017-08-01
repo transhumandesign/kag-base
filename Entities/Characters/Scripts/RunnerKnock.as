@@ -67,7 +67,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		CBlob@ sponge = null;
 		//find the sponge with lowest absorbed
 		CInventory@ inv = this.getInventory();
-		if (inv !is null) 
+		if (inv !is null)
 		{
 			u8 lowest_absorbed = 100;
 			for (int i = 0; i < inv.getItemsCount(); i++)
@@ -93,7 +93,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		{
 			if (has_sponge)
 			{
-				time = 15;
+				time = 5;
 				wet_sponge = true;
 			}
 			else
@@ -106,7 +106,19 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 		if (has_sponge && wet_sponge)
 		{
-			sponge.server_Die();
+			string apn = "absorbed";
+			u8 sp_max = 100;
+			u8 sp_amount = Maths::Min(sp_max, sponge.get_u8(apn) + 50);
+			//full?
+			if(sp_amount == sp_max)
+			{
+				sponge.server_Die();
+			}
+			else
+			{
+				sponge.set_u8(apn, sp_amount);
+				sponge.Sync(apn, true);
+			}
 		}
 	}
 

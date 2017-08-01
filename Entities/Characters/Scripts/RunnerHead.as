@@ -1,5 +1,7 @@
 // generic character head script
 
+// TODO: fix double includes properly, added the following line temporarily to fix include issues
+#include "PaletteSwap.as"
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
 
