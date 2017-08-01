@@ -533,10 +533,14 @@ void doQuiverUpdate(CSprite@ this, bool has_arrows, bool quiver)
 	CSpriteLayer@ quiverLayer = this.getSpriteLayer("quiver");
 	CBlob@ blob = this.getBlob();
 
-	if (not this.isVisible()) return;
-
 	if (quiverLayer !is null)
 	{
+		if (not this.isVisible()) {
+			quiverLayer.SetVisible(false);
+			return;
+		}
+		quiverLayer.SetVisible(true);
+
 		if (quiver)
 		{
 			quiverLayer.SetVisible(true);
