@@ -102,9 +102,9 @@ bool isFlooded(CBlob@ this)
 	// 5 tiles checked on both sides
 	for (uint i = 0; i < height / map.tilesize - WATER_FLOOD_REQUIRED + 1; i++)
 	{
-		if (map.isInWater(this.getPosition() + Vec2f(width / 2.1f, -height / 2.1f + (i * map.tilesize)))) 
+		if (map.isInWater(this.getPosition() + Vec2f(width / 2.1f, -height / 2.1f + (i * map.tilesize))))
 			return true;
-		if (map.isInWater(this.getPosition() + Vec2f(width /-2.1f, -height / 2.1f + (i * map.tilesize)))) 
+		if (map.isInWater(this.getPosition() + Vec2f(width /-2.1f, -height / 2.1f + (i * map.tilesize))))
 			return true;
 	}
 	return false;
@@ -644,7 +644,7 @@ void onRender(CSprite@ this)
 				}
 
 				GUI::SetFont("menu");
-				GUI::DrawText("Units " + tickets,
+				GUI::DrawText(getTranslatedString("Units") + " " + tickets,
 				              pos + Vec2f(-30, -4 + (tickets > 0 ? (-SHOW_TICKETS_TIME + diffTime) / 5 : 0)),
 				              color);
 			}

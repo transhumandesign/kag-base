@@ -59,7 +59,7 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 	}
 	if (blob.hasTag("door"))
 	{
-		SetHelp(blob, "help rotate", "", "$" + blob.getName() + "$" + " $Rotate$ Rotate    $KEY_SPACE$", "", 3);
+		SetHelp(blob, "help rotate", "", "$" + blob.getName() + "$ " + getTranslatedString("$Rotate$ Rotate    $KEY_SPACE$"), "", 3, false);
 	}
 
 
@@ -122,12 +122,12 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 	}
 	else if (name == "catapult" || name == "ballista")
 	{
-		SetHelp(blob, "help DRIVER movement", "", "$" + blob.getName() + "$" + "Drive     $KEY_A$ $KEY_S$ $KEY_D$", "", 3);
-		SetHelp(blob, "help GUNNER action", "", "$" + blob.getName() + "$" + "FIRE     $KEY_HOLD$$LMB$", "", 3);
+		SetHelp(blob, "help DRIVER movement", "", "$" + blob.getName() + "$" + getTranslatedString("Drive     $KEY_A$ $KEY_S$ $KEY_D$"), "", 3, false);
+		SetHelp(blob, "help GUNNER action", "", "$" + blob.getName() + "$" + getTranslatedString("FIRE     $KEY_HOLD$$LMB$"), "", 3, false);
 	}
 	else if (name == "mounted_bow")
 	{
-		SetHelp(blob, "help GUNNER action", "", "$" + blob.getName() + "$" + "FIRE     $LMB$", "", 3);
+		SetHelp(blob, "help GUNNER action", "", "$" + blob.getName() + "$" + getTranslatedString("FIRE     $LMB$"), "", 3, false);
 	}
 	else if (name == "food")
 	{

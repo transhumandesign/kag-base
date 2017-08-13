@@ -189,7 +189,7 @@ void onRender(CSprite@ this)
 			Vec2f upperleft(pos2d.x - 100, pos2d.y - 50.0f);
 			Vec2f lowerright(pos2d.x + 100, pos2d.y);
 			GUI::SetFont("menu");
-			GUI::DrawText("Requires a Worker from the Hall to work here.", upperleft, lowerright, SColor(255, 240, 10, 10), false, false, true);
+			GUI::DrawText(getTranslatedString("Requires a Worker from the Hall to work here."), upperleft, lowerright, SColor(255, 240, 10, 10), false, false, true);
 		}
 	}  // E
 }

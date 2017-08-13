@@ -38,7 +38,7 @@ void onInit(CBlob@ this)
 			// help
 			const string iconToken = "$crate_" + packed + "$";
 			AddIconToken("$crate_" + packed + "$", "/MiniIcons.png", Vec2f(16, 16), frame);
-			SetHelp(this, "help use", "", iconToken + "Unpack " + packed + "   $KEY_E$", "", 4);
+			SetHelp(this, "help use", "", iconToken + getTranslatedString("Unpack ") + packed + "   $KEY_E$", "", 4, false);
 		}
 		else
 		{

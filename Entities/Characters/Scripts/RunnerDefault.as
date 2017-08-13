@@ -46,7 +46,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 		RemoveHelps(this, "help throw");
 
 		if (!attached.hasTag("activated"))
-			SetHelp(this, "help throw", "", "$" + attached.getName() + "$" + "Throw    $KEY_C$", "", 2);
+			SetHelp(this, "help throw", "", "$" + attached.getName() + "$" + getTranslatedString("Throw    $KEY_C$"), "", 2, false);
 	}
 
 	// check if we picked a player - don't just take him out of the box
