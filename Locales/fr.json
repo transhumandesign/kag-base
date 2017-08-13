@@ -1,0 +1,24 @@
+ {
+ //TDM_Interface.as
+	 "WARMUP": "ÉCHAUFFEMENT",
+	 "KILLS": "Victimes",
+	 "SUDDEN DEATH": "MORT SUBITE",
+	 "In Queue to Respawn...": "Dans la queue de réapparition...",
+	 "No Respawning - Wait for the Game to End.": "Pas de réapparition, attendre la fin de la partie.",
+	 "Respawning in:": "Réapparition dans:",
+ 
+ //ScoreboardRender.as
+	 "Players: ": "Joueurs: ",
+	 "Player": "Joueur",
+	 "Username": "Nom d'utilisateur",
+	 "Ping": "Ping",
+	 "Kills": "Victimes",
+	 "Deaths": "Morts",
+	 "KDR": "V/M",
+	 "Spectators:": "Spectateurs:",
+	 "and more ...": "et plus...",
+	 
+ //WAR_Interface.as
+	 "Respawning in:": "Réapparition dans:",
+	 "No spawns available!": "Pas de point de réapparition disponibles!"
+ }
