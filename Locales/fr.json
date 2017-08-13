@@ -20,5 +20,104 @@
 	 
  //WAR_Interface.as
 	 "Respawning in:": "Réapparition dans:",
-	 "No spawns available!": "Pas de point de réapparition disponibles!"
- }
+	 "No spawns available!": "Pas de point de réapparition disponibles!",
+ 
+ //BuilderInventory.as
+	 "Stop building": "Cesser de construire",
+	 "Requires": "Nécessite",
+	 
+ //Production.as
+	 "requires": "nécessite",
+	 "Add materials in storage.": "Ajouter les matériaux dans le stockage.",
+	 "Producing": "Production de",
+	 " available on respawn": " disponible(s) lors de la réapparition",
+	 " limit reached.": ": limite atteinte",
+	 
+ //FactoryAnim.as
+	 "Requires a Worker from the Hall to work here.": "Nécessite un travailleur du hall qui travaille ici.",
+ 
+ //Hall.as
+	 "Units": "Unités",
+	 
+ //ResearchGUI.as
+	 "Click the items you vote to research!": "Votez sur les objets à rechercher en cliquant dessus!",
+	 "Yellow paths show what will be researched when the match starts.": "Les chemins en jaune seront recherchés dès le début du combat.",
+	 "Red path items can only be bought for gold at trader.": "Les chemins en rouge ne pourront plus qu'être achetés chez le marchand.",
+	 "(available)": "(disponible)",
+	 "(researching - ": "(recherche - ",
+	 "s)": " secondes restantes)",
+	 "(click to vote)": "(cliquer pour voter)",
+ 
+//Sign.as
+	"The big brown fox jumped over the shaggy chocolate.": "Voix ambiguë d'un cœur qui au zéphyr préfère les jattes de kiwis.",
+		 
+ //// HELPS ////
+//DrawHelp.as
+	"$!!!$$GREEN$WATCH THESE FOR          .          GAMEPLAY HELP$GREEN$\n\n\n$KEY_ESC$ CHECK CONTROLS\n\n$KEY_F1$ HELP ON/OFF\n\n(click to remove this)\n\n      $DEFEND_THIS$":
+		"$!!!$$GREEN$LISEZ CES AIDES          .            DE GAMEPLAY$GREEN$\n\n\n$KEY_ESC$ CONTRÔLES\n\n$KEY_F1$ (DÉS)ACTIVER L'AIDE\n\n(cliquer pour cacher)\n\n      $DEFEND_THIS$",
+ 
+ //BasicHelps.as
+	 " $down_arrow$ Hop inside  $KEY_S$": " $down_arrow$ Entrer dedans $KEY_S$",
+	 " Get out  $KEY_W$": " Sortir $KEY_W$",
+	 "$trader$ Buy    $KEY_E$": "$trader$ Acheter $KEY_E$",
+	 "$CLASSCHANGE$ Change class    $KEY_E$": "$CLASSCHANGE$ Changer de classe $KEY_E$",
+	 "$Rotate$ Rotate    $KEY_SPACE$": "$Rotate$ Tourner $KEY_SPACE$",
+	 "$trap_block$ Opens on enemy": "$trap_block$ Laisse tomber les ennemis",
+	 "$spikes$ Retracts on enemy if on stone $STONE$": "$spikes$ Se rétracte sur l'ennemi quand placé sur de la pierre $STONE$",
+	 "$wooden_platform$  $Rotate$ Rotate    $KEY_SPACE$": "$wooden_platform$  $Rotate$ Tourner    $KEY_SPACE$",
+	 "$ladder$  $Rotate$ Rotate    $KEY_SPACE$": "$ladder$  $Rotate$ Tourner $KEY_SPACE$",
+	 "Change class    $KEY_E$": "Changer de classe $KEY_E$",
+	 "$lantern$ On/Off     $KEY_SPACE$": "$lantern$ Allumer/éteindre $KEY_SPACE$",
+	 "$lantern$ Pick up    $KEY_C$": "$lantern$ Ramasser $KEY_C$",
+	 "$satchel$ Light     $KEY_SPACE$": "$satchel$ Enflammer $KEY_SPACE$",
+	 "$satchel$ Only KNIGHT can light satchel": "$satchel$ Seuls les CHEVALIER peuvent enflammer les bombes incendiaires",
+	 "$satchel$ THROW!    $KEY_SPACE$": "$satchel$ JETER! $KEY_SPACE$",
+	 "$log$ Chop $mat_wood$   $RMB$": "$log$ Couper $mat_wood$   $RMB$",
+	 "$keg$Pick up    $KEY_C$": "$keg$Prendre $KEY_C$",
+	 "$keg$THROW!    $KEY_SPACE$": "$keg$JETER! $KEY_SPACE$",
+	 "$mat_bombs$THROW!    $KEY_SPACE$": "$mat_bombs$JETER! $KEY_SPACE$",
+	 "$crate$Pick up    $KEY_C$": "$crate$Ramasser $KEY_C$",
+	 "Drive     $KEY_A$ $KEY_S$ $KEY_D$": "Conduire $KEY_A$ $KEY_S$ $KEY_D$",
+	 "FIRE     $KEY_HOLD$$LMB$": "TIRER $KEY_HOLD$$LMB$",
+	 "FIRE     $LMB$": "TIRER $LMB$",
+	 "$food$Take out food  $KEY_HOLD$$KEY_F$": "$food$Sortir la nourriture $KEY_HOLD$$KEY_F$",
+	 "$boulder$ Pick up    $KEY_C$": "$boulder$ Prendre $KEY_C$",
+	 "$building$Construct    $KEY_E$": "$building$Construire $KEY_E$",
+	 "$building$Use    $KEY_E$": "$building$Utiliser $KEY_E$",
+	 "$$ctf_flag$ Bring enemy flag to capture": "$$ctf_flag$ Ramener le drapeau ennemi pour le capturer",
+ 
+//Factory.as
+	 "$workshop$Convert workshop    $KEY_E$": "$workshop$Convertir le magasin $KEY_E$",
+	 "Check production    $KEY_E$": "Vérifier la production $KEY_E$",
+	 
+//Crate.as
+	"Unpack ": "Déballer ",
+
+//Scroll.as
+	"$scroll$Pick up    $KEY_C$": "$scroll$Ramasser $KEY_C$",
+	"$scroll$Use in *first* Hall     $KEY_E$": "$scroll$Utiliser dans le *premier* hall $KEY_E$",
+	"$scroll$Use magic scroll    $KEY_E$": "$scroll$Utiliser le parchemin magique $KEY_E$",
+
+//KnightLogic.as
+	"$Jab$Jab        $LMB$": "$Jab$Coup d'estoc $LMB$",
+	"$Shield$Shield    $KEY_HOLD$$RMB$": "$Shield$Bouclier $KEY_HOLD$$RMB$",
+	"$Slash$ Slash!    $KEY_HOLD$$LMB$": "$Slash$ Sabrer! $KEY_HOLD$$LMB$",
+	
+//BuilderLogic.as
+	"$Pick$Dig/Chop  $KEY_HOLD$$RMB$": "$Pick$Creuser/Couper $KEY_HOLD$$RMB$",
+
+//BuilderInventory.as
+	"$Build$Build/Place  $LMB$": "$Build$Construire/Poser $LMB$",
+	
+//ArcherLogic.as
+	"Hide    $KEY_S$": "Se cacher $KEY_S$",
+	"$Grapple$ Grappling hook    $RMB$": "$Grapple$ Grappin $RMB$",
+	"$arrow$Fire arrow   $KEY_HOLD$$LMB$": "$arrow$Tirer une flèche $KEY_HOLD$$LMB$",
+
+//RunnerDefault.as
+	"Throw    $KEY_C$": "Jeter $KEY_C$",
+	
+//TreeSync.as
+	"$Axe$$Tree$Chop tree    $RMB$": "$Axe$$Tree$Couper l'arbre $RMB$",
+	"$Tree$Climb tree    $KEY_W$": "$Tree$Grimper à l'arbre $KEY_W$"
+}
