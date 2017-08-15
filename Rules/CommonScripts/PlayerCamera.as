@@ -150,8 +150,8 @@ void onRender(CRules@ this)
 	if (targetPlayer() !is null && getLocalPlayerBlob() is null)
 	{
 		GUI::SetFont("menu");
-		GUI::DrawText("Following " + targetPlayer().getCharacterName() +
-		              " (" + targetPlayer().getUsername() + ")",
+		GUI::DrawText(getTranslatedString("Following {CHARACTERNAME} ({USERNAME})")
+					  .replace("{CHARACTERNAME}", targetPlayer().getCharacterName()).replace("{USERNAME}", targetPlayer().getUsername()),
 		              Vec2f(getScreenWidth() / 2 - 90, getScreenHeight() * (0.2f)),
 		              Vec2f(getScreenWidth() / 2 + 90, getScreenHeight() * (0.2f) + 30),
 		              SColor(0xffffffff), true, true);

@@ -83,7 +83,7 @@ void onRender(CRules@ this)
 
 				if (hud.kills_limit > 0)
 				{
-					kills = getTranslatedString("KILLS") + ": " + hud.kills + "/" + hud.kills_limit;
+					kills = getTranslatedString("KILLS: {CURRENT}/{LIMIT}").replace("{CURRENT}", "" + hud.kills).replace("{LIMIT}", "" + hud.kills_limit);
 				}
 				else if (hud.kills_limit == -2)
 				{
@@ -114,7 +114,7 @@ void onRender(CRules@ this)
 			}
 			else
 			{
-				GUI::DrawText(getTranslatedString("Respawning in:") + " " + spawn , Vec2f(getScreenWidth() / 2 - 70, getScreenHeight() / 3 + Maths::Sin(getGameTime() / 3.0f) * 5.0f), SColor(255, 255, 255, 55));
+				GUI::DrawText(getTranslatedString("Respawning in: {SEC}").replace("{SEC}", "" + spawn), Vec2f(getScreenWidth() / 2 - 70, getScreenHeight() / 3 + Maths::Sin(getGameTime() / 3.0f) * 5.0f), SColor(255, 255, 255, 55));
 			}
 		}
 	}

@@ -4,8 +4,6 @@ shared class HelpText
 {
 	string name;
 	string recipient;
-	string textOrig; // untranslated text
-	string altTextOrig;
 	string text;
 	string altText;
 	u32 reduceAfterTimes;
@@ -13,6 +11,7 @@ shared class HelpText
 	u32 usedCount;
 	f32	fadeOut;
 	Vec2f drawSize;
+
 
 	HelpText()
 	{
@@ -22,7 +21,7 @@ shared class HelpText
 };
 
 // altText - when not recipient
-HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient, const string &in text, const string &in altText = "", bool do_translate = true)
+HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient, const string &in text, const string &in altText = "")
 {
 	if (!u_showtutorial)
 		return null;
@@ -42,20 +41,9 @@ HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient
 	HelpText ht;
 	ht.name = name;
 	ht.recipient = recipient;
-	ht.textOrig = text;
-	ht.altTextOrig = altText;
-	if (do_translate)
-	{
-		ht.text = getTranslatedString(text);
-		ht.altText = getTranslatedString(altText);
-	}
-	else
-	{
-		ht.text = text;
-		ht.altText = altText;
-	}
+	ht.text = text;
+	ht.altText = altText;
 	ht.reduceAfterTimes = 1;
-
 	this.push(HELPS_ARRAY, ht);
 
 	HelpText@ p_ref;
@@ -63,7 +51,7 @@ HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient
 	return p_ref;
 }
 
-HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient, const string &in text, const string &in altText, const u32 reduceAfterTimes, bool do_translate = true)
+HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient, const string &in text, const string &in altText, const u32 reduceAfterTimes)
 {
 	if (!u_showtutorial)
 		return null;
@@ -83,20 +71,9 @@ HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient
 	HelpText ht;
 	ht.name = name;
 	ht.recipient = recipient;
-	ht.textOrig = text;
-	ht.altTextOrig = altText;
-	if (do_translate)
-	{
-		ht.text = getTranslatedString(text);
-		ht.altText = getTranslatedString(altText);
-	}
-	else
-	{
-		ht.text = text;
-		ht.altText = altText;
-	}
+	ht.text = text;
+	ht.altText = altText;
 	ht.reduceAfterTimes = reduceAfterTimes;
-
 	this.push(HELPS_ARRAY, ht);
 
 	HelpText@ p_ref;
@@ -137,7 +114,7 @@ HelpText@ getHelpText(CBlob@ this, const string &in name, const string &in descr
 	for (uint i = 0; i < helps.length; i++)
 	{
 		HelpText@ ht = helps[i];
-		if (ht.name == name && ht.textOrig == description)
+		if (ht.name == name && ht.text == description)
 		{
 			return ht;
 		}

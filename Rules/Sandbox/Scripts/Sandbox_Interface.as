@@ -18,7 +18,7 @@ void onRender(CRules@ this)
 		if (spawn != 255)
 		{
 			GUI::SetFont("menu");
-			GUI::DrawText("Respawn in: " + spawn , Vec2f(getScreenWidth() / 2 - 70, getScreenHeight() / 3 + Maths::Sin(getGameTime() / 3.0f) * 5.0f), SColor(255, 255, 255, 55));
+			GUI::DrawText(getTranslatedString("Respawning in: {SEC}").replace("{SEC}", "" + spawn), Vec2f(getScreenWidth() / 2 - 70, getScreenHeight() / 3 + Maths::Sin(getGameTime() / 3.0f) * 5.0f), SColor(255, 255, 255, 55));
 		}
 	}
 }

@@ -46,96 +46,96 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 
 	if (blob.hasTag("seats") && !blob.hasTag("animal"))
 	{
-		SetHelp(blob, "help hop", "", " $down_arrow$ Hop inside  $KEY_S$", "", 5);
-		SetHelp(blob, "help hop out", "", " Get out  $KEY_W$", "", 4);
+		SetHelp(blob, "help hop", "", getTranslatedString(" $down_arrow$ Hop inside  $KEY_S$"), "", 5);
+		SetHelp(blob, "help hop out", "", getTranslatedString(" Get out  $KEY_W$"), "", 4);
 	}
 	if (blob.hasTag("trader"))
 	{
-		SetHelp(blob, "help use", "", "$trader$ Buy    $KEY_E$", "", 3);
+		SetHelp(blob, "help use", "", getTranslatedString("$trader$ Buy    $KEY_E$"), "", 3);
 	}
 	if (blob.hasTag("respawn"))
 	{
-		SetHelp(blob, "help use", "", "$CLASSCHANGE$ Change class    $KEY_E$", "", 3);
+		SetHelp(blob, "help use", "", getTranslatedString("$CLASSCHANGE$ Change class    $KEY_E$"), "", 3);
 	}
 	if (blob.hasTag("door"))
 	{
-		SetHelp(blob, "help rotate", "", "$" + blob.getName() + "$ " + getTranslatedString("$Rotate$ Rotate    $KEY_SPACE$"), "", 3, false);
+		SetHelp(blob, "help rotate", "", getTranslatedString("${ITEM}$ $Rotate$ Rotate    $KEY_SPACE$").replace("{ITEM}", blob.getName()), "", 3);
 	}
 
 
 
 	if (name == "hall")
 	{
-		SetHelp(blob, "help use", "", "$CLASSCHANGE$ Change class    $KEY_E$", "", 5);
+		SetHelp(blob, "help use", "", getTranslatedString("$CLASSCHANGE$ Change class    $KEY_E$"), "", 5);
 	}
 	else if (name == "trap_block")
 	{
-		SetHelp(blob, "help show", "builder", "$trap_block$ Opens on enemy", "", 15);
+		SetHelp(blob, "help show", "builder", getTranslatedString("$trap_block$ Opens on enemy"), "", 15);
 	}
 	else if (name == "spikes")
 	{
-		SetHelp(blob, "help show", "builder", "$spikes$ Retracts on enemy if on stone $STONE$", "", 20);
+		SetHelp(blob, "help show", "builder", getTranslatedString("$spikes$ Retracts on enemy if on stone $STONE$"), "", 20);
 	}
 	else if (name == "wooden_platform")
 	{
-		SetHelp(blob, "help rotate", "", "$wooden_platform$  $Rotate$ Rotate    $KEY_SPACE$", "", 3);
+		SetHelp(blob, "help rotate", "", getTranslatedString("$wooden_platform$  $Rotate$ Rotate    $KEY_SPACE$"), "", 3);
 	}
 	else if (name == "ladder")
 	{
-		SetHelp(blob, "help rotate", "", "$ladder$  $Rotate$ Rotate    $KEY_SPACE$", "", 3);
+		SetHelp(blob, "help rotate", "", getTranslatedString("$ladder$  $Rotate$ Rotate    $KEY_SPACE$"), "", 3);
 	}
 	else if (name == "tdm_ruins")
 	{
-		SetHelp(blob, "help use", "", "Change class    $KEY_E$", "", 5);
+		SetHelp(blob, "help use", "", getTranslatedString("Change class    $KEY_E$"), "", 5);
 	}
 	else if (name == "lantern")
 	{
-		SetHelp(blob, "help activate", "", "$lantern$ On/Off     $KEY_SPACE$", "");
-		SetHelp(blob, "help pickup", "", "$lantern$ Pick up    $KEY_C$");
+		SetHelp(blob, "help activate", "", getTranslatedString("$lantern$ On/Off     $KEY_SPACE$"), "");
+		SetHelp(blob, "help pickup", "", getTranslatedString("$lantern$ Pick up    $KEY_C$"));
 	}
 	else if (name == "satchel")
 	{
-		SetHelp(blob, "help activate", "knight", "$satchel$ Light     $KEY_SPACE$", "$satchel$ Only KNIGHT can light satchel", 3);
-		SetHelp(blob, "help throw", "knight", "$satchel$ THROW!    $KEY_SPACE$", "", 3);
+		SetHelp(blob, "help activate", "knight", getTranslatedString("$satchel$ Light     $KEY_SPACE$"), getTranslatedString("$satchel$ Only KNIGHT can light satchel"), 3);
+		SetHelp(blob, "help throw", "knight", getTranslatedString("$satchel$ THROW!    $KEY_SPACE$"), "", 3);
 	}
 	else if (name == "log")
 	{
-		SetHelp(blob, "help action2", "builder", "$log$ Chop $mat_wood$   $RMB$", "", 3);
+		SetHelp(blob, "help action2", "builder", getTranslatedString("$log$ Chop $mat_wood$   $RMB$"), "", 3);
 	}
 	else if (name == "keg")
 	{
-		SetHelp(blob, "help pickup", "", "$keg$Pick up    $KEY_C$", "", 3);
-		SetHelp(blob, "help activate", "knight", "$keg$Light    $KEY_SPACE$", "$keg$Only KNIGHT can light keg", 5);
-		SetHelp(blob, "help throw", "", "$keg$THROW!    $KEY_SPACE$", "", 3);
+		SetHelp(blob, "help pickup", "", getTranslatedString("$keg$Pick up    $KEY_C$"), "", 3);
+		SetHelp(blob, "help activate", "knight", getTranslatedString("$keg$Light    $KEY_SPACE$"), getTranslatedString("$keg$Only KNIGHT can light keg"), 5);
+		SetHelp(blob, "help throw", "", getTranslatedString("$keg$THROW!    $KEY_SPACE$"), "", 3);
 	}
 	else if (name == "bomb")
 	{
-		SetHelp(blob, "help throw", "", "$mat_bombs$THROW!    $KEY_SPACE$", "", 3);
+		SetHelp(blob, "help throw", "", getTranslatedString("$mat_bombs$THROW!    $KEY_SPACE$"), "", 3);
 	}
 	else if (name == "crate")
 	{
-		SetHelp(blob, "help pickup", "", "$crate$Pick up    $KEY_C$", "", 3);
+		SetHelp(blob, "help pickup", "", getTranslatedString("$crate$Pick up    $KEY_C$"), "", 3);
 	}
 	else if (name == "workbench")
 	{
-		SetHelp(blob, "help use", "", "$workbench$    $KEY_TAP$$KEY_E$", "", 4);
+		SetHelp(blob, "help use", "", getTranslatedString("$workbench$    $KEY_TAP$$KEY_E$"), "", 4);
 	}
 	else if (name == "catapult" || name == "ballista")
 	{
-		SetHelp(blob, "help DRIVER movement", "", "$" + blob.getName() + "$" + getTranslatedString("Drive     $KEY_A$ $KEY_S$ $KEY_D$"), "", 3, false);
-		SetHelp(blob, "help GUNNER action", "", "$" + blob.getName() + "$" + getTranslatedString("FIRE     $KEY_HOLD$$LMB$"), "", 3, false);
+		SetHelp(blob, "help DRIVER movement", "", getTranslatedString("${VEHICLE}$Drive     $KEY_A$ $KEY_S$ $KEY_D$").replace("{VEHICLE}", blob.getName()), "", 3);
+		SetHelp(blob, "help GUNNER action", "", getTranslatedString("${VEHICLE}$FIRE     $KEY_HOLD$$LMB$").replace("{VEHICLE}", blob.getName()), "", 3);
 	}
 	else if (name == "mounted_bow")
 	{
-		SetHelp(blob, "help GUNNER action", "", "$" + blob.getName() + "$" + getTranslatedString("FIRE     $LMB$"), "", 3, false);
+		SetHelp(blob, "help GUNNER action", "", getTranslatedString("${VEHICLE}$FIRE     $LMB$").replace("{VEHICLE}", blob.getName()), "", 3);
 	}
 	else if (name == "food")
 	{
-		SetHelp(blob, "help switch", "", "$food$Take out food  $KEY_HOLD$$KEY_F$", "", 3);
+		SetHelp(blob, "help switch", "", getTranslatedString("$food$Take out food  $KEY_HOLD$$KEY_F$"), "", 3);
 	}
 	else if (name == "boulder")
 	{
-		SetHelp(blob, "help pickup", "", "$boulder$ Pick up    $KEY_C$");
+		SetHelp(blob, "help pickup", "", getTranslatedString("$boulder$ Pick up    $KEY_C$"));
 	}
 	//else if (name == "tent")
 	//{
@@ -143,11 +143,11 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 	//}
 	else if (name == "building")
 	{
-		SetHelp(blob, "help use", "", "$building$Construct    $KEY_E$", "", 3);
+		SetHelp(blob, "help use", "", getTranslatedString("$building$Construct    $KEY_E$"), "", 3);
 	}
 	else if (name == "archershop" || name == "boatshop" || name == "knightshop" || name == "buildershop" || name == "vehicleshop")
 	{
-		SetHelp(blob, "help use", "", "$building$Use    $KEY_E$", "", 3);
+		SetHelp(blob, "help use", "", getTranslatedString("$building$Use    $KEY_E$"), "", 3);
 	}
 	//else if (name == "ctf_flag")
 	//{

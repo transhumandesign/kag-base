@@ -141,7 +141,7 @@ void MakeBlocksMenu(CInventory@ this, const Vec2f &in INVENTORY_CE)
 			CGridButton@ clear = tool.AddButton("$BUILDER_CLEAR$", "", Builder::TOOL_CLEAR, Vec2f(1, 1), params);
 			if(clear !is null)
 			{
-				clear.SetHoverText(getTranslatedString("Stop building") + "\n");
+				clear.SetHoverText(getTranslatedString("Stop building\n"));
 			}
 		}
 
@@ -250,7 +250,7 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 
 			if(blob.isMyPlayer())
 			{
-				SetHelp(blob, "help self action", "builder", "$Build$Build/Place  $LMB$", "", 3);
+				SetHelp(blob, "help self action", "builder", getTranslatedString("$Build$Build/Place  $LMB$"), "", 3);
 			}
 		}
 	}
@@ -350,7 +350,7 @@ void onRender(CSprite@ this)
 					{
 						const string missingText = getButtonRequirementsText( bc.missing, true );
 						Vec2f boxpos( myPos.x, myPos.y - 120.0f );
-						GUI::DrawText( getTranslatedString("Requires") + "\n" + missingText, Vec2f(boxpos.x - 50, boxpos.y - 15.0f), Vec2f(boxpos.x + 50, boxpos.y + 15.0f), color_black, false, false, true );
+						GUI::DrawText( getTranslatedString("Requires\n") + missingText, Vec2f(boxpos.x - 50, boxpos.y - 15.0f), Vec2f(boxpos.x + 50, boxpos.y + 15.0f), color_black, false, false, true );
 					}
 					else if (bc.cursorClose)
 					{

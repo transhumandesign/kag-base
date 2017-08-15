@@ -38,7 +38,7 @@ void onInit(CBlob@ this)
 			// help
 			const string iconToken = "$crate_" + packed + "$";
 			AddIconToken("$crate_" + packed + "$", "/MiniIcons.png", Vec2f(16, 16), frame);
-			SetHelp(this, "help use", "", iconToken + getTranslatedString("Unpack ") + packed + "   $KEY_E$", "", 4, false);
+			SetHelp(this, "help use", "", iconToken + getTranslatedString("Unpack {ITEM}   $KEY_E$").replace("{ITEM}", packed), "", 4);
 		}
 		else
 		{
@@ -196,13 +196,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 	else if (hasSomethingPacked(this) && !canUnpackHere(this))
 	{
-
-		string msg = "Can't unpack " + this.get_string("packed name");
-
-		//if (this.isAttached())
-		//	msg += " while carrying it";
-		//else
-		msg += " here";
+		string msg = getTranslatedString("Can't unpack {ITEM} here").replace("{ITEM}", this.get_string("packed name"));
 
 		CButton@ button = caller.CreateGenericButton(12, buttonpos, this, 0, msg);
 		if (button !is null)

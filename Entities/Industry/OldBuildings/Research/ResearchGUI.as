@@ -221,7 +221,7 @@ void DrawButton( CBlob@ blob, ScrollDef@ def, const string &in defname, Vec2f bu
 		if (def.hasTech())
 			suffix = " \n\n" + getTranslatedString("(available)");
 		else if (def.researching)
-			suffix = " \n\n" + getTranslatedString("(researching - ") + uint16(def.timeSecs * (1-def.percent)) + getTranslatedString("s)");
+			suffix = " \n\n" + getTranslatedString("(researching - {TIME}s)").replace("{TIME}", "" + uint16(def.timeSecs * (1-def.percent)));
 		else
 			suffix = " \n\n" + getTranslatedString("(click to vote)");
 
