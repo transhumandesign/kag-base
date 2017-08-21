@@ -1,5 +1,5 @@
-<p align = 'center'><img src = 'http://i.imgur.com/794rYzg.png'><br>Base/-folder</p>
-<h2 align = 'center'>King Arthur's Gold</h3>
+<h2 align = 'center'><img src = 'http://i.imgur.com/794rYzg.png'><br>King Arthur's Gold</h2>
+<p align = 'center'>Base game content</p>
 
 <p align = 'center'>
   <a href = 'https://discord.gg/JucZs9m'>
@@ -21,3 +21,14 @@ To fix an issue or enhance a module, follow these steps:
 - Make the modifications
 - Commit the modifications
 - Create a pull request
+
+### Legal Considerations and Licensing
+
+To submit a public pull request you must be legally able and and willing to:
+
+- Agree to give THD irrevokable commercial and distribution rights to your contribution
+- Agree to do so free of charge unless otherwise stated
+
+You retain rights to use your contribution for other purposes and projects, we just need to be able to use it without restriction in our game!
+
+We are open to negotiating compensation for large, self-contained contributions; especially from established contributors. Such negotiations must take place before work begins, and especially before.
