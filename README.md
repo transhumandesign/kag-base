@@ -24,7 +24,7 @@ To fix an issue or enhance a module, follow these steps:
 
 ### Legal Considerations and Licensing
 
-To submit a public pull request you must be legally able and and willing to:
+To submit a public pull request you must be legally able and willing to:
 
 - Agree to give THD irrevokable commercial and distribution rights to your contribution
 - Agree to do so free of charge unless otherwise stated
