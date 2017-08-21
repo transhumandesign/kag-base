@@ -432,7 +432,7 @@ shared class CTFCore : RulesCore
 
 		CMap@ map = getMap();
 
-		if (map !is null)
+		if (map !is null && map.tilemapwidth != 0)
 		{
 			//spawn the spawns :D
 			Vec2f respawnPos;
@@ -498,6 +498,15 @@ shared class CTFCore : RulesCore
 				f32 x = map.tilemapwidth * map.tilesize - auto_distance_from_edge;
 				respawnPos = Vec2f(x, (map.getLandYAtX(x / map.tilesize) - 2) * map.tilesize);
 				server_CreateBlob(flag_spawn_name(), 1, respawnPos);
+			}
+		}
+		else
+		{
+			warn("CTF: map loading failure");
+			for(int i = 0; i < 2; i++)
+			{
+				SetupBase(server_CreateBlob(base_name(), i, Vec2f(0,0)));
+				server_CreateBlob(flag_spawn_name(), i, Vec2f(0,0));
 			}
 		}
 
