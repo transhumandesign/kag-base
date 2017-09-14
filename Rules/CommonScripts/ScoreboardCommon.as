@@ -68,7 +68,7 @@ float drawServerInfo(float y)
     CNet@ net = getNet();
     CRules@ rules = getRules();
 
-    string info = rules.gamemode_name + ": " + rules.gamemode_info;
+    string info = getTranslatedString(rules.gamemode_name) + ": " + getTranslatedString(rules.gamemode_info);
     Vec2f dim;
     GUI::GetTextDimensions(info, dim);
     if(dim.x + 15 > width)
@@ -94,11 +94,11 @@ float drawServerInfo(float y)
     mid.y += 20;
     GUI::DrawTextCentered(net.joined_servername, mid, white);
     mid.y += 20;
-    GUI::DrawTextCentered(rules.gamemode_name + ": " + rules.gamemode_info, mid, white);
+    GUI::DrawTextCentered(info, mid, white);
     mid.y += 15;
     GUI::DrawTextCentered(net.joined_ip, mid, white);
     mid.y += 20;
-    GUI::DrawTextCentered("Match time: " + timestamp((getRules().exists("match_time") ? getRules().get_u32("match_time") : getGameTime())/getTicksASecond()), mid, white);
+    GUI::DrawTextCentered(getTranslatedString("Match time: {TIME}").replace("{TIME}", "" + timestamp((getRules().exists("match_time") ? getRules().get_u32("match_time") : getGameTime())/getTicksASecond())), mid, white);
 
 
     return bot.y;
@@ -109,20 +109,20 @@ string timestamp(uint s)
 {
     string ret;
     int hours = s/60/60;
-    if (hours > 0) 
-        ret += hours + "h ";
+    if (hours > 0)
+        ret += hours + getTranslatedString("h ");
 
     int minutes = s/60%60;
-    if (minutes < 10) 
-        ret += "0";
-    
-    ret += minutes + "m ";
-    
-    int seconds = s%60;
-    if (seconds < 10) 
+    if (minutes < 10)
         ret += "0";
 
-    ret += seconds + "s ";
+    ret += minutes + getTranslatedString("m ");
+
+    int seconds = s%60;
+    if (seconds < 10)
+        ret += "0";
+
+    ret += seconds + getTranslatedString("s ");
 
     return ret;
 }

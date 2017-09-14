@@ -174,11 +174,7 @@ void onRender(CRules@ this)
 
 		if (spawn != 255)
 		{
-			string spawn_message = "Respawn in: " + spawn;
-			if (spawn >= 250)
-			{
-				spawn_message = "Respawn in: (approximately never)";
-			}
+			string spawn_message = getTranslatedString("Respawning in: {SEC}").replace("{SEC}", ((spawn > 250) ? getTranslatedString("approximatively never") : ("" + spawn)));
 
 			GUI::SetFont("hud");
 			GUI::DrawText(spawn_message , Vec2f(getScreenWidth() / 2 - 70, getScreenHeight() / 3 + Maths::Sin(getGameTime() / 3.0f) * 5.0f), SColor(255, 255, 255, 55));

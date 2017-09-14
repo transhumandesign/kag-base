@@ -23,12 +23,11 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 
 	//draw team info
 	GUI::DrawText(team.getName(), Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
-	GUI::DrawText(getTranslatedString("Players: ") + players.length, Vec2f(bottomright.x - 400, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(getTranslatedString("Players: {PLAYERCOUNT}").replace("{PLAYERCOUNT}", "" + players.length), Vec2f(bottomright.x - 400, topleft.y), SColor(0xffffffff));
 
 	topleft.y += stepheight * 2;
 
 	//draw player table header
-
 	GUI::DrawText(getTranslatedString("Player"), Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Username"), Vec2f(bottomright.x - 400, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Ping"), Vec2f(bottomright.x - 260, topleft.y), SColor(0xffffffff));

@@ -144,7 +144,7 @@ void onRender(CRules@ this)
 				if (playerBlob !is null && playerBlob.getTickSinceCreated() < 360)
 				{
 					GUI::SetFont("menu");
-					
+
 					const bool isBuilder = playerBlob.getName() == "builder";
 					const bool myTeamHall = playerBlob.getTeamNum() == hud_hall.team_num;
 					CBlob@ hall = hud_hall.getBlob();
@@ -164,9 +164,8 @@ void onRender(CRules@ this)
 						string text;
 						if (myTeamHall && hud_hall.under_raid)
 						{
-							if (hallOnLeft) text = "DEFEND THE HALL!";
-							else if (hallOnRight) text = "DEFEND THE HALL!";
-							else text = "DEFEND THE HALL!\n           $DEFEND_THIS$";
+							if (hallOnLeft || hallOnRight) text = getTranslatedString("DEFEND THE HALL!");
+							else text = getTranslatedString("DEFEND THE HALL!\n           $DEFEND_THIS$");
 						}
 						else if (myTeamHall && !hud_hall.under_raid && isOnScreen)
 						{
@@ -175,24 +174,24 @@ void onRender(CRules@ this)
 								continue;
 							if (hud_hall.factoryIcons.length == 0 && gametime % 150 > 75)
 							{
-								text = "BUILD WORKSHOPS\n           $BUILD$";
+								text = getTranslatedString("BUILD WORKSHOPS\n           $BUILD$");
 							}
 							else
-								text = "BUILD DEFENSES\n           $BUILD$";
+								text = getTranslatedString("BUILD DEFENSES\n           $BUILD$");
 						}
 						else if (!myTeamHall && isOnScreen && hud_hall.team_num > 10)
 						{
-							text = "CAPTURE THE HALL!\n           $DEFEND_THIS$";
+							text = getTranslatedString("CAPTURE THE HALL!\n           $DEFEND_THIS$");
 						}
 						else if (!myTeamHall)
 						{
-							if (hallOnLeft && !isBuilder) text = "$ATTACK_LEFT$ATTACK!";
-							else if (hallOnRight && !isBuilder) text = "ATTACK!$ATTACK_RIGHT$";
+							if (hallOnLeft && !isBuilder) text = getTranslatedString("$ATTACK_LEFT$ATTACK!");
+							else if (hallOnRight && !isBuilder) text = getTranslatedString("ATTACK!$ATTACK_RIGHT$");
 							else
 							{
 								if (!isOnScreen && isBuilder)
 									continue;
-								text = "ATTACK!\n           $ATTACK_THIS$";
+								text = getTranslatedString("ATTACK!\n           $ATTACK_THIS$");
 							}
 							attackShown = true;
 						}
@@ -220,11 +219,10 @@ void onRender(CRules@ this)
 
 		if (difference > 0 || difference < -1000.0f)
 		{
-			GUI::DrawText(!noSpawns ? getTranslatedString("Respawning in:") + " " + Maths::Ceil(difference) : getTranslatedString("No spawns available!") ,
+			GUI::DrawText(!noSpawns ? getTranslatedString("Respawning in: {SEC}").replace("{SEC}", "" + Maths::Ceil(difference)) : getTranslatedString("No spawns available!") ,
 			              Vec2f(getScreenWidth() / 2 - 90, getScreenHeight() * (0.3f) + Maths::Sin(getGameTime() / 3.0f) * 5.0f),
 			              Vec2f(getScreenWidth() / 2 + 90, getScreenHeight() * (0.3f) + Maths::Sin(getGameTime() / 3.0f) * 5.0f + 30),
 			              noSpawns ? SColor(0xffff1100) : SColor(0xffffff00), true, true);
 		}
 	}
 }
-
