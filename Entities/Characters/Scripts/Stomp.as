@@ -2,11 +2,6 @@
 #include "/Entities/Common/Attacks/Hitters.as";
 #include "Knocked.as"
 
-void onInit(CBlob@ this)
-{
-	this.getCurrentScript().removeIfTag = "dead";
-}
-
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (blob is null)   // map collision?
@@ -15,6 +10,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 
 	if (!solid)
+	{
+		return;
+	}
+
+	//dead bodies dont stomp
+	if(this.hasTag("dead"))
 	{
 		return;
 	}

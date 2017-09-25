@@ -5,12 +5,14 @@
 void onInit(CBlob@ this)
 {
 	setKnockable(this);   //already done in runnerdefault but some dont have that
-	this.getCurrentScript().removeIfTag = "dead";
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	if (this.hasTag("invincible")) //pass through if invince
+		return damage;
+
+	if (this.hasTag("dead")) //pass through if dead
 		return damage;
 
 	u8 time = 0;
