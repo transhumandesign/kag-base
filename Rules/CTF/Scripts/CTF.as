@@ -495,7 +495,7 @@ shared class CTFCore : RulesCore
 			else
 			{
 				warn("CTF: Red flag added");
-				f32 x = map.tilemapwidth * map.tilesize - auto_distance_from_edge;
+				f32 x = (map.tilemapwidth-1) * map.tilesize - auto_distance_from_edge;
 				respawnPos = Vec2f(x, (map.getLandYAtX(x / map.tilesize) - 2) * map.tilesize);
 				server_CreateBlob(flag_spawn_name(), 1, respawnPos);
 			}
