@@ -296,6 +296,7 @@ shared class CTFCore : RulesCore
 
 	CTFCore(CRules@ _rules, RespawnSystem@ _respawns)
 	{
+		spawnTime=0;
 		super(_rules, _respawns);
 	}
 
