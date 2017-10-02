@@ -171,7 +171,7 @@ namespace Material
     }
   }
 
-  // Server-side: Get material from a blob
+  // Server-side: Create material from a blob
   void fromBlob(CBlob@ this, CBlob@ blob, float &in damage)
   {
     if (damage <= 0.0f) return;
@@ -182,7 +182,7 @@ namespace Material
     dictionary harvest;
     blob.get('harvest', harvest);
 
-    string[]@ names = harvest.getKeys();
+    array<string>@ names = harvest.getKeys();
 
     // Create all harvested materials
     for (uint8 i = 0; i < names.length; ++ i)
