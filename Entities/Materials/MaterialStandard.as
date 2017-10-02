@@ -1,5 +1,5 @@
 
-#include 'MaterialCommon.as';
+#include 'MaterialCommon.as'
 
 // Use `.Tag('custom quantity')` to
 // prevent the quantity from being
