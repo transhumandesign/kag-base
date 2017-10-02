@@ -154,7 +154,10 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 		CBlob@ blockBlob = server_CreateBlob(b.name, this.getTeamNum(), pos);
 		if (blockBlob !is null)
 		{
-			this.server_Pickup(blockBlob);
+			if(!b.buildOnGround)
+			{
+				this.server_Pickup(blockBlob);
+			}
 			if(b.temporaryBlob)
 			{
 				blockBlob.Tag("temp blob");
@@ -162,7 +165,7 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 			return blockBlob;
 		}
 	}
-	
+
 	return null;
 }
 
