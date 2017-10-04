@@ -9,7 +9,7 @@
 
 namespace Material
 {
-  const float MERGE_RADIUS = 20.0f;
+  const float MERGE_RADIUS = 20.f;
 
   // Client-side: Update material frame
   void updateFrame(CBlob@ this)
@@ -174,7 +174,7 @@ namespace Material
   // Server-side: Create material from a blob
   void fromBlob(CBlob@ this, CBlob@ blob, float &in damage)
   {
-    if (damage <= 0.0f) return;
+    if (damage <= 0.f) return;
 
     // Return unless it's a harvest blob
     if (not blob.exists('harvest')) return;
@@ -199,7 +199,7 @@ namespace Material
   // Server-side: Create material from a tile
   void fromTile(CBlob@ this, uint16 &in type, float &in damage)
   {
-    if (damage <= 0.0f) return;
+    if (damage <= 0.f) return;
 
     CMap@ map = getMap();
 
@@ -207,11 +207,11 @@ namespace Material
 
     if (map.isTileThickStone(type))
     {
-      createFor(this, 'mat_stone', 6 * damage);
+      createFor(this, 'mat_stone', 6.f * damage);
     }
     else if (map.isTileStone(type))
     {
-      createFor(this, 'mat_stone', 4 * damage);
+      createFor(this, 'mat_stone', 4.f * damage);
     }
     else if (map.isTileCastle(type))
     {
@@ -223,7 +223,7 @@ namespace Material
     }
     else if (map.isTileGold(type))
     {
-      createFor(this, 'mat_gold', 4 * damage);
+      createFor(this, 'mat_gold', 4.f * damage);
     }
   }
 }
