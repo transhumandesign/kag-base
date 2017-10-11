@@ -1,6 +1,6 @@
 
 // Use `.set('harvest', ..)` to
-// define the materials an entity
+// define the materials a blob
 // should yield when harvested
 
 // It's only supposed to be set on
@@ -57,7 +57,7 @@ namespace Material
     }
     else
     {
-      // Max one out
+      // Max one material out
       this.server_SetQuantity(this.maxQuantity);
       blob.server_SetQuantity(sum - this.maxQuantity);
     }
@@ -203,7 +203,7 @@ namespace Material
 
     CMap@ map = getMap();
 
-    // Only solid tiles returns materials
+    // Only solid tiles yield materials
     if (not map.isTileSolid(type)) return;
 
     if (map.isTileThickStone(type))
