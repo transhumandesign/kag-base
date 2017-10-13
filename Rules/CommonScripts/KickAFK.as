@@ -90,7 +90,7 @@ void RemoveWarning()
 {
 	if(warned)
 	{
-		client_AddToChat("AFK Kick avoided.", SColor(255, 20, 120, 0));
+		client_AddToChat("AFK penalty avoided.", SColor(255, 20, 120, 0));
 		warned = false;
 	}
 }
