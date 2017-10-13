@@ -9,8 +9,6 @@
  *		Note: don't modify this file directly, do it in a mod!
  */
 
-//#include MaterialCommon.as;
-
 namespace CMap
 {
 	enum CustomTiles
@@ -20,17 +18,7 @@ namespace CMap
 	};
 };
 
-//Map loading
 void HandleCustomTile(CMap@ map, int offset, SColor pixel)
 {
 	//change this in your mod
-}
-
-//Harvesting
-void MaterialFromCustomTile(CBlob@ this, uint16 &in type, float &in damage)
-{
-  if (type == CMap::tile_whatever)
-  {
-    //Material::createFor(this, 'mat_whatever', damage);
-  }
 }
