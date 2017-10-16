@@ -1,5 +1,6 @@
 // kicks players that dont play for a given time
 // by norill
+// move people with kick immunity to spec instead of doing nothing -mazey
 
 #define CLIENT_ONLY
 
@@ -22,11 +23,12 @@ void onTick(CRules@ this)
 	if (p is null ||											//no player
 		controls is null ||										//no controls
 		p.getTeamNum() == getRules().getSpectatorTeamNum() ||	//or spectator
-		getNet().isServer() ||									//or we're running the server
-		getSecurity().checkAccess_Feature(p, "kick_immunity"))	//or we're not kickable
+		getNet().isServer())								//or we're running the server
 	{
 		return;
 	}
+
+	bool kickImmunity = getSecurity().checkAccess_Feature(p, "kick_immunity");
 
 	//not updated yet or numbers from last game?
 	if(controls.lastKeyPressTime == 0 || controls.lastKeyPressTime > getGameTime())
@@ -55,7 +57,7 @@ void onTick(CRules@ this)
 			{
 				//you have been warned
 				client_AddToChat("Seems like you are currently away from your keyboard.", SColor(255, 255, 100, 32));
-				client_AddToChat("Move around or you will be kicked in "+warnToKickSeconds+" seconds!", SColor(255, 255, 100, 32));
+				client_AddToChat("Move around or you will be " + (kickImmunity ? "moved to spectator" : "kicked") + " in "+warnToKickSeconds+" seconds!", SColor(255, 255, 100, 32));
 				warned = true;
 				warnTime = time;
 			}
@@ -65,9 +67,16 @@ void onTick(CRules@ this)
 	if (warned && time - warnTime > warnToKickSeconds)
 	{
 		//so long, sucker
-		client_AddToChat("You were kicked for being AFK too long.", SColor(255, 240, 50, 0));
+		client_AddToChat("You were " + (kickImmunity ? "moved to spectator" : "kicked") + " for being AFK too long.", SColor(255, 240, 50, 0));
 		warned = false;
-		getNet().DisconnectClient();
+		if (!kickImmunity)
+		{
+			getNet().DisconnectClient();
+		}
+		else
+		{
+			p.client_ChangeTeam(this.getSpectatorTeamNum());
+		}
 	}
 }
 
@@ -81,7 +90,7 @@ void RemoveWarning()
 {
 	if(warned)
 	{
-		client_AddToChat("AFK Kick avoided.", SColor(255, 20, 120, 0));
+		client_AddToChat("AFK penalty avoided.", SColor(255, 20, 120, 0));
 		warned = false;
 	}
 }
