@@ -7,6 +7,8 @@
 // the server-side. An example can
 // be found in Log.as
 
+#include "CustomBlocks.as";
+
 namespace Material
 {
   const float MERGE_RADIUS = 20.0f;
@@ -224,6 +226,10 @@ namespace Material
     else if (map.isTileGold(type))
     {
       createFor(this, 'mat_gold', 4 * damage);
+    }
+    else
+    {
+      MaterialFromCustomTile(this, type, damage);
     }
   }
 }
