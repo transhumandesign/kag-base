@@ -120,7 +120,7 @@ void AttackBlob(CBlob@ blob, CBlob @target)
 			// raycast to check if there is a hole behind
 
 			Vec2f raypos = mypos;
-			raypos += targetPos.x < mypos.x ? 32.0f : -32.0f;
+			raypos.x += targetPos.x < mypos.x ? 32.0f : -32.0f;
 			Vec2f col;
 			if (getMap().rayCastSolid(raypos, raypos + Vec2f(0.0f, 32.0f), col))
 			{

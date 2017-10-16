@@ -42,14 +42,15 @@ int get_dlc_number(int headIndex)
 	return 0;
 }
 
-int getHeadFrame(CBlob@ blob, int headIndex)
+int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 {
 	if(headIndex < NUM_UNIQUEHEADS)
 	{
 		return headIndex * NUM_HEADFRAMES;
 	}
 
-	if(headIndex == 255 || headIndex == NUM_UNIQUEHEADS)
+	//special heads logic for default heads pack
+	if(default_pack && (headIndex == 255 || headIndex == NUM_UNIQUEHEADS))
 	{
 		CRules@ rules = getRules();
 		bool holidayhead = false;
@@ -115,7 +116,8 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 {
 	this.RemoveSpriteLayer("head");
 	// add head
-	HeadsDLC dlc = dlcs[get_dlc_number(headIndex)];
+	int dlc_number = get_dlc_number(headIndex);
+	HeadsDLC dlc = dlcs[dlc_number];
 	CSpriteLayer@ head = this.addSpriteLayer("head", dlc.filename, 16, 16,
 	                     (dlc.do_teamcolour ? this.getBlob().getTeamNum() : 0),
 	                     (dlc.do_skincolour ? this.getBlob().getSkinNum() : 0));
@@ -123,7 +125,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 
 	// set defaults
 	headIndex = headIndex % 256; // DLC heads
-	s32 headFrame = getHeadFrame(blob, headIndex);
+	s32 headFrame = getHeadFrame(blob, headIndex, dlc_number == 0);
 
 	blob.set_s32("head index", headFrame);
 	if (head !is null)

@@ -589,9 +589,7 @@ void onRender(CSprite@ this)
 
 							if (mouseHover) // draw missing requirements
 							{
-								string reqsText = item.name + "\n\nrequires\n" + getButtonRequirementsText(item.requirementsMissing, true);
-								reqsText += "\n";
-								reqsText += "Add materials in storage.";
+								string reqsText = item.name + getTranslatedString("\n\nrequires\n{MISSING}\nAdd materials in storage.").replace("{MISSING}", getButtonRequirementsText(item.requirementsMissing, true));
 								GUI::SetFont("menu");
 								GUI::DrawText(reqsText, Vec2f(upperleft.x - 25.0f, lowerright.y + 20.0f), Vec2f(lowerright.x + 25.0f, lowerright.y + 90.0f), color_black, false, false, true);
 							}
@@ -611,10 +609,11 @@ void onRender(CSprite@ this)
 							//}
 
 							if (!available)
-								reqsText += "Producing " + item.name + "...";
+								reqsText += getTranslatedString("Producing {ITEM}...").replace("{ITEM}", item.name);
 							else
-								reqsText += item.name + (onDemand ? " available on respawn" : " limit reached.");
-								GUI::SetFont("menu");
+								reqsText += getTranslatedString("{ITEM}" + (onDemand ? " available on respawn" : " limit reached.")).replace("{ITEM}", item.name);
+
+							GUI::SetFont("menu");
 							GUI::DrawText(reqsText, Vec2f(upperleft.x - 25.0f, lowerright.y + 20.0f), Vec2f(lowerright.x + 25.0f, lowerright.y + 100.0f), color_black, false, false, true);
 
 							//for drawing the arrow to the specific blob if we want that kind of HUD again

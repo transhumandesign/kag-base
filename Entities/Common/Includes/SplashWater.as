@@ -65,14 +65,6 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 			for (uint i = 0; i < blobs.length; i++)
 			{
 				CBlob@ blob = blobs[i];
-                /*if(raycast
-                    && blob.getPlayer() !is null
-                    && map.rayCastSolidNoBlobs(this.getPosition(), blob.getPosition()))
-                {
-                    continue;
-
-                }*/
-
 
 				bool hitHard = blob.getTeamNum() != this.getTeamNum() || ownerBlob is blob;
 
@@ -84,8 +76,7 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 				{
 					this.server_Hit(blob, pos, bombforce, 0.0f, Hitters::water_stun_force, true);
 				}
-
-				if (hitHard)
+				else if (hitHard)
 				{
 					this.server_Hit(blob, pos, bombforce, 0.0f, hitter, true);
 				}

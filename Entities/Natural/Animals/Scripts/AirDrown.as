@@ -14,6 +14,12 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	//(wont be done for long)
+	if(this.hasTag("dead"))
+	{
+		return;
+	}
+
 	s16 ticks = this.get_s16("airdrown_ticks");
 
 	ticks += this.getCurrentScript().tickFrequency;
@@ -24,7 +30,7 @@ void onTick(CBlob@ this)
 		this.server_Hit(this, this.getPosition(), Vec2f(0, 1), 1.0f, 0, true);
 		this.server_SetHealth(0.0f);
 		this.Tag("dead");
-		this.getCurrentScript().runFlags |= Script::remove_after_this;
+		//this.getCurrentScript().runFlags |= Script::remove_after_this;
 	}
 	else
 	{

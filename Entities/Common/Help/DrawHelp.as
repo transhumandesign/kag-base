@@ -529,7 +529,7 @@ void onRender(CSprite@ this)
 		Vec2f upperleft = offset + Vec2f(-30.0f, -199.0f + bounce);
 		Vec2f lowerright = offset + Vec2f(170.0f, 0.0f + bounce);
 		GUI::SetFont("menu");
-		GUI::DrawText("$!!!$$GREEN$WATCH THESE FOR          .          GAMEPLAY HELP$GREEN$\n\n\n$KEY_ESC$ CHECK CONTROLS\n\n$KEY_F1$ HELP ON/OFF\n\n(click to remove this)\n\n      $DEFEND_THIS$", upperleft, lowerright, color_black, true, true, true);
+		GUI::DrawText(getTranslatedString("$!!!$$GREEN$WATCH THESE FOR          .          GAMEPLAY HELP$GREEN$\n\n\n$KEY_ESC$ CHECK CONTROLS\n\n$KEY_F1$ HELP ON/OFF\n\n(click to remove this)\n\n      $DEFEND_THIS$"), upperleft, lowerright, color_black, true, true, true);
 
 		if (getControls().mousePressed1)
 		{
@@ -556,7 +556,7 @@ Vec2f DrawHelpText(const string &in text, Vec2f offset, f32 donePercent, const b
 	//f32 y = Maths::Max( 200, int(pos.y) );
 	f32 y = pos.y;
 	Vec2f dim;
-	GUI::SetFont("menu");	
+	GUI::SetFont("menu");
 	GUI::GetTextDimensions(text, dim);
 	Vec2f ul = Vec2f(pos.x - 50, y - 18.0f);
 	Vec2f lr = Vec2f(pos.x + 180.0f, y + 18.0f);

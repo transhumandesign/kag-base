@@ -89,11 +89,27 @@ bool loadMap(CMap@ _map, const string& in filename)
 		ruins_width *= width;
 	}
 
+	//water
+
+	s32 water_baseline = cfg.read_s32("water_baseline", 0);
+	s32 water_baseline_tiles = (1.0f - (water_baseline) / 100.0f) * height;
+
+	//symmetry
+
+	bool mirror_map = cfg.read_bool("mirror_map", false);
+
+	s32 gen_width = width;
+	if (mirror_map) {
+		gen_width = (width + 1) / 2;
+		ruins_count = ruins_count / 2;
+	}
+
 	//done with vars! --------------------------------
 
 	SetupMap(map, width, height);
 
 	//gen heightmap
+	//(generate full width to avoid clamping strangeness)
 	array<int> heightmap(width);
 	for (int x = 0; x < width; ++x)
 	{
@@ -130,20 +146,26 @@ bool loadMap(CMap@ _map, const string& in filename)
 	}
 
 
-	//map margin
+	//smooth map margin
 
 	for (int x = 0; x < map_margin + lerp_distance; ++x)
 	{
 		if (x < map_margin)
 		{
 			heightmap[x] = baseline_tiles;
-			heightmap[width - 1 - x] = baseline_tiles;
+			if(!mirror_map)
+			{
+				heightmap[width - 1 - x] = baseline_tiles;
+			}
 		}
 		else
 		{
 			f32 lerp = Maths::Min(1.0f, (x - map_margin) / f32(lerp_distance));
 			heightmap[x] = baseline_tiles * (1.0f - lerp) + heightmap[x] * lerp;
-			heightmap[width - 1 - x] = baseline_tiles * (1.0f - lerp) + heightmap[width - 1 - x] * lerp;
+			if(!mirror_map)
+			{
+				heightmap[width - 1 - x] = baseline_tiles * (1.0f - lerp) + heightmap[width - 1 - x] * lerp;
+			}
 
 		}
 	}
@@ -154,13 +176,13 @@ bool loadMap(CMap@ _map, const string& in filename)
 	const s32 tree_limit = 2;
 	const s32 bush_limit = 3;
 
-	array<int> naturemap(width);
-	for (int x = 0; x < width; ++x)
+	array<int> naturemap(gen_width);
+	for (int x = 0; x < gen_width; ++x)
 	{
 		naturemap[x] = -1; //no nature
 	}
 
-	for (int x = 0; x < width; ++x)
+	for (int x = 0; x < gen_width; ++x)
 	{
 		f32 overhang = 0;
 		for (int y = 0; y < height; y++)
@@ -269,11 +291,23 @@ bool loadMap(CMap@ _map, const string& in filename)
 	{
 		int type = ruins_random.NextRanged(3);
 
-		s32 x = (width * 0.5f) + (ruins_random.NextFloat() - 0.5f) * ruins_width;
+		f32 _offset = (ruins_random.NextFloat() - 0.5f);
+		//generate on area to be mirrored
+		if(mirror_map) {
+			_offset = -Maths::Abs(_offset);
+		}
+
+		s32 x = (width * 0.5f) + s32(_offset * ruins_width);
 
 		s32 _size = ruins_size + ruins_random.NextRanged(ruins_size / 2) - ruins_size / 4;
 
 		x -= _size / 2;
+
+		//ensure dont overlap middle
+		if(mirror_map) {
+			x = Maths::Min(x, gen_width - _size);
+		}
+
 		//first pass -get minimum alt
 		s32 floor_height = 0;
 		for (int x_step = 0; x_step < _size; ++x_step)
@@ -363,56 +397,100 @@ bool loadMap(CMap@ _map, const string& in filename)
 		}
 	}
 
-	for (int x = 0; x < width; ++x)
+	//END generating tiles - refining pass
+
+	for (int y = 0; y < height; ++y)
+	{
+		for (int x = 0; x < gen_width; ++x)
+		{
+			u32 offset = (x) + (y * width);
+			u32 mirror_offset = (width - 1 - x) + (y * width);
+			TileType t = map.getTile(offset).type;
+			//(so now we actually mirror the tiles)
+			if(mirror_map)
+			{
+				map.SetTile(mirror_offset, t);
+			}
+
+			//and write in water if needed
+			if(!map.isTileSolid(t) && y > water_baseline_tiles)
+			{
+				map.server_setFloodWaterOffset(offset, true);
+				if(mirror_map)
+				{
+					map.server_setFloodWaterOffset(mirror_offset, true);
+				}
+			}
+		}
+	}
+
+
+	//START generating blobs
+	for (int x = 0; x < gen_width; ++x)
 	{
 		if (naturemap[x] == -1)
 			continue;
 
+
 		int y = naturemap[x];
+
+		//underwater?
+		if(y > water_baseline_tiles)
+			continue;
 
 		f32 edge_dist = Maths::Max(Maths::Min(x - map_margin, width - x - map_margin), 0);
 		f32 lerp = Maths::Min(1.0f, edge_dist / f32(lerp_distance));
 
 		u32 offset = x + y * width;
+		u32 mirror_offset = (width - 1 - x) + y * width;
 
 		bool force_tree = (x == map_margin - 2 || width - x == map_margin - 2);
 
 		f32 grass_frac = material_noise.Fractal(x * 0.02f, y * 0.02f) + ((1.0f - lerp) * 0.5f);
 		if (force_tree || grass_frac > 0.5f)
 		{
-			map.SetTile(offset - width, CMap::tile_grass + map_random.NextRanged(4));  //todo grass random
-
+			bool spawned = false;
 			//generate vegetation
 			if (force_tree ||
 			        (x > map_margin && width - x > map_margin) && (x % 7 == 0 || x % 23 == 3))
 			{
 				f32 _g = map_random.NextFloat();
 
-				Vec2f pos = (Vec2f(x, y - 1) * map.tilesize) +
-				            Vec2f(4.0f, 4.0f);
+				Vec2f pos = (Vec2f(x, y - 1) * map.tilesize) + Vec2f(4.0f, 4.0f);
+				Vec2f mirror_pos = (Vec2f(width - 1 - x, y - 1) * map.tilesize) + Vec2f(4.0f, 4.0f);
 
 				if (tree_skip < tree_limit &&
 				        (!force_tree && _g > 0.5f || bush_skip > bush_limit))  //bush
 				{
 					bush_skip = 0;
-					server_CreateBlob("bush", -1, pos);
 					tree_skip++;
+
+					SpawnBush(map, pos);
+					if(mirror_map) {
+						SpawnBush(map, mirror_pos);
+					}
+
+					spawned = true;
 				}
 				else if (tree_skip >= tree_limit || force_tree || _g > 0.25f)  //tree
 				{
 					tree_skip = 0;
-					CBlob@ tree = server_CreateBlobNoInit(y < baseline_tiles ? "tree_pine" : "tree_bushy");
-					if (tree !is null)
-					{
-						tree.Tag("startbig");
-						tree.setPosition(pos);
-						tree.Init();
-
-						if (map.getTile(offset).type == CMap::tile_empty)
-							map.SetTile(offset, CMap::tile_grass + map_random.NextRanged(3));
-					}
 					bush_skip++;
+
+					SpawnTree(map, pos, y < baseline_tiles);
+					if(mirror_map) {
+						SpawnTree(map, mirror_pos, y < baseline_tiles);
+					}
+
+					spawned = true;
 				}
+			}
+
+			//todo grass control random
+			TileType grass_tile = CMap::tile_grass + (spawned ? 0 : map_random.NextRanged(4));
+			map.SetTile(offset - width, grass_tile);
+			if(mirror_map) {
+				map.SetTile(mirror_offset - width, grass_tile);
 			}
 		}
 	}
@@ -421,6 +499,23 @@ bool loadMap(CMap@ _map, const string& in filename)
 	return true;
 }
 
+//spawn functions
+CBlob@ SpawnBush(CMap@ map, Vec2f pos)
+{
+	return server_CreateBlob("bush", -1, pos);
+}
+
+CBlob@ SpawnTree(CMap@ map, Vec2f pos, bool high_altitude)
+{
+	CBlob@ tree = server_CreateBlobNoInit(high_altitude ? "tree_pine" : "tree_bushy");
+	if (tree !is null)
+	{
+		tree.Tag("startbig");
+		tree.setPosition(pos);
+		tree.Init();
+	}
+	return tree;
+}
 
 void SetupMap(CMap@ map, int width, int height)
 {

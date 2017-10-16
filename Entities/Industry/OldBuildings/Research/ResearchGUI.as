@@ -12,7 +12,7 @@ void onInit(CSprite@ this)
 }
 
 void onRender( CSprite@ this )
-{	   	
+{
 	CBlob@ localBlob = getLocalPlayerBlob();
 	CBlob@ blob = this.getBlob();
 	if (localBlob is null || localBlob.isKeyPressed(key_inventory) ||
@@ -54,18 +54,18 @@ void onRender( CSprite@ this )
 
 		Vec2f upperleft( pos2d.x-size.x*0.5f, pos2d.y-size.y*0.5f );
 		Vec2f lowerright( pos2d.x+size.x*0.5f, pos2d.y+size.y*0.5f );
-		
+
 		GUI::DrawRectangle( upperleft, lowerright );
 		GUI::SetFont("menu");
-		GUI::DrawText( "Click the items you vote to research!", upperleft+Vec2f(10,10), SColor(0xffffffff) );
-		GUI::DrawText( "Yellow paths show what will be researched when the match starts.", upperleft+Vec2f(10,24), SColor(0xffffc64b) );
-		GUI::DrawText( "Red path items can only be bought for gold at trader.", upperleft+Vec2f(10,38), SColor(0xffff4b4b) );
+		GUI::DrawText( getTranslatedString("Click the items you vote to research!"), upperleft+Vec2f(10,10), SColor(0xffffffff) );
+		GUI::DrawText( getTranslatedString("Yellow paths show what will be researched when the match starts."), upperleft+Vec2f(10,24), SColor(0xffffc64b) );
+		GUI::DrawText( getTranslatedString("Red path items can only be bought for gold at trader."), upperleft+Vec2f(10,38), SColor(0xffff4b4b) );
 
 		ResearchStatus@ stat;
-		blob.get( "techs", @stat );	   		
+		blob.get( "techs", @stat );
 		if(stat is null) return;
-		
-		ScrollSet@ scrolls = stat.scrolls;		
+
+		ScrollSet@ scrolls = stat.scrolls;
 		for (uint i = 0; i < scrolls.names.length; i++)
 		{
 			const string defname = scrolls.names[i];
@@ -73,7 +73,7 @@ void onRender( CSprite@ this )
 			scrolls.scrolls.get( defname, @def);
 			if (def is null)
 				continue;
-			
+
 			Vec2f buttonUL, buttonLR, buttonIcon;
 			getButtonFromDef( def, upperleft, buttonUL, buttonLR, buttonIcon );
 			Vec2f buttonSize( buttonLR.x-buttonUL.x, buttonLR.y-buttonUL.y );
@@ -87,7 +87,7 @@ void onRender( CSprite@ this )
 				ScrollDef@ nextdef = getScrollDef( scrolls, nextName );
 				if (nextdef is null)
 					continue;
-				
+
 				const bool hasNextTech = nextdef.hasTech();
 
 				Vec2f nextButtonUL, nextButtonLR, nextButtonIcon;
@@ -107,7 +107,7 @@ void onRender( CSprite@ this )
 				{
 					GUI::DrawArrow2D( a, b, SColor(0xff9dca22) );
 				}
-				else 
+				else
 				{
 					GUI::DrawArrow2D( a, b, SColor(0xff660d0d) );
 				}
@@ -136,9 +136,9 @@ void onRender( CSprite@ this )
 			}
 
 			DrawButton( blob, def, defname, buttonUL, buttonLR, labeldim, buttonIcon, localBlob, mouseHover, false );
-		
+
 		}
-	
+
 		// draw voted path
 
 		for (uint i = 0; i < stat.researchers.length; i++)
@@ -146,12 +146,12 @@ void onRender( CSprite@ this )
 			ResearchPoint@ p = stat.researchers[i];
 			if(p is null || p.targets.length <= 0)
 				continue;
-			
+
 			string current = p.target;
 			for(uint j = 0; j < p.targets.length; j++)
 			{
 				const string next = p.targets[j];
-				
+
 				ScrollDef@ curdef;
 				ScrollDef@ nextdef;
 				if (scrolls.scrolls.get( current, @curdef) && curdef !is null &&
@@ -174,7 +174,7 @@ void onRender( CSprite@ this )
 				current = next;
 			}
 		}
-	
+
 	}  // E
 }
 
@@ -187,12 +187,12 @@ void getButtonFromDef( ScrollDef@ def, Vec2f upperleft, Vec2f &out ul, Vec2f &ou
 	iconPos = ul + Vec2f(10.0f,10.0f);
 	lr.x = ul.x + buttonsize;
 	lr.y = ul.y + buttonsize;
-} 
+}
 
 void getArrowPositions( Vec2f &out a, Vec2f &out b, Vec2f buttonUL, Vec2f buttonLR, Vec2f nextButtonUL, Vec2f nextButtonLR, Vec2f buttonSize )
 {
 	const bool nextOnTheRight = nextButtonUL.x > buttonLR.x;
-	const bool nextOnIsLower = nextButtonUL.y > buttonLR.y;	  
+	const bool nextOnIsLower = nextButtonUL.y > buttonLR.y;
 	a.x = nextOnTheRight ? buttonLR.x : buttonLR.x - buttonSize.x/2.0f;
 	a.y = nextOnTheRight ? buttonUL.y + buttonSize.y/2.0f : nextOnIsLower ? buttonLR.y : buttonUL.y;
 	b.x = nextOnTheRight ? nextButtonUL.x : nextButtonUL.x + buttonSize.x/2.0f;
@@ -219,11 +219,11 @@ void DrawButton( CBlob@ blob, ScrollDef@ def, const string &in defname, Vec2f bu
 	{
 		string suffix;
 		if (def.hasTech())
-			suffix = " \n\n(available)";
+			suffix = " \n\n" + getTranslatedString("(available)");
 		else if (def.researching)
-			suffix = " \n\n(researching - " + uint16(def.timeSecs * (1-def.percent)) + "s)";
+			suffix = " \n\n" + getTranslatedString("(researching - {TIME}s)").replace("{TIME}", "" + uint16(def.timeSecs * (1-def.percent)));
 		else
-			suffix = " \n\n(click to vote)";
+			suffix = " \n\n" + getTranslatedString("(click to vote)");
 
 		GUI::SetFont("menu");
 		GUI::DrawText( def.name + suffix, Vec2f(buttonLR.x - labeldim.x/2.0f, buttonLR.y), color_white );

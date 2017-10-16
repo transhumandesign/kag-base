@@ -58,7 +58,7 @@ void BuildRespawnMenu(CRules@ this, CPlayer@ player)
 		}
 
 		// build menu for spawns
-		CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos() + Vec2f(0.0f, getDriver().getScreenHeight() / 2.0f - BUTTON_SIZE - 46.0f), null, Vec2f((respawns.length) * BUTTON_SIZE, BUTTON_SIZE), "Pick spawn point");
+		CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos() + Vec2f(0.0f, getDriver().getScreenHeight() / 2.0f - BUTTON_SIZE - 46.0f), null, Vec2f((respawns.length) * BUTTON_SIZE, BUTTON_SIZE), getTranslatedString("Pick spawn point"));
 
 		if (menu !is null)
 		{
@@ -72,7 +72,7 @@ void BuildRespawnMenu(CRules@ this, CPlayer@ player)
 				params.ResetBitIndex();
 				params.write_netid(localID);
 				params.write_netid(respawn.getNetworkID());
-				CGridButton@ button2 = menu.AddButton("$" + respawnName + "$", "Spawn at " + respawn.getInventoryName(), this.getCommandID("pick spawn"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);				
+				CGridButton@ button2 = menu.AddButton("$" + respawnName + "$", getTranslatedString("Spawn at {ITEM}").replace("{ITEM}", getTranslatedString(respawn.getInventoryName())), this.getCommandID("pick spawn"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
                 if (button2 !is null)
 				{
 					button2.selectOneOnClick = true;
@@ -80,7 +80,7 @@ void BuildRespawnMenu(CRules@ this, CPlayer@ player)
                     if(isUnderRaid(respawn))
                     {
                         button2.SetEnabled(false);
-                        button2.SetHoverText("respawn is contested");
+                        button2.SetHoverText(getTranslatedString("respawn is contested"));
 
                     }
 

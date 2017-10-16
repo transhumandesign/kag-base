@@ -31,15 +31,14 @@ void LoadTips()
 
 void SelectRandomTip()
 {
-	tip = "Tip: ";
-	if (tips.length == 0)
+	if (tips.empty())
 	{
 		tip = "";
 		timer = 0;
 	}
 	else
 	{
-		tip += tips[getGameTime() % tips.length];
+		tip = getTranslatedString("Tip: {TIP}").replace("{TIP}", getTranslatedString(tips[getGameTime() % tips.length]));
 	}
 }
 

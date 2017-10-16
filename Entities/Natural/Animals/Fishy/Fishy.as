@@ -47,7 +47,6 @@ void onTick(CSprite@ this)
 	else
 	{
 		this.SetAnimation(anims[age][2]);
-		this.getCurrentScript().runFlags |= Script::remove_after_this;
 	}
 }
 
@@ -126,6 +125,5 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	sprite.SetFacingLeft(!sprite.isFacingLeft());
 
-	this.getCurrentScript().runFlags |= Script::remove_after_this;
 	return damage;
 }

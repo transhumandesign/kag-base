@@ -417,7 +417,7 @@ void onRender(CSprite@ this)
 					Vec2f dimensions;
 					GUI::SetFont("menu");
 					GUI::GetTextDimensions(b.getInventoryName(), dimensions);
-					GUI::DrawText(b.getInventoryName(), getDriver().getScreenPosFromWorldPos(b.getPosition() - Vec2f(0, -b.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);
+					GUI::DrawText(getTranslatedString(b.getInventoryName()), getDriver().getScreenPosFromWorldPos(b.getPosition() - Vec2f(0, -b.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);
 
 					// draw mouse hover effect
 					//if (canBePicked)

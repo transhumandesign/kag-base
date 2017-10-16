@@ -90,7 +90,7 @@ void onInit(CBlob@ this)
 	this.set_Vec2f("nobuild extend", Vec2f(0.0f, 8.0f));
 
 	// wont work in basichelps in single for some map loading reason
-	SetHelp(this, "help use", "", "Change class    $KEY_E$", "", 5);
+	SetHelp(this, "help use", "", getTranslatedString("Change class    $KEY_E$"), "", 5);
 }
 
 bool isFlooded(CBlob@ this)
@@ -102,9 +102,9 @@ bool isFlooded(CBlob@ this)
 	// 5 tiles checked on both sides
 	for (uint i = 0; i < height / map.tilesize - WATER_FLOOD_REQUIRED + 1; i++)
 	{
-		if (map.isInWater(this.getPosition() + Vec2f(width / 2.1f, -height / 2.1f + (i * map.tilesize)))) 
+		if (map.isInWater(this.getPosition() + Vec2f(width / 2.1f, -height / 2.1f + (i * map.tilesize))))
 			return true;
-		if (map.isInWater(this.getPosition() + Vec2f(width /-2.1f, -height / 2.1f + (i * map.tilesize)))) 
+		if (map.isInWater(this.getPosition() + Vec2f(width /-2.1f, -height / 2.1f + (i * map.tilesize))))
 			return true;
 	}
 	return false;
@@ -438,7 +438,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				if (localPlayer !is null && localPlayer.getTeamNum() == this.getTeamNum())
 				{
 					Sound::Play("/party_join.ogg");
-					client_AddToChat("Another worker has been hired!");
+					client_AddToChat(getTranslatedString("Another worker has been hired!"));
 				}
 			}
 		}
@@ -459,7 +459,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ localBlob = getLocalPlayerBlob();
 		if (localBlob !is null && localBlob.getTeamNum() == this.getTeamNum())
 		{
-			client_AddToChat("Supplies will drop at your halls.");
+			client_AddToChat(getTranslatedString("Supplies will drop at your halls."));
 		}
 	}
 	else
@@ -644,7 +644,7 @@ void onRender(CSprite@ this)
 				}
 
 				GUI::SetFont("menu");
-				GUI::DrawText("Units " + tickets,
+				GUI::DrawText(getTranslatedString("Units") + " " + tickets,
 				              pos + Vec2f(-30, -4 + (tickets > 0 ? (-SHOW_TICKETS_TIME + diffTime) / 5 : 0)),
 				              color);
 			}
