@@ -1,6 +1,7 @@
 // TDM PNG loader base class - extend this to add your own PNG loading functionality!
 
 #include "BasePNGLoader.as";
+#include "LoaderUtilities.as";
 
 const SColor color_tradingpost_1(0xff8888ff);
 const SColor color_tradingpost_2(0xffff8888);
