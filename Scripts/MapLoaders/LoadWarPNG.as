@@ -1,6 +1,7 @@
 // PNG loader base class - extend this to add your own PNG loading functionality!
 
 #include "BasePNGLoader.as";
+#include "LoaderUtilities.as";
 #include "WAR_Technology.as";
 
 const SColor color_hall(255, 211, 249, 193);
