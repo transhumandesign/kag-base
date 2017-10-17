@@ -2,6 +2,7 @@
 // fileName is "" on client!
 
 #include "BasePNGLoader.as";
+#include "LoaderUtilities.as";
 
 bool LoadMap(CMap@ map, const string& in fileName)
 {
