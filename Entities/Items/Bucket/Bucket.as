@@ -20,7 +20,7 @@ void onInit(CBlob@ this)
 
 	this.getSprite().ReloadSprites(0, 0);
 	this.addCommandID("splash");
-	this.set_u8("filled", 0);
+	this.set_u8("filled", splashes);
 
 	this.getCurrentScript().runFlags |= Script::tick_attached;
 }
