@@ -35,20 +35,59 @@
 	"Stop building\n": "Прекратить строительство\n",
 	"Requires\n": "Требуется\n",
 
+//CommonBuilderBlocks.as
+	"Stone Block\nBasic building block":"Каменный блок\nОсновной строительный блок",
+	"Back Stone Wall\nExtra support":"Каменная стена\nДополнительная опора",
+	"Stone Door\nPlace next to walls":"Каменная дверь\nСтавьте рядом с блоками",
+	"Wood Block\nCheap block\nwatch out for fire!":"Деревянный блок\nДешёвый\nОпасайтесь огня!",
+	"Back Wood Wall\nCheap extra support":"Деревянная стена\nДешёвая опора",
+	"Wooden Door\nPlace next to walls":"Деревянная дверь\nСтавьте рядом с блоками",
+	"Trap Block\nOnly enemies can pass":"Ловушка\nУбирается при контакте с врагом",
+	"Ladder\nAnyone can climb it":"Любой может подниматься по ней",
+	"Wooden Platform\nOne way platform":"Деревянная платформа\nОдносторонний проход",
+	"Spikes\nPlace on Stone Block\nfor Retracting Trap":"Шипы\nСтавьте на каменных блоках\nдля выдвигающиеся ловушки",
+	"Workshop\nStand in an open space\nand tap this button.":"Магазин\nВстаньте в открытое место\nи нажмите на эту кнопку",
+	"Workshop":"Магазин",
+	"Workbench":"Верстак",
+	"Wire":"Провод",
+	"Elbow":"Коленчатый провод",
+	"Tee":"T-образный провод",
+	"Junction":"Узел",
+	"Diode":"Диод",
+	"Resistor":"Резистор",
+	"Inverter":"Инвертер",
+	"Oscillator":"Осциллятор",
+	"Transistor":"Транзистор",
+	"Toggle":"Тумблер",
+	"Randomizer":"Рандомайзер",
+	"Lever":"Рычаг",
+	"Button":"Кнопка",
+	"Coin Slot":"Отверстие для монеты",
+	"Pressure Plate":"Нажимная плита",
+	"Motion Sensor":"Датчик движения",
+	"Lamp":"Лампа",
+	"Emitter":"Эмиттер",
+	"Receiver":"Ресивер",
+	"Magazine":"ПАМАГИТЕ",
+	"Bolter":"ПАМАГИТЕ",
+	"Dispenser":"Раздатчик",
+	"Obstructor":"Выдвижной блок",
+	"Spiker":"Выдвижной шип",
+
 //Production.as
 	"\n\nrequires\n{MISSING}\nAdd materials in storage.": "\n\nтребуется:\n{MISSING}\nДобавьте материалы в хранилище.",
 	"Producing {ITEM}...": "Производится {ITEM}...",
 	"{ITEM} available on respawn": "{ITEM} Доступно при возрождении",
 	"{ITEM} limit reached.": "Лимит {ITEM} достигнут.",
-	 
+
 //FactoryAnim.as
 	"Requires a Worker from the Hall to work here.": "Для функционирования требуется рабочий с базы.",
- 
+
 //Hall.as
 	"Units": "Единицы",
 	"Another worker has been hired!": "Новый рабочий был нанят!",
 	"Supplies will drop at your halls.": "Припасы доставляются к вашим базам", // TODO accent support
-	 
+
 //ResearchGUI.as
 	"Click the items you vote to research!": "Нажимайте на предметы, которые вам нужно исследовать!",
 	"Yellow paths show what will be researched when the match starts.": "Жёлтые линии указывают на то, что будет изучено в начале матча..",
@@ -56,16 +95,16 @@
 	"(available)": "(доступно)",
 	"(researching - {TIME}s)": "(Изучается - {TIME} секунд)",
 	"(click to vote)": "(нажмите, чтобы проголосовать)",
- 
+
 //Sign.as
 	"The big brown fox jumped over the shaggy chocolate.": "Южно-эфиопский грач увёл мышь за хобот на съезд ящериц.",
-	
+
 //PlayerCamera.as
 	"Following {CHARACTERNAME} ({USERNAME})": "Наблюдение за {CHARACTERNAME} ({USERNAME})",
-	
+
 //ShowTipOnDeath.as
 	"Tip: {TIP}": "Совет: {TIP}",
-	
+
 //TimeToEnd.as
 	"Time is up!\n{TEAM} wins the game!": "Время вышло!\n{TEAM} выигрывает игру!",
 	"Time is up!\nIt's a tie!": "Время вышло!\nНичья!",
@@ -80,7 +119,7 @@
 	"Ctrl+O Pass": "Ctrl+O Завершить",
 	"CTRL+P Cancel": "Ctrl+P Отменить",
 	"Click to close ({TIMELEFT}s)": "Нажмите, чтобы закрыть ({TIMELEFT} с)",
-	
+
 //TDM_Interface.as
 	"WARMUP": "РАЗМИНКА",
 	"KILLS: {CURRENT}/{LIMIT}": "УБИЙСТВА: {CURRENT}/{LIMIT}",
