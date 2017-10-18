@@ -1,10 +1,10 @@
 #include "ChallengesCommon.as"
 
 const string OUTRO_TEXT =
-    "   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .";
+    getTranslatedString("   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .");
 
 const string OUTRO_TEXT_DEAD_PRINCESS =
-    "   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .";
+    getTranslatedString("   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .");
 
 int gameEndTime	= 0;
 int gameEndDuration	= getTicksASecond() * 25;

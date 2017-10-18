@@ -2,7 +2,7 @@
 #include "Challenge_PrincessMiddle.as" // oo !!!!
 
 const string INTRO_TEXT =
-    "   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.";
+    getTranslatedString("   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.");
 
 const int introEndTime = getTicksASecond() * 30;
 
@@ -47,7 +47,7 @@ void onRender(CMap@ this)
 		Vec2f lr(middle + 170.0f, bottom + 400.0f);
 
 		GUI::SetFont("menu");
-		GUI::DrawText(getTranslatedString(INTRO_TEXT),
+		GUI::DrawText(INTRO_TEXT,
 		              ul, lr,
 		              SColor(alpha, 255, 255, 255),
 		              false, false, false);
