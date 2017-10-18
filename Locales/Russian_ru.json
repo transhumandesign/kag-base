@@ -68,7 +68,7 @@
 	
 //TimeToEnd.as
 	"Time is up!\n{TEAM} wins the game!": "Время вышло!\n{TEAM} выигрывает игру!",
-	"Time is up!\nIt's a tie!": "Время вышло!\Ничья!",
+	"Time is up!\nIt's a tie!": "Время вышло!\nНичья!",
 	"Time left: {MIN}:{SEC}": "Времени осталось: {MIN}:{SEC}",
 
 //// VOTES ////
