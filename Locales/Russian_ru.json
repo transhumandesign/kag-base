@@ -21,7 +21,7 @@
 	//"s ": "s ",
 
 //ScoreboardRender.as
-	"Players: {PLAYERCOUNT}": "Количество игроков: {PLAYERCOUNT}",
+	"Players: {PLAYERCOUNT}": "Всего игроков: {PLAYERCOUNT}",
 	"Player": "Игрок",
 	"Username": "Имя",
 	"Ping": "Пинг",
@@ -47,7 +47,7 @@
 //Hall.as
 	"Units": "Единицы",
 	"Another worker has been hired!": "Новый рабочий был нанят!",
-	"Supplies will drop at your halls.": "Ресурсы снабжения будут сброшены к вашим базам", // TODO accent support
+	"Supplies will drop at your halls.": "Припасы доставляются к вашим базам", // TODO accent support
 	 
 //ResearchGUI.as
 	"Click the items you vote to research!": "Нажимайте на предметы, которые вам нужно исследовать!",
@@ -55,7 +55,7 @@
 	"Red path items can only be bought for gold at trader.": "Исследования на красных линиях могут быть куплены только у торговца.",
 	"(available)": "(доступно)",
 	"(researching - {TIME}s)": "(Изучается - {TIME} секунд)",
-	"(click to vote)": "(Нажми,чтобы проголосовать)",
+	"(click to vote)": "(нажмите, чтобы проголосовать)",
  
 //Sign.as
 	"The big brown fox jumped over the shaggy chocolate.": "Южно-эфиопский грач увёл мышь за хобот на съезд ящериц.",
@@ -68,7 +68,7 @@
 	
 //TimeToEnd.as
 	"Time is up!\n{TEAM} wins the game!": "Время вышло!\n{TEAM} выигрывает игру!",
-	"Time is up!\nIt's a tie!": "Время вышло!\nЭто ничья!",
+	"Time is up!\nIt's a tie!": "Время вышло!\Ничья!",
 	"Time left: {MIN}:{SEC}": "Времени осталось: {MIN}:{SEC}",
 
 //// VOTES ////
@@ -79,7 +79,7 @@
 	"[P] - No": "[P] - Против",
 	"Ctrl+O Pass": "Ctrl+O Завершить",
 	"CTRL+P Cancel": "Ctrl+P Отменить",
-	"Click to close ({TIMELEFT}s)": "Нажми чтобы закрыть ({TIMELEFT} с)",
+	"Click to close ({TIMELEFT}s)": "Нажмите, чтобы закрыть ({TIMELEFT} с)",
 	
 //TDM_Interface.as
 	"WARMUP": "РАЗМИНКА",
@@ -117,7 +117,7 @@
 	"BUILD DEFENSES\n           $BUILD$": "СТРОЙТЕ УКРЕПЛЕНИЯ\n           $BUILD$",
 	"CAPTURE THE HALL!\n           $DEFEND_THIS$": "ЗАХВАТИТЕ БАЗУ!\n           $DEFEND_THIS$",
 	"$ATTACK_LEFT$ATTACK!": "$ATTACK_LEFT$АТАКУЙТЕ!",
-	"ATTACK!$ATTACK_RIGHT$": "АТАКУЙ!$ATTACK_RIGHT$",
+	"ATTACK!$ATTACK_RIGHT$": "АТАКУЙТЕ!$ATTACK_RIGHT$",
 	"ATTACK!\n           $ATTACK_THIS$": "АТАКУЙТЕ!\n           $ATTACK_THIS$",
 	
 //// HELPS ////
@@ -183,7 +183,7 @@
 //ArcherLogic.as
 	"Hide    $KEY_S$": "Спрятатьcя $KEY_S$",
 	"$Grapple$ Grappling hook    $RMB$": "$Grapple$ Крюк-кошка $RMB$",
-	"$arrow$Fire arrow   $KEY_HOLD$$LMB$": "$arrow$натянуть тетеву $KEY_HOLD$$LMB$",
+	"$arrow$Fire arrow   $KEY_HOLD$$LMB$": "$arrow$Натянуть тетиву $KEY_HOLD$$LMB$",
 
 //RunnerDefault.as
 	"${ATTACHED}$Throw    $KEY_C$": "${ATTACHED}$Кинуть $KEY_C$",
@@ -197,21 +197,21 @@
 	"Enemies can use your tunnels so protect them well!": "Противники могут использовать ваши туннели, так что защищайте их!",
 	"Spikes will stun you for a short time.": "Шипы оглушают вас на короткий промежуток времени.",
 	"Saws will kill you instantly": "Пила убивает вас мгновенно",
-	"Spikes placed on stone blocks behave differently, than if placed on other blocks. Experiment!": "Шипы, поставленые на каменный блок, отличаются от тех, что поставлены на другие блоки. Эксперементируйте!",
-	"As an archer you can move faster using the grappling hook.": "Играя за лучника, ты можешь передвегаться быстрее, используя крюк-кошку.",
+	"Spikes placed on stone blocks behave differently, than if placed on other blocks. Experiment!": "Шипы, поставленные на каменный блок, отличаются от тех, что поставлены на другие блоки. Экспериментируйте!",
+	"As an archer you can move faster using the grappling hook.": "Играя за лучника, вы можете передвигаться быстрее, используя крюк-кошку.",
 	"You can put out fires using water bombs or water arrows (as well as a bucket of water)!": "Вы можете тушить огонь с помощью водных бомб или водных стрел (а также и ведром с водой)!",
 	"As a knight, jabbing isn't always effective, try charging for a slash!": "Играя за рыцаря, колющие удары не всегда эффективны, попробуй задержать атаку для рассекающего удара!",
 	"A builder can be more useful on the front lines than in his base. But keep your eyes open over there!": "Строитель может быть гораздо полезнее на фронте. Но будьте готовы к атаке!",
 	"Wood blocks and backwalls can be set on fire, try using stone alongside the wood!":"Деревянные блоки могут поджечь, так что укрепляйте их камнем снаружи!",
 	"Don't run wildly into the battlefield with a keg, you might have it stolen!": "Не бегите с бочкой сломя голову прямо в гущу сражения, её могут украсть!",
-	"Pay attention to the ground, there may be a trap waiting!": "Внимательно смотрите на землю,там может ожидать ловушка!",
+	"Pay attention to the ground, there may be a trap waiting!": "Смотрите под ноги, ловшуки могут ждать вас в самых неожиданных местах!",
 	"Bomb arrows can be used to collapse towers quickly.": "Взрывные стрелы могут быть использованы для быстрого уничтожения башен.",
 	"If you see materials on the ground, take them to a builder or put them in your storage!": "Если вы видите материалы на земле, подберите их и отнесите своему строителю или положите их на склад!",
 	"Water bombs and water arrows stun your enemies for an easy kill.": "Водные бомбы и водные стрелы оглушают врагов для лёгкого убийства.",
 	"Pay attention to your minimap for enemy tunnelers.": "Внимательно следите за картой, чтобы не пропустить вражеских тоннельщиков.",
 	"Don't let siege weapons fall into the wrong hands!": "Не дайте осадным орудиям попасть не в те руки!",
 	"Immobilise siege weapons to prevent them from accidentally falling off a cliff!": "Иммобилизируйте осадные орудия для того, чтобы они не падали с возвышенностей!",
-	"Press [SPACE] to light and throw a bomb, [C] to pickup.": "Нажми [ПРОБЕЛ] для того, чтобы зажечь и кинуть бомбу, [C] чтобы подобрать.",
+	"Press [SPACE] to light and throw a bomb, [C] to pickup.": "Нажми [ПРОБЕЛ] для того, чтобы зажечь бомбу и ещё раз чтобы кинуть её. Нажмите [C], чтобы поднять её.",
 	"Keep your ballistae safe - if an enemy takes it, they can use it against you!": "Защищайте свою баллисту. Если враг её захватит, то он сможет использовать её против вас!",
 	"Drills can be cooled down by jumping into water or running around.": "Буры охлаждаются в воде или во время бега.",
 	"Enemies can use your workshops. Don't let them buy explosives in your base!": "Враги могут использовать ваши мастерские. Не позволяйте им покупать взрывчатку прямо на своей базе!",
@@ -223,7 +223,7 @@
 	"Drills are a fast way to dig, but only yield 50%. Don't use them on precious gold or during build time!": "Буры очень быстро копают, но они извлекают лишь 50% ресурсов. Не используйте их для добычи золота или во время строительной фазы.",
 	"Good players can play any class when needed.": "Хорошие игроки могут играть любым классом в зависимости от ситуации.",
 	"Make sure you're helping your team advance; don't just hide out in the back!": "Помогайте своей команде. Не отсиживайтесь на базе!",
-	"Ride a shark on land and press up to pick him up.": "Осделав акулу на суше, нажмите вверх, чтобы взять её.",
+	"Ride a shark on land and press up to pick him up.": "Оседлав акулу на суше, нажмите вверх, чтобы взять её.",
 	"A red name indicates a server admin - ask them for help if you need it.": "Имя администратора сервера имеет красный цвет - попросите его о помощи, если она понадобится.",
 	"A bush plus a mine equals happy fun time.": "Куст и мина обеспечат вам весёлое настроение.",
 	"Enemies can walk through your doors if open them. Don't let them in!":"Противники могут проходить через ваши открытые двери. Будьте осторожны и не открывайте двери прямо перед противником!",
@@ -276,11 +276,11 @@
 	"When knights shield upward, other players can stand on them to get past obstacles.": "Когда рыцарь ставит щит вверх, другие игроки могут встать на него преодолев препятствия.",
 	"Not all arrows need to be triple shots! Single shots are more consistent.": "Не всегда стоит использовать тройной выстрел! Одиночные выстрелы более стойкие и точные.",
 	"You can replace wood with stone without breaking the block. This is a good way to stop fires before they spread.": "Деревянные блоки можно заменять на каменные, при этом не ломая их. Это хороший способ остановить огонь до его распростронения.",
-	"More than one game has been lost because a flag-runner couldn't get back into their base - make ways in and out!": "Некоторые матчи проигрываются из-за того, что игрок с флагом не может вернуться обратно на базу. Всегда стройте не только выход, но и вход!",
+	"More than one game has been lost because a flag-runner couldn't get back into their base - make ways in and out!": "Некоторые матчи проигрываются из-за того, что игрок с флагом не может вернуться на базу. Всегда стройте не только выход, но и вход!",
 	"Fish, chickens, and even bushes all have uses. Don't randomly attack them.": "Рыба, курица и даже куст имеют предназначение, не стоит просто так их уничтожать.",
 	"Quarters (food shop) in a forward base helps keep pressure on the enemy.": "Магазин с едой на передовой линии обороны, помогает держать давление на врага.",
 	"If you want a shop built, build it yourself! If a builder hasn't built it already, they probably won't.": "Если вам нужен магазин, то постройте его самостоятельно! Если строитель его ещё не построил, возможно он его не построит.",
-	"Downward platforms at the top of a tower will help prevent enemies from climbing over.": "Плафтормы, направленные вниз, помогут вам остановить врагов, пытающихся забраться на башню.",
+	"Downward platforms at the top of a tower will help prevent enemies from climbing over.": "Платформы, направленные вниз, помогут вам остановить врагов, пытающихся забраться на башню.",
 	"Stomping enemies is great tactic, but be careful - jump from too high and you'll die if you miss.": "Прыгать на врага с высоты - хорошая тактика, но будьте осторожны - вы разобьётесь, если не попадёте в цель.",
 	"Buy eggs to replenish your stock of chickens.": "Покупайте яйца для пополнения вашего запаса куриц.",
 	"Knights can use their swords to destroy wooden blocks and doors, but not stone": "Рыцари могут использовать меч для уничтожения деревянных блоков и дверей, но не каменных.",
