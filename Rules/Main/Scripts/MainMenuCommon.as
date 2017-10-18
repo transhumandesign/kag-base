@@ -15,7 +15,7 @@
 
 #include "UILabel.as"
 
-ACTION_FUNCTION@ _backCallback = ShowMainMenu;
+UI::ACTION_FUNCTION@ _backCallback = ShowMainMenu;
 
 //---
 
@@ -42,7 +42,7 @@ void ShowMainMenu( UI::Group@ group, UI::Control@ control )
 		UI::AddSeparator();
 		UI::Button::Add("Quit", SelectQuitGame);
 		 UI::Button::AddIcon("MenuItems.png", Vec2f(32, 32), 29 );
-		g.proxy.renderFunc = RenderTitleBackgound;
+		@g.proxy.renderFunc = RenderTitleBackgound;
 	UI::SetLastSelection(0);
 }
 
@@ -72,7 +72,7 @@ void SelectWiki( UI::Group@ group, UI::Control@ control ){
 void ShowSingleplayerMenu( UI::Group@ group, UI::Control@ control )
 {
 	UI::Clear();
-	_backCallback = ShowMainMenu;
+	@_backCallback = ShowMainMenu;
 
 	UI::AddGroup("Solo 1", Vec2f(0.3,0.13), Vec2f(0.7,0.4));
 		UI::Grid( 1, 1, 0.1 );
@@ -101,7 +101,7 @@ void ShowSingleplayerMenu( UI::Group@ group, UI::Control@ control )
 
 void SelectTutorials( UI::Group@ group, UI::Control@ control ){
 	UI::Clear();
-	_backCallback = ShowSingleplayerMenu;
+	@_backCallback = ShowSingleplayerMenu;
 
 	UI::AddGroup("Tutorials 1", Vec2f(0.3,0.13), Vec2f(0.7,0.6));
 		UI::Fullscreen();
@@ -183,12 +183,12 @@ void SelectSandbox( UI::Group@ group, UI::Control@ control ){
 void ShowMultiplayerMenu( UI::Group@ group, UI::Control@ control )
 {
 	UI::Clear();
-	_backCallback = ShowMainMenu;
+	@_backCallback = ShowMainMenu;
 
 	if (/**f/false/*/!Engine::isAuthenticated()/**/){
 		Engine::ShowLoginWindow();
 		UI::Group@ g = UI::AddGroup("titlescreen", Vec2f(0,0), Vec2f(1.0,1.0));
-		g.proxy.renderFunc = RenderTitleBackgound;
+		@g.proxy.renderFunc = RenderTitleBackgound;
 		return;
 	}
 
@@ -212,7 +212,7 @@ void ShowMultiplayerMenu( UI::Group@ group, UI::Control@ control )
 void ShowSimpleJoin( UI::Group@ group, UI::Control@ control )
 {
 	UI::Clear();
-	_backCallback = ShowMultiplayerMenu;
+	@_backCallback = ShowMultiplayerMenu;
 
 	UI::Control@ c;
 
@@ -362,7 +362,7 @@ bool SimpleJoinIsInRange(int sizeCategory, int players)
 void ShowConnectTo( UI::Group@ group, UI::Control@ control )
 {
 	UI::Clear();
-	_backCallback = ShowMultiplayerMenu;
+	@_backCallback = ShowMultiplayerMenu;
 
 	UI::AddGroup("Connect to... 1", Vec2f(0.30,0.3), Vec2f(0.72,0.7));
 		UI::Grid( 1, 3 );
@@ -394,7 +394,7 @@ void ConnectTo( UI::Group@ group, UI::Control@ control )
 	string[]@ split = cl_joinaddress.split(":");
 	if (split.length != 2) return;
 
-	_backCallback = ShowMainMenu;
+	@_backCallback = ShowMainMenu;
 	getNet().SafeConnect(split[0] +":" +split[1]);
 	//ExitToMenu();
 }
@@ -636,7 +636,7 @@ string search = "";
 void ShowBrowser( UI::Group@ group, UI::Control@ control )
 {
 	UI::Clear();
-	_backCallback = ShowMultiplayerMenu;
+	@_backCallback = ShowMultiplayerMenu;
 
 	UI::Control@ c;
 
@@ -669,7 +669,7 @@ void ShowBrowser( UI::Group@ group, UI::Control@ control )
 		@c = UI::TextInput::Add("", SetSearch, search, "", 0, "Instant search...");
 		 c.proxy.align.Set(0.02f, 0.5f);
 		 c.vars.set("caption centered", false);
-		 c.input = UpdateSearch;
+		 @c.input = UpdateSearch;
 
 	UI::AddGroup("Server browser m2", Vec2f(0.4,0.66), Vec2f(0.645,0.72));
 		UI::Grid( 1, 1, 0.0 );
@@ -699,7 +699,7 @@ void ShowBrowser( UI::Group@ group, UI::Control@ control )
 		 c.proxy.align.Set(0.3f, 0.5f);
 		 UI::Button::AddIcon("MenuItems.png", Vec2f(16, 16), 81+(7+g_filtergold)%9, 0.5 );
 		@c = UI::RangeSlider::Add("Players:", SetPlayersLower, SetPlayersUpper, g_filterplayerlower/100.0, g_filterplayerupper/100.0, 0.05, 100, "%");
-		 c.processMouse = RangeSliderProcessMouse;
+		@c.processMouse = RangeSliderProcessMouse;
 		@c = UI::Button::Add("Password", ToggleFilterPass);
 		 c.proxy.align.Set(0.3f, 0.5f);
 		 UI::Button::AddIcon("MenuItems.png", Vec2f(16, 16), 81+(7+g_filterpass)%9, 0.5 );
