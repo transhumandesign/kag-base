@@ -110,6 +110,40 @@
 	"Time is up!\nIt's a tie!": "Время вышло!\nНичья!",
 	"Time left: {MIN}:{SEC}": "Времени осталось: {MIN}:{SEC}",
 
+//// SOLO GAME MODES ////
+//Tutorial01.as
+	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"Ходьба и прыжок $KEY_A$ $KEY_W$ $KEY_D$",
+	"$sign$Go to the right and\n\nbe sure to read these signs.":"$sign$Идите вправо\n\nи не пропускайте табличек.",
+	"$Jab$Practice the sword JAB\n\non the dummy.\n\nAim with mouse and tap $LMB$":"$Jab$Потренируйте колющий\n\nудар на манекене.\n\nнажмите $LMB$, наведясь\n\nна него мышкой.",
+	"Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!":"Теперь потренируйте РАССЕКАЮЩИЙ УДАР.\n\nДержите $LMB$, дождитесь,\n\nпока рыцарь не замахнётся\nмечом$Tutorial_Slash$\n\n\nи отпустите $LMB$!",
+	"Practice the DOUBLE SLASH.\n\nHOLD $LMB$ until spark$Tutorial_Slash2$\n\n\nQuickly TAP $LMB$ 2 times!":"Потренируйте ДВОЙНОЙ РАССЕКАЮЩИЙ УДАР.\n\nДержите $LMB$, пока не\n\nпоявится искра$Tutorial_Slash2$\n\n\nА затем быстро два раза\n\nнажмите $LMB$!",
+	"Before entering this room charge your sword $Tutorial_Slash2$\n\nand then quickly\nwalk inside and slash!":"До того, как зайдёте в команту, замахнитесь мечом $Tutorial_Slash2$\n\n\nи затем быстро зайдите внутрь и проведите рассекающий удар!",
+	"HOLD $RMB$ to shield.\n\nUse mouse to aim shield.":"Держите $RMB$, чтобы\n\nподнять свой щит\nИспользуйте мышку для наведения.",
+	"Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$":"Держите $KEY_D$$KEY_W$, чтобы\n\nпробежать по стене.",
+	"Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$":"Рыцари могут ломать деревянные блоки или двери и копать землю. Наведясь на стену, сломайте её с помощью$LMB$",
+	"Automatically pickup things used by your class.":"Классовые предметы подбираются автоматически.",
+	"Press $KEY_SPACE$ to light bomb\n\nAim with mouse.\n\nAgain $KEY_SPACE$ throw it.":"Нажмите на $KEY_SPACE$,\n\nчтобы поджечь бомбу\n\nНаведясь мышкой на цель, ещё раз нажмите на $KEY_SPACE$, чтобы бросить её.",
+	"Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.":"Парите с помощью\n\nщита$Tutorial_Glide$\n\n\nПрыгните в каньон, держа\n\nкурсор выше себя и$RMB$.",
+
+//TutorialCTF01.as
+	"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":"Захват флага - это простой режим игры, подходящий для новичков. Цель режима проста - украсть флаг у противника и вернуть его на свою базу.",
+	"Killing enemies, building structures and generally being useful for your team will give you coins.\n\nCoins allow you to purchase ammo, weapons & tools in workshops. First thing, as an example on how it will look when you kill an enemy:\n\nKill those chicken and get their coins!\n\n$chicken$":
+	"За убийства врагов и постройку сооружений вы получаете монеты.\n\nМонеты позволяют вам покупать боеприпасы, оружие и инструменты в мастерских. Для начала покажем наглядно, как это происходит.\n\nУбейте этих куриц и заберите их деньги!\n$chicken$",
+	"Go to the Tent and switch class to BUILDER.\n\nPress $KEY_E$ while standing\n\non the Tent.\n\n\n\n$tent$\n\n\n":"Идите к палатке и смените свой класс на СТРОИТЕЛЯ.\n\nСтоя около палатки,\n\nнажмите $KEY_E$.\n\n$tent$\n\n\n",
+	"If you've switched to builder in the Tent now you can build workshops for your team.\n\n\nHold $KEY_F$ and select $building$":"Будучи строителем, вы можете строить мастерские для своей команды.\n\n\nДержите $KEY_F$ и выберите $building$",
+	"If you don't have wood:\n$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.\n\n\n$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":
+	"Если вам не хватает древесины, срубите дерево:\n\n$Tree$\n\nДЕРЖИТЕ$RMB$, наведясь\n\nна дерево.\n\n$log$\n\nРубите брёвна, тем самым получая древесину $mat_wood$\n\nДЕРЖИТЕ $RMB$, наведясь на бревно.",
+	//"Press $KEY_E$ on the frame\n\nto convert it to a proper workshop. Some will require additional resources, go gather them!"
+
+//Challenge_PrincessStart
+	"   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.":
+	"	Высоко на вершине скалистого утёса, охраняемого армией свирепых войнов, стоит крепость великого тёмного лорда Сэджвика. Глубого в тёмной пещере замка Сэджвик злорадствует над своим прекрасными пленником, принцессой Гети.\n\n   Вы королевский рыцарь. Один, только со своими мечом и щитом, ты должен одолеть Сэджвика и освободить прекрасную Гети.\n\n   Оставь все свои страхи позади. Собери всю свою волю в кулак, примите смерть как один из исходов, оставайся сильным. Так поступают настоящие рыцари.",
+//Sandbox.as 
+	"Welcome to King Arthur's Gold":"Добро пожаловать в King Arthur's Gold",
+	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"Это режим песочницы.\nЗдесь вы можете расслабиться и просто наслаждаться игрой.\n\nНажмите [ESC], чтобы посмотреть управление.",
+
+//Sandbox gamemode.cfg
+	"Build whatever your heart desires. Respect other folk's creations!":"Стройте всё, что душе угодно. Уважайте труд других людей.",
 //// VOTES ////
 //VoteCore.as
 	"Reason: {REASON}": "Причина: {REASON}",
