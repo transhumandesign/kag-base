@@ -100,7 +100,7 @@ void AddRequirement(CBitStream &inout bs, const string &in req, const string &in
 {
 	bs.write_string(req);
 	bs.write_string(blobName);
-	bs.write_string(getTranslatedString(friendlyName));
+	bs.write_string(friendlyName);
 	bs.write_u16(quantity);
 }
 

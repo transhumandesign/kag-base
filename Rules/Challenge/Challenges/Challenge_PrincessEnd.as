@@ -1,10 +1,10 @@
 #include "ChallengesCommon.as"
 
 const string OUTRO_TEXT =
-    getTranslatedString("   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .");
+    "   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .";
 
 const string OUTRO_TEXT_DEAD_PRINCESS =
-    getTranslatedString("   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .");
+    "   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .";
 
 int gameEndTime	= 0;
 int gameEndDuration	= getTicksASecond() * 25;
@@ -89,7 +89,7 @@ void onRender(CMap@ this)
 				Vec2f lr(middle + 170.0f, bottom + 400.0f);
 
 				GUI::SetFont("menu");
-				GUI::DrawText(princessAlive ? OUTRO_TEXT : OUTRO_TEXT_DEAD_PRINCESS,
+				GUI::DrawText(princessAlive ? getTranslatedString(OUTRO_TEXT) : getTranslatedString(OUTRO_TEXT_DEAD_PRINCESS),
 				              ul, lr,
 				              SColor(255, 255, 255, 255),
 				              false, false, false);
@@ -102,7 +102,7 @@ void onRender(CMap@ this)
 		{
 			PrincessSaved(princessAlive);
 			ExitToMenu();
-			MessageBox("The End.", "For more adventures there is an entire multiplayer world ready to explore. If you've purchased the game just launch the servers browser in Multiplayer", true);
+			MessageBox(getTranslatedString("The End."), getTranslatedString("For more adventures there is an entire multiplayer world ready to explore. If you've purchased the game just launch the servers browser in Multiplayer"), true);
 		}
 	}
 }
