@@ -35,7 +35,7 @@ void onInit(CBlob@ this)
 
 	this.set_TileType("background tile", CMap::tile_wood_back);
 
-	SetHelp(this, "help use", "builder", "$workshop$Convert workshop    $KEY_E$", "", 3);
+	SetHelp(this, "help use", "builder", getTranslatedString("$workshop$Convert workshop    $KEY_E$", "", 3));
 
 	if (hasTech(this))
 	{
@@ -74,13 +74,13 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (!hasTech(this) && caller.isOverlapping(this))
 	{
-		caller.CreateGenericButton(12, Vec2f(0, 0), this, this.getCommandID("upgrade factory menu"), "Convert Workshop", params);
+		caller.CreateGenericButton(12, Vec2f(0, 0), this, this.getCommandID("upgrade factory menu"), getTranslatedString("Convert Workshop"), params);
 	}
 	else
 	{
 		if (getWorkers(this) == 0)
 		{
-			CButton@ button = caller.CreateGenericButton("$migrant$", Vec2f(0, 0), this, 0, "Requires a free worker from Hall");
+			CButton@ button = caller.CreateGenericButton("$migrant$", Vec2f(0, 0), this, 0, getTranslatedString("Requires a free worker from Hall"));
 			if (button !is null)
 			{
 				button.SetEnabled(false);
@@ -148,8 +148,7 @@ void AddButtonsForSet(CBlob@ this, CGridMenu@ menu, ScrollSet@ set)
 				if (!hasRequirements_Tech(inv, reqs, missing))
 				{
 					button.SetEnabled(false);
-					button.hoverText = "Convert Workshop\n";
-					button.hoverText += "\n$RED$Requires " + def.name + "\n from Hall\n$RED$            $RESEARCH$\n\n";
+					button.hoverText = "Convert Workshop\n\n$RED$Requires " + def.name + "\n from Hall\n$RED$            $RESEARCH$\n\n";
 				}
 				else
 				{
@@ -324,7 +323,7 @@ void AddProductionItemsFromTech(CBlob@ this, const string &in defname)
 		if (getNet().isClient())
 		{
 			RemoveHelps(this, "help use");
-			SetHelp(this, "help use", "", "Check production    $KEY_E$", "", 2);
+			SetHelp(this, "help use", "", getTranslatedString("Check production    $KEY_E$", "", 2));
 		}
 	}
 }
