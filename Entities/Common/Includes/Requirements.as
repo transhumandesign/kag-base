@@ -32,7 +32,7 @@ string getButtonRequirementsText(CBitStream& inout bs, bool missing)
 			text += "$"; text += name; text += "$";
 			text += " ";
 			text += quantityColor;
-			text += friendlyName;
+			text += getTranslatedString(friendlyName);
 			text += quantityColor;
 			// text += " required.";
 			text += "\n";
@@ -55,8 +55,7 @@ string getButtonRequirementsText(CBitStream& inout bs, bool missing)
 		}
 		else if (requiredType == "coin")
 		{
-			text += quantity;
-			text += " $COIN$ required\n";
+			text += getTranslatedString("{COINS_QUANTITY} $COIN$ required\n").replace("{COINS_QUANTITY}", "" + quantity);
 		}
 		else if (requiredType == "no more" && missing)
 		{
@@ -100,7 +99,7 @@ void AddRequirement(CBitStream &inout bs, const string &in req, const string &in
 {
 	bs.write_string(req);
 	bs.write_string(blobName);
-	bs.write_string(friendlyName);
+	bs.write_string(getTranslatedString(friendlyName));
 	bs.write_u16(quantity);
 }
 

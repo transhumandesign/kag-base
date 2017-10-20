@@ -35,7 +35,7 @@ void onInit(CBlob@ this)
 
 	this.set_TileType("background tile", CMap::tile_wood_back);
 
-	SetHelp(this, "help use", "builder", getTranslatedString("$workshop$Convert workshop    $KEY_E$", "", 3));
+	SetHelp(this, "help use", "builder", getTranslatedString("$workshop$Convert workshop    $KEY_E$"), "", 3);
 
 	if (hasTech(this))
 	{
@@ -116,7 +116,7 @@ void BuildUpgradeMenu(CBlob@ this, CBlob@ caller)
 
 		CControls@ controls = caller.getControls();
 		int size = Maths::Sqrt(all.names.length);
-		CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + Vec2f(0.0f, 50.0f), this, Vec2f(size, size - 1), "Upgrade to...");
+		CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + Vec2f(0.0f, 50.0f), this, Vec2f(size, size - 1), getTranslatedString("Upgrade to..."));
 		if (menu !is null)
 		{
 			menu.deleteAfterClick = true;
@@ -148,7 +148,7 @@ void AddButtonsForSet(CBlob@ this, CGridMenu@ menu, ScrollSet@ set)
 				if (!hasRequirements_Tech(inv, reqs, missing))
 				{
 					button.SetEnabled(false);
-					button.hoverText = "Convert Workshop\n\n$RED$Requires " + def.name + "\n from Hall\n$RED$            $RESEARCH$\n\n";
+					button.hoverText = getTranslatedString("Convert Workshop\n\n$RED$Requires {TECH_NAME}\n from Hall\n$RED$            $RESEARCH$\n\n").replace("{TECH_NAME}", def.name);;
 				}
 				else
 				{
@@ -323,7 +323,7 @@ void AddProductionItemsFromTech(CBlob@ this, const string &in defname)
 		if (getNet().isClient())
 		{
 			RemoveHelps(this, "help use");
-			SetHelp(this, "help use", "", getTranslatedString("Check production    $KEY_E$", "", 2));
+			SetHelp(this, "help use", "", getTranslatedString("Check production    $KEY_E$"), "", 2);
 		}
 	}
 }
