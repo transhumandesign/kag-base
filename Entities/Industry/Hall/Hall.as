@@ -380,11 +380,11 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			if (goldCount >= MIGRANT_COST)
 			{
 				//buy migrant button
-				CButton@ button = caller.CreateGenericButton("$migrant$", buttonpos, this, this.getCommandID(buymigrantcmd), getTranslatedString("Buy a worker for {MIGRANT_COST} Gold").replace("{MIGRANT_COST}", MIGRANT_COST), params);
+				CButton@ button = caller.CreateGenericButton("$migrant$", buttonpos, this, this.getCommandID(buymigrantcmd), getTranslatedString("Buy a worker for {MIGRANT_COST} Gold").replace("{MIGRANT_COST}", "" + MIGRANT_COST), params);
 			}
 			else
 			{
-				CButton@ button = caller.CreateGenericButton("$migrant$", buttonpos, this, 0, getTranslatedString("Buy worker: Requires {MIGRANT_COST} Gold").replace("{MIGRANT_COST}", MIGRANT_COST));
+				CButton@ button = caller.CreateGenericButton("$migrant$", buttonpos, this, 0, getTranslatedString("Buy worker: Requires {MIGRANT_COST} Gold").replace("{MIGRANT_COST}", "" + MIGRANT_COST));
 				if (button !is null)
 				{
 					button.SetEnabled(false);
