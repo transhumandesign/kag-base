@@ -138,10 +138,10 @@
 
 //Challenge_PrincessStart
 	//"   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.":
-	//"	Высоко на вершине скалистого утёса, охраняемого армией свирепых войнов, стоит крепость великого тёмного лорда Сэджвика. Глубого в тёмной пещере замка Сэджвик злорадствует над своим прекрасными пленником, принцессой Гети.\n\n   Вы королевский рыцарь. Один, только со своими мечом и щитом, ты должен одолеть Сэджвика и освободить прекрасную Гети.\n\n   Оставь все свои страхи позади. Собери всю свою волю в кулак, примите смерть как один из исходов, оставайся сильным. Так поступают настоящие рыцари.",
+	//"	Высоко на вершине скалистого утёса, охраняемого армией свирепых воинов, стоит крепость великого тёмного лорда Сэджвика. Глубого в тёмной пещере замка Сэджвик злорадствует над своим прекрасными пленником, принцессой Гети.\n\n   Вы королевский рыцарь. Один, только со своими мечом и щитом, ты должен одолеть Сэджвика и освободить прекрасную Гети.\n\n   Оставь все свои страхи позади. Собери всю свою волю в кулак, примите смерть как один из исходов, оставайся сильным. Так поступают настоящие рыцари.",
 //Sandbox.as 
 	"Welcome to King Arthur's Gold":"Добро пожаловать в King Arthur's Gold",
-	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"Это режим песочницы.\nЗдесь вы можете расслабиться и просто наслаждаться игрой.\n\nНажмите [ESC], чтобы посмотреть управление.",
+	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"Это режим песочницы.\nЗдесь вы можете расслабиться и просто наслаждаться игрой.\n\nНажмите [ESC], чтобы посмотреть управление.\nВеселитесь!",
 //Sandbox gamemode.cfg
 	"Build whatever your heart desires. Respect other folk's creations!":"Стройте всё, что душе угодно. И уважайте труд других людей.",
 
@@ -164,7 +164,7 @@
 
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
-	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"Следующее пополнение запасов через {SEC} {TIMESUFFIX} {ACTION}!",
+	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"Следующее пополнение запасов через {SEC}{TIMESUFFIX},{ACTION}!",
 	"Go Fight"                                     :"Бегом сражаться",
 	"Go Build"                                     :"Бегом строить",
 	"Prepare for Battle"                           :"Готовьтесь к бою",
@@ -213,7 +213,7 @@
 	"A stone boulder useful for crushing enemies.":"Валун, которым можно раздавить врага.",
 	"An empty wooden crate for storing and transporting inventory.":"Пустой деревянный ящик, в котором можно хранить и транспортировать вещи.",
 	"An explosive mine. Triggered by contact with an enemy.":"Взрывающаяся мина. Срабатывает при контакте с врагом.",
-	//"Fire satchel for Knight only.":"",
+	//"Fire satchel for Knight only.":"Подрывмешок только для Рыцаря.",
 	"A health regenerating heart.":"Восстанавливающие здоровье сердца.",
 	//"A sack for storing more inventory on your back.":"",
 	"A seedling of an oak tree ready for planting.":"Саженец дуба, готовый к посадке.",
@@ -261,7 +261,7 @@
  
 //BasicHelps.as
 	" $down_arrow$ Hop inside  $KEY_S$"                :" $down_arrow$ Залезть $KEY_S$",
-	" Get out  $KEY_W$"                                :" Выйти $KEY_W$",
+	" Get out  $KEY_W$"                                :" Вылезти $KEY_W$",
 	"$trader$ Buy    $KEY_E$"                          :"$trader$ Купить $KEY_E$",
 	"$CLASSCHANGE$ Change class    $KEY_E$"            :"$CLASSCHANGE$ Сменить класс $KEY_E$",
 	"${ITEM}$ $Rotate$ Rotate    $KEY_SPACE$"          :"${ITEM}$ $Rotate$ Вращать $KEY_SPACE$",
@@ -273,7 +273,7 @@
 	"$lantern$ On/Off     $KEY_SPACE$"                 :"$lantern$ Вкл/Выкл $KEY_SPACE$",
 	"$lantern$ Pick up    $KEY_C$"                     :"$lantern$ Поднять $KEY_C$",
 	//"$satchel$ Light     $KEY_SPACE$"                :"$satchel$ Зажечь $KEY_SPACE$",               //NOT USED
-	//"$satchel$ Only KNIGHT can light satchel"        :"$satchel$ Только РЫЦАРЬ может зажечь бомбу", //NOT USED
+	//"$satchel$ Only KNIGHT can light satchel"        :"$satchel$ Только РЫЦАРЬ может зажечь подрывмешок", //NOT USED
 	//"$satchel$ THROW!    $KEY_SPACE$"                :"$satchel$ БРОСИТЬ $KEY_SPACE$",              //NOT USED
 	"$log$ Chop $mat_wood$   $RMB$"                    :"$log$ Рубить $mat_wood$   $RMB$",
 	"$keg$Pick up    $KEY_C$"                          :"$keg$Поднять $KEY_C$",
