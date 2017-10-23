@@ -230,6 +230,12 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
 	{
 		if (name == "mat_wood" || name == "mat_stone" || name == "mat_gold")
 		{
+			// scale based on how full the stack is
+			f32 stack_size = b.getQuantity();
+			f32 max_size = b.maxQuantity;
+			scale *= (1.25f - ((stack_size / max_size) / 2.0f));
+			// scaling will vary from 0.75 (full stack) to 1.25 (empty stack)
+			
 			if (thisname == "builder")
 			{
 				scale *= 0.25f;
