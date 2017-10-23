@@ -6,10 +6,10 @@ void onInit(CRules@ this)
 {
 	printf("onInit");
 	//setGameState( GameState::game );
-	//if (!Engine::isAuthenticated()){ 
-	//	Engine::ShowLoginWindow(); 
+	//if (!Engine::isAuthenticated()){
+	//	Engine::ShowLoginWindow();
 	//} else {
-		ShowMainMenu( null, null );		
+		ShowMainMenu( null, null );
 	//}
 	onReload(this);
 }
@@ -18,9 +18,9 @@ void onReload(CRules@ this)
 {
 	printf("onReload");
 	//_backCallback( null, null );
-	
+
 	UI::Group@ g = UI::AddGroup("titlescreen", Vec2f(0,0), Vec2f(1.0,1.0));
-	g.proxy.renderFunc = RenderTitleBackgound;
+	@g.proxy.renderFunc = RenderTitleBackgound;
 }
 
 void onShowMenu(CRules@ this)
@@ -53,5 +53,3 @@ void OnOffline(CRules@ this)
 	print("AUTH OFFLINE");
 	ShowMainMenu( null, null );
 }
-
-                                       

@@ -371,7 +371,7 @@ namespace UI
 		GUI::GetTextDimensions(text, dim);
 		Vec2f pad(4, 10);
 		Vec2f pos = rules.get_Vec2f("tooltip mousepos") - Vec2f(0, dim.y + 2*pad.y + 4) + pad;
-		
+
 		Vec2f tl = pos - pad;
 		Vec2f br = pos + dim + pad + Vec2f(7, 3);
 		Vec2f offset;
@@ -401,8 +401,8 @@ namespace UI
 					return proxy;
 				}
 			}
-		}			
-		
+		}
+
 		return null;
 	}
 
@@ -426,7 +426,7 @@ namespace UI
 		const bool keyAction1 = (controls.ActionKeyPressed(AK_ACTION1) && !controls.isKeyPressed(KEY_LBUTTON)) || controls.isKeyJustPressed(KEY_RETURN) || controls.isKeyPressed(KEY_SPACE);
 		const bool keyAction2 = (controls.ActionKeyPressed(AK_ACTION2) && !controls.isKeyPressed(KEY_RBUTTON));
 		const bool anyKeyPressed = keyLeft || keyRight || keyUp || keyDown || keyAction1 || keyAction2;
-		
+
 		//TODO: esc = a2 = back
 
 
@@ -438,7 +438,7 @@ namespace UI
 				// {
 				// 	print("caption: "+proxy.caption+
 				// 	 " selected: "+proxy.selected+
-				// 	 " tooltip: "+proxy.control.tooltip 
+				// 	 " tooltip: "+proxy.control.tooltip
 				// 	 );
 				// }
 		//HOVER
@@ -449,8 +449,8 @@ namespace UI
 				|| controls.lastKeyPressed == MOUSE_SCROLL_DOWN)) {
 				bool ok, cancel;
 				proxy.control.input( proxy.control, controls.lastKeyPressed, ok, cancel );
-			}	
-		} 
+			}
+		}
 		else {
 			rules.set_string("tooltip text", "");
 			// SetSelection(-2);
@@ -459,7 +459,7 @@ namespace UI
 		//DOWN
 		if (mouse1JustPressed) {
 			@data.dragProxy = proxy;
-			
+
 			//cancel edit
 			if (data.activeGroup !is null) {
 				Control@ editControl = data.activeGroup.editControl;
@@ -472,7 +472,7 @@ namespace UI
 					}
 				}
 			}
-			
+
 			//focus/unfocus
 			if (proxy !is null && proxy.control.selectable) {
 				Control@ control = proxy.control;
@@ -489,7 +489,7 @@ namespace UI
 		}
 
 		//HOLD
-		if ((mouse1 || mouse1JustReleased) && data.dragProxy !is null 
+		if ((mouse1 || mouse1JustReleased) && data.dragProxy !is null
 			&& data.dragProxy.control !is null && data.dragProxy.control.processMouse !is null) {
 			data.dragProxy.control.processMouse(data.dragProxy, MouseEvent::HOLD);
 		}
@@ -502,7 +502,7 @@ namespace UI
 		}
 
 		// continuous keys update
-		
+
 		if (anyKeyPressed && data.canControl){
 			data.holdKeyTime = time;
 		}
@@ -519,7 +519,7 @@ namespace UI
 		}
 
 		// control
-					
+
 		if (data.canControl && data.activeGroup !is null )
 		{
 			Group@ group = data.activeGroup;
@@ -544,7 +544,7 @@ namespace UI
 			else
 			{
 				bool listMode = data.rules.hasTag("list mode");
-				listMode = false; 
+				listMode = false;
 				if (keyLeft){
 					if (listMode && group.activeControl !is null && group.activeControl.move !is null) {
 						group.activeControl.move(group.activeControl, true);
@@ -664,19 +664,19 @@ namespace UI
 	void Fullscreen()
 	{
 		Data@ data = getData();
-		data.activeGroup.proxy.renderFunc = RenderGroupFullscreen;
+		@data.activeGroup.proxy.renderFunc = RenderGroupFullscreen;
 		data.activeGroup.proxy.Z = -1;
 		data.proxies.sortAsc();
 	}
 
 	void Background()
 	{
-		getData().activeGroup.proxy.renderFunc = RenderGroup;
+		@getData().activeGroup.proxy.renderFunc = RenderGroup;
 	}
 
 	void TabsGroup()
 	{
-		getData().activeGroup.proxy.renderFunc = RenderTabsGroup;
+		@getData().activeGroup.proxy.renderFunc = RenderTabsGroup;
 	}
 
 	void Grid( int columns, int rows, float paddingFactor = 0.37 )
