@@ -192,7 +192,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
 	}
 
 	// combat items, important
-	if (name == "boulder" || name == "drill" || name == "keg" ||
+	if (name == "boulder" || name == "drill" || name == "keg" || name == "saw" ||
 	    name == "mine" || name == "satchel" || name == "crate")
 	{
 		scale *= 0.41f;
