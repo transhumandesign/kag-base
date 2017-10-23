@@ -46,7 +46,7 @@ void onRender(CSprite@ this)
 		int left = 200.0f;
 		int margin = 4;
 		Vec2f dim;
-		string label = blob.get_string("text");
+		string label = getTranslatedString(blob.get_string("text"));
 		label += "\n";
 		GUI::SetFont("menu");
 		GUI::GetTextDimensions(label , dim);
