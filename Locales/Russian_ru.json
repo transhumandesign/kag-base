@@ -16,9 +16,9 @@
 //// SCOREBOARD ////
 //ScoreboardCommon.as
 	"Match time: {TIME}": "Время матча: {TIME}",
-	//"h ": "h ",
-	//"m ": "m ",
-	//"s ": "s ",
+	"h ": "ч ",
+	"m ": "м ",
+	"s ": "с ",
 
 //ScoreboardRender.as
 	"Players      :{PLAYERCOUNT}": "Всего игроков: {PLAYERCOUNT}",
@@ -77,7 +77,7 @@
 //Production.as
 	"\n\nrequires\n{MISSING}\nAdd materials in storage.":"\n\nтребуется:\n{MISSING}\nДобавьте материалы в хранилище.",
 	"Producing {ITEM}..."                               :"Производится {ITEM}...",
-	"{ITEM} available on respawn"                       :"{ITEM} Доступно при возрождении",
+	"{ITEM} available on respawn"                       :"{ITEM} - доступно при возрождении",
 	"{ITEM} limit reached."                             :"Лимит {ITEM} достигнут.",
 
 //FactoryAnim.as
@@ -107,7 +107,7 @@
 	"Tip: {TIP}": "Совет: {TIP}",
 
 //TimeToEnd.as
-	"Time is up!\n{TEAM} wins the game!":"Время вышло!\n{TEAM} выигрывает игру!",
+	"Time is up!\n{TEAM} wins the game!":"Время вышло!\n{TEAM} побеждает!",
 	"Time is up!\nIt's a tie!"          :"Время вышло!\nНичья!",
 	"Time left: {MIN}:{SEC}"            :"Времени осталось: {MIN}:{SEC}",
 
@@ -179,7 +179,7 @@
 //CTF_PickSpawn.as
 	"Respawning in: {SEC}" :"Возрождение через: {SEC}",
 	"approximatively never":"Примерно никогда",
-	"Pick spawn point"     :"Выберите точку возрождения",
+	"Pick spawn point"     :"Выбрать точку возрождения",
 	"Spawn at {ITEM}"      :"Возродиться на {ITEM}",
 	"respawn is contested" :"Точка возрождения занята",
 	"No spawns available!" :"Нет свободного места возрождения!",
@@ -205,7 +205,7 @@
 	"Lanterns help with mining in the dark, and lighten the mood.":"Фонари помогают вам копать в темноте.",
 	"A small boat with two rowing positions and a large space for cargo.":"Маленькая гребная лодка, вмещающая в себя двух человек. Много места для груза.",
 	//"A siege engine designed to break open walls and fortifications.":"Осадное орудие, используемое для разрушения дверей и других сооружений.",
-	"A mill saw turns tree logs into wood material.":"Распиливает брёвна,превращая их в деревянное сырьё.",
+	"A mill saw turns tree logs into wood material.":"Распиливает брёвна, превращая их в деревянное сырьё.",
 	//"A trading post. Requires a trader to reside inside.":"Торговый пост. Для работы требуется продавец.",
 	//"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies."
 	"Piercing bolts for ballista.":"Болты для баллисты.",
@@ -327,7 +327,7 @@
 	
 //TreeSync.as
 	"$Axe$$Tree$Chop tree    $RMB$": "$Axe$$Tree$Рубить дерево $RMB$",
-	"$Tree$Climb tree    $KEY_W$": "$Tree$Подняться по дереву $KEY_W$",
+	"$Tree$Climb tree    $KEY_W$": "$Tree$Карабкаться $KEY_W$",
 	
 //HelpfulDeathTips.cfg
 	"To hide these tips, and other in-game help, hit F1.": "Чтобы скрыть эти подсказки, и другие советы, нажмите F1.",
