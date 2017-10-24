@@ -81,6 +81,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	if (cmd == this.getCommandID("shop made item"))
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
+
+		if(!getNet().isServer()) return; /////////////////////// server only past here
+
 		u16 caller, item;
 		if (!params.saferead_netid(caller) || !params.saferead_netid(item))
 		{
