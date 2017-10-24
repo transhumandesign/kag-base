@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
 
 	if (!this.exists("text"))
 	{
-		this.set_string("text", getTranslatedString("The big brown fox jumped over the shaggy chocolate.")); // Should be ok even if the server and the client run it?
+		this.set_string("text", "The big brown fox jumped over the shaggy chocolate."); // Should be ok even if the server and the client run it?
 	}
 
 	this.getSprite().SetAnimation("written");
