@@ -16,9 +16,9 @@
 //// SCOREBOARD ////
 //ScoreboardCommon.as
 	"Match time: {TIME}": "Время матча: {TIME}",
-	//"h ": "h ",
-	//"m ": "m ",
-	//"s ": "s ",
+	"h ": "ч ",
+	"m ": "м ",
+	"s ": "с ",
 
 //ScoreboardRender.as
 	"Players      :{PLAYERCOUNT}": "Всего игроков: {PLAYERCOUNT}",
@@ -77,7 +77,7 @@
 //Production.as
 	"\n\nrequires\n{MISSING}\nAdd materials in storage.":"\n\nтребуется:\n{MISSING}\nДобавьте материалы в хранилище.",
 	"Producing {ITEM}..."                               :"Производится {ITEM}...",
-	"{ITEM} available on respawn"                       :"{ITEM} Доступно при возрождении",
+	"{ITEM} available on respawn"                       :"{ITEM} - доступно при возрождении",
 	"{ITEM} limit reached."                             :"Лимит {ITEM} достигнут.",
 
 //FactoryAnim.as
@@ -107,7 +107,7 @@
 	"Tip: {TIP}": "Совет: {TIP}",
 
 //TimeToEnd.as
-	"Time is up!\n{TEAM} wins the game!":"Время вышло!\n{TEAM} выигрывает игру!",
+	"Time is up!\n{TEAM} wins the game!":"Время вышло!\n{TEAM} побеждает!",
 	"Time is up!\nIt's a tie!"          :"Время вышло!\nНичья!",
 	"Time left: {MIN}:{SEC}"            :"Времени осталось: {MIN}:{SEC}",
 
@@ -123,13 +123,13 @@
 	"Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$":"Держите $KEY_D$$KEY_W$, чтобы\n\nпробежать по стене.",
 	"Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$":"Рыцари могут ломать деревянные блоки или двери и копать землю. Наведясь на стену, сломайте её с помощью$LMB$",
 	"Automatically pickup things used by your class.":"Классовые предметы подбираются автоматически.",
-	"Press $KEY_SPACE$ to light bomb\n\nAim with mouse.\n\nAgain $KEY_SPACE$ throw it.":"Нажмите на $KEY_SPACE$,\n\nчтобы поджечь бомбу\n\nНаведясь мышкой на цель, ещё раз нажмите на $KEY_SPACE$, чтобы бросить её.",
+	"Press $KEY_SPACE$ to light bomb\n\nAim with mouse.\n\nAgain $KEY_SPACE$ throw it.":"Нажмите на $KEY_SPACE$,\n\nчтобы поджечь бомбу.\n\nНаведясь мышкой на цель, ещё раз нажмите на $KEY_SPACE$, чтобы бросить её.",
 	"Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.":"Парите с помощью\n\nщита$Tutorial_Glide$\n\n\nПрыгните в каньон, держа\n\nкурсор выше себя и$RMB$.",
 
 //TutorialCTF01.as
 	//"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":"Захват флага - это простой режим игры, подходящий для новичков. Цель режима проста - украсть флаг у противника и вернуть его на свою базу.",
 	//"Killing enemies, building structures and generally being useful for your team will give you coins.\n\nCoins allow you to purchase ammo, weapons & tools in workshops. First thing, as an example on how it will look when you kill an enemy:\n\nKill those chicken and get their coins!\n\n$chicken$":
-	//"За убийства врагов и постройку сооружений вы получаете монеты.\n\nМонеты позволяют вам покупать боеприпасы, оружие и инструменты в мастерских. Для начала покажем наглядно, как это происходит.\n\nУбейте этих куриц и заберите их деньги!\n$chicken$",
+	//"За убийства врагов и постройку сооружений вы получаете монеты.\n\nМонеты позволяют вам покупать боеприпасы, оружие и инструменты в мастерских. Для начала покажем наглядно, как это происходит.\n\nУбейте этих куриц и отберите их деньги!\n$chicken$",
 	//"Go to the Tent and switch class to BUILDER.\n\nPress $KEY_E$ while standing\n\non the Tent.\n\n\n\n$tent$\n\n\n":"Идите к палатке и смените свой класс на СТРОИТЕЛЯ.\n\nСтоя около палатки,\n\nнажмите $KEY_E$.\n\n$tent$\n\n\n",
 	//"If you've switched to builder in the Tent now you can build workshops for your team.\n\n\nHold $KEY_F$ and select $building$":"Будучи строителем, вы можете строить мастерские для своей команды.\n\n\nДержите $KEY_F$ и выберите $building$",
 	//"If you don't have wood:\n$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.\n\n\n$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":
@@ -138,7 +138,7 @@
 
 //Challenge_PrincessStart
 	//"   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.":
-	//"	Высоко на вершине скалистого утёса, охраняемого армией свирепых воинов, стоит крепость великого тёмного лорда Сэджвика. Глубого в тёмной пещере замка Сэджвик злорадствует над своим прекрасными пленником, принцессой Гети.\n\n   Вы королевский рыцарь. Один, только со своими мечом и щитом, ты должен одолеть Сэджвика и освободить прекрасную Гети.\n\n   Оставь все свои страхи позади. Собери всю свою волю в кулак, примите смерть как один из исходов, оставайся сильным. Так поступают настоящие рыцари.",
+	//"	Высоко на вершине скалистого утёса, охраняемого армией свирепых воинов, стоит крепость великого тёмного лорда Сэджвика. Глубого в тёмной пещере замка Сэджвик злорадствует над своим прекрасными пленником, принцессой Гети.\n\n   Вы королевский рыцарь. Один, только со своими мечом и щитом, ты должен одолеть Сэджвика и освободить прекрасную Гети.\n\n   Оставь все свои страхи позади. Собери всю свою волю в кулак, прими смерть как один из исходов, оставайся сильным. Так поступают настоящие рыцари.",
 //Sandbox.as 
 	"Welcome to King Arthur's Gold":"Добро пожаловать в King Arthur's Gold",
 	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"Это режим песочницы.\nЗдесь вы можете расслабиться и просто наслаждаться игрой.\n\nНажмите [ESC], чтобы посмотреть управление.\nНаслаждайтесь!",
@@ -178,11 +178,11 @@
 //Sandbox_Interface.as
 //CTF_PickSpawn.as
 	"Respawning in: {SEC}" :"Возрождение через: {SEC}",
-	"approximatively never":"Примерно никогда",
-	"Pick spawn point"     :"Выберите точку возрождения",
+	"approximatively never":"примерно никогда",
+	"Pick spawn point"     :"выберите точку возрождения",
 	"Spawn at {ITEM}"      :"Возродиться на {ITEM}",
 	"respawn is contested" :"Точка возрождения занята",
-	"No spawns available!" :"Нет свободного места возрождения!",
+	"No spawns available!" :"Нет доступной точки возрождения!",
 
 //WAR_Interface.as
 	"DEFEND THE HALL!"                           :"ЗАЩИЩАЙТЕ БАЗУ!",
@@ -198,23 +198,23 @@
 	"Bombs for Knight only.":"Бомбы для рыцаря.",
 	"Arrows for Archer and mounted bow.":"Стрелы для лучника и стационарного арбалета.",
 	"Highly explosive powder keg for Knight only.":"Огромная пороховая бочка для рыцаря.",
-	"A stone throwing, ridable siege engine, requiring a crew of two.":"Осадная орудие, используемое для метания камней.",
-	"A bolt-firing pinpoint accurate siege engine, requiring a crew of two. Allows respawn and class change.":"Осадное орудие, стреляющее болтами. Для управления и стрельбы требуются 2 человека. Позволяет менять класс и возрождаться около себя.",
+	"A stone throwing, ridable siege engine, requiring a crew of two.":"Осадное орудие, используемое для метания камней.",
+	"A bolt-firing pinpoint accurate siege engine, requiring a crew of two. Allows respawn and class change.":"Высокоточное осадное орудие, стреляющее болтами. Для управления и стрельбы требуются 2 человека. Позволяет менять класс и возрождаться около себя.",
 	"Raw stone material.":"Каменное сырьё.",
 	"Raw wood material.":"Деревянное сырьё.",
 	"Lanterns help with mining in the dark, and lighten the mood.":"Фонари помогают вам копать в темноте.",
 	"A small boat with two rowing positions and a large space for cargo.":"Маленькая гребная лодка, вмещающая в себя двух человек. Много места для груза.",
 	//"A siege engine designed to break open walls and fortifications.":"Осадное орудие, используемое для разрушения дверей и других сооружений.",
-	"A mill saw turns tree logs into wood material.":"Распилвает брёвна, получая из них деревянное сырьё.",
+	"A mill saw turns tree logs into wood material.":"Распиливает брёвна, превращая их в деревянное сырьё.",
 	//"A trading post. Requires a trader to reside inside.":"Торговый пост. Для работы требуется продавец.",
 	//"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies."
 	"Piercing bolts for ballista.":"Болты для баллисты.",
 	"A simple wooden ladder for climbing over defenses.":"Простая деревянная лестница. С помощью неё можно перебираться через вражеские сооружения.",
 	"A stone boulder useful for crushing enemies.":"Валун, которым можно раздавить врага.",
-	"An empty wooden crate for storing and transporting inventory.":"Пустой деревянный ящик, в котором можно хранить и транспортировать вещи.",
+	"An empty wooden crate for storing and transporting inventory.":"Пустой деревянный ящик, в котором можно хранить и перемещать вещи.",
 	"An explosive mine. Triggered by contact with an enemy.":"Взрывающаяся мина. Срабатывает при контакте с врагом.",
 	//"Fire satchel for Knight only.":"Подрывмешок только для Рыцаря.",
-	"A health regenerating heart.":"Восстанавливающие здоровье сердца.",
+	"A health regenerating heart.":"Восстанавливающее здоровье сердце.",
 	//"A sack for storing more inventory on your back.":"",
 	"A seedling of an oak tree ready for planting.":"Саженец дуба, готовый к посадке.",
 	"A seedling of a pine tree ready for planting.":"Cаженец сосны, готовый к посадке.",
@@ -228,19 +228,19 @@
 	"A fast rowing boat used for quickly getting across water.":"Гребная лодка. Позволяет быстро передвигаться по воде.",
 	"A tunnel for quick transportation.":"Тоннель для быстрого перемещения.",
 	"Bucket for storing water. Useful for fighting fires.":"Ведро для хранения воды. Пригодится в борьбе с пожарами.",
-	"A slow armoured boat which acts also as a water base for respawn and class change.":"Медленная бронированная лодка, которая является также водной базой и точками возрождения и смены класса.",
+	"A slow armoured boat which acts also as a water base for respawn and class change.":"Медленная бронированная лодка, которая является водной базой и точкой для возрождения и смены класса.",
 	"A generic factory. Requires Research Room, technology upgrade and big enough population to produce items.":"Фабрика. Для создания предметов требуются комната для исследований, соответствующая технология и достаточная популяция.",
 	//"Kitchen produces food which heal wounds.":"Кухня производит продукты питания, которые лечат раны.",
 	//"A plant nursery with grain, oak and pine tree seeds.":"",
 	//"Barracks allow changing class to Archer or Knight.":"Барраки позволяют изменить класс на лучника или рыцаря.",
-	//"A storage than can hold materials and items and share them with other storages.":"Хранилище которое может хранить материалы и предметы, а также делит их с другими хранилищами.",
+	//"A storage than can hold materials and items and share them with other storages.":"Хранилище,которое может хранить материалы и предметы, а также делить их с другими хранилищами.",
 	"A mining drill. Increases speed of digging and gathering resources, but gains only half the possible resources.":"Шахтёрский бур. Быстрее копает, но выдаёт только половину ресурсов.",
 	"Bombs for Knights & arrows for Archers.\nAutomatically distributed on respawn.":"Бомбы для рыцарей и стрелы для лучников.\nАвтоматически выдаются при возрождении.",
 	"Items used for blowing stuff up.":"Взрывчатка.",
 	"Items used for lighting things on fire.":"Поджигающие предметы.",
 	//"When team is in possession of stone construction technology it allows builders to make stone walls, doors, traps and spikes.":""
 	//"Dorm increases population count and allows spawning and healing inside. Requires a migrant.":""
-	"Research room.":"Комната для исследований",
+	"Research room.":"Комната для исследований.",
 	"Water arrows for Archer. Can extinguish fires and stun enemies.":"Водные стрелы для лучника. Могут тушить пожары и оглушать врагов.",
 	"Bomb arrows for Archer.":"Стрелы с бомбами для лучника.",
 	"Water bomb for Knight. Can extinguish fires and stun enemies.":"Водная бомба для рыцаря. Может тушить пожары и оглушать врагов.",
@@ -252,7 +252,7 @@
 	"Naval workshop for building boats":"Корабельная мастерская для строительства лодок и кораблей.",
 	"Place of merriment and healing":"Место для отдыха и лечения.",
 	"A Cache for storing your materials, items and armaments.":"Склад для хранения ваших материалов, предметов и боеприпасов.",
-	//"Fire satchel for Knight only.":"",
+	//"Fire satchel for Knight only.":"Подрывмешок для Рыцаря.",
 
 //// HELPS ////
 //DrawHelp.as
@@ -327,10 +327,10 @@
 	
 //TreeSync.as
 	"$Axe$$Tree$Chop tree    $RMB$": "$Axe$$Tree$Рубить дерево $RMB$",
-	"$Tree$Climb tree    $KEY_W$": "$Tree$Подняться по дереву $KEY_W$",
+	"$Tree$Climb tree    $KEY_W$": "$Tree$Карабкаться $KEY_W$",
 	
 //HelpfulDeathTips.cfg
-	"To hide these tips, and other in-game help, hit F1.": "Чтобы скрыть эти подсказки, и другие советы, нажмите F1.",
+	"To hide these tips, and other in-game help, hit F1.": "Чтобы скрыть эти подсказки и другие советы, нажмите F1.",
 	"Enemies can use your tunnels so protect them well!": "Противники могут использовать ваши туннели, так что защищайте их!",
 	"Spikes will stun you for a short time.": "Шипы оглушают вас на короткий промежуток времени.",
 	"Saws will kill you instantly": "Пила убивает вас мгновенно",
@@ -345,22 +345,22 @@
 	"Bomb arrows can be used to collapse towers quickly.": "Взрывные стрелы могут быть использованы для быстрого уничтожения башен.",
 	"If you see materials on the ground, take them to a builder or put them in your storage!": "Если вы видите материалы на земле, подберите их и отнесите своему строителю или положите их на склад!",
 	"Water bombs and water arrows stun your enemies for an easy kill.": "Водные бомбы и водные стрелы оглушают врагов для лёгкого убийства.",
-	"Pay attention to your minimap for enemy tunnelers.": "Внимательно следите за картой, чтобы не пропустить вражеских тоннельщиков.",
+	"Pay attention to your minimap for enemy tunnelers.": "Не забывайте за вражескими тоннелями на миникарте.",
 	"Don't let siege weapons fall into the wrong hands!": "Не дайте осадным орудиям попасть не в те руки!",
-	"Immobilise siege weapons to prevent them from accidentally falling off a cliff!": "Иммобилизируйте осадные орудия для того, чтобы они не падали с возвышенностей!",
-	"Press [SPACE] to light and throw a bomb, [C] to pickup.": "Нажми [ПРОБЕЛ] для того, чтобы зажечь бомбу и ещё раз чтобы кинуть её. Нажмите [C], чтобы поднять её.",
+	"Immobilise siege weapons to prevent them from accidentally falling off a cliff!": "Снимайте колёса с осадных орудий, чтобы они не падали с возвышенностей!",
+	"Press [SPACE] to light and throw a bomb, [C] to pickup.": "Нажми [ПРОБЕЛ] для того, чтобы зажечь бомбу, и ещё раз, чтобы кинуть её. Нажмите [C], чтобы поднять её.",
 	"Keep your ballistae safe - if an enemy takes it, they can use it against you!": "Защищайте свою баллисту. Если враг её захватит, то он сможет использовать её против вас!",
 	"Drills can be cooled down by jumping into water or running around.": "Буры охлаждаются в воде или во время бега.",
 	"Enemies can use your workshops. Don't let them buy explosives in your base!": "Враги могут использовать ваши мастерские. Не позволяйте им покупать взрывчатку прямо на своей базе!",
 	"Teamwork is the key to success!": "Командная работа - это ключ к успеху!",
 	"Try to help your team mates if the situation gets tight.": "Старайтесь помогать своим союзникам, когда ситуация выходит из-под контроля.",
 	"As a knight, you can put your shield up in the air to glide.": "Будучи рыцарем, вы можете поднять свой щит над головой, чтобы парить в воздухе.",
-	"Wood blocks are cheaper than stone blocks, but are also weaker and can catch fire.": "Деревянные блоки дешевле чем каменные, но также менее прочные, и они могут быть подожжены.",
+	"Wood blocks are cheaper than stone blocks, but are also weaker and can catch fire.": "Деревянные блоки дешевле, чем каменные, но менее прочны и могут быть подожжены.",
 	"1 bomb can deal up to 3 hearts of damage.": "1 бомба может нанести до трёх сердец урона.",
 	"Drills are a fast way to dig, but only yield 50%. Don't use them on precious gold or during build time!": "Буры очень быстро копают, но они извлекают лишь 50% ресурсов. Не используйте их для добычи золота или во время строительной фазы.",
 	"Good players can play any class when needed.": "Хорошие игроки могут играть любым классом в зависимости от ситуации.",
 	"Make sure you're helping your team advance; don't just hide out in the back!": "Помогайте своей команде. Не отсиживайтесь на базе!",
-	"Ride a shark on land and press up to pick him up.": "Оседлав акулу на суше, нажмите вверх, чтобы взять её.",
+	"Ride a shark on land and press up to pick him up.": "Оседлайте акулу на суше и нажмите вверх, чтобы взять ее.",
 	"A red name indicates a server admin - ask them for help if you need it.": "Имя администратора сервера имеет красный цвет - попросите его о помощи, если она понадобится.",
 	"A bush plus a mine equals happy fun time.": "Куст и мина обеспечат вам весёлое настроение.",
 	"Enemies can walk through your doors if open them. Don't let them in!":"Противники могут проходить через ваши открытые двери. Будьте осторожны и не открывайте двери прямо перед противником!",
@@ -372,7 +372,7 @@
 	"Try bomb jumping: drop a bomb on the ground, then jump and shield downwards as it explodes!": "Попробуйте сделать \"взрывной прыжок\": киньте бомбу на землю и, когда она почти взорвётся, подпрыгните над ней и опустите щит вниз!",
 	"If your enemy throws a bomb too early, you can pick it up with [C] and throw it back!": "Если противник кинул бомбу слишком рано, вы можете перехватить её с помощью клавиши [C] и кинуть её обратно!",
 	"You risk walking into mines or traps in dark tunnels - be careful or take a lantern!": "Вы рискуете наткнуться на мину или ловушку в тёмных туннелях, будьте осторожны или возьмите с собой лампу!",
-	"Retracting spikes deal less damage and have a delay, but are less likely to hurt your own team.": "Шипы на камне наносят меньше урона и имеют задержку, зато они скорее всего не поранят ваших союзников.",
+	"Retracting spikes deal less damage and have a delay, but are less likely to hurt your own team.": "Шипы на камне наносят меньше урона и имеют задержку, зато они, скорее всего, не поранят ваших союзников.",
 	"Supporting solid walls with backwalling is important but often overlooked.": "Поддерживайте стены из блоков задними стенами. Зачастую это упускается из виду.",
 	"Collect hearts, dead fish and grain in your inventory so you can heal later on.": "Подбирайте сердца, мёртвых рыб и зёрна, чтобы вылечить себя или своего союзника в будущем.",
 	"Team mates will not be happy if you light a lantern in their secret tunnel.": "Ваши союзники не особо обрадуются, если вы зажжёте фонарь в их секретном подкопе/тоннеле.",
@@ -381,10 +381,10 @@
 	"Make sure you're spending your coins after you've gained a decent amount!": "Не забывайте тратить полученные монеты!",
 	"No class is bad when the player is good.": "Для хорошего игрока не существует плохого класса.",
 	"Prioritize building flag protection and forward towers over traps during build time.": "Во время строительной фазы первым делом стройте оборону для флага и фронтовые башни.",
-	"Going knight and heading forwards is often more helpful to your team than endlessly fortifying your base.": "Давление на противника армией рыцарей зачастаю полезнее, чем бесконечное укрепление вашей базы.",
+	"Going knight and heading forwards is often more helpful to your team than endlessly fortifying your base.": "Стать рыцарем и пойти в атаку зачастую полезнее, чем бесконечно укреплять свою базу.",
 	"The best defense is a good offense!": "Лучшая защита - это нападение!",
-	"No matter how majestic your tower is, with no offensive units you will lose.": "Не важно как хороша ваша башня. Без атакующих юнитов вы проиграете.",
-	"Mines are most effective near the enemy base - not your own!": "Мины гораздо эффективнее на вражеской базе - не на вашей!",
+	"No matter how majestic your tower is, with no offensive units you will lose.": "Не важно, как хороша ваша башня. Без атакующих солдат вы проиграете.",
+	"Mines are most effective near the enemy base - not your own!": "Мины гораздо эффективнее около вражеской базы - не на вашей!",
 	"As archer, you can put a mine in your inventory, grapple to the opponent's base, and place it there.": "Играя за лучника, вы можете взять мину и с помощью крюка-кошки добраться до вражеской базы и установить её там.",
 	"If you put a mine in your inventory, it can pop out when you die, potentially killing enemies and destroying structures.": "Если вы умираете, мины выпадают из вашего инвентаря, тем самым убивая врага или взрывая вражеские сооружения.",
 	"Hearts, dead fish, grain, burgers and steaks all heal you.": "Сердца, мёртвая рыба, зерно, бургеры и стейки лечат вас.",
@@ -393,7 +393,7 @@
 	"Kegs can hurt both your team and the enemy - use them wisely.": "Бочки также наносят урон членам вашей команды. Используйте их с умом.",
 	"You can climb arrows that are stuck in blocks to climb upwards.": "Вы можете подниматься по стрелам, которые застряли в стене.",
 	"Archers can make arrow ladders by shooting arrows at tower walls.": "Лучники могут создать лестницу из стрел, стреляя ими в блоки.",
-	"Hold chickens to glide further.": "Возьмите курицу с собой, чтобы увеличить длительность полёта.",
+	"Hold chickens to glide further.": "Держите курицу для увеличения длительности полёта.",
 	"There is a red barrier during build phase which will disappear on match start": "Во время строительной фазы присутствует красный барьер, который исчезает в начале матча.",
 	"Don't be afraid to let people know you're new - they may lend a helping hand.": "Не бойтесь говорить игрокам, что вы новенький - они могут протянуть вам руку помощи!",
 	"Try to get video evidence of people griefing or hacking first before yelling for an admin.": "Постарайтесь записать видео-доказательство серьёзного нарушения правил игры, перед тем как сообщать об этом администратору.",
@@ -412,16 +412,16 @@
 	"Your main base should be finished by the end of the build period, builders should focus on forward defenses.": "Ваша главная база должна быть закончена к концу строительного периода, во время битвы строители должны сконцентрироваться на передовой обороне.",
 	"When knights shield upward, other players can stand on them to get past obstacles.": "Когда рыцарь ставит щит вверх, другие игроки могут встать на него преодолев препятствия.",
 	"Not all arrows need to be triple shots! Single shots are more consistent.": "Не всегда стоит использовать тройной выстрел! Одиночные выстрелы более стойкие и точные.",
-	"You can replace wood with stone without breaking the block. This is a good way to stop fires before they spread.": "Деревянные блоки можно заменять на каменные, при этом не ломая их. Это хороший способ остановить огонь до его распростронения.",
+	"You can replace wood with stone without breaking the block. This is a good way to stop fires before they spread.": "Деревянные блоки можно заменять на каменные, при этом не ломая их. Это хороший способ остановить огонь до его распространения.",
 	"More than one game has been lost because a flag-runner couldn't get back into their base - make ways in and out!": "Некоторые матчи проигрываются из-за того, что игрок с флагом не может вернуться на базу. Всегда стройте не только выход, но и вход!",
-	"Fish, chickens, and even bushes all have uses. Don't randomly attack them.": "Рыба, курица и даже куст имеют предназначение, не стоит просто так их уничтожать.",
-	"Quarters (food shop) in a forward base helps keep pressure on the enemy.": "Магазин с едой на передовой линии обороны, помогает держать давление на врага.",
-	"If you want a shop built, build it yourself! If a builder hasn't built it already, they probably won't.": "Если вам нужен магазин, то постройте его самостоятельно! Если строитель его ещё не построил, возможно он его не построит.",
+	"Fish, chickens, and even bushes all have uses. Don't randomly attack them.": "Рыбы, курица и даже кусты могут быть полезны, не стоит просто так их уничтожать.",
+	"Quarters (food shop) in a forward base helps keep pressure on the enemy.": "Магазин с едой на передовой линии обороны помогает держать давление на врага.",
+	"If you want a shop built, build it yourself! If a builder hasn't built it already, they probably won't.": "Если вам нужен магазин, то постройте его самостоятельно! Если строитель его ещё не построил, то, скорее всего, он его так и не построит.",
 	"Downward platforms at the top of a tower will help prevent enemies from climbing over.": "Платформы, направленные вниз, помогут вам остановить врагов, пытающихся забраться на башню.",
 	"Stomping enemies is great tactic, but be careful - jump from too high and you'll die if you miss.": "Прыгать на врага с высоты - хорошая тактика, но будьте осторожны - вы разобьётесь, если не попадёте в цель.",
 	"Buy eggs to replenish your stock of chickens.": "Покупайте яйца для пополнения вашего запаса куриц.",
 	"Knights can use their swords to destroy wooden blocks and doors, but not stone": "Рыцари могут использовать меч для уничтожения деревянных блоков и дверей, но не каменных.",
-	"Doors and siege weapons are vulnerable to explosives.": "Двери и осадные орудия сильно уязвимы к взрывам.",
+	"Doors and siege weapons are vulnerable to explosives.": "Двери и осадные орудия уязвимы к взрывам.",
 	"Bison can be tamed with burgers.": "Бизонов можно приручать с помощью бургеров.",
 	"Resources can be resupplied by changing classes in workshops, not just at the tent!": "Ресурсы могут быть пополнены в классовых мастерских, не только в палатке!",
 
