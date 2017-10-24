@@ -58,7 +58,7 @@
 	"Inverter"      :"Инвертер",
 	"Oscillator"    :"Осциллятор",
 	"Transistor"    :"Транзистор",
-	"Toggle"        :"Переключатль",
+	"Toggle"        :"Переключатель",
 	"Randomizer"    :"Рандомайзер",
 	"Lever"         :"Рычаг",
 	"Button"        :"Кнопка",
@@ -135,8 +135,27 @@
 	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"Совмещайте крюк-кошку и бег по стенам, чтобы пройти дальше.\n\nЗАЖМИТЕ$RMB$ и ДЕРЖИТЕ\n\nпрыжок и бег $KEY_D$$KEY_W$.",
 	"HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!":"ДЕРЖИТЕ $LMB$, пока не\n\nпоявится искра$Tutorial_Archer2$\n\n\nЗатем НАЖМИТЕ $LMB$ ещё раз для\nТРОЙНОГО ВЫСТРЕЛА!\nОн хорошо подходит для ближней дистанции!",
 	"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!":"$Tutorial_Archer2$\n\n\nПотренируйтесь, а затем зарядите свой выстрел перед тем, как открыть дверь, и атауйте рыцаря ТРОЙНЫМ ВЫСТРЕЛОМ!",
-	"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE фhook before stopping.":"Используйте\nсвой крюк-кошку$Tutorial_Grapple$.\n\n\nЗАЖМИТЕ$RMB$, наведясь на\n\nпотолок в ту точку, где\n\nустановлен фонарь $lantern$.\n\nЗАЖМИТЕ $KEY_D$и ОТПУСТИТЕ\n\n$RMB$ перед остановкой.",
+	"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.":"Используйте\nсвой крюк-кошку$Tutorial_Grapple$.\n\n\nЗАЖМИТЕ$RMB$, наведясь на\n\nпотолок в ту точку, где\n\nустановлен фонарь $lantern$.\n\nЗАЖМИТЕ $KEY_D$и ОТПУСТИТЕ\n\n$RMB$ перед остановкой.",
 
+//Tutorial03.as
+	"$lantern$\nPickup the lantern $KEY_C$":"$lantern$\nПоднимите лампу. $KEY_C$",
+	"Drop is the same as pickup $KEY_C$":"Вещи поднимаются и бросаются одной кнопкой. $KEY_C$",
+	"Activate/Deactivate things\n   $KEY_SPACE$\n\n\n$lantern$ On/Off":"Активация/деактивация предметов:\n   $KEY_SPACE$\n\n\n$lantern$ On/Off",
+	"By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$":"Кстати: вы можете увидеть мини-карту на верхней части экрана. Используйте \n\n$KEY_M$ для включения/отключения миникарты.",
+	"Switch class to BUILDER  $BUILDER$\n\nGo to Hall. HOLD $KEY_E$ and mouse over$CLASSCHANGE$":"Смените класс на\n\n СТРОИТЕЛЯ.  $BUILDER$\n\nИдите к базе. ДЕРЖИТЕ $KEY_E$\n\n и наведите мышь на$CLASSCHANGE$",
+	"The passage is blocked here. As builder, dig your way through.\n\nPoint mouse at block\n\nHOLD $RMB$":"Проход заблокирован. Прокопайте свой путь наружу!.\n\nНаведите мышь на блок и \n\nДЕРЖИТЕ $RMB$",
+	"$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.":"$Tree$\n\nСрубите дерево - \n\nДЕРЖИТЕ $RMB$ и наведите мышь на основании дерева.",
+	"$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":"$log$\n\nРазрубите дерево\nв $mat_wood$\n\nНаведите мышь на бревно и\n\nДЕРЖИТЕ $RMB$.",
+	"$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)":"$ladder$\n\nВыберите лестницу для строительства.\n\nДЕРЖИТЕ $KEY_F$ (кнопка инвентаря)\n\nНаведите курсор на лестницу и отпустите кнопку инвентаря.\n\n(требуется$mat_wood$для этого)",
+	"Place by pointing with mouse and pressing $LMB$":"Поставьте лестницу, наведя\n\n мышь и нажав$LMB$",
+	"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.":"$Pick$\n\nПостройте мост.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nПопробуйте разные блоки - посмотрите, что они делают.",
+	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"Учтите, что при горизонтальном строительстве вы достигнете лимит. Вам придется построить опоры снизу для того, чтобы продолжть строительство.",
+	"$Pick$  $BlockStone$\n\nMine some stone $RMB$":"$Pick$  $BlockStone$\n\nВыкопайте немного камня.\n\n $RMB$",
+	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\nЗарядите катапульту камнем.\n\n ЗАЖМИТЕ $KEY_E$, НАЖМИТЕ\n\n$mat_stone$",
+	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$\n\n\nВстаньте на позицию стрелка\n(там, где находится$down_arrow$ на рисунке)\n\nНажмите $KEY_S$, чтобы залезть внутрь.\n\n\nДЕРЖИТЕ $LMB$ для увеличения силы выстрела.\n\n\n(Водитель - в центре;\nВерхушка - платформа с боеприпасом.)",
+	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"И напоследок.\n\nНе бойтесь просить о помощи в мультиплеере - нажмите \n\n$KEY_ENTER$, чтобы открыть чат.\n\n\nИспользуйте смайлы!\n\nДЕРЖИТЕ $KEY_Q$",
+	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"Здесь заканчивается базовое обучение. Вы явно будете учится новому, играя!\n\nА теперь попробуйте другие одиночные миссии или присоеденитесь к серверу!",
+	
 //TutorialCTF01.as
 	//"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":"Захват флага - это простой режим игры, подходящий для новичков. Цель режима проста - украсть флаг у противника и донести его до своего.",
 	//"Killing enemies, building structures and generally being useful for your team will give you coins.\n\nCoins allow you to purchase ammo, weapons & tools in workshops. First thing, as an example on how it will look when you kill an enemy:\n\nKill those chicken and get their coins!\n\n$chicken$":
