@@ -56,7 +56,7 @@ void onTick(CMap@ this)
 						{
 							rules.set_bool("played fanfare", true); //
 							DefaultWin(rules);
-							rules.SetGlobalMessage(getTranslatedString("You saved the princess!"));
+							rules.SetGlobalMessage("You saved the princess!");
 						}
 
 						ConfigFile stats;
@@ -74,7 +74,7 @@ void onTick(CMap@ this)
 		{
 			rules.SetTeamWon(1);
 			rules.SetCurrentState(GAME_OVER);
-			rules.SetGlobalMessage(getTranslatedString("The princess died!"));
+			rules.SetGlobalMessage("The princess died!");
 		}
 
 		if (rules.isGameOver())
