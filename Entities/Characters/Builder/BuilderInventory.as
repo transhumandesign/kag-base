@@ -100,8 +100,8 @@ void MakeBlocksMenu(CInventory@ this, const Vec2f &in INVENTORY_CE)
 		{
 			BuildBlock@ b = blocks[PAGE][i];
 			if(b is null) continue;
-
-			CGridButton@ button = menu.AddButton(b.icon, "\n" + b.description, Builder::make_block + i);
+			string block_desc = getTranslatedString(b.description);
+			CGridButton@ button = menu.AddButton(b.icon, "\n" + block_desc, Builder::make_block + i);
 			if(button is null) continue;
 
 			button.selectOneOnClick = true;
@@ -109,11 +109,11 @@ void MakeBlocksMenu(CInventory@ this, const Vec2f &in INVENTORY_CE)
 			CBitStream missing;
 			if(hasRequirements(this, b.reqs, missing, not b.buildOnGround))
 			{
-				button.hoverText = b.description + "\n" + getButtonRequirementsText(b.reqs, false);
+				button.hoverText = block_desc + "\n" + getButtonRequirementsText(b.reqs, false);
 			}
 			else
 			{
-				button.hoverText = b.description + "\n" + getButtonRequirementsText(missing, true);
+				button.hoverText = block_desc + "\n" + getButtonRequirementsText(missing, true);
 				button.SetEnabled(false);
 			}
 

@@ -370,7 +370,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		CBitStream params;
 		params.write_u16(caller.getNetworkID());
 
-		CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(12, 7), this, SpawnCmd::buildMenu, "Change class", params);
+		CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(12, 7), this, SpawnCmd::buildMenu, getTranslatedString("Change class"), params);
 
 		if(caller.getName() == "builder")
 		{
@@ -380,11 +380,11 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			if (goldCount >= MIGRANT_COST)
 			{
 				//buy migrant button
-				CButton@ button = caller.CreateGenericButton("$migrant$", buttonpos, this, this.getCommandID(buymigrantcmd), "Buy a worker for " + MIGRANT_COST + " Gold" , params);
+				CButton@ button = caller.CreateGenericButton("$migrant$", buttonpos, this, this.getCommandID(buymigrantcmd), getTranslatedString("Buy a worker for {MIGRANT_COST} Gold").replace("{MIGRANT_COST}", "" + MIGRANT_COST), params);
 			}
 			else
 			{
-				CButton@ button = caller.CreateGenericButton("$migrant$", buttonpos, this, 0, "Buy worker: Requires " + MIGRANT_COST + " Gold");
+				CButton@ button = caller.CreateGenericButton("$migrant$", buttonpos, this, 0, getTranslatedString("Buy worker: Requires {MIGRANT_COST} Gold").replace("{MIGRANT_COST}", "" + MIGRANT_COST));
 				if (button !is null)
 				{
 					button.SetEnabled(false);

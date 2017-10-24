@@ -355,7 +355,7 @@ void addShopItemsToMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
 					//if (takeReqsFromStorage)
 					//	desc += "\n\n(Using resources from team storage)";
 
-					SetItemDescription_Tech(button, caller, s_item.requirements, desc, takeReqsFromStorage ? storageReq.getInventory() : this.getInventory());
+					SetItemDescription_Tech(button, caller, s_item.requirements, getTranslatedString(desc), takeReqsFromStorage ? storageReq.getInventory() : this.getInventory());
 				}
 
 				//if (s_item.producing) {

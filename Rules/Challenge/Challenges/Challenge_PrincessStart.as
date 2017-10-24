@@ -47,7 +47,7 @@ void onRender(CMap@ this)
 		Vec2f lr(middle + 170.0f, bottom + 400.0f);
 
 		GUI::SetFont("menu");
-		GUI::DrawText(INTRO_TEXT,
+		GUI::DrawText(getTranslatedString(INTRO_TEXT),
 		              ul, lr,
 		              SColor(alpha, 255, 255, 255),
 		              false, false, false);
