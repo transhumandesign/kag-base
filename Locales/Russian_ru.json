@@ -113,18 +113,29 @@
 
 //// SOLO GAME MODES ////
 //Tutorial01.as
-	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"Ходьба и прыжок $KEY_A$ $KEY_W$ $KEY_D$",
+	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"Ходьба и прыжок\n\n$KEY_A$$KEY_W$$KEY_D$",
 	"$sign$Go to the right and\n\nbe sure to read these signs.":"$sign$Идите вправо\n\nи не пропускайте табличек.",
-	"$Jab$Practice the sword JAB\n\non the dummy.\n\nAim with mouse and tap $LMB$":"$Jab$Потренируйте колющий\n\nудар на манекене.\n\nНажмите $LMB$, наведясь\n\nна него мышкой.",
-	"Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!":"Теперь потренируйте РАССЕКАЮЩИЙ УДАР.\n\nДержите $LMB$, дождитесь,\n\nпока рыцарь не замахнётся\nмечом$Tutorial_Slash$\n\n\nи отпустите $LMB$!",
-	"Practice the DOUBLE SLASH.\n\nHOLD $LMB$ until spark$Tutorial_Slash2$\n\n\nQuickly TAP $LMB$ 2 times!":"Потренируйте ДВОЙНОЙ РАССЕКАЮЩИЙ УДАР.\n\nДержите $LMB$, пока не\n\nпоявится искра$Tutorial_Slash2$\n\n\nА затем быстро два раза\n\nнажмите $LMB$!",
+	"$Jab$Practice the sword JAB\n\non the dummy.\n\nAim with mouse and tap $LMB$":"$Jab$потренируйте\n        КОЛЮЩИЙ УДАР на\n                            манекене.\n\nНажмите $LMB$, наведясь\n\nна него мышкой.",
+	"Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!":"Теперь потренируйте РАССЕКАЮЩИЙ УДАР.\n\nЗАЖМИТЕ $LMB$, дождитесь,\n\nпока рыцарь не замахнётся\nмечом$Tutorial_Slash$\n\n\nи ОТПУСТИТЕ $LMB$!",
+	"Practice the DOUBLE SLASH.\n\nHOLD $LMB$ until spark$Tutorial_Slash2$\n\n\nQuickly TAP $LMB$ 2 times!":"Потренируйте ДВОЙНОЙ РАССЕКАЮЩИЙ УДАР.\n\nДЕРЖИТЕ $LMB$, пока не\n\nпоявится искра$Tutorial_Slash2$\n\n\nА затем быстро два раза\n\nНАЖМИТЕ $LMB$!",
 	"Before entering this room charge your sword $Tutorial_Slash2$\n\nand then quickly\nwalk inside and slash!":"До того, как зайдёте в команту, замахнитесь мечом $Tutorial_Slash2$\n\n\nи затем быстро зайдите внутрь и проведите рассекающий удар!",
-	"HOLD $RMB$ to shield.\n\nUse mouse to aim shield.":"Держите $RMB$, чтобы\n\nподнять свой щит\nИспользуйте мышку для наведения.",
-	"Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$":"Держите $KEY_D$$KEY_W$, чтобы\n\nпробежать по стене.",
-	"Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$":"Рыцари могут ломать деревянные блоки и двери и копать землю. Наведя мышку на стену, сломайте её с помощью $LMB$",
+	"HOLD $RMB$ to shield.\n\nUse mouse to aim shield.":"ЗАЖМИТЕ $RMB$, чтобы\n\nподнять свой щит\nИспользуйте мышку для наведения.",
+	"Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$":"Держите $KEY_D$$KEY_W$, чтобы\n\nПРОБЕЖАТЬ ПО СТЕНЕ.",
+	"Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$":"Рыцари могут ломать деревянные блоки и двери и копать землю. Наведя мышку на стену, сломайте её с помощью $LMB$.",
 	"Automatically pickup things used by your class.":"Классовые предметы подбираются автоматически.",
 	"Press $KEY_SPACE$ to light bomb\n\nAim with mouse.\n\nAgain $KEY_SPACE$ throw it.":"Нажмите на $KEY_SPACE$,\n\nчтобы поджечь бомбу.\n\nНаведя мышку на цель, ещё раз нажмите на $KEY_SPACE$, чтобы бросить её.",
-	"Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.":"Парите с помощью\n\nщита$Tutorial_Glide$\n\n\nПрыгните в каньон, держа\n\nкурсор выше себя и зажимая$RMB$.",
+	"Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.":"Парите с помощью щита.$Tutorial_Glide$\n\nПерепрыгните через каньон, держа курсор выше себя и ЗАЖИМАЯ$RMB$.",
+
+//Tutorial02.as
+	"Stand on the enemy hall$hall$ to capture it.":"Стойте внутри вражеской$hall$ базы, чтобы захватить её.",
+	"Halls are respawn points and can be used to switch class.":"База является точкой возрождения и может использоваться для смены класса.",
+	"In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.":"На базе смените свой класс на ЛУЧНИКА $ARCHER$.\n\nДЕРЖИТЕ $KEY_E$,\n\nнаведите курсор на $CLASSCHANGE$ кнопку и отпустите клавишу.",
+	"As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!":"За лучника $Tutorial_Archer$\n\n\nцельтесь мышкой.\n\nЗАЖМИТЕ$LMB$, чтобы\n\nнатянуть тетиву.\n\nОТПУСТИТЕ кнопку, чтобы выстрелить!",
+	"Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$":"Используйте свой$Tutorial_Grapple$\nкрюк-кошку.\n\n\nНаведитесь мышкой на потолок, ЗАЖМИТЕ$RMB$\n\nи заберитесь наверх $KEY_D$.",
+	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"Совмещайте крюк-кошку и бег по стенам, чтобы пройти дальше.\n\nЗАЖМИТЕ$RMB$ и ДЕРЖИТЕ\n\nпрыжок и бег $KEY_D$$KEY_W$.",
+	"HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!":"ДЕРЖИТЕ $LMB$, пока не\n\nпоявится искра$Tutorial_Archer2$\n\n\nЗатем НАЖМИТЕ $LMB$ ещё раз для\nТРОЙНОГО ВЫСТРЕЛА!\nОн хорошо подходит для ближней дистанции!",
+	"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!":"$Tutorial_Archer2$\n\n\nПотренируйтесь, а затем зарядите свой выстрел перед тем, как открыть дверь, и атауйте рыцаря ТРОЙНЫМ ВЫСТРЕЛОМ!",
+	"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE фhook before stopping.":"Используйте\nсвой крюк-кошку$Tutorial_Grapple$.\n\n\nЗАЖМИТЕ$RMB$, наведясь на\n\nпотолок в ту точку, где\n\nустановлен фонарь $lantern$.\n\nЗАЖМИТЕ $KEY_D$и ОТПУСТИТЕ\n\n$RMB$ перед остановкой.",
 
 //TutorialCTF01.as
 	//"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":"Захват флага - это простой режим игры, подходящий для новичков. Цель режима проста - украсть флаг у противника и донести его до своего.",
