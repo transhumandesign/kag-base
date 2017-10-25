@@ -118,7 +118,7 @@
 	"$Jab$Practice the sword JAB\n\non the dummy.\n\nAim with mouse and tap $LMB$":"$Jab$Потренируйте\n        КОЛЮЩИЙ УДАР на\n                            манекене.\n\nНажмите $LMB$, наведясь\n\nна него мышкой.",
 	"Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!":"Теперь потренируйте РАССЕКАЮЩИЙ УДАР.\n\nЗАЖМИТЕ $LMB$, дождитесь,\n\nпока рыцарь не замахнётся\nмечом$Tutorial_Slash$\n\n\nи ОТПУСТИТЕ $LMB$!",
 	"Practice the DOUBLE SLASH.\n\nHOLD $LMB$ until spark$Tutorial_Slash2$\n\n\nQuickly TAP $LMB$ 2 times!":"Потренируйте ДВОЙНОЙ РАССЕКАЮЩИЙ УДАР.\n\nДЕРЖИТЕ $LMB$, пока не\n\nпоявится искра$Tutorial_Slash2$\n\n\nА затем быстро два раза\n\nНАЖМИТЕ $LMB$!",
-	"Before entering this room charge your sword $Tutorial_Slash2$\n\nand then quickly\nwalk inside and slash!":"До того, как зайдёте в команту, замахнитесь мечом $Tutorial_Slash2$\n\n\nи затем быстро зайдите внутрь и проведите рассекающий удар!",
+	"Before entering this room charge your sword $Tutorial_Slash2$\n\nand then quickly\nwalk inside and slash!":"До того, как зайдёте в комнату, замахнитесь мечом $Tutorial_Slash2$\n\n\nи затем быстро зайдите внутрь и проведите рассекающий удар!",
 	"HOLD $RMB$ to shield.\n\nUse mouse to aim shield.":"ЗАЖМИТЕ $RMB$, чтобы\n\nподнять свой щит\nИспользуйте мышку для наведения.",
 	"Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$":"Держите $KEY_D$$KEY_W$, чтобы\n\nПРОБЕЖАТЬ ПО СТЕНЕ.",
 	"Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$":"Рыцари могут ломать деревянные блоки и двери и копать землю. Наведя мышку на стену, сломайте её с помощью $LMB$.",
@@ -154,7 +154,7 @@
 	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\nЗарядите катапульту камнем.\n\n ЗАЖМИТЕ $KEY_E$, НАЖМИТЕ\n\n$mat_stone$",
 	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$\n\n\nВстаньте на позицию стрелка\n(там, где находится$down_arrow$ на рисунке)\n\nНажмите $KEY_S$,\n\nчтобы залезть внутрь.\n\n\nДЕРЖИТЕ $LMB$\n\nдля увеличения силы выстрела.\n\n\n(Водитель - в центре;\nВерхушка - платформа с боеприпасом.)",
 	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"И напоследок.\n\nНе бойтесь просить о помощи в мультиплеере - нажмите \n\n$KEY_ENTER$, чтобы открыть чат.\n\n\nИспользуйте смайлы!\n\nДЕРЖИТЕ $KEY_Q$",
-	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"Здесь заканчивается базовое обучение. Вы явно будете учится новому, играя!\n\nА теперь попробуйте другие одиночные миссии или присоеденитесь к серверу!",
+	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"Здесь заканчивается базовое обучение. Вы постоянно будете учиться чему-то новому, играя!\n\nА теперь попробуйте другие одиночные миссии или присоеденитесь к серверу!",
 	
 //TutorialCTF01.as
 	"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":
@@ -172,11 +172,11 @@
 	"Workshops allow you to buy items in them for coins which you get for doing useful things for your team.\n\nClass workshops allow you to switch class in them.\n\nThe tunnel allows you to quickly move from place to place (at least 2 required).\n\nTry them out!\n\n\n$tunnel$\n":
 	"Магазины позволяют вам покупать предметы за монеты, которые вы получаете за различные полезные действия для вашей команды.\n\nКлассовые магазины позволяют вам менять класс.\n\nТоннель позволяет вам быстро перемещаться с места на место (минимум 2 необходимо).\n\nОпробуйте их!\n\n\n$tunnel$\n",
 	"To conclude this tutorial go get the red flag and bring it back to your blue flag. \n\nPress $KEY_ESC$ to go to menu\n\nand exit after you're done.":
-	"В завершении этого обучения заберите красный флаг и принесите его к своего синему флагу.\n\nНажмите $KEY_ESC$,\n\nчтобы выйти, когда вы закончите.",
+	"В завершении этого обучения заберите красный флаг и принесите его к своему синему флагу.\n\nНажмите $KEY_ESC$,\n\nчтобы выйти, когда вы закончите.",
 
 //TutorialTTH01.as
 	"The goal of Take the Halls is for your team to capture all the halls on the map.\n\nYou can easily see them in the minimap on top of the screen.\n\n$KEY_M$ to toggle the\n\nminimap.":
-	"Цель режима захвата баз - захватить все базы противника.\n\nВы можете легко видеть их на миникарте вверху вашего экрана.\n\nНажмите $KEY_M$, чтобы\n\nвключить миникарту.",
+	"Цель режима захвата баз - захватить все базы противника.\n\nВы можете легко видеть их на мини-карте вверху вашего экрана.\n\nНажмите $KEY_M$, чтобы\n\nвключить мини-карту.",
 	"A white colored Hall is neutral. It belongs to the people of this land. Capture it by standing inside of it.":
 	"База белого цвета нейтральна. Захватите её, зайдя внутрь.",
 	"Hold $KEY_E$ and press $CLASSCHANGE$\n\nto change class to BUILDER\n\n\n$RESEARCH$\n\n\nPress this button to view your teams research tree.\n\nThe whole team can vote here on what technology they want. Not all techs can be achieved, decide wisely!":
@@ -192,7 +192,7 @@
 	"Hold $KEY_E$ on a workshop to see\n\nwhat it is producing. Green indicates it's done.\n\n\nTry out the different shops!":
 	"Держите $KEY_E$ около\n\nфабрики, чтобы увидеть, что производится в данный момент.\nЗелёный цвет означает, что производство завершено.\nОпробуйте разные фабрики!",
 	"$trader$\n\n\nYou see a trader in his shop below.\n\nPress $KEY_E$ on the trader to buy.\n\nYou can buy the following:\n\nTechnology scrolls - give you quick access to a tech without the need for long research\n\nMagic scrolls - check the descriptions!\n\nExchange materials for gold and vice versa. This is useful when one of the resources is lacking on the map.":
-	"$trader$\n\n\nСнизу вы видете продавца со своим магазином.\n\nНажмите $KEY_E$ окло торговца, чтобы увидеть доступные предметы для покупки.\n\nВы можете купить:\n\nСвитки технологий - моментально даёт нужную технологию без необходимости долгого исследования.\n\nМагические свитки - прочтите их описание!\n\nОбменивайте материалы на золото и наоборот. Это полезно, когда на карте заканчиваются ресурсы.",
+	"$trader$\n\n\nСнизу вы видите продавца со своим магазином.\n\nНажмите $KEY_E$ около торговца, чтобы увидеть доступные предметы для покупки.\n\nВы можете купить:\n\nСвитки технологий - моментально даёт нужную технологию без необходимости долгого исследования.\n\nМагические свитки - прочтите их описание!\n\nОбменивайте материалы на золото и наоборот. Это полезно, когда на карте заканчиваются ресурсы.",
 	"Dig the gold $RMB$.\n\nGet enough to buy the Scroll of Drought from the trader.\n\n$scroll$":
 	"Добудьте золото $RMB$.\n\nНакопив достаточно золота, купите у торговца свиток засухи (Scroll of Drought).\n\n$scroll$",
 	"$scroll$\n\nOnce you have the scroll press $KEY_E$ to use it!":
@@ -287,7 +287,7 @@
 	"Grain used as food.":"Зерно, которое можно есть.",
 	"Wooden swing door.":"Деревянная дверь.",
 	"Stone spikes used as a defense around fortifications.":"Шипы, используемые для защиты укреплений.",
-	"A trampoline used for bouncing and jumping over enemy walls.":"Батут для прыжков, позволяющий перепрыгивать через стены протвиника.",
+	"A trampoline used for bouncing and jumping over enemy walls.":"Батут для прыжков, позволяющий перепрыгивать через стены противника.",
 	"A stationary arrow-firing death machine.":"Стреляющая стрелами машина для убийств.",
 	"Fire arrows used to set wooden structures on fire.":"Огненные стрелы, которыми можно поджигать деревянные конструкции",
 	"A fast rowing boat used for quickly getting across water.":"Гребная лодка. Позволяет быстро передвигаться по воде.",
@@ -410,7 +410,7 @@
 	"Bomb arrows can be used to collapse towers quickly.": "Взрывные стрелы могут быть использованы для быстрого уничтожения башен.",
 	"If you see materials on the ground, take them to a builder or put them in your storage!": "Если вы видите материалы на земле, подберите их и отнесите своему строителю или положите их на склад!",
 	"Water bombs and water arrows stun your enemies for an easy kill.": "Водные бомбы и водные стрелы оглушают врагов для лёгкого убийства.",
-	"Pay attention to your minimap for enemy tunnelers.": "Не забывайте за вражескими тоннелями на миникарте.",
+	"Pay attention to your minimap for enemy tunnelers.": "Не забывайте за вражескими тоннелями на мини-карте.",
 	"Don't let siege weapons fall into the wrong hands!": "Не дайте осадным орудиям попасть не в те руки!",
 	"Immobilise siege weapons to prevent them from accidentally falling off a cliff!": "Снимайте колёса с осадных орудий, чтобы они не падали с возвышенностей!",
 	"Press [SPACE] to light and throw a bomb, [C] to pickup.": "Нажми [ПРОБЕЛ] для того, чтобы зажечь бомбу, и ещё раз, чтобы кинуть её. Нажмите [C], чтобы поднять её.",
