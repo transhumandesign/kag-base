@@ -3,12 +3,8 @@
 #include "Requirements.as"
 #include "ShopCommon.as";
 #include "Descriptions.as";
-#include "WARCosts.as";
+#include "Costs.as";
 #include "CheckSpam.as";
-
-const s32 cost_dinghy = 25;
-const s32 cost_longboat = 50;
-const s32 cost_warboat = 250;
 
 void onInit(CBlob@ this)
 {

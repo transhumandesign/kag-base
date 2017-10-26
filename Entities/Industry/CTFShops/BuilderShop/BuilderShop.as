@@ -1,10 +1,10 @@
 ﻿// BuilderShop.as
 
 #include "Requirements.as"
-#include "ShopCommon.as";
-#include "Descriptions.as";
-#include "WARCosts.as";
-#include "CheckSpam.as";
+#include "ShopCommon.as"
+#include "Descriptions.as"
+#include "WARCosts.as"
+#include "CheckSpam.as"
 
 void onInit(CBlob@ this)
 {

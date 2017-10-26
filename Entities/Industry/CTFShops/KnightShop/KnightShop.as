@@ -3,14 +3,8 @@
 #include "Requirements.as"
 #include "ShopCommon.as";
 #include "Descriptions.as";
-#include "WARCosts.as";
+#include "Costs.as";
 #include "CheckSpam.as";
-#include "CTFShopCommon.as";
-
-s32 cost_bomb = 25;
-s32 cost_waterbomb = 30;
-s32 cost_keg = 120;
-s32 cost_mine = 60;
 
 void onInit(CBlob@ this)
 {
@@ -18,20 +12,6 @@ void onInit(CBlob@ this)
 
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
-
-	//load config
-	if (getRules().exists("ctf_costs_config"))
-	{
-		cost_config_file = getRules().get_string("ctf_costs_config");
-	}
-
-	ConfigFile cfg = ConfigFile();
-	cfg.loadFile(cost_config_file);
-
-	cost_bomb = cfg.read_s32("cost_bomb_plain", cost_bomb);
-	cost_waterbomb = cfg.read_s32("cost_bomb_water", cost_waterbomb);
-	cost_mine = cfg.read_s32("cost_mine", cost_mine);
-	cost_keg = cfg.read_s32("cost_keg", cost_keg);
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);

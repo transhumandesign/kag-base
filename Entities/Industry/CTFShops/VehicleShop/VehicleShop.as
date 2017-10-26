@@ -4,13 +4,8 @@
 #include "Requirements_Tech.as";
 #include "ShopCommon.as";
 #include "Descriptions.as";
-#include "WARCosts.as";
+#include "Costs.as";
 #include "CheckSpam.as";
-
-const s32 cost_catapult = 80;
-const s32 cost_ballista = 200;
-const s32 cost_ballista_ammo = 100;
-const s32 cost_ballista_ammo_upgrade_gold = 100;
 
 void onInit(CBlob@ this)
 {

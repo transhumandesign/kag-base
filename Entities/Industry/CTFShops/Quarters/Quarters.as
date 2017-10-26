@@ -1,16 +1,11 @@
 ﻿// Quarters.as
 
-#include "Requirements.as";
-#include "ShopCommon.as";
-#include "Descriptions.as";
-#include "CheckSpam.as";
-#include "StandardControlsCommon.as";
-#include "CTFShopCommon.as";
-
-s32 cost_beer = 5;
-s32 cost_meal = 10;
-s32 cost_egg = 30;
-s32 cost_burger = 20;
+#include "Requirements.as"
+#include "ShopCommon.as"
+#include "Descriptions.as"
+#include "Costs.as"
+#include "CheckSpam.as"
+#include "StandardControlsCommon.as"
 
 const f32 beer_amount = 1.0f;
 const f32 heal_amount = 0.25f;
@@ -83,20 +78,6 @@ void onInit(CBlob@ this)
 	AddIconToken("$quarters_egg$", "Quarters.png", Vec2f(24, 24), 8);
 	AddIconToken("$quarters_burger$", "Quarters.png", Vec2f(24, 24), 9);
 	AddIconToken("$rest$", "InteractionIcons.png", Vec2f(32, 32), 29);
-
-	//load config
-	if (getRules().exists("ctf_costs_config"))
-	{
-		cost_config_file = getRules().get_string("ctf_costs_config");
-	}
-
-	ConfigFile cfg = ConfigFile();
-	cfg.loadFile(cost_config_file);
-
-	cost_beer = cfg.read_s32("cost_beer", cost_beer);
-	cost_meal = cfg.read_s32("cost_meal", cost_meal);
-	cost_egg = cfg.read_s32("cost_egg", cost_egg);
-	cost_burger = cfg.read_s32("cost_burger", cost_burger);
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
