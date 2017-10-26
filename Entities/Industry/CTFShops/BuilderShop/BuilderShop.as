@@ -35,6 +35,12 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::bucket_wood);
 	}
 	{
+		ShopItem@ s = addShopItem(this, "Filled Bucket", "$_buildershop_filled_bucket$", "filled_bucket", "A wooden bucket pre-filled with water for fighting fires.", false); //TODO: descriptions.as
+		s.spawnNothing = true;
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::bucket_wood);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::filled_bucket);
+	}
+	{
 		ShopItem@ s = addShopItem(this, "Sponge", "$sponge$", "sponge", descriptions[53], false);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::sponge);
 	}
