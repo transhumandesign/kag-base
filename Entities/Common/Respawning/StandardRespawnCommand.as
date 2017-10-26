@@ -53,7 +53,7 @@ void BuildRespawnMenuFor(CBlob@ this, CBlob @caller)
 
 	if (caller !is null && caller.isMyPlayer() && classes !is null)
 	{
-		CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + Vec2f(24.0f, caller.getRadius() * 1.0f + 48.0f), this, Vec2f(classes.length * CLASS_BUTTON_SIZE, CLASS_BUTTON_SIZE), "Swap class");
+		CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + Vec2f(24.0f, caller.getRadius() * 1.0f + 48.0f), this, Vec2f(classes.length * CLASS_BUTTON_SIZE, CLASS_BUTTON_SIZE), getTranslatedString("Swap class"));
 		if (menu !is null)
 		{
 			addClassesToMenu(this, menu, caller.getNetworkID());

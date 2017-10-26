@@ -1,11 +1,9 @@
 ﻿// Trading Post
 
-#include "MakeCrate.as";
-#include "MakeSeed.as";
+#include "MakeCrate.as"
+#include "MakeSeed.as"
 #include "Requirements.as"
 #include "TradingCommon.as"
-#include "Descriptions.as";
-#include "WARCosts.as";
 
 const int DROP_SECS = 8;
 
@@ -56,7 +54,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		CBitStream params;
 		params.write_u16(caller.getNetworkID());
-		caller.CreateGenericButton("$trade$", Vec2f_zero, this, this.getCommandID("stock"), "Shop", params);
+		caller.CreateGenericButton("$trade$", Vec2f_zero, this, this.getCommandID("stock"), getTranslatedString("Shop"), params);
 	}
 }
 
@@ -105,12 +103,12 @@ void addTradeItemsToMenu(CBlob@ this, CGridMenu@ menu, u16 callerID)
 				const u16 goldCount = caller.getBlobCount("mat_gold");
 				params.write_u16(goldCount);
 
-				CGridButton@ button = menu.AddButton(item.iconName, item.name, this.getCommandID("buy"), params);
+				CGridButton@ button = menu.AddButton(item.iconName, getTranslatedString(item.name), this.getCommandID("buy"), params);
 				if (button !is null)
 				{
 					if (item.boughtTime != 0 && item.boughtTime + item.unavailableTime > gametime)
 					{
-						button.hoverText = "Out of stock. Come back later.";
+						button.hoverText = getTranslatedString("Out of stock. Come back later.");
 						button.SetEnabled(false);
 					}
 					else
