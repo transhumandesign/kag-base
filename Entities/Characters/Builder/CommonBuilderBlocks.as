@@ -37,6 +37,7 @@ const string inventory_offset = "inventory offset";
 
 void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 {
+	InitCosts();
 	CRules@ rules = getRules();
 	const bool CTF = rules.gamemode_name == "CTF";
 	const bool TTH = rules.gamemode_name == "TTH";
