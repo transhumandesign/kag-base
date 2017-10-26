@@ -104,7 +104,7 @@
 	"Yellow paths show what will be researched when the match starts.":"Жёлтые линии указывают на то, что будет изучено в начале матча..",
 	"Red path items can only be bought for gold at trader."           :"Исследования на красных линиях могут быть куплены только у торговца.",
 	"(available)"                                                     :"(изучено)",
-	"(researching - {TIME}s)"                                         :"(Изучается - {TIME} секунд)",
+	"(researching - {TIME}s)"                                         :"(Изучается - {TIME} сек.)",
 	"(click to vote)"                                                 :"(нажмите, чтобы проголосовать)",
 
 //Sign.as
@@ -239,9 +239,9 @@
 
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
-	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"Следующее пополнение запасов через {SEC}{TIMESUFFIX},{ACTION}!",
-	"Go Fight"                                     :"Бегом сражаться",
-	"Go Build"                                     :"Бегом строить",
+	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"Следующее пополнение запасов через {SEC} {TIMESUFFIX} {ACTION}!",
+	"Go Fight"                                     :"Сражайтесь",
+	"Go Build"                                     :"Стройте",
 	"Prepare for Battle"                           :"Готовьтесь к бою",
 	" seconds"                                     :"сек.",
 	" second"                                      :"сек.",
@@ -578,6 +578,8 @@
 	"Ballista Bolt":"Болт баллисты",
 	"Ballista Bolts":"Болты баллисты",
 	"Scroll":"Свиток",
+	"Scroll of Drought":"Свиток засухи",
+	"Scroll of Carnage":"Свиток побоища",
 	"Sponge":"Губка",
 	"Bomb Arrow":"Взрывающаяся стрела",
 	"Fire Arrows":"Огненная стрела",
