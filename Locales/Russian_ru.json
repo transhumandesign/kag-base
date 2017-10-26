@@ -21,15 +21,15 @@
 	"s ": "с ",
 
 //ScoreboardRender.as
-	"Players      :{PLAYERCOUNT}": "Всего игроков: {PLAYERCOUNT}",
-	"Player"      :"Игрок",
-	"Username"    :"Имя",
-	"Ping"        :"Пинг",
-	"Kills"       :"Убийства",
-	"Deaths"      :"Смерти",
-	"KDR"         :"У/С",
-	"Spectators:" :"Зрители",
-	"and more ...":"и другие...",
+	"Players: {PLAYERCOUNT}":"Игроков: {PLAYERCOUNT}",
+	"Player"      			:"Игрок",
+	"Username"    			:"Имя",
+	"Ping"        			:"Пинг",
+	"Kills"       			:"Убийства",
+	"Deaths"      			:"Смерти",
+	"KDR"         			:"У/С",
+	"Spectators:" 			:"Зрители",
+	"and more ..."			:"и другие...",
 
 //BuilderInventory.as
 	"Stop building\n": "Прекратить строительство\n",
@@ -89,6 +89,16 @@
 	"Supplies will drop at your halls."       :"Припасы сбрасываются к вашим базам.", // TODO accent support
 	"Buy a worker for {MIGRANT_COST} Gold"    :"Купить рабочего за {MIGRANT_COST} золота",
 	"Buy worker: Requires {MIGRANT_COST} Gold":"Купить рабочего: нужно {MIGRANT_COST} золота",
+
+//TunnelTravel.as
+	"Travel":"Переместиться",
+	"Travel (requires Transport Tunnels)":"Переместиться (нужен ещё один транспортный тоннель)",
+	"Pick tunnel to travel":"Выберите тоннель для перемещения",
+	"Return to base":"Вернуться на базу", //OLD
+	"Travel right":"Переместиться вправо",
+	"Travel left":"Переместиться влево",
+	"You are here":"Вы находитесь здесь",
+
 //ResearchGUI.as
 	"Click the items you vote to research!"                           :"Нажимайте на предметы, которые вам нужно исследовать!",
 	"Yellow paths show what will be researched when the match starts.":"Жёлтые линии указывают на то, что будет изучено в начале матча..",
@@ -359,10 +369,30 @@
 	"$workshop$Convert workshop    $KEY_E$": "$workshop$Преобразовать мастерскую $KEY_E$",
 	"Check production    $KEY_E$": "Проверить продукцию $KEY_E$",
 	"Requires a free worker from Hall":"Нужен свободный рабочий с базы",
+	"Convert Workshop":"Преобразовать фабрику",
 	"Convert Workshop\n\n$RED$Requires {TECH_NAME}\n from Hall\n$RED$            $RESEARCH$\n\n":"Преобразовать фабрику\n\n$RED$Требуется технология \"{TECH_NAME}\"\n$RED$                 $RESEARCH$\n\n",
 	"Upgrade to...":"Улучшить до...",
+
+	//"Saw":"Пила", //in blobs
+	//"Ballista":"Баллиста", //in blobs
+	"Bomb Ammo":"ПОМОГИ",
+	//"Catapult":"Катапульта", //in blobs
+	"Demolition":"Разрушение",
+	"Bakery":"Выпечка",
+	"Longboat":"Корабль",
+	"Military Supplies":"Военное снаряжение",
+	"Pyrotechnics":"Пиротехника",
+	//"War Boat":"Военный корабль", //in blobs
+	"Water Ammo":"Водяное вооружение",
+	
+//Saw.as
+	"Turn Saw On":"Включить пилу",
+	"Turn Saw Off":"Выключить пилу",
 	 
 //Crate.as
+	"Unpack all":"Распаковать",
+	"Stop {ITEM}":"Прервать {ITEM}",
+	"Unpack {ITEM}":"Распаковать {ITEM}",
 	"Unpack {ITEM}   $KEY_E$": "Распаковать {ITEM}   $KEY_E$",
 	"Can't unpack {ITEM} here": "Невозможно распаковать {ITEM} здесь",
 
@@ -393,7 +423,10 @@
 //TreeSync.as
 	"$Axe$$Tree$Chop tree    $RMB$": "$Axe$$Tree$Рубить дерево $RMB$",
 	"$Tree$Climb tree    $KEY_W$": "$Tree$Карабкаться $KEY_W$",
-	
+
+//TradingMenu.as
+	"Out of stock. Come back later.":"Нет на складе. Приходите позже.",
+
 //HelpfulDeathTips.cfg
 	"To hide these tips, and other in-game help, hit F1.": "Чтобы скрыть эти подсказки и другие советы, нажмите F1.",
 	"Enemies can use your tunnels so protect them well!": "Противники могут использовать ваши туннели, так что защищайте их!",
@@ -522,6 +555,7 @@
 	"Nursery":"Теплица", //OLD
 	"Research":"Исследовательская", //OLD
 	"Mill Saw":"Циркулярная пила",
+	"Saw":"Пила",
 	"Trader":"Торговец",
 	"Trading Post":"Торговый пост",
 	"Travel Tunnel":"Тоннель",
@@ -564,7 +598,9 @@
 	"Grain Plant":"Зерновое растение",
 	"Flowers":"Цветы",
 	"Seed":"Семя",
-	"Bushy Tree":"Пышное дерево",
+	"Pine Seed":"Семя сосны",
+	"Oak Seed":"Семя дуба",
+	"Bushy Tree":"Дуб",
 	"Pine Tree":"Сосна",
 	"Very Important Flag":"Очень важный флаг",
 	"Flag Base":"Подставка под флаг",
@@ -606,5 +642,19 @@
 	"Boat Compartment":"Отсек лодки",
 	"Team Storage":"Хранилище команды",
 	"Tech Scrolls":"Свитки технологий", // OLD
-	"Storage":"Склад"
+	"Storage":"Склад",
+
+//// BUTTONS AND OTHER ////
+	"Buy":"Купить", //CTF Shops
+	"Shop":"Магазин", //Shop.as (menu desc) & TradingMenu.as (btn)
+	"Swap Class":"Сменить класс", //OneClassAvailable.as & TentLogic.as (btns)
+	"Swap class":"Сменить класс", //StandardRespawnCommand.as (menu desc)
+	"Change class":"Сменить класс", //Hall.as, TDM_Ruins.as, WAR_base.as, Ballista.as, WarBoat.as
+
+//// SCROLLS ////
+//ScrollDrought.as
+	"Use this to dry up an orb of water.":"Высушить всю воду в радиусе.",
+	"Use this to turn all stone in the area into gold":"Превратить весь камень в золото в радиусе.",
+	"Use this to make all visible enemies instantly turn into a pile of gibs.":"Превратить всех видимых врагов в кучу ошмёток."
+
 }
