@@ -3,7 +3,7 @@
 #include "Requirements.as"
 #include "ShopCommon.as"
 #include "Descriptions.as"
-#include "WARCosts.as"
+#include "Costs.as"
 #include "CheckSpam.as"
 
 void onInit(CBlob@ this)
@@ -13,6 +13,9 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
+	//INIT COSTS
+	InitCosts();
+	
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
 	this.set_Vec2f("shop menu size", Vec2f(4, 3));
@@ -25,33 +28,33 @@ void onInit(CBlob@ this)
 
 	{
 		ShopItem@ s = addShopItem(this, "Lantern", "$lantern$", "lantern", descriptions[9], false);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", COST_WOOD_LANTERN);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::lantern_wood);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Bucket", "$bucket$", "bucket", descriptions[36], false);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", COST_WOOD_BUCKET);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::bucket_wood);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Sponge", "$sponge$", "sponge", descriptions[53], false);
-		AddRequirement(s.requirements, "coin", "", "Coins", 15);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::sponge);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Boulder", "$boulder$", "boulder", descriptions[17], false);
-		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", 35);
+		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::boulder_stone);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Trampoline", "$trampoline$", "trampoline", descriptions[30], false);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", COST_WOOD_TRAMPOLINE);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::trampoline_wood);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Saw", "$saw$", "saw", descriptions[12], false);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", COST_WOOD_SAW);
-		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", 100);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::saw_wood);
+		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::saw_stone);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Drill", "$drill$", "drill", descriptions[43], false);
-		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", COST_STONE_DRILL);
-		AddRequirement(s.requirements, "coin", "", "Coins", 25);
+		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::drill_stone);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::drill);
 	}
 }
 

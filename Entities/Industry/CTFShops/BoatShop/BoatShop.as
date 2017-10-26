@@ -1,10 +1,10 @@
 ﻿// BoatShop.as
 
 #include "Requirements.as"
-#include "ShopCommon.as";
-#include "Descriptions.as";
-#include "Costs.as";
-#include "CheckSpam.as";
+#include "ShopCommon.as"
+#include "Descriptions.as"
+#include "Costs.as"
+#include "CheckSpam.as"
 
 void onInit(CBlob@ this)
 {
@@ -13,8 +13,11 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
+	//INIT COSTS
+	InitCosts();
+
 	// SHOP
-	this.set_Vec2f("shop offset", Vec2f(0, 0));
+	this.set_Vec2f("shop offset", Vec2f_zero);
 	this.set_Vec2f("shop menu size", Vec2f(6, 2));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
@@ -23,12 +26,12 @@ void onInit(CBlob@ this)
 	{
 		ShopItem@ s = addShopItem(this, "Dinghy", "$dinghy$", "dinghy", "$dinghy$\n\n\n" + descriptions[10]);
 		AddRequirement(s.requirements, "coin", "", "Coins", cost_dinghy);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 100);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", cost_dinghy_wood);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Longboat", "$longboat$", "longboat", "$longboat$\n\n\n" + descriptions[33], false, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", cost_longboat);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", 200);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", cost_longboat_wood);
 		s.crate_icon = 1;
 	}
 	{

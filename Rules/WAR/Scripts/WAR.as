@@ -3,17 +3,18 @@
 
 #define SERVER_ONLY
 
-#include "WAR_Structs.as";
-#include "RulesCore.as";
-#include "RespawnSystem.as";
+#include "WAR_Structs.as"
+#include "RulesCore.as"
+#include "RespawnSystem.as"
 #include "WAR_PopulateSpawnList.as"
-#include "MakeCrate.as";
-#include "ScrollCommon.as";
-#include "WAR_HUDCommon.as";
-#include "TradingCommon.as";
-#include "Descriptions.as";
-#include "MigrantCommon.as";
-#include "WAR_Population.as";
+#include "MakeCrate.as"
+#include "ScrollCommon.as"
+#include "WAR_HUDCommon.as"
+#include "TradingCommon.as"
+#include "Descriptions.as"
+#include "MigrantCommon.as"
+#include "WAR_Population.as"
+#include "Costs.as"
 
 //simple config function - edit the variables in the config file
 void Config(WarCore@ this)
@@ -908,6 +909,7 @@ void onInit(CRules@ this)
 {
 	Reset(this);
 	this.set_s32("restart_rules_after_game_time", 25 * 30);
+	InitCosts();
 }
 
 
@@ -990,25 +992,25 @@ void MakeWarTradeMenu(CBlob@ trader)
 
 	//siege techs
 	addTradeSeparatorItem(trader, "$MENU_SIEGE$", Vec2f(3, 1));
-	addTradeScrollFromScrollDef(trader, "mounted bow", cost_medium, descriptions[31]);
-	addTradeScrollFromScrollDef(trader, "ballista", cost_medium, descriptions[6]);
-	addTradeScrollFromScrollDef(trader, "catapult", cost_big, descriptions[5]);
+	addTradeScrollFromScrollDef(trader, "mounted bow", WARCosts::medium_scroll, descriptions[31]);
+	addTradeScrollFromScrollDef(trader, "ballista", WARCosts::medium_scroll, descriptions[6]);
+	addTradeScrollFromScrollDef(trader, "catapult", WARCosts::big_scroll, descriptions[5]);
 
 	//boats
 	addTradeSeparatorItem(trader, "$MENU_NAVAL$", Vec2f(3, 1));
-	addTradeScrollFromScrollDef(trader, "longboat", cost_medium, descriptions[33]);
-	addTradeScrollFromScrollDef(trader, "warboat", cost_big, descriptions[37]);
+	addTradeScrollFromScrollDef(trader, "longboat", WARCosts::medium_scroll, descriptions[33]);
+	addTradeScrollFromScrollDef(trader, "warboat", WARCosts::big_scroll, descriptions[37]);
 	addTradeEmptyItem(trader);
 
 	//item kits
 	addTradeSeparatorItem(trader, "$MENU_KITS$", Vec2f(3, 1));
 	//addTradeScrollFromScrollDef(trader, "military basics", cost_crappy, descriptions[44]);
-	addTradeScrollFromScrollDef(trader, "water ammo", cost_crappy, descriptions[50]);
-	addTradeScrollFromScrollDef(trader, "bomb ammo", cost_big, descriptions[51]);
-	addTradeScrollFromScrollDef(trader, "pyro", cost_big, descriptions[46]);
-	addTradeScrollFromScrollDef(trader, "drill", cost_crappiest, descriptions[43]);
-	addTradeScrollFromScrollDef(trader, "saw", cost_crappiest, descriptions[12]);
-	addTradeScrollFromScrollDef(trader, "explosives", cost_big, descriptions[45]);
+	addTradeScrollFromScrollDef(trader, "water ammo", WARCosts::crappy_scroll, descriptions[50]);
+	addTradeScrollFromScrollDef(trader, "bomb ammo", WARCosts::big_scroll, descriptions[51]);
+	addTradeScrollFromScrollDef(trader, "pyro", WARCosts::big_scroll, descriptions[46]);
+	addTradeScrollFromScrollDef(trader, "drill", WARCosts::crappiest_scroll, descriptions[43]);
+	addTradeScrollFromScrollDef(trader, "saw", WARCosts::crappiest_scroll, descriptions[12]);
+	addTradeScrollFromScrollDef(trader, "explosives", WARCosts::big_scroll, descriptions[45]);
 
 	//magic scrolls
 	addTradeSeparatorItem(trader, "$MENU_MAGIC$", Vec2f(3, 1));

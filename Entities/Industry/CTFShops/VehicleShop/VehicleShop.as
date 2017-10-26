@@ -1,11 +1,11 @@
 ﻿// Vehicle Workshop
 
-#include "Requirements.as";
-#include "Requirements_Tech.as";
-#include "ShopCommon.as";
-#include "Descriptions.as";
-#include "Costs.as";
-#include "CheckSpam.as";
+#include "Requirements.as"
+#include "Requirements_Tech.as"
+#include "ShopCommon.as"
+#include "Descriptions.as"
+#include "Costs.as"
+#include "CheckSpam.as"
 
 void onInit(CBlob@ this)
 {
@@ -16,8 +16,11 @@ void onInit(CBlob@ this)
 
 	AddIconToken("$vehicleshop_upgradebolts$", "BallistaBolt.png", Vec2f(32, 8), 1);
 
+	//INIT COSTS
+	InitCosts();
+	
 	// SHOP
-	this.set_Vec2f("shop offset", Vec2f(0, 0));
+	this.set_Vec2f("shop offset", Vec2f_zero);
 	this.set_Vec2f("shop menu size", Vec2f(6, 2));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
@@ -25,17 +28,17 @@ void onInit(CBlob@ this)
 	{
 		ShopItem@ s = addShopItem(this, "Catapult", "$catapult$", "catapult", "$catapult$\n\n\n" + descriptions[5], false, true);
 		s.crate_icon = 4;
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_catapult);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::catapult);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Ballista", "$ballista$", "ballista", "$ballista$\n\n\n" + descriptions[6], false, true);
 		s.crate_icon = 5;
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_ballista);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Ballista Ammo", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + descriptions[15], false, false);
 		s.crate_icon = 5;
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_ballista_ammo);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista_ammo);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Bomb Bolt Upgrade", "$vehicleshop_upgradebolts$", "upgradebolts", "For Ballista\nTurns its piercing bolts into a shaped explosive charge.", false);
@@ -43,7 +46,7 @@ void onInit(CBlob@ this)
 		s.customButton = true;
 		s.buttonwidth = 2;
 		s.buttonheight = 1;
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", cost_ballista_ammo_upgrade_gold);
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::ballista_ammo_upgrade_gold);
 		AddRequirement(s.requirements, "not tech", "bomb ammo", "Bomb Bolt", 1);
 	}
 }

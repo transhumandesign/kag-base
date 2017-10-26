@@ -12,6 +12,9 @@ void onInit(CBlob@ this)
 
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
+	
+	//INIT COSTS
+	InitCosts();
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
@@ -25,19 +28,19 @@ void onInit(CBlob@ this)
 
 	{
 		ShopItem@ s = addShopItem(this, "Arrows", "$mat_arrows$", "mat_arrows", descriptions[2], true);
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_arrows);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::arrows);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Water Arrows", "$mat_waterarrows$", "mat_waterarrows", descriptions[50], true);
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_waterarrows);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::waterarrows);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Fire Arrows", "$mat_firearrows$", "mat_firearrows", descriptions[32], true);
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_firearrows);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::firearrows);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Bomb Arrows", "$mat_bombarrows$", "mat_bombarrows", descriptions[51], true);
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_bombarrows);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::bombarrows);
 	}
 }
 

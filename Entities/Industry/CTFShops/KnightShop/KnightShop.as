@@ -1,10 +1,10 @@
 ﻿// Knight Workshop
 
 #include "Requirements.as"
-#include "ShopCommon.as";
-#include "Descriptions.as";
-#include "Costs.as";
-#include "CheckSpam.as";
+#include "ShopCommon.as"
+#include "Descriptions.as"
+#include "Costs.as"
+#include "CheckSpam.as"
 
 void onInit(CBlob@ this)
 {
@@ -12,6 +12,9 @@ void onInit(CBlob@ this)
 
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
+
+	//INIT COSTS
+	InitCosts();
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
@@ -25,19 +28,19 @@ void onInit(CBlob@ this)
 
 	{
 		ShopItem@ s = addShopItem(this, "Bomb", "$bomb$", "mat_bombs", descriptions[1], true);
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_bomb);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::bomb);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Water Bomb", "$waterbomb$", "mat_waterbombs", descriptions[52], true);
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_waterbomb);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::waterbomb);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Mine", "$mine$", "mine", descriptions[20], false);
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_mine);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::mine);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Keg", "$keg$", "keg", descriptions[4], false);
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_keg);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::keg);
 	}
 }
 

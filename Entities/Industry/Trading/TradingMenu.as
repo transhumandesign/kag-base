@@ -1,11 +1,10 @@
 ﻿// Trading Post
 
-#include "MakeCrate.as";
-#include "MakeSeed.as";
+#include "MakeCrate.as"
+#include "MakeSeed.as"
 #include "Requirements.as"
 #include "TradingCommon.as"
-#include "Descriptions.as";
-#include "WARCosts.as";
+#include "Descriptions.as"
 
 const int DROP_SECS = 8;
 

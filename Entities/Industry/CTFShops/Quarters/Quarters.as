@@ -72,6 +72,9 @@ void onInit(CBlob@ this)
 	this.addCommandID("rest");
 	this.getCurrentScript().runFlags |= Script::tick_hasattached;
 
+	//INIT COSTS
+	InitCosts();
+	
 	// ICONS
 	AddIconToken("$quarters_beer$", "Quarters.png", Vec2f(24, 24), 7);
 	AddIconToken("$quarters_meal$", "Quarters.png", Vec2f(48, 24), 2);
@@ -88,7 +91,7 @@ void onInit(CBlob@ this)
 	{
 		ShopItem@ s = addShopItem(this, "Beer - 1 Heart", "$quarters_beer$", "beer", "A refreshing mug of beer.", false);
 		s.spawnNothing = true;
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_beer);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::beer);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Meal - Full Health", "$quarters_meal$", "meal", "A hearty meal to get you back on your feet.", false);
@@ -96,15 +99,15 @@ void onInit(CBlob@ this)
 		s.customButton = true;
 		s.buttonwidth = 2;
 		s.buttonheight = 1;
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_meal);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::meal);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Egg - Full Health", "$quarters_egg$", "egg", "A suspiciously undercooked egg, maybe it will hatch.", false);
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_egg);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::egg);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Burger - Full Health", "$quarters_burger$", "food", "A burger to go.", true);
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_burger);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::burger);
 	}
 }
 
