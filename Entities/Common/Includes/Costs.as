@@ -174,7 +174,7 @@ void InitCosts()
 	CTFCosts::burger = cfg.read_s32("cost_burger", CTFCosts::burger);
 
 	//CommonBuilderBlocks.as
-	WARCosts::workshop_wood = cfg.read_s32("cost_workshop_wood", WARCosts::workshop_wood);
+	CTFCosts::workshop_wood = cfg.read_s32("cost_workshop_wood", CTFCosts::workshop_wood);
 
 //###################
 

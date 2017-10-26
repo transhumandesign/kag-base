@@ -25,18 +25,18 @@ void onInit(CBlob@ this)
 	// TODO: Better information + icons like the vehicle shop, also make boats not suck
 	{
 		ShopItem@ s = addShopItem(this, "Dinghy", "$dinghy$", "dinghy", "$dinghy$\n\n\n" + descriptions[10]);
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_dinghy);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", cost_dinghy_wood);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::dinghy);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::dinghy_wood);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Longboat", "$longboat$", "longboat", "$longboat$\n\n\n" + descriptions[33], false, true);
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_longboat);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", cost_longboat_wood);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::longboat);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::longboat_wood);
 		s.crate_icon = 1;
 	}
 	{
 		ShopItem@ s = addShopItem(this, "War Boat", "$warboat$", "warboat", "$warboat$\n\n\n" + descriptions[37], false, true);
-		AddRequirement(s.requirements, "coin", "", "Coins", cost_warboat);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::warboat);
 		s.crate_icon = 2;
 	}
 }

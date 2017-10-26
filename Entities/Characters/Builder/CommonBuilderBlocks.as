@@ -99,7 +99,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 	if(CTF)
 	{
 		BuildBlock b(0, "building", "$building$", "Workshop\nStand in an open space\nand tap this button.");
-		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", WARCosts::workshop_wood);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", CTFCosts::workshop_wood);
 		b.buildOnGround = true;
 		b.size.Set(40, 24);
 		blocks[0].insertAt(9, b);
