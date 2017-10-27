@@ -27,19 +27,19 @@ void onInit(CBlob@ this)
 	this.set_string("required class", "archer");
 
 	{
-		ShopItem@ s = addShopItem(this, "Arrows", "$mat_arrows$", "mat_arrows", descriptions[2], true);
+		ShopItem@ s = addShopItem(this, "Arrows", "$mat_arrows$", "mat_arrows", desc_arrows, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::arrows);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Water Arrows", "$mat_waterarrows$", "mat_waterarrows", descriptions[50], true);
+		ShopItem@ s = addShopItem(this, "Water Arrows", "$mat_waterarrows$", "mat_waterarrows", desc_waterarrows, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::waterarrows);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Fire Arrows", "$mat_firearrows$", "mat_firearrows", descriptions[32], true);
+		ShopItem@ s = addShopItem(this, "Fire Arrows", "$mat_firearrows$", "mat_firearrows", desc_firearrows, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::firearrows);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Bomb Arrows", "$mat_bombarrows$", "mat_bombarrows", descriptions[51], true);
+		ShopItem@ s = addShopItem(this, "Bomb Arrows", "$mat_bombarrows$", "mat_bombarrows", desc_bombarrows, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::bombarrows);
 	}
 }

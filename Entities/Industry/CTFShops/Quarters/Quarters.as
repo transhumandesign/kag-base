@@ -89,12 +89,12 @@ void onInit(CBlob@ this)
 	this.set_u8("shop icon", 25);
 
 	{
-		ShopItem@ s = addShopItem(this, "Beer - 1 Heart", "$quarters_beer$", "beer", "A refreshing mug of beer.", false);
+		ShopItem@ s = addShopItem(this, "Beer - 1 Heart", "$quarters_beer$", "beer", desc_beer, false);
 		s.spawnNothing = true;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::beer);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Meal - Full Health", "$quarters_meal$", "meal", "A hearty meal to get you back on your feet.", false);
+		ShopItem@ s = addShopItem(this, "Meal - Full Health", "$quarters_meal$", "meal", desc_meal, false);
 		s.spawnNothing = true;
 		s.customButton = true;
 		s.buttonwidth = 2;
@@ -102,11 +102,11 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::meal);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Egg - Full Health", "$quarters_egg$", "egg", "A suspiciously undercooked egg, maybe it will hatch.", false);
+		ShopItem@ s = addShopItem(this, "Egg - Full Health", "$quarters_egg$", "egg", desc_egg, false);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::egg);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Burger - Full Health", "$quarters_burger$", "food", "A burger to go.", true);
+		ShopItem@ s = addShopItem(this, "Burger - Full Health", "$quarters_burger$", "food", desc_burger, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::burger);
 	}
 }

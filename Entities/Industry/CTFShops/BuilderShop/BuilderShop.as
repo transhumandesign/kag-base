@@ -27,38 +27,38 @@ void onInit(CBlob@ this)
 	this.set_string("required class", "builder");
 
 	{
-		ShopItem@ s = addShopItem(this, "Lantern", "$lantern$", "lantern", descriptions[9], false);
+		ShopItem@ s = addShopItem(this, "Lantern", "$lantern$", "lantern", desc_lantern, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::lantern_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Bucket", "$bucket$", "bucket", descriptions[36], false);
+		ShopItem@ s = addShopItem(this, "Bucket", "$bucket$", "bucket", desc_bucket, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::bucket_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Filled Bucket", "$_buildershop_filled_bucket$", "filled_bucket", "A wooden bucket pre-filled with water for fighting fires.", false); //TODO: descriptions.as
+		ShopItem@ s = addShopItem(this, "Filled Bucket", "$_buildershop_filled_bucket$", "filled_bucket", desc_filled_bucket, false); //TODO: descriptions.as
 		s.spawnNothing = true;
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::bucket_wood);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::filled_bucket);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Sponge", "$sponge$", "sponge", descriptions[53], false);
+		ShopItem@ s = addShopItem(this, "Sponge", "$sponge$", "sponge", desc_sponge, false);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::sponge);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Boulder", "$boulder$", "boulder", descriptions[17], false);
+		ShopItem@ s = addShopItem(this, "Boulder", "$boulder$", "boulder", desc_boulder, false);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::boulder_stone);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Trampoline", "$trampoline$", "trampoline", descriptions[30], false);
+		ShopItem@ s = addShopItem(this, "Trampoline", "$trampoline$", "trampoline", desc_trampoline, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::trampoline_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Saw", "$saw$", "saw", descriptions[12], false);
+		ShopItem@ s = addShopItem(this, "Saw", "$saw$", "saw", desc_saw, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::saw_wood);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::saw_stone);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Drill", "$drill$", "drill", descriptions[43], false);
+		ShopItem@ s = addShopItem(this, "Drill", "$drill$", "drill", desc_drill, false);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::drill_stone);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::drill);
 	}

@@ -27,19 +27,19 @@ void onInit(CBlob@ this)
 	this.set_string("required class", "knight");
 
 	{
-		ShopItem@ s = addShopItem(this, "Bomb", "$bomb$", "mat_bombs", descriptions[1], true);
+		ShopItem@ s = addShopItem(this, "Bomb", "$bomb$", "mat_bombs", desc_bomb, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::bomb);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Water Bomb", "$waterbomb$", "mat_waterbombs", descriptions[52], true);
+		ShopItem@ s = addShopItem(this, "Water Bomb", "$waterbomb$", "mat_waterbombs", desc_waterbomb, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::waterbomb);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Mine", "$mine$", "mine", descriptions[20], false);
+		ShopItem@ s = addShopItem(this, "Mine", "$mine$", "mine", desc_mine, false);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::mine);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Keg", "$keg$", "keg", descriptions[4], false);
+		ShopItem@ s = addShopItem(this, "Keg", "$keg$", "keg", desc_keg, false);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::keg);
 	}
 }

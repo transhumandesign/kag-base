@@ -79,20 +79,20 @@ void MakeTradeMenu(CBlob@ trader)
 	addTradeSeparatorItem(trader, "$MENU_GENERIC$", Vec2f(3, 1));
 
 	if (cost_bombs > 0)
-		addItemForCoin(trader, "Bomb", cost_bombs, true, "$mat_bombs$", "mat_bombs", descriptions[1]);
+		addItemForCoin(trader, "Bomb", cost_bombs, true, "$mat_bombs$", "mat_bombs", desc_bomb);
 
 	if (cost_waterbombs > 0)
 		addItemForCoin(trader, "Water Bomb", cost_waterbombs, true, "$mat_waterbombs$", "mat_waterbombs", descriptions[52]);
 
 	if (cost_keg > 0)
-		addItemForCoin(trader, "Keg", cost_keg, true, "$keg$", "keg", descriptions[4]);
+		addItemForCoin(trader, "Keg", cost_keg, true, "$keg$", "keg", desc_keg);
 
 	if (cost_mine > 0)
 		addItemForCoin(trader, "Mine", cost_mine, true, "$mine$", "mine", descriptions[20]);
 
 
 	if (cost_arrows > 0)
-		addItemForCoin(trader, "Arrows", cost_arrows, true, "$mat_arrows$", "mat_arrows", descriptions[2]);
+		addItemForCoin(trader, "Arrows", cost_arrows, true, "$mat_arrows$", "mat_arrows", desc_arrows);
 
 	if (cost_waterarrows > 0)
 		addItemForCoin(trader, "Water Arrows", cost_waterarrows, true, "$mat_waterarrows$", "mat_waterarrows", descriptions[50]);

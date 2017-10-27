@@ -1045,10 +1045,10 @@ void MakeTradeMenu(CBlob@ trader)
 
 	//
 	addTradeSeparatorItem(trader, "$MENU_GENERIC$", Vec2f(3, 1));
-	addItemForCoin(trader, "Bomb", 10, true, "$mat_bombs$", "mat_bombs", descriptions[1]);
-	addItemForCoin(trader, "Water Bomb", 10, true, "$mat_waterbombs$", "mat_waterbombs", descriptions[50]);
-	addItemForCoin(trader, "Keg", 50, true, "$keg$", "keg", descriptions[4]);
-	addItemForCoin(trader, "Arrows", 5, true, "$mat_arrows$", "mat_arrows", descriptions[2]);
+	addItemForCoin(trader, "Bomb", 10, true, "$mat_bombs$", "mat_bombs", desc_bomb);
+	addItemForCoin(trader, "Water Bomb", 10, true, "$mat_waterbombs$", "mat_waterbombs", desc_waterbomb);
+	addItemForCoin(trader, "Keg", 50, true, "$keg$", "keg", desc_keg);
+	addItemForCoin(trader, "Arrows", 5, true, "$mat_arrows$", "mat_arrows", desc_arrows);
 	addItemForCoin(trader, "Water Arrows", 10, true, "$mat_waterarrows$", "mat_waterarrows", descriptions[50]);
 	addItemForCoin(trader, "Fire Arrows", 15, true, "$mat_firearrows$", "mat_firearrows", descriptions[32]);
 	addItemForCoin(trader, "Bomb Arrow", 10, true, "$mat_bombarrows$", "mat_bombarrows", descriptions[51]);
