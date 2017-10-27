@@ -1,13 +1,13 @@
 // War Base logic
 
-#include "ClassSelectMenu.as";
-#include "StandardRespawnCommand.as";
-#include "MakeSeed.as";
-#include "Descriptions.as";
-#include "ShopCommon.as";
-#include "Requirements.as";
-#include "AddTilesBySector.as";
-#include "WARCosts.as";
+#include "ClassSelectMenu.as"
+#include "StandardRespawnCommand.as"
+#include "MakeSeed.as"
+#include "Descriptions.as"
+#include "ShopCommon.as"
+#include "Requirements.as"
+#include "AddTilesBySector.as"
+#include "Costs.as"
 
 const Vec2f upgradeButtonPos(-36.0f, 10.0f);
 const Vec2f classButtonPos(-76, 10);
@@ -21,32 +21,35 @@ const Vec2f classButtonPos(-76, 10);
 
 void InitWorkshop(CBlob@ this)
 {
+	//init costs from cfg
+	InitCosts();
+	
 	this.set_Vec2f("shop offset", Vec2f(-110, 10));
 	this.set_Vec2f("shop menu size", Vec2f(4, 5));
 
 	{
-		ShopItem@ s = addShopItem(this, "Lantern", "$lantern$", "lantern", descriptions[9], false);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", COST_WOOD_LANTERN);
+		ShopItem@ s = addShopItem(this, "Lantern", "$lantern$", "lantern", desc_lantern, false);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::lantern_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Crate", "$crate$", "crate", descriptions[18], false);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", COST_WOOD_CRATE);
+		ShopItem@ s = addShopItem(this, "Crate", "$crate$", "crate", desc_crate, false);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::crate_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Bucket", "$bucket$", "bucket", descriptions[36], false);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", COST_WOOD_BUCKET);
+		ShopItem@ s = addShopItem(this, "Bucket", "$bucket$", "bucket", desc_bucket, false);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::bucket_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Transport Tunnel", "$tunnel$", "tunnel", descriptions[34], false, true);
-		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", COST_STONE_TUNNEL);
+		ShopItem@ s = addShopItem(this, "Transport Tunnel", "$tunnel$", "tunnel", desc_tunnel, false, true);
+		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", WARCosts::tunnel_stone);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Factory", "$factory$", "factory", descriptions[38], false, true);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", COST_WOOD_FACTORY);
+		ShopItem@ s = addShopItem(this, "Factory", "$factory$", "factory", desc_factory, false, true);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::factory_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Kitchen", "$kitchen$", "kitchen", descriptions[39], false, true);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", COST_WOOD_KITCHEN);
+		ShopItem@ s = addShopItem(this, "Kitchen", "$kitchen$", "kitchen", desc_kitchen, false, true);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::kitchen_wood);
 	}
 }
 

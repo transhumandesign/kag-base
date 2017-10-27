@@ -28,38 +28,38 @@ void onInit(CBlob@ this)
 	this.Tag(SHOP_AUTOCLOSE);
 
 	{
-		ShopItem@ s = addShopItem(this, "Builder Shop", "$buildershop$", "buildershop", descriptions[54]);
+		ShopItem@ s = addShopItem(this, "Builder Shop", "$buildershop$", "buildershop", desc_buildershop);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::buildershop_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Quarters", "$quarters$", "quarters", descriptions[59]);
+		ShopItem@ s = addShopItem(this, "Quarters", "$quarters$", "quarters", desc_quarters);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::quarters_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Knight Shop", "$knightshop$", "knightshop", descriptions[55]);
+		ShopItem@ s = addShopItem(this, "Knight Shop", "$knightshop$", "knightshop", desc_knightshop);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::knightshop_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Archer Shop", "$archershop$", "archershop", descriptions[56]);
+		ShopItem@ s = addShopItem(this, "Archer Shop", "$archershop$", "archershop", desc_archershop);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::archershop_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Boat Shop", "$boatshop$", "boatshop", descriptions[58]);
+		ShopItem@ s = addShopItem(this, "Boat Shop", "$boatshop$", "boatshop", desc_boatshop);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::boatshop_wood);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::boatshop_gold);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Vehicle Shop", "$vehicleshop$", "vehicleshop", descriptions[57]);
+		ShopItem@ s = addShopItem(this, "Vehicle Shop", "$vehicleshop$", "vehicleshop", desc_vehicleshop);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::vehicleshop_wood);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::vehicleshop_gold);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Storage Cache", "$storage$", "storage", descriptions[60]);
+		ShopItem@ s = addShopItem(this, "Storage Cache", "$storage$", "storage", desc_storagecache);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::storage_stone);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::storage_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Transport Tunnel", "$tunnel$", "tunnel", descriptions[34]);
+		ShopItem@ s = addShopItem(this, "Transport Tunnel", "$tunnel$", "tunnel", desc_tunnel);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::tunnel_stone);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::tunnel_wood);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::tunnel_gold);

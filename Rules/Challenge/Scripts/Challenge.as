@@ -3,13 +3,13 @@
 
 #define SERVER_ONLY
 
-#include "WAR_Structs.as";
-#include "RulesCore.as";
-#include "RespawnSystem.as";
+#include "WAR_Structs.as"
+#include "RulesCore.as"
+#include "RespawnSystem.as"
 #include "WAR_PopulateSpawnList.as"
-#include "WAR_HUDCommon.as";
-#include "TradingCommon.as";
-#include "Descriptions.as";
+#include "WAR_HUDCommon.as"
+#include "TradingCommon.as"
+#include "Descriptions.as"
 
 const f32 MOOK_SPAWN_DISTANCE = 600.0f;
 const f32 DIFFICULTY_INCREASE_DISTANCE = 500.0f;
@@ -1049,17 +1049,17 @@ void MakeTradeMenu(CBlob@ trader)
 	addItemForCoin(trader, "Water Bomb", 10, true, "$mat_waterbombs$", "mat_waterbombs", desc_waterbomb);
 	addItemForCoin(trader, "Keg", 50, true, "$keg$", "keg", desc_keg);
 	addItemForCoin(trader, "Arrows", 5, true, "$mat_arrows$", "mat_arrows", desc_arrows);
-	addItemForCoin(trader, "Water Arrows", 10, true, "$mat_waterarrows$", "mat_waterarrows", descriptions[50]);
-	addItemForCoin(trader, "Fire Arrows", 15, true, "$mat_firearrows$", "mat_firearrows", descriptions[32]);
-	addItemForCoin(trader, "Bomb Arrow", 10, true, "$mat_bombarrows$", "mat_bombarrows", descriptions[51]);
-	addItemForCoin(trader, "Mine", 25, true, "$mine$", "mine", descriptions[20]);
-	addItemForCoin(trader, "Mounted Bow", 80, true, "$mounted_bow$", "mounted_bow", descriptions[31]);
-	addItemForCoin(trader, "Drill", 30, true, "$drill$", "drill", descriptions[43]);
-	addItemForCoin(trader, "Boulder", 5, true, "$boulder$", "boulder", descriptions[17]);
-	addItemForCoin(trader, "Burger", 10, true, "$food$", "food", "For healing. Don't think about this too much.");
+	addItemForCoin(trader, "Water Arrows", 10, true, "$mat_waterarrows$", "mat_waterarrows", desc_waterarrows);
+	addItemForCoin(trader, "Fire Arrows", 15, true, "$mat_firearrows$", "mat_firearrows", desc_firearrows);
+	addItemForCoin(trader, "Bomb Arrow", 10, true, "$mat_bombarrows$", "mat_bombarrows", desc_bombarrows);
+	addItemForCoin(trader, "Mine", 25, true, "$mine$", "mine", desc_mine);
+	addItemForCoin(trader, "Mounted Bow", 80, true, "$mounted_bow$", "mounted_bow", desc_mounted_bow);
+	addItemForCoin(trader, "Drill", 30, true, "$drill$", "drill", desc_drill);
+	addItemForCoin(trader, "Boulder", 5, true, "$boulder$", "boulder", desc_boulder);
+	addItemForCoin(trader, "Burger", 10, true, "$food$", "food", desc_food);
 	//addItemForCoin( trader, "Balloon Bomber", 100, true, "$bomber$", "bomber", "An airship." );
-	//addItemForCoin( trader, "Catapult", 80, true, "$catapult$", "catapult", descriptions[5] );
-	//addItemForCoin( trader, "Ballista", 80, true, "$ballista$", "ballista", descriptions[6] );
+	//addItemForCoin( trader, "Catapult", 80, true, "$catapult$", "catapult", desc_catapult );
+	//addItemForCoin( trader, "Ballista", 80, true, "$ballista$", "ballista", desc_ballista );
 }
 
 // add coins for red dead

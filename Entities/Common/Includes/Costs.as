@@ -89,6 +89,10 @@ namespace WARCosts
 	//Builder Menu
 	s32 factory_wood = 150;
 	s32 workbench_wood = 120;
+
+	//WAR_Base.as
+	s32 tunnel_stone = 100;
+	s32 kitchen_wood = 100;
 }
 
 //// BUILDER COSTS ////
@@ -211,6 +215,10 @@ void InitCosts()
 	//CommonBuilderBlocks.as
 	ReadCost(cfg, "cost_factory_wood"       , WARCosts::factory_wood);
 	ReadCost(cfg, "cost_workbench_wood"     , WARCosts::workbench_wood);
+
+	//WAR_Base.as
+	ReadCost(cfg, "cost_tunnel_stone"       , WARCosts::tunnel_stone);
+	ReadCost(cfg, "cost_kitchen_wood"       , WARCosts::kitchen_wood);
 
 //###################
 

@@ -1,4 +1,4 @@
-#include "TradingCommon.as";
+#include "TradingCommon.as"
 #include "Descriptions.as"
 
 #define SERVER_ONLY
@@ -82,48 +82,48 @@ void MakeTradeMenu(CBlob@ trader)
 		addItemForCoin(trader, "Bomb", cost_bombs, true, "$mat_bombs$", "mat_bombs", desc_bomb);
 
 	if (cost_waterbombs > 0)
-		addItemForCoin(trader, "Water Bomb", cost_waterbombs, true, "$mat_waterbombs$", "mat_waterbombs", descriptions[52]);
+		addItemForCoin(trader, "Water Bomb", cost_waterbombs, true, "$mat_waterbombs$", "mat_waterbombs", desc_waterarrows);
 
 	if (cost_keg > 0)
 		addItemForCoin(trader, "Keg", cost_keg, true, "$keg$", "keg", desc_keg);
 
 	if (cost_mine > 0)
-		addItemForCoin(trader, "Mine", cost_mine, true, "$mine$", "mine", descriptions[20]);
+		addItemForCoin(trader, "Mine", cost_mine, true, "$mine$", "mine", desc_mine);
 
 
 	if (cost_arrows > 0)
 		addItemForCoin(trader, "Arrows", cost_arrows, true, "$mat_arrows$", "mat_arrows", desc_arrows);
 
 	if (cost_waterarrows > 0)
-		addItemForCoin(trader, "Water Arrows", cost_waterarrows, true, "$mat_waterarrows$", "mat_waterarrows", descriptions[50]);
+		addItemForCoin(trader, "Water Arrows", cost_waterarrows, true, "$mat_waterarrows$", "mat_waterarrows", desc_waterarrows);
 
 	if (cost_firearrows > 0)
-		addItemForCoin(trader, "Fire Arrows", cost_firearrows, true, "$mat_firearrows$", "mat_firearrows", descriptions[32]);
+		addItemForCoin(trader, "Fire Arrows", cost_firearrows, true, "$mat_firearrows$", "mat_firearrows", desc_firearrows);
 
 	if (cost_bombarrows > 0)
-		addItemForCoin(trader, "Bomb Arrow", cost_bombarrows, true, "$mat_bombarrows$", "mat_bombarrows", descriptions[51]);
+		addItemForCoin(trader, "Bomb Arrow", cost_bombarrows, true, "$mat_bombarrows$", "mat_bombarrows", desc_bombarrows);
 
 	if (cost_sponge > 0)
-		addItemForCoin(trader, "Sponge", cost_sponge, true, "$sponge$", "sponge", descriptions[53]);
+		addItemForCoin(trader, "Sponge", cost_sponge, true, "$sponge$", "sponge", desc_sponge);
 
 	if (cost_mountedbow > 0)
-		addItemForCoin(trader, "Mounted Bow", cost_mountedbow, true, "$mounted_bow$", "mounted_bow", descriptions[31]);
+		addItemForCoin(trader, "Mounted Bow", cost_mountedbow, true, "$mounted_bow$", "mounted_bow", desc_mounted_bow);
 
 	if (cost_drill > 0)
-		addItemForCoin(trader, "Drill", cost_drill, true, "$drill$", "drill", descriptions[43]);
+		addItemForCoin(trader, "Drill", cost_drill, true, "$drill$", "drill", desc_drill);
 
 	if (cost_boulder > 0)
-		addItemForCoin(trader, "Boulder", cost_boulder, true, "$boulder$", "boulder", descriptions[17]);
+		addItemForCoin(trader, "Boulder", cost_boulder, true, "$boulder$", "boulder", desc_boulder);
 
 	if (cost_burger > 0)
-		addItemForCoin(trader, "Burger", cost_burger, true, "$food$", "food", "Food for healing. Don't think about this too much.");
+		addItemForCoin(trader, "Burger", cost_burger, true, "$food$", "food", desc_food);
 
 
 	if (cost_catapult > 0)
-		addItemForCoin(trader, "Catapult", cost_catapult, true, "$catapult$", "catapult", descriptions[5]);
+		addItemForCoin(trader, "Catapult", cost_catapult, true, "$catapult$", "catapult", desc_catapult);
 
 	if (cost_ballista > 0)
-		addItemForCoin(trader, "Ballista", cost_ballista, true, "$ballista$", "ballista", descriptions[6]);
+		addItemForCoin(trader, "Ballista", cost_ballista, true, "$ballista$", "ballista", desc_ballista);
 
 }
 

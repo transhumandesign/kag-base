@@ -1,9 +1,9 @@
 ﻿// Dorm
 
-#include "WARCosts.as";
-#include "ShopCommon.as";
-#include "Descriptions.as";
-#include "MigrantCommon.as";
+#include "WARCosts.as"
+#include "ShopCommon.as"
+#include "Descriptions.as"
+#include "MigrantCommon.as"
 
 namespace MigrantState
 {
@@ -39,13 +39,13 @@ void onInit( CBlob@ this )
 	this.set_bool("shop available", false );
 
 	//{
-	//	ShopItem@ s = addShopItem( this, "Barracks", "$barracks$", "barracks", descriptions[41] );
+	//	ShopItem@ s = addShopItem( this, "Barracks", "$barracks$", "barracks", desc_barracks );
 	//	AddRequirement( s.requirements, "blob", "mat_stone", "Stone", COST_STONE_BARRACKS );
 	//	AddRequirement( s.requirements, "tech", "barracks", "Barracks Technology" );
 	//}	
 
 	//{
-	//	ShopItem@ s = addShopItem( this, "Research", "$research$", "research", descriptions[49] );
+	//	ShopItem@ s = addShopItem( this, "Research", "$research$", "research", desc_research );
 	//	AddRequirement( s.requirements, "blob", "mat_stone", "Stone", COST_STONE_RESEARCH );
 	//}
 

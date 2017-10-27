@@ -22,42 +22,42 @@ void onInit(CBlob@ this)
 
 
 	{
-		ShopItem@ s = addShopItem(this, "Lantern", "$lantern$", "lantern", descriptions[9], false);
+		ShopItem@ s = addShopItem(this, "Lantern", "$lantern$", "lantern", desc_lantern, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::lantern_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Bucket", "$bucket$", "bucket", descriptions[36], false);
+		ShopItem@ s = addShopItem(this, "Bucket", "$bucket$", "bucket", desc_bucket, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::bucket_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Sponge", "$sponge$", "sponge", descriptions[53], false);
+		ShopItem@ s = addShopItem(this, "Sponge", "$sponge$", "sponge", desc_sponge, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::sponge_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Trampoline", "$trampoline$", "trampoline", descriptions[30], false);
+		ShopItem@ s = addShopItem(this, "Trampoline", "$trampoline$", "trampoline", desc_trampoline, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::trampoline_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Crate", "$crate$", "crate", descriptions[18], false);
+		ShopItem@ s = addShopItem(this, "Crate", "$crate$", "crate", desc_crate, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::crate_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Drill", "$drill$", "drill", descriptions[43], false);
+		ShopItem@ s = addShopItem(this, "Drill", "$drill$", "drill", desc_drill, false);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", WARCosts::drill_stone);
 		AddRequirement(s.requirements, "tech", "drill", "Drill Technology");
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Saw", "$saw$", "saw", descriptions[12], false);
+		ShopItem@ s = addShopItem(this, "Saw", "$saw$", "saw", desc_saw, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::saw_wood);
 		AddRequirement(s.requirements, "tech", "saw", "Saw Technology");
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Dinghy", "$dinghy$", "dinghy", descriptions[10], false);
+		ShopItem@ s = addShopItem(this, "Dinghy", "$dinghy$", "dinghy", desc_dinghy, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::dinghy_wood);
 		AddRequirement(s.requirements, "tech", "dinghy", "Dinghy Technology");
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Boulder", "$boulder$", "boulder", descriptions[17], false);
+		ShopItem@ s = addShopItem(this, "Boulder", "$boulder$", "boulder", desc_boulder, false);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", WARCosts::boulder_stone);
 	}
 }
