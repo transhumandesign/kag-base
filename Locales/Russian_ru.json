@@ -273,17 +273,23 @@
 	"Bombs for Knight only.":"Бомбы для рыцаря.",
 	"Arrows for Archer and mounted bow.":"Стрелы для лучника и стационарного арбалета.",
 	"Highly explosive powder keg for Knight only.":"Огромная пороховая бочка для рыцаря.",
+	
 	"A stone throwing, ridable siege engine, requiring a crew of two.":"Осадное орудие, используемое для метания камней.",
 	"A bolt-firing pinpoint accurate siege engine, requiring a crew of two. Allows respawn and class change.":"Высокоточное осадное орудие, стреляющее болтами. Для управления и стрельбы требуются 2 человека. Позволяет менять класс и возрождаться около себя.",
+	"Piercing bolts for ballista.":"Болты для баллисты.",
+	"For Ballista\nTurns its piercing bolts into a shaped explosive charge.":"Для баллисты.\nУлучшает обычные болты до взрывающихся.",
+
+	"A small boat with two rowing positions and a large space for cargo.":"Маленькая гребная лодка, вмещающая в себя двух человек. Много места для груза.",
+	"A fast rowing boat used for quickly getting across water.":"Гребная лодка. Позволяет быстро передвигаться по воде.",
+	"A slow armoured boat which acts also as a water base for respawn and class change.":"Медленная бронированная лодка, которая является наводной базой и точкой для возрождения и смены класса.",
+
+	//"A siege engine designed to break open walls and fortifications.":"Осадное орудие, используемое для разрушения дверей и других сооружений.",
 	"Raw stone material.":"Каменное сырьё.",
 	"Raw wood material.":"Деревянное сырьё.",
 	"Lanterns help with mining in the dark, and lighten the mood.":"Фонари помогают вам копать в темноте.",
-	"A small boat with two rowing positions and a large space for cargo.":"Маленькая гребная лодка, вмещающая в себя двух человек. Много места для груза.",
-	//"A siege engine designed to break open walls and fortifications.":"Осадное орудие, используемое для разрушения дверей и других сооружений.",
 	"A mill saw turns tree logs into wood material.":"Распиливает брёвна, превращая их в деревянное сырьё.",
 	//"A trading post. Requires a trader to reside inside.":"Торговый пост. Для работы требуется продавец.",
 	//"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies."
-	"Piercing bolts for ballista.":"Болты для баллисты.",
 	"A simple wooden ladder for climbing over defenses.":"Простая деревянная лестница. С помощью неё можно перебираться через вражеские сооружения.",
 	"A stone boulder useful for crushing enemies.":"Валун, которым можно раздавить врага.",
 	"An empty wooden crate for storing and transporting inventory.":"Пустой деревянный ящик, в котором можно хранить и перемещать вещи.",
@@ -300,10 +306,9 @@
 	"A trampoline used for bouncing and jumping over enemy walls.":"Батут для прыжков, позволяющий перепрыгивать через стены противника.",
 	"A stationary arrow-firing death machine.":"Стреляющая стрелами машина для убийств.",
 	"Fire arrows used to set wooden structures on fire.":"Огненные стрелы, которыми можно поджигать деревянные конструкции",
-	"A fast rowing boat used for quickly getting across water.":"Гребная лодка. Позволяет быстро передвигаться по воде.",
+
 	"A tunnel for quick transportation.":"Тоннель для быстрого перемещения.",
 	"Bucket for storing water. Useful for fighting fires.":"Ведро для хранения воды. Пригодится в борьбе с пожарами.",
-	"A slow armoured boat which acts also as a water base for respawn and class change.":"Медленная бронированная лодка, которая является водной базой и точкой для возрождения и смены класса.",
 	"A generic factory. Requires Research Room, technology upgrade and big enough population to produce items.":"Фабрика. Для создания предметов требуются комната для исследований, соответствующая технология и достаточная популяция.",
 	//"Kitchen produces food which heal wounds.":"Кухня производит продукты питания, которые лечат раны.",
 	//"A plant nursery with grain, oak and pine tree seeds.":"",
@@ -316,9 +321,9 @@
 	//"When team is in possession of stone construction technology it allows builders to make stone walls, doors, traps and spikes.":""
 	//"Dorm increases population count and allows spawning and healing inside. Requires a migrant.":""
 	"Research room.":"Комната для исследований.",
-	"Water arrows for Archer. Can extinguish fires and stun enemies.":"Водные стрелы для лучника. Могут тушить пожары и оглушать врагов.",
+	"Water arrows for Archer. Can extinguish fires and stun enemies.":"Водяные стрелы для лучника. Могут тушить пожары и оглушать врагов.",
 	"Bomb arrows for Archer.":"Стрелы с бомбами для лучника.",
-	"Water bomb for Knight. Can extinguish fires and stun enemies.":"Водная бомба для рыцаря. Может тушить пожары и оглушать врагов.",
+	"Water bomb for Knight. Can extinguish fires and stun enemies.":"Водяная бомба для рыцаря. Может тушить пожары и оглушать врагов.",
 	"Water absorbing sponge. Useful for unflooding tunnels and reducing water stuns.":"Губка, всасывающая воду. Полезна для осушения тоннелей и уменьшения длительности оглушения",
 	"Builder workshop for building utilities and changing class to Builder":"Мастерская строителя для создания строительных инструментов и приспособлений и смены класса на строителя.",
 	"Knight workshop for building explosives and changing class to Knight":"Мастерская рыцаря для создания взрывчатки и смены класса на рыцаря.",
@@ -327,6 +332,13 @@
 	"Naval workshop for building boats":"Корабельная мастерская для строительства лодок и кораблей.",
 	"Place of merriment and healing":"Место для отдыха и лечения.",
 	"A Cache for storing your materials, items and armaments.":"Склад для хранения ваших материалов, предметов и боеприпасов.",
+	"A refreshing mug of beer.":"Освежающая кружка пива.",
+	"A hearty meal to get you back on your feet.":"Хорошая порция еды, которая поднимет вас на ноги.",
+	"A suspiciously undercooked egg, maybe it will hatch.":"Подозрительно недожаренное яйцо, возможно оно вылупится.",
+	"A burger to go.":"Бургер с собой.",
+
+	"This magic scroll when cast will turn all nearby enemies into a pile of bloody gibs.":"Этот магический свиток превращает всех видимых врагов в кучу ошмётков.",
+	"This magic scroll will evaporate all water in a large surrounding orb.":"Этот магический свиток превращает весь камень в радиусе в золото.",
 	//"Fire satchel for Knight only.":"Подрывмешок для Рыцаря.",
 
 //// HELPS ////
@@ -375,15 +387,15 @@
 
 	//"Saw":"Пила", //in blobs
 	//"Ballista":"Баллиста", //in blobs
-	"Bomb Ammo":"ПОМОГИ",
+	"Bomb Ammo":"Взрывоопасные боеприпасы",
 	//"Catapult":"Катапульта", //in blobs
 	"Demolition":"Разрушение",
 	"Bakery":"Выпечка",
-	"Longboat":"Корабль",
+	"Longboat":"Баркас ",
 	"Military Supplies":"Военное снаряжение",
 	"Pyrotechnics":"Пиротехника",
 	//"War Boat":"Военный корабль", //in blobs
-	"Water Ammo":"Водяное вооружение",
+	"Water Ammo":"Водяные боеприпасы",
 	
 //Saw.as
 	"Turn Saw On":"Включить пилу",
@@ -434,7 +446,7 @@
 	"Saws will kill you instantly": "Пила убивает вас мгновенно",
 	"Spikes placed on stone blocks behave differently, than if placed on other blocks. Experiment!": "Шипы, поставленные на каменный блок, отличаются от тех, что поставлены на другие блоки. Экспериментируйте!",
 	"As an archer you can move faster using the grappling hook.": "Играя за лучника, вы можете передвигаться быстрее, используя крюк-кошку.",
-	"You can put out fires using water bombs or water arrows (as well as a bucket of water)!": "Вы можете тушить огонь с помощью водных бомб или водных стрел (а также и ведром с водой)!",
+	"You can put out fires using water bombs or water arrows (as well as a bucket of water)!": "Вы можете тушить огонь с помощью водяных бомб или водяных стрел (а также и ведром с водой)!",
 	"As a knight, jabbing isn't always effective, try charging for a slash!": "Играя за рыцаря, колющие удары не всегда эффективны, попробуй задержать атаку для рассекающего удара!",
 	"A builder can be more useful on the front lines than in his base. But keep your eyes open over there!": "Строитель может быть гораздо полезнее на фронте. Но будьте готовы к атаке!",
 	"Wood blocks and backwalls can be set on fire, try using stone alongside the wood!":"Деревянные блоки могут поджечь, так что укрепляйте их камнем снаружи!",
@@ -442,7 +454,7 @@
 	"Pay attention to the ground, there may be a trap waiting!": "Смотрите под ноги, ловшуки могут ждать вас в самых неожиданных местах!",
 	"Bomb arrows can be used to collapse towers quickly.": "Взрывные стрелы могут быть использованы для быстрого уничтожения башен.",
 	"If you see materials on the ground, take them to a builder or put them in your storage!": "Если вы видите материалы на земле, подберите их и отнесите своему строителю или положите их на склад!",
-	"Water bombs and water arrows stun your enemies for an easy kill.": "Водные бомбы и водные стрелы оглушают врагов для лёгкого убийства.",
+	"Water bombs and water arrows stun your enemies for an easy kill.": "Водяные бомбы и водяные стрелы оглушают врагов для лёгкого убийства.",
 	"Pay attention to your minimap for enemy tunnelers.": "Не забывайте за вражескими тоннелями на мини-карте.",
 	"Don't let siege weapons fall into the wrong hands!": "Не дайте осадным орудиям попасть не в те руки!",
 	"Immobilise siege weapons to prevent them from accidentally falling off a cliff!": "Снимайте колёса с осадных орудий, чтобы они не падали с возвышенностей!",
@@ -630,7 +642,7 @@
 	"Bomber":"Воздушный шар", //OLD
 	"Ballista":"Баллиста",
 	"Dinghy":"Лодка",
-	"Long Boat":"Корабль",
+	"Long Boat":"Баркас",
 	"Raft":"Плот",
 	"War Boat":"Военный корабль",
 	"Large Door":"Большая дверь", //OLD
@@ -652,11 +664,12 @@
 	"Swap Class":"Сменить класс", //OneClassAvailable.as & TentLogic.as (btns)
 	"Swap class":"Сменить класс", //StandardRespawnCommand.as (menu desc)
 	"Change class":"Сменить класс", //Hall.as, TDM_Ruins.as, WAR_base.as, Ballista.as, WarBoat.as
+	"Trade":"Торговля",
 
 //// SCROLLS ////
 //ScrollDrought.as
 	"Use this to dry up an orb of water.":"Высушить всю воду в радиусе.",
 	"Use this to turn all stone in the area into gold":"Превратить весь камень в золото в радиусе.",
-	"Use this to make all visible enemies instantly turn into a pile of gibs.":"Превратить всех видимых врагов в кучу ошмёток."
+	"Use this to make all visible enemies instantly turn into a pile of gibs.":"Превратить всех видимых врагов в кучу ошмётков."
 
 }
