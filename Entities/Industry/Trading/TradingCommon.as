@@ -134,7 +134,7 @@ TradeItem@ addTradeScrollFromScrollDef(CBlob@ this, const string &in name, s32 c
 		item.configFilename = "scroll";
 		item.iconFrame = def.scrollFrame;
 
-		string techPrefix = def.name + "   ";
+		string techPrefix = getTranslatedString(def.name) + "   ";
 		for (uint i = 0; i < def.items.length; i++)
 			techPrefix = techPrefix + "   " + def.items[i].iconName;
 		techPrefix = techPrefix + "\n\n\n";

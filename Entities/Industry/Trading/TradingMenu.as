@@ -65,7 +65,7 @@ void BuildTradingMenu(CBlob@ this, CBlob @caller)
 
 	if (caller !is null && caller.isMyPlayer() && items !is null)
 	{
-		CGridMenu@ menu = CreateGridMenu(this.getScreenPos() + Vec2f(0.0f, 0.0f), this, this.get_Vec2f("trade menu size"), this.get_string("trade menu caption"));
+		CGridMenu@ menu = CreateGridMenu(this.getScreenPos() + Vec2f(0.0f, 0.0f), this, this.get_Vec2f("trade menu size"), getTranslatedString(this.get_string("trade menu caption")));
 		if (menu !is null)
 		{
 			addTradeItemsToMenu(this, menu, caller.getNetworkID());
