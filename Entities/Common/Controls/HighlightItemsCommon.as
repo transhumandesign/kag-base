@@ -7,40 +7,16 @@ const string[][] highlight_items = {
 
 int getClassIndex(CBlob@ blob)
 {
-	string config_name = blob.getConfig();
-	for (uint i = 0; i < classes.length(); i++)
-	{
-		if (classes[i] == config_name)
-		{
-			return i;
-		}
-	}
-	return -1;
+	return classes.find(blob.getConfig());
 }
 
-bool isItemToHighlight(CBlob@ for_blob, CBlob@ item)
+bool shouldHighlightBlob(CBlob@ for_blob, CBlob@ item)
 {
-	string item_config_name = item.getConfig();
 	int class_index = getClassIndex(for_blob);
-	for (uint i = 0; i < highlight_items[class_index].length(); i++)
-	{
-		if (item_config_name == highlight_items[class_index][i])
-		{
-			return true;
-		}
-	}
-	return false;
+	return highlight_items[class_index].find(item.getConfig()) >= 0;
 }
 
-bool isItemToHighlight(int class_index, CBlob@ item)
+bool shouldHighlightBlob(int class_index, CBlob@ item)
 {
-	string item_config_name = item.getConfig();
-	for (uint i = 0; i < highlight_items[class_index].length(); i++)
-	{
-		if (item_config_name == highlight_items[class_index][i])
-		{
-			return true;
-		}
-	}
-	return false;
+	return highlight_items[class_index].find(item.getConfig()) >= 0;
 }
