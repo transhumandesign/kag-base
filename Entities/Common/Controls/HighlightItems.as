@@ -12,7 +12,7 @@ const string[][] highlight_items = {
 bool do_highlight = false;
 
 //Disable highlighting for items, if their luminance is less than this variable.
-const uint hide_luminance_level = 30;
+const uint hide_luminance_level = 40;
 
 void onTick(CSprite@ sprite)
 {
@@ -28,28 +28,38 @@ void onRender(CSprite@ sprite)
 		CMap@ map = getMap();
 		if (camera is null || map is null) return;
 
+		//Index of array of items to highlight.
+		int class_index = classes.find(sprite.getBlob().getConfig());
 		CBlob@[] blobs;
 		if (getBlobs(@blobs))
 		{
 			for (uint i = 0; i < blobs.length; i++)
 			{
 				CBlob@ blob = blobs[i];
-				//Highlight.
-				int class_index = classes.find(sprite.getBlob().getConfig());
-				if (shouldHighlightBlob(class_index, blob) && !blob.isInInventory())
+				CSprite@ blob_sprite = blob.getSprite();
+				if (!blob.isInInventory() && blob_sprite !is null)
 				{
-					float luminance = map.getColorLight(blob.getPosition()).getLuminance();
-					//Don't highlight items in dark caves and places.
-					if (luminance >= hide_luminance_level)
+					//Highlight.
+					if (shouldHighlightBlob(class_index, blob) && blob_sprite.isOnScreen())
 					{
-						//Highlight like any normal pickup.
-						blob.RenderForHUD(Vec2f_zero, 0.0f, SColor(255,255,255,255), RenderStyle::normal);
-						//But do a beautiful fading effect.
-						uint brightness_level = Maths::Abs(Maths::Sin(getGameTime() / 20.0f) * 180);
-						blob.RenderForHUD(Vec2f_zero, 0.0f, SColor(brightness_level,255,255,0), RenderStyle::light);
-						blob.RenderForHUD(Vec2f_zero, 0.0f, SColor(brightness_level,255,255,255), RenderStyle::light);
+						float luminance = map.getColorLight(blob.getPosition()).getLuminance();
+						//Don't highlight items in dark caves and places.
+						if (luminance >= hide_luminance_level)
+						{
+							//Make items darker in darkness.
+							float luminance_modifier = luminance / 255.0f;
+							//Highlight like any normal pickup.
+							blob.RenderForHUD(Vec2f_zero, 0.0f, SColor(255,luminance,luminance,luminance), RenderStyle::normal);
+							//But do a beautiful fading effect.
+							float range = 200.0f * luminance_modifier;
+							uint brightness_level = Maths::Abs(Maths::Sin(getGameTime() / 20.0f)) * range;
+							//Make it a bit darker in dark places, so it doesn't break your eyes.
+							blob.RenderForHUD(Vec2f_zero, 0.0f, SColor(brightness_level,255,255,0), RenderStyle::light);
+							blob.RenderForHUD(Vec2f_zero, 0.0f, SColor(brightness_level,255,255,255), RenderStyle::light);
+						}
 					}
 				}
+				
 			}
 		}
 	}
