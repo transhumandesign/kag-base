@@ -3,7 +3,6 @@
 
 #include "StandardControlsCommon.as"
 #include "ThrowCommon.as"
-#include "HighlightItemsCommon.as"
 
 const u32 PICKUP_ERASE_TICKS = 80;
 
@@ -406,8 +405,8 @@ void onRender(CSprite@ this)
 				CBlob @b = pickupBlobs[i];
 
 				bool canBePicked = canBlobBePickedUp(blob, b);
-				bool shouldHighlight = shouldHighlightBlob(blob, b);
-				if (canBePicked && !shouldHighlight)
+
+				if (canBePicked)
 				{
 					b.RenderForHUD(RenderStyle::outline_front);
 				}
@@ -419,8 +418,7 @@ void onRender(CSprite@ this)
 					GUI::SetFont("menu");
 					GUI::GetTextDimensions(b.getInventoryName(), dimensions);
 					GUI::DrawText(getTranslatedString(b.getInventoryName()), getDriver().getScreenPosFromWorldPos(b.getPosition() - Vec2f(0, -b.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);
-					if (shouldHighlight)
-						b.RenderForHUD(RenderStyle::outline_front);
+
 					// draw mouse hover effect
 					//if (canBePicked)
 					{
