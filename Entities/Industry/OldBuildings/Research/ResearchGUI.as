@@ -226,7 +226,7 @@ void DrawButton( CBlob@ blob, ScrollDef@ def, const string &in defname, Vec2f bu
 			suffix = " \n\n" + getTranslatedString("(click to vote)");
 
 		GUI::SetFont("menu");
-		GUI::DrawText( def.name + suffix, Vec2f(buttonLR.x - labeldim.x/2.0f, buttonLR.y), color_white );
+		GUI::DrawText(getTranslatedString(def.name) + suffix, Vec2f(buttonLR.x - labeldim.x/2.0f, buttonLR.y), color_white );
 
 		if(localBlob.isKeyJustPressed(key_action1) && !def.hasTech() && !def.researching) //avoid sending pointless cmds
 		{

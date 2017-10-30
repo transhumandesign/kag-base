@@ -27,7 +27,7 @@ void onRender(CMap@ this)
 
 	if (time < endTime1)
 	{
-		text = "Welcome to King Arthur's Gold";
+		text = getTranslatedString("Welcome to King Arthur's Gold");
 		ul = Vec2f(getScreenWidth() / 2 - 70, 3 * getScreenHeight() / 4);
 		Vec2f size;
 		GUI::GetTextDimensions(text, size);
@@ -36,7 +36,7 @@ void onRender(CMap@ this)
 	}
 	else if (time < endTime2)
 	{
-		text =  "This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!";
+		text =  getTranslatedString("This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!");
 		ul = Vec2f(getScreenWidth() / 2 - 70, 3 * getScreenHeight() / 4);
 		Vec2f size;
 		GUI::GetTextDimensions(text, size);

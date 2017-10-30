@@ -9,7 +9,7 @@
 void onInit(CBlob@ this)
 {
 	InitCosts(); //read from cfg
-
+  
 	AddIconToken("$_buildershop_filled_bucket$", "Bucket.png", Vec2f(16, 16), 1);
 
 	this.set_TileType("background tile", CMap::tile_wood_back);

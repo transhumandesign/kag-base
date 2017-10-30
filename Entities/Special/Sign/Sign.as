@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
 
 	if (!this.exists("text"))
 	{
-		this.set_string("text", getTranslatedString("The big brown fox jumped over the shaggy chocolate.")); // Should be ok even if the server and the client run it?
+		this.set_string("text", "The big brown fox jumped over the shaggy chocolate."); // Should be ok even if the server and the client run it?
 	}
 
 	this.getSprite().SetAnimation("written");
@@ -46,7 +46,7 @@ void onRender(CSprite@ this)
 		int left = 200.0f;
 		int margin = 4;
 		Vec2f dim;
-		string label = blob.get_string("text");
+		string label = getTranslatedString(blob.get_string("text"));
 		label += "\n";
 		GUI::SetFont("menu");
 		GUI::GetTextDimensions(label , dim);

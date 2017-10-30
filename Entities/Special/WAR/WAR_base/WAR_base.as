@@ -430,7 +430,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			}
 			else
 			{
-				caller.CreateGenericButton("$change_class$", classButtonPos, this, this.getCommandID("class menu"), "Change class", params);
+				caller.CreateGenericButton("$change_class$", classButtonPos, this, this.getCommandID("class menu"), getTranslatedString("Change class"), params);
 			}
 		}
 	}

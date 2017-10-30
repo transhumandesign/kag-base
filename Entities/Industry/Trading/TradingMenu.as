@@ -54,7 +54,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		CBitStream params;
 		params.write_u16(caller.getNetworkID());
-		caller.CreateGenericButton("$trade$", Vec2f_zero, this, this.getCommandID("stock"), "Shop", params);
+		caller.CreateGenericButton("$trade$", Vec2f_zero, this, this.getCommandID("stock"), getTranslatedString("Shop"), params);
 	}
 }
 
@@ -65,7 +65,7 @@ void BuildTradingMenu(CBlob@ this, CBlob @caller)
 
 	if (caller !is null && caller.isMyPlayer() && items !is null)
 	{
-		CGridMenu@ menu = CreateGridMenu(this.getScreenPos() + Vec2f(0.0f, 0.0f), this, this.get_Vec2f("trade menu size"), this.get_string("trade menu caption"));
+		CGridMenu@ menu = CreateGridMenu(this.getScreenPos() + Vec2f(0.0f, 0.0f), this, this.get_Vec2f("trade menu size"), getTranslatedString(this.get_string("trade menu caption")));
 		if (menu !is null)
 		{
 			addTradeItemsToMenu(this, menu, caller.getNetworkID());
@@ -103,12 +103,12 @@ void addTradeItemsToMenu(CBlob@ this, CGridMenu@ menu, u16 callerID)
 				const u16 goldCount = caller.getBlobCount("mat_gold");
 				params.write_u16(goldCount);
 
-				CGridButton@ button = menu.AddButton(item.iconName, item.name, this.getCommandID("buy"), params);
+				CGridButton@ button = menu.AddButton(item.iconName, getTranslatedString(item.name), this.getCommandID("buy"), params);
 				if (button !is null)
 				{
 					if (item.boughtTime != 0 && item.boughtTime + item.unavailableTime > gametime)
 					{
-						button.hoverText = "Out of stock. Come back later.";
+						button.hoverText = getTranslatedString("Out of stock. Come back later.");
 						button.SetEnabled(false);
 					}
 					else
