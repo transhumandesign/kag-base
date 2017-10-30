@@ -35,7 +35,7 @@ void onInit(CBlob@ this)
 
 	this.set_Vec2f("inventory offset", Vec2f(0.0f, 160.0f));
 
-	SetHelp(this, "help self action2", "builder", "$Pick$Dig/Chop  $KEY_HOLD$$RMB$", "", 3);
+	SetHelp(this, "help self action2", "builder", getTranslatedString("$Pick$Dig/Chop  $KEY_HOLD$$RMB$"), "", 3);
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().removeIfTag = "dead";

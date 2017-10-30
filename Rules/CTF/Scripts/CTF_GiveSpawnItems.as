@@ -282,7 +282,7 @@ void onRender(CRules@ this)
 		else if (next_items > getGameTime())
 		{
 			f32 offset = 140.0f;
-			string action = (b.getName() == "builder" ? "Go Build" : "Go Fight");
+			string action = (b.getName() == "builder" ? "Go Build" : "Go Fight";
 			if (this.isWarmup())
 			{
 				action = "Prepare for Battle";
@@ -295,7 +295,7 @@ void onRender(CRules@ this)
 			GUI::DrawText(getTranslatedString("Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!")
 							.replace("{SEC}", "" + secs)
 							.replace("{TIMESUFFIX}", getTranslatedString(units))
-							.replace("{ACTION}", action),
+							.replace("{ACTION}", getTranslatedString(action)),
 			              Vec2f(getScreenWidth() / 2 - offset, getScreenHeight() / 3 - 70.0f + Maths::Sin(getGameTime() / 3.0f) * 5.0f),
 			              SColor(255, 255, 55, 55));
 		}

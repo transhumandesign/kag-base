@@ -15,7 +15,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	CBitStream params;
 	params.write_u16(caller.getNetworkID());
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("drought"), "Use this to dry up an orb of water.", params);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("drought"), getTranslatedString("Use this to dry up an orb of water."), params);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

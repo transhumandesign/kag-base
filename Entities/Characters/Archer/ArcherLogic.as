@@ -41,8 +41,8 @@ void onInit(CBlob@ this)
 
 	this.addCommandID(grapple_sync_cmd);
 
-	SetHelp(this, "help self hide", "archer", "Hide    $KEY_S$", "", 1);
-	SetHelp(this, "help self action2", "archer", "$Grapple$ Grappling hook    $RMB$", "", 3);
+	SetHelp(this, "help self hide", "archer", getTranslatedString("Hide    $KEY_S$"), "", 1);
+	SetHelp(this, "help self action2", "archer", getTranslatedString("$Grapple$ Grappling hook    $RMB$"), "", 3);
 
 	//add a command ID for each arrow type
 	for (uint i = 0; i < arrowTypeNames.length; i++)
@@ -1017,7 +1017,7 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 		{
 			if (itemname == arrowTypeNames[j])
 			{
-				SetHelp(this, "help self action", "archer", "$arrow$Fire arrow   $KEY_HOLD$$LMB$", "", 3);
+				SetHelp(this, "help self action", "archer", getTranslatedString("$arrow$Fire arrow   $KEY_HOLD$$LMB$"), "", 3);
 				if (j > 0 && this.getInventory().getItemsCount() > 1)
 				{
 					SetHelp(this, "help inventory", "archer", "$Help_Arrow1$$Swap$$Help_Arrow2$         $KEY_TAP$$KEY_F$", "", 2);

@@ -1,7 +1,5 @@
 ﻿// Research
 
-#include "Help.as"
-#include "WARCosts.as"
 #include "ScrollCommon.as"
 #include "WAR_Structs.as"
 #include "RulesCore.as"
@@ -99,11 +97,11 @@ void GetButtonsFor( CBlob@ this, CBlob@ caller )
 		if ( overlapping && carried !is null && carried.getName() == "scroll" && carried.hasTag("tech"))
 		{
 			params.write_u16( carried.getNetworkID() );
-			caller.CreateGenericButton( "$scroll$", offset, this, this.getCommandID("use scroll"), "Use scroll", params );
+			caller.CreateGenericButton( "$scroll$", offset, this, this.getCommandID("use scroll"), getTranslatedString("Use scroll"), params );
 		}
 		else
 		{
-			caller.CreateGenericButton(27, offset, this, this.getCommandID("show research"), "Research", params );
+			caller.CreateGenericButton(27, offset, this, this.getCommandID("show research"), getTranslatedString("Research"), params );
 		}
 	}
 	
