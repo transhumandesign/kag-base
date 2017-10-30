@@ -24,16 +24,16 @@ void onInit(CBlob@ this)
 		//	this.getSprite().SetFrame( frame );
 	}
 
-	SetHelp(this, "help pickup", "", "$scroll$Pick up    $KEY_C$");
+	SetHelp(this, "help pickup", "", getTranslatedString("$scroll$Pick up    $KEY_C$"));
 
 	ShopItem[]@ items;
 	if (this.get(TECH_ARRAY, @items))
 	{
-		SetHelp(this, "help use carried", "", "$scroll$Use in *first* Hall     $KEY_E$");
+		SetHelp(this, "help use carried", "", getTranslatedString("$scroll$Use in *first* Hall     $KEY_E$"));
 	}
 	else
 	{
-		SetHelp(this, "help use carried", "", "$scroll$Use magic scroll    $KEY_E$");
+		SetHelp(this, "help use carried", "", getTranslatedString("$scroll$Use magic scroll    $KEY_E$"));
 	}
 }
 

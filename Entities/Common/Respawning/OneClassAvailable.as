@@ -42,7 +42,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		this.get_Vec2f("class offset"),             // button offset
 		this,                                       // button attachment
 		SpawnCmd::changeClass,                      // command id
-		"Swap Class",                               // description
+		getTranslatedString("Swap Class"),                               // description
 		params);                                    // bit stream
 
 		button.enableRadius = this.get_u8("class button radius");

@@ -1,15 +1,14 @@
 ﻿// Factory
 
-#include "ShopCommon.as";
-#include "ProductionCommon.as";
-#include "TechsCommon.as";
-#include "Descriptions.as";
-#include "Requirements_Tech.as";
-#include "MakeScroll.as";
-#include "Help.as";
-#include "WARCosts.as";
-#include "Hitters.as";
-#include "HallCommon.as";
+#include "ShopCommon.as"
+#include "ProductionCommon.as"
+#include "TechsCommon.as"
+#include "Requirements_Tech.as"
+#include "MakeScroll.as"
+#include "Help.as"
+#include "WARCosts.as"
+#include "Hitters.as"
+#include "HallCommon.as"
 
 const string children_destructible_tag = "children destructible";
 const string children_destructible_label = "children destruct label";
@@ -140,7 +139,7 @@ void AddButtonsForSet(CBlob@ this, CGridMenu@ menu, ScrollSet@ set)
 		{
 			CBitStream params;
 			params.write_string(defname);
-			CGridButton@ button = menu.AddButton("MiniIcons.png", def.scrollFrame, Vec2f(16, 16), def.name, this.getCommandID("upgrade factory"), Vec2f(1, 1), params);
+			CGridButton@ button = menu.AddButton("MiniIcons.png", def.scrollFrame, Vec2f(16, 16), getTranslatedString(def.name), this.getCommandID("upgrade factory"), Vec2f(1, 1), params);
 			if (button !is null)
 			{
 				CBitStream reqs, missing;
@@ -148,7 +147,7 @@ void AddButtonsForSet(CBlob@ this, CGridMenu@ menu, ScrollSet@ set)
 				if (!hasRequirements_Tech(inv, reqs, missing))
 				{
 					button.SetEnabled(false);
-					button.hoverText = getTranslatedString("Convert Workshop\n\n$RED$Requires {TECH_NAME}\n from Hall\n$RED$            $RESEARCH$\n\n").replace("{TECH_NAME}", def.name);;
+					button.hoverText = getTranslatedString("Convert Workshop\n\n$RED$Requires {TECH_NAME}\n from Hall\n$RED$            $RESEARCH$\n\n").replace("{TECH_NAME}", getTranslatedString(def.name));
 				}
 				else
 				{
