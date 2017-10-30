@@ -13,13 +13,16 @@ void onInit(CBlob@ this)
 
 	this.Tag("can settle"); //for DieOnCollapse to prevent 2 second life :)
 
-	//INIT COSTS
-	InitCosts();
-	
-	// SHOP
+	InitWorkshop(this);
+}
+
+
+void InitWorkshop(CBlob@ this)
+{
+	InitCosts(); //read from cfg
+
 	this.set_Vec2f("shop offset", Vec2f_zero);
 	this.set_Vec2f("shop menu size", Vec2f(4, 5));
-
 
 	{
 		ShopItem@ s = addShopItem(this, "Lantern", "$lantern$", "lantern", desc_lantern, false);

@@ -8,17 +8,18 @@
 
 void onInit(CBlob@ this)
 {
+	InitCosts(); //read from cfg
+
+	AddIconToken("$_buildershop_filled_bucket$", "Bucket.png", Vec2f(16, 16), 1);
+
 	this.set_TileType("background tile", CMap::tile_wood_back);
 
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
-	//INIT COSTS
-	InitCosts();
-	
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(4, 3));
+	this.set_Vec2f("shop menu size", Vec2f(3, 3));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
 
@@ -41,10 +42,6 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::filled_bucket);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Sponge", "$sponge$", "sponge", desc_sponge, false);
-		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::sponge);
-	}
-	{
 		ShopItem@ s = addShopItem(this, "Boulder", "$boulder$", "boulder", desc_boulder, false);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::boulder_stone);
 	}
@@ -61,6 +58,10 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Drill", "$drill$", "drill", desc_drill, false);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::drill_stone);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::drill);
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Sponge", "$sponge$", "sponge", desc_sponge, false);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::sponge);
 	}
 }
 
@@ -82,5 +83,31 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	if (cmd == this.getCommandID("shop made item"))
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
+
+		if(!getNet().isServer()) return; /////////////////////// server only past here
+
+		u16 caller, item;
+		if (!params.saferead_netid(caller) || !params.saferead_netid(item))
+		{
+			return;
+		}
+		string name = params.read_string();
+		{
+			CBlob@ callerBlob = getBlobByNetworkID(caller);
+			if (callerBlob is null)
+			{
+				return;
+			}
+
+			if (name == "filled_bucket")
+			{
+				CBlob@ b = server_CreateBlobNoInit("bucket");
+				b.setPosition(callerBlob.getPosition());
+				b.server_setTeamNum(callerBlob.getTeamNum());
+				b.Tag("_start_filled");
+				b.Init();
+				callerBlob.server_Pickup(b);
+			}
+		}
 	}
 }
