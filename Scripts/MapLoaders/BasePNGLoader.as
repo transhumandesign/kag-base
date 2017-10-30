@@ -54,10 +54,13 @@ class PNGLoader
 
 			while(image.nextPixel())
 			{
-				SColor pixel = image.readPixel();
-				int offset = image.getPixelOffset();
+				const SColor pixel = image.readPixel();
+				const int offset = image.getPixelOffset();
 
-				handlePixel(pixel, offset);
+				if (pixel.color != sky) // optimization
+				{
+					handlePixel(pixel, offset);
+				}
 
 				getNet().server_KeepConnectionsAlive();
 			}
@@ -78,71 +81,67 @@ class PNGLoader
 		return false;
 	}
 
-	void handlePixel(SColor pixel, int offset)
-	{
+	void handlePixel(const SColor &in pixel, const int offset)
+	{	
 		u8 alpha = pixel.getAlpha();
 
 		if(alpha < 255)
 		{
 			alpha &= ~0x80;
-			SColor rgb = SColor(0xFF, pixel.getRed(), pixel.getGreen(), pixel.getBlue());
+			const SColor rgb = SColor(0xFF, pixel.getRed(), pixel.getGreen(), pixel.getBlue());
 			const Vec2f position = getSpawnPosition(map, offset);
 
 			//print(" ARGB = "+alpha+", "+rgb.getRed()+", "+rgb.getGreen()+", "+rgb.getBlue());
 
-			// BLOCKS
-			if(rgb == ladder)
+			switch (rgb.color)
 			{
+			case ladder:
 				spawnBlob(map, "ladder", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == spikes)
-			{
+			break;
+			case spikes:
 				spawnBlob(map, "spikes", getTeamFromChannel(alpha), position, true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == stone_door)
-			{
+			break;
+			case stone_door:
 				spawnBlob(map, "stone_door", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == trap_block)
-			{
+			break;
+			case trap_block:
 				spawnBlob(map, "trap_block", getTeamFromChannel(alpha), position, true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == wooden_door)
-			{
+			break;
+			case wooden_door:
 				spawnBlob(map, "wooden_door", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == wooden_platform)
-			{
+			break;
+			case wooden_platform:
 				spawnBlob(map, "wooden_platform", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
+			break;
 			// MARKERS
-			else if(rgb == spawn)
+			case spawn:
 			{
 				const string team = alpha & 0x01 == 0? "blue" : "red";
-
 				AddMarker(map, offset, team+" main spawn");
 			}
-			else if(rgb == flag)
+			break;
+			case flag:
 			{
 				const string team = alpha & 0x01 == 0? "blue" : "red";
-
 				AddMarker(map, offset, team+" spawn");
 			}
+			break;
 			// NATURAL
-			else if(rgb == stalagmite)
+			case stalagmite:
 			{
 				CBlob@ blob = spawnBlob(map, "stalagmite", 255, position, getAngleFromChannel(alpha), true);
 				blob.set_u8("state", 1); // Spike::stabbing
 				offsets[autotile_offset].push_back(offset);
 			}
+			break;
 			// MECHANISMS
-			else if(rgb == lever)
+			case lever:
 			{
 				CBlob@ blob = spawnBlob(map, "lever", getTeamFromChannel(alpha), position, true);
 				offsets[autotile_offset].push_back(offset);
@@ -161,52 +160,44 @@ class PNGLoader
 				}
 				*/
 			}
-			else if(rgb == pressure_plate)
-			{
+			break;
+			case pressure_plate:
 				spawnBlob(map, "pressure_plate", 255, position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == push_button)
-			{
+			break;
+			case push_button:
 				spawnBlob(map, "push_button", getTeamFromChannel(alpha), position, true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == coin_slot)
-			{
+			break;
+			case coin_slot:
 				spawnBlob(map, "coin_slot", getTeamFromChannel(alpha), position, true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == sensor)
-			{
+			break;
+			case sensor:
 				spawnBlob(map, "sensor", getTeamFromChannel(alpha), position, true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == diode)
-			{
+			break;
+			case diode:
 				spawnBlob(map, "diode", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == elbow)
-			{
+			break;
+			case elbow:
 				spawnBlob(map, "elbow", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == emitter)
-			{
+			break;
+			case emitter:
 				spawnBlob(map, "emitter", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == inverter)
-			{
+			break;
+			case inverter:
 				spawnBlob(map, "inverter", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == junction)
-			{
+			break;
+			case junction:
 				spawnBlob(map, "junction", getTeamFromChannel(alpha), position, true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == magazine)
+			break;
+			case magazine:
 			{
 				CBlob@ blob = spawnBlob(map, "magazine", 255, position, true);
 				offsets[autotile_offset].push_back(offset);
@@ -232,738 +223,604 @@ class PNGLoader
 				CBlob@ item = server_CreateBlob(name, 255, position);
 				blob.server_PutInInventory(item);
 			}
-			else if(rgb == oscillator)
-			{
+			break;
+			case oscillator:
 				spawnBlob(map, "oscillator", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == randomizer)
-			{
+			break;
+			case randomizer:
 				spawnBlob(map, "randomizer", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == receiver)
-			{
+			break;
+			case receiver:
 				spawnBlob(map, "receiver", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == resistor)
-			{
+			break;
+			case resistor:
 				spawnBlob(map, "resistor", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == tee)
-			{
+			break;
+			case tee:
 				spawnBlob(map, "tee", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == toggle)
-			{
+			break;
+			case toggle:
 				spawnBlob(map, "toggle", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == transistor)
-			{
+			break;
+			case transistor:
 				spawnBlob(map, "transistor", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == wire)
-			{
+			break;
+			case wire:
 				spawnBlob(map, "wire", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == bolter)
-			{
+			break;
+			case bolter:
 				spawnBlob(map, "bolter", 255, position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == dispenser)
-			{
+			break;
+			case dispenser:
 				spawnBlob(map, "dispenser", 255, position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == lamp)
-			{
+			break;
+			case lamp:
 				spawnBlob(map, "lamp", 255, position, true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == obstructor)
-			{
+			break;
+			case obstructor:
 				spawnBlob(map, "obstructor", 255, position, true);
 				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == spiker)
-			{
+			break;
+			case spiker:
 				spawnBlob(map, "spiker", 255, position, getAngleFromChannel(alpha), true);
 				offsets[autotile_offset].push_back(offset);
-			}
-		}
-		else if(pixel == color_tile_ground)
-		{
-			map.SetTile(offset, CMap::tile_ground);
-		}
-		else if(pixel == color_tile_ground_back)
-		{
-			map.SetTile(offset, CMap::tile_ground_back);
-		}
-		else if(pixel == color_tile_stone)
-		{
-			map.SetTile(offset, CMap::tile_stone);
-		}
-		else if(pixel == color_tile_thickstone)
-		{
-			map.SetTile(offset, CMap::tile_thickstone);
-		}
-		else if(pixel == color_tile_bedrock)
-		{
-			map.SetTile(offset, CMap::tile_bedrock);
-		}
-		else if(pixel == color_tile_gold)
-		{
-			map.SetTile(offset, CMap::tile_gold);
-		}
-		else if(pixel == color_tile_castle)
-		{
-			map.SetTile(offset, CMap::tile_castle);
-		}
-		else if(pixel == color_tile_castle_back)
-		{
-			map.SetTile(offset, CMap::tile_castle_back);
-		}
-		else if(pixel == color_tile_castle_moss)
-		{
-			map.SetTile(offset, CMap::tile_castle_moss);
-		}
-		else if(pixel == color_tile_castle_back_moss)
-		{
-			map.SetTile(offset, CMap::tile_castle_back_moss);
-		}
-		else if(pixel == color_tile_wood)
-		{
-			map.SetTile(offset, CMap::tile_wood);
-		}
-		else if(pixel == color_tile_wood_back)
-		{
-			map.SetTile(offset, CMap::tile_wood_back );
-		}
-		else if(pixel == color_tile_grass)
-		{
-			map.SetTile(offset, CMap::tile_grass + map_random.NextRanged(3));
-		}
-		else if(pixel == color_water_air)
-		{
-			map.server_setFloodWaterOffset(offset, true);
-		}
-		else if(pixel == color_water_backdirt)
-		{
-			map.server_setFloodWaterOffset(offset, true);
-			map.SetTile(offset, CMap::tile_ground_back);
-		}
-		else if(pixel == color_princess)
-		{
-			spawnBlob(map, "princess", offset, 6, false);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if(pixel == color_necromancer)
-		{
-			spawnBlob( map, "necromancer", offset, 3, false);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if(pixel == color_necromancer_teleport)
-		{
-			AddMarker( map, offset, "necromancer teleport" );
-		}
-		else if(pixel == color_blue_main_spawn)
-		{
-			AddMarker(map, offset, "blue main spawn");
-		}
-		else if(pixel == color_red_main_spawn)
-		{
-			AddMarker(map, offset, "red main spawn");
-		}
-		else if (pixel == color_green_main_spawn)
-		{
-			CBlob@ hall = spawnBlob( map, "hall", offset, 2 );
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_purple_main_spawn)
-		{
-			CBlob@ hall = spawnBlob( map, "hall", offset, 3 );
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_orange_main_spawn)
-		{
-			CBlob@ hall = spawnBlob( map, "hall", offset, 4 );
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_aqua_main_spawn)
-		{
-			CBlob@ hall = spawnBlob( map, "hall", offset, 5 );
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_teal_main_spawn)
-		{
-			CBlob@ hall = spawnBlob( map, "hall", offset, 6 );
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_gray_main_spawn)
-		{
-			CBlob@ hall = spawnBlob( map, "hall", offset, 7 );
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_blue_spawn)
-		{
-			AddMarker( map, offset, "blue spawn" );
-		}
-		else if (pixel == color_red_spawn)
-		{
-			AddMarker( map, offset, "red spawn" );
-		}
-		else if (pixel == color_green_spawn)
-		{
-			AddMarker( map, offset, "green spawn" );
-		}
-		else if (pixel == color_purple_spawn)
-		{
-			AddMarker( map, offset, "purple spawn" );
-		}
-		else if (pixel == color_orange_spawn)
-		{
-			AddMarker( map, offset, "orange spawn" );
-		}
-		else if (pixel == color_aqua_spawn)
-		{
-			AddMarker( map, offset, "aqua spawn" );
-		}
-		else if (pixel == color_teal_spawn)
-		{
-			AddMarker( map, offset, "teal spawn" );
-		}
-		else if (pixel == color_gray_spawn)
-		{
-			AddMarker( map, offset, "gray spawn" );
-		}
-		else if (pixel == color_knight_shop)
-		{
-			spawnBlob( map, "knightshop", offset, 255);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_builder_shop)
-		{
-			spawnBlob( map, "buildershop", offset, 255);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_archer_shop)
-		{
-			spawnBlob( map, "archershop", offset, 255);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_boat_shop)
-		{
-			spawnBlob( map, "boatshop", offset, 255);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if(pixel == color_vehicle_shop)
-		{
-			spawnBlob(map, "vehicleshop", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_quarters)
-		{
-			spawnBlob(map, "quarters", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_storage_noteam)
-		{
-			spawnBlob(map, "storage", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_barracks_noteam)
-		{
-			spawnBlob(map, "barracks", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_factory_noteam)
-		{
-			spawnBlob(map, "factory", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_tunnel_blue)
-		{
-			spawnBlob(map, "tunnel", offset, 0);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_tunnel_red)
-		{
-			spawnBlob(map, "tunnel", offset, 1);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_tunnel_noteam)
-		{
-			spawnBlob(map, "tunnel", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_kitchen)
-		{
-			spawnBlob(map, "kitchen", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_nursery)
-		{
-			spawnBlob(map, "nursery", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_research)
-		{
-			spawnBlob(map, "research", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_workbench)
-		{
-			spawnBlob(map, "workbench", offset, -1, true);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_campfire)
-		{
-			spawnBlob(map, "fireplace", offset, -1, true, Vec2f(0.0f, -4.0f));
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if(pixel == color_saw)
-		{
-			spawnBlob( map, "saw", offset, -1, false);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if(pixel.getRed() == color_tree.getRed() && pixel.getBlue() == color_tree.getBlue() && pixel.getGreen() >= color_tree.getGreen() && pixel.getGreen() <= color_tree.getGreen()+3)
-		{
-			offsets[tree_offset].push_back(offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if(pixel == color_bush)
-		{
-			offsets[bush_offset].push_back( offset );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_grain)
-		{
-			offsets[grain_offset].push_back( offset );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_flowers)
-		{
-			spawnBlob( map, "flowers", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_log)
-		{
-			spawnBlob( map, "log", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_shark)
-		{
-			spawnBlob( map, "shark", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_fish)
-		{
-			CBlob@ fishy = spawnBlob( map, "fishy", offset, -1);
-			if (fishy !is null)
-			{
-				fishy.set_u8("age", (offset * 997) % 4 );
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_bison)
-		{
-			spawnBlob( map, "bison", offset, -1, false);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_chicken)
-		{
-			spawnBlob( map, "chicken", offset, -1, false, Vec2f(0,-8));
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_ladder || pixel == color_tile_ladder_ground || pixel == color_tile_ladder_castle || pixel == color_tile_ladder_wood)
-		{
-			offsets[ladder_offset].push_back( offset );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_platform_up)
-		{
-			spawnBlob( map, "wooden_platform", offset, 255, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_platform_right)
-		{
-			CBlob@ blob = spawnBlob(map, "wooden_platform", offset, 255, false);
-			offsets[autotile_offset].push_back(offset);
-			blob.setAngleDegrees(90.0f);
-			blob.getShape().SetStatic(true);
-		}
-		else if (pixel == color_platform_down)
-		{
-			CBlob@ blob = spawnBlob( map, "wooden_platform", offset, 255, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 180.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_platform_left)
-		{
-			CBlob@ blob = spawnBlob( map, "wooden_platform", offset, 255, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( -90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_wooden_door_h_blue)
-		{
-			spawnBlob( map, "wooden_door", offset, 0, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_wooden_door_v_blue)
-		{
-			CBlob@ blob = spawnBlob( map, "wooden_door", offset, 0, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_wooden_door_h_red)
-		{
-			spawnBlob( map, "wooden_door", offset, 1, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_wooden_door_v_red)
-		{
-			CBlob@ blob = spawnBlob( map, "wooden_door", offset, 1, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_wooden_door_h_noteam)
-		{
-			spawnBlob( map, "wooden_door", offset, 255, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_wooden_door_v_noteam)
-		{
-			CBlob@ blob = spawnBlob( map, "wooden_door", offset, 255, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_stone_door_h_blue)
-		{
-			spawnBlob( map, "stone_door", offset, 0, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_stone_door_v_blue)
-		{
-			CBlob@ blob = spawnBlob( map, "stone_door", offset, 0, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_stone_door_h_red)
-		{
-			spawnBlob( map, "stone_door", offset, 1, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_stone_door_v_red)
-		{
-			CBlob@ blob = spawnBlob( map, "stone_door", offset, 1, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_stone_door_h_noteam)
-		{
-			spawnBlob( map, "stone_door", offset, 255, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_stone_door_v_noteam)
-		{
-			CBlob@ blob = spawnBlob( map, "stone_door", offset, 255, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_trapblock_blue)
-		{
-			spawnBlob( map, "trap_block", offset, 0, true);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_trapblock_red)
-		{
-			spawnBlob( map, "trap_block", offset, 1, true);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_trapblock_noteam)
-		{
-			spawnBlob( map, "trap_block", offset, 255, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_spikes)
-		{
-			offsets[spike_offset].push_back( offset );
-		}
-		else if (pixel == color_spikes_ground)
-		{
-			map.SetTile(offset, CMap::tile_ground_back );
-			offsets[spike_offset].push_back( offset );
-		}
-		else if (pixel == color_spikes_castle)
-		{
-			map.SetTile(offset, CMap::tile_castle_back );
-			offsets[spike_offset].push_back( offset );
-		}
-		else if (pixel == color_spikes_wood)
-		{
-			map.SetTile(offset, CMap::tile_wood_back );
-			offsets[spike_offset].push_back( offset );
-		}
-		else if(pixel == chest)
-		{
-			spawnBlob(map, "chest", 255, getSpawnPosition(map, offset));
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if (pixel == color_drill)
-		{
-			spawnBlob( map, "drill", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_trampoline)
-		{
-			CBlob@ trampoline = server_CreateBlobNoInit("trampoline");
-			if (trampoline !is null)
-			{
-				trampoline.Tag("invincible");
-				trampoline.Tag("static");
-				trampoline.Tag("no pickup");
-				trampoline.setPosition(getSpawnPosition(map, offset));
-				trampoline.Init();
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_lantern)
-		{
-			spawnBlob( map, "lantern", offset, -1, true);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_crate)
-		{
-			spawnBlob( map, "crate", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_bucket)
-		{
-			spawnBlob( map, "bucket", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_sponge)
-		{
-			spawnBlob( map, "sponge", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_steak)
-		{
-			spawnBlob( map, "steak", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_burger)
-		{
-			spawnBlob( map, "food", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_heart)
-		{
-			spawnBlob( map, "heart", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_catapult)
-		{
-			spawnVehicle( map, "catapult", offset, 0); // HACK: team for Challenge
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_ballista)
-		{
-			spawnVehicle( map, "ballista", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_mountedbow)
-		{
-			spawnBlob( map, "mounted_bow", offset, -1, true, Vec2f(0.0f, 4.0f));
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_longboat)
-		{
-			spawnVehicle( map, "longboat", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_warboat)
-		{
-			spawnVehicle( map, "warboat", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_dinghy)
-		{
-			spawnVehicle( map, "dinghy", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_raft)
-		{
-			spawnVehicle( map, "raft", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_airship)
-		{
-			spawnVehicle( map, "airship", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_bomber)
-		{
-			spawnVehicle( map, "bomber", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_bombs)
-		{
-			AddMarker( map, offset, "mat_bombs" );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_waterbombs)
-		{
-			spawnBlob( map, "mat_waterbombs", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_arrows)
-		{
-			spawnBlob( map, "mat_arrows", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_bombarrows)
-		{
-			spawnBlob( map, "mat_bombarrows", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_waterarrows)
-		{
-			spawnBlob( map, "mat_waterarrows", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_firearrows)
-		{
-			spawnBlob( map, "mat_firearrows", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_bolts)
-		{
-			spawnBlob( map, "mat_bolts", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_blue_mine)
-		{
-			spawnBlob( map, "mine", offset, 0);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_red_mine)
-		{
-			spawnBlob( map, "mine", offset, 1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_mine_noteam)
-		{
-			spawnBlob( map, "mine", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_boulder)
-		{
-			spawnBlob( map, "boulder", offset, -1, false, Vec2f(8.0f, -8.0f));
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_satchel)
-		{
-			spawnBlob( map, "satchel", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_keg)
-		{
-			spawnBlob( map, "keg", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_gold)
-		{
-			spawnBlob( map, "mat_gold", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_stone)
-		{
-			spawnBlob( map, "mat_stone", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_wood)
-		{
-			spawnBlob( map, "mat_wood", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_mook_knight)
-		{
-			AddMarker( map, offset, "mook knight" );
-		}
-		else if(pixel == color_mook_archer)
-		{
-			AddMarker(map, offset, "mook archer");
-		}
-		else if(pixel == color_mook_spawner)
-		{
-			AddMarker(map, offset, "mook spawner");
-		}
-		else if(pixel == color_mook_spawner_10)
-		{
-			AddMarker(map, offset, "mook spawner 10");
-		}
-		else if(pixel == color_dummy)
-		{
-			spawnBlob(map, "dummy", offset, 1, true);
-			offsets[autotile_offset].push_back( offset );
+			break;
+			};
 		}
 		else
 		{
-			HandleCustomTile( map, offset, pixel );
+			switch (pixel.color)
+			{
+			case color_tile_ground:           map.SetTile(offset, CMap::tile_ground); break;
+			case color_tile_ground_back:      map.SetTile(offset, CMap::tile_ground_back); break;
+			case color_tile_stone:            map.SetTile(offset, CMap::tile_stone); break;
+			case color_tile_thickstone:       map.SetTile(offset, CMap::tile_thickstone); break;
+			case color_tile_bedrock:          map.SetTile(offset, CMap::tile_bedrock); break;
+			case color_tile_gold:             map.SetTile(offset, CMap::tile_gold); break;
+			case color_tile_castle:           map.SetTile(offset, CMap::tile_castle); break;
+			case color_tile_castle_back:      map.SetTile(offset, CMap::tile_castle_back); break;
+			case color_tile_castle_moss:      map.SetTile(offset, CMap::tile_castle_moss); break;
+			case color_tile_castle_back_moss: map.SetTile(offset, CMap::tile_castle_back_moss); break;
+			case color_tile_wood:             map.SetTile(offset, CMap::tile_wood); break;
+			case color_tile_wood_back:        map.SetTile(offset, CMap::tile_wood_back); break;
+			case color_tile_grass:            map.SetTile(offset, CMap::tile_grass + map_random.NextRanged(3)); break;
+			case color_water_air:
+				map.server_setFloodWaterOffset(offset, true);
+			break;
+			case color_water_backdirt:
+				map.server_setFloodWaterOffset(offset, true);
+				map.SetTile(offset, CMap::tile_ground_back);
+			break;
+			case color_princess:
+				spawnBlob(map, "princess", offset, 6, false);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_necromancer:
+				spawnBlob(map, "necromancer", offset, 3, false);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_necromancer_teleport:
+				AddMarker(map, offset, "necromancer teleport");
+			break;
+			case color_blue_main_spawn:
+				AddMarker(map, offset, "blue main spawn");
+			break;
+			case color_red_main_spawn:
+				AddMarker(map, offset, "red main spawn");
+			break;
+			case color_green_main_spawn:
+			{
+				CBlob@ hall = spawnBlob( map, "hall", offset, 2 );
+				if (hall !is null) // add research to first hall
+				{
+					hall.AddScript("Researching.as");
+					hall.Tag("script added");
+				}
+				offsets[autotile_offset].push_back( offset );
+			}
+			break;
+			case color_purple_main_spawn:
+			{
+				CBlob@ hall = spawnBlob( map, "hall", offset, 3 );
+				if (hall !is null) // add research to first hall
+				{
+					hall.AddScript("Researching.as");
+					hall.Tag("script added");
+				}
+				offsets[autotile_offset].push_back( offset );
+			}
+			break;
+			case color_orange_main_spawn:
+			{
+				CBlob@ hall = spawnBlob( map, "hall", offset, 4 );
+				if (hall !is null) // add research to first hall
+				{
+					hall.AddScript("Researching.as");
+					hall.Tag("script added");
+				}
+				offsets[autotile_offset].push_back( offset );
+			}
+			break;
+			case color_aqua_main_spawn:
+			{
+				CBlob@ hall = spawnBlob( map, "hall", offset, 5 );
+				if (hall !is null) // add research to first hall
+				{
+					hall.AddScript("Researching.as");
+					hall.Tag("script added");
+				}
+				offsets[autotile_offset].push_back( offset );
+			}
+			break;
+			case color_teal_main_spawn:
+			{
+				CBlob@ hall = spawnBlob( map, "hall", offset, 6 );
+				if (hall !is null) // add research to first hall
+				{
+					hall.AddScript("Researching.as");
+					hall.Tag("script added");
+				}
+				offsets[autotile_offset].push_back( offset );
+			}
+			break;
+			case color_gray_main_spawn:
+			{
+				CBlob@ hall = spawnBlob( map, "hall", offset, 7 );
+				if (hall !is null) // add research to first hall
+				{
+					hall.AddScript("Researching.as");
+					hall.Tag("script added");
+				}
+				offsets[autotile_offset].push_back( offset );
+			}
+			break;
+			case color_blue_spawn:   AddMarker(map, offset, "blue spawn"); break;
+			case color_red_spawn:    AddMarker(map, offset, "red spawn"); break;
+			/*case color_green_spawn:  AddMarker(map, offset, "green spawn"); break;*/ // BROKEN FIXME, same as grass
+			case color_purple_spawn: AddMarker(map, offset, "purple spawn"); break;
+			/*case color_orange_spawn: AddMarker(map, offset, "orange spawn"); break;*/ // BROKEN FIXME, same as dirt
+			case color_aqua_spawn:   AddMarker(map, offset, "aqua spawn"); break;
+			case color_teal_spawn:   AddMarker(map, offset, "teal spawn"); break;
+			case color_gray_spawn:   AddMarker(map, offset, "gray spawn"); break;
+			case color_knight_shop:
+				spawnBlob( map, "knightshop", offset, 255);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_builder_shop:
+				spawnBlob( map, "buildershop", offset, 255);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_archer_shop:
+				spawnBlob( map, "archershop", offset, 255);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_boat_shop:
+				spawnBlob( map, "boatshop", offset, 255);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_vehicle_shop:
+				spawnBlob(map, "vehicleshop", offset, 255);
+				offsets[autotile_offset].push_back(offset);
+			break;
+			case color_quarters:
+				spawnBlob(map, "quarters", offset, 255);
+				offsets[autotile_offset].push_back(offset);
+			break;
+			case color_storage_noteam:
+				spawnBlob(map, "storage", offset, 255);
+				offsets[autotile_offset].push_back(offset);
+			break;
+			case color_barracks_noteam:
+				spawnBlob(map, "barracks", offset, 255);
+				offsets[autotile_offset].push_back(offset);
+			break;
+			case color_factory_noteam:
+				spawnBlob(map, "factory", offset, 255);
+				offsets[autotile_offset].push_back(offset);
+			break;
+			case color_tunnel_blue:
+				spawnBlob(map, "tunnel", offset, 0);
+				offsets[autotile_offset].push_back(offset);
+			break;
+			case color_tunnel_red:
+				spawnBlob(map, "tunnel", offset, 1);
+				offsets[autotile_offset].push_back(offset);
+			break;
+			case color_tunnel_noteam:
+				spawnBlob(map, "tunnel", offset, 255);
+				offsets[autotile_offset].push_back(offset);
+			break;
+			case color_kitchen:
+				spawnBlob(map, "kitchen", offset, 255);
+				offsets[autotile_offset].push_back(offset);
+			break;
+			case color_nursery:
+				spawnBlob(map, "nursery", offset, 255);
+				offsets[autotile_offset].push_back(offset);
+			break;
+			case color_research:
+				spawnBlob(map, "research", offset, 255);
+				offsets[autotile_offset].push_back(offset);
+			break;
+			case color_workbench:
+				spawnBlob(map, "workbench", offset, -1, true);
+				offsets[autotile_offset].push_back(offset);
+			break;
+			case color_campfire:
+				spawnBlob(map, "fireplace", offset, -1, true, Vec2f(0.0f, -4.0f));
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_saw:
+				spawnBlob( map, "saw", offset, -1, false);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_tree:
+			case color_tree + (1 << 4): // TODO verify
+			case color_tree + (2 << 4):
+			case color_tree + (3 << 4):
+				offsets[tree_offset].push_back(offset);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_bush:
+				offsets[bush_offset].push_back( offset );
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_grain:
+				offsets[grain_offset].push_back( offset );
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_flowers:
+				spawnBlob( map, "flowers", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_log:
+				spawnBlob( map, "log", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_shark:
+				spawnBlob( map, "shark", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_fish:
+			{
+				CBlob@ fishy = spawnBlob( map, "fishy", offset, -1);
+				if (fishy !is null)
+				{
+					fishy.set_u8("age", (offset * 997) % 4 );
+				}
+				offsets[autotile_offset].push_back( offset );
+			}
+			break;
+			case color_bison:
+				spawnBlob( map, "bison", offset, -1, false);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_chicken:
+				spawnBlob( map, "chicken", offset, -1, false, Vec2f(0,-8));
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_ladder:
+			//case color_tile_ladder_ground: // same as color_ladder
+			case color_tile_ladder_castle:
+			case color_tile_ladder_wood:
+				offsets[ladder_offset].push_back( offset );
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_platform_up:
+				spawnBlob( map, "wooden_platform", offset, 255, true );
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_platform_right:
+			{
+				CBlob@ blob = spawnBlob(map, "wooden_platform", offset, 255, false);
+				offsets[autotile_offset].push_back(offset);
+				blob.setAngleDegrees(90.0f);
+				blob.getShape().SetStatic(true);
+			}
+			break;
+			case color_platform_down:
+			{
+				CBlob@ blob = spawnBlob( map, "wooden_platform", offset, 255, false );
+				offsets[autotile_offset].push_back( offset );
+				CShape@ shape = blob.getShape();
+				blob.setAngleDegrees( 180.0f );
+				shape.SetStatic( true );
+			}
+			break;
+			case color_platform_left:
+			{
+				CBlob@ blob = spawnBlob( map, "wooden_platform", offset, 255, false );
+				offsets[autotile_offset].push_back( offset );
+				CShape@ shape = blob.getShape();
+				blob.setAngleDegrees( -90.0f );
+				shape.SetStatic( true );
+			}
+			break;
+			case color_wooden_door_h_blue:
+				spawnBlob( map, "wooden_door", offset, 0, true );
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_wooden_door_v_blue:
+			{
+				CBlob@ blob = spawnBlob( map, "wooden_door", offset, 0, false );
+				offsets[autotile_offset].push_back( offset );
+				CShape@ shape = blob.getShape();
+				blob.setAngleDegrees( 90.0f );
+				shape.SetStatic( true );
+			}
+			break;
+			case color_wooden_door_h_red:
+				spawnBlob( map, "wooden_door", offset, 1, true );
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_wooden_door_v_red:
+			{
+				CBlob@ blob = spawnBlob( map, "wooden_door", offset, 1, false );
+				offsets[autotile_offset].push_back( offset );
+				CShape@ shape = blob.getShape();
+				blob.setAngleDegrees( 90.0f );
+				shape.SetStatic( true );
+			}
+			break;
+			case color_wooden_door_h_noteam:
+				spawnBlob( map, "wooden_door", offset, 255, true );
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_wooden_door_v_noteam:
+			{
+				CBlob@ blob = spawnBlob( map, "wooden_door", offset, 255, false );
+				offsets[autotile_offset].push_back( offset );
+				CShape@ shape = blob.getShape();
+				blob.setAngleDegrees( 90.0f );
+				shape.SetStatic( true );
+			}
+			break;
+			case color_stone_door_h_blue:
+				spawnBlob( map, "stone_door", offset, 0, true );
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_stone_door_v_blue:
+			{
+				CBlob@ blob = spawnBlob( map, "stone_door", offset, 0, false );
+				offsets[autotile_offset].push_back( offset );
+				CShape@ shape = blob.getShape();
+				blob.setAngleDegrees( 90.0f );
+				shape.SetStatic( true );
+			}
+			break;
+			case color_stone_door_h_red:
+				spawnBlob( map, "stone_door", offset, 1, true );
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_stone_door_v_red:
+			{
+				CBlob@ blob = spawnBlob( map, "stone_door", offset, 1, false );
+				offsets[autotile_offset].push_back( offset );
+				CShape@ shape = blob.getShape();
+				blob.setAngleDegrees( 90.0f );
+				shape.SetStatic( true );
+			}
+			break;
+			case color_stone_door_h_noteam:
+				spawnBlob( map, "stone_door", offset, 255, true );
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_stone_door_v_noteam:
+			{
+				CBlob@ blob = spawnBlob( map, "stone_door", offset, 255, false );
+				offsets[autotile_offset].push_back( offset );
+				CShape@ shape = blob.getShape();
+				blob.setAngleDegrees( 90.0f );
+				shape.SetStatic( true );
+			}
+			break;
+			case color_trapblock_blue:
+				spawnBlob( map, "trap_block", offset, 0, true);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_trapblock_red:
+				spawnBlob( map, "trap_block", offset, 1, true);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_trapblock_noteam:
+				spawnBlob( map, "trap_block", offset, 255, true );
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_spikes:
+				offsets[spike_offset].push_back( offset );
+			break;
+			case color_spikes_ground:
+				map.SetTile(offset, CMap::tile_ground_back );
+				offsets[spike_offset].push_back( offset );
+			break;
+			case color_spikes_castle:
+				map.SetTile(offset, CMap::tile_castle_back );
+				offsets[spike_offset].push_back( offset );
+			break;
+			case color_spikes_wood:
+				map.SetTile(offset, CMap::tile_wood_back );
+				offsets[spike_offset].push_back( offset );
+			break;
+			case chest:
+				spawnBlob(map, "chest", 255, getSpawnPosition(map, offset));
+				offsets[autotile_offset].push_back(offset);
+			break;
+			case color_drill:
+				spawnBlob( map, "drill", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_trampoline:
+			{
+				CBlob@ trampoline = server_CreateBlobNoInit("trampoline");
+				if (trampoline !is null)
+				{
+					trampoline.Tag("invincible");
+					trampoline.Tag("static");
+					trampoline.Tag("no pickup");
+					trampoline.setPosition(getSpawnPosition(map, offset));
+					trampoline.Init();
+				}
+				offsets[autotile_offset].push_back( offset );
+			}
+			break;
+			case color_lantern:
+				spawnBlob( map, "lantern", offset, -1, true);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_crate:
+				spawnBlob( map, "crate", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_bucket:
+				spawnBlob( map, "bucket", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_sponge:
+				spawnBlob( map, "sponge", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_steak:
+				spawnBlob( map, "steak", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_burger:
+				spawnBlob( map, "food", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_heart:
+				spawnBlob( map, "heart", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_catapult:
+				spawnVehicle( map, "catapult", offset, 0); // HACK: team for Challenge
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_ballista:
+				spawnVehicle( map, "ballista", offset);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_mountedbow:
+				spawnBlob( map, "mounted_bow", offset, -1, true, Vec2f(0.0f, 4.0f));
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_longboat:
+				spawnVehicle( map, "longboat", offset);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_warboat:
+				spawnVehicle( map, "warboat", offset);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_dinghy:
+				spawnVehicle( map, "dinghy", offset);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_raft:
+				spawnVehicle( map, "raft", offset);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_airship:
+				spawnVehicle( map, "airship", offset);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_bomber:
+				spawnVehicle( map, "bomber", offset);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_bombs:
+				AddMarker( map, offset, "mat_bombs" );
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_waterbombs:
+				spawnBlob( map, "mat_waterbombs", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_arrows:
+				spawnBlob( map, "mat_arrows", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_bombarrows:
+				spawnBlob( map, "mat_bombarrows", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_waterarrows:
+				spawnBlob( map, "mat_waterarrows", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_firearrows:
+				spawnBlob( map, "mat_firearrows", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_bolts:
+				spawnBlob( map, "mat_bolts", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_blue_mine:
+				spawnBlob( map, "mine", offset, 0);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_red_mine:
+				spawnBlob( map, "mine", offset, 1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_mine_noteam:
+				spawnBlob( map, "mine", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_boulder:
+				spawnBlob( map, "boulder", offset, -1, false, Vec2f(8.0f, -8.0f));
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_satchel:
+				spawnBlob( map, "satchel", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_keg:
+				spawnBlob( map, "keg", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_gold:
+				spawnBlob( map, "mat_gold", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_stone:
+				spawnBlob( map, "mat_stone", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_wood:
+				spawnBlob( map, "mat_wood", offset, -1);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			case color_mook_knight:
+				AddMarker( map, offset, "mook knight" );
+			break;
+			case color_mook_archer:
+				AddMarker(map, offset, "mook archer");
+			break;
+			case color_mook_spawner:
+				AddMarker(map, offset, "mook spawner");
+			break;
+			case color_mook_spawner_10:
+				AddMarker(map, offset, "mook spawner 10");
+			break;
+			case color_dummy:
+				spawnBlob(map, "dummy", offset, 1, true);
+				offsets[autotile_offset].push_back( offset );
+			break;
+			default:
+				HandleCustomTile( map, offset, pixel );
+			};
 		}
 	}
 
@@ -1085,10 +942,10 @@ class PNGLoader
 
 void PlaceMostLikelyTile(CMap@ map, int offset)
 {
-	TileType up = map.getTile( offset - map.tilemapwidth).type;
-	TileType down = map.getTile( offset + map.tilemapwidth).type;
-	TileType left = map.getTile( offset - 1).type;
-	TileType right = map.getTile( offset + 1).type;
+	const TileType up = map.getTile(offset - map.tilemapwidth).type;
+	const TileType down = map.getTile(offset + map.tilemapwidth).type;
+	const TileType left = map.getTile(offset - 1).type;
+	const TileType right = map.getTile(offset + 1).type;
 
 	bool upEmpty = (up == CMap::tile_empty);
 
