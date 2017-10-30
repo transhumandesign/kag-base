@@ -3,10 +3,10 @@
 // properties:
 //      shop offset - Vec2f - used to offset things bought that spawn into the world, like vehicles
 
-#include "ShopCommon.as";
-#include "Requirements_Tech.as";
-#include "MakeCrate.as";
-#include "CheckSpam.as";
+#include "ShopCommon.as"
+#include "Requirements_Tech.as"
+#include "MakeCrate.as"
+#include "CheckSpam.as"
 
 void onInit(CBlob@ this)
 {
@@ -57,7 +57,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		this.get_Vec2f("shop offset"),              // button offset
 		this,                                       // button attachment
 		this.getCommandID("shop menu"),             // command id
-		this.get_string("shop description"),        // description
+		getTranslatedString(this.get_string("shop description")),        // description
 		params);                                    // bit stream
 
 		button.enableRadius = this.get_u8("shop button radius");
@@ -355,7 +355,7 @@ void addShopItemsToMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
 					//if (takeReqsFromStorage)
 					//	desc += "\n\n(Using resources from team storage)";
 
-					SetItemDescription_Tech(button, caller, s_item.requirements, desc, takeReqsFromStorage ? storageReq.getInventory() : this.getInventory());
+					SetItemDescription_Tech(button, caller, s_item.requirements, getTranslatedString(desc), takeReqsFromStorage ? storageReq.getInventory() : this.getInventory());
 				}
 
 				//if (s_item.producing) {
@@ -391,5 +391,5 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 
 void BuildDefaultShopMenu(CBlob@ this, CBlob @caller)
 {
-	BuildShopMenu(this, caller, "Shop", Vec2f(0, 0), Vec2f(4, 4));
+	BuildShopMenu(this, caller, getTranslatedString("Shop"), Vec2f(0, 0), Vec2f(4, 4));
 }

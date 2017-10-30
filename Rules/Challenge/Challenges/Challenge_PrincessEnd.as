@@ -89,7 +89,7 @@ void onRender(CMap@ this)
 				Vec2f lr(middle + 170.0f, bottom + 400.0f);
 
 				GUI::SetFont("menu");
-				GUI::DrawText(princessAlive ? OUTRO_TEXT : OUTRO_TEXT_DEAD_PRINCESS,
+				GUI::DrawText(princessAlive ? getTranslatedString(OUTRO_TEXT) : getTranslatedString(OUTRO_TEXT_DEAD_PRINCESS),
 				              ul, lr,
 				              SColor(255, 255, 255, 255),
 				              false, false, false);
@@ -102,7 +102,7 @@ void onRender(CMap@ this)
 		{
 			PrincessSaved(princessAlive);
 			ExitToMenu();
-			MessageBox("The End.", "For more adventures there is an entire multiplayer world ready to explore. If you've purchased the game just launch the servers browser in Multiplayer", true);
+			MessageBox(getTranslatedString("The End."), getTranslatedString("For more adventures there is an entire multiplayer world ready to explore. If you've purchased the game just launch the servers browser in Multiplayer"), true);
 		}
 	}
 }

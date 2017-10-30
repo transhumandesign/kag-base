@@ -114,7 +114,7 @@ CButton@ MakeTravelButton(CBlob@ this, CBlob@ caller, Vec2f buttonPos, const str
 		return null;
 	CBitStream params;
 	params.write_u16(caller.getNetworkID());
-	CButton@ button = caller.CreateGenericButton(8, buttonPos, this, this.getCommandID("travel"), gotTunnels ? label : cantTravelLabel, params);
+	CButton@ button = caller.CreateGenericButton(8, buttonPos, this, this.getCommandID("travel"), gotTunnels ? getTranslatedString(label) : getTranslatedString(cantTravelLabel), params);
 	if (button !is null)
 	{
 		button.SetEnabled(travelAvailable);
@@ -242,7 +242,7 @@ void BuildTunnelsMenu(CBlob@ this, const u16 callerID)
 	CBlob@[] tunnels;
 	getTunnelsForButtons(this, @tunnels);
 
-	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos() + Vec2f(0.0f, 0.0f), this, Vec2f((tunnels.length) * BUTTON_SIZE, BUTTON_SIZE), "Pick tunnel to travel");
+	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos() + Vec2f(0.0f, 0.0f), this, Vec2f((tunnels.length) * BUTTON_SIZE, BUTTON_SIZE), getTranslatedString("Pick tunnel to travel"));
 	if (menu !is null)
 	{
 		CBitStream exitParams;
@@ -255,14 +255,14 @@ void BuildTunnelsMenu(CBlob@ this, const u16 callerID)
 			CBlob@ tunnel = tunnels[i];
 			if (tunnel is null)
 			{
-				menu.AddButton("$CANCEL$", "You are here", Vec2f(BUTTON_SIZE, BUTTON_SIZE));
+				menu.AddButton("$CANCEL$", getTranslatedString("You are here"), Vec2f(BUTTON_SIZE, BUTTON_SIZE));
 			}
 			else
 			{
 				CBitStream params;
 				params.write_u16(callerID);
 				params.write_u16(tunnel.getNetworkID());
-				menu.AddButton(getTravelIcon(this, tunnel), getTravelDescription(this, tunnel), this.getCommandID("travel to"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
+				menu.AddButton(getTravelIcon(this, tunnel), getTranslatedString(getTravelDescription(this, tunnel)), this.getCommandID("travel to"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
 			}
 		}
 	}

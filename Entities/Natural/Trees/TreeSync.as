@@ -14,8 +14,8 @@ void InitVars(CBlob@ this)
 	AddIconToken("$Axe$", "Entities/Common/GUI/HelpIcons.png", Vec2f(16, 16), 13);
 	AddIconToken("$Daggar$", "Entities/Common/GUI/HelpIcons.png", Vec2f(16, 16), 10);
 
-	SetHelp(this, "help action2", "builder", "$Axe$$Tree$Chop tree    $RMB$", "", 3);
-	SetHelp(this, "help jump", "archer", "$Tree$Climb tree    $KEY_W$", "", 2);
+	SetHelp(this, "help action2", "builder", getTranslatedString("$Axe$$Tree$Chop tree    $RMB$"), "", 3);
+	SetHelp(this, "help jump", "archer", getTranslatedString("$Tree$Climb tree    $KEY_W$"), "", 2);
 }
 
 void InitTree(CBlob@ this, TreeVars@ vars)

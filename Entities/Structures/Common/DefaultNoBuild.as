@@ -33,7 +33,9 @@ void onTick(CBlob@ this)
 		Vec2f ul, lr;
 		Vec2f extend;
 		if (this.exists(nobuild_extend))
+		{
 			extend = this.get_Vec2f(nobuild_extend);
+		}
 
 		this.getShape().getBoundingRect(ul, lr);
 		ul.x += 1.0f;
@@ -48,7 +50,9 @@ void onTick(CBlob@ this)
 			AddTilesBySector(ul, lr, "no build", this.get_TileType(back), CMap::tile_castle_back);
 		}
 		else
+		{
 			this.getCurrentScript().runFlags |= Script::remove_after_this;
+		}
 
 		this.getCurrentScript().tickFrequency = CHECK_FREQ;
 	}
