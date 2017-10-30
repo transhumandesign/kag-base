@@ -4,70 +4,100 @@
 const string[] classes = {"builder", "knight", "archer"};
 const string[][] highlight_items = {
 /* 0 */	{"mat_stone", "mat_wood", "mat_gold"}, //builder
-/* 1 */	{"mat_bombs", "mat_waterbombs"}, //knight
+/* 1 */	{"mat_bombs", "mat_waterbombs", "keg"}, //knight
 /* 2 */	{"mat_firearrows", "mat_waterarrows", "mat_bombarrows"} //archer
 };
 
-//If button is pressed.
-bool do_highlight = false;
+//Disable highlighting for items with a map luminance lower than this
+const uint map_luminance_threshold = 40;
 
-//Disable highlighting for items, if their luminance is less than this variable.
-const uint hide_luminance_level = 40;
+//Update latency in ticks, optimization, should be at least 3
+//This is also used as the delay before useful materials shine
+const uint update_latency = 15;
+
+//The ticks spent since pressing [C]
+uint ticks_since_pressed = 0;
+
+//Double-buffering logic
+CBlob@[] highlighted_blobs_buf1, highlighted_blobs_buf2;
+CBlob@[]@ front_buffer = @highlighted_blobs_buf1;
+
+//Blobs being processed for the back buffer. Updated on the first update stage.
+CBlob@[] processed_blobs;
 
 void onTick(CSprite@ sprite)
 {
-	do_highlight = sprite.getBlob().isKeyPressed(key_pickup);
+	CMap@ map = getMap();
+	CBlob@ playerblob = sprite.getBlob();
+	CPlayer@ player = playerblob.getPlayer();
+
+	if (map is null || player is null || !player.isMyPlayer()) return;
+	
+	if (playerblob.isKeyPressed(key_pickup))
+	{
+		//Index of array of items to highlight.
+		int class_index = classes.find(sprite.getBlob().getConfig());
+		if (class_index < 0) return;
+
+		CBlob@[]@ back_buffer = front_buffer is @highlighted_blobs_buf1 ? @highlighted_blobs_buf2 : @highlighted_blobs_buf1;
+		
+		const u8 current_stage = ticks_since_pressed++ % update_latency;
+		if (current_stage == 0)
+		{
+			Driver@ driver = getDriver();
+			Vec2f world_lowerright = driver.getWorldPosFromScreenPos(driver.getScreenDimensions());
+			Vec2f world_upperleft = driver.getWorldPosFromScreenPos(Vec2f_zero);
+
+			processed_blobs.clear();
+			map.getBlobsInBox(world_lowerright, world_upperleft, processed_blobs);
+		}
+
+		for (uint i = current_stage; i < processed_blobs.length; i += update_latency)
+		{
+			CBlob@ blob = processed_blobs[i];
+			if (blob !is null && !blob.isInInventory() && highlight_items[class_index].find(blob.getConfig()) >= 0)
+			{
+				back_buffer.push_back(@blob);
+			}
+		}
+
+		//Swap out buffers and clear the new backbuffer
+		if (current_stage == update_latency - 1)
+		{
+			front_buffer.clear();
+			@front_buffer = @back_buffer;
+		} 
+	}
+	else
+	{
+		ticks_since_pressed = 0;
+	}
 }
 
 void onRender(CSprite@ sprite)
 {
-	if (do_highlight)
-	{
-		//Highlight items.
-		CCamera@ camera = getCamera();
-		CMap@ map = getMap();
-		if (camera is null || map is null) return;
+	CMap@ map = getMap();
 
-		//Index of array of items to highlight.
-		int class_index = classes.find(sprite.getBlob().getConfig());
-		CBlob@[] blobs;
-		if (getBlobs(@blobs))
+	if (map is null || ticks_since_pressed <= update_latency) return;
+
+	const float base_brightness = Maths::Abs(Maths::Sin((ticks_since_pressed - update_latency) / 20.0f));
+
+	for (uint i = 0; i < front_buffer.length; ++i)
+	{
+		CBlob@ blob = front_buffer[i];
+
+		//Check for conditions that might have been invalidated recently!
+		if (blob is null || blob.isInInventory()) continue;
+
+		const u8 map_luminance = map.getColorLight(blob.getPosition()).getLuminance();
+		if (map_luminance >= map_luminance_threshold)
 		{
-			for (uint i = 0; i < blobs.length; i++)
-			{
-				CBlob@ blob = blobs[i];
-				CSprite@ blob_sprite = blob.getSprite();
-				if (!blob.isInInventory() && blob_sprite !is null)
-				{
-					//Highlight.
-					if (shouldHighlightBlob(class_index, blob) && blob_sprite.isOnScreen())
-					{
-						float luminance = map.getColorLight(blob.getPosition()).getLuminance();
-						//Don't highlight items in dark caves and places.
-						if (luminance >= hide_luminance_level)
-						{
-							//Make items darker in darkness.
-							float luminance_modifier = luminance / 255.0f;
-							//Highlight like any normal pickup.
-							blob.RenderForHUD(Vec2f_zero, 0.0f, SColor(255,luminance,luminance,luminance), RenderStyle::normal);
-							//But do a beautiful fading effect.
-							float range = 200.0f * luminance_modifier;
-							uint brightness_level = Maths::Abs(Maths::Sin(getGameTime() / 20.0f)) * range;
-							//Make it a bit darker in dark places, so it doesn't break your eyes.
-							blob.RenderForHUD(Vec2f_zero, 0.0f, SColor(brightness_level,255,255,0), RenderStyle::light);
-							blob.RenderForHUD(Vec2f_zero, 0.0f, SColor(brightness_level,255,255,255), RenderStyle::light);
-						}
-					}
-				}
+			//Fading effect, brightness depends on the map color
+			const uint effect_brightness = base_brightness * map_luminance;
 				
-			}
+			//Render the normal and light effects
+			blob.RenderForHUD(Vec2f_zero, 0.0f, SColor(255, map_luminance, map_luminance, map_luminance), RenderStyle::normal);
+			blob.RenderForHUD(Vec2f_zero, 0.0f, SColor(255, effect_brightness, effect_brightness, effect_brightness / 2), RenderStyle::light);
 		}
 	}
-}
-
-//Finds a blob's config name in array.
-bool shouldHighlightBlob(int class_index, CBlob@ item)
-{
-	if (class_index < 0) return false;
-	return highlight_items[class_index].find(item.getConfig()) >= 0;
 }
