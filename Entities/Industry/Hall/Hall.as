@@ -5,6 +5,7 @@
 #include "MigrantCommon.as";
 #include "HallCommon.as";
 #include "Requirements.as"
+#include "AddSectorOnTiles.as"
 
 #include "Help.as"
 
@@ -86,9 +87,6 @@ void onInit(CBlob@ this)
 
 	this.getShape().getConsts().waterPasses = false;
 
-	// defaultnobuild
-	this.set_Vec2f("nobuild extend", Vec2f(0.0f, 8.0f));
-
 	// wont work in basichelps in single for some map loading reason
 	SetHelp(this, "help use", "", getTranslatedString("Change class    $KEY_E$"), "", 5);
 }
@@ -117,6 +115,19 @@ void onTick(CBlob@ this)
 	// capture HALL
 	if (getNet().isServer())
 	{
+		if (!this.hasTag("_set_floor_sector") && this.getTickSinceCreated() > 30)
+		{
+			this.Tag("_set_floor_sector");
+
+			CMap@ map = getMap();
+			Vec2f ul, lr;
+			this.getShape().getBoundingRect(ul, lr);
+			ul += Vec2f(1.0f, 1.0f + map.tilesize * 6.0f);
+			lr += Vec2f(-1.0f, -1.0f + map.tilesize * 1.0f);
+
+			AddSectorOnSolid(ul, lr, "no build", this.getNetworkID());//
+		}
+
 		const u8 state = this.get_u8("hall state");
 		if (NEUTRAL_IN_WATER && isFlooded(this))
 		{
