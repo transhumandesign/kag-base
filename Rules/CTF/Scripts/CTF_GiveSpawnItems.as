@@ -282,7 +282,7 @@ void onRender(CRules@ this)
 		else if (next_items > getGameTime())
 		{
 			f32 offset = 140.0f;
-			string action = (b.getName() == "builder" ? "Go Build" : "Go Fight";
+			string action = (b.getName() == "builder" ? "Go Build" : "Go Fight");
 			if (this.isWarmup())
 			{
 				action = "Prepare for Battle";
