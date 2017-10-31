@@ -12,7 +12,7 @@ void onInit(CBlob@ this)
 
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
-	
+
 	//INIT COSTS
 	InitCosts();
 
@@ -27,19 +27,19 @@ void onInit(CBlob@ this)
 	this.set_string("required class", "archer");
 
 	{
-		ShopItem@ s = addShopItem(this, "Arrows", "$mat_arrows$", "mat_arrows", desc_arrows, true);
+		ShopItem@ s = addShopItem(this, "Arrows", "$mat_arrows$", "mat_arrows", Descriptions::arrows, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::arrows);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Water Arrows", "$mat_waterarrows$", "mat_waterarrows", desc_waterarrows, true);
+		ShopItem@ s = addShopItem(this, "Water Arrows", "$mat_waterarrows$", "mat_waterarrows", Descriptions::waterarrows, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::waterarrows);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Fire Arrows", "$mat_firearrows$", "mat_firearrows", desc_firearrows, true);
+		ShopItem@ s = addShopItem(this, "Fire Arrows", "$mat_firearrows$", "mat_firearrows", Descriptions::firearrows, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::firearrows);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Bomb Arrows", "$mat_bombarrows$", "mat_bombarrows", desc_bombarrows, true);
+		ShopItem@ s = addShopItem(this, "Bomb Arrows", "$mat_bombarrows$", "mat_bombarrows", Descriptions::bombarrows, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::bombarrows);
 	}
 }

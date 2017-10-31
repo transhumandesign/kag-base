@@ -18,14 +18,14 @@ const int migrant_tickets = 1;
 const int migrant_replenish_ticks = 300;
 
 void onInit( CBlob@ this )
-{	 
+{
 	this.set_TileType("background tile", CMap::tile_wood_back);
 
 	// from TheresAMigrantInTheRoom
 	this.set_bool("migrants auto", true);
 	this.set_u8("migrants max", 1 );		   		 // how many physical migrants it needs
-	this.set_u32("next respawn time", 0 ); 		
-	this.addCommandID("respawn");		   
+	this.set_u32("next respawn time", 0 );
+	this.addCommandID("respawn");
 	this.getCurrentScript().tickFrequency = 49;
 
 	this.Tag("bed"); // allow spawning in WAR
@@ -33,23 +33,23 @@ void onInit( CBlob@ this )
 	// SHOP
 
 	this.set_Vec2f("shop offset", Vec2f(0, 0));
-	this.set_Vec2f("shop menu size", Vec2f(2,2));	
+	this.set_Vec2f("shop menu size", Vec2f(2,2));
 	this.set_string("shop description", "Upgrade");
 	this.set_u8("shop icon", 12);
 	this.set_bool("shop available", false );
 
 	//{
-	//	ShopItem@ s = addShopItem( this, "Barracks", "$barracks$", "barracks", desc_barracks );
+	//	ShopItem@ s = addShopItem( this, "Barracks", "$barracks$", "barracks", Descriptions::barracks );
 	//	AddRequirement( s.requirements, "blob", "mat_stone", "Stone", COST_STONE_BARRACKS );
 	//	AddRequirement( s.requirements, "tech", "barracks", "Barracks Technology" );
-	//}	
+	//}
 
 	//{
-	//	ShopItem@ s = addShopItem( this, "Research", "$research$", "research", desc_research );
+	//	ShopItem@ s = addShopItem( this, "Research", "$research$", "research", Descriptions::research );
 	//	AddRequirement( s.requirements, "blob", "mat_stone", "Stone", COST_STONE_RESEARCH );
 	//}
 
-}	  
+}
 
 void onChangeMigrantState(CBlob@ this, MigrantState::State s)
 {
@@ -64,7 +64,7 @@ void onChangeMigrantState(CBlob@ this, MigrantState::State s)
 //		return;
 
 	this.set_u8("migrant state", s );
-	
+
 	if (s == MigrantState::none)
 	{
 		zzz.SetVisible(false);
@@ -82,31 +82,31 @@ void onChangeMigrantState(CBlob@ this, MigrantState::State s)
 		{
 			zzz.SetVisible( false );
 			bed.SetFrameIndex(1);
-			sprite.SetFrameIndex(1);	 
+			sprite.SetFrameIndex(1);
 		}
 	}
 	else if (s == MigrantState::sleeping)
 	{
 		fire.SetVisible(true);
-		if (!zzz.isVisible()) {			
+		if (!zzz.isVisible()) {
 			this.getSprite().PlaySound("/MigrantSleep");
 		}
 		zzz.SetVisible( true );
 		bed.SetFrameIndex(2);
 		sprite.SetFrameIndex(1);
 		this.SetLight(true);
-	
+
 		if (needsReplenishMigrant(this)) {
 			AddMigrantCount( this );
 		}
 	}
-	
+
 	this.SetLightRadius(32.0f );
 }
 
 void onTick( CBlob@ this )
 {
- 
+
 }
 
 void GetButtonsFor( CBlob@ this, CBlob@ caller )
@@ -143,12 +143,12 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 {
 	CSprite@ sprite = this.getSprite();
 	if (cmd == this.getCommandID("put migrant") && !isRoomFullOfMigrants(this))
-	{	
+	{
 		onChangeMigrantState(this, MigrantState::sleeping);
 		this.set_bool("shop available", true );
 	}
 	else if (cmd == this.getCommandID("out migrant"))
-	{	
+	{
 		if (this.get_u8("migrants count") <= 1)
 		{
 			onChangeMigrantState(this, MigrantState::none );
@@ -156,14 +156,14 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 		}
 	}
 	else if (cmd == this.getCommandID("respawn"))
-	{	
+	{
 		onChangeMigrantState(this, MigrantState::absent );
-		const u32 spawnTime = getGameTime() + migrant_replenish_ticks;   
+		const u32 spawnTime = getGameTime() + migrant_replenish_ticks;
 		this.set_u32("next respawn time", spawnTime );
 	}
 	else if (cmd == this.getCommandID("shop buy"))
 	{
-		this.getSprite().PlaySound("/Construct.ogg" ); 
+		this.getSprite().PlaySound("/Construct.ogg" );
 		this.getSprite().getVars().gibbed = true;
 		this.server_Die();
 	}
@@ -171,13 +171,13 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 	{
 		u16 callerID;
 		if (!params.saferead_u16(callerID))
-			return;		
+			return;
 		u16 blobID;
 		if (!params.saferead_u16(blobID))
-			return;		
+			return;
 		CBlob@ blob = getBlobByNetworkID(blobID);
 		if (blob !is null)
-		{	
+		{
 			blob.set_u8("migrants count", this.get_u8("migrants count") );
 			this.set_u8("migrants count", 0);
 		}
@@ -209,7 +209,7 @@ void onInit(CSprite@ this)
 		zzz.SetOffset(Vec2f(0 ,-7));
 		zzz.SetHUD(true);
 	}
-	
+
 	CSpriteLayer@ fire = this.addSpriteLayer( "fire", 8,8 );
 	if(fire !is null)
 	{
@@ -219,6 +219,6 @@ void onInit(CSprite@ this)
 		fire.SetOffset(Vec2f(-9, 5));
 		fire.SetRelativeZ(0.1f);
 	}
-	
+
 	onChangeMigrantState(this.getBlob(), MigrantState::none);
 }

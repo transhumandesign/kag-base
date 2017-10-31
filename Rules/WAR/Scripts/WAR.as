@@ -987,35 +987,35 @@ void MakeWarTradeMenu(CBlob@ trader)
 
 	//econ techs
 //	addTradeSeparatorItem( trader, "$MENU_INDUSTRY$", Vec2f(3,1) );
-//	addTradeScrollFromScrollDef(trader, "saw", cost_crappiest, desc_saw);
+//	addTradeScrollFromScrollDef(trader, "saw", cost_crappiest, Descriptions::saw);
 	//addTradeEmptyItem(trader);
 
 	//siege techs
 	addTradeSeparatorItem(trader, "$MENU_SIEGE$", Vec2f(3, 1));
-	addTradeScrollFromScrollDef(trader, "mounted bow", WARCosts::medium_scroll, desc_mounted_bow);
-	addTradeScrollFromScrollDef(trader, "ballista", WARCosts::medium_scroll, desc_ballista);
-	addTradeScrollFromScrollDef(trader, "catapult", WARCosts::big_scroll, desc_catapult);
+	addTradeScrollFromScrollDef(trader, "mounted bow", WARCosts::medium_scroll, Descriptions::mounted_bow);
+	addTradeScrollFromScrollDef(trader, "ballista", WARCosts::medium_scroll, Descriptions::ballista);
+	addTradeScrollFromScrollDef(trader, "catapult", WARCosts::big_scroll, Descriptions::catapult);
 
 	//boats
 	addTradeSeparatorItem(trader, "$MENU_NAVAL$", Vec2f(3, 1));
-	addTradeScrollFromScrollDef(trader, "longboat", WARCosts::medium_scroll, desc_longboat);
-	addTradeScrollFromScrollDef(trader, "warboat", WARCosts::big_scroll, desc_warboat);
+	addTradeScrollFromScrollDef(trader, "longboat", WARCosts::medium_scroll, Descriptions::longboat);
+	addTradeScrollFromScrollDef(trader, "warboat", WARCosts::big_scroll, Descriptions::warboat);
 	addTradeEmptyItem(trader);
 
 	//item kits
 	addTradeSeparatorItem(trader, "$MENU_KITS$", Vec2f(3, 1));
-	//addTradeScrollFromScrollDef(trader, "military basics", cost_crappy, desc_militarybasics);
-	addTradeScrollFromScrollDef(trader, "water ammo", WARCosts::crappy_scroll, desc_waterarrows);
-	addTradeScrollFromScrollDef(trader, "bomb ammo", WARCosts::big_scroll, desc_bombarrows);
-	addTradeScrollFromScrollDef(trader, "pyro", WARCosts::big_scroll, desc_pyro);
-	addTradeScrollFromScrollDef(trader, "drill", WARCosts::crappiest_scroll, desc_drill);
-	addTradeScrollFromScrollDef(trader, "saw", WARCosts::crappiest_scroll, desc_saw);
-	addTradeScrollFromScrollDef(trader, "explosives", WARCosts::big_scroll, desc_explosives);
+	//addTradeScrollFromScrollDef(trader, "military basics", cost_crappy, Descriptions::militarybasics);
+	addTradeScrollFromScrollDef(trader, "water ammo", WARCosts::crappy_scroll, Descriptions::waterarrows);
+	addTradeScrollFromScrollDef(trader, "bomb ammo", WARCosts::big_scroll, Descriptions::bombarrows);
+	addTradeScrollFromScrollDef(trader, "pyro", WARCosts::big_scroll, Descriptions::pyro);
+	addTradeScrollFromScrollDef(trader, "drill", WARCosts::crappiest_scroll, Descriptions::drill);
+	addTradeScrollFromScrollDef(trader, "saw", WARCosts::crappiest_scroll, Descriptions::saw);
+	addTradeScrollFromScrollDef(trader, "explosives", WARCosts::big_scroll, Descriptions::explosives);
 
 	//magic scrolls
 	addTradeSeparatorItem(trader, "$MENU_MAGIC$", Vec2f(3, 1));
-	addTradeScrollFromScrollDef(trader, "carnage", 400, desc_scroll_carnage);
-	addTradeScrollFromScrollDef(trader, "drought", 120, desc_scroll_drought);
+	addTradeScrollFromScrollDef(trader, "carnage", 400, Descriptions::scroll_carnage);
+	addTradeScrollFromScrollDef(trader, "drought", 120, Descriptions::scroll_drought);
 	addTradeEmptyItem(trader);
 
 	//material exchange
@@ -1041,11 +1041,11 @@ void MakeWarTradeMenu(CBlob@ trader)
 
 	//individual items
 	//addTradeSeparatorItem( trader, "$MENU_OTHER$", Vec2f(3,1) );
-	//addTradeScrollFromScrollDef(trader, "boulder", cost_crappy, desc_boulder);
+	//addTradeScrollFromScrollDef(trader, "boulder", cost_crappy, Descriptions::boulder);
 	//addTradeEmptyItem(trader);
 	//addTradeEmptyItem(trader);
 
 	//individual items
 	//addTradeSeparatorItem( trader, "$MENU_TECHS$", Vec2f(3,1) );
-	//addTradeScrollFromScrollDef(trader, "stone", cost_crappy, desc_stonetech);
+	//addTradeScrollFromScrollDef(trader, "stone", cost_crappy, Descriptions::stonetech);
 }

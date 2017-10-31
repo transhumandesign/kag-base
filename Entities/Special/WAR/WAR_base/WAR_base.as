@@ -23,32 +23,32 @@ void InitWorkshop(CBlob@ this)
 {
 	//init costs from cfg
 	InitCosts();
-	
+
 	this.set_Vec2f("shop offset", Vec2f(-110, 10));
 	this.set_Vec2f("shop menu size", Vec2f(4, 5));
 
 	{
-		ShopItem@ s = addShopItem(this, "Lantern", "$lantern$", "lantern", desc_lantern, false);
+		ShopItem@ s = addShopItem(this, "Lantern", "$lantern$", "lantern", Descriptions::lantern, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::lantern_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Crate", "$crate$", "crate", desc_crate, false);
+		ShopItem@ s = addShopItem(this, "Crate", "$crate$", "crate", Descriptions::crate, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::crate_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Bucket", "$bucket$", "bucket", desc_bucket, false);
+		ShopItem@ s = addShopItem(this, "Bucket", "$bucket$", "bucket", Descriptions::bucket, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::bucket_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Transport Tunnel", "$tunnel$", "tunnel", desc_tunnel, false, true);
+		ShopItem@ s = addShopItem(this, "Transport Tunnel", "$tunnel$", "tunnel", Descriptions::tunnel, false, true);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", WARCosts::tunnel_stone);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Factory", "$factory$", "factory", desc_factory, false, true);
+		ShopItem@ s = addShopItem(this, "Factory", "$factory$", "factory", Descriptions::factory, false, true);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::factory_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Kitchen", "$kitchen$", "kitchen", desc_kitchen, false, true);
+		ShopItem@ s = addShopItem(this, "Kitchen", "$kitchen$", "kitchen", Descriptions::kitchen, false, true);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::kitchen_wood);
 	}
 }
@@ -932,7 +932,7 @@ void onRender(CSprite@ this)
 		const uint margin = 7;
 		Vec2f dim;
 		string label = "Level 10000";
-		GUI::SetFont("menu");		
+		GUI::SetFont("menu");
 		GUI::GetTextDimensions(label , dim);
 		dim.x += 2.0f * margin;
 		dim.y += 2.0f * margin;

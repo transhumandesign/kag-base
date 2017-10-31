@@ -1045,21 +1045,21 @@ void MakeTradeMenu(CBlob@ trader)
 
 	//
 	addTradeSeparatorItem(trader, "$MENU_GENERIC$", Vec2f(3, 1));
-	addItemForCoin(trader, "Bomb", 10, true, "$mat_bombs$", "mat_bombs", desc_bomb);
-	addItemForCoin(trader, "Water Bomb", 10, true, "$mat_waterbombs$", "mat_waterbombs", desc_waterbomb);
-	addItemForCoin(trader, "Keg", 50, true, "$keg$", "keg", desc_keg);
-	addItemForCoin(trader, "Arrows", 5, true, "$mat_arrows$", "mat_arrows", desc_arrows);
-	addItemForCoin(trader, "Water Arrows", 10, true, "$mat_waterarrows$", "mat_waterarrows", desc_waterarrows);
-	addItemForCoin(trader, "Fire Arrows", 15, true, "$mat_firearrows$", "mat_firearrows", desc_firearrows);
-	addItemForCoin(trader, "Bomb Arrow", 10, true, "$mat_bombarrows$", "mat_bombarrows", desc_bombarrows);
-	addItemForCoin(trader, "Mine", 25, true, "$mine$", "mine", desc_mine);
-	addItemForCoin(trader, "Mounted Bow", 80, true, "$mounted_bow$", "mounted_bow", desc_mounted_bow);
-	addItemForCoin(trader, "Drill", 30, true, "$drill$", "drill", desc_drill);
-	addItemForCoin(trader, "Boulder", 5, true, "$boulder$", "boulder", desc_boulder);
-	addItemForCoin(trader, "Burger", 10, true, "$food$", "food", desc_food);
+	addItemForCoin(trader, "Bomb", 10, true, "$mat_bombs$", "mat_bombs", Descriptions::bomb);
+	addItemForCoin(trader, "Water Bomb", 10, true, "$mat_waterbombs$", "mat_waterbombs", Descriptions::waterbomb);
+	addItemForCoin(trader, "Keg", 50, true, "$keg$", "keg", Descriptions::keg);
+	addItemForCoin(trader, "Arrows", 5, true, "$mat_arrows$", "mat_arrows", Descriptions::arrows);
+	addItemForCoin(trader, "Water Arrows", 10, true, "$mat_waterarrows$", "mat_waterarrows", Descriptions::waterarrows);
+	addItemForCoin(trader, "Fire Arrows", 15, true, "$mat_firearrows$", "mat_firearrows", Descriptions::firearrows);
+	addItemForCoin(trader, "Bomb Arrow", 10, true, "$mat_bombarrows$", "mat_bombarrows", Descriptions::bombarrows);
+	addItemForCoin(trader, "Mine", 25, true, "$mine$", "mine", Descriptions::mine);
+	addItemForCoin(trader, "Mounted Bow", 80, true, "$mounted_bow$", "mounted_bow", Descriptions::mounted_bow);
+	addItemForCoin(trader, "Drill", 30, true, "$drill$", "drill", Descriptions::drill);
+	addItemForCoin(trader, "Boulder", 5, true, "$boulder$", "boulder", Descriptions::boulder);
+	addItemForCoin(trader, "Burger", 10, true, "$food$", "food", Descriptions::food);
 	//addItemForCoin( trader, "Balloon Bomber", 100, true, "$bomber$", "bomber", "An airship." );
-	//addItemForCoin( trader, "Catapult", 80, true, "$catapult$", "catapult", desc_catapult );
-	//addItemForCoin( trader, "Ballista", 80, true, "$ballista$", "ballista", desc_ballista );
+	//addItemForCoin( trader, "Catapult", 80, true, "$catapult$", "catapult", Descriptions::catapult );
+	//addItemForCoin( trader, "Ballista", 80, true, "$ballista$", "ballista", Descriptions::ballista );
 }
 
 // add coins for red dead

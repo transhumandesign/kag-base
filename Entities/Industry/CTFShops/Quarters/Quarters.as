@@ -74,7 +74,7 @@ void onInit(CBlob@ this)
 
 	//INIT COSTS
 	InitCosts();
-	
+
 	// ICONS
 	AddIconToken("$quarters_beer$", "Quarters.png", Vec2f(24, 24), 7);
 	AddIconToken("$quarters_meal$", "Quarters.png", Vec2f(48, 24), 2);
@@ -89,12 +89,12 @@ void onInit(CBlob@ this)
 	this.set_u8("shop icon", 25);
 
 	{
-		ShopItem@ s = addShopItem(this, "Beer - 1 Heart", "$quarters_beer$", "beer", desc_beer, false);
+		ShopItem@ s = addShopItem(this, "Beer - 1 Heart", "$quarters_beer$", "beer", Descriptions::beer, false);
 		s.spawnNothing = true;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::beer);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Meal - Full Health", "$quarters_meal$", "meal", desc_meal, false);
+		ShopItem@ s = addShopItem(this, "Meal - Full Health", "$quarters_meal$", "meal", Descriptions::meal, false);
 		s.spawnNothing = true;
 		s.customButton = true;
 		s.buttonwidth = 2;
@@ -102,11 +102,11 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::meal);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Egg - Full Health", "$quarters_egg$", "egg", desc_egg, false);
+		ShopItem@ s = addShopItem(this, "Egg - Full Health", "$quarters_egg$", "egg", Descriptions::egg, false);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::egg);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Burger - Full Health", "$quarters_burger$", "food", desc_burger, true);
+		ShopItem@ s = addShopItem(this, "Burger - Full Health", "$quarters_burger$", "food", Descriptions::burger, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::burger);
 	}
 }

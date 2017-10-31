@@ -18,7 +18,7 @@ void onInit(CBlob@ this)
 
 	//INIT COSTS
 	InitCosts();
-	
+
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
 	this.set_Vec2f("shop menu size", Vec2f(6, 2));
@@ -26,22 +26,25 @@ void onInit(CBlob@ this)
 	this.set_u8("shop icon", 25);
 
 	{
-		ShopItem@ s = addShopItem(this, "Catapult", "$catapult$", "catapult", "$catapult$\n\n\n" + desc_catapult, false, true);
+		ShopItem@ s = addShopItem(this, "Catapult", "$catapult$", "catapult", "$catapult$\n\n\n" + Descriptions::catapult, false, true);
 		s.crate_icon = 4;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::catapult);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Ballista", "$ballista$", "ballista", "$ballista$\n\n\n" + desc_ballista, false, true);
+		ShopItem@ s = addShopItem(this, "Ballista", "$ballista$", "ballista", "$ballista$\n\n\n" + Descriptions::ballista, false, true);
 		s.crate_icon = 5;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Ballista Ammo", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + desc_ballista_ammo, false, false);
+		ShopItem@ s = addShopItem(this, "Ballista Ammo", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + Descriptions::ballista_ammo, false, false);
 		s.crate_icon = 5;
+		s.customButton = true;
+		s.buttonwidth = 2;
+		s.buttonheight = 1;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista_ammo);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Bomb Bolt Upgrade", "$vehicleshop_upgradebolts$", "upgradebolts", desc_ballista_ammo_upgrade_gold, false);
+		ShopItem@ s = addShopItem(this, "Bomb Bolt Upgrade", "$vehicleshop_upgradebolts$", "upgradebolts", Descriptions::ballista_ammo_upgrade_gold, false);
 		s.spawnNothing = true;
 		s.customButton = true;
 		s.buttonwidth = 2;
