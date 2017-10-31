@@ -77,8 +77,9 @@ void onTick(CSprite@ sprite)
 void onRender(CSprite@ sprite)
 {
 	CMap@ map = getMap();
+	CPlayer@ player = sprite.getBlob().getPlayer();
 
-	if (map is null || ticks_since_pressed <= update_latency) return;
+	if (map is null || player is null || !player.isMyPlayer() || ticks_since_pressed <= update_latency) return;
 
 	const float base_brightness = Maths::Abs(Maths::Sin((ticks_since_pressed - update_latency) / 20.0f));
 
