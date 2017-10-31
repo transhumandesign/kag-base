@@ -309,6 +309,7 @@
 
 	"A tunnel for quick transportation.":"Тоннель для быстрого перемещения.",
 	"Bucket for storing water. Useful for fighting fires.":"Ведро для хранения воды. Пригодится в борьбе с пожарами.",
+	"A wooden bucket pre-filled with water for fighting fires.":"Уже заполненное водой деревянное ведро для тушения пожаров.",
 	"A generic factory. Requires Research Room, technology upgrade and big enough population to produce items.":"Фабрика. Для создания предметов требуются комната для исследований, соответствующая технология и достаточная популяция.",
 	//"Kitchen produces food which heal wounds.":"Кухня производит продукты питания, которые лечат раны.",
 	//"A plant nursery with grain, oak and pine tree seeds.":"",
@@ -571,9 +572,11 @@
 	"Trader":"Торговец",
 	"Trading Post":"Торговый пост",
 	"Travel Tunnel":"Тоннель",
+	"Transport Tunnel":"Тоннель",
 	"Workbench":"Верстак",
 	"Boulder":"Валун",
 	"Bucket":"Ведро",
+	"Filled Bucket":"Ведро с водой",
 	"Crate":"Ящик",
 	"Bomb":"Бомба",
 	"Keg":"Пороховая бочка",
@@ -660,11 +663,21 @@
 
 //// BUTTONS AND OTHER ////
 	"Buy":"Купить", //CTF Shops
+	"Construct":"Построить", //Building.as
 	"Shop":"Магазин", //Shop.as (menu desc) & TradingMenu.as (btn)
 	"Swap Class":"Сменить класс", //OneClassAvailable.as & TentLogic.as (btns)
 	"Swap class":"Сменить класс", //StandardRespawnCommand.as (menu desc)
 	"Change class":"Сменить класс", //Hall.as, TDM_Ruins.as, WAR_base.as, Ballista.as, WarBoat.as
 	"Trade":"Торговля",
+	"Build":"Строительство", //BuilderInventory.as
+	"Current bomb":"Выбранная бомба", //KnightLogic.as
+//ArcherLogic.as
+	"Current arrow":"Выбранная стрела", 
+	"Regular arrows":"Обычная стрела",
+	"Water arrows":"Водяная стрела",
+	"Fire arrows":"Огненная стрела",
+	"Bomb arrow":"Взрывающаяся стрела",
+
 
 //// SCROLLS ////
 //ScrollDrought.as
