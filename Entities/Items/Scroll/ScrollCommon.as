@@ -1,13 +1,5 @@
 #include "ShopCommon.as"
 
-// consts for use everywhere scrolls are made - TODO config file
-
-const s32 cost_crappiest = 60;
-const s32 cost_crappy 	= 100;
-const s32 cost_medium 	= 200;
-const s32 cost_big	 	= 300;
-const s32 cost_super 	= 500;
-
 //scroll definitions
 
 shared class ScrollDef

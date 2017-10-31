@@ -28,14 +28,16 @@
 // BuildBlock b(0, "name", "icon", "description");
 // blocks[3].push_back(b);
 
-#include "BuildBlock.as";
-#include "Requirements.as";
+#include "BuildBlock.as"
+#include "Requirements.as"
+#include "Costs.as"
 
 const string blocks_property = "blocks";
 const string inventory_offset = "inventory offset";
 
 void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 {
+	InitCosts();
 	CRules@ rules = getRules();
 	const bool CTF = rules.gamemode_name == "CTF";
 	const bool TTH = rules.gamemode_name == "TTH";
@@ -45,59 +47,59 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 	blocks.push_back(page_0);
 	{
 		BuildBlock b(CMap::tile_castle, "stone_block", "$stone_block$", "Stone Block\nBasic building block");
-		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
+		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::stone_block);
 		blocks[0].push_back(b);
 	}
 	{
 		BuildBlock b(CMap::tile_castle_back, "back_stone_block", "$back_stone_block$", "Back Stone Wall\nExtra support");
-		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 2);
+		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::back_stone_block);
 		blocks[0].push_back(b);
 	}
 	{
 		BuildBlock b(0, "stone_door", "$stone_door$", "Stone Door\nPlace next to walls");
-		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 50);
+		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::stone_door);
 		blocks[0].push_back(b);
 	}
 	{
 		BuildBlock b(CMap::tile_wood, "wood_block", "$wood_block$", "Wood Block\nCheap block\nwatch out for fire!");
-		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::wood_block);
 		blocks[0].push_back(b);
 	}
 	{
 		BuildBlock b(CMap::tile_wood_back, "back_wood_block", "$back_wood_block$", "Back Wood Wall\nCheap extra support");
-		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 2);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::back_wood_block);
 		blocks[0].push_back(b);
 	}
 	{
 		BuildBlock b(0, "wooden_door", "$wooden_door$", "Wooden Door\nPlace next to walls");
-		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 30);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::wooden_door);
 		blocks[0].push_back(b);
 	}
 	{
 		BuildBlock b(0, "trap_block", "$trap_block$", "Trap Block\nOnly enemies can pass");
-		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 25);
+		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::trap_block);
 		blocks[0].push_back(b);
 	}
 	{
 		BuildBlock b(0, "ladder", "$ladder$", "Ladder\nAnyone can climb it");
-		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::ladder);
 		blocks[0].push_back(b);
 	}
 	{
 		BuildBlock b(0, "wooden_platform", "$wooden_platform$", "Wooden Platform\nOne way platform");
-		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 15);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::wooden_platform);
 		blocks[0].push_back(b);
 	}
 	{
 		BuildBlock b(0, "spikes", "$spikes$", "Spikes\nPlace on Stone Block\nfor Retracting Trap");
-		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
+		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::spikes);
 		blocks[0].push_back(b);
 	}
 
 	if(CTF)
 	{
 		BuildBlock b(0, "building", "$building$", "Workshop\nStand in an open space\nand tap this button.");
-		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 150);
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", CTFCosts::workshop_wood);
 		b.buildOnGround = true;
 		b.size.Set(40, 24);
 		blocks[0].insertAt(9, b);
@@ -106,14 +108,14 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 	{
 		{
 			BuildBlock b(0, "factory", "$building$", "Workshop");
-			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 150);
+			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", WARCosts::factory_wood);
 			b.buildOnGround = true;
 			b.size.Set(40, 24);
 			blocks[0].insertAt(9, b);
 		}
 		{
 			BuildBlock b(0, "workbench", "$workbench$", "Workbench");
-			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 120);
+			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", WARCosts::workbench_wood);
 			b.buildOnGround = true;
 			b.size.Set(32, 16);
 			blocks[0].push_back(b);
