@@ -6,7 +6,7 @@
 #include "Requirements_Tech.as"
 #include "MakeScroll.as"
 #include "Help.as"
-#include "WARCosts.as"
+#include "Costs.as"
 #include "Hitters.as"
 #include "HallCommon.as"
 
@@ -20,6 +20,8 @@ bool hasTech(CBlob@ this)
 
 void onInit(CBlob@ this)
 {
+	InitCosts(); //read from cfg
+
 	this.Tag("huffpuff production");   // for production.as
 
 	AddIconToken("$take_scroll$", "/GUI/InteractionIcons.png", Vec2f(32, 32), 19, 1);
@@ -342,7 +344,7 @@ void onDie(CBlob@ this)
 		CBlob@ blob = server_CreateBlob("mat_wood", this.getTeamNum(), this.getPosition());
 		if (blob !is null)
 		{
-			blob.server_SetQuantity(COST_WOOD_FACTORY / 2);
+			blob.server_SetQuantity(WARCosts::factory_wood / 6);
 		}
 	}
 }

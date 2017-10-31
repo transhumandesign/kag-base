@@ -1,4 +1,4 @@
-#include "TradingCommon.as";
+#include "TradingCommon.as"
 #include "Descriptions.as"
 
 #define SERVER_ONLY
@@ -31,8 +31,12 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 
 TradeItem@ addItemForCoin(CBlob@ this, const string &in name, int cost, const bool instantShipping, const string &in iconName, const string &in configFilename, const string &in description)
 {
+	if(cost <= 0) {
+		return null;
+	}
+
 	TradeItem@ item = addTradeItem(this, name, 0, instantShipping, iconName, configFilename, description);
-	if (item !is null && cost > 0)
+	if (item !is null)
 	{
 		AddRequirement(item.reqs, "coin", "", "Coins", cost);
 		item.buyIntoInventory = true;
@@ -78,52 +82,25 @@ void MakeTradeMenu(CBlob@ trader)
 	//
 	addTradeSeparatorItem(trader, "$MENU_GENERIC$", Vec2f(3, 1));
 
-	if (cost_bombs > 0)
-		addItemForCoin(trader, "Bomb", cost_bombs, true, "$mat_bombs$", "mat_bombs", descriptions[1]);
-
-	if (cost_waterbombs > 0)
-		addItemForCoin(trader, "Water Bomb", cost_waterbombs, true, "$mat_waterbombs$", "mat_waterbombs", descriptions[52]);
-
-	if (cost_keg > 0)
-		addItemForCoin(trader, "Keg", cost_keg, true, "$keg$", "keg", descriptions[4]);
-
-	if (cost_mine > 0)
-		addItemForCoin(trader, "Mine", cost_mine, true, "$mine$", "mine", descriptions[20]);
-
-
-	if (cost_arrows > 0)
-		addItemForCoin(trader, "Arrows", cost_arrows, true, "$mat_arrows$", "mat_arrows", descriptions[2]);
-
-	if (cost_waterarrows > 0)
-		addItemForCoin(trader, "Water Arrows", cost_waterarrows, true, "$mat_waterarrows$", "mat_waterarrows", descriptions[50]);
-
-	if (cost_firearrows > 0)
-		addItemForCoin(trader, "Fire Arrows", cost_firearrows, true, "$mat_firearrows$", "mat_firearrows", descriptions[32]);
-
-	if (cost_bombarrows > 0)
-		addItemForCoin(trader, "Bomb Arrow", cost_bombarrows, true, "$mat_bombarrows$", "mat_bombarrows", descriptions[51]);
-
-	if (cost_sponge > 0)
-		addItemForCoin(trader, "Sponge", cost_sponge, true, "$sponge$", "sponge", descriptions[53]);
-
-	if (cost_mountedbow > 0)
-		addItemForCoin(trader, "Mounted Bow", cost_mountedbow, true, "$mounted_bow$", "mounted_bow", descriptions[31]);
-
-	if (cost_drill > 0)
-		addItemForCoin(trader, "Drill", cost_drill, true, "$drill$", "drill", descriptions[43]);
-
-	if (cost_boulder > 0)
-		addItemForCoin(trader, "Boulder", cost_boulder, true, "$boulder$", "boulder", descriptions[17]);
-
-	if (cost_burger > 0)
-		addItemForCoin(trader, "Burger", cost_burger, true, "$food$", "food", "Food for healing. Don't think about this too much.");
-
-
-	if (cost_catapult > 0)
-		addItemForCoin(trader, "Catapult", cost_catapult, true, "$catapult$", "catapult", descriptions[5]);
-
-	if (cost_ballista > 0)
-		addItemForCoin(trader, "Ballista", cost_ballista, true, "$ballista$", "ballista", descriptions[6]);
+	//knighty stuff
+	addItemForCoin(trader, "Bomb", cost_bombs, true, "$mat_bombs$", "mat_bombs", Descriptions::bomb);
+	addItemForCoin(trader, "Water Bomb", cost_waterbombs, true, "$mat_waterbombs$", "mat_waterbombs", Descriptions::waterarrows);
+	addItemForCoin(trader, "Keg", cost_keg, true, "$keg$", "keg", Descriptions::keg);
+	addItemForCoin(trader, "Mine", cost_mine, true, "$mine$", "mine", Descriptions::mine);
+	//archery stuff
+	addItemForCoin(trader, "Arrows", cost_arrows, true, "$mat_arrows$", "mat_arrows", Descriptions::arrows);
+	addItemForCoin(trader, "Water Arrows", cost_waterarrows, true, "$mat_waterarrows$", "mat_waterarrows", Descriptions::waterarrows);
+	addItemForCoin(trader, "Fire Arrows", cost_firearrows, true, "$mat_firearrows$", "mat_firearrows", Descriptions::firearrows);
+	addItemForCoin(trader, "Bomb Arrow", cost_bombarrows, true, "$mat_bombarrows$", "mat_bombarrows", Descriptions::bombarrows);
+	//utility stuff
+	addItemForCoin(trader, "Sponge", cost_sponge, true, "$sponge$", "sponge", Descriptions::sponge);
+	addItemForCoin(trader, "Mounted Bow", cost_mountedbow, true, "$mounted_bow$", "mounted_bow", Descriptions::mounted_bow);
+	addItemForCoin(trader, "Drill", cost_drill, true, "$drill$", "drill", Descriptions::drill);
+	addItemForCoin(trader, "Boulder", cost_boulder, true, "$boulder$", "boulder", Descriptions::boulder);
+	addItemForCoin(trader, "Burger", cost_burger, true, "$food$", "food", Descriptions::food);
+	//vehicles
+	addItemForCoin(trader, "Catapult", cost_catapult, true, "$catapult$", "catapult", Descriptions::catapult);
+	addItemForCoin(trader, "Ballista", cost_ballista, true, "$ballista$", "ballista", Descriptions::ballista);
 
 }
 
