@@ -968,7 +968,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 	this.ClearGridMenusExceptInventory();
 	Vec2f pos(gridmenu.getUpperLeftPosition().x + 0.5f * (gridmenu.getLowerRightPosition().x - gridmenu.getUpperLeftPosition().x),
 	          gridmenu.getUpperLeftPosition().y - 32 * 1 - 2 * 24);
-	CGridMenu@ menu = CreateGridMenu(pos, this, Vec2f(arrowTypeNames.length, 2), "Current arrow");
+	CGridMenu@ menu = CreateGridMenu(pos, this, Vec2f(arrowTypeNames.length, 2), getTranslatedString("Current arrow"));
 
 	ArcherInfo@ archer;
 	if (!this.get("archerInfo", @archer))
@@ -984,7 +984,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 		for (uint i = 0; i < arrowTypeNames.length; i++)
 		{
 			string matname = arrowTypeNames[i];
-			CGridButton @button = menu.AddButton(arrowIcons[i], arrowNames[i], this.getCommandID("pick " + matname));
+			CGridButton @button = menu.AddButton(arrowIcons[i], getTranslatedString(arrowNames[i]), this.getCommandID("pick " + matname));
 
 			if (button !is null)
 			{
