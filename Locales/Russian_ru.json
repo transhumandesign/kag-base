@@ -31,6 +31,17 @@
 	"Spectators:"           :"Зрители",
 	"and more ..."          :"и другие...",
 
+//TeamMenu.as
+	"Spectator":"Зритель",
+	"Auto-pick teams":"Автоматический выбор",
+
+//ShowGameMode.as //You can translate here any game mode names
+	"  Gamemode: {GAMEMODE}":"  Игровой режим: {GAMEMODE}",
+	"\n  Server: {SERVERNAME}\n":"\n  Сервер: {SERVERNAME}\n",
+	"CTF":"CTF",
+	"TTH":"TTH",
+	"TDM":"TDM",
+	
 //BuilderInventory.as
 	"Stop building\n": "Прекратить строительство\n",
 	"Requires\n": "Требуется\n",
@@ -213,7 +224,7 @@
 	"Это основы, которые вам нужно знать о режиме захвата баз. Всё остальное можно узнать во время игры онлайн. Этот режим прост, но сложность заключается в хорошей стратегии. Увидимся на поле битвы!\n\nНажмите $KEY_ESC$, чтобы выйти.",
 //Challenge_PrincessStart
 	"   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.":
-	"   Высоко на вершине скалистого утёса, охраняемого армией свирепых воинов, стоит крепость великого тёмного лорда Сэджвика. Глубого в тёмной пещере замка Сэджвик заточил своего прекрасного пленника, принцессу Гети.\n\n   Вы королевский рыцарь. Один, только со своими мечом и щитом, вы должны одолеть Сэджвика и освободить прекрасную Гети.\n\n   Оставь все свои страхи позади. Собери всю свою волю в кулак, прими смерть как один из исходов, оставайся сильным. Так поступают настоящие рыцари.",
+	"   Высоко на вершине скалистого утёса, охраняемого армией свирепых воинов, стоит крепость великого тёмного лорда Сэджвика. Глубоко в тёмном подземелье замка Сэджвик заточил своего прекрасного пленника, принцессу Гети.\n\n   Вы королевский рыцарь. Один, только со своими мечом и щитом, вы должны одолеть Сэджвика и освободить прекрасную Гети.\n\n   Оставь все свои страхи позади. Собери всю свою волю в кулак, прими смерть как один из исходов, оставайся сильным. Так поступают настоящие рыцари.",
 	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .":
 	"   На этом ваше приключение заканчивается. Ужасный Сэджвик был повержен, прекрасная Гети в ваших руках. Впервые на вашей памяти страна купается в мирных лучах солнца. Но будьте осторожны: для рыцаря короля всегда наступает следующий раз. . . .",
 	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .":
