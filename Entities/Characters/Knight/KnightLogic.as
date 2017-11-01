@@ -79,8 +79,8 @@ void onInit(CBlob@ this)
 	//centered on inventory
 	this.set_Vec2f("inventory offset", Vec2f(0.0f, 0.0f));
 
-	SetHelp(this, "help self action", "knight", "$Jab$Jab        $LMB$", "", 4);
-	SetHelp(this, "help self action2", "knight", "$Shield$Shield    $KEY_HOLD$$RMB$", "", 4);
+	SetHelp(this, "help self action", "knight", getTranslatedString("$Jab$Jab        $LMB$"), "", 4);
+	SetHelp(this, "help self action2", "knight", getTranslatedString("$Shield$Shield    $KEY_HOLD$$RMB$"), "", 4);
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().removeIfTag = "dead";
@@ -521,7 +521,7 @@ void onTick(CBlob@ this)
 
 		if (this.isKeyJustPressed(key_action1) && getGameTime() > 150)
 		{
-			SetHelp(this, "help self action", "knight", "$Slash$ Slash!    $KEY_HOLD$$LMB$", "", 13);
+			SetHelp(this, "help self action", "knight", getTranslatedString("$Slash$ Slash!    $KEY_HOLD$$LMB$"), "", 13);
 		}
 	}
 

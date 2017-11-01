@@ -31,7 +31,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (caller.getTeamNum() != this.getTeamNum() || this.getDistanceTo(caller) > 16) return;
 
-	string desc = "Turn Saw " + (getSawOn(this) ? "Off" : "On");
+	string desc = getTranslatedString("Turn Saw " + (getSawOn(this) ? "Off" : "On"));
 	caller.CreateGenericButton(8, Vec2f(0, 0), this, this.getCommandID(toggle_id), desc);
 }
 

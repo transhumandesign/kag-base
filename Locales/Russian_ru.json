@@ -165,7 +165,7 @@
 	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$\n\n\nВстаньте на позицию стрелка\n(там, где находится$down_arrow$ на рисунке)\n\nНажмите $KEY_S$,\n\nчтобы залезть внутрь.\n\n\nДЕРЖИТЕ $LMB$\n\nдля увеличения силы выстрела.\n\n\n(Водитель - в центре;\nВерхушка - платформа с боеприпасом.)",
 	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"И напоследок.\n\nНе бойтесь просить о помощи в мультиплеере - нажмите \n\n$KEY_ENTER$, чтобы открыть чат.\n\n\nИспользуйте смайлы!\n\nДЕРЖИТЕ $KEY_Q$",
 	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"Здесь заканчивается базовое обучение. Вы постоянно будете учиться чему-то новому, играя!\n\nА теперь попробуйте другие одиночные миссии или присоеденитесь к серверу!",
-	
+
 //TutorialCTF01.as
 	"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":
 	"Захват флага - это простой режим игры, подходящий для новичков. Цель режима проста - украсть флаг у противника и донести его до своего.",
@@ -219,7 +219,7 @@
 	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .":
 	"   На этом ваше приключение заканчивается. Ужасный Сэджвик был повержен, бездыханная прекрасная Гети лежит у ваших ног. Впервые на вашей памяти страна купается в мирных лучах солнца, но скорбит о смерти своей любимой принцессы. . . .",
 
-//Sandbox.as 
+//Sandbox.as
 	"Welcome to King Arthur's Gold":"Добро пожаловать в King Arthur's Gold",
 	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"Это режим песочницы.\nЗдесь вы можете расслабиться и просто наслаждаться игрой.\n\nНажмите [ESC], чтобы посмотреть управление.\nНаслаждайтесь!",
 //Sandbox gamemode.cfg
@@ -278,7 +278,7 @@
 	"Bombs for Knight only.":"Бомбы для рыцаря.",
 	"Arrows for Archer and mounted bow.":"Стрелы для лучника и стационарного арбалета.",
 	"Highly explosive powder keg for Knight only.":"Огромная пороховая бочка для рыцаря.",
-	
+
 	"A stone throwing, ridable siege engine, requiring a crew of two.":"Осадное орудие, используемое для метания камней.",
 	"A bolt-firing pinpoint accurate siege engine, requiring a crew of two. Allows respawn and class change.":"Высокоточное осадное орудие, стреляющее болтами. Для управления и стрельбы требуются 2 человека. Позволяет менять класс и возрождаться около себя.",
 	"Piercing bolts for ballista.":"Болты для баллисты.",
@@ -292,7 +292,7 @@
 	"Raw stone material.":"Каменное сырьё.",
 	"Raw wood material.":"Деревянное сырьё.",
 	"Lanterns help with mining in the dark, and lighten the mood.":"Фонари помогают вам копать в темноте.",
-	"A mill saw turns tree logs into wood material.":"Распиливает брёвна, превращая их в деревянное сырьё.",
+	"A circular saw that turns tree logs into wood material.":"Распиливает брёвна, превращая их в деревянное сырьё.",
 	//"A trading post. Requires a trader to reside inside.":"Торговый пост. Для работы требуется продавец.",
 	//"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies."
 	"A simple wooden ladder for climbing over defenses.":"Простая деревянная лестница. С помощью неё можно перебираться через вражеские сооружения.",
@@ -351,7 +351,7 @@
 //DrawHelp.as
 	"$!!!$$GREEN$WATCH THESE FOR          .          GAMEPLAY HELP$GREEN$\n\n\n$KEY_ESC$ CHECK CONTROLS\n\n$KEY_F1$ HELP ON/OFF\n\n(click to remove this)\n\n      $DEFEND_THIS$":
 	"$!!!$$GREEN$ЗДЕСЬ\n           ОТОБРАЖАЕТСЯ\n           ИГРОВАЯ ПОМОЩЬ$GREEN$\n\n$KEY_ESC$ ПРОВЕРИТЬ\n             УПРАВЛЕНИЕ\n\n$KEY_F1$ ВКЛ/ВЫКЛ ПОМОЩЬ\n             (нажмите, скрыть)\n\n      $DEFEND_THIS$",
- 
+
 //BasicHelps.as
 	" $down_arrow$ Hop inside  $KEY_S$"                :" $down_arrow$ Залезть $KEY_S$",
 	" Get out  $KEY_W$"                                :" Вылезти $KEY_W$",
@@ -402,11 +402,11 @@
 	"Pyrotechnics":"Пиротехника",
 	//"War Boat":"Военный корабль", //in blobs
 	"Water Ammo":"Водяные боеприпасы",
-	
+
 //Saw.as
 	"Turn Saw On":"Включить пилу",
 	"Turn Saw Off":"Выключить пилу",
-	 
+
 //Crate.as
 	"Unpack all":"Распаковать",
 	"Stop {ITEM}":"Прервать {ITEM}",
@@ -423,13 +423,13 @@
 	"$Jab$Jab        $LMB$": "$Jab$Колющий удар $LMB$",
 	"$Shield$Shield    $KEY_HOLD$$RMB$": "$Shield$Щит $KEY_HOLD$$RMB$",
 	"$Slash$ Slash!    $KEY_HOLD$$LMB$": "$Slash$ Рассекающий удар! $KEY_HOLD$$LMB$",
-	
+
 //BuilderLogic.as
 	"$Pick$Dig/Chop  $KEY_HOLD$$RMB$": "$Pick$Копать/Рубить $KEY_HOLD$$RMB$",
 
 //BuilderInventory.as
 	"$Build$Build/Place  $LMB$": "$Build$Построить/Поставить $LMB$",
-	
+
 //ArcherLogic.as
 	"Hide    $KEY_S$": "Спрятатьcя $KEY_S$",
 	"$Grapple$ Grappling hook    $RMB$": "$Grapple$ Крюк-кошка $RMB$",
@@ -437,7 +437,7 @@
 
 //RunnerDefault.as
 	"${ATTACHED}$Throw    $KEY_C$": "${ATTACHED}$Кинуть $KEY_C$",
-	
+
 //TreeSync.as
 	"$Axe$$Tree$Chop tree    $RMB$": "$Axe$$Tree$Рубить дерево $RMB$",
 	"$Tree$Climb tree    $KEY_W$": "$Tree$Карабкаться $KEY_W$",
