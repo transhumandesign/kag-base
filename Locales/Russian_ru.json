@@ -233,8 +233,6 @@
 //Sandbox.as
 	"Welcome to King Arthur's Gold":"Добро пожаловать в King Arthur's Gold",
 	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"Это режим песочницы.\nЗдесь вы можете расслабиться и просто наслаждаться игрой.\n\nНажмите [ESC], чтобы посмотреть управление.\nНаслаждайтесь!",
-//Sandbox gamemode.cfg
-	"Build whatever your heart desires. Respect other folk's creations!":"Стройте всё, что душе угодно. И уважайте труд других людей.",
 
 //// VOTES ////
 //VoteCore.as
@@ -739,6 +737,31 @@
 	"Connecting to {IP}": "Подключение к {IP}",
 	"Connection failed": "Не удалось подключиться",
 	"Please check the address again and make sure the server is running.": "Пожалуйста, проверьте ещё раз адрес и убедитесь, что сервер запущен.",
-	"DISCONNECTED FROM SERVER": "ОТКЛЮЧЁН ОТ СЕРВЕРА"
+	"DISCONNECTED FROM SERVER": "ОТКЛЮЧЁН ОТ СЕРВЕРА",
+
+////GLOBAL MESSAGES////
+	"It's a tie!":"Ничья!",
+	"Well done. Loading next map...":"Отлично. Загрузка следующей карты...",
+	"You saved the princess!":"Вы спасли принцессу!",
+	"The princess died!":"Принцесса умерла!",
+	"Not enough players in each team for the game to start.\nPlease wait for someone to join...":"Недостаточно игроков в каждой команде для начала игры.\nПожалуйста, подождите, пока кто-нибудь присоединится...",
+//Challenges
+	"Kill all of the red scum":"Убейте весь красный биомусор",
+	"Eliminate the campers":"Уничтожте всех кемперов",
+	"Jump to the end before times passes":"Доберитесь до конца до того, как закончится время",
+	"Get as fast as possible across the map":"Как можно быстрее пройдите через карту",
+	"Runaway from the tidal wave!":"Убегайте от цунами!",
+	"Climb the tower!":"Заберитесь на башню!",
+	"Get to the far right!":"Доберитесь до правого края!",
+	"Find the longboat!":"Найдите баркас!",
+	"Get to the top right of the castle!":"Доберитесь до правой части крыши замка!",
+	"Take the red hall!":"Захватите красную базу!",
+
+////GAMEMODE INFO////
+	"Challenges":"Испытания",
+	"Capture the Flag":"Захват флага",
+	"Team Deathmatch":"Командный бой насмерть",
+	"Take the Halls":"Захват баз",
+	"Build whatever your heart desires. Respect other folk's creations!":"Стройте всё, что душе угодно. И уважайте труд других людей."
 
 }
