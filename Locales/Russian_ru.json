@@ -22,14 +22,14 @@
 
 //ScoreboardRender.as
 	"Players: {PLAYERCOUNT}":"Игроков: {PLAYERCOUNT}",
-	"Player"      			:"Игрок",
-	"Username"    			:"Имя",
-	"Ping"        			:"Пинг",
-	"Kills"       			:"Убийства",
-	"Deaths"      			:"Смерти",
-	"KDR"         			:"У/С",
-	"Spectators:" 			:"Зрители",
-	"and more ..."			:"и другие...",
+	"Player"                :"Игрок",
+	"Username"              :"Имя",
+	"Ping"                  :"Пинг",
+	"Kills"                 :"Убийства",
+	"Deaths"                :"Смерти",
+	"KDR"                   :"У/С",
+	"Spectators:"           :"Зрители",
+	"and more ..."          :"и другие...",
 
 //BuilderInventory.as
 	"Stop building\n": "Прекратить строительство\n",
@@ -212,8 +212,13 @@
 	"Those are the basics you need to know about Take the Halls. The rest can be learned when playing online by observation. This game mode is simple but complexity comes from great strategy. See you on the battlefield!\n\nPress $KEY_ESC$ to get out.":
 	"Это основы, которые вам нужно знать о режиме захвата баз. Всё остальное можно узнать во время игры онлайн. Этот режим прост, но сложность заключается в хорошей стратегии. Увидимся на поле битвы!\n\nНажмите $KEY_ESC$, чтобы выйти.",
 //Challenge_PrincessStart
-	//"   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.":
-	//"	Высоко на вершине скалистого утёса, охраняемого армией свирепых воинов, стоит крепость великого тёмного лорда Сэджвика. Глубого в тёмной пещере замка Сэджвик злорадствует над своим прекрасными пленником, принцессой Гети.\n\n   Вы королевский рыцарь. Один, только со своими мечом и щитом, ты должен одолеть Сэджвика и освободить прекрасную Гети.\n\n   Оставь все свои страхи позади. Собери всю свою волю в кулак, прими смерть как один из исходов, оставайся сильным. Так поступают настоящие рыцари.",
+	"   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.":
+	"   Высоко на вершине скалистого утёса, охраняемого армией свирепых воинов, стоит крепость великого тёмного лорда Сэджвика. Глубого в тёмной пещере замка Сэджвик заточил своего прекрасного пленника, принцессу Гети.\n\n   Вы королевский рыцарь. Один, только со своими мечом и щитом, вы должны одолеть Сэджвика и освободить прекрасную Гети.\n\n   Оставь все свои страхи позади. Собери всю свою волю в кулак, прими смерть как один из исходов, оставайся сильным. Так поступают настоящие рыцари.",
+	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .":
+	"   На этом ваше приключение заканчивается. Ужасный Сэджвик был повержен, прекрасная Гети в ваших руках. Впервые на вашей памяти страна купается в мирных лучах солнца. Но будьте осторожны: для рыцаря короля всегда наступает следующий раз. . . .",
+	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .":
+	"   На этом ваше приключение заканчивается. Ужасный Сэджвик был повержен, бездыханная прекрасная Гети лежит у ваших ног. Впервые на вашей памяти страна купается в мирных лучах солнца, но скорбит о смерти своей любимой принцессы. . . .",
+
 //Sandbox.as 
 	"Welcome to King Arthur's Gold":"Добро пожаловать в King Arthur's Gold",
 	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"Это режим песочницы.\nЗдесь вы можете расслабиться и просто наслаждаться игрой.\n\nНажмите [ESC], чтобы посмотреть управление.\nНаслаждайтесь!",
@@ -537,9 +542,9 @@
 	"Resources can be resupplied by changing classes in workshops, not just at the tent!": "Ресурсы могут быть пополнены в классовых мастерских, не только в палатке!",
 
 //Requirements.as
-	"Wood":"Дерева",
-	"Stone":"Камня",
-	"Gold":"Золота",
+	//"Wood":"Дерева",
+	//"Stone":"Камня",
+	//"Gold":"Золота",
 	"{COINS_QUANTITY} $COIN$ required\n":"Требуется {COINS_QUANTITY} $COIN$",
 
 //// BLOB NAMES ////
@@ -566,7 +571,7 @@
 	"Kitchen":"Кухня", //OLD
 	"Seeds":"Семена",
 	"Nursery":"Теплица", //OLD
-	"Research":"Исследовательская", //OLD
+	//"Research":"Исследовательская", //OLD
 	"Mill Saw":"Циркулярная пила",
 	"Saw":"Пила",
 	"Trader":"Торговец",
@@ -659,18 +664,28 @@
 	"Boat Compartment":"Отсек лодки",
 	"Team Storage":"Хранилище команды",
 	"Tech Scrolls":"Свитки технологий", // OLD
-	"Storage":"Склад",
+	"Storage":"Хранилище",
 
 //// BUTTONS AND OTHER ////
 	"Buy":"Купить", //CTF Shops
 	"Construct":"Построить", //Building.as
 	"Shop":"Магазин", //Shop.as (menu desc) & TradingMenu.as (btn)
+	"Store":"Выложить все вещи", //Storage.as (btn)
+	"Rest":"Отдохнуть", //Quarters.as (btn)
+	"Research":"Исследования",
+	"Immobilise":"Иммобилизировать", //PopWheelsOff.as (btn)
+	"Detach {ITEM}":"Detach {ITEM}", //VehicleAttachment.as (btn)
+	"Load {ITEM}":"Загрузить {ITEM}", //VehicleCommon.as (btn)
 	"Swap Class":"Сменить класс", //OneClassAvailable.as & TentLogic.as (btns)
 	"Swap class":"Сменить класс", //StandardRespawnCommand.as (menu desc)
 	"Change class":"Сменить класс", //Hall.as, TDM_Ruins.as, WAR_base.as, Ballista.as, WarBoat.as
 	"Trade":"Торговля",
 	"Build":"Строительство", //BuilderInventory.as
 	"Current bomb":"Выбранная бомба", //KnightLogic.as
+//Components
+	"Unload":"Разрядить", //Magazine.as (btn)
+	"Insert 60 coins":"Вставить 60 монет", //CoinSlot.as (btn)
+	"Activate":"Активировать", //PushButton.as (btn)
 //ArcherLogic.as
 	"Current arrow":"Выбранная стрела", 
 	"Regular arrows":"Обычная стрела",
@@ -683,6 +698,36 @@
 //ScrollDrought.as
 	"Use this to dry up an orb of water.":"Высушить всю воду в радиусе.",
 	"Use this to turn all stone in the area into gold":"Превратить весь камень в золото в радиусе.",
-	"Use this to make all visible enemies instantly turn into a pile of gibs.":"Превратить всех видимых врагов в кучу ошмётков."
+	"Use this to make all visible enemies instantly turn into a pile of gibs.":"Превратить всех видимых врагов в кучу ошмётков.",
+
+//// TEAMS ////
+	"Blue Team": "Синяя команда",
+	"Red Team": "Красная команда",
+
+//// CHAT EVENTS ////
+	"{PLAYER} is now spectating": "{PLAYER} теперь наблюдает",
+	"{PLAYER} ({USERNAME}) is now spectating": "{PLAYER} ({USERNAME}) теперь наблюдает",
+	"{PLAYER} has joined {TEAM}": "{PLAYER} присоединился к \"{TEAM}\"",
+	"{PLAYER} ({USERNAME}) has joined {TEAM}": "{PLAYER} ({USERNAME}) присоединился к:\"{TEAM}\"",
+	"{PLAYER} has switched teams": "{PLAYER} сменил команду",
+	"{PLAYER} ({USERNAME}) has switched teams": "{PLAYER} ({USERNAME}) сменил команду",
+	"{PLAYER} connected": "{PLAYER} подключился",
+	"{USERNAME} left the game": "{USERNAME} вышел из игры",
+	"New player joined the game": "Новый игрок присоединился к игре",
+	"{USERNAME} connected as {PLAYER}": "{USERNAME} подключился под именем {PLAYER}",
+	"{USERNAME} is now known as {PLAYER}": "{USERNAME} теперь известен как {PLAYER}",
+	"Map: {MAP}": "Карта: \"{MAP}\"",
+
+//// IRRLICHT GUI /////
+//guiConnect.xml
+	"IP:Port": "IP:Порт",
+	"Password:": "Пароль:",
+
+//// SERVER CONNECTION EVENTS ////
+	"Connecting to {SERVER}...": "Подключение к {SERVER}...",
+	"Connecting to {IP}": "Подключение к {IP}",
+	"Connection failed": "Не удалось подключиться",
+	"Please check the address again and make sure the server is running.": "Пожалуйста, проверьте ещё раз адрес и убедитесь, что сервер запущен.",
+	"DISCONNECTED FROM SERVER": "ОТКЛЮЧЁН ОТ СЕРВЕРА"
 
 }
