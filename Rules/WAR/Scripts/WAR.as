@@ -874,6 +874,8 @@ shared class WarCore : RulesCore
 
 void Reset(CRules@ this)
 {
+	InitCosts();
+
 	printf("Restarting rules script: " + getCurrentScriptName());
 	WarSpawns spawns();
 	WarCore core(this, spawns);
@@ -909,7 +911,6 @@ void onInit(CRules@ this)
 {
 	Reset(this);
 	this.set_s32("restart_rules_after_game_time", 25 * 30);
-	InitCosts();
 }
 
 
@@ -982,6 +983,8 @@ TradeItem@ addGoldForItem(CBlob@ this, const string &in name,
 
 void MakeWarTradeMenu(CBlob@ trader)
 {
+	InitCosts();
+
 	// build menu
 	CreateTradeMenu(trader, Vec2f(3, 11), "Trade");
 
