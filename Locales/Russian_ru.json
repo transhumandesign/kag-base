@@ -745,6 +745,11 @@
 	"You saved the princess!":"Вы спасли принцессу!",
 	"The princess died!":"Принцесса умерла!",
 	"Not enough players in each team for the game to start.\nPlease wait for someone to join...":"Недостаточно игроков в каждой команде для начала игры.\nПожалуйста, подождите, пока кто-нибудь присоединится...",
+	//"{TEAM1} Surrendered! {TEAM2} wins the Game!":"{TEAM1} сдалась! {TEAM2} побеждает!", //DOESN'T WORK YET 
+	//"Match starts in {TIME}":"Матч начинается через {TIME}", //DOESN'T WORK YET 
+	//"\nMatch starts in {TIME}":"\nМатч начинается через {TIME}", //DOESN'T WORK YET 
+	//"{TEAM} wins the game!":" побеждает!", //DOESN'T WORK YET
+
 //Challenges
 	"Kill all of the red scum":"Убейте весь красный биомусор",
 	"Eliminate the campers":"Уничтожте всех кемперов",
@@ -756,6 +761,8 @@
 	"Find the longboat!":"Найдите баркас!",
 	"Get to the top right of the castle!":"Доберитесь до правой части крыши замка!",
 	"Take the red hall!":"Захватите красную базу!",
+	"Time passed!":"Время закончилось!",
+	"Round lost!":"Раунд проигран!",
 
 ////GAMEMODE INFO////
 	"Challenges":"Испытания",
