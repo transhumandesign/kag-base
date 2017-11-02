@@ -1,7 +1,7 @@
 // spawn resources
 
-#include "RulesCore.as";
-#include "CTF_Structs.as";
+#include "RulesCore.as"
+#include "CTF_Structs.as"
 
 const u32 materials_wait = 20; //seconds between free mats
 const u32 materials_wait_warmup = 40; //seconds between free mats
@@ -15,13 +15,14 @@ bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity)
 {
 	CInventory@ inv = blob.getInventory();
 
+	/* Why do we need this?
 	//already got them?
 	if (inv.isInInventory(name, quantity))
 		return false;
 
 	//otherwise...
 	inv.server_RemoveItems(name, quantity); //shred any old ones
-
+	*/
 	CBlob@ mat = server_CreateBlobNoInit(name);
 
 	if (mat !is null)
