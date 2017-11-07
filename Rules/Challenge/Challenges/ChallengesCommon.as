@@ -60,7 +60,7 @@ void SetIntroduction(CRules@ this, const string &in shortName)
 	this.set_s32("restart_rules_after_game_time", 30 * 7.0f); // no better place?
 }
 
-void DefaultWin(CRules@ this, const string endGameMsg = "You've won!")
+void DefaultWin(CRules@ this, const string endGameMsg = "You won!")
 {
 	this.SetTeamWon(0);
 	this.SetCurrentState(GAME_OVER);
