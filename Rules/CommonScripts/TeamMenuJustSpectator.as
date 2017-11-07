@@ -33,11 +33,11 @@ void ShowTeamMenu(CRules@ this)
 		params.write_u16(local.getNetworkID());
 		if (local.getTeamNum() == this.getSpectatorTeamNum())
 		{
-			CGridButton@ button = menu.AddButton("$TEAMS$", "Auto-pick teams", this.getCommandID("pick teams"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
+			CGridButton@ button = menu.AddButton("$TEAMS$", getTranslatedString("Auto-pick teams"), this.getCommandID("pick teams"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
 		}
 		else
 		{
-			CGridButton@ button = menu.AddButton("$SPECTATOR$", "Spectator", this.getCommandID("pick spectator"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
+			CGridButton@ button = menu.AddButton("$SPECTATOR$", getTranslatedString("Spectator"), this.getCommandID("pick spectator"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
 		}
 	}
 }
