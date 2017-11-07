@@ -121,6 +121,12 @@
 	"Time is up!\nIt's a tie!"          :"Время вышло!\nНичья!",
 	"Time left: {MIN}:{SEC}"            :"Времени осталось: {MIN}:{SEC}",
 
+//CTF.as
+	"Match starts in {SEC}": "Начало матча в {SEC}",
+
+//Challenge.as
+	"Starting in... {SEC}s": "Начиная с... {SEC}с",
+
 //// SOLO GAME MODES ////
 //Tutorial01.as
 	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"Ходьба и прыжок\n\n$KEY_A$$KEY_W$$KEY_D$",
