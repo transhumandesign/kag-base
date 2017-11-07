@@ -52,7 +52,7 @@ shared class HoverMessage
 		}
 
 		const bool show_positive = true;
-		const bool show_negative = true;
+		const bool show_negative = false;
 		//translate name
 		string _translated_name = name;
 		//(unless this is a kill message - todo: generalise this further)
@@ -74,6 +74,8 @@ shared class HoverMessage
 				.replace("{AMOUNT}", ""+Maths::Abs(quantity))
 				.replace("{NAME}", _translated_name);
 		}
+
+		return "";
 	}
 
 	// update message on every tick
