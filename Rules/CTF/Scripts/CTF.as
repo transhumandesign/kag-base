@@ -325,7 +325,8 @@ shared class CTFCore : RulesCore
 		}
 		else if (ticksToStart > 0 && rules.isWarmup()) //is the start of the game, spawn everyone + give mats
 		{
-			rules.SetGlobalMessage("Match starts in " + ((ticksToStart / 30) + 1));
+			rules.SetGlobalMessage("Match starts in {SEC}");
+			rules.AddGlobalMessageReplacement("SEC", "" + ((ticksToStart / 30) + 1));
 			ctf_spawns.force = true;
 		}
 

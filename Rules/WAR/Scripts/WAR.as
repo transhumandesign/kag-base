@@ -500,11 +500,11 @@ shared class WarCore : RulesCore
 			if (ticksToStart <= 0)
 			{
 				rules.SetCurrentState(GAME);
-				printf("WAR STARTED");
 			}
 			else if (ticksToStart > 0) //is the start of the game, spawn everyone + give mats
 			{
-				rules.SetGlobalMessage("\nMatch starts in " + ((ticksToStart / 30) + 1));
+				rules.SetGlobalMessage("Match starts in {SEC}");
+				rules.AddGlobalMessageReplacement("SEC", "" + ((ticksToStart / 30) + 1));
 				war_spawns.force = true;
 			}
 		}
