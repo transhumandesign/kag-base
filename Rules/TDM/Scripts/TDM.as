@@ -690,7 +690,8 @@ shared class TDMCore : RulesCore
 
 			rules.SetTeamWon(winteamIndex);   //game over!
 			rules.SetCurrentState(GAME_OVER);
-			rules.SetGlobalMessage(winteam.name + " wins the game!");
+			rules.SetGlobalMessage("{WINNING_TEAM} wins the game!");
+			rules.AddGlobalMessageReplacement("WINNING_TEAM", winteam.name);
 		}
 	}
 
