@@ -28,7 +28,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 					{
 						CBitStream params;
 						params.write_netid(occBlob.getNetworkID());
-						caller.CreateGenericButton(1, ap.offset, this, this.getCommandID("detach vehicle"), "Detach " + occBlob.getInventoryName(), params);
+						caller.CreateGenericButton(1, ap.offset, this, this.getCommandID("detach vehicle"), getTranslatedString("Detach {ITEM}").replace("{ITEM}", occBlob.getInventoryName()), params);
 					}
 				}
 			}

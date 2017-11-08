@@ -78,7 +78,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		Vec2f_zero,                             // button offset
 		this,                                   // button attachment
 		this.getCommandID("load"),              // command id
-		"Load",                                 // description
+		getTranslatedString("Load"),            // description
 		params);                                // cbitstream
 
 		button.radius = 8.0f;
@@ -97,7 +97,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		Vec2f_zero,                             // button offset
 		this,                                   // button attachment
 		this.getCommandID("unload"),            // command id
-		"Unload",                               // description
+		getTranslatedString("Unload"),          // description
 		params);                                // cbitstream
 
 		button.radius = 8.0f;

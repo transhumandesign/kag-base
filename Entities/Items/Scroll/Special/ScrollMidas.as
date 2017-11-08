@@ -13,7 +13,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	CBitStream params;
 	params.write_u16(caller.getNetworkID());
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("midas"), "Use this to turn all stone in the area into gold", params);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("midas"), getTranslatedString("Use this to turn all stone in the area into gold"), params);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

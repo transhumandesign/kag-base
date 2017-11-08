@@ -74,7 +74,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	Vec2f_zero,                                 // button offset
 	this,                                       // button attachment
 	this.getCommandID("activate"),              // command id
-	"Activate");                                // description
+	getTranslatedString("Activate"));           // description
 
 	button.radius = 8.0f;
 	button.enableRadius = 20.0f;

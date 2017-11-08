@@ -15,7 +15,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (this.getTeamNum() == caller.getTeamNum() && isOverlapping(this, caller) && !caller.isAttached() && !this.hasTag("immobile"))
 	{
-		caller.CreateGenericButton(2, Vec2f(0.0f, 8.0f), this, this.getCommandID("pop_wheels"), "Immobilise");
+		caller.CreateGenericButton(2, Vec2f(0.0f, 8.0f), this, this.getCommandID("pop_wheels"), getTranslatedString("Immobilise"));
 	}
 }
 

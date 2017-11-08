@@ -500,11 +500,11 @@ shared class WarCore : RulesCore
 			if (ticksToStart <= 0)
 			{
 				rules.SetCurrentState(GAME);
-				printf("WAR STARTED");
 			}
 			else if (ticksToStart > 0) //is the start of the game, spawn everyone + give mats
 			{
-				rules.SetGlobalMessage("\nMatch starts in " + ((ticksToStart / 30) + 1));
+				rules.SetGlobalMessage("Match starts in {SEC}");
+				rules.AddGlobalMessageReplacement("SEC", "" + ((ticksToStart / 30) + 1));
 				war_spawns.force = true;
 			}
 		}
@@ -662,7 +662,8 @@ shared class WarCore : RulesCore
 				{
 					rules.SetTeamWon(i);
 					rules.SetCurrentState(GAME_OVER);
-					rules.SetGlobalMessage(team.name + " wins the game!");
+					rules.SetGlobalMessage("{WINNING_TEAM} wins the game!");
+					rules.AddGlobalMessageReplacement("WINNING_TEAM", team.name);
 					break;
 				}
 			}
@@ -874,6 +875,8 @@ shared class WarCore : RulesCore
 
 void Reset(CRules@ this)
 {
+	InitCosts();
+
 	printf("Restarting rules script: " + getCurrentScriptName());
 	WarSpawns spawns();
 	WarCore core(this, spawns);
@@ -909,7 +912,6 @@ void onInit(CRules@ this)
 {
 	Reset(this);
 	this.set_s32("restart_rules_after_game_time", 25 * 30);
-	InitCosts();
 }
 
 
@@ -982,6 +984,8 @@ TradeItem@ addGoldForItem(CBlob@ this, const string &in name,
 
 void MakeWarTradeMenu(CBlob@ trader)
 {
+	InitCosts();
+
 	// build menu
 	CreateTradeMenu(trader, Vec2f(3, 11), "Trade");
 

@@ -50,7 +50,7 @@ void ShowTeamMenu(CRules@ this)
 					CBitStream params;
 					params.write_u16(getLocalPlayer().getNetworkID());
 					params.write_u8(this.getSpectatorTeamNum());
-					CGridButton@ button2 = menu.AddButton("$SPECTATOR$", "Spectator", this.getCommandID("pick spectator"), Vec2f(BUTTON_SIZE / 2, BUTTON_SIZE), params);
+					CGridButton@ button2 = menu.AddButton("$SPECTATOR$", getTranslatedString("Spectator"), this.getCommandID("pick spectator"), Vec2f(BUTTON_SIZE / 2, BUTTON_SIZE), params);
 				}
 				icon = "$RED_TEAM$";
 				name = "Red Team";
@@ -61,7 +61,7 @@ void ShowTeamMenu(CRules@ this)
 				name = "Generic";
 			}
 
-			CGridButton@ button =  menu.AddButton(icon, name, this.getCommandID("pick teams"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
+			CGridButton@ button =  menu.AddButton(icon, getTranslatedString(name), this.getCommandID("pick teams"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
 		}
 	}
 }

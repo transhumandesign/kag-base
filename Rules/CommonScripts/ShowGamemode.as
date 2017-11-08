@@ -26,12 +26,12 @@ void onRender(CRules@ this)
 		const string servername = getNet().joined_servername;
 
 		//build display strings
-		string display = "  Gamemode: " + name;
+		string display = getTranslatedString("  Gamemode: {GAMEMODE}").replace("{GAMEMODE}", getTranslatedString(name));
 
 		if (name != info && info != "")
-			display += "\n\n " + info;
+			display += "\n\n " + getTranslatedString(info);
 
-		display += "\n  Server: " + servername + "\n";
+		display += getTranslatedString("\n  Server: {SERVERNAME}\n").replace("{SERVERNAME}", servername);
 
 		GUI::SetFont("menu");
 		GUI::DrawText(display ,

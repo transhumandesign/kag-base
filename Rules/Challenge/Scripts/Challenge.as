@@ -425,7 +425,10 @@ shared class ChallengeCore : RulesCore
 			}
 			else
 			{
-				rules.SetGlobalMessage(rules.get_string("introduction") + "\n\nStarting in... " + (warmUpTime / 30) + "s");
+				rules.SetGlobalMessage("{INTRODUCTION}\n\n{STARTING_IN}");
+				rules.AddGlobalMessageReplacement("INTRODUCTION", rules.get_string("introduction"));
+				rules.AddGlobalMessageReplacement("STARTING_IN", "Starting in... {SEC}s");
+				rules.AddGlobalMessageReplacement("SEC", "" + ((warmUpTime / 30) + 1));
 			}
 		}
 		else if (rules.isMatchRunning())

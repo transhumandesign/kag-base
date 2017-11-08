@@ -341,7 +341,7 @@ bool MakeLoadAmmoButton(CBlob@ this, CBlob@ caller, Vec2f offset, VehicleInfo@ v
 		{
 			CBitStream callerParams;
 			callerParams.write_u16(caller.getNetworkID());
-			caller.CreateGenericButton("$" + ammoBlob.getName() + "$", offset, this, this.getCommandID("load_ammo"), "Load " + ammoBlob.getInventoryName(), callerParams);
+			caller.CreateGenericButton("$" + ammoBlob.getName() + "$", offset, this, this.getCommandID("load_ammo"), getTranslatedString("Load {ITEM}").replace("{ITEM}", ammoBlob.getInventoryName()), callerParams);
 			return true;
 		}
 
@@ -377,7 +377,7 @@ bool Vehicle_AddLoadAmmoButton(CBlob@ this, CBlob@ caller)
 			CBitStream callerParams;
 			callerParams.write_u16(caller.getNetworkID());
 			callerParams.write_u16(carryObject.getNetworkID());
-			caller.CreateGenericButton("$" + carryObject.getName() + "$", getMagAttachmentPoint(this).offset, this, this.getCommandID("putin_mag"), "Load " + carryObject.getInventoryName(), callerParams);
+			caller.CreateGenericButton("$" + carryObject.getName() + "$", getMagAttachmentPoint(this).offset, this, this.getCommandID("putin_mag"), getTranslatedString("Load {ITEM}").replace("{ITEM}", carryObject.getInventoryName()), callerParams);
 			return true;
 		}
 		else  // nothing in hands - take automatic

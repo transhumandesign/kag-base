@@ -62,7 +62,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	Vec2f_zero,                                 // button offset
 	this,                                       // button attachment
 	this.getCommandID("activate"),              // command id
-	"Open",                                     // description
+	getTranslatedString("Open"),                                     // description
 	params);                                    // cbitstream parameters
 
 	button.radius = 8.0f;
