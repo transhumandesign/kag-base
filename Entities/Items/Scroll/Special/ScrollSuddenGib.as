@@ -11,7 +11,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	CBitStream params;
 	params.write_u16(caller.getNetworkID());
-	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("sudden gib"), "Use this to make all visible enemies instantly turn into a pile of gibs.", params);
+	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("sudden gib"), getTranslatedString("Use this to make all visible enemies instantly turn into a pile of gibs."), params);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

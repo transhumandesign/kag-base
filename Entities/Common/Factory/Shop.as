@@ -304,9 +304,9 @@ void addShopItemsToMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
 			CGridButton@ button;
 
 			if (s_item.customButton)
-				@button = menu.AddButton(s_item.iconName, s_item.name, this.getCommandID("shop buy"), Vec2f(s_item.buttonwidth, s_item.buttonheight), params);
+				@button = menu.AddButton(s_item.iconName, getTranslatedString(s_item.name), this.getCommandID("shop buy"), Vec2f(s_item.buttonwidth, s_item.buttonheight), params);
 			else
-				@button = menu.AddButton(s_item.iconName, s_item.name, this.getCommandID("shop buy"), params);
+				@button = menu.AddButton(s_item.iconName, getTranslatedString(s_item.name), this.getCommandID("shop buy"), params);
 
 
 			if (button !is null)
@@ -378,7 +378,7 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 
 
 	CControls@ controls = caller.getControls();
-	CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + offset, this, Vec2f(slotsAdd.x, slotsAdd.y), description);
+	CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + offset, this, Vec2f(slotsAdd.x, slotsAdd.y), getTranslatedString(description));
 
 	if (menu !is null)
 	{
