@@ -24,7 +24,7 @@ void onInit(CMap@ this)
 	createSign(Vec2f(8, 45) * this.tilesize, "The goal of Take the Halls is for your team to capture all the halls on the map.\n\nYou can easily see them in the minimap on top of the screen.\n\n$KEY_M$ to toggle the\n\nminimap.");
 	createSign(Vec2f(26, 51) * this.tilesize, "A white colored Hall is neutral. It belongs to the people of this land. Capture it by standing inside of it.");
 	createSign(Vec2f(51, 51) * this.tilesize, "Hold $KEY_E$ and press $CLASSCHANGE$\n\nto change class to BUILDER\n\n\n$RESEARCH$\n\n\nPress this button to view your teams research tree.\n\nThe whole team can vote here on what technology they want. Not all techs can be achieved, decide wisely!");
-	createSign(Vec2f(46, 44) * this.tilesize, "$crate$\n\nPress $KEY_E$ on the crate'\n\n(if it has dropped from the sky) to get supply materials!");
+	createSign(Vec2f(46, 44) * this.tilesize, "$crate$\n\nPress $KEY_E$ on the crate\n\n(if it has dropped from the sky) to get supply materials!");
 	createSign(Vec2f(64, 49) * this.tilesize, "If you've switched to builder in the Hall now you can build workshops for your team.\n\nWorkshops are basically factories which make ammo & weapons automatically for you.\n\nGo to an empty spot.\n\nHold $KEY_F$ and select $building$.");
 	createSign(Vec2f(76, 48) * this.tilesize, "After converting to a workshop you can see a worker appeared inside of it.\n$migrant$\n\n\nHe came from the hall.\n\nYou can only build as many functional workshops as there are workers in your hall.");
 	createSign(Vec2f(83, 48) * this.tilesize, "Press $KEY_E$ on the frame\n\n$building$\n\nto convert it to a proper workshop. Select one (the unavailable ones are waiting for research in the hall to complete).");

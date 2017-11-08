@@ -3,17 +3,18 @@
 
 #define SERVER_ONLY
 
-#include "WAR_Structs.as";
-#include "RulesCore.as";
-#include "RespawnSystem.as";
+#include "WAR_Structs.as"
+#include "RulesCore.as"
+#include "RespawnSystem.as"
 #include "WAR_PopulateSpawnList.as"
-#include "MakeCrate.as";
-#include "ScrollCommon.as";
-#include "WAR_HUDCommon.as";
-#include "TradingCommon.as";
-#include "Descriptions.as";
-#include "MigrantCommon.as";
-#include "WAR_Population.as";
+#include "MakeCrate.as"
+#include "ScrollCommon.as"
+#include "WAR_HUDCommon.as"
+#include "TradingCommon.as"
+#include "Descriptions.as"
+#include "MigrantCommon.as"
+#include "WAR_Population.as"
+#include "Costs.as"
 
 //simple config function - edit the variables in the config file
 void Config(WarCore@ this)
@@ -499,11 +500,11 @@ shared class WarCore : RulesCore
 			if (ticksToStart <= 0)
 			{
 				rules.SetCurrentState(GAME);
-				printf("WAR STARTED");
 			}
 			else if (ticksToStart > 0) //is the start of the game, spawn everyone + give mats
 			{
-				rules.SetGlobalMessage("\nMatch starts in " + ((ticksToStart / 30) + 1));
+				rules.SetGlobalMessage("Match starts in {SEC}");
+				rules.AddGlobalMessageReplacement("SEC", "" + ((ticksToStart / 30) + 1));
 				war_spawns.force = true;
 			}
 		}
@@ -661,7 +662,8 @@ shared class WarCore : RulesCore
 				{
 					rules.SetTeamWon(i);
 					rules.SetCurrentState(GAME_OVER);
-					rules.SetGlobalMessage(team.name + " wins the game!");
+					rules.SetGlobalMessage("{WINNING_TEAM} wins the game!");
+					rules.AddGlobalMessageReplacement("WINNING_TEAM", team.name);
 					break;
 				}
 			}
@@ -873,6 +875,8 @@ shared class WarCore : RulesCore
 
 void Reset(CRules@ this)
 {
+	InitCosts();
+
 	printf("Restarting rules script: " + getCurrentScriptName());
 	WarSpawns spawns();
 	WarCore core(this, spawns);
@@ -980,40 +984,42 @@ TradeItem@ addGoldForItem(CBlob@ this, const string &in name,
 
 void MakeWarTradeMenu(CBlob@ trader)
 {
+	InitCosts();
+
 	// build menu
 	CreateTradeMenu(trader, Vec2f(3, 11), "Trade");
 
 	//econ techs
 //	addTradeSeparatorItem( trader, "$MENU_INDUSTRY$", Vec2f(3,1) );
-//	addTradeScrollFromScrollDef(trader, "saw", cost_crappiest, descriptions[12]);
+//	addTradeScrollFromScrollDef(trader, "saw", cost_crappiest, Descriptions::saw);
 	//addTradeEmptyItem(trader);
 
 	//siege techs
 	addTradeSeparatorItem(trader, "$MENU_SIEGE$", Vec2f(3, 1));
-	addTradeScrollFromScrollDef(trader, "mounted bow", cost_medium, descriptions[31]);
-	addTradeScrollFromScrollDef(trader, "ballista", cost_medium, descriptions[6]);
-	addTradeScrollFromScrollDef(trader, "catapult", cost_big, descriptions[5]);
+	addTradeScrollFromScrollDef(trader, "mounted bow", WARCosts::medium_scroll, Descriptions::mounted_bow);
+	addTradeScrollFromScrollDef(trader, "ballista", WARCosts::medium_scroll, Descriptions::ballista);
+	addTradeScrollFromScrollDef(trader, "catapult", WARCosts::big_scroll, Descriptions::catapult);
 
 	//boats
 	addTradeSeparatorItem(trader, "$MENU_NAVAL$", Vec2f(3, 1));
-	addTradeScrollFromScrollDef(trader, "longboat", cost_medium, descriptions[33]);
-	addTradeScrollFromScrollDef(trader, "warboat", cost_big, descriptions[37]);
+	addTradeScrollFromScrollDef(trader, "longboat", WARCosts::medium_scroll, Descriptions::longboat);
+	addTradeScrollFromScrollDef(trader, "warboat", WARCosts::big_scroll, Descriptions::warboat);
 	addTradeEmptyItem(trader);
 
 	//item kits
 	addTradeSeparatorItem(trader, "$MENU_KITS$", Vec2f(3, 1));
-	//addTradeScrollFromScrollDef(trader, "military basics", cost_crappy, descriptions[44]);
-	addTradeScrollFromScrollDef(trader, "water ammo", cost_crappy, descriptions[50]);
-	addTradeScrollFromScrollDef(trader, "bomb ammo", cost_big, descriptions[51]);
-	addTradeScrollFromScrollDef(trader, "pyro", cost_big, descriptions[46]);
-	addTradeScrollFromScrollDef(trader, "drill", cost_crappiest, descriptions[43]);
-	addTradeScrollFromScrollDef(trader, "saw", cost_crappiest, descriptions[12]);
-	addTradeScrollFromScrollDef(trader, "explosives", cost_big, descriptions[45]);
+	//addTradeScrollFromScrollDef(trader, "military basics", cost_crappy, Descriptions::militarybasics);
+	addTradeScrollFromScrollDef(trader, "water ammo", WARCosts::crappy_scroll, Descriptions::waterarrows);
+	addTradeScrollFromScrollDef(trader, "bomb ammo", WARCosts::big_scroll, Descriptions::bombarrows);
+	addTradeScrollFromScrollDef(trader, "pyro", WARCosts::big_scroll, Descriptions::pyro);
+	addTradeScrollFromScrollDef(trader, "drill", WARCosts::crappiest_scroll, Descriptions::drill);
+	addTradeScrollFromScrollDef(trader, "saw", WARCosts::crappiest_scroll, Descriptions::saw);
+	addTradeScrollFromScrollDef(trader, "explosives", WARCosts::big_scroll, Descriptions::explosives);
 
 	//magic scrolls
 	addTradeSeparatorItem(trader, "$MENU_MAGIC$", Vec2f(3, 1));
-	addTradeScrollFromScrollDef(trader, "carnage", 400, "This magic scroll when cast will turn all nearby enemies into a pile of bloody gibs.");
-	addTradeScrollFromScrollDef(trader, "drought", 120, "This magic scroll will evaporate all water in a large surrounding orb.");
+	addTradeScrollFromScrollDef(trader, "carnage", 400, Descriptions::scroll_carnage);
+	addTradeScrollFromScrollDef(trader, "drought", 120, Descriptions::scroll_drought);
 	addTradeEmptyItem(trader);
 
 	//material exchange
@@ -1039,11 +1045,11 @@ void MakeWarTradeMenu(CBlob@ trader)
 
 	//individual items
 	//addTradeSeparatorItem( trader, "$MENU_OTHER$", Vec2f(3,1) );
-	//addTradeScrollFromScrollDef(trader, "boulder", cost_crappy, descriptions[17]);
+	//addTradeScrollFromScrollDef(trader, "boulder", cost_crappy, Descriptions::boulder);
 	//addTradeEmptyItem(trader);
 	//addTradeEmptyItem(trader);
 
 	//individual items
 	//addTradeSeparatorItem( trader, "$MENU_TECHS$", Vec2f(3,1) );
-	//addTradeScrollFromScrollDef(trader, "stone", cost_crappy, descriptions[47]);
+	//addTradeScrollFromScrollDef(trader, "stone", cost_crappy, Descriptions::stonetech);
 }

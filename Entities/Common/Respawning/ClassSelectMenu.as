@@ -1,4 +1,4 @@
-//stuff for building repspawn menus
+//stuff for building respawn menus
 
 #include "RespawnCommandCommon.as"
 
