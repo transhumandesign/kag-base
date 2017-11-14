@@ -769,7 +769,7 @@
 //guiBrowser.xml
 	"Enter server password":"Введите пароль сервера",
 	"OK":"OK",
-	"Servers browser":"Браузер серверов",
+	"Servers browser":"Обзор серверов",
 	"Instant Search...":"Мгновенный поиск...",
 	"X":"X",
 	"PLAY":"PLAY",
@@ -826,7 +826,7 @@
 	"E-mail:":"E-mail",
 	"Submit":"Подтвердить",
 //guiMulti.xml
-	"Simple Join":"Простой вход",
+	"Simple Join":"Быстрый вход",
 	"Browse servers":"Браузер серверов",
 	"Connect to...":"Подключиться к...",
 //guiPopup.xml
@@ -843,15 +843,19 @@
 	"Team Deathmatch":"Командный бой насмерть",
 	"Sandbox":"Песочница",
 	"Co-op Challenge":"Испытания",
-	"Custom Content":"",
+	"Custom Content":"Пользовательский контент",
 	"Play!":"Играть!",
 //guiSettings.xml
+	"Controls"                  :"Управление",
+	"Video"                     :"Видео",
+	"Audio"                     :"Аудио",
+	"Misc"                      :"Разное",
 	"Clantag:"                  :"Клан-тег:",
 	"Gender:"                   :"Пол:",
 	"Male"                      :"Мужчина",
 	"Female"                    :"Женский",
 	"BUY {HEADS_PACK}"          :"КУПИТЬ {HEADS_PACK}",
-	"Standard"                  :"стандарт",
+	"Standard"                  :"Стандартные",
 	"Flags of The World"        :"Флаги мира",
 	"Head packs:"               :"Паки голов:",
 	"Head:"                     :"Голова:",
@@ -861,6 +865,8 @@
 	"Uncap framerate"           :"Неограниченный FPS",
 	"VSync - Requires Restart"  :"VSync - требуется рестарт",
 	"Game music"                :"Игровая музыка",
+	"Sound Volume:"             :"Звуки:"
+	"Music Volume:"             :"Музыка:"
 	"Volume:"                   :"Громкость:",
 	"Menu music"                :"Музыка меню",
 	"Swap audio channels"       :"Поменять аудио каналы",
@@ -877,7 +883,7 @@
 //guiSolo.xml
 	"(start here)":"(начинать отсюда)",
 	"TUTORIALS":"ОБУЧЕНИЕ",
-	"Save the Princess":"Спасти принцессу",
+	"Save the Princess":"Спасение принцессы",
 	"Challenges!":"Испытания!",
 	"Tutorials":"Обучение",
 	"Basics":"Основы",
