@@ -127,11 +127,6 @@
 //ShowTipOnDeath.as
 	"Tip: {TIP}": "Совет: {TIP}",
 
-//TimeToEnd.as
-	"Time is up!\n{TEAM} wins the game!":"Время вышло!\n{TEAM} побеждает!",
-	"Time is up!\nIt's a tie!"          :"Время вышло!\nНичья!",
-	"Time left: {MIN}:{SEC}"            :"Времени осталось: {MIN}:{SEC}",
-
 //// SOLO GAME MODES ////
 //Tutorial01.as
 	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"Ходьба и прыжок\n\n$KEY_A$$KEY_W$$KEY_D$",
@@ -340,9 +335,9 @@
 	"Bomb arrows for Archer.":"Стрелы с бомбами для лучника.",
 	"Water bomb for Knight. Can extinguish fires and stun enemies.":"Водяная бомба для рыцаря. Может тушить пожары и оглушать врагов.",
 	"Water absorbing sponge. Useful for unflooding tunnels and reducing water stuns.":"Губка, всасывающая воду. Полезна для осушения тоннелей и уменьшения длительности оглушения",
-	"Builder workshop for building utilities and changing class to Builder":"Мастерская строителя для создания строительных инструментов и приспособлений и смены класса на строителя.",
-	"Knight workshop for building explosives and changing class to Knight":"Мастерская рыцаря для создания взрывчатки и смены класса на рыцаря.",
-	"Archer workshop for building arrows and changing class to Archer":"Мастерская лучника для создания стрел и смены класса на лучника.",
+	"Builder workshop for building utilities and changing class to Builder":"Мастерская для создания строительных инструментов и приспособлений и смены класса на строителя.",
+	"Knight workshop for building explosives and changing class to Knight":"Мастерская для создания взрывчатки и смены класса на рыцаря.",
+	"Archer workshop for building arrows and changing class to Archer":"Мастерская для создания стрел и смены класса на лучника.",
 	"Siege workshop for building wheeled siege engines":"Мастерская для строительства передвижных осадных орудий.",
 	"Naval workshop for building boats":"Корабельная мастерская для строительства лодок и кораблей.",
 	"Place of merriment and healing":"Место для отдыха и лечения.",
@@ -565,7 +560,7 @@
 	"Archer Shop":"Магазин лучников",
 	"Boat Shop":"Корабельный магазин",
 	"Builder Shop":"Магазин строителей",
-	"Knight Shop":"Магазин рыцарей",
+	"Knight Shop":"Рыцарский магазин",
 	"Quarters":"Казарма",
 	"Storage":"Склад",
 	"Storage Cache":"Склад",
@@ -597,6 +592,7 @@
 	"Mine":"Мина",
 	"Satchel":"Взрывпакет", //OLD
 	"Water Bomb":"Водяная бомба",
+	"Water Bombs":"Водяная бомба",
 	"Burger":"Бургер",
 	"Heart":"Сердце",
 	"Lantern":"Фонарь",
@@ -616,8 +612,6 @@
 	"Gold":"Золото",
 	"Stone":"Камень",
 	"Wood":"Дерево",
-	"Bomb":"Бомба",
-	"Water Bombs":"Водяная бомба",
 	"Wisent":"Бизон",
 	"Chicken":"Курица",
 	"Egg":"Яйцо",
@@ -676,6 +670,9 @@
 	"Storage":"Хранилище",
 
 //// BUTTONS AND OTHER ////
+	"Builder":"Строитель",
+	"Knight":"Рыцарь",
+	"Archer":"Лучник",
 	"Buy":"Купить", //CTF Shops
 	"Construct":"Построить", //Building.as
 	"Shop":"Магазин", //Shop.as (menu desc) & TradingMenu.as (btn)
@@ -736,7 +733,7 @@
 
 ////GLOBAL MESSAGES////
 	"Match starts in {SEC}": "Матч начинается через {SEC}",
-	"Starting in... {SEC}s": "Начиная с... {SEC}с",
+	"Starting in... {SEC}s": "Начало через... {SEC}с",
 	"It's a tie!":"Ничья!",
 	"Well done. Loading next map...":"Отлично. Загрузка следующей карты...",
 	"You saved the princess!":"Вы спасли принцессу!",
@@ -744,6 +741,10 @@
 	"Not enough players in each team for the game to start.\nPlease wait for someone to join...":"Недостаточно игроков в каждой команде для начала игры.\nПожалуйста, подождите, пока кто-нибудь присоединится...",
 	"{LOSING_TEAM} Surrendered! {WINNING_TEAM} wins the Game!":"{LOSING_TEAM} сдалась! {WINNING_TEAM} побеждает!",
 	"{WINNING_TEAM} wins the game!":"{WINNING_TEAM} побеждает!",
+//TimeToEnd.as
+	"Time is up!\n{WINNING_TEAM} wins the game!":"Время вышло!\n{WINNING_TEAM} побеждает!",
+	"Time is up!\nIt's a tie!"          :"Время вышло!\nНичья!",
+	"Time left: {MIN}:{SEC}"            :"Времени осталось: {MIN}:{SEC}",
 
 //Challenges
 	"Kill the Red Scum!":"Убейте весь красный биомусор!",
@@ -754,7 +755,7 @@
 	"Find the longboat!":"Найдите баркас!",
 	"Get to the top right of the castle!":"Доберитесь до правой части крыши замка!",
 	"Take the red hall!":"Захватите красную базу!",
-	"Time passed!":"Время закончилось!",
+	"Time passed!":"Время истекло!",
 	"Round lost!":"Раунд проигран!",
 
 ////GAMEMODE INFO////
