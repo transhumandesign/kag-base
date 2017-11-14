@@ -45,13 +45,15 @@ void onTick(CRules@ this)
 			if (teamWon !is null)
 			{
 				hasWinner = true;
-				this.SetGlobalMessage(getTranslatedString("Time is up!\n{TEAM} wins the game!").replace("{TEAM}", teamWon.getName()));
+				this.SetGlobalMessage("Time is up!\n{WINNING_TEAM} wins the game!");
+				this.AddGlobalMessageReplacement("WINNING_TEAM", teamWon.getName());
+				
 			}
 		}
 
 		if (!hasWinner)
 		{
-			this.SetGlobalMessage(getTranslatedString("Time is up!\nIt's a tie!"));
+			this.SetGlobalMessage("Time is up!\nIt's a tie!");
 		}
 
 		//GAME OVER
