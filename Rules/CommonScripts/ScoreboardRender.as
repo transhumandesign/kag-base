@@ -12,7 +12,7 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 
 	f32 stepheight = 16;
 	Vec2f bottomright(getScreenWidth() - 100, topleft.y + (players.length + 5.5) * stepheight);
-	GUI::DrawPane(topleft, bottomright, SColor(team.color));
+	GUI::DrawPane(topleft, bottomright, team.color);
 
 	//offset border
 	topleft.x += stepheight;

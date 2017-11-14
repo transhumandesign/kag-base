@@ -36,7 +36,7 @@ namespace Game
 		}
 		pTimer.name = name;
 		pTimer.endTime = getGameTime() + secs * getTicksASecond();
-		pTimer.endFunc = endFunc;
+		@pTimer.endFunc = endFunc;
 		pTimer.showTimer = showTimer;
 		@pTimer.rules = rules;
 		return pTimer;

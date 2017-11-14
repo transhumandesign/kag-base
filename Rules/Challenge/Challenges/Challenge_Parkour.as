@@ -2,7 +2,7 @@
 
 bool myPlayerGotToTheEnd = false;
 int checkpointCount = 0;
-string endGameText = "You've made it!";
+string endGameText = "You made it!";
 const float END_DIST = 49.0f;
 
 void Reset(CRules@ this)

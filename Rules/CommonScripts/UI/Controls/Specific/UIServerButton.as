@@ -23,10 +23,10 @@ namespace UI
 				c.vars.set( "colour", SColor(255, 175, 250, 254) );
 				c.vars.set( "colour selected", SColor(255, 209, 229, 254) );
 			}
-			
-			c.proxy.renderFunc = Render;
-			c.input = Input;
-			c.processMouse = ProcessMouseDoubleClick;
+
+			@c.proxy.renderFunc = Render;
+			@c.input = Input;
+			@c.processMouse = ProcessMouseDoubleClick;
 			c.proxy.align.Set(0.05f, 0.5f);
 			@scroll = getGroup("Server browser scroll").controls[0][0];
 		}
@@ -204,13 +204,13 @@ namespace UI
 					port == 10594 ||
 					port == 10595 ||
 					port == 10596 ||
-					port == 10600 || 
+					port == 10600 ||
 					port == 10634)
 				{
 					return true;
 				}
 			}
-		 
+
 			if(ip == "162.221.187.210") // Servers in USA
 			{
 				if( port == 10609 ||
@@ -225,7 +225,7 @@ namespace UI
 					return true;
 				}
 			}
-		 
+
 			if (ip == "125.63.57.72") // Servers in Australia
 			{
 				if (port == 10649 ||
@@ -247,8 +247,8 @@ namespace UI
 			Control@ c = UI::Button::Add( "", Toggle, "Toggle favourite", 1.1);
 			c.vars.set( "server", @s );
 
-			c.proxy.renderFunc = Render;
-			c.input = UI::ServerButton::Input;
+			@c.proxy.renderFunc = Render;
+			@c.input = UI::ServerButton::Input;
 			c.proxy.align.Set(0.5f, 0.5f);
 		}
 

@@ -1,7 +1,6 @@
 ﻿// Tunnel.as
 
-#include "WARCosts.as";
-#include "TunnelCommon.as";
+#include "TunnelCommon.as"
 
 const bool CASUAL_MODE = false;
 
