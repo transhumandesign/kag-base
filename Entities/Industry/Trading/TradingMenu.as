@@ -113,7 +113,7 @@ void addTradeItemsToMenu(CBlob@ this, CGridMenu@ menu, u16 callerID)
 					}
 					else
 					{
-						SetItemDescription(button, caller, item.reqs, item.description);
+						SetItemDescription(button, caller, item.reqs, item.getDescription());
 
 						if (item.prepaidGold)
 						{

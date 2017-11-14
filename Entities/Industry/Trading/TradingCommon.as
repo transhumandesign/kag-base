@@ -9,7 +9,8 @@ shared class TradeItem
 	string iconName;
 	u8 iconFrame; // used if iconName = ""
 	string configFilename;
-	string description;
+	string[] _description;		//build this with AddDescription()
+	string final_description;	//caches getDescription()
 	CBitStream reqs;
 	string scrollName;
 	bool instantShipping;
@@ -21,6 +22,7 @@ shared class TradeItem
 
 	bool isSeparator;
 	Vec2f separatorIconSize;
+
 
 	TradeItem()
 	{
@@ -34,41 +36,87 @@ shared class TradeItem
 
 	void Serialise(CBitStream@ stream)
 	{
+		//specialised description handling
+		stream.write_s32(_description.length);
+		for(int i = 0; i < _description.length; i++)
+		{
+			stream.write_string(_description[i]);
+		}
+
 		stream.write_string(scrollName);
 		stream.write_string(name);
 		stream.write_string(iconName);
 		stream.write_u8(iconFrame);
 		stream.write_string(configFilename);
-		stream.write_string(description);
-		stream.write_CBitStream(reqs);
-		stream.write_bool(instantShipping);
-		stream.write_bool(buyIntoInventory);
 		stream.write_u32(unavailableTime);
 		stream.write_u32(boughtTime);
 		stream.write_u16(paidGold);
+		stream.write_Vec2f(separatorIconSize);
+
+		stream.write_CBitStream(reqs);
+		stream.write_bool(instantShipping);
+		stream.write_bool(buyIntoInventory);
 		stream.write_bool(prepaidGold);
 		stream.write_bool(isSeparator);
-		stream.write_Vec2f(separatorIconSize);
+
 	}
 
 	bool Unserialise(CBitStream@ stream)
 	{
+		_description.clear();
+		s32 description_size = 0;
+		if (!stream.saferead_s32(description_size)) return false;
+		while(description_size-- > 0) {
+			string s;
+			if (!stream.saferead_string(s)) return false;
+			AddDescription(s);
+		}
+
 		if (!stream.saferead_string(scrollName)) return false;
 		if (!stream.saferead_string(name)) return false;
 		if (!stream.saferead_string(iconName)) return false;
 		if (!stream.saferead_u8(iconFrame)) return false;
 		if (!stream.saferead_string(configFilename)) return false;
-		if (!stream.saferead_string(description)) return false;
-		if (!stream.saferead_CBitStream(reqs)) return false;
-		if (!stream.saferead_bool(instantShipping)) return false;
-		if (!stream.saferead_bool(buyIntoInventory)) return false;
 		if (!stream.saferead_u32(unavailableTime)) return false;
 		if (!stream.saferead_u32(boughtTime)) return false;
 		if (!stream.saferead_u16(paidGold)) return false;
+		if (!stream.saferead_Vec2f(separatorIconSize)) return false;
+
+		if (!stream.saferead_CBitStream(reqs)) return false;
+		if (!stream.saferead_bool(instantShipping)) return false;
+		if (!stream.saferead_bool(buyIntoInventory)) return false;
 		if (!stream.saferead_bool(prepaidGold)) return false;
 		if (!stream.saferead_bool(isSeparator)) return false;
-		if (!stream.saferead_Vec2f(separatorIconSize)) return false;
+
 		return true;
+	}
+
+	void AddDescription(string s)
+	{
+		_description.push_back(s);
+		final_description = "";
+	}
+
+	string getDescription()
+	{
+		if(final_description != "")
+		{
+			//cached already
+			return final_description;
+		}
+
+		final_description = "";
+		int size = _description.length;
+		if(size > 0)
+		{
+			final_description = _description[0];
+			for (int i = 1; i < size; i++)
+			{
+				string next_sep = (i == (size - 1)) ? "\n\n\n" : "   ";
+				final_description = final_description + next_sep + getTranslatedString(_description[i]);
+			}
+		}
+		return final_description;
 	}
 };
 
@@ -105,7 +153,7 @@ TradeItem@ addTradeItem(CBlob@ this, const string &in name, int cost, const bool
 	item.name = name;
 	item.iconName = iconName;
 	item.configFilename = configFilename;
-	item.description = description;
+	item.AddDescription(description);
 	item.instantShipping = instantShipping;
 	item.isSeparator = false;
 	if (cost > 0)
@@ -133,13 +181,11 @@ TradeItem@ addTradeScrollFromScrollDef(CBlob@ this, const string &in name, s32 c
 		item.iconName = "$scroll" + def.scrollFrame + "$";
 		item.configFilename = "scroll";
 		item.iconFrame = def.scrollFrame;
-
-		string techPrefix = getTranslatedString(def.name) + "   ";
 		for (uint i = 0; i < def.items.length; i++)
-			techPrefix = techPrefix + "   " + def.items[i].iconName;
-		techPrefix = techPrefix + "\n\n\n";
-
-		item.description = techPrefix + description;
+		{
+			item.AddDescription(def.items[i].iconName);
+		}
+		item.AddDescription(description);
 		item.instantShipping = true;
 		item.isSeparator = false;
 		//item.prepaidGold = true; // stack gold  ITS BUGGY
