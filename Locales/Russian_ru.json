@@ -748,7 +748,8 @@
 
 //Challenges
 	"Kill the Red Scum!":"Убейте весь красный биомусор!",
-	"Kill all the Campers!":"Уничтожте всех кемперов!",
+	"Kill all the Campers":"Уничтожьте всех кемперов",
+	"Kill all the Campers!":"Уничтожьте всех кемперов!",
 	"Reach the end before time runs out!":"Как можно быстрее пройдите через карту!",
 	"Run away from the tidal wave!":"Убегайте от цунами!",
 	"Get to the far right!":"Доберитесь до правого края!",
@@ -757,6 +758,13 @@
 	"Take the red hall!":"Захватите красную базу!",
 	"Time passed!":"Время истекло!",
 	"Round lost!":"Раунд проигран!",
+
+	"Kill'em All!":"Убейте их всех!",
+	"Kill the Necromancer":"Убейте некроманта!",
+	"Parkour":"Паркур",
+	"Save the Princess!":"Спасите принцессу!",
+	"Save the Princess":"Спасите принцессу",
+	"Take the Hall":"Захватите базу",
 
 ////GAMEMODE INFO////
 	"Challenges":"Испытания",
@@ -780,7 +788,7 @@
 	"Refresh":"Обновить",
 	"Non-Vanilla":"Моды",
 	"Password ":"Пароль ",
-	"Game mode:":"Игровой режим",
+	"Game mode:":"Игровой режим:",
 	"HELPTEXT TAB":"HELPTEXT TAB",
 "YELLOW = official server\nWHITE = vanilla server\nBLUE = modded server\n                  \n                  Instant Search      \n\nFilter the server list down to those containing one of the following fields: \nname, description, game mode, IP address, player name (only entire names are matched).\n\ne.g. entering 'Shadlington' will find any servers that Shadlington is playing on or have 'Shadlington' in the name/description.\n\nPlayers (%) slider: Use this to set the min and max percent full you want servers to be.\ne.g. set it to 1% min and 99% max to find servers that are not empty and not full, or set it to 50% to 99% to find servers that are 'at least half full'.\n\nMap Preview can be dragged.":
 "ЖЁЛТЫЙ = официальный сервер\nБЕЛЫЙ = обычный сервер\nBLUE = сервер с модами\n                  \n                  Мгновенный поиск      \n\nОтфильтруйте список серверов до тех, которые содержат одно из следующих полей: \nназвание, описание, игровой режим, IP адрес, имя игрока (распознаются только целые имена).\n\nнапример введя 'Shadlington' найдётся сервер на котором играет Shadlington, или в названии/описании сервера присутствует 'Shadlington'.\n\nСлайдер игроков (%): Отфильтровать сервера по колличеству игроков в процентах.\nнапример установите его минимум на 1% и максимум на 99% чтобы найти сервера которые не пустые и не полные, или установить минимум на 50% и максимум на 99% чтобы найти те сервера, которые хотя бы на половину полные.\n\nПревью карты можно перемещать.",
@@ -827,7 +835,7 @@
 	"Submit":"Подтвердить",
 //guiMulti.xml
 	"Simple Join":"Быстрый вход",
-	"Browse servers":"Браузер серверов",
+	"Browse servers":"Обзор серверов",
 	"Connect to...":"Подключиться к...",
 //guiPopup.xml
 	"New Game From THD:":"Новая игра от THD",
@@ -848,11 +856,11 @@
 //guiSettings.xml
 	"Controls"                  :"Управление",
 	"Video"                     :"Видео",
-	"Audio"                     :"Аудио",
+	"Sound"                     :"Аудио",
 	"Misc"                      :"Разное",
 	"Clantag:"                  :"Клан-тег:",
 	"Gender:"                   :"Пол:",
-	"Male"                      :"Мужчина",
+	"Male"                      :"Мужской",
 	"Female"                    :"Женский",
 	"BUY {HEADS_PACK}"          :"КУПИТЬ {HEADS_PACK}",
 	"Standard"                  :"Стандартные",
@@ -865,8 +873,8 @@
 	"Uncap framerate"           :"Неограниченный FPS",
 	"VSync - Requires Restart"  :"VSync - требуется рестарт",
 	"Game music"                :"Игровая музыка",
-	"Sound Volume:"             :"Звуки:"
-	"Music Volume:"             :"Музыка:"
+	"Sound Volume:"             :"Громкость звуков:",
+	"Music Volume:"             :"Громкость музыки:",
 	"Volume:"                   :"Громкость:",
 	"Menu music"                :"Музыка меню",
 	"Swap audio channels"       :"Поменять аудио каналы",
@@ -897,7 +905,7 @@
 	"Blog":"Блог",
 	"Report Bugs":"Сообщить об ошибке",
 	"Quick Setup":"Быстрая настройка",
-	"Fullscreen (can cause visual issues)":"Полный экран (может взывть визуальные ошибки)",
+	"Fullscreen (can cause visual issues)":"Полный экран (может вызвать визуальные ошибки)",
 	"Window size":"Размер окна",
 	"Manual Resolution Entry - Hit Enter when done. Use at own risk!":"Выбор любого разрешения - Нажмите Enter, чтобы применить. Использовать на свой страх и риск!",
 //guiSteam.xml
