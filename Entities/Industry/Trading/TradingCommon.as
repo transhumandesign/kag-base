@@ -109,7 +109,7 @@ shared class TradeItem
 		int size = _description.length;
 		if(size > 0)
 		{
-			final_description = _description[0];
+			final_description = getTranslatedString(_description[0]);
 			for (int i = 1; i < size; i++)
 			{
 				string next_sep = (i == (size - 1)) ? "\n\n\n" : "   ";
