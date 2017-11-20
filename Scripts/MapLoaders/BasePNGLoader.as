@@ -1,4 +1,7 @@
 // BasePNGLoader.as
+// NSFL if you don't unzoom it out in your editor
+
+// Note for modders upgrading their mod, handlePixel's signature has changed recently!
 
 #include "LoaderColors.as";
 #include "LoaderUtilities.as";
@@ -22,13 +25,13 @@ class PNGLoader
 {
 	PNGLoader()
 	{
-		offsets = array<array<int>>(offsets_count, array<int>(0));
+		offsets = int[][](offsets_count, int[](0));
 	}
 
 	CFileImage@ image;
 	CMap@ map;
 
-	array<array<int>> offsets;
+	int[][] offsets;
 
 	int current_offset_count;
 
@@ -54,10 +57,15 @@ class PNGLoader
 
 			while(image.nextPixel())
 			{
-				SColor pixel = image.readPixel();
-				int offset = image.getPixelOffset();
+				const SColor pixel = image.readPixel();
+				const int offset = image.getPixelOffset();
 
-				handlePixel(pixel, offset);
+				// Optimization: check if the pixel color is the sky color
+				// We do this before calling handlePixel because it is overriden, and to avoid a SColor copy
+				if (pixel.color != map_colors::sky)
+				{
+					handlePixel(pixel, offset);
+				}
 
 				getNet().server_KeepConnectionsAlive();
 			}
@@ -77,904 +85,331 @@ class PNGLoader
 		}
 		return false;
 	}
-
-	void handlePixel(SColor pixel, int offset)
+	
+	// Queue an offset to be autotiled
+	void autotile(int offset)
 	{
-		u8 alpha = pixel.getAlpha();
+		offsets[autotile_offset].push_back(offset);
+	}
 
+	void handlePixel(const SColor &in pixel, int offset)
+	{	
+		u8 alpha = pixel.getAlpha();
+		
 		if(alpha < 255)
 		{
 			alpha &= ~0x80;
-			SColor rgb = SColor(0xFF, pixel.getRed(), pixel.getGreen(), pixel.getBlue());
 			const Vec2f position = getSpawnPosition(map, offset);
 
-			//print(" ARGB = "+alpha+", "+rgb.getRed()+", "+rgb.getGreen()+", "+rgb.getBlue());
+			//print("ARGB = "+alpha+", "+pixel.getRed()+", "+pixel.getGreen()+", "+pixel.getBlue());
+			
+			// TODO future reader, if the new angelscript release has arrived; consider using named arguments for spawnBlob etc if it doesn't clutter the lines too much.
+			// It might be nice for things like the static argument.
 
-			// BLOCKS
-			if(rgb == ladder)
+			// Test color with alpha 255
+			switch (pixel.color | 0xFF000000)
 			{
-				spawnBlob(map, "ladder", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == spikes)
+			// Alpha spawn and flag
+			case map_colors::alpha_spawn: autotile(offset); AddMarker(map, offset, (alpha & 0x01 == 0 ? "blue main spawn" : "red main spawn")); break;
+			case map_colors::alpha_flag:  autotile(offset); AddMarker(map, offset, (alpha & 0x01 == 0 ? "blue spawn"      : "red spawn"));      break;
+			
+			// Alpha various structures
+			case map_colors::alpha_stalagmite:      autotile(offset); spawnBlob(map, "stalagmite",                            255, position, getAngleFromChannel(alpha), true).set_u8("state", 1); /*stabbing*/ break;
+			case map_colors::alpha_ladder:          autotile(offset); spawnBlob(map, "ladder",          getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_spikes:          autotile(offset); spawnBlob(map, "spikes",          getTeamFromChannel(alpha), position,                             true); break;
+			case map_colors::alpha_stone_door:      autotile(offset); spawnBlob(map, "stone_door",      getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_trap_block:      autotile(offset); spawnBlob(map, "trap_block",      getTeamFromChannel(alpha), position,                             true); break;
+			case map_colors::alpha_wooden_door:     autotile(offset); spawnBlob(map, "wooden_door",     getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_wooden_platform: autotile(offset); spawnBlob(map, "wooden_platform", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			
+			// Mechanisms
+			case map_colors::alpha_pressure_plate:  autotile(offset); spawnBlob(map, "pressure_plate",                        255, position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_push_button:     autotile(offset); spawnBlob(map, "push_button",     getTeamFromChannel(alpha), position,                             true); break;
+			case map_colors::alpha_coin_slot:       autotile(offset); spawnBlob(map, "coin_slot",       getTeamFromChannel(alpha), position,                             true); break;
+			case map_colors::alpha_sensor:          autotile(offset); spawnBlob(map, "sensor",          getTeamFromChannel(alpha), position,                             true); break;
+			case map_colors::alpha_diode:           autotile(offset); spawnBlob(map, "diode",           getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_elbow:           autotile(offset); spawnBlob(map, "elbow",           getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_emitter:         autotile(offset); spawnBlob(map, "emitter",         getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_inverter:        autotile(offset); spawnBlob(map, "inverter",        getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_junction:        autotile(offset); spawnBlob(map, "junction",        getTeamFromChannel(alpha), position,                             true); break;
+			case map_colors::alpha_oscillator:      autotile(offset); spawnBlob(map, "oscillator",      getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_randomizer:      autotile(offset); spawnBlob(map, "randomizer",      getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_receiver:        autotile(offset); spawnBlob(map, "receiver",        getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_resistor:        autotile(offset); spawnBlob(map, "resistor",        getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_tee:             autotile(offset); spawnBlob(map, "tee",             getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_toggle:          autotile(offset); spawnBlob(map, "toggle",          getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_transistor:      autotile(offset); spawnBlob(map, "transistor",      getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_wire:            autotile(offset); spawnBlob(map, "wire",            getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_bolter:          autotile(offset); spawnBlob(map, "bolter",                                255, position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_dispenser:       autotile(offset); spawnBlob(map, "dispenser",                             255, position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_lamp:            autotile(offset); spawnBlob(map, "lamp",                                  255, position,                             true); break;
+			case map_colors::alpha_obstructor:      autotile(offset); spawnBlob(map, "obstructor",                            255, position,                             true); break;
+			case map_colors::alpha_spiker:          autotile(offset); spawnBlob(map, "spiker",                                255, position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_lever:
 			{
-				spawnBlob(map, "spikes", getTeamFromChannel(alpha), position, true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == stone_door)
-			{
-				spawnBlob(map, "stone_door", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == trap_block)
-			{
-				spawnBlob(map, "trap_block", getTeamFromChannel(alpha), position, true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == wooden_door)
-			{
-				spawnBlob(map, "wooden_door", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == wooden_platform)
-			{
-				spawnBlob(map, "wooden_platform", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			// MARKERS
-			else if(rgb == spawn)
-			{
-				const string team = alpha & 0x01 == 0? "blue" : "red";
-
-				AddMarker(map, offset, team+" main spawn");
-			}
-			else if(rgb == flag)
-			{
-				const string team = alpha & 0x01 == 0? "blue" : "red";
-
-				AddMarker(map, offset, team+" spawn");
-			}
-			// NATURAL
-			else if(rgb == stalagmite)
-			{
-				CBlob@ blob = spawnBlob(map, "stalagmite", 255, position, getAngleFromChannel(alpha), true);
-				blob.set_u8("state", 1); // Spike::stabbing
-				offsets[autotile_offset].push_back(offset);
-			}
-			// MECHANISMS
-			else if(rgb == lever)
-			{
+				autotile(offset);
 				CBlob@ blob = spawnBlob(map, "lever", getTeamFromChannel(alpha), position, true);
-				offsets[autotile_offset].push_back(offset);
-
+				
 				// | state          | binary    | hex  | dec |
 				// ---------------------vv--------------------
 				// | off            | 0000 0000 | 0x00 |   0 |
 				// | on             | 0001 0000 | 0x10 |  16 |
 				// | random         | 0010 0000 | 0x20 |  32 |
 
-				/*
-				not implimented at the moment
-				if(alpha & 0x10 != 0 || alpha & 0x20 != 0 && XORRandom(2) == 0)
+				/*if(alpha & 0x10 != 0 || alpha & 0x20 != 0 && XORRandom(2) == 0) // not implemented at the moment
 				{
 					blob.SendCommand(blob.getCommandID("toggle"));
-				}
-				*/
+				}*/
 			}
-			else if(rgb == pressure_plate)
+			break;
+			case map_colors::alpha_magazine:
 			{
-				spawnBlob(map, "pressure_plate", 255, position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == push_button)
-			{
-				spawnBlob(map, "push_button", getTeamFromChannel(alpha), position, true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == coin_slot)
-			{
-				spawnBlob(map, "coin_slot", getTeamFromChannel(alpha), position, true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == sensor)
-			{
-				spawnBlob(map, "sensor", getTeamFromChannel(alpha), position, true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == diode)
-			{
-				spawnBlob(map, "diode", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == elbow)
-			{
-				spawnBlob(map, "elbow", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == emitter)
-			{
-				spawnBlob(map, "emitter", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == inverter)
-			{
-				spawnBlob(map, "inverter", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == junction)
-			{
-				spawnBlob(map, "junction", getTeamFromChannel(alpha), position, true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == magazine)
-			{
+				autotile(offset); 
 				CBlob@ blob = spawnBlob(map, "magazine", 255, position, true);
-				offsets[autotile_offset].push_back(offset);
 
 				const string[] items = {
-				"mat_bombs",
-				"mat_waterbombs",
-				"mat_arrows",
-				"mat_waterarrows",
-				"mat_firearrows",
-				"mat_bombarrows",
-				"food",
-				"random"};
+				"mat_bombs",       // 0
+				"mat_waterbombs",  // 1
+				"mat_arrows",      // 2
+				"mat_waterarrows", // 3
+				"mat_firearrows",  // 4
+				"mat_bombarrows",  // 5
+				"food"};           // 6
+				// RANDOM             7
 
-				if(alpha >= items.length) return;
+				if(alpha >= items.length + 1) break;
 
-				string name = items[alpha];
-				if(name == "random")
+				string name;
+				if(alpha == items.length) // random
 				{
-					name = items[XORRandom(items.length - 2)];
+					name = items[XORRandom(items.length - 1)];
+				}
+				else
+				{
+					name = items[alpha];
 				}
 
 				CBlob@ item = server_CreateBlob(name, 255, position);
 				blob.server_PutInInventory(item);
 			}
-			else if(rgb == oscillator)
-			{
-				spawnBlob(map, "oscillator", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == randomizer)
-			{
-				spawnBlob(map, "randomizer", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == receiver)
-			{
-				spawnBlob(map, "receiver", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == resistor)
-			{
-				spawnBlob(map, "resistor", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == tee)
-			{
-				spawnBlob(map, "tee", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == toggle)
-			{
-				spawnBlob(map, "toggle", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == transistor)
-			{
-				spawnBlob(map, "transistor", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == wire)
-			{
-				spawnBlob(map, "wire", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == bolter)
-			{
-				spawnBlob(map, "bolter", 255, position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == dispenser)
-			{
-				spawnBlob(map, "dispenser", 255, position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == lamp)
-			{
-				spawnBlob(map, "lamp", 255, position, true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == obstructor)
-			{
-				spawnBlob(map, "obstructor", 255, position, true);
-				offsets[autotile_offset].push_back(offset);
-			}
-			else if(rgb == spiker)
-			{
-				spawnBlob(map, "spiker", 255, position, getAngleFromChannel(alpha), true);
-				offsets[autotile_offset].push_back(offset);
-			}
-		}
-		else if(pixel == color_tile_ground)
-		{
-			map.SetTile(offset, CMap::tile_ground);
-		}
-		else if(pixel == color_tile_ground_back)
-		{
-			map.SetTile(offset, CMap::tile_ground_back);
-		}
-		else if(pixel == color_tile_stone)
-		{
-			map.SetTile(offset, CMap::tile_stone);
-		}
-		else if(pixel == color_tile_thickstone)
-		{
-			map.SetTile(offset, CMap::tile_thickstone);
-		}
-		else if(pixel == color_tile_bedrock)
-		{
-			map.SetTile(offset, CMap::tile_bedrock);
-		}
-		else if(pixel == color_tile_gold)
-		{
-			map.SetTile(offset, CMap::tile_gold);
-		}
-		else if(pixel == color_tile_castle)
-		{
-			map.SetTile(offset, CMap::tile_castle);
-		}
-		else if(pixel == color_tile_castle_back)
-		{
-			map.SetTile(offset, CMap::tile_castle_back);
-		}
-		else if(pixel == color_tile_castle_moss)
-		{
-			map.SetTile(offset, CMap::tile_castle_moss);
-		}
-		else if(pixel == color_tile_castle_back_moss)
-		{
-			map.SetTile(offset, CMap::tile_castle_back_moss);
-		}
-		else if(pixel == color_tile_wood)
-		{
-			map.SetTile(offset, CMap::tile_wood);
-		}
-		else if(pixel == color_tile_wood_back)
-		{
-			map.SetTile(offset, CMap::tile_wood_back );
-		}
-		else if(pixel == color_tile_grass)
-		{
-			map.SetTile(offset, CMap::tile_grass + map_random.NextRanged(3));
-		}
-		else if(pixel == color_water_air)
-		{
-			map.server_setFloodWaterOffset(offset, true);
-		}
-		else if(pixel == color_water_backdirt)
-		{
-			map.server_setFloodWaterOffset(offset, true);
-			map.SetTile(offset, CMap::tile_ground_back);
-		}
-		else if(pixel == color_princess)
-		{
-			spawnBlob(map, "princess", offset, 6, false);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if(pixel == color_necromancer)
-		{
-			spawnBlob( map, "necromancer", offset, 3, false);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if(pixel == color_necromancer_teleport)
-		{
-			AddMarker( map, offset, "necromancer teleport" );
-		}
-		else if(pixel == color_blue_main_spawn)
-		{
-			AddMarker(map, offset, "blue main spawn");
-		}
-		else if(pixel == color_red_main_spawn)
-		{
-			AddMarker(map, offset, "red main spawn");
-		}
-		else if (pixel == color_green_main_spawn)
-		{
-			CBlob@ hall = spawnBlob( map, "hall", offset, 2 );
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_purple_main_spawn)
-		{
-			CBlob@ hall = spawnBlob( map, "hall", offset, 3 );
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_orange_main_spawn)
-		{
-			CBlob@ hall = spawnBlob( map, "hall", offset, 4 );
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_aqua_main_spawn)
-		{
-			CBlob@ hall = spawnBlob( map, "hall", offset, 5 );
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_teal_main_spawn)
-		{
-			CBlob@ hall = spawnBlob( map, "hall", offset, 6 );
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_gray_main_spawn)
-		{
-			CBlob@ hall = spawnBlob( map, "hall", offset, 7 );
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_blue_spawn)
-		{
-			AddMarker( map, offset, "blue spawn" );
-		}
-		else if (pixel == color_red_spawn)
-		{
-			AddMarker( map, offset, "red spawn" );
-		}
-		else if (pixel == color_green_spawn)
-		{
-			AddMarker( map, offset, "green spawn" );
-		}
-		else if (pixel == color_purple_spawn)
-		{
-			AddMarker( map, offset, "purple spawn" );
-		}
-		else if (pixel == color_orange_spawn)
-		{
-			AddMarker( map, offset, "orange spawn" );
-		}
-		else if (pixel == color_aqua_spawn)
-		{
-			AddMarker( map, offset, "aqua spawn" );
-		}
-		else if (pixel == color_teal_spawn)
-		{
-			AddMarker( map, offset, "teal spawn" );
-		}
-		else if (pixel == color_gray_spawn)
-		{
-			AddMarker( map, offset, "gray spawn" );
-		}
-		else if (pixel == color_knight_shop)
-		{
-			spawnBlob( map, "knightshop", offset, 255);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_builder_shop)
-		{
-			spawnBlob( map, "buildershop", offset, 255);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_archer_shop)
-		{
-			spawnBlob( map, "archershop", offset, 255);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_boat_shop)
-		{
-			spawnBlob( map, "boatshop", offset, 255);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if(pixel == color_vehicle_shop)
-		{
-			spawnBlob(map, "vehicleshop", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_quarters)
-		{
-			spawnBlob(map, "quarters", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_storage_noteam)
-		{
-			spawnBlob(map, "storage", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_barracks_noteam)
-		{
-			spawnBlob(map, "barracks", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_factory_noteam)
-		{
-			spawnBlob(map, "factory", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_tunnel_blue)
-		{
-			spawnBlob(map, "tunnel", offset, 0);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_tunnel_red)
-		{
-			spawnBlob(map, "tunnel", offset, 1);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_tunnel_noteam)
-		{
-			spawnBlob(map, "tunnel", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_kitchen)
-		{
-			spawnBlob(map, "kitchen", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_nursery)
-		{
-			spawnBlob(map, "nursery", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_research)
-		{
-			spawnBlob(map, "research", offset, 255);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_workbench)
-		{
-			spawnBlob(map, "workbench", offset, -1, true);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if(pixel == color_campfire)
-		{
-			spawnBlob(map, "fireplace", offset, -1, true, Vec2f(0.0f, -4.0f));
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if(pixel == color_saw)
-		{
-			spawnBlob( map, "saw", offset, -1, false);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if(pixel.getRed() == color_tree.getRed() && pixel.getBlue() == color_tree.getBlue() && pixel.getGreen() >= color_tree.getGreen() && pixel.getGreen() <= color_tree.getGreen()+3)
-		{
-			offsets[tree_offset].push_back(offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if(pixel == color_bush)
-		{
-			offsets[bush_offset].push_back( offset );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_grain)
-		{
-			offsets[grain_offset].push_back( offset );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_flowers)
-		{
-			spawnBlob( map, "flowers", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_log)
-		{
-			spawnBlob( map, "log", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_shark)
-		{
-			spawnBlob( map, "shark", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_fish)
-		{
-			CBlob@ fishy = spawnBlob( map, "fishy", offset, -1);
-			if (fishy !is null)
-			{
-				fishy.set_u8("age", (offset * 997) % 4 );
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_bison)
-		{
-			spawnBlob( map, "bison", offset, -1, false);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_chicken)
-		{
-			spawnBlob( map, "chicken", offset, -1, false, Vec2f(0,-8));
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_ladder || pixel == color_tile_ladder_ground || pixel == color_tile_ladder_castle || pixel == color_tile_ladder_wood)
-		{
-			offsets[ladder_offset].push_back( offset );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_platform_up)
-		{
-			spawnBlob( map, "wooden_platform", offset, 255, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_platform_right)
-		{
-			CBlob@ blob = spawnBlob(map, "wooden_platform", offset, 255, false);
-			offsets[autotile_offset].push_back(offset);
-			blob.setAngleDegrees(90.0f);
-			blob.getShape().SetStatic(true);
-		}
-		else if (pixel == color_platform_down)
-		{
-			CBlob@ blob = spawnBlob( map, "wooden_platform", offset, 255, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 180.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_platform_left)
-		{
-			CBlob@ blob = spawnBlob( map, "wooden_platform", offset, 255, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( -90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_wooden_door_h_blue)
-		{
-			spawnBlob( map, "wooden_door", offset, 0, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_wooden_door_v_blue)
-		{
-			CBlob@ blob = spawnBlob( map, "wooden_door", offset, 0, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_wooden_door_h_red)
-		{
-			spawnBlob( map, "wooden_door", offset, 1, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_wooden_door_v_red)
-		{
-			CBlob@ blob = spawnBlob( map, "wooden_door", offset, 1, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_wooden_door_h_noteam)
-		{
-			spawnBlob( map, "wooden_door", offset, 255, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_wooden_door_v_noteam)
-		{
-			CBlob@ blob = spawnBlob( map, "wooden_door", offset, 255, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_stone_door_h_blue)
-		{
-			spawnBlob( map, "stone_door", offset, 0, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_stone_door_v_blue)
-		{
-			CBlob@ blob = spawnBlob( map, "stone_door", offset, 0, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_stone_door_h_red)
-		{
-			spawnBlob( map, "stone_door", offset, 1, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_stone_door_v_red)
-		{
-			CBlob@ blob = spawnBlob( map, "stone_door", offset, 1, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_stone_door_h_noteam)
-		{
-			spawnBlob( map, "stone_door", offset, 255, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_stone_door_v_noteam)
-		{
-			CBlob@ blob = spawnBlob( map, "stone_door", offset, 255, false );
-			offsets[autotile_offset].push_back( offset );
-			CShape@ shape = blob.getShape();
-			blob.setAngleDegrees( 90.0f );
-			shape.SetStatic( true );
-		}
-		else if (pixel == color_trapblock_blue)
-		{
-			spawnBlob( map, "trap_block", offset, 0, true);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_trapblock_red)
-		{
-			spawnBlob( map, "trap_block", offset, 1, true);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_trapblock_noteam)
-		{
-			spawnBlob( map, "trap_block", offset, 255, true );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_spikes)
-		{
-			offsets[spike_offset].push_back( offset );
-		}
-		else if (pixel == color_spikes_ground)
-		{
-			map.SetTile(offset, CMap::tile_ground_back );
-			offsets[spike_offset].push_back( offset );
-		}
-		else if (pixel == color_spikes_castle)
-		{
-			map.SetTile(offset, CMap::tile_castle_back );
-			offsets[spike_offset].push_back( offset );
-		}
-		else if (pixel == color_spikes_wood)
-		{
-			map.SetTile(offset, CMap::tile_wood_back );
-			offsets[spike_offset].push_back( offset );
-		}
-		else if(pixel == chest)
-		{
-			spawnBlob(map, "chest", 255, getSpawnPosition(map, offset));
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if (pixel == color_drill)
-		{
-			spawnBlob( map, "drill", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_trampoline)
-		{
-			CBlob@ trampoline = server_CreateBlobNoInit("trampoline");
-			if (trampoline !is null)
-			{
-				trampoline.Tag("invincible");
-				trampoline.Tag("static");
-				trampoline.Tag("no pickup");
-				trampoline.setPosition(getSpawnPosition(map, offset));
-				trampoline.Init();
-			}
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_lantern)
-		{
-			spawnBlob( map, "lantern", offset, -1, true);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_crate)
-		{
-			spawnBlob( map, "crate", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_bucket)
-		{
-			spawnBlob( map, "bucket", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_sponge)
-		{
-			spawnBlob( map, "sponge", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_steak)
-		{
-			spawnBlob( map, "steak", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_burger)
-		{
-			spawnBlob( map, "food", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_heart)
-		{
-			spawnBlob( map, "heart", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_catapult)
-		{
-			spawnVehicle( map, "catapult", offset, 0); // HACK: team for Challenge
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_ballista)
-		{
-			spawnVehicle( map, "ballista", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_mountedbow)
-		{
-			spawnBlob( map, "mounted_bow", offset, -1, true, Vec2f(0.0f, 4.0f));
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_longboat)
-		{
-			spawnVehicle( map, "longboat", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_warboat)
-		{
-			spawnVehicle( map, "warboat", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_dinghy)
-		{
-			spawnVehicle( map, "dinghy", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_raft)
-		{
-			spawnVehicle( map, "raft", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_airship)
-		{
-			spawnVehicle( map, "airship", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_bomber)
-		{
-			spawnVehicle( map, "bomber", offset);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_bombs)
-		{
-			AddMarker( map, offset, "mat_bombs" );
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_waterbombs)
-		{
-			spawnBlob( map, "mat_waterbombs", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_arrows)
-		{
-			spawnBlob( map, "mat_arrows", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_bombarrows)
-		{
-			spawnBlob( map, "mat_bombarrows", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_waterarrows)
-		{
-			spawnBlob( map, "mat_waterarrows", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_firearrows)
-		{
-			spawnBlob( map, "mat_firearrows", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_bolts)
-		{
-			spawnBlob( map, "mat_bolts", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_blue_mine)
-		{
-			spawnBlob( map, "mine", offset, 0);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_red_mine)
-		{
-			spawnBlob( map, "mine", offset, 1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_mine_noteam)
-		{
-			spawnBlob( map, "mine", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_boulder)
-		{
-			spawnBlob( map, "boulder", offset, -1, false, Vec2f(8.0f, -8.0f));
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_satchel)
-		{
-			spawnBlob( map, "satchel", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_keg)
-		{
-			spawnBlob( map, "keg", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_gold)
-		{
-			spawnBlob( map, "mat_gold", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_stone)
-		{
-			spawnBlob( map, "mat_stone", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_wood)
-		{
-			spawnBlob( map, "mat_wood", offset, -1);
-			offsets[autotile_offset].push_back( offset );
-		}
-		else if (pixel == color_mook_knight)
-		{
-			AddMarker( map, offset, "mook knight" );
-		}
-		else if(pixel == color_mook_archer)
-		{
-			AddMarker(map, offset, "mook archer");
-		}
-		else if(pixel == color_mook_spawner)
-		{
-			AddMarker(map, offset, "mook spawner");
-		}
-		else if(pixel == color_mook_spawner_10)
-		{
-			AddMarker(map, offset, "mook spawner 10");
-		}
-		else if(pixel == color_dummy)
-		{
-			spawnBlob(map, "dummy", offset, 1, true);
-			offsets[autotile_offset].push_back( offset );
+			break;
+			};
 		}
 		else
 		{
-			HandleCustomTile( map, offset, pixel );
+			switch (pixel.color)
+			{
+			// Tiles
+			case map_colors::tile_ground:           map.SetTile(offset, CMap::tile_ground);           break;
+			case map_colors::tile_ground_back:      map.SetTile(offset, CMap::tile_ground_back);      break;
+			case map_colors::tile_stone:            map.SetTile(offset, CMap::tile_stone);            break;
+			case map_colors::tile_thickstone:       map.SetTile(offset, CMap::tile_thickstone);       break;
+			case map_colors::tile_bedrock:          map.SetTile(offset, CMap::tile_bedrock);          break;
+			case map_colors::tile_gold:             map.SetTile(offset, CMap::tile_gold);             break;
+			case map_colors::tile_castle:           map.SetTile(offset, CMap::tile_castle);           break;
+			case map_colors::tile_castle_back:      map.SetTile(offset, CMap::tile_castle_back);      break;
+			case map_colors::tile_castle_moss:      map.SetTile(offset, CMap::tile_castle_moss);      break;
+			case map_colors::tile_castle_back_moss: map.SetTile(offset, CMap::tile_castle_back_moss); break;
+			case map_colors::tile_wood:             map.SetTile(offset, CMap::tile_wood);             break;
+			case map_colors::tile_wood_back:        map.SetTile(offset, CMap::tile_wood_back);        break;
+			case map_colors::tile_grass:            map.SetTile(offset, CMap::tile_grass + map_random.NextRanged(3)); break;
+			
+			// Water
+			case map_colors::water_air:
+				map.server_setFloodWaterOffset(offset, true);
+			break;
+			case map_colors::water_backdirt:
+				map.server_setFloodWaterOffset(offset, true);
+				map.SetTile(offset, CMap::tile_ground_back);
+			break;
+			
+			// Princess & necromancer
+			case map_colors::princess:             autotile(offset); spawnBlob(map, "princess",    offset, 6); break;
+			case map_colors::necromancer:          autotile(offset); spawnBlob(map, "necromancer", offset, 3); break;
+			case map_colors::necromancer_teleport: autotile(offset); AddMarker(map, offset, "necromancer teleport"); break;
+			
+			// Main spawns
+			case map_colors::blue_main_spawn:   autotile(offset); AddMarker(map, offset, "blue main spawn"); break;
+			case map_colors::red_main_spawn:    autotile(offset); AddMarker(map, offset, "red main spawn");  break;
+			case map_colors::green_main_spawn:  autotile(offset); spawnHall(map, offset, 2); break;
+			case map_colors::purple_main_spawn: autotile(offset); spawnHall(map, offset, 3); break;
+			case map_colors::orange_main_spawn: autotile(offset); spawnHall(map, offset, 4); break;
+			case map_colors::aqua_main_spawn:   autotile(offset); spawnHall(map, offset, 5); break;
+			case map_colors::teal_main_spawn:   autotile(offset); spawnHall(map, offset, 6); break;
+			case map_colors::gray_main_spawn:   autotile(offset); spawnHall(map, offset, 7); break;
+			
+			// Normal spawns
+			case map_colors::blue_spawn:     autotile(offset); AddMarker(map, offset, "blue spawn");   break;
+			case map_colors::red_spawn:      autotile(offset); AddMarker(map, offset, "red spawn");    break;
+			/*case map_colors::green_spawn:  autotile(offset); AddMarker(map, offset, "green spawn");  break;*/ // same as grass...?
+			case map_colors::purple_spawn:   autotile(offset); AddMarker(map, offset, "purple spawn"); break;
+			/*case map_colors::orange_spawn: autotile(offset); AddMarker(map, offset, "orange spawn"); break;*/ // same as dirt...?
+			case map_colors::aqua_spawn:     autotile(offset); AddMarker(map, offset, "aqua spawn");   break;
+			case map_colors::teal_spawn:     autotile(offset); AddMarker(map, offset, "teal spawn");   break;
+			case map_colors::gray_spawn:     autotile(offset); AddMarker(map, offset, "gray spawn");   break;
+			
+			// Workshops
+			case map_colors::knight_shop:     autotile(offset); spawnBlob(map, "knightshop",  offset); break;
+			case map_colors::builder_shop:    autotile(offset); spawnBlob(map, "buildershop", offset); break;
+			case map_colors::archer_shop:     autotile(offset); spawnBlob(map, "archershop",  offset); break;
+			case map_colors::boat_shop:       autotile(offset); spawnBlob(map, "boatshop",    offset); break;
+			case map_colors::vehicle_shop:    autotile(offset); spawnBlob(map, "vehicleshop", offset); break;
+			case map_colors::quarters:        autotile(offset); spawnBlob(map, "quarters",    offset); break;
+			case map_colors::storage_noteam:  autotile(offset); spawnBlob(map, "storage",     offset); break;
+			case map_colors::barracks_noteam: autotile(offset); spawnBlob(map, "barracks",    offset); break;
+			case map_colors::factory_noteam:  autotile(offset); spawnBlob(map, "factory",     offset); break;
+			case map_colors::tunnel_blue:     autotile(offset); spawnBlob(map, "tunnel",      offset, 0); break;
+			case map_colors::tunnel_red:      autotile(offset); spawnBlob(map, "tunnel",      offset, 1); break;
+			case map_colors::tunnel_noteam:   autotile(offset); spawnBlob(map, "tunnel",      offset); break;
+			case map_colors::kitchen:         autotile(offset); spawnBlob(map, "kitchen",     offset); break;
+			case map_colors::nursery:         autotile(offset); spawnBlob(map, "nursery",     offset); break;
+			case map_colors::research:        autotile(offset); spawnBlob(map, "research",    offset); break;
+			
+			case map_colors::workbench:       autotile(offset); spawnBlob(map, "workbench",   offset, 255, true); break;
+			case map_colors::campfire:        autotile(offset); spawnBlob(map, "fireplace",   offset, 255, true, Vec2f(0.0f, -4.0f)); break;
+			case map_colors::saw:             autotile(offset); spawnBlob(map, "saw",         offset); break;
+			
+			// Flora
+			case map_colors::tree:
+			case map_colors::tree + (1 << 4):
+			case map_colors::tree + (2 << 4):
+			case map_colors::tree + (3 << 4):
+				autotile(offset);
+				offsets[tree_offset].push_back(offset);
+			break;
+			case map_colors::bush:    autotile(offset); offsets[bush_offset].push_back(offset); break;
+			case map_colors::grain:   autotile(offset); offsets[grain_offset].push_back(offset); break;
+			case map_colors::flowers: autotile(offset); spawnBlob(map, "flowers", offset); break;
+			case map_colors::log:     autotile(offset); spawnBlob(map, "log",     offset); break;
+			
+			// Fauna
+			case map_colors::shark:   autotile(offset); spawnBlob(map, "shark",   offset); break;
+			case map_colors::fish:    autotile(offset); spawnBlob(map, "fishy",   offset).set_u8("age", (offset * 997) % 4); break;
+			case map_colors::bison:   autotile(offset); spawnBlob(map, "bison",   offset); break;
+			case map_colors::chicken: autotile(offset); spawnBlob(map, "chicken", offset, 255, false, Vec2f(0,-8)); break;
+			
+			// Ladders
+			case map_colors::ladder:
+			//case map_colors::tile_ladder_ground: // same as map_colors::ladder
+			case map_colors::tile_ladder_castle:
+			case map_colors::tile_ladder_wood:
+				autotile(offset);
+				offsets[ladder_offset].push_back( offset );
+			break;
+			
+			// Platforms
+			case map_colors::platform_up:    autotile(offset); spawnBlob(map, "wooden_platform", offset, 255, true); break;
+			case map_colors::platform_right: autotile(offset); spawnBlob(map, "wooden_platform", offset, 255, true, Vec2f_zero,  90); break;
+			case map_colors::platform_down:  autotile(offset); spawnBlob(map, "wooden_platform", offset, 255, true, Vec2f_zero, 180); break;
+			case map_colors::platform_left:  autotile(offset); spawnBlob(map, "wooden_platform", offset, 255, true, Vec2f_zero, -90); break;
+			
+			// Doors
+			case map_colors::wooden_door_h_blue:   autotile(offset); spawnBlob(map, "wooden_door", offset,   0, true); break;
+			case map_colors::wooden_door_v_blue:   autotile(offset); spawnBlob(map, "wooden_door", offset,   0, true, Vec2f_zero, 90); break;
+			case map_colors::wooden_door_h_red:    autotile(offset); spawnBlob(map, "wooden_door", offset,   1, true); break;
+			case map_colors::wooden_door_v_red:    autotile(offset); spawnBlob(map, "wooden_door", offset,   1, true, Vec2f_zero, 90); break;
+			case map_colors::wooden_door_h_noteam: autotile(offset); spawnBlob(map, "wooden_door", offset, 255, true); break;
+			case map_colors::wooden_door_v_noteam: autotile(offset); spawnBlob(map, "wooden_door", offset, 255, true, Vec2f_zero, 90); break;
+			case map_colors::stone_door_h_blue:    autotile(offset); spawnBlob(map, "stone_door",  offset,   0, true); break;
+			case map_colors::stone_door_v_blue:    autotile(offset); spawnBlob(map, "stone_door",  offset,   0, true, Vec2f_zero, 90); break;
+			case map_colors::stone_door_h_red:     autotile(offset); spawnBlob(map, "stone_door",  offset,   1, true); break;
+			case map_colors::stone_door_v_red:     autotile(offset); spawnBlob(map, "stone_door",  offset,   1, true, Vec2f_zero, 90); break;
+			case map_colors::stone_door_h_noteam:  autotile(offset); spawnBlob(map, "stone_door",  offset, 255, true); break;
+			case map_colors::stone_door_v_noteam:  autotile(offset); spawnBlob(map, "stone_door",  offset, 255, true, Vec2f_zero, 90); break;
+			
+			// Trapblocks
+			case map_colors::trapblock_blue:   autotile(offset); spawnBlob(map, "trap_block", offset,   0, true); break;
+			case map_colors::trapblock_red:    autotile(offset); spawnBlob(map, "trap_block", offset,   1, true); break;
+			case map_colors::trapblock_noteam: autotile(offset); spawnBlob(map, "trap_block", offset, 255, true); break;
+			
+			// Spikes
+			case map_colors::spikes_ground: offsets[spike_offset].push_back(offset); map.SetTile(offset, CMap::tile_ground_back); break;
+			case map_colors::spikes_castle: offsets[spike_offset].push_back(offset); map.SetTile(offset, CMap::tile_castle_back); break;
+			case map_colors::spikes_wood:   offsets[spike_offset].push_back(offset); map.SetTile(offset, CMap::tile_wood_back);   break;
+			
+			// Misc stuff
+			case map_colors::drill: autotile(offset); spawnBlob(map, "drill", offset, -1); break;
+			case map_colors::trampoline:
+			{
+				autotile(offset);
+				CBlob@ trampoline = server_CreateBlobNoInit("trampoline");
+				if (trampoline !is null)
+				{
+					trampoline.Tag("invincible");
+					trampoline.Tag("static");
+					trampoline.Tag("no pickup");
+					trampoline.setPosition(getSpawnPosition(map, offset));
+					trampoline.Init();
+				}
+			}
+			break;
+			case map_colors::lantern:     autotile(offset); spawnBlob(map, "lantern", offset, 255, true); break;
+			case map_colors::crate:       autotile(offset); spawnBlob(map, "crate",   offset); break;
+			case map_colors::bucket:      autotile(offset); spawnBlob(map, "bucket",  offset); break;
+			case map_colors::sponge:      autotile(offset); spawnBlob(map, "sponge",  offset); break;
+			case map_colors::chest:       autotile(offset); spawnBlob(map, "chest",   offset); break;
+			
+			// Food
+			case map_colors::steak:       autotile(offset); spawnBlob(map, "steak", offset); break;
+			case map_colors::burger:      autotile(offset); spawnBlob(map, "food",  offset); break;
+			case map_colors::heart:       autotile(offset); spawnBlob(map, "heart", offset); break;
+			
+			// Ground siege
+			case map_colors::catapult:    autotile(offset); spawnVehicle(map, "catapult", offset, 0); break; // HACK: team for Challenge
+			case map_colors::ballista:    autotile(offset); spawnVehicle(map, "ballista", offset); break;
+			case map_colors::mountedbow:  autotile(offset); spawnBlob(map, "mounted_bow", offset, 255, true, Vec2f(0.0f, 4.0f)); break;
+			
+			// Water/air vehicles
+			case map_colors::longboat:    autotile(offset); spawnVehicle(map, "longboat", offset); break;
+			case map_colors::warboat:     autotile(offset); spawnVehicle(map, "warboat",  offset); break;
+			case map_colors::dinghy:      autotile(offset); spawnVehicle(map, "dinghy",   offset); break;
+			case map_colors::raft:        autotile(offset); spawnVehicle(map, "raft",     offset); break;
+			case map_colors::airship:     autotile(offset); spawnVehicle(map, "airship",  offset); break;
+			case map_colors::bomber:      autotile(offset); spawnVehicle(map, "bomber",   offset); break;
+			
+			// Ammo
+			case map_colors::bombs:       autotile(offset); AddMarker(map, offset, "mat_bombs"); break;
+			case map_colors::waterbombs:  autotile(offset); spawnBlob(map, "mat_waterbombs",  offset); break;
+			case map_colors::arrows:      autotile(offset); spawnBlob(map, "mat_arrows",      offset); break;
+			case map_colors::bombarrows:  autotile(offset); spawnBlob(map, "mat_bombarrows",  offset); break;
+			case map_colors::waterarrows: autotile(offset); spawnBlob(map, "mat_waterarrows", offset); break;
+			case map_colors::firearrows:  autotile(offset); spawnBlob(map, "mat_firearrows",  offset); break;
+			case map_colors::bolts:       autotile(offset); spawnBlob(map, "mat_bolts",       offset); break;
+			
+			// Mines, explosives
+			case map_colors::blue_mine:   autotile(offset); spawnBlob(map, "mine", offset, 0); break;
+			case map_colors::red_mine:    autotile(offset); spawnBlob(map, "mine", offset, 1); break;
+			case map_colors::mine_noteam: autotile(offset); spawnBlob(map, "mine", offset); break;
+			case map_colors::boulder:     autotile(offset); spawnBlob(map, "boulder", offset, -1, false, Vec2f(8.0f, -8.0f)); break;
+			case map_colors::satchel:     autotile(offset); spawnBlob(map, "satchel", offset); break;
+			case map_colors::keg:         autotile(offset); spawnBlob(map, "keg", offset); break;
+			
+			// Materials
+			case map_colors::gold:        autotile(offset); spawnBlob(map, "mat_gold", offset); break;
+			case map_colors::stone:       autotile(offset); spawnBlob(map, "mat_stone", offset); break;
+			case map_colors::wood:        autotile(offset); spawnBlob(map, "mat_wood", offset); break;
+			
+			// Mooks
+			case map_colors::mook_knight:     autotile(offset); AddMarker(map, offset, "mook knight"); break;
+			case map_colors::mook_archer:     autotile(offset); AddMarker(map, offset, "mook archer"); break;
+			case map_colors::mook_spawner:    autotile(offset); AddMarker(map, offset, "mook spawner"); break;
+			case map_colors::mook_spawner_10: autotile(offset); AddMarker(map, offset, "mook spawner 10"); break;
+			case map_colors::dummy:           autotile(offset); spawnBlob(map, "dummy", offset, 1, true); break;
+			default:
+				HandleCustomTile( map, offset, pixel );
+			};
 		}
 	}
 
 	//override this to add post-load offset types.
 	void handleOffset(int type, int offset, int position, int count)
 	{
-		if(type == autotile_offset)
+		switch (type)
 		{
+		case autotile_offset:
 			PlaceMostLikelyTile(map, offset);
-		}
-		else if(type == tree_offset)
+		break;
+		case tree_offset:
 		{
 			// load trees only at the ground
 			if(!map.isTileSolid(map.getTile(offset + map.tilemapwidth))) return;
@@ -991,13 +426,13 @@ class PNGLoader
 				}
 			}
 		}
-		else if(type == bush_offset)
-		{
+		break;
+		case bush_offset:
 			server_CreateBlob("bush", -1, map.getTileWorldPosition(offset) + Vec2f(4, 4));
-		}
-		else if (type == grain_offset)
+		break;
+		case grain_offset:
 		{
-			CBlob@ grain = server_CreateBlobNoInit( "grain_plant" );
+			CBlob@ grain = server_CreateBlobNoInit("grain_plant");
 			if(grain !is null)
 			{
 				grain.Tag("instant_grow");
@@ -1005,19 +440,14 @@ class PNGLoader
 				grain.Init();
 			}
 		}
-		else if(type == spike_offset)
-		{
-			CBlob@ spikes = server_CreateBlob( "spikes", -1, map.getTileWorldPosition(offset) + Vec2f(4, 4));
-
-			if(spikes !is null)
-			{
-				spikes.getShape().SetStatic( true );
-			}
-		}
-		else if(type == ladder_offset)
-		{
-			spawnLadder( map, offset );
-		}
+		break;
+		case spike_offset:
+			spawnBlob(map, "spikes", -1, map.getTileWorldPosition(offset) + Vec2f(4, 4), true);
+		break;
+		case ladder_offset:
+			spawnLadder(map, offset);
+		break;
+		};
 	}
 
 	void SetupMap(int width, int height)
@@ -1085,27 +515,27 @@ class PNGLoader
 
 void PlaceMostLikelyTile(CMap@ map, int offset)
 {
-	TileType up = map.getTile( offset - map.tilemapwidth).type;
-	TileType down = map.getTile( offset + map.tilemapwidth).type;
-	TileType left = map.getTile( offset - 1).type;
-	TileType right = map.getTile( offset + 1).type;
-
-	bool upEmpty = (up == CMap::tile_empty);
-
-	if(!upEmpty)
+	const TileType up = map.getTile(offset - map.tilemapwidth).type;
+	const TileType down = map.getTile(offset + map.tilemapwidth).type;
+	const TileType left = map.getTile(offset - 1).type;
+	const TileType right = map.getTile(offset + 1).type;
+	
+	if (up != CMap::tile_empty)
 	{
-		if(up == CMap::tile_castle || up == CMap::tile_castle_back || down == CMap::tile_castle || down == CMap::tile_castle_back ||
-			left == CMap::tile_castle || left == CMap::tile_castle_back || right == CMap::tile_castle || right == CMap::tile_castle_back)
+		const TileType[] neighborhood = { up, down, left, right };
+		
+		if ((neighborhood.find(CMap::tile_castle) != -1) ||
+		    (neighborhood.find(CMap::tile_castle_back) != -1))
 		{
 			map.SetTile(offset, CMap::tile_castle_back);
 		}
-		else if( up == CMap::tile_wood || up == CMap::tile_wood_back || down == CMap::tile_wood || down == CMap::tile_wood_back ||
-				left == CMap::tile_wood || left == CMap::tile_wood_back || right == CMap::tile_wood || right == CMap::tile_wood_back)
+		else if ((neighborhood.find(CMap::tile_wood) != -1) ||
+		         (neighborhood.find(CMap::tile_wood_back) != -1))
 		{
 			map.SetTile(offset, CMap::tile_wood_back );
 		}
-		else if(up == CMap::tile_ground || up == CMap::tile_ground_back || down == CMap::tile_ground || down == CMap::tile_ground_back ||
-				left == CMap::tile_ground || left == CMap::tile_ground_back || right == CMap::tile_ground || right == CMap::tile_ground_back)
+		else if ((neighborhood.find(CMap::tile_ground) != -1) ||
+		         (neighborhood.find(CMap::tile_ground_back) != -1))
 		{
 			map.SetTile(offset, CMap::tile_ground_back);
 		}
@@ -1140,6 +570,7 @@ u16 getAngleFromChannel(u8 channel)
 		case 32: return 180;
 		case 48: return 270;
 	}
+	
 	return 0;
 }
 
@@ -1151,6 +582,7 @@ u8 getChannelFromAngle(u16 angle)
 		case 180: return 32;
 		case 270: return 48;
 	}
+	
 	return 0;
 }
 
@@ -1163,51 +595,49 @@ Vec2f getSpawnPosition(CMap@ map, int offset)
 	return pos;
 }
 
-CBlob@ spawnBlob(CMap@ map, const string name, u8 team, Vec2f position)
+CBlob@ spawnHall(CMap@ map, int offset, u8 team)
 {
-	CBlob@ blob = server_CreateBlob(name, team, position);
-
-	return blob;
-}
-
-CBlob@ spawnBlob(CMap@ map, const string name, u8 team, Vec2f position, const bool fixed)
-{
-	CBlob@ blob = server_CreateBlob(name, team, position);
-	blob.getShape().SetStatic(fixed);
-
-	return blob;
-}
-
-CBlob@ spawnBlob(CMap@ map, const string name, u8 team, Vec2f position, u16 angle)
-{
-	CBlob@ blob = server_CreateBlob(name, team, position);
-	blob.setAngleDegrees(angle);
-
-	return blob;
-}
-
-CBlob@ spawnBlob(CMap@ map, const string name, u8 team, Vec2f position, u16 angle, const bool fixed)
-{
-	CBlob@ blob = server_CreateBlob(name, team, position);
-	blob.setAngleDegrees(angle);
-	blob.getShape().SetStatic(fixed);
-
-	return blob;
-}
-
-CBlob@ spawnBlob(CMap@ map, const string& in name, int offset, int team, bool attached_to_map, Vec2f posOffset)
-{
-	CBlob@ blob = server_CreateBlob(name, team, getSpawnPosition( map, offset) + posOffset);
-	if(blob !is null && attached_to_map)
+	CBlob@ hall = spawnBlob(map, "hall", offset, team);
+	if (hall !is null) // add research to first hall
 	{
-		blob.getShape().SetStatic( true );
+		hall.AddScript("Researching.as");
+		hall.Tag("script added");
 	}
+	return @hall;
+}
+
+CBlob@ spawnBlob(CMap@ map, const string &in name, u8 team, Vec2f position)
+{
+	return server_CreateBlob(name, team, position);
+}
+
+CBlob@ spawnBlob(CMap@ map, const string &in name, u8 team, Vec2f position, const bool fixed)
+{
+	CBlob@ blob = server_CreateBlob(name, team, position);
+	blob.getShape().SetStatic(fixed);
+
 	return blob;
 }
 
-CBlob@ spawnBlob(CMap@ map, const string& in name, int offset, int team, bool attached_to_map = false)
+CBlob@ spawnBlob(CMap@ map, const string &in name, u8 team, Vec2f position, s16 angle)
 {
-	return spawnBlob(map, name, offset, team, attached_to_map, Vec2f_zero);
+	CBlob@ blob = server_CreateBlob(name, team, position);
+	blob.setAngleDegrees(angle);
+
+	return blob;
+}
+
+CBlob@ spawnBlob(CMap@ map, const string &in name, u8 team, Vec2f position, s16 angle, const bool fixed)
+{
+	CBlob@ blob = spawnBlob(map, name, team, position, angle);
+	blob.getShape().SetStatic(fixed);
+
+	return blob;
+}
+
+CBlob@ spawnBlob(CMap@ map, const string& in name, int offset, u8 team = 255, bool attached_to_map = false, Vec2f posOffset = Vec2f_zero, s16 angle = 0)
+{
+	return spawnBlob(map, name, team, getSpawnPosition(map, offset) + posOffset, angle, attached_to_map);
 }
 
 CBlob@ spawnVehicle(CMap@ map, const string& in name, int offset, int team = -1)
@@ -1223,7 +653,6 @@ CBlob@ spawnVehicle(CMap@ map, const string& in name, int offset, int team = -1)
 void AddMarker(CMap@ map, int offset, const string& in name)
 {
 	map.AddMarker(map.getTileWorldPosition(offset), name);
-	PlaceMostLikelyTile(map, offset);
 }
 
 void SaveMap(CMap@ map, const string &in fileName)
@@ -1244,13 +673,13 @@ void SaveMap(CMap@ map, const string &in fileName)
 		SColor color = getColorFromTileType(map.getTile(i).type);
 		if(map.isInWater(map.getTileWorldPosition(i)))
 		{
-			if(color == sky)
+			if(color == map_colors::sky)
 			{
-				color = color_water_air;
+				color = map_colors::water_air;
 			}
 			else
 			{
-				color = color_water_backdirt;
+				color = map_colors::water_backdirt;
 			}
 		}
 		image.setPixelAndAdvance(color);
@@ -1268,7 +697,7 @@ void SaveMap(CMap@ map, const string &in fileName)
 		Vec2f offset;
 
 		getInfoFromBlob(blob, color, offset);
-		if(color == unused) continue;
+		if(color == map_colors::unused) continue;
 
 		const Vec2f position = map.getTileSpacePosition(blob.getPosition() + offset);
 
@@ -1298,7 +727,7 @@ void SaveMap(CMap@ map, const string &in fileName)
 		{
 			for(u8 j = 0; j < position.length; j++)
 			{
-				color = spawn;
+				color = map_colors::alpha_spawn;
 				color.setAlpha(0x80 | getChannelFromTeam(i));
 				position[j] = map.getTileSpacePosition(position[j]);
 
@@ -1311,7 +740,7 @@ void SaveMap(CMap@ map, const string &in fileName)
 		{
 			for(u8 j = 0; j < position.length; j++)
 			{
-				color = flag;
+				color = map_colors::alpha_flag;
 				color.setAlpha(0x80 | getChannelFromTeam(i));
 				position[j] = map.getTileSpacePosition(position[j]);
 
@@ -1328,7 +757,7 @@ void getInfoFromBlob(CBlob@ this, SColor &out color, Vec2f &out offset)
 	const string name = this.getName();
 
 	// declare some default values
-	color = unused;
+	color = map_colors::unused;
 	offset = Vec2f_zero;
 
 	// BLOCKS
@@ -1336,88 +765,88 @@ void getInfoFromBlob(CBlob@ this, SColor &out color, Vec2f &out offset)
 	{
 		if(name == "ladder")
 		{
-			color = ladder;
+			color = map_colors::alpha_ladder;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "spikes")
 		{
-			color = spikes;
+			color = map_colors::alpha_spikes;
 			color.setAlpha(getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "stone_door")
 		{
-			color = stone_door;
+			color = map_colors::alpha_stone_door;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "trap_block")
 		{
-			color = trap_block;
+			color = map_colors::alpha_trap_block;
 			color.setAlpha(getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "wooden_door")
 		{
-			color = wooden_door;
+			color = map_colors::alpha_wooden_door;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "wooden_platform")
 		{
-			color = wooden_platform;
+			color = map_colors::alpha_wooden_platform;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		// MECHANISMS
 		else if(name == "coin_slot")
 		{
-			color = coin_slot;
+			color = map_colors::alpha_coin_slot;
 			color.setAlpha(getChannelFromTeam(255));
 		}
 		else if(name == "lever")
 		{
-			color = lever;
+			color = map_colors::alpha_lever;
 			color.setAlpha(getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "pressure_plate")
 		{
-			color = pressure_plate;
+			color = map_colors::alpha_pressure_plate;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()));
 		}
 		else if(name == "push_button")
 		{
-			color = push_button;
+			color = map_colors::alpha_push_button;
 			color.setAlpha(getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "sensor")
 		{
-			color = sensor;
+			color = map_colors::alpha_sensor;
 			color.setAlpha(getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "diode")
 		{
-			color = diode;
+			color = map_colors::alpha_diode;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "elbow")
 		{
-			color = elbow;
+			color = map_colors::alpha_elbow;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "emitter")
 		{
-			color = emitter;
+			color = map_colors::alpha_emitter;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "inverter")
 		{
-			color = inverter;
+			color = map_colors::alpha_inverter;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "junction")
 		{
-			color = junction;
+			color = map_colors::alpha_junction;
 			color.setAlpha(getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "magazine")
 		{
-			color = magazine;
+			color = map_colors::alpha_magazine;
 
 			const string[] MAGAZINE_ITEM = {
 			"mat_bombs",
@@ -1445,67 +874,67 @@ void getInfoFromBlob(CBlob@ this, SColor &out color, Vec2f &out offset)
 		}
 		else if(name == "oscillator")
 		{
-			color = oscillator;
+			color = map_colors::alpha_oscillator;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "randomizer")
 		{
-			color = randomizer;
+			color = map_colors::alpha_randomizer;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "receiver")
 		{
-			color = receiver;
+			color = map_colors::alpha_receiver;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "resistor")
 		{
-			color = resistor;
+			color = map_colors::alpha_resistor;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "tee")
 		{
-			color = tee;
+			color = map_colors::alpha_tee;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "toggle")
 		{
-			color = toggle;
+			color = map_colors::alpha_toggle;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "transistor")
 		{
-			color = transistor;
+			color = map_colors::alpha_transistor;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "wire")
 		{
-			color = wire;
+			color = map_colors::alpha_wire;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()) | getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "bolter")
 		{
-			color = bolter;
+			color = map_colors::alpha_bolter;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()));
 		}
 		else if(name == "dispenser")
 		{
-			color = dispenser;
+			color = map_colors::alpha_dispenser;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()));
 		}
 		else if(name == "lamp")
 		{
-			color = lamp;
+			color = map_colors::alpha_lamp;
 			color.setAlpha(getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "obstructor")
 		{
-			color = obstructor;
+			color = map_colors::alpha_obstructor;
 			color.setAlpha(getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "spiker")
 		{
-			color = spiker;
+			color = map_colors::alpha_spiker;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()));
 		}
 	}
@@ -1513,36 +942,36 @@ void getInfoFromBlob(CBlob@ this, SColor &out color, Vec2f &out offset)
 	// FLORA
 	if(name == "bush")
 	{
-		color = color_bush;
+		color = map_colors::bush;
 	}
 	else if(name == "flowers")
 	{
-		color = color_flowers;
+		color = map_colors::flowers;
 	}
 	else if(name == "grain_plant")
 	{
-		color = color_grain;
+		color = map_colors::grain;
 	}
 	else if(name == "tree_pine" || name == "tree_bushy")
 	{
-		color = color_tree;
+		color = map_colors::tree;
 	}
 	// FAUNA
 	else if(name == "bison")
 	{
-		color = color_bison;
+		color = map_colors::bison;
 	}
 	else if(name == "chicken")
 	{
-		color = color_chicken;
+		color = map_colors::chicken;
 	}
 	else if(name == "fishy")
 	{
-		color = color_fish;
+		color = map_colors::fish;
 	}
 	else if(name == "shark")
 	{
-		color = color_shark;
+		color = map_colors::shark;
 	}
 
 	// set last bit to true so the minimum alpha is 128
@@ -1557,265 +986,265 @@ SColor getColorFromTileType(TileType tile)
 {
 	if(tile >= TILE_LUT.length)
 	{
-		return unused;
+		return map_colors::unused;
 	}
 	return TILE_LUT[tile];
 }
 
 const SColor[] TILE_LUT = {
-unused,                                           // |   0 |
-unused,                                           // |   1 |
-unused,                                           // |   2 |
-unused,                                           // |   3 |
-unused,                                           // |   4 |
-unused,                                           // |   5 |
-unused,                                           // |   6 |
-unused,                                           // |   7 |
-unused,                                           // |   8 |
-unused,                                           // |   9 |
-unused,                                           // |  10 |
-unused,                                           // |  11 |
-unused,                                           // |  12 |
-unused,                                           // |  13 |
-unused,                                           // |  14 |
-unused,                                           // |  15 |
-color_tile_ground,                                // |  16 |
-color_tile_ground,                                // |  17 |
-color_tile_ground,                                // |  18 |
-color_tile_ground,                                // |  19 |
-color_tile_ground,                                // |  20 |
-color_tile_ground,                                // |  21 |
-color_tile_ground,                                // |  22 |
-color_tile_ground,                                // |  23 |
-color_tile_ground,                                // |  24 |
-color_tile_grass,                                 // |  25 |
-color_tile_grass,                                 // |  26 |
-color_tile_grass,                                 // |  27 |
-color_tile_grass,                                 // |  28 |
-color_tile_ground,                                // |  29 | damaged
-color_tile_ground,                                // |  30 | damaged
-color_tile_ground,                                // |  31 | damaged
-color_tile_ground_back,                           // |  32 |
-color_tile_ground_back,                           // |  33 |
-color_tile_ground_back,                           // |  34 |
-color_tile_ground_back,                           // |  35 |
-color_tile_ground_back,                           // |  36 |
-color_tile_ground_back,                           // |  37 |
-color_tile_ground_back,                           // |  38 |
-color_tile_ground_back,                           // |  39 |
-color_tile_ground_back,                           // |  40 |
-color_tile_ground_back,                           // |  41 |
-unused,                                           // |  42 |
-unused,                                           // |  43 |
-unused,                                           // |  44 |
-unused,                                           // |  45 |
-unused,                                           // |  46 |
-unused,                                           // |  47 |
-color_tile_castle,                                // |  48 |
-color_tile_castle,                                // |  49 |
-color_tile_castle,                                // |  50 |
-color_tile_castle,                                // |  51 |
-color_tile_castle,                                // |  52 |
-color_tile_castle,                                // |  53 |
-color_tile_castle,                                // |  54 |
-unused,                                           // |  55 |
-unused,                                           // |  56 |
-unused,                                           // |  57 |
-color_tile_castle,                                // |  58 | damaged
-color_tile_castle,                                // |  59 | damaged
-color_tile_castle,                                // |  60 | damaged
-color_tile_castle,                                // |  61 | damaged
-color_tile_castle,                                // |  62 | damaged
-color_tile_castle,                                // |  63 | damaged
-color_tile_castle_back,                           // |  64 |
-color_tile_castle_back,                           // |  65 |
-color_tile_castle_back,                           // |  66 |
-color_tile_castle_back,                           // |  67 |
-color_tile_castle_back,                           // |  68 |
-color_tile_castle_back,                           // |  69 |
-unused,                                           // |  70 |
-unused,                                           // |  71 |
-unused,                                           // |  72 |
-unused,                                           // |  73 |
-unused,                                           // |  74 |
-unused,                                           // |  75 |
-color_tile_castle_back,                           // |  76 | damaged
-color_tile_castle_back,                           // |  77 | damaged
-color_tile_castle_back,                           // |  78 | damaged
-color_tile_castle_back,                           // |  79 | damaged
-color_tile_gold,                                  // |  80 |
-color_tile_gold,                                  // |  81 |
-color_tile_gold,                                  // |  82 |
-color_tile_gold,                                  // |  83 |
-color_tile_gold,                                  // |  84 |
-color_tile_gold,                                  // |  85 |
-unused,                                           // |  86 |
-unused,                                           // |  87 |
-unused,                                           // |  88 |
-unused,                                           // |  89 |
-color_tile_gold,                                  // |  90 | damaged
-color_tile_gold,                                  // |  91 | damaged
-color_tile_gold,                                  // |  92 | damaged
-color_tile_gold,                                  // |  93 | damaged
-color_tile_gold,                                  // |  94 | damaged
-unused,                                           // |  95 |
-color_tile_stone,                                 // |  96 |
-color_tile_stone,                                 // |  97 |
-unused,                                           // |  98 |
-unused,                                           // |  99 |
-color_tile_stone,                                 // | 100 | damaged
-color_tile_stone,                                 // | 101 | damaged
-color_tile_stone,                                 // | 102 | damaged
-color_tile_stone,                                 // | 103 | damaged
-color_tile_stone,                                 // | 104 | damaged
-unused,                                           // | 105 |
-color_tile_bedrock,                               // | 106 |
-color_tile_bedrock,                               // | 107 |
-color_tile_bedrock,                               // | 108 |
-color_tile_bedrock,                               // | 109 |
-color_tile_bedrock,                               // | 110 |
-color_tile_bedrock,                               // | 111 |
-unused,                                           // | 112 |
-unused,                                           // | 113 |
-unused,                                           // | 114 |
-unused,                                           // | 115 |
-unused,                                           // | 116 |
-unused,                                           // | 117 |
-unused,                                           // | 118 |
-unused,                                           // | 119 |
-unused,                                           // | 120 |
-unused,                                           // | 121 |
-unused,                                           // | 122 |
-unused,                                           // | 123 |
-unused,                                           // | 124 |
-unused,                                           // | 125 |
-unused,                                           // | 126 |
-unused,                                           // | 127 |
-unused,                                           // | 128 |
-unused,                                           // | 129 |
-unused,                                           // | 130 |
-unused,                                           // | 131 |
-unused,                                           // | 132 |
-unused,                                           // | 133 |
-unused,                                           // | 134 |
-unused,                                           // | 135 |
-unused,                                           // | 136 |
-unused,                                           // | 137 |
-unused,                                           // | 138 |
-unused,                                           // | 139 |
-unused,                                           // | 140 |
-unused,                                           // | 141 |
-unused,                                           // | 142 |
-unused,                                           // | 143 |
-unused,                                           // | 144 |
-unused,                                           // | 145 |
-unused,                                           // | 146 |
-unused,                                           // | 147 |
-unused,                                           // | 148 |
-unused,                                           // | 149 |
-unused,                                           // | 150 |
-unused,                                           // | 151 |
-unused,                                           // | 152 |
-unused,                                           // | 153 |
-unused,                                           // | 154 |
-unused,                                           // | 155 |
-unused,                                           // | 156 |
-unused,                                           // | 157 |
-unused,                                           // | 158 |
-unused,                                           // | 159 |
-unused,                                           // | 160 |
-unused,                                           // | 161 |
-unused,                                           // | 162 |
-unused,                                           // | 163 |
-unused,                                           // | 164 |
-unused,                                           // | 165 |
-unused,                                           // | 166 |
-unused,                                           // | 167 |
-unused,                                           // | 168 |
-unused,                                           // | 169 |
-unused,                                           // | 170 |
-unused,                                           // | 171 |
-unused,                                           // | 172 |
-color_tile_wood_back,                             // | 173 |
-unused,                                           // | 174 |
-unused,                                           // | 175 |
-unused,                                           // | 176 |
-unused,                                           // | 177 |
-unused,                                           // | 178 |
-unused,                                           // | 179 |
-unused,                                           // | 180 |
-unused,                                           // | 181 |
-unused,                                           // | 182 |
-unused,                                           // | 183 |
-unused,                                           // | 184 |
-unused,                                           // | 185 |
-unused,                                           // | 186 |
-unused,                                           // | 187 |
-unused,                                           // | 188 |
-unused,                                           // | 189 |
-unused,                                           // | 190 |
-unused,                                           // | 191 |
-unused,                                           // | 192 |
-unused,                                           // | 193 |
-unused,                                           // | 194 |
-unused,                                           // | 195 |
-color_tile_wood,                                  // | 196 |
-color_tile_wood,                                  // | 197 |
-color_tile_wood,                                  // | 198 |
-unused,                                           // | 199 |
-color_tile_wood,                                  // | 200 | damaged
-color_tile_wood,                                  // | 201 | damaged
-color_tile_wood,                                  // | 202 | damaged
-color_tile_wood,                                  // | 203 | damaged
-color_tile_wood,                                  // | 204 | damaged
-color_tile_wood_back,                             // | 205 |
-color_tile_wood_back,                             // | 206 |
-color_tile_wood_back,                             // | 207 | damaged
-color_tile_thickstone,                            // | 208 |
-color_tile_thickstone,                            // | 209 |
-unused,                                           // | 210 |
-unused,                                           // | 211 |
-unused,                                           // | 212 |
-unused,                                           // | 213 |
-color_tile_thickstone,                            // | 214 | damaged
-color_tile_thickstone,                            // | 215 | damaged
-color_tile_thickstone,                            // | 216 | damaged
-color_tile_thickstone,                            // | 217 | damaged
-color_tile_thickstone,                            // | 218 | damaged
-unused,                                           // | 219 |
-unused,                                           // | 220 |
-unused,                                           // | 221 |
-unused,                                           // | 222 |
-unused,                                           // | 223 |
-color_tile_castle_moss,                           // | 224 |
-color_tile_castle_moss,                           // | 225 |
-color_tile_castle_moss,                           // | 226 |
-color_tile_castle_back_moss,                      // | 227 |
-color_tile_castle_back_moss,                      // | 228 |
-color_tile_castle_back_moss,                      // | 229 |
-color_tile_castle_back_moss,                      // | 230 |
-color_tile_castle_back_moss,                      // | 231 |
-unused,                                           // | 232 |
-unused,                                           // | 233 |
-unused,                                           // | 234 |
-unused,                                           // | 235 |
-unused,                                           // | 236 |
-unused,                                           // | 237 |
-unused,                                           // | 238 |
-unused,                                           // | 239 |
-unused,                                           // | 240 |
-unused,                                           // | 241 |
-unused,                                           // | 242 |
-unused,                                           // | 243 |
-unused,                                           // | 244 |
-unused,                                           // | 245 |
-unused,                                           // | 246 |
-unused,                                           // | 247 |
-unused,                                           // | 248 |
-unused,                                           // | 249 |
-unused,                                           // | 250 |
-unused,                                           // | 251 |
-unused,                                           // | 252 |
-unused,                                           // | 253 |
-unused,                                           // | 254 |
-unused};                                          // | 255 |
+map_colors::unused,                // |   0 |
+map_colors::unused,                // |   1 |
+map_colors::unused,                // |   2 |
+map_colors::unused,                // |   3 |
+map_colors::unused,                // |   4 |
+map_colors::unused,                // |   5 |
+map_colors::unused,                // |   6 |
+map_colors::unused,                // |   7 |
+map_colors::unused,                // |   8 |
+map_colors::unused,                // |   9 |
+map_colors::unused,                // |  10 |
+map_colors::unused,                // |  11 |
+map_colors::unused,                // |  12 |
+map_colors::unused,                // |  13 |
+map_colors::unused,                // |  14 |
+map_colors::unused,                // |  15 |
+map_colors::tile_ground,           // |  16 |
+map_colors::tile_ground,           // |  17 |
+map_colors::tile_ground,           // |  18 |
+map_colors::tile_ground,           // |  19 |
+map_colors::tile_ground,           // |  20 |
+map_colors::tile_ground,           // |  21 |
+map_colors::tile_ground,           // |  22 |
+map_colors::tile_ground,           // |  23 |
+map_colors::tile_ground,           // |  24 |
+map_colors::tile_grass,            // |  25 |
+map_colors::tile_grass,            // |  26 |
+map_colors::tile_grass,            // |  27 |
+map_colors::tile_grass,            // |  28 |
+map_colors::tile_ground,           // |  29 | damaged
+map_colors::tile_ground,           // |  30 | damaged
+map_colors::tile_ground,           // |  31 | damaged
+map_colors::tile_ground_back,      // |  32 |
+map_colors::tile_ground_back,      // |  33 |
+map_colors::tile_ground_back,      // |  34 |
+map_colors::tile_ground_back,      // |  35 |
+map_colors::tile_ground_back,      // |  36 |
+map_colors::tile_ground_back,      // |  37 |
+map_colors::tile_ground_back,      // |  38 |
+map_colors::tile_ground_back,      // |  39 |
+map_colors::tile_ground_back,      // |  40 |
+map_colors::tile_ground_back,      // |  41 |
+map_colors::unused,                // |  42 |
+map_colors::unused,                // |  43 |
+map_colors::unused,                // |  44 |
+map_colors::unused,                // |  45 |
+map_colors::unused,                // |  46 |
+map_colors::unused,                // |  47 |
+map_colors::tile_castle,           // |  48 |
+map_colors::tile_castle,           // |  49 |
+map_colors::tile_castle,           // |  50 |
+map_colors::tile_castle,           // |  51 |
+map_colors::tile_castle,           // |  52 |
+map_colors::tile_castle,           // |  53 |
+map_colors::tile_castle,           // |  54 |
+map_colors::unused,                // |  55 |
+map_colors::unused,                // |  56 |
+map_colors::unused,                // |  57 |
+map_colors::tile_castle,           // |  58 | damaged
+map_colors::tile_castle,           // |  59 | damaged
+map_colors::tile_castle,           // |  60 | damaged
+map_colors::tile_castle,           // |  61 | damaged
+map_colors::tile_castle,           // |  62 | damaged
+map_colors::tile_castle,           // |  63 | damaged
+map_colors::tile_castle_back,      // |  64 |
+map_colors::tile_castle_back,      // |  65 |
+map_colors::tile_castle_back,      // |  66 |
+map_colors::tile_castle_back,      // |  67 |
+map_colors::tile_castle_back,      // |  68 |
+map_colors::tile_castle_back,      // |  69 |
+map_colors::unused,                // |  70 |
+map_colors::unused,                // |  71 |
+map_colors::unused,                // |  72 |
+map_colors::unused,                // |  73 |
+map_colors::unused,                // |  74 |
+map_colors::unused,                // |  75 |
+map_colors::tile_castle_back,      // |  76 | damaged
+map_colors::tile_castle_back,      // |  77 | damaged
+map_colors::tile_castle_back,      // |  78 | damaged
+map_colors::tile_castle_back,      // |  79 | damaged
+map_colors::tile_gold,             // |  80 |
+map_colors::tile_gold,             // |  81 |
+map_colors::tile_gold,             // |  82 |
+map_colors::tile_gold,             // |  83 |
+map_colors::tile_gold,             // |  84 |
+map_colors::tile_gold,             // |  85 |
+map_colors::unused,                // |  86 |
+map_colors::unused,                // |  87 |
+map_colors::unused,                // |  88 |
+map_colors::unused,                // |  89 |
+map_colors::tile_gold,             // |  90 | damaged
+map_colors::tile_gold,             // |  91 | damaged
+map_colors::tile_gold,             // |  92 | damaged
+map_colors::tile_gold,             // |  93 | damaged
+map_colors::tile_gold,             // |  94 | damaged
+map_colors::unused,                // |  95 |
+map_colors::tile_stone,            // |  96 |
+map_colors::tile_stone,            // |  97 |
+map_colors::unused,                // |  98 |
+map_colors::unused,                // |  99 |
+map_colors::tile_stone,            // | 100 | damaged
+map_colors::tile_stone,            // | 101 | damaged
+map_colors::tile_stone,            // | 102 | damaged
+map_colors::tile_stone,            // | 103 | damaged
+map_colors::tile_stone,            // | 104 | damaged
+map_colors::unused,                // | 105 |
+map_colors::tile_bedrock,          // | 106 |
+map_colors::tile_bedrock,          // | 107 |
+map_colors::tile_bedrock,          // | 108 |
+map_colors::tile_bedrock,          // | 109 |
+map_colors::tile_bedrock,          // | 110 |
+map_colors::tile_bedrock,          // | 111 |
+map_colors::unused,                // | 112 |
+map_colors::unused,                // | 113 |
+map_colors::unused,                // | 114 |
+map_colors::unused,                // | 115 |
+map_colors::unused,                // | 116 |
+map_colors::unused,                // | 117 |
+map_colors::unused,                // | 118 |
+map_colors::unused,                // | 119 |
+map_colors::unused,                // | 120 |
+map_colors::unused,                // | 121 |
+map_colors::unused,                // | 122 |
+map_colors::unused,                // | 123 |
+map_colors::unused,                // | 124 |
+map_colors::unused,                // | 125 |
+map_colors::unused,                // | 126 |
+map_colors::unused,                // | 127 |
+map_colors::unused,                // | 128 |
+map_colors::unused,                // | 129 |
+map_colors::unused,                // | 130 |
+map_colors::unused,                // | 131 |
+map_colors::unused,                // | 132 |
+map_colors::unused,                // | 133 |
+map_colors::unused,                // | 134 |
+map_colors::unused,                // | 135 |
+map_colors::unused,                // | 136 |
+map_colors::unused,                // | 137 |
+map_colors::unused,                // | 138 |
+map_colors::unused,                // | 139 |
+map_colors::unused,                // | 140 |
+map_colors::unused,                // | 141 |
+map_colors::unused,                // | 142 |
+map_colors::unused,                // | 143 |
+map_colors::unused,                // | 144 |
+map_colors::unused,                // | 145 |
+map_colors::unused,                // | 146 |
+map_colors::unused,                // | 147 |
+map_colors::unused,                // | 148 |
+map_colors::unused,                // | 149 |
+map_colors::unused,                // | 150 |
+map_colors::unused,                // | 151 |
+map_colors::unused,                // | 152 |
+map_colors::unused,                // | 153 |
+map_colors::unused,                // | 154 |
+map_colors::unused,                // | 155 |
+map_colors::unused,                // | 156 |
+map_colors::unused,                // | 157 |
+map_colors::unused,                // | 158 |
+map_colors::unused,                // | 159 |
+map_colors::unused,                // | 160 |
+map_colors::unused,                // | 161 |
+map_colors::unused,                // | 162 |
+map_colors::unused,                // | 163 |
+map_colors::unused,                // | 164 |
+map_colors::unused,                // | 165 |
+map_colors::unused,                // | 166 |
+map_colors::unused,                // | 167 |
+map_colors::unused,                // | 168 |
+map_colors::unused,                // | 169 |
+map_colors::unused,                // | 170 |
+map_colors::unused,                // | 171 |
+map_colors::unused,                // | 172 |
+map_colors::tile_wood_back,        // | 173 |
+map_colors::unused,                // | 174 |
+map_colors::unused,                // | 175 |
+map_colors::unused,                // | 176 |
+map_colors::unused,                // | 177 |
+map_colors::unused,                // | 178 |
+map_colors::unused,                // | 179 |
+map_colors::unused,                // | 180 |
+map_colors::unused,                // | 181 |
+map_colors::unused,                // | 182 |
+map_colors::unused,                // | 183 |
+map_colors::unused,                // | 184 |
+map_colors::unused,                // | 185 |
+map_colors::unused,                // | 186 |
+map_colors::unused,                // | 187 |
+map_colors::unused,                // | 188 |
+map_colors::unused,                // | 189 |
+map_colors::unused,                // | 190 |
+map_colors::unused,                // | 191 |
+map_colors::unused,                // | 192 |
+map_colors::unused,                // | 193 |
+map_colors::unused,                // | 194 |
+map_colors::unused,                // | 195 |
+map_colors::tile_wood,             // | 196 |
+map_colors::tile_wood,             // | 197 |
+map_colors::tile_wood,             // | 198 |
+map_colors::unused,                // | 199 |
+map_colors::tile_wood,             // | 200 | damaged
+map_colors::tile_wood,             // | 201 | damaged
+map_colors::tile_wood,             // | 202 | damaged
+map_colors::tile_wood,             // | 203 | damaged
+map_colors::tile_wood,             // | 204 | damaged
+map_colors::tile_wood_back,        // | 205 |
+map_colors::tile_wood_back,        // | 206 |
+map_colors::tile_wood_back,        // | 207 | damaged
+map_colors::tile_thickstone,       // | 208 |
+map_colors::tile_thickstone,       // | 209 |
+map_colors::unused,                // | 210 |
+map_colors::unused,                // | 211 |
+map_colors::unused,                // | 212 |
+map_colors::unused,                // | 213 |
+map_colors::tile_thickstone,       // | 214 | damaged
+map_colors::tile_thickstone,       // | 215 | damaged
+map_colors::tile_thickstone,       // | 216 | damaged
+map_colors::tile_thickstone,       // | 217 | damaged
+map_colors::tile_thickstone,       // | 218 | damaged
+map_colors::unused,                // | 219 |
+map_colors::unused,                // | 220 |
+map_colors::unused,                // | 221 |
+map_colors::unused,                // | 222 |
+map_colors::unused,                // | 223 |
+map_colors::tile_castle_moss,      // | 224 |
+map_colors::tile_castle_moss,      // | 225 |
+map_colors::tile_castle_moss,      // | 226 |
+map_colors::tile_castle_back_moss, // | 227 |
+map_colors::tile_castle_back_moss, // | 228 |
+map_colors::tile_castle_back_moss, // | 229 |
+map_colors::tile_castle_back_moss, // | 230 |
+map_colors::tile_castle_back_moss, // | 231 |
+map_colors::unused,                // | 232 |
+map_colors::unused,                // | 233 |
+map_colors::unused,                // | 234 |
+map_colors::unused,                // | 235 |
+map_colors::unused,                // | 236 |
+map_colors::unused,                // | 237 |
+map_colors::unused,                // | 238 |
+map_colors::unused,                // | 239 |
+map_colors::unused,                // | 240 |
+map_colors::unused,                // | 241 |
+map_colors::unused,                // | 242 |
+map_colors::unused,                // | 243 |
+map_colors::unused,                // | 244 |
+map_colors::unused,                // | 245 |
+map_colors::unused,                // | 246 |
+map_colors::unused,                // | 247 |
+map_colors::unused,                // | 248 |
+map_colors::unused,                // | 249 |
+map_colors::unused,                // | 250 |
+map_colors::unused,                // | 251 |
+map_colors::unused,                // | 252 |
+map_colors::unused,                // | 253 |
+map_colors::unused,                // | 254 |
+map_colors::unused};               // | 255 |
