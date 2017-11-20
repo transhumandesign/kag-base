@@ -13,7 +13,9 @@ void onRender(CRules@ this)
 		s32 timeToEnd = s32(gameTicksLeft) / 30;
 		s32 secondsToEnd = timeToEnd % 60;
 		s32 MinutesToEnd = timeToEnd / 60;
-		drawRulesFont("Time left: " + ((MinutesToEnd < 10) ? "0" + MinutesToEnd : "" + MinutesToEnd) + ":" + ((secondsToEnd < 10) ? "0" + secondsToEnd : "" + secondsToEnd),
-		              SColor(255, 255, 255, 255), Vec2f(10, 140), Vec2f(getScreenWidth() - 20, 180), true, false);
+		string minutes = (MinutesToEnd < 10) ? "0" + MinutesToEnd : "" + MinutesToEnd;
+		string seconds = (secondsToEnd < 10) ? "0" + secondsToEnd : "" + secondsToEnd;
+		string time_message = getTranslatedString("Time left: {MIN}:{SEC}").replace("{MIN}", minutes).replace("{SEC}", seconds);
+		drawRulesFont(time_message, color_white, Vec2f(10, 140), Vec2f(getScreenWidth() - 20, 180), true, false);
 	}
 }
