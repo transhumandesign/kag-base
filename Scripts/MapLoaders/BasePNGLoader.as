@@ -323,6 +323,7 @@ class PNGLoader
 			case map_colors::trapblock_noteam: autotile(offset); spawnBlob(map, "trap_block", offset, 255, true); break;
 			
 			// Spikes
+			case map_colors::spikes:  offsets[spike_offset].push_back(offset); break;
 			case map_colors::spikes_ground: offsets[spike_offset].push_back(offset); map.SetTile(offset, CMap::tile_ground_back); break;
 			case map_colors::spikes_castle: offsets[spike_offset].push_back(offset); map.SetTile(offset, CMap::tile_castle_back); break;
 			case map_colors::spikes_wood:   offsets[spike_offset].push_back(offset); map.SetTile(offset, CMap::tile_wood_back);   break;
@@ -347,6 +348,7 @@ class PNGLoader
 			case map_colors::crate:       autotile(offset); spawnBlob(map, "crate",   offset); break;
 			case map_colors::bucket:      autotile(offset); spawnBlob(map, "bucket",  offset); break;
 			case map_colors::sponge:      autotile(offset); spawnBlob(map, "sponge",  offset); break;
+			case map_colors::alpha_chest:
 			case map_colors::chest:       autotile(offset); spawnBlob(map, "chest",   offset); break;
 			
 			// Food
