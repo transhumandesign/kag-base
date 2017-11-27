@@ -1,6 +1,10 @@
 //handy dandy frame lookup
 namespace Emotes
 {
+	//note: it's recommended to use the names in-config
+	//		for future compatibility; emote indices _may_ get re-ordered
+	//		but we will try not to rename emoticons
+
 	enum Emote_Indices
 	{
 		skull = 0,  //0
@@ -27,10 +31,10 @@ namespace Emotes
 		builder,
 		disappoint,
 		thumbsdown,
-		derp,
+		drool,
 		ladder,
 		attn,
-		pickup,
+		okhand,
 		cry,
 		wall,
 		heart,		//30
@@ -39,9 +43,67 @@ namespace Emotes
 		cross,
 		dots,
 		cog,
+		think,
+		laughcry,
+		derp,
+		awkward,
+		smug,       //40
+		love,
+		kiss,
+		pickup,
+		raised,
 
 		emotes_total,
 		off
+	};
+
+	//careful to keep these in sync!
+	const string[] names = {
+		"skull",
+		"blueflag",
+		"note",
+		"right",
+		"smile",
+		"redflag",
+		"flex",
+		"down",
+		"frown",
+		"troll",
+		"finger",
+		"left",
+		"mad",
+		"archer",
+		"sweat",
+		"up",
+		"laugh",
+		"knight",
+		"question",
+		"thumbsup",
+		"wat",
+		"builder",
+		"disappoint",
+		"thumbsdown",
+		"drool",
+		"ladder",
+		"attn",
+		"okhand",
+		"cry",
+		"wall",
+		"heart",
+		"fire",
+		"check",
+		"cross",
+		"dots",
+		"cog",
+		"think",
+		"laughcry",
+		"derp",
+		"awkward",
+		"smug",
+		"love",
+		"kiss",
+		"pickup",
+		"raised"
 	};
 }
 
