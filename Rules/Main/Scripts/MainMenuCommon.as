@@ -61,7 +61,7 @@ void SelectQuitGame( UI::Group@ group, UI::Control@ control ){
 	QuitGame(); // bye bye
 }
 void SelectChat( UI::Group@ group, UI::Control@ control ){
-	OpenWebsite("http://webchat.quakenet.org/?channels=kag&nick="+getLocalPlayer().getUsername());
+	OpenWebsite("http://webchat.quakenet.org/?channels=thd&nick="+getLocalPlayer().getUsername());
 }
 void SelectWiki( UI::Group@ group, UI::Control@ control ){
 	OpenWebsite("https://wiki.kag2d.com/wiki/Main_Page");
