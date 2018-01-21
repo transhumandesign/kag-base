@@ -1,7 +1,7 @@
 #define CLIENT_ONLY
 
 f32 zoomTarget = 1.0f;
-int ticksToScroll = 0;
+float timeToScroll = 0.0f;
 
 bool justClicked = false;
 string _targetPlayer;
@@ -41,11 +41,11 @@ void Spectator(CRules@ this)
 		return;
 
 	//Zoom in and out using mouse wheel
-	if (ticksToScroll <= 0)
+	if (timeToScroll <= 0)
 	{
 		if (controls.mouseScrollUp)
 		{
-			ticksToScroll = 7;
+			timeToScroll = 7;
 			if (zoomTarget < 1.0f)
 				zoomTarget = 1.0f;
 			else
@@ -54,7 +54,7 @@ void Spectator(CRules@ this)
 		}
 		else if (controls.mouseScrollDown)
 		{
-			ticksToScroll = 7;
+			timeToScroll = 7;
 			if (zoomTarget > 1.0f)
 				zoomTarget = 1.0f;
 			else
@@ -65,21 +65,21 @@ void Spectator(CRules@ this)
 	}
 	else
 	{
-		ticksToScroll--;
+		timeToScroll -= getRenderSpeedup();
 	}
 
 	Vec2f pos = camera.getPosition();
 
 	if (Maths::Abs(camera.targetDistance - zoomTarget) > 0.001f)
 	{
-		camera.targetDistance = (camera.targetDistance * 3 + zoomTarget) / 4;
+		camera.targetDistance = (camera.targetDistance * (3 - getRenderSpeedup() + 1.0f) + (zoomTarget * getRenderSpeedup())) / 4;
 	}
 	else
 	{
 		camera.targetDistance = zoomTarget;
 	}
 
-	f32 camSpeed = 15.0f / zoomTarget;
+	f32 camSpeed = getRenderSpeedup() * 15.0f / zoomTarget;
 
 	//Move the camera using the action movement keys
 	if (controls.ActionKeyPressed(AK_MOVE_LEFT))
@@ -119,7 +119,7 @@ void Spectator(CRules@ this)
 		for (uint i = 0; i < players.length; i++)
 		{
 			CBlob@ blob = players[i];
-			Vec2f bpos = blob.getPosition();
+			Vec2f bpos = blob.getInterpolatedPosition();
 			if (blob.getName() == "migrant") // screw migrants
 				continue;
 
@@ -128,14 +128,14 @@ void Spectator(CRules@ this)
 				//print("set player to track: " + (blob.getPlayer() is null ? "null" : blob.getPlayer().getUsername()));
 				SetTargetPlayer(blob.getPlayer());
 				camera.setTarget(blob);
-				camera.setPosition(blob.getPosition());
+				camera.setPosition(blob.getInterpolatedPosition());
 				return;
 			}
 		}
 	}
 	else if (!waitForRelease && controls.isKeyPressed(KEY_LBUTTON) && camera.getTarget() is null) //classic-like held mouse moving
 	{
-		pos += (mousePos - pos) / 8;
+		pos += ((mousePos - pos) / 8.0f) * getRenderSpeedup();
 	}
 
 	if (targetPlayer() !is null)
