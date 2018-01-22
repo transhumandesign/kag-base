@@ -9,6 +9,8 @@ void onInit(CBlob@ blob)
 	blob.set_u32("emotetime", 0);
 	//init emote layer
 	CSpriteLayer@ emote = sprite.addSpriteLayer("bubble", "Entities/Common/Emotes/Emoticons.png", 32, 32, 0, 0);
+	emote.SetIgnoreParentFacing(true);
+	emote.SetFacingLeft(false);
 
 	if (emote !is null)
 	{
@@ -50,10 +52,7 @@ void onTick(CBlob@ blob)
 				emote.animation.frame = index;
 
 				emote.ResetTransform();
-				if (sprite.isFacingLeft())
-				{
-					emote.ScaleBy(Vec2f(-1.0f, 1.0f));
-				}
+				
 				CCamera@ camera = getCamera();
 				if (camera !is null)
 				{

@@ -6,6 +6,7 @@ shared class HoverMessage
 	string name;
 	int quantity;
 	uint ticker;
+	f32 renderticker;
 	f32 xpos;
 	f32 ypos;
 	uint ttl;		 // time of expiry
@@ -25,6 +26,7 @@ shared class HoverMessage
 		name = _name;
 		quantity = _quantity;
 		ticker = 0;
+		renderticker = 0.0f;
 		xpos = 0.0;
 		ypos = 0.0;
 		ttl = _ttl;
@@ -81,7 +83,8 @@ shared class HoverMessage
 	// update message on every tick
 	void update()
 	{
-		ticker = ticker + 2;
+		ticker += 2;
+		renderticker += 2.0f * getRenderSpeedup();
 	}
 
 	// see if this message is expired, or should be removed from GUI
@@ -93,9 +96,8 @@ shared class HoverMessage
 	// get the active color of the message. decrease proportionally by the fadeout ratio
 	private SColor getColor()
 	{
-		uint alpha = Maths::Max(0, 255 * (ttl - ticker * fade_ratio / 100.0f) / ttl);
-		SColor color2 = SColor(alpha, color.getRed(), color.getGreen(), color.getBlue());
-		return color2;
+		uint alpha = Maths::Max(0, 255 * (ttl - renderticker * fade_ratio / 100.0f) / ttl);
+		return SColor(alpha, color.getRed(), color.getGreen(), color.getBlue());
 	}
 
 	// get the position of the message. Store it to the object if no pos is already set. This allows us to do the
@@ -104,7 +106,7 @@ shared class HoverMessage
 	{
 		if (ypos == 0.0)
 		{
-			Vec2f pos2d = blob.getScreenPos();
+			Vec2f pos2d = blob.getInterpolatedScreenPos();
 			int top = pos2d.y - 2.5f * blob.getHeight() - 20.0f;
 			Vec2f dim;
 			GUI::GetTextDimensions(m , dim);
@@ -113,7 +115,7 @@ shared class HoverMessage
 			ypos = top - 2 * dim.y - i * dim.y;
 		}
 
-		ypos = ypos - (ticker / (40));
+		ypos -= renderticker / 40.0f;
 		return Vec2f(xpos, ypos);
 	}
 

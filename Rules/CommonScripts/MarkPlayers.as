@@ -62,13 +62,13 @@ void onRender(CRules@ this)
 		CBlob@ blob = marked[i].player().getBlob();
 		if (blob !is null && marked[i].active)
 		{
-			if (map.getTile(blob.getPosition()).light < 0x20 && blob !is getLocalPlayerBlob())
+			if (map.getTile(blob.getInterpolatedPosition()).light < 0x20 && blob !is getLocalPlayerBlob())
 			{
 				blob.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 8, Vec2f(8, 8));
 				continue;
 			}
 
-			Vec2f p = blob.getPosition() + Vec2f(0.0f, -blob.getHeight() * 3.0f);
+			Vec2f p = blob.getInterpolatedPosition() + Vec2f(0.0f, -blob.getHeight() * 3.0f);
 			p.x -= 8;
 			Vec2f pos = getDriver().getScreenPosFromWorldPos(p);
 			pos.y += deltaY;
