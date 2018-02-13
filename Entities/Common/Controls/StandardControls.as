@@ -21,6 +21,13 @@ void onInit(CBlob@ this)
 
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
+
+	//add to the sprite
+	CSprite@ sprite = this.getSprite();
+	if (sprite !is null)
+	{
+		sprite.AddScript("StandardControls.as");
+	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
@@ -276,10 +283,63 @@ void onDie(CBlob@ this)
 
 // CAMERA
 
-void ManageCamera(CBlob@ this)
+void onInit(CSprite@ this)
+{
+	//backwards compat - tag the blob if we're assigned to the sprite too
+	//so if it's not there, the blob can adjust the camera at 30fps at least
+	CBlob@ blob = this.getBlob();
+	if (blob is null) return;
+	blob.Tag("60fps_camera");
+}
+
+void onRender(CSprite@ this)
+{
+	CBlob@ blob = this.getBlob();
+	if (blob is null) return;
+	//do 60fps camera
+	AdjustCamera(blob, true);
+}
+
+void AdjustCamera(CBlob@ this, bool is_in_render)
 {
 	CCamera@ camera = getCamera();
 	f32 zoom = camera.targetDistance;
+
+	f32 zoomSpeed = 0.1f;
+	if (is_in_render)
+	{
+		zoomSpeed *= getRenderApproximateCorrectionFactor();
+	}
+
+	f32 minZoom = 0.5f; // TODO: make vars
+	f32 maxZoom = 2.0f;
+
+	if (zoomLevel == 1 && (this.wasKeyPressed(key_use) || this.wasKeyPressed(key_pickup)))
+	{
+		zoom = 1.0f;
+	}
+	f32 zoom_target = 1.0f;
+	switch (zoomLevel) {
+		case 0: zoom_target = 0.5f; break;
+		case 1: zoom_target = 1.0f; break;
+		case 2: zoom_target = 2.0f; break;
+	}
+
+	if (zoom > zoom_target)
+	{
+		zoom = Maths::Max(zoom_target, zoom - zoomSpeed);
+	}
+	else if (zoom < zoom_target)
+	{
+		zoom = Maths::Min(zoom_target, zoom + zoomSpeed);
+	}
+
+	camera.targetDistance = zoom;
+}
+
+void ManageCamera(CBlob@ this)
+{
+	CCamera@ camera = getCamera();
 	CControls@ controls = this.getControls();
 
 	// mouse look & zoom
@@ -321,75 +381,12 @@ void ManageCamera(CBlob@ this)
 		}
 	}
 
-	f32 zoomSpeed = 0.1f;
-	f32 minZoom = 0.5f; // TODO: make vars
-	f32 maxZoom = 2.0f;
-
-	if (zoomLevel == 1 && (this.wasKeyPressed(key_use) || this.wasKeyPressed(key_pickup)))
+	if (!this.hasTag("60fps_camera"))
 	{
-		zoom = 1.0f;
+		AdjustCamera(this, false);
 	}
 
-	switch (zoomLevel)
-	{
-		case 0:
-			if (zoom > 0.5f)
-			{
-				zoom -= zoomSpeed;
-			}
-
-			break;
-
-		case 1:
-			if (zoom > 1.0f)
-			{
-				zoom -= zoomSpeed;
-			}
-			else
-			{
-				zoom = 1.0f;
-			}
-
-			break;
-
-		case 2:
-			if (zoom < maxZoom)
-			{
-				zoom += zoomSpeed;
-			}
-
-			break;
-
-		case 3:
-			if (zoom < 1.0f)
-			{
-				zoom += zoomSpeed;
-			}
-			else
-			{
-				zoom = 1.0f;
-			}
-
-			break;
-
-		default:
-			zoom = 1.0f;
-			break;
-	}
-
-	// security check
-
-	if (zoom < minZoom)
-	{
-		zoom = minZoom;
-	}
-
-	if (zoom > maxZoom)
-	{
-		zoom = maxZoom;
-	}
-
-
+	f32 zoom = camera.targetDistance;
 	bool fixedCursor = true;
 	if (zoom < 1.0f)  // zoomed out
 	{
@@ -414,7 +411,6 @@ void ManageCamera(CBlob@ this)
 
 	// camera
 	camera.mouseFactor = 0.5f; // doesn't affect soldat cam
-	camera.targetDistance = zoom;
 }
 
 
