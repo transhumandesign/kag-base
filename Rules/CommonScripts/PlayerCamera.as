@@ -135,7 +135,7 @@ void onRender(CRules@ this)
 			camera.setPosition(deathLock);
 			if (camera.targetDistance < 2.0f)
 			{
-				camera.targetDistance += 0.1f * getRenderSpeedup();
+				camera.targetDistance += 1.0f * getRenderDeltaTime();
 			}
 		}
 		else
@@ -143,7 +143,7 @@ void onRender(CRules@ this)
 			Spectator(this);
 		}
 	}
-	
+
 	if (targetPlayer() !is null && getLocalPlayerBlob() is null)
 	{
 		GUI::SetFont("menu");

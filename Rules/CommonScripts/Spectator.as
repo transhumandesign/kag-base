@@ -65,21 +65,21 @@ void Spectator(CRules@ this)
 	}
 	else
 	{
-		timeToScroll -= getRenderSpeedup();
+		timeToScroll -= getRenderApproximateCorrectionFactor();
 	}
 
 	Vec2f pos = camera.getPosition();
 
 	if (Maths::Abs(camera.targetDistance - zoomTarget) > 0.001f)
 	{
-		camera.targetDistance = (camera.targetDistance * (3 - getRenderSpeedup() + 1.0f) + (zoomTarget * getRenderSpeedup())) / 4;
+		camera.targetDistance = (camera.targetDistance * (3 - getRenderApproximateCorrectionFactor() + 1.0f) + (zoomTarget * getRenderApproximateCorrectionFactor())) / 4;
 	}
 	else
 	{
 		camera.targetDistance = zoomTarget;
 	}
 
-	f32 camSpeed = getRenderSpeedup() * 15.0f / zoomTarget;
+	f32 camSpeed = getRenderApproximateCorrectionFactor() * 15.0f / zoomTarget;
 
 	//Move the camera using the action movement keys
 	if (controls.ActionKeyPressed(AK_MOVE_LEFT))
@@ -135,7 +135,7 @@ void Spectator(CRules@ this)
 	}
 	else if (!waitForRelease && controls.isKeyPressed(KEY_LBUTTON) && camera.getTarget() is null) //classic-like held mouse moving
 	{
-		pos += ((mousePos - pos) / 8.0f) * getRenderSpeedup();
+		pos += ((mousePos - pos) / 8.0f) * getRenderApproximateCorrectionFactor();
 	}
 
 	if (targetPlayer() !is null)

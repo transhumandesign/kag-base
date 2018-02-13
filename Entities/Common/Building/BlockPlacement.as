@@ -184,7 +184,7 @@ void onRender(CSprite@ this)
 					// no support
 					color.set(255, 255, 46, 50);
 					const u32 gametime = getGameTime();
-					Vec2f offset(0.0f, -1.0f + 1.0f * ((gametime * 0.8f) % 8));
+					Vec2f offset(0.0f, -1.0f + 1.0f * ((gametime * 0.2f) % 8));
 					map.DrawTile(bc.tileAimPos + offset, buildtile, color, getCamera().targetDistance, false);
 
 					if (gametime % 16 < 9)
@@ -208,7 +208,7 @@ void onRender(CSprite@ this)
 			{
 				f32 halfTile = map.tilesize / 2.0f;
 				Vec2f aimpos = blob.getAimPos();
-				Vec2f offset(-0.2f + 0.4f * ((getGameTime() * 0.8f) % 8), 0.0f);
+				Vec2f offset(-0.2f + 0.4f * (Maths::Sin(getGameTime() * 0.5f)), 0.0f);
 				map.DrawTile(Vec2f(aimpos.x - halfTile, aimpos.y - halfTile) + offset, buildtile,
 				             SColor(255, 255, 46, 50),
 				             getCamera().targetDistance, false);

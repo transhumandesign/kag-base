@@ -84,7 +84,7 @@ shared class HoverMessage
 	void update()
 	{
 		ticker += 2;
-		renderticker += 2.0f * getRenderSpeedup();
+		renderticker += 2.0f * getRenderApproximateCorrectionFactor();
 	}
 
 	// see if this message is expired, or should be removed from GUI
