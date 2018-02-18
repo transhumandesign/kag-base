@@ -122,28 +122,31 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 
 }
 
-void onRender(CRules@ this)
+// death effect
+void onTick(CRules@ this)
 {
-	//death effect
 	CCamera@ camera = getCamera();
-	if (camera !is null && getLocalPlayerBlob() is null && getLocalPlayer() !is null)
+	if (camera is null || getLocalPlayerBlob() !is null || getLocalPlayer() is null)
+		return;
+
+	const int diffTime = deathTime - getGameTime();
+	// death effect
+	if (!spectatorTeam && diffTime > 0)
 	{
-		const int diffTime = deathTime - getGameTime();
-		// death effect
-		if (!spectatorTeam && diffTime > 0)
+		camera.setPosition(deathLock);
+		if (camera.targetDistance < 2.0f)
 		{
-			camera.setPosition(deathLock);
-			if (camera.targetDistance < 2.0f)
-			{
-				camera.targetDistance += 0.1f * getRenderSpeedup();
-			}
-		}
-		else
-		{
-			Spectator(this);
+			camera.targetDistance += 0.1f;
 		}
 	}
-	
+	else
+	{
+		Spectator(this);
+	}
+}
+
+void onRender(CRules@ this)
+{
 	if (targetPlayer() !is null && getLocalPlayerBlob() is null)
 	{
 		GUI::SetFont("menu");
