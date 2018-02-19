@@ -173,11 +173,12 @@ void onRender(CSprite@ this)
 			if (bc.cursorClose && bc.hasReqs && bc.buildable)
 			{
 				SColor color;
+				Vec2f aimpos = bc.tileAimPos + getCamera().getInterpolationOffset();
 
 				if (bc.buildable && bc.supported)
 				{
 					color.set(255, 255, 255, 255);
-					map.DrawTile(bc.tileAimPos, buildtile, color, getCamera().targetDistance, false);
+					map.DrawTile(aimpos, buildtile, color, getCamera().targetDistance, false);
 				}
 				else
 				{
@@ -185,11 +186,11 @@ void onRender(CSprite@ this)
 					color.set(255, 255, 46, 50);
 					const u32 gametime = getGameTime();
 					Vec2f offset(0.0f, -1.0f + 1.0f * ((gametime * 0.2f) % 8));
-					map.DrawTile(bc.tileAimPos + offset, buildtile, color, getCamera().targetDistance, false);
+					map.DrawTile(aimpos + offset, buildtile, color, getCamera().targetDistance, false);
 
 					if (gametime % 16 < 9)
 					{
-						Vec2f supportPos = bc.tileAimPos + Vec2f(blob.isFacingLeft() ? map.tilesize : -map.tilesize, map.tilesize);
+						Vec2f supportPos = aimpos + Vec2f(blob.isFacingLeft() ? map.tilesize : -map.tilesize, map.tilesize);
 						Vec2f point;
 						if (map.rayCastSolid(supportPos, supportPos + Vec2f(0.0f, map.tilesize * 32.0f), point))
 						{
@@ -207,7 +208,7 @@ void onRender(CSprite@ this)
 			else
 			{
 				f32 halfTile = map.tilesize / 2.0f;
-				Vec2f aimpos = blob.getAimPos();
+				Vec2f aimpos = blob.getAimPos() + getCamera().getInterpolationOffset();
 				Vec2f offset(-0.2f + 0.4f * (Maths::Sin(getGameTime() * 0.5f)), 0.0f);
 				map.DrawTile(Vec2f(aimpos.x - halfTile, aimpos.y - halfTile) + offset, buildtile,
 				             SColor(255, 255, 46, 50),

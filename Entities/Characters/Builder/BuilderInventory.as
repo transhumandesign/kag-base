@@ -336,6 +336,8 @@ void onRender(CSprite@ this)
 				blob.set_u32( "show build time", getGameTime());
 			}
 
+			Vec2f cam_offset = getCamera().getInterpolationOffset();
+
 			BlockCursor @bc;
 			blob.get("blockCursor", @bc);
 			if (bc !is null)
@@ -343,8 +345,8 @@ void onRender(CSprite@ this)
 				if (bc.blockActive || bc.blobActive)
 				{
 					Vec2f pos = blob.getPosition();
-					Vec2f myPos =  blob.getScreenPos() + Vec2f(0.0f,(pos.y > blob.getAimPos().y) ? -blob.getRadius() : blob.getRadius());
-					Vec2f aimPos2D = getDriver().getScreenPosFromWorldPos( blob.getAimPos() );
+					Vec2f myPos =  blob.getInterpolatedScreenPos() + Vec2f(0.0f,(pos.y > blob.getAimPos().y) ? -blob.getRadius() : blob.getRadius());
+					Vec2f aimPos2D = getDriver().getScreenPosFromWorldPos( blob.getAimPos() + cam_offset );
 
 					if (!bc.hasReqs)
 					{
@@ -356,7 +358,7 @@ void onRender(CSprite@ this)
 					{
 						if (bc.rayBlocked)
 						{
-							Vec2f blockedPos2D = getDriver().getScreenPosFromWorldPos(bc.rayBlockedPos);
+							Vec2f blockedPos2D = getDriver().getScreenPosFromWorldPos(bc.rayBlockedPos + cam_offset);
 							GUI::DrawArrow2D( aimPos2D, blockedPos2D, SColor(0xffdd2212) );
 						}
 
@@ -379,7 +381,7 @@ void onRender(CSprite@ this)
 										CBlob @b = blobsInRadius[i];
 										if (!b.isAttached())
 										{
-											Vec2f bpos = b.getPosition();
+											Vec2f bpos = b.getInterpolatedPosition();
 											float w = b.getWidth();
 											float h = b.getHeight();
 
