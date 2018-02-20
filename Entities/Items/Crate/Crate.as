@@ -261,6 +261,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void Unpack(CBlob@ this)
 {
+	if(!getNet().isServer()) return;
+
 	CBlob@ blob = server_CreateBlob(this.get_string("packed"), this.getTeamNum(), Vec2f_zero);
 
 	// put on ground if not in water
