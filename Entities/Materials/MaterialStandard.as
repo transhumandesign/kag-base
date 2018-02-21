@@ -1,5 +1,5 @@
 
-#include 'MaterialCommon.as';
+#include 'MaterialCommon.as'
 
 // Use `.Tag('custom quantity')` to
 // prevent the quantity from being
@@ -30,7 +30,7 @@ void onInit(CBlob@ this)
 
   this.Tag('material');
 
-  this.getShape().getVars().waterDragScale = 12.0f;
+  this.getShape().getVars().waterDragScale = 12.f;
 
   if (getNet().isClient())
   {

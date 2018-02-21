@@ -65,9 +65,15 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 	if (this.isInInventory())
 	{
 		CBlob@ doomed = this.getInventoryBlob();
-		if (doomed !is null && !doomed.hasTag("invincible"))
+		if (doomed !is null)
 		{
-			this.server_Hit(doomed, pos, Vec2f(), 100.0f, Hitters::explosion, true);
+			//copy position, explode from centre of carrier
+			pos = doomed.getPosition();
+			//kill players if we're in their inventory (even water bombs for now)
+			if (doomed.hasTag("player") && !doomed.hasTag("invincible"))
+			{
+				this.server_Hit(doomed, pos, Vec2f(), 100.0f, Hitters::explosion, true);
+			}
 		}
 	}
 

@@ -1,7 +1,7 @@
 
-#define SERVER_ONLY;
+#define SERVER_ONLY
 
-#include 'MaterialCommon.as';
+#include 'MaterialCommon.as'
 
 void onInit(CBlob@ this)
 {

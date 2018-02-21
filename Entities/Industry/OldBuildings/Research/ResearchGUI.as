@@ -11,6 +11,52 @@ void onInit(CSprite@ this)
 	CBlob@ blob = this.getBlob();
 }
 
+void onTick(CSprite@ this)
+{
+	CBlob@ localBlob = getLocalPlayerBlob();
+	CBlob@ blob = this.getBlob();
+
+	if (blob.hasTag("show research"))
+	{
+		Vec2f pos2d = blob.getScreenPos();	  pos2d.y += 20.0f;
+		Vec2f size(800,480);
+		Vec2f mouse = getControls().getMouseScreenPos();
+
+		int teamNum = blob.getTeamNum();
+
+		Vec2f upperleft( pos2d.x-size.x*0.5f, pos2d.y-size.y*0.5f );
+		Vec2f lowerright( pos2d.x+size.x*0.5f, pos2d.y+size.y*0.5f );
+
+		ResearchStatus@ stat;
+		blob.get( "techs", @stat );
+		if(stat is null) return;
+
+		ScrollSet@ scrolls = stat.scrolls;
+		for (uint i = 0; i < scrolls.names.length; i++)
+		{
+			const string defname = scrolls.names[i];
+			ScrollDef@ def;
+			scrolls.scrolls.get( defname, @def);
+			if (def is null)
+				continue;
+
+			Vec2f buttonUL, buttonLR, buttonIcon;
+			getButtonFromDef( def, upperleft, buttonUL, buttonLR, buttonIcon );
+
+			const bool hasTech = def.hasTech();
+			const bool mouseHover = (mouse.x > buttonUL.x && mouse.x < buttonLR.x && mouse.y > buttonUL.y && mouse.y < buttonLR.y);
+
+			if(mouseHover && localBlob.isKeyJustPressed(key_action1) && !def.hasTech() && !def.researching) //avoid sending pointless cmds
+			{
+				CBitStream params;
+				params.write_string(localBlob.getPlayer().getUsername());
+				params.write_string(defname);
+				blob.SendCommand(blob.getCommandID(tech_vote_cmd), params);
+			}
+		}
+	}
+}
+
 void onRender( CSprite@ this )
 {
 	CBlob@ localBlob = getLocalPlayerBlob();
@@ -23,7 +69,7 @@ void onRender( CSprite@ this )
 		getHUD().menuState = 0;
 		return;
 	}
-
+	
 	CBlob@ carried = localBlob.getCarriedBlob();
 	if (carried !is null && carried.getName() == "scroll" && carried.hasTag("tech"))
 	{
@@ -227,14 +273,6 @@ void DrawButton( CBlob@ blob, ScrollDef@ def, const string &in defname, Vec2f bu
 
 		GUI::SetFont("menu");
 		GUI::DrawText(getTranslatedString(def.name) + suffix, Vec2f(buttonLR.x - labeldim.x/2.0f, buttonLR.y), color_white );
-
-		if(localBlob.isKeyJustPressed(key_action1) && !def.hasTech() && !def.researching) //avoid sending pointless cmds
-		{
-			CBitStream params;
-			params.write_string(localBlob.getPlayer().getUsername());
-			params.write_string(defname);
-			blob.SendCommand( blob.getCommandID(tech_vote_cmd), params );
-		}
 	}
 
 

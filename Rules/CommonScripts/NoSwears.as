@@ -44,11 +44,22 @@ string KidSafeText(const string &in textIn)
 			const string replacement = word_replacements[i + 1];
 			const uint endpos = pos + replacement.length;
 
-			if (isVital || // if isVital, if !isVital check for the whole word
-			    ((pos == 0              || text[pos - 1] == charSpace) && // first part of the word?
-			     (endpos == text.length || text[endpos]  == charSpace))) // last part of the word?
+			if (isVital || // if !isVital check for the whole word
+			    ((pos == 0                    || text[pos - 1]    == charSpace) && // first part of the word?
+			     (endpos == text.length       || text[endpos - 1] == charSpace))) // last part of the word?
 			{
-				text = text.substr(0, pos) + replacement + text.substr(endpos);
+				const string orig_substring = text.substr(pos, word_replacements[i].length);
+				bool is_lowercase = false;
+				for (int j = 0; j < orig_substring.length; ++j)
+				{
+					if (orig_substring[j] >= "a"[0] && orig_substring[j] <= "z"[0])
+					{
+						is_lowercase = true;
+						break;
+					}
+				}
+					
+				text = text.substr(0, pos) + (is_lowercase ? replacement : replacement.toUpper()) + text.substr(pos + word_replacements[i].length);
 				lowerText = text.toLower(); // update the lowercase text
 			}
 

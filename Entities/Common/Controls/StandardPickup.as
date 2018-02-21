@@ -217,7 +217,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
 	}
 
 	// super low priority, dead stuff - sick of picking up corpses
-	if (b.hasTag("dead"))
+	if (b.hasTag("dead") && name != "fishy")
 	{
 		scale *= 10.0f;
 		scale += 20.0f;
