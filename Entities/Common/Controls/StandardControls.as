@@ -295,7 +295,7 @@ void onInit(CSprite@ this)
 void onRender(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
-	if (blob is null) return;
+	if (blob is null || !blob.isMyPlayer()) return;
 	//do 60fps camera
 	AdjustCamera(blob, true);
 }
