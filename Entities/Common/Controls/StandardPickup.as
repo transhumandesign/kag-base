@@ -334,12 +334,12 @@ CBlob@ getClosestAimedBlob(CBlob@ this, CBlob@[] available)
 
 CBlob@ getClosestBlob(CBlob@ this)
 {
+	CBlob@ closest;
+
 	CBlob@[]@ pickupBlobs;
 	if (this.get("pickup blobs", @pickupBlobs))
 	{
 		Vec2f pos = this.getPosition();
-		Vec2f aimpos = this.getAimPos();
-		bool facingLeft = this.isFacingLeft();
 
 		CBlob@[] available;
 		FillAvailable(this, available, pickupBlobs);
@@ -355,46 +355,26 @@ CBlob@ getClosestBlob(CBlob@ this)
 			return closestAimed;
 		}
 
-		// sort by closest
-
-		CBlob@[] closest;
-		while (available.size() > 0)
+		float closestFactor = 999999.9f;
+		
+		for (uint i = 0; i < available.length; ++i)
 		{
-			f32 closestDist = 999999.9f;
-			uint closestIndex = 999;
+			CBlob @b = available[i];
+			Vec2f bpos = b.getPosition();
 
-			for (uint i = 0; i < available.length; i++)
+			float dist = (bpos - pos).getLength();
+			float factor = dist / 30.0f;
+			factor += getPriorityPickupScale(this, b);
+
+			if (factor < closestFactor)
 			{
-				CBlob @b = available[i];
-				Vec2f bpos = b.getPosition();
-
-				f32 dist = (bpos - pos).getLength();
-				f32 factor = dist / 30.0f;
-				factor += getPriorityPickupScale(this, b);
-
-				if (factor < closestDist)
-				{
-					closestDist = factor;
-					closestIndex = i;
-				}
+				closestFactor = factor;
+				@closest = @b;
 			}
-
-			if (closestIndex >= 999)
-			{
-				break;
-			}
-
-			closest.push_back(available[closestIndex]);
-			available.erase(closestIndex);
-		}
-
-		if (closest.length > 0)
-		{
-			return closest[0];
 		}
 	}
 
-	return null;
+	return closest;
 }
 
 bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
