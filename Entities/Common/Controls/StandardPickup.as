@@ -313,7 +313,6 @@ CBlob@ getClosestBlob(CBlob@ this)
 		Vec2f pos = this.getPosition();
 		Vec2f aimpos = this.getAimPos();
 		bool facingLeft = this.isFacingLeft();
-		pos += Vec2f(facingLeft ? -this.getRadius() : this.getRadius(), 0);
 
 		CBlob@[] available;
 		FillAvailable(this, available, pickupBlobs);
@@ -335,7 +334,8 @@ CBlob@ getClosestBlob(CBlob@ this)
 			{
 				CBlob @b = available[i];
 				Vec2f bpos = b.getPosition();
-				f32 factor = (bpos - pos).getLength() / 90.0f;
+				f32 dist = (bpos - pos).getLength();
+				f32 factor = dist / 90.0f;
 				factor += getPriorityPickupScale(this, b, factor);
 
 				if (factor < closestDist)
