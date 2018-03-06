@@ -767,6 +767,7 @@
 	"Take the Hall":"Захватите базу",
 
 ////GAMEMODE INFO////
+	"All Gamemodes":"Все гамодеды",
 	"Challenges":"Испытания",
 	"Capture the Flag":"Захват флага",
 	"CTF":"Захват флага (CTF)",
@@ -792,6 +793,7 @@
 	"Create Account":"Создать аккаунт",
 	"Offline":"Оффлайн",
 	"Forgot?":"Забыли?",
+	"PLAY":"Играть",
 //guiMain.xml
 	"Solo":"Одиночная игра",
 	"Multiplayer":"Сетевая игра",
@@ -941,19 +943,19 @@
 	"GAME IN PROGRESS":                              "ИГРА В ПРОЦЕССЕ",
 	//quick join fail notice
 	"No appropriate game found, sorry!":             "Не найдено подходящей игры, извините!",
-	"No active, low ping game was found meeting your criteria.\nTry Adjusting the criteria, or pick a game manually through the server browser.\n\nGames with more players will usually be up the top of the browser.\n\nIf you can't find any servers, please check your internet connection!": 
+	"No active, low ping game was found meeting your criteria.\nTry Adjusting the criteria, or pick a game manually through the server browser.\n\nGames with more players will usually be up the top of the browser.\n\nIf you can't find any servers, please check your internet connection!":
 	"Не найдено ни одной активной игры с низким пингом, соответствующей вашим критериям.\nПопробуйте настроить критерии или выбрать игру вручную через браузер сервера.\n\nИгры с большим количеством игроков обычно будут в верхней части браузера.\n\nЕсли вы не можете найти какие-либо серверы, проверьте подключение к Интернету!",
 	//server browser main help text
 	"YELLOW = official server": "ЖЁЛТЫЙ = официальный сервер",
 	"WHITE = vanilla server":   "БЕЛЫЙ = обычный сервер",
 	"BLUE = modded server":     "СИНИЙ = сервер с модами",
-	"Instant Search: searches for servers containing the query in the server name, description, game mode, IP address, or any player on the server (exact match only for players).": 
+	"Instant Search: searches for servers containing the query in the server name, description, game mode, IP address, or any player on the server (exact match only for players).":
 	"Быстрый поиск: посик серверов, содержащих набранный текст в названии сервера, описании, игровом режиме, IP-адресе или в имени игрока.",
-	"e.g. entering 'Shadlington' will find any servers that Shadlington is playing on, or that have 'Shadlington' in the name/description.": 
+	"e.g. entering 'Shadlington' will find any servers that Shadlington is playing on, or that have 'Shadlington' in the name/description.":
 	"например, после ввода \"Shadlington\" буду найдены серверы, где играет Shadlington или которые имеют слово \"Shadlington\" в названии/описании.",
-	"Players (%) slider: Use this to set the min and max percent full you want servers to be.": 
+	"Players (%) slider: Use this to set the min and max percent full you want servers to be.":
 	"Ползунок игроков (%): используйте его для выставления макс. и мин. процентов игроков.",
-	"e.g. set it to 1% min and 99% max to find servers that are not empty and not full, or set it to 50% to 100% to find servers that are 'at least half full'.": 
+	"e.g. set it to 1% min and 99% max to find servers that are not empty and not full, or set it to 50% to 100% to find servers that are 'at least half full'.":
 	"например, выставите его мин. и макс. значения на 1% и 99% соответственно, чтобы найти неполные, но не пустые, серверы. Или выставите его значения на 50% и 100%, чтобы найти наполовину заполненные серверы.",
 	"Map Preview can be dragged with the mouse.": "Превью карты можно перемещать с помощью мышки."
 }
