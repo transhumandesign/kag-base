@@ -336,7 +336,7 @@ CBlob@ getClosestBlob(CBlob@ this)
 				Vec2f bpos = b.getPosition();
 				f32 dist = (bpos - pos).getLength();
 				f32 factor = dist / 90.0f;
-				factor += getPriorityPickupScale(this, b, factor);
+				factor += getPriorityPickupScale(this, b);
 
 				if (factor < closestDist)
 				{
