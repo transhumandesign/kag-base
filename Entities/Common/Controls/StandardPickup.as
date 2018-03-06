@@ -305,6 +305,33 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
 	return scale * getPriorityPickupScale(this, b);
 }
 
+CBlob@ getClosestAimedBlob(CBlob@ this, CBlob@[] available)
+{
+	CBlob@ closest;
+	float lowestScore = 16.0f; // TODO provide better sorting routines in the interface
+
+	for (int i = 0; i < available.length; ++i)
+	{
+		CBlob@ current = available[i];
+
+		float cursorDistance = (this.getAimPos() - current.getPosition()).Length();
+
+		float radius = current.getRadius();
+		if (radius > 3.0f && cursorDistance > current.getRadius() * 1.5f)
+		{
+			continue;
+		}
+
+		if (cursorDistance < lowestScore)
+		{
+			lowestScore = cursorDistance;
+			@closest = @current;
+		}
+	}
+
+	return closest;
+}
+
 CBlob@ getClosestBlob(CBlob@ this)
 {
 	CBlob@[]@ pickupBlobs;
@@ -322,6 +349,12 @@ CBlob@ getClosestBlob(CBlob@ this)
 			FillAvailable(this, available, pickupBlobs);
 		}
 
+		CBlob@ closestAimed = getClosestAimedBlob(this, available);
+		if (closestAimed !is null)
+		{
+			return closestAimed;
+		}
+
 		// sort by closest
 
 		CBlob@[] closest;
@@ -334,8 +367,9 @@ CBlob@ getClosestBlob(CBlob@ this)
 			{
 				CBlob @b = available[i];
 				Vec2f bpos = b.getPosition();
+
 				f32 dist = (bpos - pos).getLength();
-				f32 factor = dist / 90.0f;
+				f32 factor = dist / 30.0f;
 				factor += getPriorityPickupScale(this, b);
 
 				if (factor < closestDist)
