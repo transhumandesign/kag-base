@@ -13,10 +13,6 @@ void onInit(CBlob@ this)
 	CBlob@[] closestblobs;
 	this.set("closest blobs", closestblobs);
 
-	string[] recent;
-	this.set("recent pickups", recent);
-	this.set_u32("last pickup time", 0);
-
 //	this.addCommandID("detach"); in StandardControls
 
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
@@ -111,13 +107,6 @@ void onTick(CBlob@ this)
 			ClearPickupBlobs(this);
 		}
 	}
-
-	// erase recent pickups list
-
-	if (this.get_u32("last pickup time") + PICKUP_ERASE_TICKS < getGameTime())
-	{
-		RemoveLastRecentPickup(this);
-	}
 }
 
 void GatherPickupBlobs(CBlob@ this)
@@ -146,26 +135,13 @@ void ClearPickupBlobs(CBlob@ this)
 	this.clear("pickup blobs");
 }
 
-void RemoveLastRecentPickup(CBlob@ this)
-{
-	string[]@ recentPickups;
-	if (this.get("recent pickups", @recentPickups))
-	{
-		if (recentPickups.length > 0)
-		{
-			recentPickups.removeAt(0);
-			this.set_u32("last pickup time", getGameTime());
-		}
-	}
-}
-
 void FillAvailable(CBlob@ this, CBlob@[]@ available, CBlob@[]@ pickupBlobs)
 {
 	for (uint i = 0; i < pickupBlobs.length; i++)
 	{
 		CBlob @b = pickupBlobs[i];
 
-		if (b !is this && canBlobBePickedUp(this, b) && !isInRecentPickups(this, b))
+		if (b !is this && canBlobBePickedUp(this, b))
 		{
 			available.push_back(b);
 		}
@@ -344,7 +320,6 @@ CBlob@ getClosestBlob(CBlob@ this)
 
 		if (available.length == 0)
 		{
-			RemoveLastRecentPickup(this);
 			FillAvailable(this, available, pickupBlobs);
 		}
 
@@ -360,12 +335,12 @@ CBlob@ getClosestBlob(CBlob@ this)
 			{
 				CBlob @b = available[i];
 				Vec2f bpos = b.getPosition();
-				f32 dist = (bpos - pos).getLength();
-				dist = getPriorityPickupScale(this, b, dist);
+				f32 factor = (bpos - pos).getLength() / 90.0f;
+				factor += getPriorityPickupScale(this, b, factor);
 
-				if (dist < closestDist)
+				if (factor < closestDist)
 				{
-					closestDist = dist;
+					closestDist = factor;
 					closestIndex = i;
 				}
 			}
@@ -397,31 +372,6 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 	        && (!this.getMap().rayCastSolid(pos, pos2) || (this.isOverlapping(blob)) ) //overlapping fixes "in platform" issue
 	       );
 }
-
-void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
-{
-	if (attachedPoint.name == "PICKUP")
-	{
-		this.push("recent pickups", attached.getName());
-	}
-}
-
-bool isInRecentPickups(CBlob@ this, CBlob@ blob)
-{
-	string[]@ recentPickups;
-	const string name = blob.getName();
-	this.get("recent pickups", @recentPickups);
-	for (uint i = 0; i < recentPickups.length; i++)
-	{
-		if (recentPickups[i] == name)
-			return true;
-	}
-	return false;
-}
-
-// SPRITE
-
-
 
 void onInit(CSprite@ this)
 {
