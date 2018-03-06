@@ -172,7 +172,7 @@ void FillAvailable(CBlob@ this, CBlob@[]@ available, CBlob@[]@ pickupBlobs)
 	}
 }
 
-f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
+f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 {
 	u32 gameTime = getGameTime();
 
@@ -209,7 +209,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
 	// Special stuff such as flags
 	if (b.hasTag("special"))
 	{
-		return scale * factor_very_important;
+		return factor_very_important;
 	}
 
 	//// MILITARY ////
@@ -220,7 +220,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
 			// Make an exception to the team rule: when the explosive is the holder's
 			bool mine = b.getDamageOwnerPlayer() is this.getPlayer();
 
-			return scale * ((same_team && !mine) ? factor_military_team : factor_military_lit);
+			return (same_team && !mine) ? factor_military_team : factor_military_lit;
 		}
 
 		bool exploding = b.hasTag("exploding");
@@ -229,35 +229,35 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
 		// But we still want a high priority so bombjumping with kegs is easier
 		if (name == "keg")
 		{
-			return scale * (exploding ? factor_military_critical : factor_military_important);
+			return exploding ? factor_military_critical : factor_military_important;
 		}
 
 		// Regular military stuff
 		if (name == "boulder" || name == "saw")
 		{
-			return scale * factor_military;
+			return factor_military;
 		}
 
 		if (name == "drill")
 		{
-			return scale * (thisname == "builder" ? factor_military_useful : factor_military);
+			return thisname == "builder" ? factor_military_useful : factor_military;
 		}
 
 		if (name == "crate")
 		{
 			if (same_team)
 			{
-				return scale * factor_military_team;
+				return factor_military_team;
 			}
 
 			// Consider crates useful usually but unpacking enemy crates important
-			return scale * ((unpackTime > gameTime && !same_team) ? factor_military_important : factor_military_useful);
+			return (unpackTime > gameTime && !same_team) ? factor_military_important : factor_military_useful;
 		}
 
 		// Other exploding stuff we don't recognize
 		if (exploding)
 		{
-			return scale * factor_military_lit;
+			return factor_military_lit;
 		}
 	}
 	
@@ -268,24 +268,24 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
 
 		if (name == "mat_gold")
 		{
-			return scale * factor_resource_strategic;
+			return factor_resource_strategic;
 		}
 
 		if (name == "mat_stone")
 		{
-			return scale * (builder ? factor_resource_useful_rare : factor_resource_boring);
+			return builder ? factor_resource_useful_rare : factor_resource_boring;
 		}
 
 		if (name == "mat_wood")
 		{
-			return scale * (builder ? factor_resource_useful : factor_resource_boring);
+			return builder ? factor_resource_useful : factor_resource_boring;
 		}
 
 		const bool knight = (thisname == "knight");
 
 		if (name == "mat_bombs" || name == "mat_waterbombs")
 		{
-			return scale * (knight ? factor_resource_useful : factor_resource_boring);
+			return knight ? factor_resource_useful : factor_resource_boring;
 		}
 
 		const bool archer = (thisname == "archer");
@@ -293,12 +293,12 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
 		if (name == "mat_arrows")
 		{
 			// Lower priority for regular arrows when the archer has more than 15 in the inventory
-			return scale * (archer && !this.hasBlob("mat_arrows", 15) ? factor_resource_useful : factor_resource_boring);
+			return archer && !this.hasBlob("mat_arrows", 15) ? factor_resource_useful : factor_resource_boring;
 		}
 
 		if (name == "mat_waterarrows" || name == "mat_firearrows" || name == "mat_bombarrows")
 		{
-			return scale * (archer ? factor_resource_useful_rare : factor_resource_boring);
+			return archer ? factor_resource_useful_rare : factor_resource_boring;
 		}
 	}
 
@@ -306,22 +306,27 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
 	if (name == "food" || name == "heart" || (name == "fishy" && b.hasTag("dead"))) // Wait, is there a better way to do that?
 	{
 		float factor_full_life = (thisname == "archer" ? factor_resource_useful : factor_resource_boring);
-		return scale * (this.getHealth() < this.getInitialHealth() ? factor_resource_critical : factor_full_life);
+		return this.getHealth() < this.getInitialHealth() ? factor_resource_critical : factor_full_life;
 	}
 	
 	//low priority
 	if (name == "log" || b.hasTag("tree"))
 	{
-		return scale * factor_boring;
+		return factor_boring;
 	}
 
 	// super low priority, dead stuff - sick of picking up corpses
 	if (b.hasTag("dead"))
 	{
-		return scale * factor_very_boring;
+		return factor_very_boring;
 	}
 
-	return scale * factor_common;
+	return factor_common;
+}
+
+f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
+{
+	return scale * getPriorityPickupScale(this, b);
 }
 
 CBlob@ getClosestBlob(CBlob@ this)
