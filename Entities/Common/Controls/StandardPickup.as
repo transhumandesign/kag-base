@@ -176,107 +176,152 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
 {
 	u32 gameTime = getGameTime();
 
-	const string name = b.getName();
+	const string thisname = this.getName(),
+		name = b.getName();
 	u32 unpackTime = b.get_u32("unpack time");
 
-	//special stuff - flags etc
+	const bool same_team = b.getTeamNum() != this.getTeamNum();
+	const bool material = b.hasTag("material");
+
+	// Military scale factor constants, NOT including military resources
+	const float factor_military = 0.4f,
+		factor_military_team = 0.6f,
+		factor_military_useful = 0.3f,
+		factor_military_lit = 0.2f,
+		factor_military_important = 0.15f,
+		factor_military_critical = 0.1f;
+
+	// Resource scale factor constants
+	const float factor_resource_boring = 0.7f,
+		factor_resource_useful = 0.5f,
+		factor_resource_useful_rare = 0.45f,
+		factor_resource_strategic = 0.4f,
+		factor_resource_critical = 0.3f;
+
+	// Generic scale factor constants
+	const float factor_very_boring = 1.0f,
+		factor_common = 0.9f,
+		factor_boring = 0.8f,
+		factor_very_important = 0.01f;
+
+	//// MISC ////
+
+	// Special stuff such as flags
 	if (b.hasTag("special"))
 	{
-		scale *= 0.01f;
+		return scale * factor_very_important;
 	}
 
-	// exploding stuff + crates unpacking
-	if (b.hasTag("exploding") || unpackTime > gameTime)
+	//// MILITARY ////
 	{
-		scale *= 0.1f;
-	}
+		// Military stuff we don't want to pick up when in the same team and always considered lit
+		if (name == "mine" || name == "bomb" || name == "waterbomb")
+		{
+			// Make an exception to the team rule: when the explosive is the holder's
+			bool mine = b.getDamageOwnerPlayer() is this.getPlayer();
 
-	// combat items, important
-	if (name == "boulder" || name == "drill" || name == "keg" || name == "saw" ||
-	    name == "mine" || name == "satchel" || name == "crate")
-	{
-		scale *= 0.41f;
+			return scale * ((same_team && !mine) ? factor_military_team : factor_military_lit);
+		}
+
+		bool exploding = b.hasTag("exploding");
+
+		// Kegs, really matters when lit (exploding)
+		// But we still want a high priority so bombjumping with kegs is easier
+		if (name == "keg")
+		{
+			return scale * (exploding ? factor_military_critical : factor_military_important);
+		}
+
+		// Regular military stuff
+		if (name == "boulder" || name == "saw")
+		{
+			return scale * factor_military;
+		}
+
+		if (name == "drill")
+		{
+			return scale * (thisname == "builder" ? factor_military_useful : factor_military);
+		}
+
+		if (name == "crate")
+		{
+			if (same_team)
+			{
+				return scale * factor_military_team;
+			}
+
+			// Consider crates useful usually but unpacking enemy crates important
+			return scale * ((unpackTime > gameTime && !same_team) ? factor_military_important : factor_military_useful);
+		}
+
+		// Other exploding stuff we don't recognize
+		if (exploding)
+		{
+			return scale * factor_military_lit;
+		}
 	}
 	
-	// builder materials
+	//// MATERIALS ////
+	if (material)
 	{
+		const bool builder = (thisname == "builder");
+
 		if (name == "mat_gold")
 		{
-			scale *= 0.7f;
+			return scale * factor_resource_strategic;
 		}
+
 		if (name == "mat_stone")
 		{
-			scale *= 0.9f;
+			return scale * (builder ? factor_resource_useful_rare : factor_resource_boring);
 		}
+
+		if (name == "mat_wood")
+		{
+			return scale * (builder ? factor_resource_useful : factor_resource_boring);
+		}
+
+		const bool knight = (thisname == "knight");
+
+		if (name == "mat_bombs" || name == "mat_waterbombs")
+		{
+			return scale * (knight ? factor_resource_useful : factor_resource_boring);
+		}
+
+		const bool archer = (thisname == "archer");
+
+		if (name == "mat_arrows")
+		{
+			// Lower priority for regular arrows when the archer has more than 15 in the inventory
+			return scale * (archer && !this.hasBlob("mat_arrows", 15) ? factor_resource_useful : factor_resource_boring);
+		}
+
+		if (name == "mat_waterarrows" || name == "mat_firearrows" || name == "mat_bombarrows")
+		{
+			return scale * (archer ? factor_resource_useful_rare : factor_resource_boring);
+		}
+	}
+
+	//// MISC ////
+	if (name == "food" || name == "heart" || (name == "fishy" && b.hasTag("dead"))) // Wait, is there a better way to do that?
+	{
+		float factor_full_life = (thisname == "archer" ? factor_resource_useful : factor_resource_boring);
+		return scale * (this.getHealth() < this.getInitialHealth() ? factor_resource_critical : factor_full_life);
 	}
 	
 	//low priority
-	if (name == "log" || b.hasTag("player"))
+	if (name == "log" || b.hasTag("tree"))
 	{
-		scale *= 5.0f;
+		return scale * factor_boring;
 	}
 
 	// super low priority, dead stuff - sick of picking up corpses
-	if (b.hasTag("dead") && name != "fishy")
+	if (b.hasTag("dead"))
 	{
-		scale *= 10.0f;
-		scale += 20.0f;
+		return scale * factor_very_boring;
 	}
 
-	const string thisname = this.getName();
-
-	//per class material scaling - done last for perf reasons
-	if (b.hasTag("material"))
-	{
-		if (name == "mat_wood" || name == "mat_stone" || name == "mat_gold")
-		{
-			// scale based on how full the stack is
-			f32 stack_size = b.getQuantity();
-			f32 max_size = b.maxQuantity;
-			scale *= (1.25f - ((stack_size / max_size) / 2.0f));
-			// scaling will vary from 0.75 (full stack) to 1.25 (empty stack)
-			
-			if (thisname == "builder")
-			{
-				scale *= 0.25f;
-			}
-			else
-			{
-				scale *= 4.0f;
-				scale += 20.0f;
-			}
-		}
-		else if (name == "mat_bombs" || name == "mat_waterbombs")
-		{
-			if (thisname == "knight")
-			{
-				scale *= 0.25f;
-			}
-			else
-			{
-				scale *= 4.0f;
-				scale += 20.0f;
-			}
-		}
-		else if (name == "mat_arrows" || name == "mat_waterarrows" ||
-		         name == "mat_firearrows" || name == "mat_bombarrows")
-		{
-			if (thisname == "archer")
-			{
-				if (name == "mat_arrows")
-					scale *= 0.3f; //pick special arrows first
-				else
-					scale *= 0.25f;
-			}
-			else
-			{
-				scale *= 4.0f;
-				scale += 20.0f;
-			}
-		}
-	}
-
-	return scale;
+	return scale * factor_common;
 }
 
 CBlob@ getClosestBlob(CBlob@ this)
