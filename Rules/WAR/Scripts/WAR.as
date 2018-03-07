@@ -651,6 +651,8 @@ shared class WarCore : RulesCore
 		}
 		if (lostCount > 1)
 		{
+			rules.SetCurrentState(GAME_OVER);
+			rules.SetGlobalMessage("It's a tie!");
 			return; // tie condition - no halls
 		}
 		else if (lostCount == 1)
