@@ -916,6 +916,41 @@ void onInit(CRules@ this)
 	this.set_s32("restart_rules_after_game_time", 25 * 30);
 }
 
+void onStateChange(CRules@ this, const u8 oldState)
+{
+	RulesCore@ core;
+	this.get("core", @core);
+
+	if (core is null)
+	{
+		return;
+	}
+
+	if (this.getCurrentState() == GAME)
+	{
+		bool[] teamHalls(core.teams.length, false); // wat, doesn't default to false?
+
+		CBlob@[] rooms;
+		getBlobsByName("hall", @rooms);
+		for (uint i = 0; i < rooms.length; ++i)
+		{
+			CBlob@ room = rooms[i];
+			const u8 team = room.getTeamNum();
+			if (team < teamHalls.length)
+			{
+				teamHalls[team] = true;
+			}
+		}
+
+		for (uint i = 0; i < teamHalls.length; ++i)
+		{
+			if (teamHalls[i] == false)
+			{
+				core.teams[i].lost = true;
+			}
+		}
+	}
+}
 
 void CheckWin(CRules@ this, CBlob@ blob, const int oldTeam)
 {
