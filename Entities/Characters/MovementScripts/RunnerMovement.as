@@ -242,16 +242,16 @@ void onTick(CMovement@ this)
 		                    map.isTileSolid(pos + Vec2f(-x_ts, y_ts));
 		if (!surface_left)
 		{
-			surface_left = checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts - map.tilesize)) ||
-			               checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts));
+			surface_left = checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts - map.tilesize), blob) ||
+			               checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts), blob);
 		}
 
 		bool surface_right = map.isTileSolid(pos + Vec2f(x_ts, y_ts - map.tilesize)) ||
 		                     map.isTileSolid(pos + Vec2f(x_ts, y_ts));
 		if (!surface_right)
 		{
-			surface_right = checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts - map.tilesize)) ||
-			                checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts));
+			surface_right = checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts - map.tilesize), blob) ||
+			                checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts), blob);
 		}
 
 		//not checking blobs for this - perf
@@ -735,7 +735,8 @@ void CleanUp(CMovement@ this, CBlob@ blob, RunnerMoveVars@ moveVars)
 }
 
 //TODO: fix flags sync and hitting so we dont need this
-bool checkForSolidMapBlob(CMap@ map, Vec2f pos)
+// blob is an optional parameter to check collisions for, e.g. you don't want enemies to climb a trapblock
+bool checkForSolidMapBlob(CMap@ map, Vec2f pos, CBlob@ blob = null)
 {
 	CBlob@ _tempBlob; CShape@ _tempShape;
 	@_tempBlob = map.getBlobAtPosition(pos);
@@ -754,6 +755,11 @@ bool checkForSolidMapBlob(CMap@ map, Vec2f pos)
 				{
 					return false;
 				}
+			}
+
+			if (blob !is null && !blob.doesCollideWithBlob(_tempBlob))
+			{
+				return false;
 			}
 
 			return true;
