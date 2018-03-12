@@ -19,10 +19,10 @@ enum kick_reason
 	kick_reason_hacker,
 	kick_reason_teamkiller,
 	kick_reason_spammer,
-	kick_reason_afk,
+	kick_reason_non_participation,
 	kick_reason_count,
 };
-string[] kick_reason_string = { "Griefer", "Hacker", "Teamkiller", "Spammer", "AFK" };
+string[] kick_reason_string = { "Griefer", "Hacker", "Teamkiller", "Chat Spam", "Non-Participation" };
 
 string g_kick_reason = kick_reason_string[kick_reason_griefer]; //default
 
@@ -108,7 +108,7 @@ class VoteKickCheckFunctor : VoteCheckFunctor
 
 		if (reason.find(kick_reason_string[kick_reason_griefer]) != -1 || //reason contains "Griefer"
 		        reason.find(kick_reason_string[kick_reason_teamkiller]) != -1 || //or TKer
-		        reason.find(kick_reason_string[kick_reason_afk]) != -1) //or AFK
+		        reason.find(kick_reason_string[kick_reason_non_participation]) != -1) //or AFK
 		{
 			return (player.getTeamNum() == kickplayer.getTeamNum() || //must be same team
 			        kickplayer.getTeamNum() == getRules().getSpectatorTeamNum() || //or they're spectator
