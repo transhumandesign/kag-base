@@ -132,11 +132,12 @@ void onRender(CRules@ this)
 		// death effect
 		if (!spectatorTeam && diffTime > 0)
 		{
+			//lock camera
 			camera.setPosition(deathLock);
-			if (camera.targetDistance < 2.0f)
-			{
-				camera.targetDistance += 1.0f * getRenderDeltaTime();
-			}
+			//zoom in for a bit
+			const float zoom_target = 2.0f;
+			const float zoom_speed = 5.0f;
+			camera.targetDistance = Maths::Min(zoom_target, camera.targetDistance + zoom_speed * getRenderDeltaTime());
 		}
 		else
 		{
