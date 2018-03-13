@@ -19,6 +19,8 @@ void Reset(CRules@ this)
 	{
 		camera.setTarget(null);
 	}
+
+	helptime = 0;
 }
 
 void onRestart(CRules@ this)
@@ -148,19 +150,21 @@ void onRender(CRules@ this)
 	if (targetPlayer() !is null && getLocalPlayerBlob() is null)
 	{
 		GUI::SetFont("menu");
-		GUI::DrawText(getTranslatedString("Following {CHARACTERNAME} ({USERNAME})")
-					  .replace("{CHARACTERNAME}", targetPlayer().getCharacterName()).replace("{USERNAME}", targetPlayer().getUsername()),
-		              Vec2f(getScreenWidth() / 2 - 90, getScreenHeight() * (0.2f)),
-		              Vec2f(getScreenWidth() / 2 + 90, getScreenHeight() * (0.2f) + 30),
-		              SColor(0xffffffff), true, true);
+		GUI::DrawText(
+			getTranslatedString("Following {CHARACTERNAME} ({USERNAME})")
+			.replace("{CHARACTERNAME}", targetPlayer().getCharacterName())
+			.replace("{USERNAME}", targetPlayer().getUsername()),
+			Vec2f(getScreenWidth() / 2 - 90, getScreenHeight() * (0.2f)),
+			Vec2f(getScreenWidth() / 2 + 90, getScreenHeight() * (0.2f) + 30),
+			SColor(0xffffffff), true, true
+		);
 	}
 
-	if (!spectatorTeam)
-		return;
-
 	int time = getGameTime();
-	if (!u_showtutorial)
+	if (!spectatorTeam || !u_showtutorial)
 	{
+		//reset help so it shows upon joining spec
+		//or re-enabling help
 		helptime = time;
 		return;
 	}
@@ -170,34 +174,33 @@ void onRender(CRules@ this)
 	const int endTime1 = helptime + (getTicksASecond() * 12);
 	const int endTime2 = helptime + (getTicksASecond() * 24);
 
-	bool draw = false;
-	Vec2f ul, lr;
 	string text = "";
 
 	if (time < endTime1)
 	{
 		text = "You can use the movement keys and clicking to move the camera.";
-		ul = Vec2f(getScreenWidth() / 3, 3.0 * getScreenHeight() / 4);
-		Vec2f size;
-		GUI::GetTextDimensions(text, size);
-		lr = ul + size;
-		draw = true;
 	}
 	else if (time < endTime2)
 	{
-		text =  "If you click on a player the camera will follow them.\nSimply press the movement keys or click again to stop following a player.";
-		ul = Vec2f(getScreenWidth() / 3, 3.0 * getScreenHeight() / 4);
-		Vec2f size;
-		GUI::GetTextDimensions(text, size);
-		lr = ul + size;
-		draw = true;
+		text = "If you click on a player the camera will follow them.\nSimply press the movement keys or click again to stop following a player.";
 	}
 
-	if (draw)
+	if (text != "")
 	{
+		//translate
+		text = getTranslatedString(text);
+		//position post translation so centering works properly
+		Vec2f ul, lr;
+		ul = Vec2f(getScreenWidth() / 2.0, 3.0 * getScreenHeight() / 4);
+		Vec2f size;
+		GUI::GetTextDimensions(text, size);
+		ul -= size * 0.5;
+		lr = ul + size;
+		//wiggle up and down
 		f32 wave = Maths::Sin(getGameTime() / 10.0f) * 5.0f;
 		ul.y += wave;
 		lr.y += wave;
+		//draw
 		GUI::DrawButtonPressed(ul - Vec2f(10, 10), lr + Vec2f(10, 10));
 		GUI::DrawText(text, ul, SColor(0xffffffff));
 	}
