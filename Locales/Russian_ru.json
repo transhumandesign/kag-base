@@ -957,5 +957,49 @@
 	"Ползунок игроков (%): используйте его для выставления макс. и мин. процентов игроков.",
 	"e.g. set it to 1% min and 99% max to find servers that are not empty and not full, or set it to 50% to 100% to find servers that are 'at least half full'.":
 	"например, выставите его мин. и макс. значения на 1% и 99% соответственно, чтобы найти неполные, но не пустые, серверы. Или выставите его значения на 50% и 100%, чтобы найти наполовину заполненные серверы.",
-	"Map Preview can be dragged with the mouse.": "Превью карты можно перемещать с помощью мышки."
+	"Map Preview can be dragged with the mouse.": "Превью карты можно перемещать с помощью мышки.",
+	//votekick
+	//TODO: get more from DefaultVotes.as
+
+	//esc menu TODO: un-google-translate-ify
+	"Change Team":				"Изменить команду",
+	"Switch to Team {NUMBER}":	"Переключиться на команду {NUMBER}", //(not used in vanilla)
+	"Spectator":				"Зритель",
+	"Spectators":				"Зрители",
+	"Suicide":					"Самоубийство",
+	"Admin":					"Администратор",
+	"Next Map":					"Следующая карта",
+	"Restart Map":				"Перезапустить карту",
+	"Administrate Players":		"Администрировать игроков",
+	"Kick":						"Удар",
+	"Ban":						"Пан",
+	"Ban - 10 mins":			"Пан - 10 минут",
+	"Ban - 1 hour":				"Пан - 1 час",
+	"Ban - 1 day":				"Пан - 1 день",
+	"Ban - Permanent":			"Пан - постоянный",
+	"Mute":						"Цензор",
+	"Mute - 10 mins":			"Цензор - 10 минут",
+	"Mute - 1 hour":			"Цензор - 1 час",
+	"Mute - 1 day":				"Цензор - 1 день",
+	"Mute - Permanent":			"Цензор - постоянный",
+	"Unmute":					"Разрешить чат",
+	"Freeze":					"Замораживание",
+	"Unfreeze":					"Разморозить",
+	"Swap Team":				"Обменная команда",
+	"Assign Seclev":			"Назначить Seclev",
+	"Ignore Player":			"Игнорировать игрока",
+	"Ignore - 10 mins":			"Игнорировать - 10 минут",
+	"Ignore - 1 hour":			"Игнорировать - 1 час",
+	"Ignore - 1 day":			"Игнорировать - 1 день",
+	"Ignore - Permanent":		"Игнорировать - постоянный",
+	"Unignore":					"Слушать",
+	"Servers":					"Серверы",
+	"Help":						"Помогите",
+	"Manual":					"Руководство",
+	"Wiki":						"Вики",
+	"Settings":					"Настройка",
+	"Map Utilities":			"Утилиты карт",
+	"Map Filename":				"Имя файла карты",
+	"Save Map":					"Сохранить карту",
+	"Quit to Main Menu":		"Выход в главное меню"
 }
