@@ -19,11 +19,11 @@ const uint update_latency = 15;
 uint ticks_since_pressed = 0;
 
 //Double-buffering logic
-CBlob@[] highlighted_blobs_buf1, highlighted_blobs_buf2;
-CBlob@[]@ front_buffer = @highlighted_blobs_buf1;
+u16[] highlighted_blobs_buf1, highlighted_blobs_buf2;
+u16[]@ front_buffer = @highlighted_blobs_buf1;
 
 //Blobs being processed for the back buffer. Updated on the first update stage.
-CBlob@[] processed_blobs;
+u16[] processed_blobs;
 
 void onTick(CSprite@ sprite)
 {
@@ -39,7 +39,7 @@ void onTick(CSprite@ sprite)
 		int class_index = classes.find(sprite.getBlob().getConfig());
 		if (class_index < 0) return;
 
-		CBlob@[]@ back_buffer = front_buffer is @highlighted_blobs_buf1 ? @highlighted_blobs_buf2 : @highlighted_blobs_buf1;
+		u16[]@ back_buffer = front_buffer is @highlighted_blobs_buf1 ? @highlighted_blobs_buf2 : @highlighted_blobs_buf1;
 
 		const u8 current_stage = ticks_since_pressed++ % update_latency;
 		if (current_stage == 0)
@@ -48,16 +48,21 @@ void onTick(CSprite@ sprite)
 			Vec2f world_lowerright = driver.getWorldPosFromScreenPos(driver.getScreenDimensions());
 			Vec2f world_upperleft = driver.getWorldPosFromScreenPos(Vec2f_zero);
 
+			CBlob@[] collected_blobs;
+			map.getBlobsInBox(world_lowerright, world_upperleft, collected_blobs);
 			processed_blobs.clear();
-			map.getBlobsInBox(world_lowerright, world_upperleft, processed_blobs);
+			for (uint i = 0; i < collected_blobs.length; i++)
+			{
+				processed_blobs.push_back(collected_blobs[i].getNetworkID());
+			}
 		}
 
 		for (uint i = current_stage; i < processed_blobs.length; i += update_latency)
 		{
-			CBlob@ blob = processed_blobs[i];
+			CBlob@ blob = getBlobByNetworkID(processed_blobs[i]);
 			if (blob !is null && !blob.isInInventory() && highlight_items[class_index].find(blob.getConfig()) >= 0)
 			{
-				back_buffer.push_back(@blob);
+				back_buffer.push_back(blob.getNetworkID());
 			}
 		}
 
@@ -85,7 +90,7 @@ void onRender(CSprite@ sprite)
 
 	for (uint i = 0; i < front_buffer.length; ++i)
 	{
-		CBlob@ blob = front_buffer[i];
+		CBlob@ blob = getBlobByNetworkID(front_buffer[i]);
 
 		//Check for conditions that might have been invalidated recently!
 		if (blob is null || blob.isInInventory()) continue;
