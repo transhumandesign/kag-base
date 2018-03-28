@@ -5,7 +5,7 @@ const string[] classes = {"builder", "knight", "archer"};
 const string[][] highlight_items = {
 /* 0 */	{"mat_stone", "mat_wood", "mat_gold"}, //builder
 /* 1 */	{"mat_bombs", "mat_waterbombs", "keg"}, //knight
-/* 2 */	{"mat_firearrows", "mat_waterarrows", "mat_bombarrows"} //archer
+/* 2 */	{"mat_arrows", "mat_firearrows", "mat_waterarrows", "mat_bombarrows"} //archer
 };
 
 //Disable highlighting for items with a map luminance lower than this
@@ -32,7 +32,7 @@ void onTick(CSprite@ sprite)
 	CPlayer@ player = playerblob.getPlayer();
 
 	if (map is null || player is null || !player.isMyPlayer()) return;
-	
+
 	if (playerblob.isKeyPressed(key_pickup))
 	{
 		//Index of array of items to highlight.
@@ -40,7 +40,7 @@ void onTick(CSprite@ sprite)
 		if (class_index < 0) return;
 
 		CBlob@[]@ back_buffer = front_buffer is @highlighted_blobs_buf1 ? @highlighted_blobs_buf2 : @highlighted_blobs_buf1;
-		
+
 		const u8 current_stage = ticks_since_pressed++ % update_latency;
 		if (current_stage == 0)
 		{
@@ -66,7 +66,7 @@ void onTick(CSprite@ sprite)
 		{
 			front_buffer.clear();
 			@front_buffer = @back_buffer;
-		} 
+		}
 	}
 	else
 	{
@@ -95,7 +95,7 @@ void onRender(CSprite@ sprite)
 		{
 			//Fading effect, brightness depends on the map color
 			const uint effect_brightness = base_brightness * map_luminance;
-				
+
 			//Render the normal and light effects
 			blob.RenderForHUD(Vec2f_zero, 0.0f, SColor(255, map_luminance, map_luminance, map_luminance), RenderStyle::normal);
 			blob.RenderForHUD(Vec2f_zero, 0.0f, SColor(255, effect_brightness, effect_brightness, effect_brightness / 2), RenderStyle::light);
