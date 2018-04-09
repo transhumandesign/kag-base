@@ -31,6 +31,8 @@ void onTick(CBlob@ this)
 	// drop / pickup / throw
 	if (this.isKeyJustPressed(key_pickup))
 	{
+		TapPickup(this);
+
 		CBlob @carryBlob = this.getCarriedBlob();
 
 		/*if (isTap( this ))	tap pickup
@@ -349,10 +351,13 @@ CBlob@ getClosestBlob(CBlob@ this)
 			FillAvailable(this, available, pickupBlobs);
 		}
 
-		CBlob@ closestAimed = getClosestAimedBlob(this, available);
-		if (closestAimed !is null)
+		if (!isTapPickup(this))
 		{
-			return closestAimed;
+			CBlob@ closestAimed = getClosestAimedBlob(this, available);
+			if (closestAimed !is null)
+			{
+				return closestAimed;
+			}
 		}
 
 		float closestFactor = 999999.9f;
