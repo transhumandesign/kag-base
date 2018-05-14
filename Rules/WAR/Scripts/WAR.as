@@ -648,11 +648,15 @@ shared class WarCore : RulesCore
 			{
 				lostCount++;
 			}
+
+			// only do when there are enough players
+			if (team.players_count == 0)
+			{
+				return;
+			}
 		}
 		if (lostCount > 1)
 		{
-			rules.SetCurrentState(GAME_OVER);
-			rules.SetGlobalMessage("It's a tie!");
 			return; // tie condition - no halls
 		}
 		else if (lostCount == 1)
@@ -936,6 +940,7 @@ void onStateChange(CRules@ this, const u8 oldState)
 		{
 			CBlob@ room = rooms[i];
 			const u8 team = room.getTeamNum();
+
 			if (team < teamHalls.length)
 			{
 				teamHalls[team] = true;
