@@ -88,6 +88,9 @@ enum _render_type {
 	render_type_tris_cols_indexed,
 	render_type_quads,
 	render_type_quads_cols,
+	render_type_raw_tris,
+	render_type_raw_tris_indexed,
+	render_type_raw_quads,
 	render_type_count,
 }
 int render_type = render_type_tris;
@@ -166,7 +169,11 @@ void ExampleRulesRenderFunction(int id)
 Vec2f[] v_pos;
 Vec2f[] v_uv;
 SColor[] v_col;
+
 u16[] v_i;
+
+//this is the highest performance option
+Vertex[] v_raw;
 
 void RenderWidgetFor(CBlob@ this)
 {
@@ -180,6 +187,7 @@ void RenderWidgetFor(CBlob@ this)
 	v_uv.clear();
 	v_col.clear();
 	v_i.clear();
+	v_raw.clear();
 
 	float x_size = 16;
 	float y_size = 16;
@@ -309,5 +317,69 @@ void RenderWidgetFor(CBlob@ this)
 		}
 
 		Render::QuadsColored(render_texture_name, z, v_pos, v_uv, v_col);
+	}
+	else
+	{
+		//raw render calls;
+		//these send "raw" vertices to the rendering API;
+		//there's no "easy" Z swap and no colour-less versions.
+		//but they are much faster, particularly for static data
+
+		//Render::RawTriangles is analogous to Render::TrianglesColored
+		//Render::RawTrianglesIndexed is analogous to Render::TrianglesColoredIndexed
+		//Render::RawQuads is analogous to Render::QuadsColored
+
+		if(render_type == render_type_raw_tris)
+		{
+			//render an RGB triangle
+			v_raw.push_back(Vertex(p.x - x_size, p.y - y_size, z, 0, 0, SColor(0xffff0000)));
+			v_raw.push_back(Vertex(p.x + x_size, p.y - y_size, z, 0, 0, SColor(0xff00ff00)));
+			v_raw.push_back(Vertex(p.x,          p.y + y_size, z, 0, 0, SColor(0xff0000ff)));
+
+			Render::RawTriangles(render_texture_name, v_raw);
+		}
+		else if(render_type == render_type_raw_tris_indexed)
+		{
+			//render a uv mapped diamond
+			//
+			//   1
+			//  /|\
+			// 0 | 2
+			//  \|/
+			//   3
+			//
+			v_raw.push_back(Vertex(p.x - x_size, p.y,          z, 0, 0, SColor(0xffffffff)));
+			v_raw.push_back(Vertex(p.x,          p.y - y_size, z, 1, 0, SColor(0xffffffff)));
+			v_raw.push_back(Vertex(p.x + x_size, p.y,          z, 1, 1, SColor(0xffffffff)));
+			v_raw.push_back(Vertex(p.x,          p.y + y_size, z, 0, 1, SColor(0xffffffff)));
+
+			//set up the mesh indexing
+			v_i.push_back(0);
+			v_i.push_back(1);
+			v_i.push_back(3);
+			v_i.push_back(1);
+			v_i.push_back(2);
+			v_i.push_back(3);
+
+			Render::RawTrianglesIndexed(render_texture_name, v_raw, v_i);
+		}
+		else if(render_type == render_type_raw_quads)
+		{
+			//render the diamond above, but with rotating colours for a bit more fun.
+
+			const float one_third_rotation = (Maths::Pi * 2.0f / 3.0f);
+			float t = (getGameTime() / 30.0f) * one_third_rotation;
+			SColor col(0xffffffff);
+			col.setRed(128 + 127 * Maths::Sin(t));
+			col.setGreen(128 + 127 * Maths::Sin(t + one_third_rotation));
+			col.setBlue(128 + 127 * Maths::Sin(t - one_third_rotation));
+
+			v_raw.push_back(Vertex(p.x - x_size, p.y,          z, 0, 0, col));
+			v_raw.push_back(Vertex(p.x,          p.y - y_size, z, 1, 0, col));
+			v_raw.push_back(Vertex(p.x + x_size, p.y,          z, 1, 1, col));
+			v_raw.push_back(Vertex(p.x,          p.y + y_size, z, 0, 1, col));
+
+			Render::RawQuads(render_texture_name, v_raw);
+		}
 	}
 }
