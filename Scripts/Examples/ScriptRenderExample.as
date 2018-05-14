@@ -1,41 +1,49 @@
 //ScriptRenderExample.as
 //
-//	dive into the wonderful world of script rendering!
+//  dive into the wonderful world of script rendering!
 //
-//	try adding this to a CBlob's or CRules's script list
+//  try adding this to a CBlob's or CRules's script list
 //
-//	tap the taunt button (V by default) to swap between effects
+//  tap the taunt button (V by default) to swap between "effects"
 //
-//	blob will render the current effect for whatever blob it's added to
-//	(the builder is good for testing in sandbox)
+//  blob will render the current effect for whatever blob it's added to
+//  (the builder is good for testing in sandbox)
 //
-//	rules will render the effect for all player blobs
+//  rules will render the effect for all player blobs
 //
-//	both options are provided to ensure there is a suitable example for
-//	both possible intended uses.
-//
+//  both options are provided to ensure there is a suitable example for
+//  both possible intended uses.
+///////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////
 // render layers available
 //
-// Render::layer_background		//after the background layers (parallax etc) - they wipe out the
-// Render::layer_tiles			//after the tilemap
-// Render::layer_objects		//after the objects (sprites, particles)
-// Render::layer_floodlayers	//after the flood layers
-// Render::layer_postworld		//after the entire world
-// Render::layer_prehud			//after the black world borders but before the rest of the HUD
-// Render::layer_posthud		//after the rest of the HUD
-// Render::layer_count			//total layer count - useful for looping around
+// world layers:
+//    Render::layer_background      //after the background layers (parallax etc) - they wipe out the
+//    Render::layer_tiles           //after the tilemap
+//    Render::layer_objects         //after the objects (sprites, particles)
+//    Render::layer_floodlayers     //after the flood layers
+//    Render::layer_postworld       //after the entire world
 
+// hud layers:
+//    Render::layer_prehud          //after the black world borders but before the rest of the HUD
+//    Render::layer_posthud         //after the rest of the HUD
+//
+// non-rendered layers
+//    Render::layer_count           //total layer count - useful for looping around
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
 // transparency matters
 //
 // alpha blending is required for soft transparency
 //
 // you can turn it on with
-//	Render::SetAlphaBlend(true);
+//  Render::SetAlphaBlend(true);
 // and off with
-//	Render::SetAlphaBlend(false);
+//  Render::SetAlphaBlend(false);
 //
-// however alpha blending also _disables_ z writing completely
+// however alpha blending also _disables_ z writing **completely**
 // so it should be used on layers most closely matching
 // the z level it's targetting
 //
@@ -43,8 +51,26 @@
 // Render::layer_postworld  - if it should be in front of everything
 //
 // or else the contents will get overwritten strangely
-//
+///////////////////////////////////////////////////////////////////////////////
 
+
+///////////////////////////////////////////////////////////////////////////////
+// coordinate concerns
+//
+// currently, all layers are in **world space**
+//
+// this means that any hud stuff in screen space will need to be translated
+//   from there to world space each time
+//
+// world/screen/arbitrary transformation functions may be provided in future
+//
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+// without further ado, here's the script
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
 // common setup code
 //
 // this is partly to remind you that you can created textures on the fly
@@ -145,7 +171,7 @@ void onTick(CRules@ this)
 //  and are removed safely when that blob is killed/removed
 //
 // both get the id of their function - they can be removed with
-//	Render::RemoveScript if appropriate
+//  Render::RemoveScript if appropriate
 
 void ExampleBlobRenderFunction(CBlob@ this, int id)
 {
