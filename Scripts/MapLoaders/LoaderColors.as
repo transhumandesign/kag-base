@@ -256,5 +256,8 @@ namespace map_colors
 
 		// TUTORIAL
 		dummy                  = 0xFFE78C43, // ARGB(255, 231, 140,  67);
+
+		// RED BARRIER
+		redbarrier			   = 0xFFE43771
 	};
 }
