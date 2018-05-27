@@ -623,6 +623,8 @@ bool checkGrappleStep(CBlob@ this, ArcherInfo@ archer, CMap@ map, const f32 dist
 
 		archer.grapple_ratio = Maths::Max(0.2, Maths::Min(archer.grapple_ratio, dist / archer_grapple_length));
 
+		archer.grapple_pos.y = Maths::Max(0.0, archer.grapple_pos.y);
+
 		if (canSend(this)) SyncGrapple(this);
 
 		return true;
