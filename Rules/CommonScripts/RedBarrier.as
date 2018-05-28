@@ -84,11 +84,28 @@ void onRender(CRules@ this)
 void getBarrierPositions(f32 &out x1, f32 &out x2, f32 &out y1, f32 &out y2)
 {
 	CMap@ map = getMap();
+
 	const f32 mapWidth = map.tilemapwidth * map.tilesize;
 	const f32 mapMiddle = mapWidth * 0.5f;
 	const f32 barrierWidth = BARRIER_PERCENT * mapWidth;
+
+	// set horizontal positions based on BARRIER_PERCENT
 	x1 = mapMiddle - barrierWidth;
 	x2 = mapMiddle + barrierWidth;
+
+	// overwrite x1 and x2 if 2 red barrier markers are found
+	Vec2f[] barrierPositions;
+	if (map.getMarkers("red barrier", barrierPositions))
+	{
+		if (barrierPositions.length() == 2)
+		{
+			int left = barrierPositions[0].x < barrierPositions[1].x ? 0 : 1;
+			x1 = barrierPositions[left].x;
+			x2 = barrierPositions[1 - left].x;
+		}
+	}
+
+	// set vertical positions
 	y2 = map.tilemapheight * map.tilesize;
 	y1 = -y2;
 	y2 *= 2.0f;
