@@ -17,7 +17,7 @@ bool Eat(CBlob@ this, CBlob@ blob)
 
 void onTick(CBlob@ this)
 {
-	if (this.isKeyPressed(key_taunts) && this.getHealth() < this.getInitialHealth())
+	if (getNet().isServer() && this.isKeyJustPressed(key_taunts) && this.getHealth() < this.getInitialHealth())
 	{
 		CBlob @carried = this.getCarriedBlob();
 		if (carried !is null)
