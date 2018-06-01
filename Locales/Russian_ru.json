@@ -165,12 +165,12 @@
 	"$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)":"$ladder$\n\nВыберите лестницу для строительства.\n\nДЕРЖИТЕ $KEY_F$(кнопка\n                           инвентаря)\n\nНаведите курсор на лестницу и отпустите кнопку инвентаря.\n\n(требуется$mat_wood$для этого)",
 	"Place by pointing with mouse and pressing $LMB$":"Поставьте лестницу, наведя\n\n мышь и нажав$LMB$",
 	"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.":"$Pick$\n\nПостройте мост.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nПопробуйте разные блоки - посмотрите, что они делают.",
-	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"Учтите, что при горизонтальном строительстве вы достигнете лимит. Вам придется построить опоры снизу для того, чтобы продолжть строительство.",
+	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"Учтите, что при горизонтальном строительстве вы достигнете лимит. Вам придется построить опоры снизу для того, чтобы продолжить строительство.",
 	"$Pick$  $BlockStone$\n\nMine some stone $RMB$":"$Pick$  $BlockStone$\n\nВыкопайте немного камня.\n\n $RMB$",
 	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\nЗарядите катапульту камнем.\n\n ЗАЖМИТЕ $KEY_E$, НАЖМИТЕ\n\n$mat_stone$",
 	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$\n\n\nВстаньте на позицию стрелка\n(там, где находится$down_arrow$ на рисунке)\n\nНажмите $KEY_S$,\n\nчтобы залезть внутрь.\n\n\nДЕРЖИТЕ $LMB$\n\nдля увеличения силы выстрела.\n\n\n(Водитель - в центре;\nВерхушка - платформа с боеприпасом.)",
 	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"И напоследок.\n\nНе бойтесь просить о помощи в мультиплеере - нажмите \n\n$KEY_ENTER$, чтобы открыть чат.\n\n\nИспользуйте смайлы!\n\nДЕРЖИТЕ $KEY_Q$",
-	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"Здесь заканчивается базовое обучение. Вы постоянно будете учиться чему-то новому, играя!\n\nА теперь попробуйте другие одиночные миссии или присоеденитесь к серверу!",
+	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"Здесь заканчивается базовое обучение. Вы постоянно будете учиться чему-то новому, играя!\n\nА теперь попробуйте другие одиночные миссии или присоединитесь к серверу!",
 
 //TutorialCTF01.as
 	"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":
@@ -204,7 +204,7 @@
 	"After converting to a workshop you can see a worker appeared inside of it.\n$migrant$\n\n\nHe came from the hall.\n\nYou can only build as many functional workshops as there are workers in your hall.":
 	"После постройки мастерской вы можете видеть рабочего, который появился внутри неё.\n$migrant$\n\n\nОн пришёл с базы.\n\nВы можете строить столько фабрик, сколько рабочих на вашей базе.",
 	"Press $KEY_E$ on the frame\n\n$building$\n\nto convert it to a proper workshop. Select one (the unavailable ones are waiting for research in the hall to complete).":
-	"Нажмите $KEY_E$ внутриn\n\nмастерской $building$, чтобы\n\nпреобразовать её в фабрику. Некоторые фабрики недоступны из-за отсутствия нужной технологии на базе.",
+	"Нажмите $KEY_E$ внутри\n\nмастерской $building$, чтобы\n\nпреобразовать её в фабрику. Некоторые фабрики недоступны из-за отсутствия нужной технологии на базе.",
 	"Hold $KEY_E$ on a workshop to see\n\nwhat it is producing. Green indicates it's done.\n\n\nTry out the different shops!":
 	"Держите $KEY_E$ около\n\nфабрики, чтобы увидеть, что производится в данный момент.\nЗелёный цвет означает, что производство завершено.\nОпробуйте разные фабрики!",
 	"$trader$\n\n\nYou see a trader in his shop below.\n\nPress $KEY_E$ on the trader to buy.\n\nYou can buy the following:\n\nTechnology scrolls - give you quick access to a tech without the need for long research\n\nMagic scrolls - check the descriptions!\n\nExchange materials for gold and vice versa. This is useful when one of the resources is lacking on the map.":
@@ -768,7 +768,7 @@
 	"Take the Hall":"Захватите базу",
 
 ////GAMEMODE INFO////
-	"All Gamemodes":"Все гамодеды",
+	"All Gamemodes":"Все игровые режимы",
 	"Challenges":"Испытания",
 	"Capture the Flag":"Захват флага",
 	"CTF":"Захват флага (CTF)",
@@ -951,7 +951,7 @@
 	"WHITE = vanilla server":   "БЕЛЫЙ = обычный сервер",
 	"BLUE = modded server":     "СИНИЙ = сервер с модами",
 	"Instant Search: searches for servers containing the query in the server name, description, game mode, IP address, or any player on the server (exact match only for players).":
-	"Быстрый поиск: посик серверов, содержащих набранный текст в названии сервера, описании, игровом режиме, IP-адресе или в имени игрока.",
+	"Быстрый поиск: поиск серверов, содержащих набранный текст в названии сервера, описании, игровом режиме, IP-адресе или в имени игрока.",
 	"e.g. entering 'Shadlington' will find any servers that Shadlington is playing on, or that have 'Shadlington' in the name/description.":
 	"например, после ввода \"Shadlington\" буду найдены серверы, где играет Shadlington или которые имеют слово \"Shadlington\" в названии/описании.",
 	"Players (%) slider: Use this to set the min and max percent full you want servers to be.":
@@ -971,13 +971,13 @@
 	"Can't Start Vote":			"Нельзя начать голосование",
 	//vote kick menu
 	"Kick":"Исключить игрока",
-	"Voting requires a {REQUIRED_MIN} min wait\nafter each started vote to\nprevent spamming/abuse.\n":"Для голосования требуется ожидание в {REQUIRED_MIN} мин\nпосле каждого голосования,\nчтобы предотвратить спам или злоупотребление этой функций.",
+	"Voting requires a {REQUIRED_MIN} min wait\nafter each started vote to\nprevent spamming/abuse.\n":"Для голосования требуется ожидание в {REQUIRED_MIN} мин\nпосле каждого голосования,\nчтобы предотвратить спам или злоупотребление этой функцией.",
 	"Vote to kick a player on your team\nout of the game.\n\n- use responsibly\n- report any abuse of this feature.\n\nTo Use:\n\n- select a reason from the\n     list (default is griefing).\n- select a name from the list.\n- everyone votes.\n":"Проголосовать за исключение\nиз игры игрока вашей команды.\n\n- использовать ответственно\n- сообщайте о любом злоупотреблении этой функцией.\n\nКак использовать:\n\n- Выберите причину из списка\n     (гриферство по умолчанию).\n- выберите имя из списка.\n- голосуют все.\n",
 	"Cannot kick {USER}":"Нельзя исключить {USER}",
 	"You started a vote for\nthis person last time.\n\nSomeone else must start the vote.":"В последний раз вы начинали\nголосование за исключение\nэтого человека.\n\nКто-то другой должен начать\nголосование",
 	"Kick {USER}":"Исключить {USER}",
 	"Kicking {USER}":"Исключаем {USER}",
-	"Make sure you're voting to kick\nthe person you meant.\n":"Убедитесь, что вы не\nголосуете за исключение\nого, кого не хотели исключать.",
+	"Make sure you're voting to kick\nthe person you meant.\n":"Убедитесь, что вы не\nголосуете за исключение\nтого, кого не хотели исключать.",
 	"Yes, I'm sure":"Да, я уверен",
 	"(No-one available)":"(не за кого голосовать)",
 	"Can't vote":"Нельзя проголосовать",
@@ -993,9 +993,9 @@
 	"Surrender":"Сдаться",
 	"Surrender to the enemy?":"Сдаться противнику?",
 	"Voting for surrender\nis not allowed before the game starts.\n":"Сдаваться до начала игры запрещено.",
-	"Voting for surrender\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"Для голосования за капитуляцию\nтреубется ожидание в {NEXTMAP_MINS} мин\nпосле каждого голосования,\nчтобы предотвратить спам.\n",
+	"Voting for surrender\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"Для голосования за то,\nчтобы сдаться\nтреубется ожидание в {NEXTMAP_MINS} мин\nпосле каждого голосования,\nчтобы предотвратить спам.\n",
 	"Voting for surrender\nis not available as a spectator\n":"Будучи зрителем, нельзя сдаваться.",
-	"Vote Surrender":"Голосование за капитуляцию",
+	"Vote Surrender":"Сдаться",
 	"Vote to end the game\nin favour of the enemy team.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select surrender if you're sure.\n- everyone votes.\n":"Голосование за окончание игры\nв пользу вражеской команды.\n\n- сообщайте о любом злоупотреблении этой функцией.\n\nКак использовать:\n\n- сдавайтесь только если вы уверены.\n- голосуют все.\n",
 	"We Surrender! (I'm sure)":"Мы сдаёмся! (Я уверен)",
 	//other menus
