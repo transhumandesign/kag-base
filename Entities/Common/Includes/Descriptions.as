@@ -80,6 +80,7 @@ namespace Descriptions
 	boatshop                   = getTranslatedString("Naval workshop for building boats"),
 	quarters                   = getTranslatedString("Place of merriment and healing"),
 	storagecache               = getTranslatedString("A Cache for storing your materials, items and armaments."),
+	quarry               	   = getTranslatedString("A Quarry intended to mine stone, fueled by wood."),
 
 	//Quarters.as
 	beer                       = getTranslatedString("A refreshing mug of beer."),
