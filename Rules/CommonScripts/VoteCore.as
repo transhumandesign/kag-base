@@ -29,7 +29,8 @@ void onRender(CRules@ this)
 	Vec2f tl = getTopLeft();
 	Vec2f br = tl + dim;
 	Vec2f text_dim;
-	GUI::GetTextDimensions(vote.title, text_dim);
+	string translated_vote_title = getTranslatedString(vote.title);
+	GUI::GetTextDimensions(translated_vote_title, text_dim);
 
 	if (can_cancel || can_force_pass)
 		br += Vec2f(0, text_dim.y);
@@ -37,7 +38,7 @@ void onRender(CRules@ this)
 	GUI::DrawPane(tl, br, SColor(0x80ffffff));
 
 	GUI::SetFont("menu");
-	GUI::DrawText(vote.title, tl + Vec2f(Maths::Max(dim.x / 2 - text_dim.x / 2, 3.0), 3), color_white);
+	GUI::DrawText(translated_vote_title, tl + Vec2f(Maths::Max(dim.x / 2 - text_dim.x / 2, 3.0), 3), color_white);
 
 	GUI::DrawText(getTranslatedString("Reason: {REASON}").replace("{REASON}", vote.reason), tl + Vec2f(3, 3 + text_dim.y * 2), color_white);
 	GUI::DrawText(getTranslatedString("Cast by: {USER}").replace("{USER}", vote.byuser), tl + Vec2f(3, 3 + text_dim.y * 3), color_white);
