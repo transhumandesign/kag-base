@@ -80,6 +80,16 @@ void onTick(CBlob@ this)
 					this.server_AttachTo(b, "FLAG");
 					b.SetFacingLeft(this.isFacingLeft());
 				}
+				if (b.hasTag("stalemate_return"))
+				{
+					//sync tag, flag can play sounds
+					b.server_DetachAll();
+					this.SendCommand(this.getCommandID(flag_return));
+					b.Untag("stalemate_return"); //local
+
+					this.server_AttachTo(b, "FLAG");
+					b.SetFacingLeft(this.isFacingLeft());
+				}
 			}
 			else
 			{

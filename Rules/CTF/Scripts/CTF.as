@@ -23,8 +23,11 @@ void Config(CTFCore@ this)
 
 	//how long to wait for everyone to spawn in?
 	s32 warmUpTimeSeconds = cfg.read_s32("warmup_time", 30);
-	this.warmUpTime = (getTicksASecond() * warmUpTimeSeconds);
+	this.warmUpTime = 1;//(getTicksASecond() * warmUpTimeSeconds);
 
+	s32 stalemateTimeSeconds = cfg.read_s32("stalemate_time", 30);
+	this.stalemateTime = (getTicksASecond() * stalemateTimeSeconds);
+	
 	//how long for the game to play out?
 	s32 gameDurationMinutes = cfg.read_s32("game_time", -1);
 	if (gameDurationMinutes <= 0)
@@ -284,6 +287,7 @@ shared class CTFCore : RulesCore
 	s32 warmUpTime;
 	s32 gameDuration;
 	s32 spawnTime;
+	s32 stalemateTime;
 
 	s32 minimum_players_in_team;
 
@@ -347,6 +351,7 @@ shared class CTFCore : RulesCore
 		 */
 
 		RulesCore::Update(); //update respawns
+		CheckStalemate();
 		CheckTeamWon();
 
 	}
@@ -575,6 +580,65 @@ shared class CTFCore : RulesCore
 			rules.SetGlobalMessage("{WINNING_TEAM} wins the game!");
 			rules.AddGlobalMessageReplacement("WINNING_TEAM", winteam.name);
 		}
+	}
+
+	void CheckStalemate()
+	{
+		if (!rules.isMatchRunning() || stalemateTime < 0) { return; }
+
+		// get all the flags
+		CBlob@[] flags;
+		getBlobsByName(flag_name(), @flags);
+
+		bool stalemate = true;
+		
+		for (uint i = 0; i < flags.length; i++)
+		{
+			CBlob @flag = flags[i];
+			CBlob @holder = flag.getAttachments().getAttachedBlob("FLAG");
+			if (holder !is null && holder.getTeamNum() == flag.getTeamNum()) //If any flag is held by an ally, break the stalemate
+			{
+				stalemate = false;
+				break;
+			}
+		}
+
+		if(stalemate){
+			if(!rules.exists("stalemate_breaker")){
+				rules.set_s16("stalemate_breaker",stalemateTime);
+			} else {
+				rules.sub_s16("stalemate_breaker",1);
+			}
+			
+			if((rules.get_s16("stalemate_breaker")/30) > 0){
+				rules.SetGlobalMessage("Stalemate: both teams have no flags.\nFlags respawning in: "+(rules.get_s16("stalemate_breaker")/30));
+			} else {
+				rules.set_s16("stalemate_breaker",-60);
+				
+				for (uint i = 0; i < flags.length; i++)
+				{
+					CBlob @flag = flags[i];
+					if (flag !is null)
+					{
+						flag.Tag("stalemate_return");
+						if(isServer())flag.Sync("stalemate_return",true);
+					}
+				}
+			}
+			
+		} else {
+			int stalemate_timer = rules.get_s16("stalemate_breaker");
+			if(stalemate_timer > -10 && stalemate_timer != stalemateTime){
+				rules.SetGlobalMessage("");
+				rules.set_s16("stalemate_breaker",stalemateTime);
+			} else
+			if(stalemate_timer <= -10){
+				rules.SetGlobalMessage("Stalemate resolved: Flags returned.");
+				rules.add_s16("stalemate_breaker",1);
+			}
+		}
+		
+		if(isServer())rules.Sync("stalemate_breaker",true);
 	}
 
 	void addKill(int team)
