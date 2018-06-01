@@ -2,7 +2,7 @@
 <p align = 'center'>Base game content</p>
 
 <p align = 'center'>
-  <a href = 'https://discord.gg/JucZs9m'>
+  <a href = 'https://discord.gg/kag'>
       <img src = 'https://img.shields.io/badge/%23development-on Discord-7289DA.svg'>
   </a>
   <a href = 'http://webchat.quakenet.org/?channels=#thd'>
@@ -21,6 +21,8 @@ To fix an issue or enhance a module, follow these steps:
 - Make the modifications
 - Commit the modifications
 - Create a pull request
+
+For more info, check out these [guidelines](https://github.com/transhumandesign/kag-base/blob/master/CONTRIBUTING.md).
 
 ### Legal Considerations and Licensing
 

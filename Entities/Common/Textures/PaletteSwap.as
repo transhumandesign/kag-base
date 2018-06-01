@@ -62,7 +62,7 @@ bool CreatePaletteSwappedTexture(ImageData@ input, string output_name, ImageData
 	{
 		SColor c = edit[i];
 
-		//skip trasparent pixels
+		//skip transparent pixels
 		if(c.getAlpha() == 0) continue;
 
 		//search the pixels array and recolour

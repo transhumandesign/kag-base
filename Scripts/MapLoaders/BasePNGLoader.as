@@ -237,6 +237,9 @@ class PNGLoader
 			case map_colors::aqua_main_spawn:   autotile(offset); spawnHall(map, offset, 5); break;
 			case map_colors::teal_main_spawn:   autotile(offset); spawnHall(map, offset, 6); break;
 			case map_colors::gray_main_spawn:   autotile(offset); spawnHall(map, offset, 7); break;
+
+			// Red Barrier
+			case map_colors::redbarrier:    autotile(offset); AddMarker(map, offset, "red barrier");  break;
 			
 			// Normal spawns
 			case map_colors::blue_spawn:     autotile(offset); AddMarker(map, offset, "blue spawn");   break;

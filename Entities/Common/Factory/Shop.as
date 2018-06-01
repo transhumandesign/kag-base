@@ -24,6 +24,8 @@ void onInit(CBlob@ this)
 		this.set_string("shop description", "Workbench");
 	if(!this.exists("shop icon"))
 		this.set_u8("shop icon", 15);
+	if(!this.exists("shop offset is buy offset"))
+		this.set_bool("shop offset is buy offset", false);
 
 	if(!this.exists("shop button radius"))
 	{
@@ -66,7 +68,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 bool isInRadius(CBlob@ this, CBlob @caller)
 {
-	return ((this.getPosition() - caller.getPosition()).Length() < caller.getRadius() / 2 + this.getRadius());
+	Vec2f offset = Vec2f_zero;
+	if (this.get_bool("shop offset is buy offset"))
+	{
+		offset = this.get_Vec2f("shop offset");
+	}
+	return ((this.getPosition() + Vec2f((this.isFacingLeft() ? -2 : 2)*offset.x, offset.y) - caller.getPosition()).Length() < caller.getRadius() / 2 + this.getRadius());
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
@@ -175,7 +182,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					//inv.server_TakeRequirements(s.requirements);
 					Vec2f spawn_offset = Vec2f();
 
-					if (this.exists("shop offset")) { spawn_offset = this.get_Vec2f("shop offset"); }
+					if (this.exists("shop offset")) { Vec2f _offset = this.get_Vec2f("shop offset"); spawn_offset = Vec2f(2*_offset.x, _offset.y); }
 					if (this.isFacingLeft()) { spawn_offset.x *= -1; }
 					CBlob@ newlyMade = null;
 

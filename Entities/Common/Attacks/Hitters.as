@@ -6,7 +6,7 @@ namespace Hitters
 		nothing = 0,
 
 		//env
-		crush,
+		crush = 1, //(required to be 1 for engine reasons)
 		fall,
 		water,      //just fire
 		water_stun, //splash
@@ -18,7 +18,7 @@ namespace Hitters
 
 		//common actor
 		stomp,
-		suicide,
+		suicide = 11, //(required to be 11 for engine reasons)
 
 		//natural
 		bite,
