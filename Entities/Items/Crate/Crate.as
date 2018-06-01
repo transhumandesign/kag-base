@@ -1,10 +1,10 @@
 // generic crate
 // can hold items in inventory or unpacks to catapult/ship etc.
 
-#include "CrateCommon.as";
-#include "VehicleAttachmentCommon.as";
-#include "MiniIconsInc.as";
-#include "Help.as";
+#include "CrateCommon.as"
+#include "VehicleAttachmentCommon.as"
+#include "MiniIconsInc.as"
+#include "Help.as"
 
 const string required_space = "required space";
 
@@ -192,11 +192,11 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	else*/
 	if (this.hasTag("unpackall"))
 	{
-		caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), "Unpack all");
+		caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), getTranslatedString("Unpack all"));
 	}
 	else if (hasSomethingPacked(this) && !canUnpackHere(this))
 	{
-		string msg = getTranslatedString("Can't unpack {ITEM} here").replace("{ITEM}", this.get_string("packed name"));
+		string msg = getTranslatedString("Can't unpack {ITEM} here").replace("{ITEM}", getTranslatedString(this.get_string("packed name")));
 
 		CButton@ button = caller.CreateGenericButton(12, buttonpos, this, 0, msg);
 		if (button !is null)
@@ -206,11 +206,11 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 	else if (isUnpacking(this))
 	{
-		caller.CreateGenericButton("$DISABLED$", buttonpos, this, this.getCommandID("stop unpack"), "Stop " + this.get_string("packed name"));
+		caller.CreateGenericButton("$DISABLED$", buttonpos, this, this.getCommandID("stop unpack"), getTranslatedString("Stop {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name"))));
 	}
 	else if (hasSomethingPacked(this))
 	{
-		caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), "Unpack " + this.get_string("packed name"));
+		caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), getTranslatedString("Unpack {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name"))));
 	}
 	/*else if (this.getInventory().getItemsCount() == 0 && caller.getCarriedBlob() is null)
 	{
@@ -261,6 +261,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void Unpack(CBlob@ this)
 {
+	if(!getNet().isServer()) return;
+
 	CBlob@ blob = server_CreateBlob(this.get_string("packed"), this.getTeamNum(), Vec2f_zero);
 
 	// put on ground if not in water

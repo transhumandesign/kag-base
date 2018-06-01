@@ -3,17 +3,21 @@
 #include "BasePNGLoader.as";
 #include "WAR_Technology.as";
 
-const SColor color_hall(255, 211, 249, 193);
-
-const SColor color_tradingpost_1(0xff8888ff);
-const SColor color_tradingpost_2(0xffff8888);
-
-const SColor color_blue_team_scroll(0xff000088);
-const SColor color_red_team_scroll(0xff880000);
-
-const SColor color_crappy_scroll(0xff563d56);
-const SColor color_medium_scroll(0xff9a419b);
-const SColor color_super_scroll(0xffcf31d1);
+// Custom map colors for WAR
+namespace war_colors
+{
+	enum color
+	{
+		hall             = 0xFFD3F9C1, // ARGB(255, 211, 249, 193)
+		tradingpost_1    = 0xFF8888FF,
+		tradingpost_2    = 0xFFFF8888,
+		blue_team_scroll = 0xFF000088,
+		red_team_scroll  = 0xFF880000,
+		crappy_scroll    = 0xFF563D56,
+		medium_scroll    = 0xFF9A419B,
+		super_scroll     = 0xFFCF31D1
+	};
+}
 
 enum Offset
 {
@@ -30,7 +34,6 @@ enum Offset
 
 class WarPNGLoader : PNGLoader
 {
-
 	WarPNGLoader()
 	{
 		super();
@@ -46,74 +49,29 @@ class WarPNGLoader : PNGLoader
 	}
 
 	//override this to extend functionality per-pixel.
-	void handlePixel(SColor pixel, int offset)
+	void handlePixel(const SColor &in pixel, int offset) override
 	{
 		PNGLoader::handlePixel(pixel, offset);
 
-		if (pixel == color_hall)
+		switch (pixel.color)
 		{
-			spawnBlob(map, "hall", offset, -1);
-			offsets[autotile_offset].push_back(offset);
-		}
-		// TRADING POST
-		else if (pixel == color_tradingpost_1)
-		{
+		case war_colors::tradingpost_1:
+		case war_colors::tradingpost_2:
+			autotile(offset);
 			spawnBlob(map, "tradingpost", offset, -1);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if (pixel == color_tradingpost_2)
-		{
-			spawnBlob(map, "tradingpost", offset, -1);
-			offsets[autotile_offset].push_back(offset);
-		}
+		break;
 		//random scroll per-team
-		else if (pixel == color_blue_team_scroll)
-		{
-			offsets[blue_team_scroll].push_back(offset);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if (pixel == color_red_team_scroll)
-		{
-			offsets[red_team_scroll].push_back(offset);
-			offsets[autotile_offset].push_back(offset);
-		}
+		case war_colors::blue_team_scroll: autotile(offset); offsets[blue_team_scroll].push_back(offset); break;
+		case war_colors::red_team_scroll:  autotile(offset); offsets[ red_team_scroll].push_back(offset); break;
 		//generic random scrolls
-		else if (pixel == color_crappy_scroll)
-		{
-			offsets[crap_scroll].push_back(offset);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if (pixel == color_medium_scroll)
-		{
-			offsets[medium_scroll].push_back(offset);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if (pixel == color_super_scroll)
-		{
-			offsets[super_scroll].push_back(offset);
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if (pixel == color_blue_main_spawn)
-		{
-			CBlob@ hall = spawnBlob(map, "hall", offset, 0);
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back(offset);
-		}
-		else if (pixel == color_red_main_spawn)
-		{
-			CBlob@ hall = spawnBlob(map, "hall", offset, 1);
-			if (hall !is null) // add research to first hall
-			{
-				hall.AddScript("Researching.as");
-				hall.Tag("script added");
-			}
-			offsets[autotile_offset].push_back(offset);
-		}
-
+		case war_colors::crappy_scroll:    autotile(offset); offsets[     crap_scroll].push_back(offset); break;
+		case war_colors::medium_scroll:    autotile(offset); offsets[   medium_scroll].push_back(offset); break;
+		case war_colors::super_scroll:     autotile(offset); offsets[    super_scroll].push_back(offset); break;
+		//halls
+		case war_colors::hall:             autotile(offset); spawnBlob(map, "hall", offset); break;
+		case map_colors::blue_main_spawn:  autotile(offset); spawnHall(map, offset, 0); break;
+		case map_colors::red_main_spawn:   autotile(offset); spawnHall(map, offset, 1); break;
+		};
 	}
 
 	//override this to add post-load offset types.

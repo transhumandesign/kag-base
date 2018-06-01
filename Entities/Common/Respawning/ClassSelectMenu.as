@@ -1,4 +1,4 @@
-//stuff for building repspawn menus
+//stuff for building respawn menus
 
 #include "RespawnCommandCommon.as"
 
@@ -48,7 +48,7 @@ void addClassesToMenu(CBlob@ this, CGridMenu@ menu, u16 callerID)
 			CBitStream params;
 			write_classchange(params, callerID, pclass.configFilename);
 
-			CGridButton@ button = menu.AddButton(pclass.iconName, pclass.name, SpawnCmd::changeClass, Vec2f(CLASS_BUTTON_SIZE, CLASS_BUTTON_SIZE), params);
+			CGridButton@ button = menu.AddButton(pclass.iconName, getTranslatedString(pclass.name), SpawnCmd::changeClass, Vec2f(CLASS_BUTTON_SIZE, CLASS_BUTTON_SIZE), params);
 			//button.SetHoverText( pclass.description + "\n" );
 		}
 	}

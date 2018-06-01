@@ -11,9 +11,11 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (this.getAttachments().getAttachedBlob("DRIVER") !is null) return;
+
 	if (this.getTeamNum() == caller.getTeamNum() && isOverlapping(this, caller) && !caller.isAttached() && !this.hasTag("immobile"))
 	{
-		caller.CreateGenericButton(2, Vec2f(0.0f, 8.0f), this, this.getCommandID("pop_wheels"), "Immobilise");
+		caller.CreateGenericButton(2, Vec2f(0.0f, 8.0f), this, this.getCommandID("pop_wheels"), getTranslatedString("Immobilise"));
 	}
 }
 
@@ -23,9 +25,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		if (!this.hasTag("immobile"))
 		{
-			this.Tag("immobile");
 			CBlob@ chauffeur = this.getAttachments().getAttachedBlob("DRIVER");
-			if (chauffeur !is null) this.server_DetachFrom(chauffeur);
+
+			if (chauffeur !is null) return;
+
+			this.Tag("immobile");
 			PopWheels(this, true);
 		}
 	}

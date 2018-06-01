@@ -3,10 +3,10 @@
 // properties:
 //      shop offset - Vec2f - used to offset things bought that spawn into the world, like vehicles
 
-#include "ShopCommon.as";
-#include "Requirements_Tech.as";
-#include "MakeCrate.as";
-#include "CheckSpam.as";
+#include "ShopCommon.as"
+#include "Requirements_Tech.as"
+#include "MakeCrate.as"
+#include "CheckSpam.as"
 
 void onInit(CBlob@ this)
 {
@@ -24,6 +24,8 @@ void onInit(CBlob@ this)
 		this.set_string("shop description", "Workbench");
 	if(!this.exists("shop icon"))
 		this.set_u8("shop icon", 15);
+	if(!this.exists("shop offset is buy offset"))
+		this.set_bool("shop offset is buy offset", false);
 
 	if(!this.exists("shop button radius"))
 	{
@@ -57,7 +59,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		this.get_Vec2f("shop offset"),              // button offset
 		this,                                       // button attachment
 		this.getCommandID("shop menu"),             // command id
-		this.get_string("shop description"),        // description
+		getTranslatedString(this.get_string("shop description")),        // description
 		params);                                    // bit stream
 
 		button.enableRadius = this.get_u8("shop button radius");
@@ -66,7 +68,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 bool isInRadius(CBlob@ this, CBlob @caller)
 {
-	return ((this.getPosition() - caller.getPosition()).Length() < caller.getRadius() / 2 + this.getRadius());
+	Vec2f offset = Vec2f_zero;
+	if (this.get_bool("shop offset is buy offset"))
+	{
+		offset = this.get_Vec2f("shop offset");
+	}
+	return ((this.getPosition() + Vec2f((this.isFacingLeft() ? -2 : 2)*offset.x, offset.y) - caller.getPosition()).Length() < caller.getRadius() / 2 + this.getRadius());
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
@@ -175,7 +182,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					//inv.server_TakeRequirements(s.requirements);
 					Vec2f spawn_offset = Vec2f();
 
-					if (this.exists("shop offset")) { spawn_offset = this.get_Vec2f("shop offset"); }
+					if (this.exists("shop offset")) { Vec2f _offset = this.get_Vec2f("shop offset"); spawn_offset = Vec2f(2*_offset.x, _offset.y); }
 					if (this.isFacingLeft()) { spawn_offset.x *= -1; }
 					CBlob@ newlyMade = null;
 
@@ -304,9 +311,9 @@ void addShopItemsToMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
 			CGridButton@ button;
 
 			if (s_item.customButton)
-				@button = menu.AddButton(s_item.iconName, s_item.name, this.getCommandID("shop buy"), Vec2f(s_item.buttonwidth, s_item.buttonheight), params);
+				@button = menu.AddButton(s_item.iconName, getTranslatedString(s_item.name), this.getCommandID("shop buy"), Vec2f(s_item.buttonwidth, s_item.buttonheight), params);
 			else
-				@button = menu.AddButton(s_item.iconName, s_item.name, this.getCommandID("shop buy"), params);
+				@button = menu.AddButton(s_item.iconName, getTranslatedString(s_item.name), this.getCommandID("shop buy"), params);
 
 
 			if (button !is null)
@@ -355,7 +362,7 @@ void addShopItemsToMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
 					//if (takeReqsFromStorage)
 					//	desc += "\n\n(Using resources from team storage)";
 
-					SetItemDescription_Tech(button, caller, s_item.requirements, desc, takeReqsFromStorage ? storageReq.getInventory() : this.getInventory());
+					SetItemDescription_Tech(button, caller, s_item.requirements, getTranslatedString(desc), takeReqsFromStorage ? storageReq.getInventory() : this.getInventory());
 				}
 
 				//if (s_item.producing) {
@@ -378,7 +385,7 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 
 
 	CControls@ controls = caller.getControls();
-	CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + offset, this, Vec2f(slotsAdd.x, slotsAdd.y), description);
+	CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + offset, this, Vec2f(slotsAdd.x, slotsAdd.y), getTranslatedString(description));
 
 	if (menu !is null)
 	{
@@ -391,5 +398,5 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 
 void BuildDefaultShopMenu(CBlob@ this, CBlob @caller)
 {
-	BuildShopMenu(this, caller, "Shop", Vec2f(0, 0), Vec2f(4, 4));
+	BuildShopMenu(this, caller, getTranslatedString("Shop"), Vec2f(0, 0), Vec2f(4, 4));
 }

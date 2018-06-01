@@ -41,8 +41,8 @@ void onInit(CBlob@ this)
 
 	this.addCommandID(grapple_sync_cmd);
 
-	SetHelp(this, "help self hide", "archer", "Hide    $KEY_S$", "", 1);
-	SetHelp(this, "help self action2", "archer", "$Grapple$ Grappling hook    $RMB$", "", 3);
+	SetHelp(this, "help self hide", "archer", getTranslatedString("Hide    $KEY_S$"), "", 1);
+	SetHelp(this, "help self action2", "archer", getTranslatedString("$Grapple$ Grappling hook    $RMB$"), "", 3);
 
 	//add a command ID for each arrow type
 	for (uint i = 0; i < arrowTypeNames.length; i++)
@@ -623,6 +623,8 @@ bool checkGrappleStep(CBlob@ this, ArcherInfo@ archer, CMap@ map, const f32 dist
 
 		archer.grapple_ratio = Maths::Max(0.2, Maths::Min(archer.grapple_ratio, dist / archer_grapple_length));
 
+		archer.grapple_pos.y = Maths::Max(0.0, archer.grapple_pos.y);
+
 		if (canSend(this)) SyncGrapple(this);
 
 		return true;
@@ -968,7 +970,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 	this.ClearGridMenusExceptInventory();
 	Vec2f pos(gridmenu.getUpperLeftPosition().x + 0.5f * (gridmenu.getLowerRightPosition().x - gridmenu.getUpperLeftPosition().x),
 	          gridmenu.getUpperLeftPosition().y - 32 * 1 - 2 * 24);
-	CGridMenu@ menu = CreateGridMenu(pos, this, Vec2f(arrowTypeNames.length, 2), "Current arrow");
+	CGridMenu@ menu = CreateGridMenu(pos, this, Vec2f(arrowTypeNames.length, 2), getTranslatedString("Current arrow"));
 
 	ArcherInfo@ archer;
 	if (!this.get("archerInfo", @archer))
@@ -984,7 +986,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 		for (uint i = 0; i < arrowTypeNames.length; i++)
 		{
 			string matname = arrowTypeNames[i];
-			CGridButton @button = menu.AddButton(arrowIcons[i], arrowNames[i], this.getCommandID("pick " + matname));
+			CGridButton @button = menu.AddButton(arrowIcons[i], getTranslatedString(arrowNames[i]), this.getCommandID("pick " + matname));
 
 			if (button !is null)
 			{
@@ -1017,7 +1019,7 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 		{
 			if (itemname == arrowTypeNames[j])
 			{
-				SetHelp(this, "help self action", "archer", "$arrow$Fire arrow   $KEY_HOLD$$LMB$", "", 3);
+				SetHelp(this, "help self action", "archer", getTranslatedString("$arrow$Fire arrow   $KEY_HOLD$$LMB$"), "", 3);
 				if (j > 0 && this.getInventory().getItemsCount() > 1)
 				{
 					SetHelp(this, "help inventory", "archer", "$Help_Arrow1$$Swap$$Help_Arrow2$         $KEY_TAP$$KEY_F$", "", 2);

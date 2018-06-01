@@ -321,7 +321,8 @@ shared class TDMCore : RulesCore
 		}
 		else if (ticksToStart > 0 && rules.isWarmup()) //is the start of the game, spawn everyone + give mats
 		{
-			rules.SetGlobalMessage("Match starts in " + ((ticksToStart / 30) + 1));
+			rules.SetGlobalMessage("Match starts in {SEC}");
+			rules.AddGlobalMessageReplacement("SEC", "" + ((ticksToStart / 30) + 1));
 			tdm_spawns.force = true;
 
 			//set kills and cache #players in smaller team
@@ -689,7 +690,8 @@ shared class TDMCore : RulesCore
 
 			rules.SetTeamWon(winteamIndex);   //game over!
 			rules.SetCurrentState(GAME_OVER);
-			rules.SetGlobalMessage(winteam.name + " wins the game!");
+			rules.SetGlobalMessage("{WINNING_TEAM} wins the game!");
+			rules.AddGlobalMessageReplacement("WINNING_TEAM", winteam.name);
 		}
 	}
 

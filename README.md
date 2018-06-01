@@ -2,7 +2,7 @@
 <p align = 'center'>Base game content</p>
 
 <p align = 'center'>
-  <a href = 'https://discord.gg/JucZs9m'>
+  <a href = 'https://discord.gg/kag'>
       <img src = 'https://img.shields.io/badge/%23development-on Discord-7289DA.svg'>
   </a>
   <a href = 'http://webchat.quakenet.org/?channels=#thd'>
@@ -22,6 +22,8 @@ To fix an issue or enhance a module, follow these steps:
 - Commit the modifications
 - Create a pull request
 
+For more info, check out these [guidelines](https://github.com/transhumandesign/kag-base/blob/master/CONTRIBUTING.md).
+
 ### Legal Considerations and Licensing
 
 To submit a public pull request you must be legally able and willing to:
@@ -31,4 +33,4 @@ To submit a public pull request you must be legally able and willing to:
 
 You retain rights to use your contribution for other purposes and projects, we just need to be able to use it without restriction in our game!
 
-We are open to negotiating compensation for large, self-contained contributions; especially from established contributors. Such negotiations must take place before work begins, and especially before.
+We are open to negotiating compensation for large, self-contained contributions; especially from established contributors. However, such negotiations must take place before work begins, and especially before changes are contributed back to the repository.

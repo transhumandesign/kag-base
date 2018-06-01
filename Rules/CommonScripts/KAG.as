@@ -30,6 +30,7 @@ void onInit(CRules@ this)
 	onRestart(this);
 }
 
+bool need_sky_check = false;
 void onRestart(CRules@ this)
 {
 	//map borders
@@ -42,6 +43,19 @@ void onRestart(CRules@ this)
 		map.SetBorderColourRight(SColor(0xff000000));
 		map.SetBorderColourBottom(SColor(0xff000000));
 
+		//do it first tick so the map is definitely there
+		//(it is on server, but not on client unfortunately)
+		need_sky_check = true;
+	}
+}
+
+void onTick(CRules@ this)
+{
+	//TODO: figure out a way to optimise so we don't need to keep running this hook
+	if (need_sky_check)
+	{
+		need_sky_check = false;
+		CMap@ map = getMap();
 		//find out if there's any solid tiles in top row
 		// if not - semitransparent sky
 		// if yes - totally solid, looks buggy with "floating" tiles

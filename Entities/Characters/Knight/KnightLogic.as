@@ -79,8 +79,8 @@ void onInit(CBlob@ this)
 	//centered on inventory
 	this.set_Vec2f("inventory offset", Vec2f(0.0f, 0.0f));
 
-	SetHelp(this, "help self action", "knight", "$Jab$Jab        $LMB$", "", 4);
-	SetHelp(this, "help self action2", "knight", "$Shield$Shield    $KEY_HOLD$$RMB$", "", 4);
+	SetHelp(this, "help self action", "knight", getTranslatedString("$Jab$Jab        $LMB$"), "", 4);
+	SetHelp(this, "help self action2", "knight", getTranslatedString("$Shield$Shield    $KEY_HOLD$$RMB$"), "", 4);
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().removeIfTag = "dead";
@@ -521,7 +521,7 @@ void onTick(CBlob@ this)
 
 		if (this.isKeyJustPressed(key_action1) && getGameTime() > 150)
 		{
-			SetHelp(this, "help self action", "knight", "$Slash$ Slash!    $KEY_HOLD$$LMB$", "", 13);
+			SetHelp(this, "help self action", "knight", getTranslatedString("$Slash$ Slash!    $KEY_HOLD$$LMB$"), "", 13);
 		}
 	}
 
@@ -709,33 +709,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 	}
-}
-
-
-f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
-{
-	// play cling sound if other knight attacked us
-	// dmg could be taken out here if we ever want to
-
-	if (hitterBlob.getPosition().x < this.getPosition().x && hitterBlob.getName() == "knight") // knight and the left one (to play only once)
-	{
-		CSprite@ sprite = this.getSprite();
-		CSprite@ hsprite = hitterBlob.getSprite();
-
-		if (hsprite.isAnimation("strike_power_ready") || hsprite.isAnimation("strike_mid") ||
-		        hsprite.isAnimation("strike_mid_down") || hsprite.isAnimation("strike_up") ||
-		        hsprite.isAnimation("strike_down") || hsprite.isAnimation("strike_up"))
-		{
-			if (sprite.isAnimation("strike_power_ready") || sprite.isAnimation("strike_mid") ||
-			        sprite.isAnimation("strike_mid_down") || sprite.isAnimation("strike_up") ||
-			        sprite.isAnimation("strike_down") || sprite.isAnimation("strike_up"))
-			{
-				this.getSprite().PlaySound("SwordCling");
-			}
-		}
-	}
-
-	return damage; //no block, damage goes through
 }
 
 /////////////////////////////////////////////////
@@ -1073,7 +1046,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 	this.ClearGridMenusExceptInventory();
 	Vec2f pos(gridmenu.getUpperLeftPosition().x + 0.5f * (gridmenu.getLowerRightPosition().x - gridmenu.getUpperLeftPosition().x),
 	          gridmenu.getUpperLeftPosition().y - 32 * 1 - 2 * 24);
-	CGridMenu@ menu = CreateGridMenu(pos, this, Vec2f(bombTypeNames.length, 2), "Current bomb");
+	CGridMenu@ menu = CreateGridMenu(pos, this, Vec2f(bombTypeNames.length, 2), getTranslatedString("Current bomb"));
 	u8 weaponSel = this.get_u8("bomb type");
 
 	if (menu !is null)
@@ -1083,7 +1056,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 		for (uint i = 0; i < bombTypeNames.length; i++)
 		{
 			string matname = bombTypeNames[i];
-			CGridButton @button = menu.AddButton(bombIcons[i], bombNames[i], this.getCommandID("pick " + matname));
+			CGridButton @button = menu.AddButton(bombIcons[i], getTranslatedString(bombNames[i]), this.getCommandID("pick " + matname));
 
 			if (button !is null)
 			{

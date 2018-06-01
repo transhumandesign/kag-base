@@ -89,7 +89,7 @@ void MakeBlocksMenu(CInventory@ this, const Vec2f &in INVENTORY_CE)
 
 	const Vec2f MENU_CE = Vec2f(0, MENU_SIZE.y * -GRID_SIZE - GRID_PADDING) + INVENTORY_CE;
 
-	CGridMenu@ menu = CreateGridMenu(MENU_CE, blob, MENU_SIZE, "Build");
+	CGridMenu@ menu = CreateGridMenu(MENU_CE, blob, MENU_SIZE, getTranslatedString("Build"));
 	if(menu !is null)
 	{
 		menu.deleteAfterClick = false;
@@ -100,8 +100,8 @@ void MakeBlocksMenu(CInventory@ this, const Vec2f &in INVENTORY_CE)
 		{
 			BuildBlock@ b = blocks[PAGE][i];
 			if(b is null) continue;
-
-			CGridButton@ button = menu.AddButton(b.icon, "\n" + b.description, Builder::make_block + i);
+			string block_desc = getTranslatedString(b.description);
+			CGridButton@ button = menu.AddButton(b.icon, "\n" + block_desc, Builder::make_block + i);
 			if(button is null) continue;
 
 			button.selectOneOnClick = true;
@@ -109,11 +109,11 @@ void MakeBlocksMenu(CInventory@ this, const Vec2f &in INVENTORY_CE)
 			CBitStream missing;
 			if(hasRequirements(this, b.reqs, missing, not b.buildOnGround))
 			{
-				button.hoverText = b.description + "\n" + getButtonRequirementsText(b.reqs, false);
+				button.hoverText = block_desc + "\n" + getButtonRequirementsText(b.reqs, false);
 			}
 			else
 			{
-				button.hoverText = b.description + "\n" + getButtonRequirementsText(missing, true);
+				button.hoverText = block_desc + "\n" + getButtonRequirementsText(missing, true);
 				button.SetEnabled(false);
 			}
 
@@ -336,6 +336,8 @@ void onRender(CSprite@ this)
 				blob.set_u32( "show build time", getGameTime());
 			}
 
+			Vec2f cam_offset = getCamera().getInterpolationOffset();
+
 			BlockCursor @bc;
 			blob.get("blockCursor", @bc);
 			if (bc !is null)
@@ -343,8 +345,8 @@ void onRender(CSprite@ this)
 				if (bc.blockActive || bc.blobActive)
 				{
 					Vec2f pos = blob.getPosition();
-					Vec2f myPos =  blob.getScreenPos() + Vec2f(0.0f,(pos.y > blob.getAimPos().y) ? -blob.getRadius() : blob.getRadius());
-					Vec2f aimPos2D = getDriver().getScreenPosFromWorldPos( blob.getAimPos() );
+					Vec2f myPos =  blob.getInterpolatedScreenPos() + Vec2f(0.0f,(pos.y > blob.getAimPos().y) ? -blob.getRadius() : blob.getRadius());
+					Vec2f aimPos2D = getDriver().getScreenPosFromWorldPos( blob.getAimPos() + cam_offset );
 
 					if (!bc.hasReqs)
 					{
@@ -356,7 +358,7 @@ void onRender(CSprite@ this)
 					{
 						if (bc.rayBlocked)
 						{
-							Vec2f blockedPos2D = getDriver().getScreenPosFromWorldPos(bc.rayBlockedPos);
+							Vec2f blockedPos2D = getDriver().getScreenPosFromWorldPos(bc.rayBlockedPos + cam_offset);
 							GUI::DrawArrow2D( aimPos2D, blockedPos2D, SColor(0xffdd2212) );
 						}
 
@@ -379,7 +381,7 @@ void onRender(CSprite@ this)
 										CBlob @b = blobsInRadius[i];
 										if (!b.isAttached())
 										{
-											Vec2f bpos = b.getPosition();
+											Vec2f bpos = b.getInterpolatedPosition();
 											float w = b.getWidth();
 											float h = b.getHeight();
 

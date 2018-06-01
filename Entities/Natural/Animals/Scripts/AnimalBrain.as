@@ -44,7 +44,7 @@ void onInit(CBrain@ this)
 	//this.getCurrentScript().tickFrequency = 5; // cant limit this, needs to press keys each frame
 
 	Vec2f terpos = blob.getPosition();
-	terpos += blob.getRadius();
+	terpos.y += blob.getRadius();
 	blob.set_Vec2f(terr_pos_property, terpos);
 }
 
@@ -60,7 +60,7 @@ void onTick(CBrain@ this)
 	if (blob.getTickSinceCreated() == 10)
 	{
 		Vec2f terpos = blob.getPosition();
-		terpos += blob.getRadius();
+		terpos.y += blob.getRadius();
 		blob.set_Vec2f(terr_pos_property, terpos);
 		//	printf("set territory " + blob.getPosition().x + " " + blob.getPosition().y );
 	}

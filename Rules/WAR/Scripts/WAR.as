@@ -3,17 +3,18 @@
 
 #define SERVER_ONLY
 
-#include "WAR_Structs.as";
-#include "RulesCore.as";
-#include "RespawnSystem.as";
+#include "WAR_Structs.as"
+#include "RulesCore.as"
+#include "RespawnSystem.as"
 #include "WAR_PopulateSpawnList.as"
-#include "MakeCrate.as";
-#include "ScrollCommon.as";
-#include "WAR_HUDCommon.as";
-#include "TradingCommon.as";
-#include "Descriptions.as";
-#include "MigrantCommon.as";
-#include "WAR_Population.as";
+#include "MakeCrate.as"
+#include "ScrollCommon.as"
+#include "WAR_HUDCommon.as"
+#include "TradingCommon.as"
+#include "Descriptions.as"
+#include "MigrantCommon.as"
+#include "WAR_Population.as"
+#include "Costs.as"
 
 //simple config function - edit the variables in the config file
 void Config(WarCore@ this)
@@ -406,6 +407,7 @@ shared class WarCore : RulesCore
 	s32 shipmentFrequency;
 	f32 alivePercent;
 	s32 startingMigrants;
+	bool missingHalls;
 
 	f32 raid_distance;
 
@@ -430,6 +432,7 @@ shared class WarCore : RulesCore
 		@war_spawns = cast < WarSpawns@ > (_respawns);
 		rules.SetCurrentState(WARMUP);
 		server_CreateBlob("Entities/Meta/WARMusic.cfg");
+		missingHalls = true;
 	}
 
 	int gametime;
@@ -444,42 +447,81 @@ shared class WarCore : RulesCore
 			updateHUD();
 		}
 
+		//don't update any more if the game has finished
 		if (rules.isGameOver()) { return; }
 
 		const u32 time = getGameTime();
 		const bool havePlayers = allTeamsHavePlayers();
 
-		int tick = 35;
+		const int tick_freq = 35;
+		const bool should_tick = ((time % 35) == 0);
 
-		if (time % tick == 0)
+		const bool is_build_time = (rules.isIntermission() || rules.isWarmup());
+
+		if (should_tick)
 		{
-			updateMigrants(time % (10 * tick) == 0);
+			updateMigrants(time % (10 * tick_freq) == 0);
 			UpdatePlayerCounts();
 			UpdatePopulationCounter();
+			UpdateTeamsLost();
+			missingHalls = (GetTeamWon() == -2);
 		}
 
-		//CHECK IF TEAMS HAVE ENOUGH PLAYERS
-		if ((rules.isIntermission() || rules.isWarmup()) && (!havePlayers))
+		//manage build time
+		if (is_build_time)
 		{
-			gametime = time + warmUpTime;
-			rules.set_u32("game_end_time", time + gameDuration);
-			rules.SetGlobalMessage("Not enough players in each team for the game to start.\nPlease wait for someone to join...");
-			war_spawns.force = true;
-		}
-		else
-		{
-			if (time % tick == 0)
+			//hold the start of the countdown if needed
+			bool can_start = !missingHalls && havePlayers;
+			if (!can_start)
 			{
-				//needs to be updated before the teamwon
-				//check if the team won
-				CheckTeamWon(tick);
-				if (rules.isMatchRunning())
+				//figure out the most helpful message
+				string start_message = "";
+				if(!havePlayers)
+				{
+					start_message = "Not enough players in each team for the game to start.\nPlease wait for someone to join...";
+				}
+				else if(missingHalls)
+				{
+					start_message = "Waiting for a hall capture before starting the game...";
+				}
+				//update the start time
+				gametime = time + warmUpTime;
+				rules.set_u32("game_end_time", time + gameDuration);
+				rules.SetGlobalMessage(start_message);
+				war_spawns.force = true;
+			}
+			//otherwise, update match start time
+			else
+			{
+				s32 ticksToStart = gametime - time;
+				war_spawns.force = false;
+				//ready to go!
+				if (ticksToStart <= 0)
 				{
 					rules.SetGlobalMessage("");
+					rules.SetCurrentState(GAME);
+				}
+				//otherwise, is the start of the game, spawn everyone + give mats
+				else
+				{
+					rules.SetGlobalMessage("Match starts in {SEC}");
+					rules.AddGlobalMessageReplacement("SEC", "" + ((ticksToStart / 30) + 1));
+					war_spawns.force = true;
 				}
 			}
 		}
-		if (havePlayers && time % tick == 0)
+		else
+		{
+			if (should_tick)
+			{
+				//needs to be updated before the teamwon
+				//check if the team won
+				CheckTeamWon();
+			}
+		}
+
+		//handle shipments
+		if (havePlayers && should_tick)
 		{
 			if (startTime == 0)
 			{
@@ -488,25 +530,6 @@ shared class WarCore : RulesCore
 			updateShipments();
 		}
 
-		if (havePlayers && rules.isWarmup())
-		{
-			s32 ticksToStart = gametime - time;
-			//setting the game state to running after warmup
-			war_spawns.force = false;
-			//printf("ticksToStart " + ticksToStart );
-			//printf("gametime " + gametime );
-			//printf("time " + time );
-			if (ticksToStart <= 0)
-			{
-				rules.SetCurrentState(GAME);
-				printf("WAR STARTED");
-			}
-			else if (ticksToStart > 0) //is the start of the game, spawn everyone + give mats
-			{
-				rules.SetGlobalMessage("\nMatch starts in " + ((ticksToStart / 30) + 1));
-				war_spawns.force = true;
-			}
-		}
 
 		RulesCore::Update(); //update respawns
 	}
@@ -630,44 +653,90 @@ shared class WarCore : RulesCore
 		}
 	}
 
-	//checks
-	void CheckTeamWon(int tickFrequency)
+	//figure out if any teams lost
+	void UpdateTeamsLost()
 	{
-		// calc alive players before this function with UpdatePlayerCounts!
+		//(don't update if game is over; prevents halls changing after the game is decided from mattering)
+		if(rules.isGameOver()) return;
 
-		// can't lose if the match is running
+		bool[] has_hall(teams.length, false);
 
-		if (!rules.isMatchRunning()) { return; }
-
-		int lostCount = 0;
-		for (uint i = 0; i < teams.length; i++)
+		//mask out teams that have halls
+		CBlob@[] halls;
+		getBlobsByName("hall", @halls);
+		for (uint i = 0; i < halls.length; ++i)
 		{
-			WarTeamInfo@ team = cast < WarTeamInfo@ > (teams[i]);
-			if (team.lost)
+			CBlob@ hall = halls[i];
+			const u8 team = hall.getTeamNum();
+
+			if (team < has_hall.length)
 			{
-				lostCount++;
+				has_hall[team] = true;
 			}
 		}
-		if (lostCount > 1)
+
+		//set lost flag on all teams without halls
+		for (uint i = 0; i < has_hall.length; ++i)
 		{
-			return; // tie condition - no halls
-		}
-		else if (lostCount == 1)
-		{
-			for (uint i = 0; i < teams.length; i++)
-			{
-				BaseTeamInfo@ team = teams[i];
-				if (!team.lost)
-				{
-					rules.SetTeamWon(i);
-					rules.SetCurrentState(GAME_OVER);
-					rules.SetGlobalMessage(team.name + " wins the game!");
-					break;
-				}
-			}
+			teams[i].lost = !(has_hall[i]);
 		}
 	}
 
+	//checks
+
+	//check the "win" state
+	// >= 0 this team won
+	// -1   game still in progress
+	// -2   noone captured anything
+	int GetTeamWon()
+	{
+		//count how many teams lost + note team(s) that aren't losing
+		int not_lost = -1;
+		int lostCount = 0;
+		for (uint i = 0; i < teams.length; i++)
+		{
+			if (teams[i].lost)
+			{
+				lostCount++;
+			}
+			else
+			{
+				not_lost = i;
+			}
+		}
+
+		//only one team left? return it
+		if (lostCount == (teams.length - 1) && not_lost != -1)
+		{
+			return not_lost;
+		}
+
+		// tie condition
+		return (lostCount == teams.length) ?
+			// no halls taken on any side
+			-2:
+			// or still have halls
+			-1;
+	}
+
+	// check if anybody won, and set the global state/message if they did
+	void CheckTeamWon()
+	{
+		// can't lose/modify state if the match is not running
+		if (!rules.isMatchRunning()) { return; }
+
+		int team_won = GetTeamWon();
+		if(team_won >= 0 && team_won < teams.length)
+		{
+			BaseTeamInfo@ team = teams[team_won];
+			rules.SetTeamWon(team_won);
+			rules.SetCurrentState(GAME_OVER);
+			rules.SetGlobalMessage("{WINNING_TEAM} wins the game!");
+			rules.AddGlobalMessageReplacement("WINNING_TEAM", team.name);
+		}
+	}
+
+	//update the crate resource shipments
 	void updateShipments()
 	{
 		if (startTime > 0)
@@ -682,15 +751,10 @@ shared class WarCore : RulesCore
 
 			for (uint i = 0; i < teams.length; i++)
 			{
-				//if (i==0)
-				//printf("ship in  " + " time " + time + " startTime " + startTime + " shipmentFirstTime " + shipmentFirstTime + " nextShipmentTime " + nextShipmentTime[i]);
-
 				// ship?
 				if ((nextShipmentTime[i] == 0 && time >= startTime + shipmentFirstTime) ||
-				        (nextShipmentTime[i] > 0  && time >= nextShipmentTime[i]))
+				    (nextShipmentTime[i] > 0  && time >= nextShipmentTime[i]))
 				{
-
-
 					available.clear();
 
 					for (uint step = 0; step < bases.length; ++step)
@@ -708,9 +772,8 @@ shared class WarCore : RulesCore
 
 
 						// check if doesnt have lots of mats or shipment crates
-						bool hasEnoughMats = false;
+						bool needsMats = true;
 						int baseWood = base.getBlobCount("mat_wood");
-
 						if (!warmup)
 						{
 							CBlob@[] blobsInRadius;
@@ -719,11 +782,13 @@ shared class WarCore : RulesCore
 								for (uint i = 0; i < blobsInRadius.length; i++)
 								{
 									CBlob @b = blobsInRadius[i];
+									//crate nearby
 									if (b.hasTag("unpackall"))
 									{
-										hasEnoughMats = true;
+										needsMats = false;
 										break;
 									}
+									//count wood
 									else if (b.getName() == "mat_wood")
 									{
 										baseWood += b.getQuantity();
@@ -731,11 +796,13 @@ shared class WarCore : RulesCore
 								}
 							}
 
-							if (!hasEnoughMats && baseWood > 1000)
-								hasEnoughMats = true;
+							if (baseWood > 1000)
+							{
+								needsMats = false;
+							}
 						}
 
-						if (!hasEnoughMats || warmup)
+						if (needsMats)
 						{
 							CBitStream params;
 							base.SendCommand(base.getCommandID("shipment"), params);
@@ -771,7 +838,10 @@ shared class WarCore : RulesCore
 							}
 						}
 
-						int freq = warmup ? shipmentFrequency * 0.1f : war_spawns.getTimeMultipliedByPlayerCount(shipmentFrequency);
+						int freq = war_spawns.getTimeMultipliedByPlayerCount(shipmentFrequency);
+						if (warmup) {
+							freq = shipmentFrequency * 0.1f;
+						}
 						nextShipmentTime[i] = time + freq;
 					}
 				}
@@ -873,6 +943,8 @@ shared class WarCore : RulesCore
 
 void Reset(CRules@ this)
 {
+	InitCosts();
+
 	printf("Restarting rules script: " + getCurrentScriptName());
 	WarSpawns spawns();
 	WarCore core(this, spawns);
@@ -910,29 +982,22 @@ void onInit(CRules@ this)
 	this.set_s32("restart_rules_after_game_time", 25 * 30);
 }
 
-
-void CheckWin(CRules@ this, CBlob@ blob, const int oldTeam)
+void DoUpdateTeamsLost()
 {
-	// check if any halls remain
-	int teamHalls = 0;
-	CBlob@[] rooms;
-	getBlobsByName("hall", @rooms);
-	for (uint roomStep = 0; roomStep < rooms.length; roomStep++)
-	{
-		CBlob@ room = rooms[roomStep];
-		const u8 teamNum = room.getTeamNum();
-		if (teamNum == oldTeam)
-		{
-			teamHalls++;
-		}
-	}
+	CRules@ this = getRules();
 
-	RulesCore@ core;
+	WarCore@ core;
 	this.get("core", @core);
-	if (core !is null && oldTeam < 2)
+	if (core is null) return;
+
+	core.UpdateTeamsLost();
+}
+
+void onStateChange(CRules@ this, const u8 oldState)
+{
+	if (this.getCurrentState() == GAME)
 	{
-		WarCore@ war_core = cast < WarCore@ > (core);
-		war_core.teams[oldTeam].lost = teamHalls == 0;
+		DoUpdateTeamsLost();
 	}
 }
 
@@ -940,7 +1005,7 @@ void onBlobChangeTeam(CRules@ this, CBlob@ blob, const int oldTeam)
 {
 	if (blob.getName() == "hall" && oldTeam < 2)
 	{
-		CheckWin(this, blob, oldTeam);
+		DoUpdateTeamsLost();
 	}
 }
 
@@ -948,7 +1013,7 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 {
 	if (blob.getName() == "hall")
 	{
-		CheckWin(this, blob, blob.getTeamNum());
+		DoUpdateTeamsLost();
 	}
 }
 
@@ -980,40 +1045,42 @@ TradeItem@ addGoldForItem(CBlob@ this, const string &in name,
 
 void MakeWarTradeMenu(CBlob@ trader)
 {
+	InitCosts();
+
 	// build menu
 	CreateTradeMenu(trader, Vec2f(3, 11), "Trade");
 
 	//econ techs
 //	addTradeSeparatorItem( trader, "$MENU_INDUSTRY$", Vec2f(3,1) );
-//	addTradeScrollFromScrollDef(trader, "saw", cost_crappiest, descriptions[12]);
+//	addTradeScrollFromScrollDef(trader, "saw", cost_crappiest, Descriptions::saw);
 	//addTradeEmptyItem(trader);
 
 	//siege techs
 	addTradeSeparatorItem(trader, "$MENU_SIEGE$", Vec2f(3, 1));
-	addTradeScrollFromScrollDef(trader, "mounted bow", cost_medium, descriptions[31]);
-	addTradeScrollFromScrollDef(trader, "ballista", cost_medium, descriptions[6]);
-	addTradeScrollFromScrollDef(trader, "catapult", cost_big, descriptions[5]);
+	addTradeScrollFromScrollDef(trader, "mounted bow", WARCosts::medium_scroll, Descriptions::mounted_bow);
+	addTradeScrollFromScrollDef(trader, "ballista", WARCosts::medium_scroll, Descriptions::ballista);
+	addTradeScrollFromScrollDef(trader, "catapult", WARCosts::big_scroll, Descriptions::catapult);
 
 	//boats
 	addTradeSeparatorItem(trader, "$MENU_NAVAL$", Vec2f(3, 1));
-	addTradeScrollFromScrollDef(trader, "longboat", cost_medium, descriptions[33]);
-	addTradeScrollFromScrollDef(trader, "warboat", cost_big, descriptions[37]);
+	addTradeScrollFromScrollDef(trader, "longboat", WARCosts::medium_scroll, Descriptions::longboat);
+	addTradeScrollFromScrollDef(trader, "warboat", WARCosts::big_scroll, Descriptions::warboat);
 	addTradeEmptyItem(trader);
 
 	//item kits
 	addTradeSeparatorItem(trader, "$MENU_KITS$", Vec2f(3, 1));
-	//addTradeScrollFromScrollDef(trader, "military basics", cost_crappy, descriptions[44]);
-	addTradeScrollFromScrollDef(trader, "water ammo", cost_crappy, descriptions[50]);
-	addTradeScrollFromScrollDef(trader, "bomb ammo", cost_big, descriptions[51]);
-	addTradeScrollFromScrollDef(trader, "pyro", cost_big, descriptions[46]);
-	addTradeScrollFromScrollDef(trader, "drill", cost_crappiest, descriptions[43]);
-	addTradeScrollFromScrollDef(trader, "saw", cost_crappiest, descriptions[12]);
-	addTradeScrollFromScrollDef(trader, "explosives", cost_big, descriptions[45]);
+	//addTradeScrollFromScrollDef(trader, "military basics", cost_crappy, Descriptions::militarybasics);
+	addTradeScrollFromScrollDef(trader, "water ammo", WARCosts::crappy_scroll, Descriptions::waterarrows);
+	addTradeScrollFromScrollDef(trader, "bomb ammo", WARCosts::big_scroll, Descriptions::bombarrows);
+	addTradeScrollFromScrollDef(trader, "pyro", WARCosts::big_scroll, Descriptions::pyro);
+	addTradeScrollFromScrollDef(trader, "drill", WARCosts::crappiest_scroll, Descriptions::drill);
+	addTradeScrollFromScrollDef(trader, "saw", WARCosts::crappiest_scroll, Descriptions::saw);
+	addTradeScrollFromScrollDef(trader, "explosives", WARCosts::big_scroll, Descriptions::explosives);
 
 	//magic scrolls
 	addTradeSeparatorItem(trader, "$MENU_MAGIC$", Vec2f(3, 1));
-	addTradeScrollFromScrollDef(trader, "carnage", 400, "This magic scroll when cast will turn all nearby enemies into a pile of bloody gibs.");
-	addTradeScrollFromScrollDef(trader, "drought", 120, "This magic scroll will evaporate all water in a large surrounding orb.");
+	addTradeScrollFromScrollDef(trader, "carnage", 400, Descriptions::scroll_carnage);
+	addTradeScrollFromScrollDef(trader, "drought", 120, Descriptions::scroll_drought);
 	addTradeEmptyItem(trader);
 
 	//material exchange
@@ -1039,11 +1106,11 @@ void MakeWarTradeMenu(CBlob@ trader)
 
 	//individual items
 	//addTradeSeparatorItem( trader, "$MENU_OTHER$", Vec2f(3,1) );
-	//addTradeScrollFromScrollDef(trader, "boulder", cost_crappy, descriptions[17]);
+	//addTradeScrollFromScrollDef(trader, "boulder", cost_crappy, Descriptions::boulder);
 	//addTradeEmptyItem(trader);
 	//addTradeEmptyItem(trader);
 
 	//individual items
 	//addTradeSeparatorItem( trader, "$MENU_TECHS$", Vec2f(3,1) );
-	//addTradeScrollFromScrollDef(trader, "stone", cost_crappy, descriptions[47]);
+	//addTradeScrollFromScrollDef(trader, "stone", cost_crappy, Descriptions::stonetech);
 }

@@ -22,7 +22,7 @@ void onRender(CSprite@ this)
 	if (aircount < default_aircount + offset + extra)
 	{
 		// draw drown indicator
-		Vec2f p = blob.getPosition() + Vec2f(0.0f, -blob.getHeight() * 1.5f);
+		Vec2f p = blob.getInterpolatedPosition() + Vec2f(0.0f, -blob.getHeight() * 1.5f);
 		p.x -= 8;
 		Vec2f pos = getDriver().getScreenPosFromWorldPos(p);
 		Vec2f dim(8, 8);

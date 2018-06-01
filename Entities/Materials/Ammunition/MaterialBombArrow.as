@@ -1,5 +1,5 @@
 
-#define SERVER_ONLY;
+#define SERVER_ONLY
 
 void onInit(CBlob@ this)
 {

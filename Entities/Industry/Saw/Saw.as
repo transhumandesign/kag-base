@@ -31,7 +31,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (caller.getTeamNum() != this.getTeamNum() || this.getDistanceTo(caller) > 16) return;
 
-	string desc = "Turn Saw " + (getSawOn(this) ? "Off" : "On");
+	string desc = getTranslatedString("Turn Saw " + (getSawOn(this) ? "Off" : "On"));
 	caller.CreateGenericButton(8, Vec2f(0, 0), this, this.getCommandID(toggle_id), desc);
 }
 
@@ -95,11 +95,19 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 	//make plankfrom wooden stuff
 	if (tobeblended.getName() == "log")
 	{
-		CBlob @wood = server_CreateBlob("mat_wood", this.getTeamNum(), this.getPosition() + Vec2f(0, 12));
-		if (wood !is null)
+		if (getNet().isServer())
 		{
-			wood.server_SetQuantity(50);
-			wood.setVelocity(Vec2f(0, -4.0f));
+			CBlob@ blob = server_CreateBlobNoInit('mat_wood');
+
+			if (blob !is null)
+			{
+				blob.Tag('custom quantity');
+				blob.Init();
+
+				blob.setPosition(this.getPosition() + Vec2f(0, 12));
+				blob.setVelocity(Vec2f(0, -4.0f));
+				blob.server_SetQuantity(50);
+			}
 		}
 
 		this.getSprite().PlaySound("SawLog.ogg");

@@ -32,9 +32,9 @@ void onTick(CBlob@ this)
 {
 	Vec2f vel = Vec2f(0, -(10 + XORRandom(30)) * 0.1f);
 	if (this.isKeyPressed(key_left))
-		vel -= 1.0f;
+		vel.x -= 1.0f;
 	if (this.isKeyPressed(key_right))
-		vel += 1.0f;
+		vel.x += 1.0f;
 	this.setVelocity(vel);
 }
 
