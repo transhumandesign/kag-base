@@ -49,10 +49,10 @@
 //CommonBuilderBlocks.as
 	"Stone Block\nBasic building block"                     :"Каменный блок\nОсновной строительный блок",
 	"Back Stone Wall\nExtra support"                        :"Каменная стена\nДополнительная опора",
-	"Stone Door\nPlace next to walls"                       :"Каменная дверь\nСтавьте рядом с блоками",
+	"Stone Door\nPlace next to walls"                       :"Каменная дверь\nСтавьте рядом со стенами",
 	"Wood Block\nCheap block\nwatch out for fire!"          :"Деревянный блок\nДешёвый\nОпасайтесь огня!",
 	"Back Wood Wall\nCheap extra support"                   :"Деревянная стена\nДешёвая опора",
-	"Wooden Door\nPlace next to walls"                      :"Деревянная дверь\nСтавьте рядом с блоками",
+	"Wooden Door\nPlace next to walls"                      :"Деревянная дверь\nСтавьте рядом со стенами",
 	"Trap Block\nOnly enemies can pass"                     :"Блок-ловушка\nТолько враги смогут пройти",
 	"Ladder\nAnyone can climb it"                           :"Лестница\nЛюбой может подняться по ней",
 	"Wooden Platform\nOne way platform"                     :"Деревянная платформа\nОдносторонняя платформа",
