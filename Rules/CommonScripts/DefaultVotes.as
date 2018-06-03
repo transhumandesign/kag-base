@@ -389,7 +389,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			{
 				CBitStream params;
 				params.write_u8(i);
-				Menu::addContextItemWithParams(kickmenu, kick_reason_string[i], "DefaultVotes.as", "Callback_KickReason", params);
+				Menu::addContextItemWithParams(kickmenu, getTranslatedString(kick_reason_string[i]), "DefaultVotes.as", "Callback_KickReason", params);
 			}
 
 			Menu::addSeparator(kickmenu);
@@ -506,7 +506,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			{
 				CBitStream params;
 				params.write_u8(i);
-				Menu::addContextItemWithParams(mapmenu, nextmap_reason_string[i], "DefaultVotes.as", "Callback_NextMap", params);
+				Menu::addContextItemWithParams(mapmenu, getTranslatedString(nextmap_reason_string[i]), "DefaultVotes.as", "Callback_NextMap", params);
 			}
 		}
 	}
