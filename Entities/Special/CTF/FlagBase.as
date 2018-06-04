@@ -82,7 +82,6 @@ void onTick(CBlob@ this)
 				}
 				if (b.hasTag("stalemate_return"))
 				{
-					//sync tag, flag can play sounds
 					b.server_DetachAll();
 					this.SendCommand(this.getCommandID(flag_return));
 					b.Untag("stalemate_return"); //local

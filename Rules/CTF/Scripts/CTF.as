@@ -23,7 +23,7 @@ void Config(CTFCore@ this)
 
 	//how long to wait for everyone to spawn in?
 	s32 warmUpTimeSeconds = cfg.read_s32("warmup_time", 30);
-	this.warmUpTime = 1;//(getTicksASecond() * warmUpTimeSeconds);
+	this.warmUpTime = (getTicksASecond() * warmUpTimeSeconds);
 
 	s32 stalemateTimeSeconds = cfg.read_s32("stalemate_time", 30);
 	this.stalemateTime = (getTicksASecond() * stalemateTimeSeconds);
@@ -603,42 +603,56 @@ shared class CTFCore : RulesCore
 			}
 		}
 
-		if(stalemate){
-			if(!rules.exists("stalemate_breaker")){
-				rules.set_s16("stalemate_breaker",stalemateTime);
-			} else {
-				rules.sub_s16("stalemate_breaker",1);
+		if(stalemate)
+		{
+			if(!rules.exists("stalemate_breaker"))
+			{
+				rules.set_s16("stalemate_breaker", stalemateTime);
+			} 
+			else 
+			{
+				rules.sub_s16("stalemate_breaker", 1);
 			}
 			
-			if((rules.get_s16("stalemate_breaker")/30) > 0){
+			if((rules.get_s16("stalemate_breaker")/30) > 0)
+			{
 				rules.SetGlobalMessage("Stalemate: both teams have no flags.\nFlags respawning in: "+(rules.get_s16("stalemate_breaker")/30));
-			} else {
-				rules.set_s16("stalemate_breaker",-60);
+			} 
+			else 
+			{
+				rules.set_s16("stalemate_breaker", -60);
 				
-				for (uint i = 0; i < flags.length; i++)
+				if(isServer())
 				{
-					CBlob @flag = flags[i];
-					if (flag !is null)
+					for (uint i = 0; i < flags.length; i++)
 					{
-						flag.Tag("stalemate_return");
-						if(isServer())flag.Sync("stalemate_return",true);
+						CBlob @flag = flags[i];
+						if (flag !is null)
+						{
+							flag.Tag("stalemate_return");
+						}
 					}
 				}
 			}
 			
-		} else {
+		} 
+		else 
+		{
 			int stalemate_timer = rules.get_s16("stalemate_breaker");
-			if(stalemate_timer > -10 && stalemate_timer != stalemateTime){
+			if(stalemate_timer > -10 && stalemate_timer != stalemateTime)
+			{
 				rules.SetGlobalMessage("");
-				rules.set_s16("stalemate_breaker",stalemateTime);
-			} else
-			if(stalemate_timer <= -10){
+				rules.set_s16("stalemate_breaker", stalemateTime);
+			} else ///??? how the hell are elses stylised if not like this?
+			if(stalemate_timer <= -10)
+			{
 				rules.SetGlobalMessage("Stalemate resolved: Flags returned.");
-				rules.add_s16("stalemate_breaker",1);
+				rules.add_s16("stalemate_breaker", 1);
 			}
 		}
 		
-		if(isServer())rules.Sync("stalemate_breaker",true);
+		if(isServer())
+			rules.Sync("stalemate_breaker",true);
 	}
 
 	void addKill(int team)
