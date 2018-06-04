@@ -15,9 +15,9 @@ bool Eat(CBlob@ this, CBlob@ blob)
 }
 
 
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+void onTick(CBlob@ this)
 {
-	if (cmd == this.getCommandID("activate/throw") && this.getHealth() < this.getInitialHealth())
+	if (getNet().isServer() && this.isKeyJustPressed(key_taunts) && this.getHealth() < this.getInitialHealth())
 	{
 		CBlob @carried = this.getCarriedBlob();
 		if (carried !is null)
