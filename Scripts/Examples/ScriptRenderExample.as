@@ -4,7 +4,7 @@
 //
 //  try adding this to a CBlob's or CRules's script list
 //
-//  tap the taunt button (V by default) to swap between "effects"
+//  tap the eat button (V by default) to swap between "effects"
 //
 //  blob will render the current effect for whatever blob it's added to
 //  (the builder is good for testing in sandbox)
@@ -127,7 +127,7 @@ void ChangeIfNeeded()
 	CControls@ c = getControls();
 	if (c is null) return;
 
-	if (c.isKeyJustPressed(c.getActionKeyKey(AK_TAUNTS)) && last_changed != getGameTime())
+	if (c.isKeyJustPressed(c.getActionKeyKey(AK_EAT)) && last_changed != getGameTime())
 	{
 		last_changed = getGameTime();
 		render_type = (render_type + 1) % render_type_count;

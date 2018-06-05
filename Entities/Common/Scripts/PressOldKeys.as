@@ -26,6 +26,8 @@ void PressOldKeys(CBlob@ this)
 
 	if (this.wasKeyPressed(key_bubbles))
 		this.setKeyPressed(key_bubbles, true);
+	if (this.wasKeyPressed(key_eat))
+		this.setKeyPressed(key_eat, true);
 	if (this.wasKeyPressed(key_taunts))
 		this.setKeyPressed(key_taunts, true);
 	if (this.wasKeyPressed(key_map))
