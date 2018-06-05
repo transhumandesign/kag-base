@@ -187,8 +187,15 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _unused
 		Vec2f vel = Vec2f(charge / 16.0f * (this.isFacingLeft() ? -1 : 1), 0.0f).RotateBy(angle);
 		bullet.setVelocity(vel);
 		Vec2f offset = arm_offset;
+
+		//(handle facing correctly)
+		offset.x *= (this.isFacingLeft() ? 1 : -1);
 		offset.RotateBy(angle);
-		bullet.setPosition(this.getPosition() + offset * (this.isFacingLeft() ? 1 : -1) * 3.5f);
+		offset.Normalize();
+		//offset set length from shoot pos
+		offset *= 3.5f;
+		bullet.setPosition(this.getPosition() + offset);
+
 		// set much higher drag than archer arrow
 		bullet.getShape().setDrag(bullet.getShape().getDrag() * 2.0f);
 
