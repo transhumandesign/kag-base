@@ -34,6 +34,7 @@
 //TeamMenu.as
 	"Spectator":"Зритель",
 	"Auto-pick teams":"Автоматический выбор",
+	"Change team":	"Сменить команду",
 
 //ShowGameMode.as //You can translate here any game mode names
 	"  Gamemode: {GAMEMODE}":"  Игровой режим: {GAMEMODE}",
@@ -53,7 +54,7 @@
 	"Wood Block\nCheap block\nwatch out for fire!"          :"Деревянный блок\nДешёвый\nОпасайтесь огня!",
 	"Back Wood Wall\nCheap extra support"                   :"Деревянная стена\nДешёвая опора",
 	"Wooden Door\nPlace next to walls"                      :"Деревянная дверь\nСтавьте рядом со стенами",
-	"Trap Block\nOnly enemies can pass"                     :"Блок-ловушка\nТолько враги смогут пройти",
+	"Trap Block\nOnly enemies can pass"                     :"Блок-ловушка\nПроходят только враги",
 	"Ladder\nAnyone can climb it"                           :"Лестница\nЛюбой может подняться по ней",
 	"Wooden Platform\nOne way platform"                     :"Деревянная платформа\nОдносторонняя платформа",
 	"Spikes\nPlace on Stone Block\nfor Retracting Trap"     :"Шипы\nСтавьте на каменные блоки\nТак они будут выдвигаться\nпри контакте с врагом",
@@ -103,7 +104,7 @@
 
 //TunnelTravel.as
 	"Travel":"Переместиться",
-	"Travel (requires Transport Tunnels)":"Переместиться (нужен ещё один транспортный тоннель)",
+	"Travel (requires Transport Tunnels)":"Переместиться (требуется ещё один транспортный тоннель)",
 	"Pick tunnel to travel":"Выберите тоннель для перемещения",
 	"Return to base":"Вернуться на базу", //OLD
 	"Travel right":"Переместиться вправо",
@@ -111,18 +112,18 @@
 	"You are here":"Вы находитесь здесь",
 
 //ResearchGUI.as
-	"Click the items you vote to research!"                           :"Нажимайте на предметы, которые вам нужно исследовать!",
-	"Yellow paths show what will be researched when the match starts.":"Жёлтые линии указывают на то, что будет изучено в начале матча..",
+	"Click the items you vote to research!"                           :"Нажимайте на предметы, за исследование которых вы хотите отдать голос!",
+	"Yellow paths show what will be researched when the match starts.":"Жёлтые линии указывают на то, что будет изучено в начале матча.",
 	"Red path items can only be bought for gold at trader."           :"Исследования на красных линиях могут быть куплены только у торговца.",
 	"(available)"                                                     :"(изучено)",
 	"(researching - {TIME}s)"                                         :"(Изучается - {TIME} сек.)",
-	"(click to vote)"                                                 :"(нажмите, чтобы проголосовать)",
+	"(click to vote)"                                                 :"(нажмите, чтобы отдать голос)",
 
 //Sign.as
 	"The big brown fox jumped over the shaggy chocolate.": "Южно-эфиопский грач увёл мышь за хобот на съезд ящериц.",
 
 //PlayerCamera.as
-	"Following {CHARACTERNAME} ({USERNAME})": "Наблюдение за {CHARACTERNAME} ({USERNAME})",
+	"Following {CHARACTERNAME} ({USERNAME})": "Следование за {CHARACTERNAME} ({USERNAME})",
 
 //ShowTipOnDeath.as
 	"Tip: {TIP}": "Совет: {TIP}",
@@ -143,34 +144,34 @@
 	"Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.":"Парите с помощью щита.$Tutorial_Glide$\n\nПерепрыгните через каньон, держа курсор выше себя и ЗАЖИМАЯ$RMB$.",
 
 //Tutorial02.as
-	"Stand on the enemy hall$hall$ to capture it.":"Стойте внутри вражеской$hall$ базы, чтобы захватить её.",
-	"Halls are respawn points and can be used to switch class.":"База является точкой возрождения и может использоваться для смены класса.",
+	"Stand on the enemy hall$hall$ to capture it.":"Захватите вражескую базу$hall$, зайдя внутрь.",
+	"Halls are respawn points and can be used to switch class.":"Базы - это точки возрождения, также они могут использоваться для смены класса.",
 	"In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.":"На базе смените свой класс на ЛУЧНИКА $ARCHER$.\n\nДЕРЖИТЕ $KEY_E$,\n\nнаведите курсор на $CLASSCHANGE$ кнопку и отпустите клавишу.",
 	"As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!":"За лучника $Tutorial_Archer$\n\n\nцельтесь мышкой.\n\nЗАЖМИТЕ$LMB$, чтобы\n\nнатянуть тетиву.\n\nОТПУСТИТЕ кнопку, чтобы выстрелить!",
 	"Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$":"Используйте свой$Tutorial_Grapple$\nкрюк-кошку.\n\n\nНаведитесь мышкой на потолок, ЗАЖМИТЕ$RMB$\n\nи заберитесь наверх $KEY_D$.",
-	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"Совмещайте крюк-кошку и бег по стенам, чтобы пройти дальше.\n\nЗАЖМИТЕ$RMB$ и ДЕРЖИТЕ\n\nпрыжок и бег $KEY_D$$KEY_W$.",
+	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"Чтобы пройти дальше, используйте крюк-кошку и бег по стенам.\n\nЗАЖМИТЕ$RMB$ и ДЕРЖИТЕ\n\nпрыжок и бег $KEY_D$$KEY_W$.",
 	"HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!":"ДЕРЖИТЕ $LMB$, пока не\n\nпоявится искра$Tutorial_Archer2$\n\n\nЗатем НАЖМИТЕ $LMB$ ещё раз для\nТРОЙНОГО ВЫСТРЕЛА!\nОн хорошо подходит для ближней дистанции!",
-	"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!":"$Tutorial_Archer2$\n\n\nПотренируйтесь, а затем зарядите свой выстрел перед тем, как открыть дверь, и атауйте рыцаря ТРОЙНЫМ ВЫСТРЕЛОМ!",
+	"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!":"$Tutorial_Archer2$\n\n\nПотренируйтесь, а затем натяните свой лук перед тем, как открыть дверь, и атакуйте рыцаря ТРОЙНЫМ ВЫСТРЕЛОМ!",
 	"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.":"Используйте\nсвой крюк-кошку$Tutorial_Grapple$.\n\n\nЗАЖМИТЕ$RMB$, наведясь на\n\nпотолок в ту точку, где\n\nустановлен фонарь $lantern$.\n\nЗАЖМИТЕ $KEY_D$и ОТПУСТИТЕ\n\n$RMB$ перед остановкой.",
 
 //Tutorial03.as
-	"$lantern$\nPickup the lantern $KEY_C$":"$lantern$\nПоднимите лампу. $KEY_C$",
-	"Drop is the same as pickup $KEY_C$":"Вещи поднимаются и бросаются одной кнопкой. $KEY_C$",
+	"$lantern$\nPickup the lantern $KEY_C$":"$lantern$\nПоднимите фонарь. $KEY_C$",
+	"Drop is the same as pickup $KEY_C$":"Бросить предмет можно той же кнопкой. $KEY_C$",
 	"Activate/Deactivate things\n   $KEY_SPACE$\n\n\n$lantern$ On/Off":"Активация/деактивация предметов:\n   $KEY_SPACE$\n\n\n$lantern$ On/Off",
-	"By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$":"Кстати: вы можете увидеть мини-карту на верхней части экрана. Используйте \n\n$KEY_M$ для\n         включения/отключения\n         миникарты.",
-	"Switch class to BUILDER  $BUILDER$\n\nGo to Hall. HOLD $KEY_E$ and mouse over$CLASSCHANGE$":"Смените класс на\n\n СТРОИТЕЛЯ.  $BUILDER$\n\nИдите к базе. ДЕРЖИТЕ $KEY_E$\n\n и наведите мышь на$CLASSCHANGE$",
+	"By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$":"Кстати, в верхней части экрана есть миникарта. Используйте \n\n$KEY_M$ для\n         включения/отключения\n         миникарты.",
+	"Switch class to BUILDER  $BUILDER$\n\nGo to Hall. HOLD $KEY_E$ and mouse over$CLASSCHANGE$":"Смените класс на\n\n СТРОИТЕЛЯ.  $BUILDER$\n\nЗайдите на базу. ЗАДЕРЖИТЕ $KEY_E$\n\n и наведите мышь на$CLASSCHANGE$",
 	"The passage is blocked here. As builder, dig your way through.\n\nPoint mouse at block\n\nHOLD $RMB$":"Проход заблокирован. Прокопайте свой путь наружу!\n\nНаведите мышь на блок и \n\nДЕРЖИТЕ $RMB$",
 	"$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.":"$Tree$\n\nСрубите дерево - \n\nДЕРЖИТЕ $RMB$\n\nи наведите мышь на основание дерева.",
 	"$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":"$log$\n\nРазрубите дерево\nв $mat_wood$\n\nНаведите мышь на бревно и\n\nДЕРЖИТЕ $RMB$.",
-	"$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)":"$ladder$\n\nВыберите лестницу для строительства.\n\nДЕРЖИТЕ $KEY_F$(кнопка\n                           инвентаря)\n\nНаведите курсор на лестницу и отпустите кнопку инвентаря.\n\n(требуется$mat_wood$для этого)",
+	"$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)":"$ladder$\n\nВыберите лестницу для строительства.\n\nДЕРЖИТЕ $KEY_F$(кнопка\n                           инвентаря)\n\nНаведите курсор на лестницу и отпустите кнопку инвентаря.\n\n(требуется$mat_wood$)",
 	"Place by pointing with mouse and pressing $LMB$":"Поставьте лестницу, наведя\n\n мышь и нажав$LMB$",
-	"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.":"$Pick$\n\nПостройте мост.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nПопробуйте разные блоки - посмотрите, что они делают.",
-	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"Учтите, что при горизонтальном строительстве вы достигнете лимит. Вам придется построить опоры снизу для того, чтобы продолжить строительство.",
+	"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.":"$Pick$\n\nПостройте мост.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nИспользуйте разные блоки, чтобы узнать, как они работают.",
+	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"Учтите, что вы не сможете бесконечно строить по горизонтали. Вам придется построить опору снизу для того, чтобы продолжить строительство.",
 	"$Pick$  $BlockStone$\n\nMine some stone $RMB$":"$Pick$  $BlockStone$\n\nВыкопайте немного камня.\n\n $RMB$",
-	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\nЗарядите катапульту камнем.\n\n ЗАЖМИТЕ $KEY_E$, НАЖМИТЕ\n\n$mat_stone$",
-	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$\n\n\nВстаньте на позицию стрелка\n(там, где находится$down_arrow$ на рисунке)\n\nНажмите $KEY_S$,\n\nчтобы залезть внутрь.\n\n\nДЕРЖИТЕ $LMB$\n\nдля увеличения силы выстрела.\n\n\n(Водитель - в центре;\nВерхушка - платформа с боеприпасом.)",
-	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"И напоследок.\n\nНе бойтесь просить о помощи в мультиплеере - нажмите \n\n$KEY_ENTER$, чтобы открыть чат.\n\n\nИспользуйте смайлы!\n\nДЕРЖИТЕ $KEY_Q$",
-	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"Здесь заканчивается базовое обучение. Вы постоянно будете учиться чему-то новому, играя!\n\nА теперь попробуйте другие одиночные миссии или присоединитесь к серверу!",
+	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\nЗагрузите камень в катапульту.\n\n ЗАЖМИТЕ $KEY_E$, НАЖМИТЕ\n\n$mat_stone$",
+	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$\n\n\nВстаньте на позицию стрелка\n(там, где находится$down_arrow$ на рисунке)\n\nНажмите $KEY_S$,\n\nчтобы залезть внутрь.\n\n\nДЕРЖИТЕ $LMB$\n\nдля увеличения силы выстрела.\n\n\n(Водитель - в центре;\nСверху - боеприпасы.)",
+	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"И напоследок.\n\nНе бойтесь просить о помощи в сетевой игре - нажмите \n\n$KEY_ENTER$, чтобы открыть чат.\n\n\nИспользуйте эмоции!\n\nДЕРЖИТЕ $KEY_Q$",
+	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"Базовое обучение на этом заканчивается. Играя, вы постоянно будете учиться чему-то новому!\n\nА теперь попробуйте другие одиночные миссии или присоединяйтесь к сетевым играм!",
 
 //TutorialCTF01.as
 	"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":
@@ -186,19 +187,19 @@
 	"Press $KEY_E$ on the frame\n\nto convert it to a proper workshop. Some will require additional resources, go gather them!":
 	"Зажмите $KEY_E$ внутри\n\nмастерской, чтобы преобразовать её в магазин.\n\nВам могут понадобиться дополнительные ресурсы, добудьте их!",
 	"Workshops allow you to buy items in them for coins which you get for doing useful things for your team.\n\nClass workshops allow you to switch class in them.\n\nThe tunnel allows you to quickly move from place to place (at least 2 required).\n\nTry them out!\n\n\n$tunnel$\n":
-	"Магазины позволяют вам покупать предметы за монеты, которые вы получаете за различные полезные действия для вашей команды.\n\nКлассовые магазины позволяют вам менять класс.\n\nТоннель позволяет вам быстро перемещаться с места на место (минимум 2 необходимо).\n\nОпробуйте их!\n\n\n$tunnel$\n",
+	"Магазины позволяют вам покупать предметы за монеты, которые вы получаете за совершение различных полезных действий для вашей команды.\n\nКлассовые магазины позволяют вам менять класс.\n\nТоннель позволяет вам быстро перемещаться с места на место (необходимо минимум 2).\n\nОпробуйте их!\n\n\n$tunnel$\n",
 	"To conclude this tutorial go get the red flag and bring it back to your blue flag. \n\nPress $KEY_ESC$ to go to menu\n\nand exit after you're done.":
 	"В завершении этого обучения заберите красный флаг и принесите его к своему синему флагу.\n\nНажмите $KEY_ESC$,\n\nчтобы выйти, когда вы закончите.",
 
 //TutorialTTH01.as
 	"The goal of Take the Halls is for your team to capture all the halls on the map.\n\nYou can easily see them in the minimap on top of the screen.\n\n$KEY_M$ to toggle the\n\nminimap.":
-	"Цель режима захвата баз - захватить все базы противника.\n\nВы можете легко видеть их на мини-карте вверху вашего экрана.\n\nНажмите $KEY_M$, чтобы\n\nвключить мини-карту.",
+	"Цель режима захвата баз - захватить все базы противника.\n\nВы можете легко видеть их на миникарте сверху вашего экрана.\n\nНажмите $KEY_M$, чтобы\n\nвключить миникарту.",
 	"A white colored Hall is neutral. It belongs to the people of this land. Capture it by standing inside of it.":
 	"База белого цвета нейтральна. Захватите её, зайдя внутрь.",
 	"Hold $KEY_E$ and press $CLASSCHANGE$\n\nto change class to BUILDER\n\n\n$RESEARCH$\n\n\nPress this button to view your teams research tree.\n\nThe whole team can vote here on what technology they want. Not all techs can be achieved, decide wisely!":
-	"Держите $KEY_E$и нажмите\n\nна $CLASSCHANGE$, чтобы\n\nпоменять класс на СТРОИТЕЛЯ.\n\n\n$RESEARCH$\n\n\nНажмите на эту кнопку, чтобы посмотреть дерево исследований.\n\nЗдесь все члены команды могут голосовать за ту технологию, которую они хотят изучить.\nНе все технологии могут быть получены, выбирайте с умом!",
+	"Держите $KEY_E$и нажмите\n\nна $CLASSCHANGE$, чтобы\n\nпоменять класс на СТРОИТЕЛЯ.\n\n\n$RESEARCH$\n\n\nНажмите на эту кнопку, чтобы посмотреть дерево исследований.\n\nЗдесь все члены команды могут отдавать свои голоса за ту технологию, которую они хотят изучить.\nНе все технологии могут быть получены, выбирайте с умом!",
 	"$crate$\n\nPress $KEY_E$ on the crate'\n\n(if it has dropped from the sky) to get supply materials!":
-	"$crate$\n\nНажмите $KEY_E$ около ящика\n\n(если он упал с неба), чтобы получить материалы!",
+	"$crate$\n\nНажмите $KEY_E$ около ящика\n\n(если он упал с неба), чтобы получить строительные материалы!",
 	"If you've switched to builder in the Hall now you can build workshops for your team.\n\nWorkshops are basically factories which make ammo & weapons automatically for you.\n\nGo to an empty spot.\n\nHold $KEY_F$ and select $building$.":
 	"Теперь, когда вы сменили свой класс на строителя, вы можете строить мастерские для своей команды.\n\nМастерские - это фабрики, которые для вас автоматически производят боеприпасы и оружие.\n\nНайдите незанятое пространство,\n\nзажмите$KEY_F$и выберите $building$",
 	"After converting to a workshop you can see a worker appeared inside of it.\n$migrant$\n\n\nHe came from the hall.\n\nYou can only build as many functional workshops as there are workers in your hall.":
@@ -227,7 +228,7 @@
 
 //Sandbox.as
 	"Welcome to King Arthur's Gold":"Добро пожаловать в King Arthur's Gold",
-	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"Это режим песочницы.\nЗдесь вы можете расслабиться и просто наслаждаться игрой.\n\nНажмите [ESC], чтобы посмотреть управление.\nНаслаждайтесь!",
+	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"Это режим песочницы.\nЗдесь вы можете расслабиться и насладиться игрой.\n\nНажмите [ESC], чтобы посмотреть управление.\nНаслаждайтесь!",
 
 //TDM_Interface.as
 	"WARMUP"                                   :"РАЗМИНКА",
@@ -699,7 +700,6 @@
 //// TEAMS ////
 	"Blue Team": "Синяя команда",
 	"Red Team": "Красная команда",
-	"Change team":	"Сменить команду",
 
 //// CHAT EVENTS ////
 	"{PLAYER} is now spectating": "{PLAYER} теперь наблюдает",
@@ -1026,25 +1026,25 @@
 //// ESC MENUS ////
 	"Back":					"Назад",
 	"Change Team":				"Сменить команду",
-	"Switch to Team {NUMBER}":	"Перейти в команду {NUMBER}", //(not used in vanilla)
+	"Switch to Team {NUMBER}":		"Перейти в команду {NUMBER}", //(not used in vanilla)
 	"Spectator":				"Зритель",
 	"Spectators":				"Зрители",
 	"Suicide":				"Самоубийство",
-	"Admin":					"Администрирование",
+	"Admin":				"Администрирование",
 	"Restart Map":				"Перезапустить карту",
-	"Administrate Players":		"Управление игроками",
+	"Administrate Players":			"Управление игроками",
 	"Ban":					"Забанить",
 	"Ban - 10 mins":			"Бан - 10 минут",
-	"Ban - 1 hour":			"Бан - 1 час",
+	"Ban - 1 hour":				"Бан - 1 час",
 	"Ban - 1 day":				"Бан - 1 день",
 	"Ban - Permanent":			"Бан - навсегда",
 	"Mute":					"Заглушить",
 	"Mute - 10 mins":			"Заглушить - 10 минут",
 	"Mute - 1 hour":			"Заглушить - 1 час",
-	"Mute - 1 day":			"Заглушить - 1 день",
+	"Mute - 1 day":				"Заглушить - 1 день",
 	"Mute - Permanent":			"Заглушить - навсегда",
-	"Unmute":					"Не заглушать",
-	"Freeze":					"Заморозить",
+	"Unmute":				"Не заглушать",
+	"Freeze":				"Заморозить",
 	"Unfreeze":				"Разморозить",
 	"Swap Team":				"Сменить команду",
 	"Assign Seclev":			"Назначить Seclev",
@@ -1052,15 +1052,15 @@
 	"Ignore - 10 mins":			"Игнорировать - 10 минут",
 	"Ignore - 1 hour":			"Игнорировать - 1 час",
 	"Ignore - 1 day":			"Игнорировать - 1 день",
-	"Ignore - Permanent":		"Игнорировать - навсегда",
+	"Ignore - Permanent":			"Игнорировать - навсегда",
 	"Unignore":				"Не игнорировать",
 	"Servers":				"Серверы",
 	"Help":					"Помощь",
-	"Manual":					"Руководство",
+	"Manual":				"Руководство",
 	"Wiki":					"Вики",
 	"Settings":				"Настройки",
 	"Map Utilities":			"Инструменты для карты",
-	"Map Filename":			"Имя файла",
+	"Map Filename":				"Имя файла",
 	"Save Map":				"Сохранить карту",
-	"Quit to Main Menu":		"Выйти в главное меню"
+	"Quit to Main Menu":			"Выйти в главное меню"
 }
