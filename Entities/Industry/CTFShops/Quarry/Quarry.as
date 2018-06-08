@@ -99,7 +99,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (this.get_s16("wood") < max_fuel)
 	{
-		CButton@ button = caller.CreateGenericButton("$mat_wood$", Vec2f(-4.0f, 0.0f), this, this.getCommandID("add fuel"), "Add fuel", params);
+		CButton@ button = caller.CreateGenericButton("$mat_wood$", Vec2f(-4.0f, 0.0f), this, this.getCommandID("add fuel"), getTranslatedString("Add fuel"), params);
 		if (button !is null)
 		{
 			button.deleteAfterClick = false;
