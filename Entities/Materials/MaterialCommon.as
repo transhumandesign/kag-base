@@ -224,7 +224,7 @@ namespace Material
     }
     else if (map.isTileGold(type))
     {
-      createFor(this, 'mat_gold', 4.f * damage);
+      createFor(this, 'mat_gold', 5.f * damage);
     }
   }
 }
