@@ -72,6 +72,9 @@ void onInit(CInventory@ this)
 	blob.set_u8("buildblob", 255);
 	blob.set_TileType("buildtile", 0);
 
+	blob.set_u8("current block", 255); // 255 for no block
+	blob.set_u8("prev block", 255);
+
 	blob.set_u32("cant build time", 0);
 	blob.set_u32("show build time", 0);
 
@@ -252,6 +255,12 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 			{
 				SetHelp(blob, "help self action", "builder", getTranslatedString("$Build$Build/Place  $LMB$"), "", 3);
 			}
+
+			if (blob.get_u8("current block") != i)
+			{
+				blob.set_u8("prev block", blob.get_u8("current block"));
+				blob.set_u8("current block", i);
+			}
 		}
 	}
 	else if(cmd == Builder::TOOL_CLEAR)
@@ -265,6 +274,12 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 		target.ClearGridMenus();
 
 		ClearCarriedBlock(target);
+
+		if (blob.get_u8("current block") != 255)
+		{
+			blob.set_u8("prev block", blob.get_u8("current block"));
+			blob.set_u8("current block", 255);
+		}
 	}
 	else if(cmd >= Builder::PAGE_SELECT && cmd < Builder::PAGE_SELECT + Builder::PAGE_COUNT)
 	{
@@ -276,6 +291,12 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 
 		target.ClearGridMenus();
 
+		if (blob.get_u8("build page") != cmd - Builder::PAGE_SELECT)
+		{
+			blob.set_u8("prev block", 255);
+			blob.set_u8("current block", 255);
+		}
+
 		target.set_u8("build page", cmd - Builder::PAGE_SELECT);
 
 		ClearCarriedBlock(target);
@@ -284,6 +305,16 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 		{
 			target.CreateInventoryMenu(target.get_Vec2f("backpack position"));
 		}
+	}
+	else if(cmd == blob.getCommandID("cycle"))
+	{
+		if (blob.get_u8("prev block") == 255)
+		{
+			CBitStream params;
+			params.write_u16(blob.getNetworkID());
+			blob.SendCommand(Builder::TOOL_CLEAR, params);
+		}
+		else blob.SendCommand(Builder::make_block + blob.get_u8("prev block"));
 	}
 }
 
