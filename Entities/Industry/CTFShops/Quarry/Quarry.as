@@ -122,8 +122,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		//amount we'd like to insert
 		int requestedAmount = Maths::Min(250, max_fuel - this.get_s16("wood"));
+
+		CBlob@ carried = caller.getCarriedBlob();
+		//how much fuel does the caller have including what's potentially in his hand?
+		int callerQuantity = caller.getInventory().getCount(fuel) + (carried !is null && carried.getName() == fuel ? carried.getQuantity() : 0);
+
 		//amount we _can_ insert
-		int ammountToStore = Maths::Min(requestedAmount, caller.getInventory().getCount(fuel));
+		int ammountToStore = Maths::Min(requestedAmount, callerQuantity);
 		//can we even insert anything?
 		if(ammountToStore > 0)
 		{
