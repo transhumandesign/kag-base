@@ -6,10 +6,10 @@ const string ore = "mat_stone";
 const string rare_ore = "mat_gold";
 
 //balance
-const int input = 25;       //input cost in fuel
-const int output = 20;       //output amount in ore
-const int rare_chance = 20; //one-in
-const int time_taken = 72;  //ticks
+const int input = 25;					//input cost in fuel
+const int output = 20;					//output amount in ore
+const int rare_chance = 20;				//one-in
+const int conversion_frequency = 2;	//how often to convert, in seconds
 
 //fuel levels for animation
 const int max_fuel = 1000;
@@ -52,11 +52,11 @@ void onInit(CBlob@ this)
 	this.set_TileType("background tile", CMap::tile_castle_back);
 	this.getSprite().SetZ(-50);
 	this.getShape().getConsts().mapCollisions = false;
-	this.getCurrentScript().tickFrequency = time_taken;
 
 	//quarry properties
 	this.set_s16("wood", 0);
 	this.set_bool("working", false);
+	this.set_u8("unique", XORRandom(getTicksASecond() * conversion_frequency));
 
 	//commands
 	this.addCommandID("add fuel");
@@ -68,28 +68,33 @@ void onTick(CBlob@ this)
 	if(getNet().isServer())
 	{
 		int blobCount = this.get_s16("wood");
-		if (blobCount >= input)
+		if ((blobCount >= input))
 		{
 			this.set_bool("working", true);
 
-			if (spawnOre(this.getPosition()))
+			//only convert every conversion_frequency seconds
+			if (getGameTime() % (conversion_frequency * getTicksASecond()) == this.get_u8("unique"))
 			{
-				this.set_s16("wood", blobCount - input); //burn some wood
-			}
-		}
-		else
-		{
-			this.set_bool("working", false);
-		}
+				if (spawnOre(this.getPosition()))
+				{
+					this.set_s16("wood", blobCount - input); //burn some wood
+				}
+				
+				if (blobCount - input < input)
+				{
+					this.set_bool("working", false);
+				}
 
-		//keep properties in sync (only done each update and delta-compressed anyway)
-		this.Sync("working", true);
-		this.Sync("wood", true);
+				this.Sync("wood", true);
+			}
+
+			this.Sync("working", true);
+		}
 	}
 
 	//update sprite based on modified or synced properties
 	updateWoodLayer(this.getSprite());
-	animateBelt(this, this.get_bool("working"));
+	if (getGameTime() % (getTicksASecond()/2) == 0) animateBelt(this, this.get_bool("working"));
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -182,13 +187,13 @@ void animateBelt(CBlob@ this, bool isActive)
 	if (isActive)
 	{
 		// slowly start animation
-		if (anim.time == 0) anim.time = 5;
+		if (anim.time == 0) anim.time = 6;
 		if (anim.time > 3) anim.time--;
 	}
 	else
 	{
 		// slowly stop animation
-		if (anim.time % 5 > 0) anim.time++;
-		anim.time = anim.time % 5;
+		if (anim.time == 6) anim.time = 0;
+		if (anim.time > 0 && anim.time < 6) anim.time++;
 	}
 }
