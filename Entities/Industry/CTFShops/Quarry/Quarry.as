@@ -10,7 +10,7 @@ const int input = 100;					//input cost in fuel
 const int output = 75;					//output amount in ore
 const int rare_chance = 10;				//one-in
 const int rare_output = 20;				//output for rare ore
-const int conversion_frequency = 6;	//how often to convert, in seconds
+const int conversion_frequency = 10;	//how often to convert, in seconds
 
 //fuel levels for animation
 const int max_fuel = 1000;
