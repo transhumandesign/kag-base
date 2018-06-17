@@ -6,10 +6,11 @@ const string ore = "mat_stone";
 const string rare_ore = "mat_gold";
 
 //balance
-const int input = 25;					//input cost in fuel
-const int output = 20;					//output amount in ore
-const int rare_chance = 20;				//one-in
-const int conversion_frequency = 2;	//how often to convert, in seconds
+const int input = 100;					//input cost in fuel
+const int output = 75;					//output amount in ore
+const int rare_chance = 10;				//one-in
+const int rare_output = 20;				//output for rare ore
+const int conversion_frequency = 6;	//how often to convert, in seconds
 
 //fuel levels for animation
 const int max_fuel = 1000;
@@ -147,7 +148,7 @@ bool spawnOre(Vec2f position)
 	_ore.Tag('custom quantity');
 	_ore.Init();
 	_ore.setPosition(position + Vec2f(-8.0f, 0.0f));
-	_ore.server_SetQuantity(output);
+	_ore.server_SetQuantity(!rare ? output : rare_output);
 
 	return true;
 }
