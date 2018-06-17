@@ -12,6 +12,8 @@ const int rare_chance = 10;				//one-in
 const int rare_output = 20;				//output for rare ore
 const int conversion_frequency = 10;	//how often to convert, in seconds
 
+const int min_input = Maths::Ceil(input/output);
+
 //fuel levels for animation
 const int max_fuel = 1000;
 const int mid_fuel = 550;
@@ -69,19 +71,16 @@ void onTick(CBlob@ this)
 	if(getNet().isServer())
 	{
 		int blobCount = this.get_s16("wood");
-		if ((blobCount >= input))
+		if ((blobCount >= min_input))
 		{
 			this.set_bool("working", true);
 
 			//only convert every conversion_frequency seconds
 			if (getGameTime() % (conversion_frequency * getTicksASecond()) == this.get_u8("unique"))
 			{
-				if (spawnOre(this.getPosition()))
-				{
-					this.set_s16("wood", blobCount - input); //burn some wood
-				}
+				spawnOre(this);
 				
-				if (blobCount - input < input)
+				if (blobCount - input < min_input)
 				{
 					this.set_bool("working", false);
 				}
@@ -136,21 +135,24 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 }
 
-bool spawnOre(Vec2f position)
+void spawnOre(CBlob@ this)
 {
+	int blobCount = this.get_s16("wood");
+	int actual_input = Maths::Min(input, blobCount);
+
 	int r = XORRandom(rare_chance);
-	bool rare = (r == 0);
+	bool rare = (r == 0 && blobCount >= input); //rare chance but never rare if not a full batch of wood
 
 	CBlob@ _ore = server_CreateBlobNoInit(!rare ? ore : rare_ore);
 
-	if (_ore is null) return false;
+	if (_ore is null) return;
 
 	_ore.Tag('custom quantity');
 	_ore.Init();
-	_ore.setPosition(position + Vec2f(-8.0f, 0.0f));
-	_ore.server_SetQuantity(!rare ? output : rare_output);
+	_ore.setPosition(this.getPosition() + Vec2f(-8.0f, 0.0f));
+	_ore.server_SetQuantity(!rare ? Maths::Floor(output * actual_input / 100) : rare_output);
 
-	return true;
+	this.set_s16("wood", blobCount - actual_input); //burn wood
 }
 
 void updateWoodLayer(CSprite@ this)
@@ -160,7 +162,7 @@ void updateWoodLayer(CSprite@ this)
 
 	if (layer is null) return;
 
-	if (wood < input)
+	if (wood < min_input)
 	{
 		layer.SetVisible(false);
 	}
