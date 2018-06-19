@@ -6,10 +6,13 @@ const string ore = "mat_stone";
 const string rare_ore = "mat_gold";
 
 //balance
-const int input = 25;       //input cost in fuel
-const int output = 20;       //output amount in ore
-const int rare_chance = 20; //one-in
-const int time_taken = 72;  //ticks
+const int input = 100;					//input cost in fuel
+const int output = 75;					//output amount in ore
+const int rare_chance = 10;				//one-in
+const int rare_output = 20;				//output for rare ore
+const int conversion_frequency = 10;	//how often to convert, in seconds
+
+const int min_input = Maths::Ceil(input/output);
 
 //fuel levels for animation
 const int max_fuel = 1000;
@@ -52,11 +55,11 @@ void onInit(CBlob@ this)
 	this.set_TileType("background tile", CMap::tile_castle_back);
 	this.getSprite().SetZ(-50);
 	this.getShape().getConsts().mapCollisions = false;
-	this.getCurrentScript().tickFrequency = time_taken;
 
 	//quarry properties
 	this.set_s16("wood", 0);
 	this.set_bool("working", false);
+	this.set_u8("unique", XORRandom(getTicksASecond() * conversion_frequency));
 
 	//commands
 	this.addCommandID("add fuel");
@@ -68,28 +71,30 @@ void onTick(CBlob@ this)
 	if(getNet().isServer())
 	{
 		int blobCount = this.get_s16("wood");
-		if (blobCount >= input)
+		if ((blobCount >= min_input))
 		{
 			this.set_bool("working", true);
 
-			if (spawnOre(this.getPosition()))
+			//only convert every conversion_frequency seconds
+			if (getGameTime() % (conversion_frequency * getTicksASecond()) == this.get_u8("unique"))
 			{
-				this.set_s16("wood", blobCount - input); //burn some wood
-			}
-		}
-		else
-		{
-			this.set_bool("working", false);
-		}
+				spawnOre(this);
+				
+				if (blobCount - input < min_input)
+				{
+					this.set_bool("working", false);
+				}
 
-		//keep properties in sync (only done each update and delta-compressed anyway)
-		this.Sync("working", true);
-		this.Sync("wood", true);
+				this.Sync("wood", true);
+			}
+
+			this.Sync("working", true);
+		}
 	}
 
 	//update sprite based on modified or synced properties
 	updateWoodLayer(this.getSprite());
-	animateBelt(this, this.get_bool("working"));
+	if (getGameTime() % (getTicksASecond()/2) == 0) animateBelt(this, this.get_bool("working"));
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -99,7 +104,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (this.get_s16("wood") < max_fuel)
 	{
-		CButton@ button = caller.CreateGenericButton("$mat_wood$", Vec2f(-4.0f, 0.0f), this, this.getCommandID("add fuel"), "Add fuel", params);
+		CButton@ button = caller.CreateGenericButton("$mat_wood$", Vec2f(-4.0f, 0.0f), this, this.getCommandID("add fuel"), getTranslatedString("Add fuel"), params);
 		if (button !is null)
 		{
 			button.deleteAfterClick = false;
@@ -117,8 +122,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		//amount we'd like to insert
 		int requestedAmount = Maths::Min(250, max_fuel - this.get_s16("wood"));
+
+		CBlob@ carried = caller.getCarriedBlob();
+		//how much fuel does the caller have including what's potentially in his hand?
+		int callerQuantity = caller.getInventory().getCount(fuel) + (carried !is null && carried.getName() == fuel ? carried.getQuantity() : 0);
+
 		//amount we _can_ insert
-		int ammountToStore = Maths::Min(requestedAmount, caller.getInventory().getCount(fuel));
+		int ammountToStore = Maths::Min(requestedAmount, callerQuantity);
 		//can we even insert anything?
 		if(ammountToStore > 0)
 		{
@@ -130,21 +140,24 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 }
 
-bool spawnOre(Vec2f position)
+void spawnOre(CBlob@ this)
 {
+	int blobCount = this.get_s16("wood");
+	int actual_input = Maths::Min(input, blobCount);
+
 	int r = XORRandom(rare_chance);
-	bool rare = (r == 0);
+	bool rare = (r == 0 && blobCount >= input); //rare chance but never rare if not a full batch of wood
 
 	CBlob@ _ore = server_CreateBlobNoInit(!rare ? ore : rare_ore);
 
-	if (_ore is null) return false;
+	if (_ore is null) return;
 
 	_ore.Tag('custom quantity');
 	_ore.Init();
-	_ore.setPosition(position + Vec2f(-8.0f, 0.0f));
-	_ore.server_SetQuantity(output);
+	_ore.setPosition(this.getPosition() + Vec2f(-8.0f, 0.0f));
+	_ore.server_SetQuantity(!rare ? Maths::Floor(output * actual_input / 100) : rare_output);
 
-	return true;
+	this.set_s16("wood", blobCount - actual_input); //burn wood
 }
 
 void updateWoodLayer(CSprite@ this)
@@ -154,7 +167,7 @@ void updateWoodLayer(CSprite@ this)
 
 	if (layer is null) return;
 
-	if (wood < input)
+	if (wood < min_input)
 	{
 		layer.SetVisible(false);
 	}
@@ -182,13 +195,13 @@ void animateBelt(CBlob@ this, bool isActive)
 	if (isActive)
 	{
 		// slowly start animation
-		if (anim.time == 0) anim.time = 5;
+		if (anim.time == 0) anim.time = 6;
 		if (anim.time > 3) anim.time--;
 	}
 	else
 	{
 		// slowly stop animation
-		if (anim.time % 5 > 0) anim.time++;
-		anim.time = anim.time % 5;
+		if (anim.time == 6) anim.time = 0;
+		if (anim.time > 0 && anim.time < 6) anim.time++;
 	}
 }
