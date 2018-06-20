@@ -12,7 +12,8 @@ namespace CTFCosts
 	//Building.as
 	s32 buildershop_wood, quarters_wood, knightshop_wood, archershop_wood,
 		boatshop_wood, boatshop_gold, vehicleshop_wood, vehicleshop_gold,
-		storage_stone, storage_wood, tunnel_stone, tunnel_wood, tunnel_gold;
+		storage_stone, storage_wood, tunnel_stone, tunnel_wood, tunnel_gold,
+		quarry_stone, quarry_gold;
 
 	//ArcherShop.as
 	s32 arrows, waterarrows, firearrows, bombarrows;
@@ -94,6 +95,8 @@ void InitCosts()
 	CTFCosts::tunnel_stone =                ReadCost(cfg, "cost_tunnel_stone"       , 100);
 	CTFCosts::tunnel_wood =                 ReadCost(cfg, "cost_tunnel_wood"        , 50);
 	CTFCosts::tunnel_gold =                 ReadCost(cfg, "cost_tunnel_gold"        , 50);
+	CTFCosts::quarry_stone =				ReadCost(cfg, "cost_quarry_stone"       , 150);
+	CTFCosts::quarry_gold =					ReadCost(cfg, "cost_quarry_gold"        , 40);
 
 	//ArcherShop.as
 	CTFCosts::arrows =                      ReadCost(cfg, "cost_arrows"             , 15);
