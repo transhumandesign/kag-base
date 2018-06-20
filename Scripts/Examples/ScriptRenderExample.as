@@ -24,13 +24,13 @@
 //    Render::layer_objects         //after the objects (sprites, particles)
 //    Render::layer_floodlayers     //after the flood layers
 //    Render::layer_postworld       //after the entire world
-
+//
 // hud layers:
 //    Render::layer_prehud          //after the black world borders but before the rest of the HUD
 //    Render::layer_posthud         //after the rest of the HUD
 //
 // non-rendered layers
-//    Render::layer_count           //total layer count - useful for looping around
+//    Render::layer_count           //total layer count - useful for looping through the layers if needed for anything
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
