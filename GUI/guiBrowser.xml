@@ -299,7 +299,7 @@
 				<enum name="HTextAlign" value="left" />
 				<enum name="VTextAlign" value="center" />
 				<int name="Id" value="10022" />
-				<string name="Caption" value="Instant Search..." />
+				<string name="Caption" value=" Instant Search..." />
 				<rect name="Rect" value="10, 436, 370, 476" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
