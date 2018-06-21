@@ -8,6 +8,7 @@ const string rare_ore = "mat_gold";
 //balance
 const int input = 100;					//input cost in fuel
 const int output = 75;					//output amount in ore
+const bool enable_rare = false;			//enable/disable
 const int rare_chance = 10;				//one-in
 const int rare_output = 20;				//output for rare ore
 const int conversion_frequency = 10;	//how often to convert, in seconds
@@ -146,7 +147,8 @@ void spawnOre(CBlob@ this)
 	int actual_input = Maths::Min(input, blobCount);
 
 	int r = XORRandom(rare_chance);
-	bool rare = (r == 0 && blobCount >= input); //rare chance but never rare if not a full batch of wood
+	//rare chance, but never rare if not a full batch of wood
+	bool rare = (enable_rare && r == 0 && blobCount >= input);
 
 	CBlob@ _ore = server_CreateBlobNoInit(!rare ? ore : rare_ore);
 
