@@ -45,7 +45,7 @@ void onInit(CSprite@ this)
 	CSpriteLayer@ wood = this.addSpriteLayer("wood", "Quarry.png", 16, 16);
 	if (wood !is null)
 	{
-		wood.SetOffset(Vec2f(8.0f, 1.0f));
+		wood.SetOffset(Vec2f(8.0f, -1.0f));
 		wood.SetVisible(false);
 	}
 }
