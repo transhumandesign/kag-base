@@ -21,7 +21,7 @@ const int low_fuel = 300;
 
 void onInit(CSprite@ this)
 {
-	CSpriteLayer@ belt = this.addSpriteLayer("belt", "QuarryBelt.png", 20, 20);
+	CSpriteLayer@ belt = this.addSpriteLayer("belt", "QuarryBelt.png", 32, 32);
 	if (belt !is null)
 	{
 		//default anim
@@ -36,7 +36,7 @@ void onInit(CSprite@ this)
 			anim.AddFrames(frames);
 		}
 		//belt setup
-		belt.SetOffset(Vec2f(-8.0f, 1.0f));
+		belt.SetOffset(Vec2f(-7.0f, -4.0f));
 		belt.SetRelativeZ(1);
 		belt.SetVisible(true);
 	}
@@ -44,7 +44,7 @@ void onInit(CSprite@ this)
 	CSpriteLayer@ wood = this.addSpriteLayer("wood", "Quarry.png", 16, 16);
 	if (wood !is null)
 	{
-		wood.SetOffset(Vec2f(9.0f, 1.0f));
+		wood.SetOffset(Vec2f(8.0f, 1.0f));
 		wood.SetVisible(false);
 	}
 }
@@ -79,7 +79,7 @@ void onTick(CBlob@ this)
 			if (getGameTime() % (conversion_frequency * getTicksASecond()) == this.get_u8("unique"))
 			{
 				spawnOre(this);
-				
+
 				if (blobCount - input < min_input)
 				{
 					this.set_bool("working", false);
@@ -200,8 +200,12 @@ void animateBelt(CBlob@ this, bool isActive)
 	}
 	else
 	{
-		// slowly stop animation
-		if (anim.time == 6) anim.time = 0;
-		if (anim.time > 0 && anim.time < 6) anim.time++;
+		//(not tossing stone)
+		if(anim.frame < 2 || anim.frame > 8)
+		{
+			// slowly stop animation
+			if (anim.time == 6) anim.time = 0;
+			if (anim.time > 0 && anim.time < 6) anim.time++;
+		}
 	}
 }
