@@ -52,7 +52,7 @@ void onTick(CBlob@ blob)
 				emote.animation.frame = index;
 
 				emote.ResetTransform();
-				
+
 				CCamera@ camera = getCamera();
 				if (camera !is null)
 				{
@@ -83,44 +83,54 @@ void AddBubblesToMenu(CBlob@ this)
 	//    }
 	//}
 
-	this.AddBubble("", Emotes::right);
+	//this.AddBubble("", Emotes::blueflag);
+	//this.AddBubble("", Emotes::redflag);
 
-	this.AddBubble("", Emotes::cross);
-	this.AddBubble("", Emotes::laugh);
-	this.AddBubble("", Emotes::smile);
-	this.AddBubble("", Emotes::check);
-	this.AddBubble("", Emotes::troll);
-	this.AddBubble("", Emotes::wat);
+	this.AddBubble("Point Right", Emotes::right);
 
-	this.AddBubble("", Emotes::down);
+	this.AddBubble("Laughing", Emotes::laugh);
+	this.AddBubble("Smiling", Emotes::smile);
+	this.AddBubble("Skull", Emotes::skull);
+	this.AddBubble("Laughing Crying", Emotes::laughcry);
+	this.AddBubble("Awkward Laughing", Emotes::awkward);
+	this.AddBubble("Smug", Emotes::smug);
+	this.AddBubble("Troll", Emotes::troll);
+	//this.AddBubble("", Emotes::raised);
+	this.AddBubble("What", Emotes::wat);
 
-	this.AddBubble("", Emotes::derp);
-	this.AddBubble("", Emotes::mad);
-	this.AddBubble("", Emotes::disappoint);
-	this.AddBubble("", Emotes::frown);
-	this.AddBubble("", Emotes::cry);
-	this.AddBubble("", Emotes::archer);
-	this.AddBubble("", Emotes::knight);
-	this.AddBubble("", Emotes::builder);
+	this.AddBubble("Point Down", Emotes::down);
 
-	this.AddBubble("", Emotes::left);
+	this.AddBubble("Derp", Emotes::derp);
+	this.AddBubble("Mad", Emotes::mad);
+	this.AddBubble("Disappointed", Emotes::disappoint);
+	this.AddBubble("Frown", Emotes::frown);
+	this.AddBubble("Crying", Emotes::cry);
+	this.AddBubble("Archer", Emotes::archer);
+	this.AddBubble("Knight", Emotes::knight);
+	this.AddBubble("Builder", Emotes::builder);
 
-	this.AddBubble("", Emotes::sweat);
-	this.AddBubble("", Emotes::heart);
-	this.AddBubble("", Emotes::skull);
-	this.AddBubble("", Emotes::flex);
-	this.AddBubble("", Emotes::finger);
-	this.AddBubble("", Emotes::thumbsdown);
-	this.AddBubble("", Emotes::thumbsup);
+	this.AddBubble("Point left", Emotes::left);
 
-	this.AddBubble("", Emotes::up);
+	this.AddBubble("Heart", Emotes::heart);
+	this.AddBubble("Love", Emotes::love);
+	this.AddBubble("Kiss", Emotes::kiss);
+	this.AddBubble("Flex", Emotes::flex);
+	this.AddBubble("Rude Gesture", Emotes::finger);
+	//this.AddBubble("", Emotes::drool);
+	this.AddBubble("Thumbs Down", Emotes::thumbsdown);
+	this.AddBubble("Thumbs Up", Emotes::thumbsup);
+	this.AddBubble("OK", Emotes::okhand);
 
-	this.AddBubble("", Emotes::ladder);
-	this.AddBubble("", Emotes::attn);
-	this.AddBubble("", Emotes::question);
-	this.AddBubble("", Emotes::fire);
-	this.AddBubble("", Emotes::wall);
-	this.AddBubble("", Emotes::note);
+	this.AddBubble("Point Up", Emotes::up);
+
+	this.AddBubble("Thinking", Emotes::think);
+	this.AddBubble("Sweat Drop", Emotes::sweat);
+	this.AddBubble("Ladder", Emotes::ladder);
+	this.AddBubble("Attention", Emotes::attn);
+	this.AddBubble("Question", Emotes::question);
+	this.AddBubble("Fire", Emotes::fire);
+	this.AddBubble("Wall", Emotes::wall);
+	this.AddBubble("Musical Note", Emotes::note);
 
 	//derp note
 }
