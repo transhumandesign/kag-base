@@ -308,13 +308,19 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 	}
 	else if(cmd == blob.getCommandID("cycle"))
 	{
-		if (blob.get_u8("prev block") == 255)
+		if (isServer()) //only send once - server will have lowest ping for this
 		{
-			CBitStream params;
-			params.write_u16(blob.getNetworkID());
-			blob.SendCommand(Builder::TOOL_CLEAR, params);
+			if (blob.get_u8("prev block") == 255)
+			{
+				CBitStream params;
+				params.write_u16(blob.getNetworkID());
+				blob.SendCommand(Builder::TOOL_CLEAR, params);
+			}
+			else
+			{
+				blob.SendCommand(Builder::make_block + blob.get_u8("prev block"));
+			}
 		}
-		else blob.SendCommand(Builder::make_block + blob.get_u8("prev block"));
 	}
 }
 
