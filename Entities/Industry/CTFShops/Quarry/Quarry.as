@@ -157,7 +157,12 @@ void spawnOre(CBlob@ this)
 	_ore.Tag('custom quantity');
 	_ore.Init();
 	_ore.setPosition(this.getPosition() + Vec2f(-8.0f, 0.0f));
-	_ore.server_SetQuantity(!rare ? Maths::Floor(output * actual_input / 100) : rare_output);
+
+
+	int amountToSpawn = Maths::Floor(output * actual_input / 100);
+	int remainder = amountToSpawn % 5;
+	amountToSpawn += (remainder < 3 ? -remainder : (5 = remainder))
+	_ore.server_SetQuantity(!rare ? amountToSpawn : rare_output);
 
 	this.set_s16("wood", blobCount - actual_input); //burn wood
 }
