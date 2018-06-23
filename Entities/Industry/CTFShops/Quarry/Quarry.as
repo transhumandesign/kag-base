@@ -16,9 +16,9 @@ const int conversion_frequency = 8;		//how often to convert, in seconds
 const int min_input = Maths::Ceil(input/output);
 
 //fuel levels for animation
-const int max_fuel = 1000;
-const int mid_fuel = 550;
-const int low_fuel = 300;
+const int max_fuel = 1500;
+const int mid_fuel = 750;
+const int low_fuel = 250;
 
 void onInit(CSprite@ this)
 {
