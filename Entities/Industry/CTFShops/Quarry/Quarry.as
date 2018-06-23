@@ -6,7 +6,7 @@ const string ore = "mat_stone";
 const string rare_ore = "mat_gold";
 
 //balance
-const int input = 50;					//input cost in fuel
+const int input = 75;					//input cost in fuel
 const int output = 25;					//output amount in ore
 const bool enable_rare = false;			//enable/disable
 const int rare_chance = 10;				//one-in
