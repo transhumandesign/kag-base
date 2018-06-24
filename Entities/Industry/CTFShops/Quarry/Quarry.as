@@ -48,6 +48,9 @@ void onInit(CSprite@ this)
 		wood.SetOffset(Vec2f(8.0f, -1.0f));
 		wood.SetVisible(false);
 	}
+
+	this.SetEmitSound("/Quarry.ogg");
+	this.SetEmitSoundPaused(true);
 }
 
 void onInit(CBlob@ this)
@@ -91,6 +94,19 @@ void onTick(CBlob@ this)
 
 			this.Sync("working", true);
 		}
+	}
+
+	CSprite@ sprite = this.getSprite();
+	if (sprite.getEmitSoundPaused())
+	{
+		if (this.get_bool("working"))
+		{
+			sprite.SetEmitSoundPaused(false);
+		}
+	}
+	else if (!this.get_bool("working"))
+	{
+		sprite.SetEmitSoundPaused(true);
 	}
 
 	//update sprite based on modified or synced properties
