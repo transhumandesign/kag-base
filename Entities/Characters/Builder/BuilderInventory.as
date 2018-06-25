@@ -321,6 +321,11 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 				blob.SendCommand(Builder::make_block + blob.get_u8("prev block"));
 			}
 		}
+		
+		if (this.isMyPlayer())
+		{
+			Sound::Play("/CycleInventory.ogg");
+		}
 	}
 }
 
