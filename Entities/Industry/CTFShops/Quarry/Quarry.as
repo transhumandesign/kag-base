@@ -158,13 +158,17 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ caller = getBlobByNetworkID(params.read_u16());
 		if(caller is null) return;
 
+		if (caller.isMyPlayer())
+		{
+			this.getSprite().PlaySound("/ChaChing.ogg");
+		}
 
 		if (getNet().isServer())
 		{
 			if (not this.get_bool("working"))
 			{
 				CPlayer@ player = caller.getPlayer();
-				if (player !is null) 
+				if (player !is null)
 				{
 					player.server_setCoins(player.getCoins() - CTFCosts::dispense_stone);
 				}
