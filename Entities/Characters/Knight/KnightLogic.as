@@ -799,9 +799,9 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 				{
 					bool ground = map.isTileGround(hi.tile);
 					bool dirt_stone = map.isTileStone(hi.tile);
-					bool gold = map.isTileGold(hi.tile);
+					// bool gold = map.isTileGold(hi.tile);
 					bool wood = map.isTileWood(hi.tile);
-					if (ground || wood || dirt_stone || gold)
+					if (ground || wood || dirt_stone) // || gold)
 					{
 						Vec2f tpos = map.getTileWorldPosition(hi.tileOffset) + Vec2f(4, 4);
 						Vec2f offset = (tpos - blobPos);
