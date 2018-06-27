@@ -843,6 +843,18 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 							if (canhit)
 							{
 								map.server_DestroyTile(hi.hitpos, 0.1f, this);
+								if (gold)
+								{
+									// Note: 0.1f damage doesn't harvest anything I guess
+									// This puts it in inventory - include MaterialCommon
+									//Material::fromTile(this, hi.tile, 1.f);
+
+									CBlob@ ore = server_CreateBlobNoInit("mat_gold");
+									ore.Tag('custom quantity');
+     								ore.Init();
+     								ore.setPosition(pos);
+     								ore.server_SetQuantity(4);
+								}
 							}
 						}
 					}
