@@ -258,8 +258,17 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 
 			if (blob.get_u8("current block") != i)
 			{
-				blob.set_u8("prev block", blob.get_u8("current block"));
-				blob.set_u8("current block", i);
+				if (block.name == "building")
+				{
+					u8 temp = blob.get_u8("current block");
+					blob.set_u8("current block", blob.get_u8("prev block"));
+					blob.set_u8("prev block", temp);
+				}
+				else
+				{
+					blob.set_u8("prev block", blob.get_u8("current block"));
+					blob.set_u8("current block", i);
+				}
 			}
 		}
 	}
@@ -320,6 +329,11 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 			{
 				blob.SendCommand(Builder::make_block + blob.get_u8("prev block"));
 			}
+		}
+
+		if (blob.isMyPlayer())
+		{
+			Sound::Play("/CycleInventory.ogg");
 		}
 	}
 }
