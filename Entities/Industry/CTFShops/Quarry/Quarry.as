@@ -20,6 +20,11 @@ const int max_fuel = 500;
 const int mid_fuel = 300;
 const int low_fuel = 150;
 
+//property names
+const string fuel_prop = "fuel_level";
+const string working_prop = "working";
+const string unique_prop = "unique";
+
 void onInit(CSprite@ this)
 {
 	CSpriteLayer@ belt = this.addSpriteLayer("belt", "QuarryBelt.png", 32, 32);
@@ -61,9 +66,9 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().mapCollisions = false;
 
 	//quarry properties
-	this.set_s16("wood", 0);
-	this.set_bool("working", false);
-	this.set_u8("unique", XORRandom(getTicksASecond() * conversion_frequency));
+	this.set_s16(fuel_prop, 0);
+	this.set_bool(working_prop, false);
+	this.set_u8(unique_prop, XORRandom(getTicksASecond() * conversion_frequency));
 
 	//commands
 	this.addCommandID("add fuel");
@@ -74,44 +79,44 @@ void onTick(CBlob@ this)
 	//only do "real" update logic on server
 	if(getNet().isServer())
 	{
-		int blobCount = this.get_s16("wood");
+		int blobCount = this.get_s16(fuel_prop);
 		if ((blobCount >= min_input))
 		{
-			this.set_bool("working", true);
+			this.set_bool(working_prop, true);
 
 			//only convert every conversion_frequency seconds
-			if (getGameTime() % (conversion_frequency * getTicksASecond()) == this.get_u8("unique"))
+			if (getGameTime() % (conversion_frequency * getTicksASecond()) == this.get_u8(unique_prop))
 			{
 				spawnOre(this);
 
 				if (blobCount - input < min_input)
 				{
-					this.set_bool("working", false);
+					this.set_bool(working_prop, false);
 				}
 
-				this.Sync("wood", true);
+				this.Sync(fuel_prop, true);
 			}
 
-			this.Sync("working", true);
+			this.Sync(working_prop, true);
 		}
 	}
 
 	CSprite@ sprite = this.getSprite();
 	if (sprite.getEmitSoundPaused())
 	{
-		if (this.get_bool("working"))
+		if (this.get_bool(working_prop))
 		{
 			sprite.SetEmitSoundPaused(false);
 		}
 	}
-	else if (!this.get_bool("working"))
+	else if (!this.get_bool(working_prop))
 	{
 		sprite.SetEmitSoundPaused(true);
 	}
 
 	//update sprite based on modified or synced properties
 	updateWoodLayer(this.getSprite());
-	if (getGameTime() % (getTicksASecond()/2) == 0) animateBelt(this, this.get_bool("working"));
+	if (getGameTime() % (getTicksASecond()/2) == 0) animateBelt(this, this.get_bool(working_prop));
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -119,7 +124,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	CBitStream params;
 	params.write_u16(caller.getNetworkID());
 
-	if (this.get_s16("wood") < max_fuel)
+	if (this.get_s16(fuel_prop) < max_fuel)
 	{
 		CButton@ button = caller.CreateGenericButton("$mat_wood$", Vec2f(-4.0f, 0.0f), this, this.getCommandID("add fuel"), getTranslatedString("Add fuel"), params);
 		if (button !is null)
@@ -137,8 +142,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ caller = getBlobByNetworkID(params.read_u16());
 		if(caller is null) return;
 
-		//amount we'd like to insert
-		int requestedAmount = Maths::Min(250, max_fuel - this.get_s16("wood"));
+		//amount we'd _like_ to insert
+		int requestedAmount = Maths::Min(250, max_fuel - this.get_s16(fuel_prop));
+		//(possible with laggy commands from 2 players, faster to early out here if we can)
+		if (requestedAmount <= 0) return;
 
 		CBlob@ carried = caller.getCarriedBlob();
 		//how much fuel does the caller have including what's potentially in his hand?
@@ -150,7 +157,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if(ammountToStore > 0)
 		{
 			caller.TakeBlob(fuel, ammountToStore);
-			this.set_s16("wood", this.get_s16("wood") + ammountToStore);
+			this.set_s16(fuel_prop, this.get_s16(fuel_prop) + ammountToStore);
 
 			updateWoodLayer(this.getSprite());
 		}
@@ -159,7 +166,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void spawnOre(CBlob@ this)
 {
-	int blobCount = this.get_s16("wood");
+	int blobCount = this.get_s16(fuel_prop);
 	int actual_input = Maths::Min(input, blobCount);
 
 	int r = XORRandom(rare_chance);
@@ -170,17 +177,17 @@ void spawnOre(CBlob@ this)
 
 	if (_ore is null) return;
 
-	_ore.Tag('custom quantity');
+	_ore.Tag("custom quantity");
 	_ore.Init();
 	_ore.setPosition(this.getPosition() + Vec2f(-8.0f, 0.0f));
 	_ore.server_SetQuantity(!rare ? Maths::Floor(output * actual_input / 100) : rare_output);
 
-	this.set_s16("wood", blobCount - actual_input); //burn wood
+	this.set_s16(fuel_prop, blobCount - actual_input); //burn wood
 }
 
 void updateWoodLayer(CSprite@ this)
 {
-	int wood = this.getBlob().get_s16("wood");
+	int wood = this.getBlob().get_s16(fuel_prop);
 	CSpriteLayer@ layer = this.getSpriteLayer("wood");
 
 	if (layer is null) return;
