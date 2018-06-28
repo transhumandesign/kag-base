@@ -1,29 +1,14 @@
 //Auto-mining quarry
-//converts wood into ores
+//mines stone over time, faster near mid
 
-const string fuel = "mat_wood";
-const string ore = "mat_stone";
-const string rare_ore = "mat_gold";
+#include "Costs.as"
 
-//balance
-const int input = 100;					//input cost in fuel
-const int output = 75;					//output amount in ore
-const bool enable_rare = false;			//enable/disable
-const int rare_chance = 10;				//one-in
-const int rare_output = 20;				//output for rare ore
-const int conversion_frequency = 30;	//how often to convert, in seconds
-
-const int min_input = Maths::Ceil(input/output);
-
-//fuel levels for animation
-const int max_fuel = 500;
-const int mid_fuel = 300;
-const int low_fuel = 150;
-
-//property names
-const string fuel_prop = "fuel_level";
-const string working_prop = "working";
-const string unique_prop = "unique";
+//balance        seconds * 30   = ticks
+//Resupply: 100stone/ 67 * 30
+const int min_time =  60 * 30; // ticks
+const int max_time = 120 * 30; // ticks
+// If min_time >= max_time, all quarries will work at max_time
+const int amount_dropped = 100; // stone dropped
 
 void onInit(CSprite@ this)
 {
@@ -47,79 +32,132 @@ void onInit(CSprite@ this)
 		belt.SetVisible(true);
 	}
 
-	CSpriteLayer@ wood = this.addSpriteLayer("wood", "Quarry.png", 16, 16);
-	if (wood !is null)
+	CSpriteLayer@ stone = this.addSpriteLayer("stone", "Quarry.png", 16, 16);
+	if (stone !is null)
 	{
-		wood.SetOffset(Vec2f(8.0f, -1.0f));
-		wood.SetVisible(false);
+		stone.SetOffset(Vec2f(8.0f, -1.0f));
+		stone.SetVisible(false);
+		stone.SetFrameIndex(5);
 	}
-
-	this.SetEmitSound("/Quarry.ogg");
-	this.SetEmitSoundPaused(true);
 }
 
 void onInit(CBlob@ this)
 {
+	InitCosts();
+
 	//building properties
+
 	this.set_TileType("background tile", CMap::tile_castle_back);
 	this.getSprite().SetZ(-50);
 	this.getShape().getConsts().mapCollisions = false;
-
-	//gold building properties
-	this.set_s32("gold building amount", 100);
+	this.getCurrentScript().tickFrequency = 90; // Tickrate
 
 	//quarry properties
-	this.set_s16(fuel_prop, 0);
-	this.set_bool(working_prop, false);
-	this.set_u8(unique_prop, XORRandom(getTicksASecond() * conversion_frequency));
+
+	f32 xpos = this.getPosition().x;
+	CMap@ map = this.getMap();
+	f32 mapcenter = map.tilesize * map.tilemapwidth / 2;
+
+	this.set_u16("ticks_worked", 0);
+	// % efficiency from 0-1, increases linearly from edge to center
+	if (min_time < max_time)
+	{
+		this.set_f32("efficiency", (mapcenter - Maths::Abs(mapcenter - xpos)) / mapcenter);
+	}
+	else // min_time >= max_time; all quarries same speed
+	{
+		// math will use max_time, so this is just for animation
+		this.set_f32("efficiency", 0.5);
+	}
+	// immediately start production
+	this.set_bool("working", true);
 
 	//commands
-	this.addCommandID("add fuel");
+	this.addCommandID("collect stone");
 }
 
 void onTick(CBlob@ this)
 {
-	//only do "real" update logic on server
-	if(getNet().isServer())
+	bool client = getNet().isClient();
+	if (this.get_bool("working"))
 	{
-		int blobCount = this.get_s16(fuel_prop);
-		if ((blobCount >= min_input))
-		{
-			this.set_bool(working_prop, true);
+		u16 ticks_of_work = this.get_u16("ticks_worked");
+		u8 tickrate = this.getCurrentScript().tickFrequency;
 
-			//only convert every conversion_frequency seconds
-			if (getGameTime() % (conversion_frequency * getTicksASecond()) == this.get_u8(unique_prop))
+		// If we've worked long enough to make stone, stop working and wait for button press
+		u16 time_to_produce = (min_time < max_time ? 
+								  (max_time - (this.get_f32("efficiency") * (max_time - min_time)))
+								: (max_time));
+		if (ticks_of_work >= time_to_produce) // we're done!
+		{
+			if (client)
 			{
-				spawnOre(this);
-
-				if (blobCount - input < min_input)
-				{
-					this.set_bool(working_prop, false);
-				}
-
-				this.Sync(fuel_prop, true);
+				// Speed up tickrate temporarily to make sure the belt stops quickly
+				this.getCurrentScript().tickFrequency = 10;
 			}
-
-			this.Sync(working_prop, true);
+			else // server
+			{
+				SetQuarryLantern(this, true);
+			}
+			this.set_bool("working", false);
+			this.set_u16("ticks_worked", 0);
 		}
-	}
-
-	CSprite@ sprite = this.getSprite();
-	if (sprite.getEmitSoundPaused())
-	{
-		if (this.get_bool(working_prop))
+		else
 		{
-			sprite.SetEmitSoundPaused(false);
+			this.set_u16("ticks_worked", ticks_of_work + tickrate);
 		}
 	}
-	else if (!this.get_bool(working_prop))
-	{
-		sprite.SetEmitSoundPaused(true);
-	}
 
-	//update sprite based on modified or synced properties
-	updateWoodLayer(this.getSprite());
-	if (getGameTime() % (getTicksASecond()/2) == 0) animateBelt(this, this.get_bool(working_prop));
+	if (client)
+	{
+		//update sprite based on modified or synced properties
+		UpdateStoneLayer(this.getSprite());
+		AnimateBelt(this);
+	}
+}
+
+void onDie(CBlob@ this)
+{
+	if (getNet().isServer() && not this.get_bool("working"))
+	{
+		// Drop the stone that was there so it isn't wasted
+		SpawnOre(this);
+
+		// Kill the light, free lanterns OP
+		SetQuarryLantern(this, false);
+	}
+}
+
+void onRender(CSprite@ this)
+{
+	// Progress bar when moused over
+
+	CBlob@ blob = this.getBlob();
+
+	if (not blob.get_bool("working")) return;
+
+	CBlob@ localBlob = getLocalPlayerBlob();
+	if (localBlob is null) return;
+
+	// Not for enemies to see
+	if (localBlob.getTeamNum() != blob.getTeamNum()) return;
+
+	Vec2f center = blob.getPosition();
+	Vec2f mouseWorld = getControls().getMouseWorldPos();
+	const f32 renderRadius = (blob.getRadius()) * 0.95f;
+	bool mouseOnBlob = (mouseWorld - center).getLength() < renderRadius;
+
+	if (mouseOnBlob and localBlob.isKeyPressed(key_use))
+	{
+		Vec2f pos = blob.getScreenPos();
+		Vec2f upperleft = Vec2f(pos.x - 30.f, pos.y - 15.f);
+		Vec2f lowerright = Vec2f(pos.x + 30.f, pos.y);
+		u16 time_to_produce = (min_time < max_time ? 
+								  (max_time - (blob.get_f32("efficiency") * (max_time - min_time)))
+								: (max_time));
+		float prog = (blob.get_u16("ticks_worked") / float(time_to_produce));
+		GUI::DrawProgressBar(upperleft, lowerright, prog);
+	}
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -127,89 +165,91 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	CBitStream params;
 	params.write_u16(caller.getNetworkID());
 
-	if (this.get_s16(fuel_prop) < max_fuel)
+	if (not this.get_bool("working") and this.isOverlapping(caller))
 	{
-		CButton@ button = caller.CreateGenericButton("$mat_wood$", Vec2f(-4.0f, 0.0f), this, this.getCommandID("add fuel"), getTranslatedString("Add fuel"), params);
+		CButton@ button = caller.CreateGenericButton("$mat_stone$", Vec2f(-4.0f, 0.0f), this,
+													 this.getCommandID("collect stone"), 
+													 "Collect stone (" + CTFCosts::dispense_stone 
+													 	+ " coins)", params);
 		if (button !is null)
 		{
-			button.deleteAfterClick = false;
-			button.SetEnabled(caller.hasBlob(fuel, 1));
+			button.deleteAfterClick = true;
+			button.SetEnabled(caller.getPlayer().getCoins() >= CTFCosts::dispense_stone);
 		}
 	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("add fuel"))
+	if (cmd == this.getCommandID("collect stone"))
 	{
 		CBlob@ caller = getBlobByNetworkID(params.read_u16());
 		if(caller is null) return;
 
-		//amount we'd _like_ to insert
-		int requestedAmount = Maths::Min(250, max_fuel - this.get_s16(fuel_prop));
-		//(possible with laggy commands from 2 players, faster to early out here if we can)
-		if (requestedAmount <= 0) return;
 
-		CBlob@ carried = caller.getCarriedBlob();
-		//how much fuel does the caller have including what's potentially in his hand?
-		int callerQuantity = caller.getInventory().getCount(fuel) + (carried !is null && carried.getName() == fuel ? carried.getQuantity() : 0);
-
-		//amount we _can_ insert
-		int ammountToStore = Maths::Min(requestedAmount, callerQuantity);
-		//can we even insert anything?
-		if(ammountToStore > 0)
+		if (getNet().isServer())
 		{
-			caller.TakeBlob(fuel, ammountToStore);
-			this.set_s16(fuel_prop, this.get_s16(fuel_prop) + ammountToStore);
+			// Make sure it's actually ready
+			if (not this.get_bool("working"))
+			{
+				// Sell the stone
+				CPlayer@ player = caller.getPlayer();
+				if (player !is null)
+				{
+					player.server_setCoins(player.getCoins() - CTFCosts::dispense_stone);
+				}
+				this.set_bool("working", true);
+				SpawnOre(this);
 
-			updateWoodLayer(this.getSprite());
+				// Turn off the light
+				SetQuarryLantern(this, false);
+			}
+		}
+
+		if (getNet().isClient())
+		{
+			if (caller.isMyPlayer())
+			{
+				this.getSprite().PlaySound("/ChaChing.ogg");
+			}
+
+			this.set_bool("working", true);
+			UpdateStoneLayer(this.getSprite());
+			AnimateBelt(this);
 		}
 	}
 }
 
-void spawnOre(CBlob@ this)
+void SpawnOre(CBlob@ this)
 {
-	int blobCount = this.get_s16(fuel_prop);
-	int actual_input = Maths::Min(input, blobCount);
+	CBlob@ ore = server_CreateBlobNoInit("mat_stone");
 
-	int r = XORRandom(rare_chance);
-	//rare chance, but never rare if not a full batch of wood
-	bool rare = (enable_rare && r == 0 && blobCount >= input);
+	if (ore is null) return;
 
-	CBlob@ _ore = server_CreateBlobNoInit(!rare ? ore : rare_ore);
-
-	if (_ore is null) return;
-
-	_ore.Tag("custom quantity");
-	_ore.Init();
-	_ore.setPosition(this.getPosition() + Vec2f(-8.0f, 0.0f));
-	_ore.server_SetQuantity(!rare ? Maths::Floor(output * actual_input / 100) : rare_output);
-
-	this.set_s16(fuel_prop, blobCount - actual_input); //burn wood
+	ore.Tag('custom quantity');
+	ore.Init();
+	ore.setPosition(this.getPosition() + Vec2f(-8.0f, 0.0f));
+	ore.server_SetQuantity(amount_dropped);
 }
 
-void updateWoodLayer(CSprite@ this)
+void UpdateStoneLayer(CSprite@ this)
 {
-	int wood = this.getBlob().get_s16(fuel_prop);
-	CSpriteLayer@ layer = this.getSpriteLayer("wood");
+	CSpriteLayer@ layer = this.getSpriteLayer("stone");
+	CBlob@ blob = this.getBlob();
 
 	if (layer is null) return;
 
-	if (wood < min_input)
+	if (this.getBlob().get_bool("working"))
 	{
 		layer.SetVisible(false);
 	}
-	else
+	else // Not working
 	{
 		layer.SetVisible(true);
-		int frame = 5;
-		if (wood > low_fuel) frame = 6;
-		if (wood > mid_fuel) frame = 7;
-		layer.SetFrameIndex(frame);
 	}
 }
 
-void animateBelt(CBlob@ this, bool isActive)
+void AnimateBelt(CBlob@ this)
 {
 	//safely fetch the animation to modify
 	CSprite@ sprite = this.getSprite();
@@ -220,20 +260,57 @@ void animateBelt(CBlob@ this, bool isActive)
 	if (anim is null) return;
 
 	//modify it based on activity
-	if (isActive)
+	if (this.get_bool("working"))
 	{
-		// slowly start animation
-		if (anim.time == 0) anim.time = 6;
-		if (anim.time > 3) anim.time--;
+		anim.time = 7 - 5 * this.get_f32("efficiency");
 	}
 	else
 	{
 		//(not tossing stone)
 		if(anim.frame < 2 || anim.frame > 8)
 		{
-			// slowly stop animation
-			if (anim.time == 6) anim.time = 0;
-			if (anim.time > 0 && anim.time < 6) anim.time++;
+			if (anim.time != 0)
+			{
+				this.getCurrentScript().tickFrequency = 90;
+			}
+			anim.time = 0;
+		}
+	}
+}
+
+void SetQuarryLantern(CBlob@ this, bool lit)
+{
+	if (not getNet().isServer())
+	{
+		return;
+	}
+
+	if (lit) // make sure there's a lantern
+	{
+		// Attach a lantern *ding*
+		AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("LANTERN");
+		if (point.getOccupied() is null)
+		{
+			CBlob@ lantern = server_CreateBlob("lantern");
+			if (lantern !is null)
+			{
+				lantern.server_setTeamNum(this.getTeamNum());
+				lantern.getShape().getConsts().collidable = false;
+				this.server_AttachTo(lantern, "LANTERN");
+				this.set_u16("lantern id", lantern.getNetworkID());
+				Sound::Play("SparkleShort.ogg", lantern.getPosition());
+			}
+		}
+	}
+	else // Not lit, we should turn off/ kill lantern
+	{
+		if (this.exists("lantern id"))
+		{
+			CBlob@ lantern = getBlobByNetworkID(this.get_u16("lantern id"));
+			if (lantern !is null)
+			{
+				lantern.server_Die();
+			}
 		}
 	}
 }

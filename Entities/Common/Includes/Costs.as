@@ -13,7 +13,7 @@ namespace CTFCosts
 	s32 buildershop_wood, quarters_wood, knightshop_wood, archershop_wood,
 		boatshop_wood, boatshop_gold, vehicleshop_wood, vehicleshop_gold,
 		storage_stone, storage_wood, tunnel_stone, tunnel_wood, tunnel_gold,
-		quarry_stone, quarry_gold;
+		quarry_wood, quarry_stone, quarry_gold;
 
 	//ArcherShop.as
 	s32 arrows, waterarrows, firearrows, bombarrows;
@@ -33,6 +33,9 @@ namespace CTFCosts
 
 	//Quarters.as
 	s32 beer, meal, egg, burger;
+
+	//Quarry.as
+	s32 dispense_stone;
 
 	//CommonBuilderBlocks.as
 	s32 workshop_wood;
@@ -95,8 +98,9 @@ void InitCosts()
 	CTFCosts::tunnel_stone =                ReadCost(cfg, "cost_tunnel_stone"       , 100);
 	CTFCosts::tunnel_wood =                 ReadCost(cfg, "cost_tunnel_wood"        , 50);
 	CTFCosts::tunnel_gold =                 ReadCost(cfg, "cost_tunnel_gold"        , 50);
-	CTFCosts::quarry_stone =				ReadCost(cfg, "cost_quarry_stone"       , 150);
-	CTFCosts::quarry_gold =					ReadCost(cfg, "cost_quarry_gold"        , 100);
+	CTFCosts::quarry_wood = 				ReadCost(cfg, "cost_quarry_wood"        , 50);
+	CTFCosts::quarry_stone =				ReadCost(cfg, "cost_quarry_stone"       , 100);
+	CTFCosts::quarry_gold =					ReadCost(cfg, "cost_quarry_gold"        , 50);
 
 	//ArcherShop.as
 	CTFCosts::arrows =                      ReadCost(cfg, "cost_arrows"             , 15);
@@ -140,6 +144,9 @@ void InitCosts()
 	CTFCosts::meal =                        ReadCost(cfg, "cost_meal"               , 10);
 	CTFCosts::egg =                         ReadCost(cfg, "cost_egg"                , 30);
 	CTFCosts::burger =                      ReadCost(cfg, "cost_burger"             , 20);
+
+	//Quarry.as
+	CTFCosts::dispense_stone = 				ReadCost(cfg, "cost_dispense_stone"		, 50);
 
 	//CommonBuilderBlocks.as
 	CTFCosts::workshop_wood =               ReadCost(cfg, "cost_workshop_wood"      , 150);
