@@ -96,7 +96,7 @@ void InitCosts()
 	CTFCosts::tunnel_wood =                 ReadCost(cfg, "cost_tunnel_wood"        , 50);
 	CTFCosts::tunnel_gold =                 ReadCost(cfg, "cost_tunnel_gold"        , 50);
 	CTFCosts::quarry_stone =				ReadCost(cfg, "cost_quarry_stone"       , 150);
-	CTFCosts::quarry_gold =					ReadCost(cfg, "cost_quarry_gold"        , 50);
+	CTFCosts::quarry_gold =					ReadCost(cfg, "cost_quarry_gold"        , 100);
 
 	//ArcherShop.as
 	CTFCosts::arrows =                      ReadCost(cfg, "cost_arrows"             , 15);

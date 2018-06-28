@@ -6,19 +6,19 @@ const string ore = "mat_stone";
 const string rare_ore = "mat_gold";
 
 //balance
-const int input = 100;					//input cost in fuel
-const int output = 75;					//output amount in ore
+const int input = 75;					//input cost in fuel
+const int output = 25;					//output amount in ore
 const bool enable_rare = false;			//enable/disable
 const int rare_chance = 10;				//one-in
 const int rare_output = 20;				//output for rare ore
-const int conversion_frequency = 10;	//how often to convert, in seconds
+const int conversion_frequency = 8;		//how often to convert, in seconds
 
 const int min_input = Maths::Ceil(input/output);
 
 //fuel levels for animation
-const int max_fuel = 1000;
-const int mid_fuel = 550;
-const int low_fuel = 300;
+const int max_fuel = 1500;
+const int mid_fuel = 750;
+const int low_fuel = 250;
 
 void onInit(CSprite@ this)
 {
@@ -48,6 +48,9 @@ void onInit(CSprite@ this)
 		wood.SetOffset(Vec2f(8.0f, -1.0f));
 		wood.SetVisible(false);
 	}
+
+	this.SetEmitSound("/Quarry.ogg");
+	this.SetEmitSoundPaused(true);
 }
 
 void onInit(CBlob@ this)
@@ -91,6 +94,19 @@ void onTick(CBlob@ this)
 
 			this.Sync("working", true);
 		}
+	}
+
+	CSprite@ sprite = this.getSprite();
+	if (sprite.getEmitSoundPaused())
+	{
+		if (this.get_bool("working"))
+		{
+			sprite.SetEmitSoundPaused(false);
+		}
+	}
+	else if (!this.get_bool("working"))
+	{
+		sprite.SetEmitSoundPaused(true);
 	}
 
 	//update sprite based on modified or synced properties
@@ -157,7 +173,12 @@ void spawnOre(CBlob@ this)
 	_ore.Tag('custom quantity');
 	_ore.Init();
 	_ore.setPosition(this.getPosition() + Vec2f(-8.0f, 0.0f));
-	_ore.server_SetQuantity(!rare ? Maths::Floor(output * actual_input / 100) : rare_output);
+
+
+	int amountToSpawn = Maths::Floor(output * actual_input / input);
+	int remainder = amountToSpawn % 5;
+	amountToSpawn += (remainder < 3 ? -remainder : (5 - remainder));
+	_ore.server_SetQuantity(!rare ? amountToSpawn : rare_output);
 
 	this.set_s16("wood", blobCount - actual_input); //burn wood
 }
