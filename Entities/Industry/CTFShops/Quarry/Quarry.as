@@ -3,12 +3,12 @@
 
 #include "Costs.as"
 
-//balance        seconds * 30  // ticks
+//balance        seconds * 30   = ticks
+//Resupply: 100stone/ 67 * 30
 const int min_time =  60 * 30; // ticks
-const int max_time = 180 * 30; // ticks
+const int max_time = 120 * 30; // ticks
+// If min_time >= max_time, all quarries will work at max_time
 const int amount_dropped = 100; // stone dropped
-
-const int tickrate = 90;
 
 void onInit(CSprite@ this)
 {
@@ -50,7 +50,7 @@ void onInit(CBlob@ this)
 	this.set_TileType("background tile", CMap::tile_castle_back);
 	this.getSprite().SetZ(-50);
 	this.getShape().getConsts().mapCollisions = false;
-	this.getCurrentScript().tickFrequency = tickrate;
+	this.getCurrentScript().tickFrequency = 90; // Tickrate
 
 	//quarry properties
 
@@ -60,7 +60,15 @@ void onInit(CBlob@ this)
 
 	this.set_u16("ticks_worked", 0);
 	// % efficiency from 0-1, increases linearly from edge to center
-	this.set_f32("efficiency", (mapcenter - Maths::Abs(mapcenter - xpos)) / mapcenter);
+	if (min_time < max_time)
+	{
+		this.set_f32("efficiency", (mapcenter - Maths::Abs(mapcenter - xpos)) / mapcenter);
+	}
+	else // min_time >= max_time; all quarries same speed
+	{
+		// math will use max_time, so this is just for animation
+		this.set_f32("efficiency", 0.5);
+	}
 	// immediately start production
 	this.set_bool("working", true);
 
@@ -70,35 +78,53 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	//only do "real" update logic on server
-	if(getNet().isServer())
+	bool client = getNet().isClient();
+	if (this.get_bool("working"))
 	{
+		u16 ticks_of_work = this.get_u16("ticks_worked");
+		u8 tickrate = this.getCurrentScript().tickFrequency;
 
-		if (this.get_bool("working"))
+		// If we've worked long enough to make stone, stop working and wait for button press
+		u16 time_to_produce = (min_time < max_time ? 
+								  (max_time - (this.get_f32("efficiency") * (max_time - min_time)))
+								: (max_time));
+		if (ticks_of_work >= time_to_produce) // we're done!
 		{
-			u16 ticks_of_work = this.get_u16("ticks_worked");
-
-			// If we've worked long enough to make stone, stop working and wait for button press
-			if (ticks_of_work >= max_time - (this.get_f32("efficiency") * (max_time - min_time)))
+			if (client)
 			{
-				this.set_bool("working", false);
-				this.set_u16("ticks_worked", 0);
+				// Speed up tickrate temporarily to make sure the belt stops quickly
+				this.getCurrentScript().tickFrequency = 10;
 			}
-			else
+			else // server
 			{
-				this.set_u16("ticks_worked", ticks_of_work + tickrate);
+				SetQuarryLantern(this, true);
 			}
+			this.set_bool("working", false);
+			this.set_u16("ticks_worked", 0);
 		}
-
-		//keep properties in sync (only done each update and delta-compressed anyway)
-		this.Sync("working", true);
+		else
+		{
+			this.set_u16("ticks_worked", ticks_of_work + tickrate);
+		}
 	}
 
-	if (getNet().isClient())
+	if (client)
 	{
 		//update sprite based on modified or synced properties
 		UpdateStoneLayer(this.getSprite());
-		AnimateBelt(this, this.get_bool("working"));
+		AnimateBelt(this);
+	}
+}
+
+void onDie(CBlob@ this)
+{
+	if (getNet().isServer() && not this.get_bool("working"))
+	{
+		// Drop the stone that was there so it isn't wasted
+		SpawnOre(this);
+
+		// Kill the light, free lanterns OP
+		SetQuarryLantern(this, false);
 	}
 }
 
@@ -126,8 +152,10 @@ void onRender(CSprite@ this)
 		Vec2f pos = blob.getScreenPos();
 		Vec2f upperleft = Vec2f(pos.x - 30.f, pos.y - 15.f);
 		Vec2f lowerright = Vec2f(pos.x + 30.f, pos.y);
-		float prog = (blob.get_u16("ticks_worked")
-					 / (max_time - (blob.get_f32("efficiency") * (max_time - min_time))));
+		u16 time_to_produce = (min_time < max_time ? 
+								  (max_time - (blob.get_f32("efficiency") * (max_time - min_time)))
+								: (max_time));
+		float prog = (blob.get_u16("ticks_worked") / float(time_to_produce));
 		GUI::DrawProgressBar(upperleft, lowerright, prog);
 	}
 }
@@ -145,7 +173,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 													 	+ " coins)", params);
 		if (button !is null)
 		{
-			button.deleteAfterClick = false;
+			button.deleteAfterClick = true;
 			button.SetEnabled(caller.getPlayer().getCoins() >= CTFCosts::dispense_stone);
 		}
 	}
@@ -158,15 +186,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ caller = getBlobByNetworkID(params.read_u16());
 		if(caller is null) return;
 
-		if (caller.isMyPlayer())
-		{
-			this.getSprite().PlaySound("/ChaChing.ogg");
-		}
 
 		if (getNet().isServer())
 		{
+			// Make sure it's actually ready
 			if (not this.get_bool("working"))
 			{
+				// Sell the stone
 				CPlayer@ player = caller.getPlayer();
 				if (player !is null)
 				{
@@ -174,13 +200,22 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 				this.set_bool("working", true);
 				SpawnOre(this);
+
+				// Turn off the light
+				SetQuarryLantern(this, false);
 			}
 		}
 
 		if (getNet().isClient())
 		{
+			if (caller.isMyPlayer())
+			{
+				this.getSprite().PlaySound("/ChaChing.ogg");
+			}
+
 			this.set_bool("working", true);
 			UpdateStoneLayer(this.getSprite());
+			AnimateBelt(this);
 		}
 	}
 }
@@ -207,42 +242,14 @@ void UpdateStoneLayer(CSprite@ this)
 	if (this.getBlob().get_bool("working"))
 	{
 		layer.SetVisible(false);
-
-		// Kill any lanterns that may be there
-
-		if (blob.exists("lantern id"))
-		{
-			CBlob@ lantern = getBlobByNetworkID(blob.get_u16("lantern id"));
-			if (lantern !is null)
-			{
-				lantern.server_Die();
-			}
-		}
 	}
-	else
+	else // Not working
 	{
 		layer.SetVisible(true);
-
-		// Also attach a lantern *ding*
-		AttachmentPoint@ point = blob.getAttachments().getAttachmentPointByName("LANTERN");
-		if (getNet().isServer() && point.getOccupied() is null)
-		{
-			CBlob@ lantern = server_CreateBlob("lantern");
-			if (lantern !is null)
-			{
-				lantern.server_setTeamNum(blob.getTeamNum());
-				lantern.getShape().getConsts().collidable = false;
-				blob.server_AttachTo(lantern, "LANTERN");
-				blob.set_u16("lantern id", lantern.getNetworkID());
-				Sound::Play("SparkleShort.ogg", lantern.getPosition());
-			}
-		}
 	}
-
-	// Attach a lantern *ding*
 }
 
-void AnimateBelt(CBlob@ this, bool isActive)
+void AnimateBelt(CBlob@ this)
 {
 	//safely fetch the animation to modify
 	CSprite@ sprite = this.getSprite();
@@ -253,7 +260,7 @@ void AnimateBelt(CBlob@ this, bool isActive)
 	if (anim is null) return;
 
 	//modify it based on activity
-	if (isActive)
+	if (this.get_bool("working"))
 	{
 		anim.time = 7 - 5 * this.get_f32("efficiency");
 	}
@@ -262,7 +269,48 @@ void AnimateBelt(CBlob@ this, bool isActive)
 		//(not tossing stone)
 		if(anim.frame < 2 || anim.frame > 8)
 		{
+			if (anim.time != 0)
+			{
+				this.getCurrentScript().tickFrequency = 90;
+			}
 			anim.time = 0;
+		}
+	}
+}
+
+void SetQuarryLantern(CBlob@ this, bool lit)
+{
+	if (not getNet().isServer())
+	{
+		return;
+	}
+
+	if (lit) // make sure there's a lantern
+	{
+		// Attach a lantern *ding*
+		AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("LANTERN");
+		if (point.getOccupied() is null)
+		{
+			CBlob@ lantern = server_CreateBlob("lantern");
+			if (lantern !is null)
+			{
+				lantern.server_setTeamNum(this.getTeamNum());
+				lantern.getShape().getConsts().collidable = false;
+				this.server_AttachTo(lantern, "LANTERN");
+				this.set_u16("lantern id", lantern.getNetworkID());
+				Sound::Play("SparkleShort.ogg", lantern.getPosition());
+			}
+		}
+	}
+	else // Not lit, we should turn off/ kill lantern
+	{
+		if (this.exists("lantern id"))
+		{
+			CBlob@ lantern = getBlobByNetworkID(this.get_u16("lantern id"));
+			if (lantern !is null)
+			{
+				lantern.server_Die();
+			}
 		}
 	}
 }
