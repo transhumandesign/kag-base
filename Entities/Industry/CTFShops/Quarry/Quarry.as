@@ -11,14 +11,14 @@ const int output = 75;					//output amount in ore
 const bool enable_rare = false;			//enable/disable
 const int rare_chance = 10;				//one-in
 const int rare_output = 20;				//output for rare ore
-const int conversion_frequency = 10;	//how often to convert, in seconds
+const int conversion_frequency = 30;	//how often to convert, in seconds
 
 const int min_input = Maths::Ceil(input/output);
 
 //fuel levels for animation
-const int max_fuel = 1000;
-const int mid_fuel = 550;
-const int low_fuel = 300;
+const int max_fuel = 500;
+const int mid_fuel = 300;
+const int low_fuel = 150;
 
 void onInit(CSprite@ this)
 {
