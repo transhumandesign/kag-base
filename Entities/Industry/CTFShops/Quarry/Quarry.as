@@ -65,6 +65,9 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50);
 	this.getShape().getConsts().mapCollisions = false;
 
+	//gold building properties
+	this.set_s32("gold building amount", 100);
+
 	//quarry properties
 	this.set_s16(fuel_prop, 0);
 	this.set_bool(working_prop, false);
