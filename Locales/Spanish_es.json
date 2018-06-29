@@ -50,7 +50,7 @@
 	"Ladder\nAnyone can climb it"                           :"Escalera\nCualquiera la puede escalar",
 	"Wooden Platform\nOne way platform"                     :"Plataforma de madera\nPlataforma con sentido único",
 	"Spikes\nPlace on Stone Block\nfor Retracting Trap"     :"Pinchos\nPoner en bloques de piedra\npara trampa retractable",
-	"Workshop\nStand in an open space\nand tap this button.":"Taller\nParate en un espacio abierto\ny apreta este boton",
+	"Workshop\nStand in an open space\nand tap this button.":"Taller\nParate en un espacio abierto\ny Aprieta este boton",
 	"Workshop"                                              :"Taller",
 	"Workbench"                                             :"Mesa de trabajo",
 	"Wire"          :"Cable",
@@ -95,21 +95,21 @@
 	"Buy worker: Requires {MIGRANT_COST} Gold":"Comprar trabajador: Requiere {MIGRANT_COST} oro",
 
 //TunnelTravel.as
-	"Travel":"Atravieza",
-	"Travel (requires Transport Tunnels)":"Atravieza (necesita tuneles de transporte)",
+	"Travel":"Atravezar",
+	"Travel (requires Transport Tunnels)":"Atravezar (necesita tuneles de transporte)",
 	"Pick tunnel to travel":"Elige el tunel que atravezar",
 	"Return to base":"Retorna a la base", //OLD
 	"Travel right":"Ir a la derecha",
 	"Travel left":"Ir a la izquierda",
-	"You are here":"Tú estas aqui",
+	"You are here":"Tú estás aqui",
 
 //ResearchGUI.as
-	"Click the items you vote to research!"                           :"Apreta los items que quieres que se investiguen!",
+	"Click the items you vote to research!"                           :"Aprieta los items que quieres que se investiguen!",
 	"Yellow paths show what will be researched when the match starts.":"Los caminos amarillos muestran que se va a investigar cuando la partida comienze.",
 	"Red path items can only be bought for gold at trader."           :"Los caminos rojos solo se pueden comprar con oro donde el vendedor.",
 	"(available)"                                                     :"(disponible)",
 	"(researching - {TIME}s)"                                         :"(en investigación - {TIME}s restantes)",
-	"(click to vote)"                                                 :"(Apreta para votar)",
+	"(click to vote)"                                                 :"(Aprieta para votar)",
 
 //Sign.as
 	"The big brown fox jumped over the shaggy chocolate.": "El zorro cafe saltó sobre el chocolate lanudo.",
@@ -152,60 +152,60 @@
 
 //// SOLO GAME MODES ////
 //Tutorial01.as
-	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"Marcher & Sauter\n\n$KEY_A$$KEY_W$$KEY_D$",
-	"$sign$Go to the right and\n\nbe sure to read these signs.":"$sign$Avancez vers la droite\n\net lisez bien ces panneaux!",
-	"$Jab$Practice the sword JAB\n\non the dummy.\n\nAim with mouse and tap $LMB$":"$Jab$Le COUP D'ÉPÉE\n\nAttaquez l'épouvantail\n\nVisez avec la souris et appuyez sur $LMB$",
-	"Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!":"Le SLASH.\n\nGARDEZ $LMB$ APPUYÉ pour charger\n\n$Tutorial_Slash$ Arrivé ce stade\n                 RELÂCHEZ $LMB$!",
-	"Practice the DOUBLE SLASH.\n\nHOLD $LMB$ until spark$Tutorial_Slash2$\n\n\nQuickly TAP $LMB$ 2 times!":"Le DOUBLE SLASH!\n\n$Tutorial_Slash2$ ENFONCEZ $LMB$\n                 jusqu'à l'étincelle\n\n\nPuis appuyez sur $LMB$ rapidement deux fois!",
-	"Before entering this room charge your sword $Tutorial_Slash2$\n\nand then quickly\nwalk inside and slash!":"Avant d'entrer dans cette salle, préparez le double slash, puis rentrez dedans et attaquez!",
-	"HOLD $RMB$ to shield.\n\nUse mouse to aim shield.":"ENFONCEZ $RMB$ pour lever le bouclier.\n\nOrientez le bouclier avec votre souris.",
-	"Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$":"Courez sur les murs.\n\nENFONCEZ $KEY_D$$KEY_W$",
-	"Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$":"Les chevaliers peuvent casser les murs et parois de bois, et creuser la terre. Visez le mur et donnez des coups avec $LMB$",
-	"Automatically pickup things used by your class.":"Les objets utilisés par votre classe sont ramassés automatiquement.",
-	"Press $KEY_SPACE$ to light bomb\n\nAim with mouse.\n\nAgain $KEY_SPACE$ throw it.":"Appuyez sur $KEY_SPACE$ pour allumer une bombe.\n\nVisez avec la souris.\n\nAppuyez sur $KEY_SPACE$ à nouveau pour la jeter.",
-	"Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.":"Planer avec le bouclier$Tutorial_Glide$\n\n\nSautez de la fallaise et dans l'air, pointez le curseur vers le haut et ENFONCEZ $RMB$ pour lever le bouclier.",
+	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"Caminar y Saltar\n\n$KEY_A$$KEY_W$$KEY_D$",
+	"$sign$Go to the right and\n\nbe sure to read these signs.":"$sign$Avanza a la derecha \n\ny pon atención a los letreros!",
+	"$Jab$Practice the sword JAB\n\non the dummy.\n\nAim with mouse and tap $LMB$":"$Jab$Practica el ataque basico\n\nen el maniquí\n\nApunta con el mouse y aprieta $LMB$",
+	"Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!":"Practica el ataque fuerte.\n\nMantén $LMB$ apretado para cargar\n\nhasta que veas esta pose $Tutorial_Slash$ \n y SUELTA $LMB$!",
+	"Practice the DOUBLE SLASH.\n\nHOLD $LMB$ until spark$Tutorial_Slash2$\n\n\nQuickly TAP $LMB$ 2 times!":"Practica el ataque doble!\n\nManten $LMB$ apretado hasta que veas $Tutorial_Slash2$\n\n\nY despues apreta dos veces rapidamente!",
+	"Before entering this room charge your sword $Tutorial_Slash2$\n\nand then quickly\nwalk inside and slash!":"Antes de entrar a esta pieza, carga tu espada $Tutorial_slash2$\n\ny luego rapidamente\nentra y ataca!",
+	"HOLD $RMB$ to shield.\n\nUse mouse to aim shield.":"Mantén $RMB$ apretado para levantar tu escudo.\n\nOcupa el mouse para orientarlo.",
+	"Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$":"Corre hacia el muro y manten apretado el salto para correr en el muro.\n\nMantén apretado $KEY_D$$KEY_W$",
+	"Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$":"Los caballeros pueden destruir bloques de madera, puertas de madera y bloques de tierra. Apunta y haz ataques basicos para destruirlos $LMB$",
+	"Automatically pickup things used by your class.":"Los objetos utilizados por tu calse se recogen automaticamente.",
+	"Press $KEY_SPACE$ to light bomb\n\nAim with mouse.\n\nAgain $KEY_SPACE$ throw it.":"Apreta $KEY_SPACE$ para prender la bomba.\n\nApunta con el mouse.\n\nApreta $KEY_SPACE$ denuevo para tirarla.",
+	"Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.":"Para planear con el escudo$Tutorial_Glide$\n\n\nSalta al cañón y mientras estás en el aire apreta $RMB$ apuntando hacia arriba.",
 
 //Tutorial02.as
-	"Stand on the enemy hall$hall$ to capture it.":"Restez sur le hall$hall$\nennemi et\ncapturez-le.",
-	"Halls are respawn points and can be used to switch class.":"Les halls sont des points de réapparition. Vous pouvez y changer votre classe.",
-	"In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.":"Dans le hall, devenez un archer $ARCHER$.\n\nENFONCEZ $KEY_E$ (touche 'utiliser'),\n\nChoisissez la classe $CLASSCHANGE$ et relâchez le bouton.",
-	"As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!":"Jouer archer $Tutorial_Archer$\n\n\nVisez avec la souris.\n\nENFONCEZ $LMB$ pour viser\n\nRELÂCHEZ pour tirer une flèche!",
-	"Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$":"Utiliser le grappin$Tutorial_Grapple$\n\n\nVisez vers le haut pour vous accrocher au plafond\n\nENFONCEZ $RMB$\n\nBalancez vous vers la droite $KEY_D$",
-	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"À l'aide du grappin, escaladez le mur ici\n\nENFONCEZ $RMB$\n\nENFONCEZ $KEY_D$$KEY_W$",
-	"HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!":"Enfoncez $LMB$ jusqu'à $Tutorial_Archer2$\n\n\nPuis appuyez $LMB$ à nouveau.\n\nLe triple tir est très puissant, mais utile qu'à courte portée.",
-	"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!":"$Tutorial_Archer2$\n\n\nEntraînez vous, puis chargez votre tir avant d'ouvrir cette porte et de faire un TRIPLE TIR sur le chevalier!",
-	"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.":"Utilisez le grappin$Tutorial_Grapple$ pour vous balancer.\n\nENFONCEZ $RMB$\n\nAccrochez vous au plafond au niveau de la lanterne$lantern$\n\nENFONCEZ $KEY_D$\n\nRELÂCHEZ le grappin lorsque vous avez une bonne propulsion.",
+	"Stand on the enemy hall$hall$ to capture it.":"Parate en el hall enemigo$hall$\npara capturarlo.",
+	"Halls are respawn points and can be used to switch class.":"Los halls son puntos de reaparición y se pueden usar para cambiar de clase.",
+	"In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.":"En el hall, cambiate a arquero $ARCHER$.\n\nAprieta $KEY_E$ (tecla de uso),\n\nPon el mouse sobre $CLASSCHANGE$ y suelta la tecla de uso.",
+	"As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!":"Como arquero $Tutorial_Archer$\n\n\nApunta con el mouse.\n\nMantén apretado $LMB$ para cargar\n\ny suelta para disparar flechas!",
+	"Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$":"Utiliza tu gancho$Tutorial_Grapple$\n\n\nApunta el mouse para atrapar el techo\n\nMantén apretado $RMB$\n\nMuevete a la derecha con $KEY_D$",
+	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"Utiliza una combinación de gancho y correr sobre el muro para cruzar\n\nMantén apretado $RMB$\n\ny $KEY_D$$KEY_W$",
+	"HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!":"Mantén apretado $LMB$ hasta $Tutorial_Archer2$\n\n\ny de nuevo aprieta $LMB$.\n\nEl disparo triple es bueno para quemarropas.",
+	"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!":"$Tutorial_Archer2$\n\n\nEntrena con tu arco antes de entrar y matar al caballero con tu disparo triple!",
+	"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.":"Ocupa el gancho$Tutorial_Grapple$ para lanzarte.\n\nMantén apretado $RMB$\n\nAtrapa el techo donde está la lampara$lantern$\n\nMantén $KEY_D$\n\nY suelta $RMB$ para salir disparado.",
 
 //Tutorial03.as
-	"$lantern$\nPickup the lantern $KEY_C$":"Ramassez la lanterne $lantern$ $KEY_C$",
-	"Drop is the same as pickup $KEY_C$":"Vous pouvez jeter un objet avec la même touche que pour ramasser $KEY_C$",
-	"Activate/Deactivate things\n   $KEY_SPACE$\n\n\n$lantern$ On/Off":"Activer/désactiver des choses\n   $KEY_SPACE$\n\n\n$lantern$ On/Off",
-	"By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$":"Au passage: Vous avez une mini-carte en haut de l'écran. Cachez-la ou agrandissez-la en appuyant sur $KEY_M$",
-	"Switch class to BUILDER  $BUILDER$\n\nGo to Hall. HOLD $KEY_E$ and mouse over$CLASSCHANGE$":"Devenez CONSTRUCTEUR $BUILDER$\n\nAllez sur le hall\net APPUYEZ sur $KEY_E$, $CLASSCHANGE$",
-	"The passage is blocked here. As builder, dig your way through.\n\nPoint mouse at block\n\nHOLD $RMB$":"Le passage est bloqué...\nEn tant que constructeur, vous pouvez creuser un passage.\nVisez le bloc à détruire et\n\nENFONCEZ $RMB$",
-	"$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.":"$Tree$ Couper un arbre\n\nENFONCEZ $RMB$ et visez l'arbre.",
-	"$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":"$log$ Couper un tronçon\n\nCoupez les tronçons pour obtenir des planches $mat_wood$\n\nENFONCEZ $RMB$ et visez le tronçon.",
-	"$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)":"$ladder$ Fabriquer des échelles\n\nSélectionnez l'échelle.\n\nENFONCEZ $KEY_F$ (inventaire)\n\nPlacez le curseur sur l'échelle et relâchez la touche.\n\nIl vous faut des planches $mat_wood$",
-	"Place by pointing with mouse and pressing $LMB$":"Visez avec la souris et\nplacez l'échelle $LMB$",
-	"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.":"$Pick$ Construire un pont\n\n$KEY_F$ $Swap$ $Help_Block1$\n\n\nEssayez d'utiliser différents blocs et voyez leur utilité.",
-	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"Sachez qu'il est impossible de construire à l'horizontale indéfiniment. Vous devrez rajouter des blocs de support dessous pour continuer.",
-	"$Pick$  $BlockStone$\n\nMine some stone $RMB$":"$Pick$  $BlockStone$\n\nMinez de la pierre $RMB$",
-	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\nChargez la catapulte de pierre.\n\nENFONCEZ $KEY_E$, APPUYEZ SUR $mat_stone$",
-	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$ La catapulte\n\n\nAsseyez-vous sur le siège du tireur ($down_arrow$ sur l'image)\n\nRentrez dedans avec $KEY_S$\n\nENFONCEZ $LMB$\n\n(Le pilote est au centre,\nle projectile en haut)",
-	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"Une dernière chose!\n\nQuand vous jouez en multijoueur, n'hésitez pas à demander de l'aide.\n\n$KEY_ENTER$ pour ouvrir le chat.\n\n\nUtilisez les émotîcones!\n\nENFONCEZ $KEY_Q$",
-	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"C'est tout pour les premiers tutoriels. Vous en apprendrez davantage en jouant au jeu.\n\nEssayez les autres modes solo ou joignez le multijoueur!",
+	"$lantern$\nPickup the lantern $KEY_C$":"Recoge la lampara $lantern$ $KEY_C$",
+	"Drop is the same as pickup $KEY_C$":"Para dejar caer algo es la misma tecla $KEY_C$",
+	"Activate/Deactivate things\n   $KEY_SPACE$\n\n\n$lantern$ On/Off":"Activar/Desactivar las cosas\n   $KEY_SPACE$\n\n\n$lantern$ On/Off",
+	"By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$":"Por si acaso, puedes ver el mini mapa arriba, Lo puedes esconder apretando $KEY_M$",
+	"Switch class to BUILDER  $BUILDER$\n\nGo to Hall. HOLD $KEY_E$ and mouse over$CLASSCHANGE$":"Cambiata a constructor $BUILDER$\n\nVe al hall\ny cambiate usando $KEY_E$, soltando sobre $CLASSCHANGE$",
+	"The passage is blocked here. As builder, dig your way through.\n\nPoint mouse at block\n\nHOLD $RMB$":"El camino está bloqueado...\nComo constructor puedes excavar.\nApunta al bloque y\n\nmantén apretado $RMB$",
+	"$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.":"$Tree$ Corta un arbol\n\nMantén apretado $RMB$ y apunta al arbol.",
+	"$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":"$log$ Corta un tronco\n\nCorta un tronco para obtener tablas $mat_wood$\n\nMantén apretado $RMB$ y apunta al tronco.",
+	"$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)":"$ladder$ Seleccióna una escalera\n\nmantén apretado $KEY_F$ (inventario)\n\nPon el mouse sobre la escalera y suelta la tecla de inventario.\n\n(Necesitas $mat_wood$)",
+	"Place by pointing with mouse and pressing $LMB$":"Apuntando con el mouse\ny apretando $LMB$ puedes situar la escalera",
+	"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.":"$Pick$ Construye un puente\n\n$KEY_F$ $Swap$ $Help_Block1$\n\n\nIntenta usando otros bloques para ver que hacen.",
+	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"Es imposible construir horizontalme por siempre. Necesitas soportes verticales para construir.",
+	"$Pick$  $BlockStone$\n\nMine some stone $RMB$":"$Pick$  $BlockStone$\n\nMina la piedra con $RMB$",
+	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\nCarga la catapulta con piedras.\n\nMantén apretado $KEY_E$, y aprieta $mat_stone$",
+	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$ La catapulta\n\n\nParate en la posición de artillero ($down_arrow$ en la imagen)\n\nEntra apretando la tecla $KEY_S$\n\nMantén apretado $LMB$\n\n(El piloto está en el centro,\nel proyectíl arriba)",
+	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"Una ultima cosa!\n\nCuando juegues mulitjugador recuerda pedir ayuda.\n\n$KEY_ENTER$ para abrir el chat.\n\n\nUtiliza los emoticons!\n\nMantén apretado $KEY_Q$",
+	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"Con esto terminan los tutoriales basicos. Aprenderas mucho mas jugando el juego.\n\nPrueba los otros modos de un jugador o unete al multijugador!",
 
 //TutorialCTF01.as
 	"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":
-	"Le mode de capture de drapeau est le plus simple pour les débutants. Le but est de voler le drapeau ennemi et de le ramener au vôtre.",
+	"El modo de captura la bandera es el mas fácil para los principiantes. El objetivo el simplemente tomar la bandera enemiga y traerla a la tuya.",
 	"Killing enemies, building structures and generally being useful for your team will give you coins.\n\nCoins allow you to purchase ammo, weapons & tools in workshops. First thing, as an example on how it will look when you kill an enemy:\n\nKill those chicken and get their coins!\n\n$chicken$":
-	"Tuer les ennemis, construire des structures, et être utile à votre équipe vous rapportera des pièces.\n\nLes pièces vous permettent d'acheter des munitions, des armes et des outils dans les ateliers. Pour commencer:\n\nTuez ces poules et récupérez leurs pièces!\n\n$chicken$",
+	"Matando enemigos, construyendo estructuras y en general siendo util te dara monedas.\n\nLas monedas te permiten comprar munición, armas y herramientas en los talleres. Para comenzar:\n\nTMata las gallinas para obtener sus monedas!\n\n$chicken$",
 	"Go to the Tent and switch class to BUILDER.\n\nPress $KEY_E$ while standing\n\non the Tent.\n\n\n\n$tent$\n\n\n":
-	"Déplacez-vous vers votre tente et devenez un CONSTRUCTEUR.\n\nAppuyez sur $KEY_E$ lorsque vous y êtes.\n\n$tent$\n\n\n",
+	"Ve a la carpa y cambiate de clase a constructor.\n\nPresiona $KEY_E$ mientras estas parado en la carpa.\n\n$tent$\n\n\n",
 	"If you've switched to builder in the Tent now you can build workshops for your team.\n\n\nHold $KEY_F$ and select $building$":
-	"Si vous êtes un constructeur, vous pouvez construire des ateliers pour votre équipe.\n\n\nEnfoncez $KEY_F$, choisissez $building$",
+	"Si eres un constructor ahora puedes construir talleres para tu equipo.\n\n\nMantén apretado $KEY_F$y selecciona $building$",
 	"If you don't have wood:\n$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.\n\n\n$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":
-	"Si vous manquez de bois:\n\n$Tree$ Coupez un arbre!\n\n\nENFONCEZ $RMB$ et visez l'arbre.\n\n\n$log$ Couper des tronçons\n\nRécupérez des planches $mat_wood$\n\nENFONCEZ $RMB$ et visez le tronçon.",
+	"Si no tienes madera:\n\n$Tree$ Corta un arbol!\n\n\nMantén apretado $RMB$ y apunta a un arbol.\n\n\n$log$ Corta los troncos\n\nRecuperaras tablas $mat_wood$\n\nMantén apretado $RMB$ y apunta al tronco.",
 	"Press $KEY_E$ on the frame\n\nto convert it to a proper workshop. Some will require additional resources, go gather them!":
 	"Appuyez sur $KEY_E$ une fois construit\n\net choisissez l'atelier voulu. La construction de certains nécessite des ressources additionnelles, allez en chercher!",
 	"Workshops allow you to buy items in them for coins which you get for doing useful things for your team.\n\nClass workshops allow you to switch class in them.\n\nThe tunnel allows you to quickly move from place to place (at least 2 required).\n\nTry them out!\n\n\n$tunnel$\n":
@@ -261,7 +261,7 @@
 	"[P] - No"                    :"[P] - No",
 	"Ctrl+O Pass"                 :"Ctrl+O Blanco",
 	"CTRL+P Cancel"               :"Ctrl+P Cancelar",
-	"Click to close ({TIMELEFT}s)":"Apreta para cerrar ({TIMELEFT}s)",
+	"Click to close ({TIMELEFT}s)":"Apretar para cerrar ({TIMELEFT}s)",
 
 //TDM_Interface.as
 	"WARMUP"                                   :"PRECALENTAMIENTO",
@@ -744,7 +744,7 @@
 	"TUTORIALS": "TUTORIALES",
 	"Basics": "Lo basico",
 	"Capture the Flag": "Captura la bandera",
-	"Take the Halls": "Capture los Halls",
+	"Take the Halls": "Captura los Halls",
 	
 	"Save the Princess": "Salva la princesa",
 	
@@ -798,7 +798,7 @@
 	"Controls": "Controles",
 	"Change keys:": "Cambiar los controles:",
 	"(Unused keys, for mods)": "(Teclas no usadas, para los mods)",
-	"Press key/mouse to change to...": "Apreta la tecla/mouse a la que quieres cambiar...",
+	"Press key/mouse to change to...": "Aprieta la tecla/mouse a la que quieres cambiar...",
 	"Keys Double-Bound": "Tecla ya asociada",
 	"This key is being used by another action or is reserved; results may not be as you expected!\n\nYou have been warned!": "Esta tecla ya esta siendo usada por otra acción o está reservada; resultados pueden variar!\n\nHas sido advertido!",
 	"Left": "Izquierda", //TODO in engine
