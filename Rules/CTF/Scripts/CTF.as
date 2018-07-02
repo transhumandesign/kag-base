@@ -43,7 +43,15 @@ void Config(CTFCore@ this)
 
 	//spawn after death time
 	this.spawnTime = (getTicksASecond() * cfg.read_s32("spawn_time", 15));
+	
+	//show gold ore on minimap
+	bool ShowGold = cfg.read_bool("minimap_gold", false);
 
+	if(ShowGold)
+	{
+		getMap().legacyTileMinimap = false;
+		getMap().MakeMiniMap();
+	}
 }
 
 shared string base_name() { return "tent"; }
