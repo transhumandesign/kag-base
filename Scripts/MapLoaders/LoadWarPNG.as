@@ -2,6 +2,7 @@
 
 #include "BasePNGLoader.as";
 #include "WAR_Technology.as";
+#include "MinimapHook.as";
 
 // Custom map colors for WAR
 namespace war_colors
@@ -162,6 +163,8 @@ bool LoadMap(CMap@ map, const string& in fileName)
 	print("LOADING WAR PNG MAP " + fileName);
 
 	WarPNGLoader loader();
+	
+	map.legacyTileMinimap = false;
 
 	return loader.loadMap(map , fileName);
 }
