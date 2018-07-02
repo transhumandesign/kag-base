@@ -2,6 +2,11 @@
 
 #include "DummyCommon.as";
 
+void onInit(CMap@ this)
+{
+	this.MakeMiniMap();
+}
+
 bool onMapTileCollapse(CMap@ map, u32 offset)
 {
 	if(isDummyTile(map.getTile(offset).type))
