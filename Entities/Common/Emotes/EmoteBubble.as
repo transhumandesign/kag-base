@@ -29,6 +29,8 @@ void onInit(CBlob@ blob)
 	}
 
 	AddBubblesToMenu(blob);
+	
+	blob.getCurrentScript().runFlags &= Script::tick_ininventory;
 }
 
 
@@ -43,7 +45,7 @@ void onTick(CBlob@ blob)
 		CSpriteLayer@ emote = sprite.getSpriteLayer("bubble");
 
 		const u8 index = blob.get_u8("emote");
-		if (is_emote(blob, index) && !blob.hasTag("dead"))
+		if (is_emote(blob, index) && !blob.hasTag("dead") && !blob.isInInventory())
 		{
 			blob.getCurrentScript().tickFrequency = 1;
 			if (emote !is null)

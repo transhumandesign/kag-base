@@ -12,7 +12,8 @@ namespace CTFCosts
 	//Building.as
 	s32 buildershop_wood, quarters_wood, knightshop_wood, archershop_wood,
 		boatshop_wood, boatshop_gold, vehicleshop_wood, vehicleshop_gold,
-		storage_stone, storage_wood, tunnel_stone, tunnel_wood, tunnel_gold;
+		storage_stone, storage_wood, tunnel_stone, tunnel_wood, tunnel_gold,
+		quarry_stone, quarry_gold;
 
 	//ArcherShop.as
 	s32 arrows, waterarrows, firearrows, bombarrows;
@@ -22,7 +23,7 @@ namespace CTFCosts
 
 	//BuilderShop.as
 	s32 lantern_wood, bucket_wood, filled_bucket, sponge, boulder_stone,
-		trampoline_wood, saw_wood, saw_stone, drill_stone, drill;
+		trampoline_wood, saw_wood, saw_stone, drill_stone, drill, crate_wood;
 
 	//BoatShop.as
 	s32 dinghy, dinghy_wood, longboat, longboat_wood, warboat;
@@ -94,6 +95,8 @@ void InitCosts()
 	CTFCosts::tunnel_stone =                ReadCost(cfg, "cost_tunnel_stone"       , 100);
 	CTFCosts::tunnel_wood =                 ReadCost(cfg, "cost_tunnel_wood"        , 50);
 	CTFCosts::tunnel_gold =                 ReadCost(cfg, "cost_tunnel_gold"        , 50);
+	CTFCosts::quarry_stone =				ReadCost(cfg, "cost_quarry_stone"       , 150);
+	CTFCosts::quarry_gold =					ReadCost(cfg, "cost_quarry_gold"        , 100);
 
 	//ArcherShop.as
 	CTFCosts::arrows =                      ReadCost(cfg, "cost_arrows"             , 15);
@@ -118,6 +121,7 @@ void InitCosts()
 	CTFCosts::saw_stone =                   ReadCost(cfg, "cost_saw_stone"          , 100);
 	CTFCosts::drill_stone =                 ReadCost(cfg, "cost_drill_stone"        , 100);
 	CTFCosts::drill =                       ReadCost(cfg, "cost_drill"              , 25);
+	CTFCosts::crate_wood =                  ReadCost(cfg, "cost_crate_wood"         , 30);
 
 	//BoatShop.as
 	CTFCosts::dinghy =                      ReadCost(cfg, "cost_dinghy"             , 25);

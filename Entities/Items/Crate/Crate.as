@@ -5,14 +5,15 @@
 #include "VehicleAttachmentCommon.as"
 #include "MiniIconsInc.as"
 #include "Help.as"
+#include "Hitters.as"
 
 const string required_space = "required space";
 
 void onInit(CBlob@ this)
 {
 	this.addCommandID("unpack");
-	//this.addCommandID("getin");
-	//this.addCommandID("getout");
+	this.addCommandID("getin");
+	this.addCommandID("getout");
 	this.addCommandID("stop unpack");
 
 	u8 frame = 0;
@@ -88,6 +89,8 @@ void onInit(CBlob@ this)
 	}
 
 	this.getSprite().SetZ(-10.0f);
+	
+	this.Tag("sawed"); //HACK: prevents saws from sawing crates :(
 }
 
 void onTick(CBlob@ this)
@@ -115,7 +118,8 @@ void onTick(CBlob@ this)
 			this.getCurrentScript().tickFrequency = 15;
 		else
 		{
-			this.getCurrentScript().tickFrequency = 0;
+			this.getCurrentScript().tickFrequency = 60;
+			PickupOverlap(this);
 			return;
 		}
 
@@ -135,6 +139,25 @@ void onTick(CBlob@ this)
 		{
 			Unpack(this);
 			return;
+		}
+	}
+}
+
+void PickupOverlap(CBlob@ this)
+{
+	if (getNet().isServer())
+	{
+		Vec2f tl, br;
+		this.getShape().getBoundingRect(tl, br);
+		CBlob@[] blobs;
+		this.getMap().getBlobsInBox(tl, br, @blobs);
+		for (uint i = 0; i < blobs.length; i++)
+		{
+			CBlob@ blob = blobs[i];
+			if (!blob.isAttached() && blob.isOnGround() && blob.hasTag("material") && blob.getName() != "mat_arrows")
+			{
+				this.server_PutInInventory(blob);
+			}
 		}
 	}
 }
@@ -162,6 +185,36 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	return !blob.hasTag("parachute");
 }
 
+void onCollision( CBlob@ this, CBlob@ blob, bool solid ){
+	
+	if(!isServer())return;
+	
+	if(blob !is null){
+		if (!blob.isAttached() && blob.isOnGround() && blob.hasTag("material") && blob.getName() != "mat_arrows")
+		{
+			this.server_PutInInventory(blob);
+		}
+	}
+	
+	if(!solid || this.getOldVelocity().Length() < 6.0f)return; 
+	
+	CInventory@ inv = this.getInventory();
+	
+	if(inv !is null){
+		for(int i = 0;i < inv.getItemsCount();i++){
+			CBlob @item = inv.getItem(i);
+			if(item !is null){
+				if(item.hasTag("player")){
+					//Enable this line if you want crates to damage players on impact
+					//this.server_Hit(item,item.getPosition(),Vec2f(0,0),1.0f,Hitters::fall,true);
+					this.server_Die();
+					break;
+				}
+			}
+		}
+	}
+}
+
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
 	if (this.hasTag("unpackall"))
@@ -183,13 +236,13 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	Vec2f buttonpos(0, 0);
-	/*if (this.getInventory().getItemsCount() > 0 && this.getInventory().getItem(0) is caller)    // fix - iterate if more stuff in crate
+	if (this.getInventory().getItemsCount() > 0 && caller.getInventoryBlob() is this)
 	{
 	    CBitStream params;
 	    params.write_u16( caller.getNetworkID() );
 	    caller.CreateGenericButton( 6, Vec2f(0,0), this, this.getCommandID("getout"), "Get out", params );
 	}
-	else*/
+	else
 	if (this.hasTag("unpackall"))
 	{
 		caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), getTranslatedString("Unpack all"));
@@ -212,12 +265,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), getTranslatedString("Unpack {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name"))));
 	}
-	/*else if (this.getInventory().getItemsCount() == 0 && caller.getCarriedBlob() is null)
+	else if (this.getInventory().getItemsCount() == 0 && caller.getCarriedBlob() is null)
 	{
 	    CBitStream params;
 	    params.write_u16( caller.getNetworkID() );
 	    caller.CreateGenericButton( 4, Vec2f(0,0), this, this.getCommandID("getin"), "Get inside", params );
-	}*/
+	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
@@ -242,12 +295,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		this.set_u32("unpack time", 0);
 	}
-	/*else if (cmd == this.getCommandID("getin"))
+	else if (cmd == this.getCommandID("getin"))
 	{
 	    CBlob @caller = getBlobByNetworkID( params.read_u16() );
 
 	    if (caller !is null) {
 	        this.server_PutInInventory( caller );
+			this.getShape().setDrag(0.5f);
 	    }
 	} else if (cmd == this.getCommandID("getout"))
 	{
@@ -255,8 +309,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 	    if (caller !is null) {
 	        this.server_PutOutInventory( caller );
+			this.getShape().setDrag(2.0f);
 	    }
-	}*/
+	}
 }
 
 void Unpack(CBlob@ this)
@@ -332,7 +387,7 @@ void HideParachute(CBlob@ this)
 void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 {
 	// die on empty crate
-	if (!this.isInInventory() && this.getInventory().getItemsCount() == 0)
+	if (!this.isInInventory() && this.getInventory().getItemsCount() == 0 && blob.hasTag("player"))
 	{
 		this.server_Die();
 	}

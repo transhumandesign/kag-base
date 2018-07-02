@@ -12,6 +12,7 @@ void onInit(CBlob@ this)
 	this.set_u8("air_count", default_aircount);
 	this.getCurrentScript().removeIfTag = "dead";
 	this.getCurrentScript().tickFrequency = FREQ; // opt
+	this.getCurrentScript().runFlags &= Script::tick_ininventory;
 }
 
 void onTick(CBlob@ this)
@@ -25,6 +26,8 @@ void onTick(CBlob@ this)
 		Vec2f pos = this.getPosition();
 		const bool inwater = this.isInWater() && this.getMap().isInWater(pos + Vec2f(0.0f, -this.getRadius() * 0.66f));
 
+		const bool suffocating = this.isInInventory();
+		
 		u8 aircount = this.get_u8("air_count");
 
 		this.getCurrentScript().tickFrequency = FREQ;
@@ -42,6 +45,22 @@ void onTick(CBlob@ this)
 				this.server_Hit(this, pos, Vec2f(0, 0), 0.5f, Hitters::drown, true);
 				Sound::Play("Gurgle", pos, 2.0f);
 				aircount += 30;
+			}
+		}
+		else
+		if (suffocating)
+		{
+			const int SuffFreq = Maths::Max(FREQ/6,1);
+			if (aircount >= SuffFreq)
+			{
+				aircount -= SuffFreq;
+			}
+
+			//drown damage
+			if (aircount < SuffFreq)
+			{
+				this.server_Hit(this, pos, Vec2f(0, 0), 0.25f, Hitters::drown, true);
+				aircount += 60;
 			}
 		}
 		else
