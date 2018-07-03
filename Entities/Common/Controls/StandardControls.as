@@ -224,7 +224,18 @@ void onTick(CBlob@ this)
 	{
 		if (this.isKeyJustPressed(key_pickup))
 		{
-			this.SendCommand(this.getCommandID("getout"));
+			CBlob@ invblob = this.getInventoryBlob();
+			// Use the inventoryblob command if it has one (crate for example)
+			if (invblob.hasCommandID("getout"))
+			{
+				CBitStream params;
+				params.write_u16(this.getNetworkID());
+				invblob.SendCommand(invblob.getCommandID("getout"), params);
+			}
+			else
+			{
+				this.SendCommand(this.getCommandID("getout"));
+			}
 		}
 
 		return;
