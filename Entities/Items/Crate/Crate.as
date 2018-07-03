@@ -259,6 +259,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller !is null) {
 			this.server_PutOutInventory( caller );
 		}
+		this.server_Die();
 	}
 }
 
@@ -341,10 +342,10 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 		blob.setVelocity(velocity);
 	}
 	// die on empty crate
-	if (!this.isInInventory() && this.getInventory().getItemsCount() == 0)
-	{
-		this.server_Die();
-	}
+	// if (!this.isInInventory() && this.getInventory().getItemsCount() == 0)
+	// {
+	// 	this.server_Die();
+	// }
 }
 
 void onDie(CBlob@ this)
