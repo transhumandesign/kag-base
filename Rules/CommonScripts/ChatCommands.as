@@ -43,6 +43,26 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			print("[" + blob.getName() + " " + blob.getNetworkID() + "] ");
 		}
 	}
+	else if(text_in == "!moderate" || text_in == "!m")
+	{
+
+		int specTeam = getRules().getSpectatorTeamNum();
+		CBlob@ blob = player.getBlob();
+		blob.server_SetPlayer(null);
+		blob.server_Die();
+		player.client_ChangeTeam(specTeam);
+		
+		// string targetUsername = tokens[1];
+		// string targetCharacterName = targetUsername;
+		// CPlayer@ targetPlayer = getPlayerByUsername(targetUsername);
+
+		// if(targetPlayer !is null)
+		// {
+			// moderate(player, targetPlayer, targetUsername, targetCharacterName);
+		// }
+		
+		return false; //false so it doesn't show as normal chat
+	}
 	// reporting logic
 	else if (text_in.substr(0, 1) == "!")
 	{
@@ -56,13 +76,12 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		{
 			if (tokens[0] == "!report" && !security.isPlayerIgnored(player))
 			{
-
 				//check if reported player exists
 				string reportedUsername = tokens[1];
 				string reportedCharacterName = reportedUsername;
 				CPlayer@ reportedPlayer = getPlayerByUsername(reportedUsername);
 
-				if( reportedPlayer !is null)
+				if(reportedPlayer !is null)
 				{
 					//if he exists start more reporting logic
 					report(reportedPlayer, reportedUsername, reportedCharacterName);
@@ -70,9 +89,24 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				else {
 					print("not found");
 				}
+
+				return false; //false so it doesn't show as normal chat
+			}
+			else if(tokens[0] == "!moderate" || tokens[0] == "!m")
+			{
+				string targetUsername = tokens[1];
+				string targetCharacterName = targetUsername;
+				CPlayer@ targetPlayer = getPlayerByUsername(targetUsername);
+
+				if(targetPlayer !is null)
+				{
+					moderate(player, targetPlayer, targetUsername, targetCharacterName);
+				}
+				
+				return false; //false so it doesn't show as normal chat
 			}
 
-			return false; //false so it doesn't show as normal chat
+			
 		}
 	}
 
