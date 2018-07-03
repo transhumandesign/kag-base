@@ -13,6 +13,7 @@ bool crateTake(CBlob@ this, CBlob@ blob)
         || blobName == "mat_firearrows"
         || blobName == "mat_bombarrows"
         || blobName == "mat_waterarrows"
+        || blobName == "log"
         || blobName == "fishy"
         || blobName == "grain"
         || blobName == "burger"
