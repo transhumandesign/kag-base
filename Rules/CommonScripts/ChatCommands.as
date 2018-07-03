@@ -43,6 +43,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			print("[" + blob.getName() + " " + blob.getNetworkID() + "] ");
 		}
 	}
+	// reporting logic
 	else if (text_in.substr(0, 1) == "!")
 	{
 		// check if we have tokens
@@ -59,7 +60,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 				if( reportedPlayer !is null)
 				{
-					//if he exists start reporting logic
+					//if he exists start more reporting logic
 					report(reportedPlayer, reportedName);
 				}
 				else {
