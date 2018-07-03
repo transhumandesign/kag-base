@@ -183,11 +183,18 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	Vec2f buttonpos(0, 0);
 	CBlob@ sneaky_player = getPlayerInside(this);
-	if (sneaky_player !is null && sneaky_player is caller)
+	if (sneaky_player !is null)
 	{
-		CBitStream params;
-		params.write_u16( caller.getNetworkID() );
-		caller.CreateGenericButton( 6, Vec2f(0,0), this, this.getCommandID("getout"), "Get out", params );
+		if (sneaky_player.getTeamNum() == caller.getTeamNum())
+		{
+			CBitStream params;
+			params.write_u16( caller.getNetworkID() );
+			CButton@ button = caller.CreateGenericButton( 6, Vec2f(0,0), this, this.getCommandID("getout"), "Get out", params);
+			if (sneaky_player !is caller) // it's a teammate, so they have to be close to use button
+			{
+				button.SetEnabled(this.isOverlapping(caller) || caller.getCarriedBlob() is this);
+			}
+		}
 	}
 	else
 	if (this.hasTag("unpackall"))
@@ -269,7 +276,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob @caller = getBlobByNetworkID( params.read_u16() );
 
 		if (caller !is null) {
-			this.server_PutOutInventory( caller );
+			this.server_PutOutInventory(getPlayerInside(this));
 		}
 		this.server_Die();
 	}
