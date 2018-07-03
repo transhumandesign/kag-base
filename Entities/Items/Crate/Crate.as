@@ -247,6 +247,18 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob @caller = getBlobByNetworkID( params.read_u16() );
 
 		if (caller !is null) {
+			// We might have to make room
+			CInventory@ inv = this.getInventory();
+			u8 itemcount = inv.getItemsCount();
+			while (!inv.canPutItem(caller) && itemcount > 0)
+			{
+				// pop out last items until we can put in player or there's nothing left
+				CBlob@ item = inv.getItem(itemcount - 1);
+				this.server_PutOutInventory(item);
+				item.setVelocity(getRandomVelocity(90, 6, 45));
+				itemcount--;
+			}
+
 			Vec2f velocity = caller.getVelocity();
 			this.server_PutInInventory( caller );
 			this.setVelocity(velocity);
