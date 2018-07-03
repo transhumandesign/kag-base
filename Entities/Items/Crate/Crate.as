@@ -11,8 +11,8 @@ const string required_space = "required space";
 void onInit(CBlob@ this)
 {
 	this.addCommandID("unpack");
-	//this.addCommandID("getin");
-	//this.addCommandID("getout");
+	this.addCommandID("getin");
+	this.addCommandID("getout");
 	this.addCommandID("stop unpack");
 
 	u8 frame = 0;
@@ -167,29 +167,29 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 	if (this.hasTag("unpackall"))
 		return false;
 
-	if (forBlob.getCarriedBlob() is null && this.getInventory().getItemsCount() == 0)
-		return false;
-
-	// not accessible if player in inv
-	for (int i = 0; i < this.getInventory().getItemsCount(); i++)
+	if (!hasSomethingPacked(this)) // It's a normal crate
 	{
-		if (this.getInventory().getItem(i).hasTag("player"))
-			return false;
+		CBlob@ sneaky_player = getPlayerInside(this);
+		return(sneaky_player is null);
 	}
 
-	return (!hasSomethingPacked(this));
+	else // has something packed
+	{
+		return false;
+	}
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	Vec2f buttonpos(0, 0);
-	/*if (this.getInventory().getItemsCount() > 0 && this.getInventory().getItem(0) is caller)    // fix - iterate if more stuff in crate
+	CBlob@ sneaky_player = getPlayerInside(this);
+	if (sneaky_player !is null && sneaky_player is caller)
 	{
-	    CBitStream params;
-	    params.write_u16( caller.getNetworkID() );
-	    caller.CreateGenericButton( 6, Vec2f(0,0), this, this.getCommandID("getout"), "Get out", params );
+		CBitStream params;
+		params.write_u16( caller.getNetworkID() );
+		caller.CreateGenericButton( 6, Vec2f(0,0), this, this.getCommandID("getout"), "Get out", params );
 	}
-	else*/
+	else
 	if (this.hasTag("unpackall"))
 	{
 		caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), getTranslatedString("Unpack all"));
@@ -212,12 +212,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), getTranslatedString("Unpack {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name"))));
 	}
-	/*else if (this.getInventory().getItemsCount() == 0 && caller.getCarriedBlob() is null)
+	else if (this.getInventory().getItemsCount() == 0 && caller.getCarriedBlob() is this)
 	{
-	    CBitStream params;
-	    params.write_u16( caller.getNetworkID() );
-	    caller.CreateGenericButton( 4, Vec2f(0,0), this, this.getCommandID("getin"), "Get inside", params );
-	}*/
+		CBitStream params;
+		params.write_u16( caller.getNetworkID() );
+		caller.CreateGenericButton( 4, Vec2f(0,0), this, this.getCommandID("getin"), "Get inside", params );
+	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
@@ -242,21 +242,22 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		this.set_u32("unpack time", 0);
 	}
-	/*else if (cmd == this.getCommandID("getin"))
+	else if (cmd == this.getCommandID("getin"))
 	{
-	    CBlob @caller = getBlobByNetworkID( params.read_u16() );
+		CBlob @caller = getBlobByNetworkID( params.read_u16() );
 
-	    if (caller !is null) {
-	        this.server_PutInInventory( caller );
-	    }
-	} else if (cmd == this.getCommandID("getout"))
+		if (caller !is null) {
+			this.server_PutInInventory( caller );
+		}
+	}
+	else if (cmd == this.getCommandID("getout"))
 	{
-	    CBlob @caller = getBlobByNetworkID( params.read_u16() );
+		CBlob @caller = getBlobByNetworkID( params.read_u16() );
 
-	    if (caller !is null) {
-	        this.server_PutOutInventory( caller );
-	    }
-	}*/
+		if (caller !is null) {
+			this.server_PutOutInventory( caller );
+		}
+	}
 }
 
 void Unpack(CBlob@ this)
@@ -404,6 +405,18 @@ Vec2f crate_getOffsetPos(CBlob@ blob, CMap@ map)
 	Vec2f alignedWorldPos = map.getAlignedWorldPos(blob.getPosition() + Vec2f(0, -2)) + (Vec2f(0.5f, 0.0f) * map.tilesize);
 	Vec2f offsetPos = alignedWorldPos - Vec2f(halfSize.x , halfSize.y) * map.tilesize;
 	return offsetPos;
+}
+
+CBlob@ getPlayerInside(CBlob@ this)
+{
+	CInventory@ inv = this.getInventory();
+	for (int i = 0; i < inv.getItemsCount(); i++)
+	{
+		CBlob@ item = inv.getItem(i);
+		if (item.hasTag("player"))
+			return item;
+	}
+	return null;
 }
 
 // SPRITE
