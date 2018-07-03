@@ -247,7 +247,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob @caller = getBlobByNetworkID( params.read_u16() );
 
 		if (caller !is null) {
+			Vec2f velocity = caller.getVelocity();
 			this.server_PutInInventory( caller );
+			this.setVelocity(velocity);
 		}
 	}
 	else if (cmd == this.getCommandID("getout"))
@@ -332,6 +334,11 @@ void HideParachute(CBlob@ this)
 
 void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 {
+	if (blob.hasTag("player"))
+	{
+		Vec2f velocity = this.getVelocity();
+		blob.setVelocity(velocity);
+	}
 	// die on empty crate
 	if (!this.isInInventory() && this.getInventory().getItemsCount() == 0)
 	{
