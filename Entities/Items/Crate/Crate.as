@@ -212,7 +212,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), getTranslatedString("Unpack {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name"))));
 	}
-	else if (this.getInventory().getItemsCount() == 0 && caller.getCarriedBlob() is this)
+	else if (caller.getCarriedBlob() is this)
 	{
 		CBitStream params;
 		params.write_u16( caller.getNetworkID() );
