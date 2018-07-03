@@ -49,26 +49,30 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		// check if we have tokens
 		string[]@ tokens = text_in.split(" ");
 
+		//server security object
+		CSecurity@ security = getSecurity();
+
 		if (tokens.length > 1)
 		{
-			if (tokens[0] == "!report")
+			if (tokens[0] == "!report" && !security.isPlayerIgnored(player))
 			{
 
 				//check if reported player exists
-				string reportedName = tokens[1];
-				CPlayer@ reportedPlayer = getPlayerByUsername(reportedName);
+				string reportedUsername = tokens[1];
+				string reportedCharacterName = reportedUsername;
+				CPlayer@ reportedPlayer = getPlayerByUsername(reportedUsername);
 
 				if( reportedPlayer !is null)
 				{
 					//if he exists start more reporting logic
-					report(reportedPlayer, reportedName);
+					report(reportedPlayer, reportedUsername, reportedCharacterName);
 				}
 				else {
 					print("not found");
 				}
 			}
 
-			return true;
+			return false; //false so it doesn't show as normal chat
 		}
 	}
 

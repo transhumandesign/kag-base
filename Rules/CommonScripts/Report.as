@@ -3,13 +3,13 @@ void test(string message)
     print("Hi, " + message);
 }
 
-void report(CPlayer@ reportedPlayer, string reportedName)
+void report(CPlayer@ reportedPlayer, string reportedUsername, string reportedCharactername)
 {
-    print("Reporting " + reportedName);
+    print("Reporting " + reportedUsername);
     print("Reporting " + reportedPlayer.getUsername());
     print("Reporting " + reportedPlayer.getCharacterName());
     print("Reporting " + reportedPlayer.getTeamNum());
-    print("Reporting " + reportedName);
+    print("Reporting " + reportedUsername);
 
     //get all players in server
     CBlob@[] allBlobs;
@@ -27,6 +27,11 @@ void report(CPlayer@ reportedPlayer, string reportedName)
 	//print message to mods
 	for (u32 i = 0; i < allPlayers.length; i++)
 	{
-		client_AddToChat("Report has been made of: " + reportedName, SColor(255, 255, 0, 0));
+		if(allPlayers[i].isMod())
+		{
+			print("You're mod");
+			client_AddToChat("Report has been made of: " + reportedUsername, SColor(255, 255, 0, 0));
+			Sound::Play("/ReportSound.ogg");
+		}
 	}
 }
