@@ -374,6 +374,10 @@ void HideParachute(CBlob@ this)
 void onAddToInventory(CBlob@ this, CBlob@ blob)
 {
 	this.getSprite().PlaySound("thud.ogg");
+	if (blob.getName() == "keg")
+	{
+		this.Tag("medium weight");
+	}
 }
 
 void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
@@ -385,6 +389,12 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 		velocity.y = -5; // Leap out of crate
 		blob.setVelocity(velocity);
 	}
+
+	if (blob.getName() == "keg")
+	{
+		this.Untag("medium weight"); // TODO: what if there can be multiple kegs?
+	}
+
 	// die on empty crate
 	// if (!this.isInInventory() && this.getInventory().getItemsCount() == 0)
 	// {
