@@ -380,6 +380,7 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 {
 	if (blob.hasTag("player"))
 	{
+		this.getSprite().PlaySound("MigrantSayHello.ogg");
 		Vec2f velocity = this.getVelocity();
 		velocity.y = -5; // Leap out of crate
 		blob.setVelocity(velocity);
