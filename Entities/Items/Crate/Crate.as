@@ -371,6 +371,11 @@ void HideParachute(CBlob@ this)
 	}
 }
 
+void onAddToInventory(CBlob@ this, CBlob@ blob)
+{
+	this.getSprite().PlaySound("thud.ogg");
+}
+
 void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 {
 	if (blob.hasTag("player"))
