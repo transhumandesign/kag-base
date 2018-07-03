@@ -5,6 +5,7 @@
 #include "VehicleAttachmentCommon.as"
 #include "MiniIconsInc.as"
 #include "Help.as"
+#include "Hitters.as"
 
 const string required_space = "required space";
 
@@ -297,6 +298,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 			this.server_PutOutInventory(getPlayerInside(this));
 		}
+		// Attack self to pop out items
+		this.server_Hit(this, this.getPosition(), Vec2f(), 100.0f, Hitters::crush, true);
 		this.server_Die();
 	}
 }
@@ -402,6 +405,20 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 	// }
 }
 
+f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )
+{
+	if (customData == Hitters::saw)
+	{
+		DumpOutItems(this, 0);
+	}
+	if (this.getHealth() - (damage / 2.0f) <= 0.0f)
+	{
+		DumpOutItems(this);
+	}
+
+	return damage;
+}
+
 void onDie(CBlob@ this)
 {
 	HideParachute(this);
@@ -480,6 +497,31 @@ CBlob@ getPlayerInside(CBlob@ this)
 			return item;
 	}
 	return null;
+}
+
+void DumpOutItems(CBlob@ this, float pop_out_velocity = 5.0f)
+{
+	if (getNet().isServer())
+	{
+		Vec2f velocity = this.getOldVelocity();
+		CInventory@ inv = this.getInventory();
+		while (inv !is null && inv.getItemsCount() > 0)
+		{
+			CBlob@ item = inv.getItem(0);
+			this.server_PutOutInventory(item);
+			if (!item.hasTag("player"))
+			{
+				if (pop_out_velocity == 0)
+				{
+					item.setVelocity(velocity);
+				}
+				else
+				{
+					item.setVelocity(getRandomVelocity(90, pop_out_velocity, 45));
+				}
+			}
+		}
+	}
 }
 
 // SPRITE
