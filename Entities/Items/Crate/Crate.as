@@ -169,8 +169,7 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 
 	if (!hasSomethingPacked(this)) // It's a normal crate
 	{
-		CBlob@ sneaky_player = getPlayerInside(this);
-		return(sneaky_player is null);
+		return(getPlayerInside(this) is null);
 	}
 
 	else // has something packed
@@ -193,6 +192,22 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			if (sneaky_player !is caller) // it's a teammate, so they have to be close to use button
 			{
 				button.SetEnabled(this.isOverlapping(caller) || caller.getCarriedBlob() is this);
+			}
+		}
+		else // make fake buttons for enemy
+		{
+			CBitStream params;
+			params.write_u16(caller.getNetworkID());
+			if (caller.getCarriedBlob() is this)
+			{
+				// Fake get in button
+				caller.CreateGenericButton(4, Vec2f(), this, this.getCommandID("getout"), "Get inside", params);
+			}
+			else
+			{
+				// Fake inventory button
+				CButton@ button = caller.CreateGenericButton(13, Vec2f(), this, this.getCommandID("getout"), "Crate", params);
+				button.SetEnabled(this.isOverlapping(caller));
 			}
 		}
 	}
@@ -276,6 +291,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob @caller = getBlobByNetworkID( params.read_u16() );
 
 		if (caller !is null) {
+			if (caller.getTeamNum() != getPlayerInside(this).getTeamNum())
+			{
+				caller.set_u8("knocked", 30);
+			}
 			this.server_PutOutInventory(getPlayerInside(this));
 		}
 		this.server_Die();
