@@ -337,6 +337,7 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 	if (blob.hasTag("player"))
 	{
 		Vec2f velocity = this.getVelocity();
+		velocity.y = -5; // Leap out of crate
 		blob.setVelocity(velocity);
 	}
 	// die on empty crate
