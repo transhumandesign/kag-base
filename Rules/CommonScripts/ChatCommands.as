@@ -5,6 +5,7 @@
 #include "MakeSeed.as";
 #include "MakeCrate.as";
 #include "MakeScroll.as";
+#include "Report.as"
 
 bool onServerProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
 {
@@ -40,6 +41,33 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		{
 			CBlob@ blob = all[i];
 			print("[" + blob.getName() + " " + blob.getNetworkID() + "] ");
+		}
+	}
+	else if (text_in.substr(0, 1) == "!")
+	{
+		// check if we have tokens
+		string[]@ tokens = text_in.split(" ");
+
+		if (tokens.length > 1)
+		{
+			if (tokens[0] == "!report")
+			{
+
+				//check if reported player exists
+				string reportedName = tokens[1];
+				CPlayer@ reportedPlayer = getPlayerByUsername(reportedName);
+
+				if( reportedPlayer !is null)
+				{
+					//if he exists start reporting logic
+					report(reportedPlayer, reportedName);
+				}
+				else {
+					print("not found");
+				}
+			}
+
+			return true;
 		}
 	}
 
