@@ -395,6 +395,11 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 
 	if (blob.getName() == "keg")
 	{
+		if (blob.hasTag("exploding") && blob.get_s32("explosion_timer") - getGameTime() <= 0)
+		{
+			this.server_Hit(this, this.getPosition(), Vec2f(), 100.0f, Hitters::explosion, true);
+		}
+
 		this.Untag("medium weight"); // TODO: what if there can be multiple kegs?
 	}
 
@@ -410,6 +415,10 @@ f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hit
 	if (customData == Hitters::saw)
 	{
 		DumpOutItems(this, 0);
+	}
+	if (customData == Hitters::explosion && damage > 50.0f) // Inventory explosion
+	{
+		DumpOutItems(this, 10);
 	}
 	if (this.getHealth() - (damage / 2.0f) <= 0.0f)
 	{
