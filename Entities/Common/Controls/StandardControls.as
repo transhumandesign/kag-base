@@ -218,6 +218,20 @@ void onTick(CBlob@ this)
 		}
 	}
 
+	// bubble menu
+
+	if (this.isKeyJustPressed(key_bubbles))
+	{
+		this.CreateBubbleMenu();
+		Tap(this);
+	}
+
+	/*else dont use this cause menu won't be release/clickable
+	if (this.isKeyJustReleased(key_bubbles))
+	{
+	    this.ClearBubbleMenu();
+	} */
+
 	// in crate
 
 	if (this.isInInventory())
@@ -242,20 +256,6 @@ void onTick(CBlob@ this)
 	}
 
 	// no more stuff possible while in crate...
-
-	// bubble menu
-
-	if (this.isKeyJustPressed(key_bubbles))
-	{
-		this.CreateBubbleMenu();
-		Tap(this);
-	}
-
-	/*else dont use this cause menu won't be release/clickable
-	if (this.isKeyJustReleased(key_bubbles))
-	{
-	    this.ClearBubbleMenu();
-	} */
 
 	// release action1 to click buttons
 

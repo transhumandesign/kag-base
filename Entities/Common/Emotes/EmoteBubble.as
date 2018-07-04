@@ -4,6 +4,8 @@
 
 void onInit(CBlob@ blob)
 {
+	blob.addCommandID("emote");
+
 	CSprite@ sprite = blob.getSprite();
 	blob.set_u8("emote", Emotes::off);
 	blob.set_u32("emotetime", 0);
@@ -43,7 +45,7 @@ void onTick(CBlob@ blob)
 		CSpriteLayer@ emote = sprite.getSpriteLayer("bubble");
 
 		const u8 index = blob.get_u8("emote");
-		if (is_emote(blob, index) && !blob.hasTag("dead"))
+		if (is_emote(blob, index) && !blob.hasTag("dead") && !blob.isInInventory())
 		{
 			blob.getCurrentScript().tickFrequency = 1;
 			if (emote !is null)
@@ -65,6 +67,17 @@ void onTick(CBlob@ blob)
 		{
 			emote.SetVisible(false);
 		}
+	}
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("emote"))
+	{
+		u8 emote = params.read_u8();
+		u32 emotetime = params.read_u32();
+		this.set_u8("emote", emote);
+		this.set_u32("emotetime", emotetime);
 	}
 }
 
