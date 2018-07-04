@@ -189,7 +189,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		{
 			CBitStream params;
 			params.write_u16( caller.getNetworkID() );
-			CButton@ button = caller.CreateGenericButton( 6, Vec2f(0,0), this, this.getCommandID("getout"), "Get out", params);
+			CButton@ button = caller.CreateGenericButton( 6, Vec2f(0,0), this, this.getCommandID("getout"), getTranslatedString("Get out"), params);
 			if (sneaky_player !is caller) // it's a teammate, so they have to be close to use button
 			{
 				button.SetEnabled(this.isOverlapping(caller) || caller.getCarriedBlob() is this);
@@ -202,12 +202,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			if (caller.getCarriedBlob() is this)
 			{
 				// Fake get in button
-				caller.CreateGenericButton(4, Vec2f(), this, this.getCommandID("getout"), "Get inside", params);
+				caller.CreateGenericButton(4, Vec2f(), this, this.getCommandID("getout"), getTranslatedString("Get inside"), params);
 			}
 			else
 			{
 				// Fake inventory button
-				CButton@ button = caller.CreateGenericButton(13, Vec2f(), this, this.getCommandID("getout"), "Crate", params);
+				CButton@ button = caller.CreateGenericButton(13, Vec2f(), this, this.getCommandID("getout"), getTranslatedString("Crate"), params);
 				button.SetEnabled(this.isOverlapping(caller));
 			}
 		}
@@ -239,7 +239,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		CBitStream params;
 		params.write_u16( caller.getNetworkID() );
-		caller.CreateGenericButton( 4, Vec2f(0,0), this, this.getCommandID("getin"), "Get inside", params );
+		caller.CreateGenericButton( 4, Vec2f(0,0), this, this.getCommandID("getin"), getTranslatedString("Get inside"), params );
 	}
 }
 
