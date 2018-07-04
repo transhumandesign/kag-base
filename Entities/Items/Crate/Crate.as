@@ -387,10 +387,17 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 {
 	if (blob.hasTag("player"))
 	{
-		this.getSprite().PlaySound("MigrantSayHello.ogg");
-		Vec2f velocity = this.getVelocity();
-		velocity.y = -5; // Leap out of crate
-		blob.setVelocity(velocity);
+		if (!this.hasTag("exploded"))
+		{
+			this.getSprite().PlaySound("MigrantSayHello.ogg");
+			Vec2f velocity = this.getVelocity();
+			velocity.y = -5; // Leap out of crate
+			blob.setVelocity(velocity);
+		}
+		else
+		{
+			this.getSprite().PlaySound("MigrantSayNo.ogg");
+		}
 	}
 
 	if (blob.getName() == "keg")
@@ -418,6 +425,31 @@ f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hit
 	}
 	if (customData == Hitters::explosion && damage > 50.0f) // Inventory explosion
 	{
+		this.Tag("exploded");
+		CBlob@ sneaky_player = getPlayerInside(this);
+		if (sneaky_player !is null) // We wanna launch them
+		{
+			this.server_PutOutInventory(sneaky_player);
+			Vec2f velocity = this.getVelocity();
+			if (velocity.x > 0) // Blow them right
+			{
+				velocity = Vec2f(0.75, -1);
+			}
+			else if (velocity.x < 0) // Blow them left
+			{
+				velocity = Vec2f(-0.75, -1);
+			}
+			else // Go straight up
+			{
+				velocity = Vec2f(0, -1);
+			}
+			sneaky_player.setVelocity(velocity * 8);
+			sneaky_player.set_u8("knocked", 30);
+
+			// Nearly kill the player
+			hitterBlob.server_Hit(sneaky_player, this.getPosition(), Vec2f(),
+								  sneaky_player.getInitialHealth() * 2 - 0.25f, Hitters::explosion, true);
+		}
 		DumpOutItems(this, 10);
 	}
 	if (this.getHealth() - (damage / 2.0f) <= 0.0f)
