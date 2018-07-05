@@ -298,7 +298,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller !is null && sneaky_player !is null) {
 			if (caller.getTeamNum() != getPlayerInside(this).getTeamNum())
 			{
-				caller.set_u8("knocked", 30);
+				if (caller.exists("knocked"))
+				{
+					caller.set_u8("knocked", 30);
+				}
 			}
 			this.server_PutOutInventory(getPlayerInside(this));
 		}
@@ -397,6 +400,10 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 			Vec2f velocity = this.getVelocity();
 			velocity.y = -5; // Leap out of crate
 			blob.setVelocity(velocity);
+			if (blob.exists("knocked"))
+			{
+				blob.set_u8("knocked", 5);
+			}
 		}
 		else // The crate exploded
 		{
@@ -415,7 +422,10 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 				velocity = Vec2f(0, -1);
 			}
 			blob.setVelocity(velocity * 8);
-			blob.set_u8("knocked", 30);
+			if (blob.exists("knocked"))
+			{
+				blob.set_u8("knocked", 30);
+			}
 		}
 	}
 
