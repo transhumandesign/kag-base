@@ -297,14 +297,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob @caller = getBlobByNetworkID( params.read_u16() );
 		CBlob@ sneaky_player = getPlayerInside(this);
 		if (caller !is null && sneaky_player !is null) {
-			if (caller.getTeamNum() != getPlayerInside(this).getTeamNum())
+			if (caller.getTeamNum() != sneaky_player.getTeamNum())
 			{
 				if (caller.exists("knocked"))
 				{
 					caller.set_u8("knocked", 30);
 				}
 			}
-			this.server_PutOutInventory(getPlayerInside(this));
+			this.server_PutOutInventory(sneaky_player);
 		}
 		// Attack self to pop out items
 		this.server_Hit(this, this.getPosition(), Vec2f(), 100.0f, Hitters::crush, true);
@@ -399,11 +399,14 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 		{
 			this.getSprite().PlaySound("MigrantSayHello.ogg");
 			Vec2f velocity = this.getVelocity();
-			velocity.y = -5; // Leap out of crate
+			if (-5 < velocity.y && velocity.y < 5)
+			{
+				velocity.y = -5; // Leap out of crate
+			}
 			blob.setVelocity(velocity);
 			if (blob.exists("knocked"))
 			{
-				blob.set_u8("knocked", 5);
+				blob.set_u8("knocked", 2);
 			}
 		}
 		else // The crate exploded
