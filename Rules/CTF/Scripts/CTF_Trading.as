@@ -182,12 +182,16 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 					g.params.ResetBitIndex();
 					string name = g.params.read_string();
 
-					if (name.findFirst("door") != -1 ||
-					        name == "wooden_platform" ||
+					if (name == "stone_door" ||
 					        name == "trap_block" ||
 					        name == "spikes")
 					{
 						coins = coinsOnBuild;
+					}
+					else if (name == "wooden_platform" ||
+								name == "wooden_door")
+					{
+						coins = coinsOnBuildWood;
 					}
 					else if (name == "building")
 					{
