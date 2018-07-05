@@ -221,6 +221,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			return;
 		}
 		else
+		if (arrowType == ArrowType::bomb)
+		{
+			this.server_Die();
+			return;
+		}
+		else
 		{
 			// this isnt synced cause we want instant collision for arrow even if it was wrong
 			dmg = ArrowHitBlob(this, point1, initVelocity, dmg, blob, Hitters::arrow, arrowType);
