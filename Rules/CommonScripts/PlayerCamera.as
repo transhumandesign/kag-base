@@ -10,7 +10,6 @@ int deathTime = 0;
 Vec2f deathLock;
 int helptime = 0;
 bool spectatorTeam;
-bool isModerating = false;
 
 void Reset(CRules@ this)
 {
@@ -67,37 +66,6 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 
 	}
 	else if (getLocalPlayer() is player)
-		spectatorTeam = false;
-
-}
-
-//when moderating
-void onModerate(CRules@ this, CPlayer@ moderator, CPlayer@ baddie)
-{
-	isModerating = true;
-	CCamera@ camera = getCamera();
-	CBlob@ moderatorBlob = moderator is null ? moderator.getBlob() : null;
-	CBlob@ baddieBlob = baddie is null ? baddie.getBlob() : null;
-
-	if (camera !is null && moderator.getTeamNum() == this.getSpectatorTeamNum() && moderator is getLocalPlayer())
-	{
-		spectatorTeam = true;
-		camera.setTarget(null);
-
-		if (baddieBlob !is null)
-		{
-			SetTargetPlayer(baddieBlob.getPlayer());
-			deathLock = moderatorBlob.getPosition();
-		}
-		else
-		{
-			camera.setTarget(null);
-
-		}
-		deathTime = getGameTime() + 2 * getTicksASecond();
-
-	}
-	else if (moderator is getLocalPlayer())
 		spectatorTeam = false;
 
 }

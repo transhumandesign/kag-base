@@ -1,7 +1,9 @@
 // report logic
 // wip
 
-#include "PlayerCamera.as"
+#include "Spectator.as";
+
+bool isModerating = false;
 
 bool onServerProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
 {
@@ -27,17 +29,18 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 		if (tokens.length > 1)
 		{
-			if ((tokens[0] == "!report" || tokens[0] == "!r") && !security.isPlayerIgnored(player))
+			if ((tokens[0] == "!report" || tokens[0] == "!r") /*&& !security.isPlayerIgnored(player)*/)
 			{
 				//check if reported player exists
-				string reportedUsername = tokens[1];
-				string reportedCharacterName = reportedUsername;
-				CPlayer@ reportedPlayer = getPlayerByUsername(reportedUsername);
+				string baddieUsername = tokens[1];
+				string baddieCharacterName = baddieUsername;
+				CPlayer@ baddie = getPlayerByUsername(baddieUsername);
 
-				if(reportedPlayer !is null)
+				if(baddie !is null)
 				{
 					//if he exists start more reporting logic
-					report(reportedPlayer, reportedUsername, reportedCharacterName);
+					report(player, baddie, baddieUsername, baddieCharacterName);
+					client_AddToChat("You have reported: " + baddieUsername, SColor(255, 255, 0, 0));
 				}
 				else {
 					print("not found");
@@ -61,19 +64,19 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		}
 	}
 
-	return false;
+	return true;
 }
 
-void report(CPlayer@ reportedPlayer, string reportedUsername, string reportedCharactername)
+void report(CPlayer@ moderator, CPlayer@ baddie, string baddieUsername, string baddieCharactername)
 {
-    print("Reporting " + reportedUsername);
-    print("Reporting " + reportedPlayer.getUsername());
-    print("Reporting " + reportedPlayer.getCharacterName());
-    print("Reporting " + reportedPlayer.getTeamNum());
-    print("Reporting " + reportedUsername);
+    print("Reporting " + baddieUsername);
+    print("Reporting " + baddie.getUsername());
+    print("Reporting " + baddie.getCharacterName());
+    print("Reporting " + baddie.getTeamNum());
+    print("Reporting " + baddieUsername);
 
 	//tag player as reported
-	reportedPlayer.Tag("reported");
+	baddie.Tag("reported");
 
     //get all players in server
     CBlob@[] allBlobs;
@@ -94,8 +97,8 @@ void report(CPlayer@ reportedPlayer, string reportedUsername, string reportedCha
 		if(allPlayers[i].isMod())
 		{
 			print("You're mod");
-			client_AddToChat("Report has been made of: " + reportedUsername, SColor(255, 255, 0, 0));
-			Sound::Play("/ReportSound.ogg");
+			client_AddToChat("Report has been made of: " + baddieUsername, SColor(255, 255, 0, 0));
+			Sound::Play("ReportSound.ogg", moderator.getBlob().getPosition());
 		}
 	}
 }
@@ -109,4 +112,28 @@ void moderate(CPlayer@ moderator, CPlayer@ targetPlayer, string targetUsername, 
 	moderator.client_ChangeTeam(specTeam);
 
 	onModerate(getRules(), moderator, targetPlayer);
+}
+
+//when moderating
+void onModerate(CRules@ this, CPlayer@ moderator, CPlayer@ baddie)
+{
+	isModerating = true;
+	CCamera@ camera = getCamera();
+	CBlob@ moderatorBlob = moderator is null ? moderator.getBlob() : null;
+	CBlob@ baddieBlob = baddie is null ? baddie.getBlob() : null;
+
+	if (camera !is null && moderator.getTeamNum() == this.getSpectatorTeamNum() && moderator is getLocalPlayer())
+	{
+		camera.setTarget(null);
+
+		if (baddieBlob !is null)
+		{
+			SetTargetPlayer(baddieBlob.getPlayer());
+		}
+		else
+		{
+			camera.setTarget(null);
+
+		}
+	}
 }
