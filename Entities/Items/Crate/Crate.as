@@ -267,9 +267,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("getin"))
 	{
+		if (this.getHealth() <= 0)
+		{
+			return;
+		}
 		CBlob @caller = getBlobByNetworkID( params.read_u16() );
 
-		if (caller !is null) {
+		if (caller !is null && this.getInventory() !is null) {
 			// We might have to make room
 			CInventory@ inv = this.getInventory();
 			u8 itemcount = inv.getItemsCount();
@@ -290,8 +294,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID("getout"))
 	{
 		CBlob @caller = getBlobByNetworkID( params.read_u16() );
-
-		if (caller !is null) {
+		CBlob@ sneaky_player = getPlayerInside(this);
+		if (caller !is null && sneaky_player !is null) {
 			if (caller.getTeamNum() != getPlayerInside(this).getTeamNum())
 			{
 				caller.set_u8("knocked", 30);
@@ -394,9 +398,24 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 			velocity.y = -5; // Leap out of crate
 			blob.setVelocity(velocity);
 		}
-		else
+		else // The crate exploded
 		{
 			this.getSprite().PlaySound("MigrantSayNo.ogg");
+			Vec2f velocity = this.getVelocity();
+			if (velocity.x > 0) // Blow them right
+			{
+				velocity = Vec2f(0.75, -1);
+			}
+			else if (velocity.x < 0) // Blow them left
+			{
+				velocity = Vec2f(-0.75, -1);
+			}
+			else // Go straight up
+			{
+				velocity = Vec2f(0, -1);
+			}
+			blob.setVelocity(velocity * 8);
+			blob.set_u8("knocked", 30);
 		}
 	}
 
@@ -427,30 +446,13 @@ f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hit
 	{
 		this.Tag("exploded");
 		CBlob@ sneaky_player = getPlayerInside(this);
-		if (sneaky_player !is null) // We wanna launch them
+		DumpOutItems(this, 10);
+		// Nearly kill the player
+		if (sneaky_player !is null)
 		{
-			this.server_PutOutInventory(sneaky_player);
-			Vec2f velocity = this.getVelocity();
-			if (velocity.x > 0) // Blow them right
-			{
-				velocity = Vec2f(0.75, -1);
-			}
-			else if (velocity.x < 0) // Blow them left
-			{
-				velocity = Vec2f(-0.75, -1);
-			}
-			else // Go straight up
-			{
-				velocity = Vec2f(0, -1);
-			}
-			sneaky_player.setVelocity(velocity * 8);
-			sneaky_player.set_u8("knocked", 30);
-
-			// Nearly kill the player
 			hitterBlob.server_Hit(sneaky_player, this.getPosition(), Vec2f(),
 								  sneaky_player.getInitialHealth() * 2 - 0.25f, Hitters::explosion, true);
 		}
-		DumpOutItems(this, 10);
 	}
 	if (this.getHealth() - (damage / 2.0f) <= 0.0f)
 	{
