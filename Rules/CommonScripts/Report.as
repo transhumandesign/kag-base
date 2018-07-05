@@ -5,7 +5,7 @@
 
 bool isModerating = false;
 
-bool onServerProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
+bool onClientProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
 {
 	if((text_in == "!moderate" || text_in == "!m") && player.isMod())
 	{
@@ -16,7 +16,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		blob.server_Die();
 		player.client_ChangeTeam(specTeam);
 		
-		return false; //false so it doesn't show as normal chat
+		return false; //false so it doesn't show as normal public chat
 	}
 	// reporting logic
 	else if (text_in.substr(0, 1) == "!")
@@ -29,11 +29,11 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 		if (tokens.length > 1)
 		{
-			if ((tokens[0] == "!report" || tokens[0] == "!r") /*&& !security.isPlayerIgnored(player)*/)
+			if ((tokens[0] == "!report" || tokens[0] == "!r") && !security.isPlayerIgnored(player))
 			{
 				//check if reported player exists
 				string baddieUsername = tokens[1];
-				string baddieCharacterName = baddieUsername;
+				string baddieCharacterName = baddieUsername; //no but idk
 				CPlayer@ baddie = getPlayerByUsername(baddieUsername);
 
 				if(baddie !is null)
@@ -43,7 +43,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					client_AddToChat("You have reported: " + baddieUsername, SColor(255, 255, 0, 0));
 				}
 				else {
-					print("not found");
+					client_AddToChat("not found", SColor(255, 255, 0, 0));
 				}
 
 				return false; //false so it doesn't show as normal chat
@@ -69,12 +69,6 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 void report(CPlayer@ moderator, CPlayer@ baddie, string baddieUsername, string baddieCharactername)
 {
-    print("Reporting " + baddieUsername);
-    print("Reporting " + baddie.getUsername());
-    print("Reporting " + baddie.getCharacterName());
-    print("Reporting " + baddie.getTeamNum());
-    print("Reporting " + baddieUsername);
-
 	//tag player as reported
 	baddie.Tag("reported");
 
@@ -96,6 +90,11 @@ void report(CPlayer@ moderator, CPlayer@ baddie, string baddieUsername, string b
 	{
 		if(allPlayers[i].isMod())
 		{
+			print("Reporting " + baddieUsername);
+			print("Reporting " + baddie.getUsername());
+			print("Reporting " + baddie.getCharacterName());
+			print("Reporting " + baddie.getTeamNum());
+			print("Reporting " + baddieUsername);
 			print("You're mod");
 			client_AddToChat("Report has been made of: " + baddieUsername, SColor(255, 255, 0, 0));
 			Sound::Play("ReportSound.ogg", moderator.getBlob().getPosition());
