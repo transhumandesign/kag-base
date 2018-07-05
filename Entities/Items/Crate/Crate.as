@@ -282,7 +282,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				// pop out last items until we can put in player or there's nothing left
 				CBlob@ item = inv.getItem(itemcount - 1);
 				this.server_PutOutInventory(item);
-				item.setVelocity(getRandomVelocity(90, 6, 45));
+				float magnitude = (1 - XORRandom(3) * 0.25) * 5.0f;
+				item.setVelocity(caller.getVelocity() + getRandomVelocity(90, magnitude, 45));
 				itemcount--;
 			}
 
@@ -552,7 +553,7 @@ CBlob@ getPlayerInside(CBlob@ this)
 	return null;
 }
 
-void DumpOutItems(CBlob@ this, float pop_out_velocity = 5.0f)
+void DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f)
 {
 	if (getNet().isServer())
 	{
@@ -564,13 +565,14 @@ void DumpOutItems(CBlob@ this, float pop_out_velocity = 5.0f)
 			this.server_PutOutInventory(item);
 			if (!item.hasTag("player"))
 			{
-				if (pop_out_velocity == 0)
+				if (pop_out_speed == 0)
 				{
 					item.setVelocity(velocity);
 				}
 				else
 				{
-					item.setVelocity(getRandomVelocity(90, pop_out_velocity, 45));
+					float magnitude = (1 - XORRandom(3) * 0.25) * pop_out_speed;
+					item.setVelocity(velocity + getRandomVelocity(90, magnitude, 45));
 				}
 			}
 		}
