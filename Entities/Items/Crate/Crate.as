@@ -163,6 +163,11 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	return !blob.hasTag("parachute");
 }
 
+bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+{
+	return (this.getTeamNum() == byBlob.getTeamNum() || this.isOverlapping(byBlob));
+}
+
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
 	if (this.hasTag("unpackall"))
@@ -170,7 +175,27 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 
 	if (!hasSomethingPacked(this)) // It's a normal crate
 	{
-		return(getPlayerInside(this) is null);
+		if (forBlob.getCarriedBlob() !is null
+			&& this.getInventory().canPutItem(forBlob.getCarriedBlob()))
+		{
+			return true; // OK to put an item in whenever
+		}
+
+		if (getPlayerInside(this) !is null)
+		{
+			return false; // Player getout buttons instead
+		}
+
+		if (this.getTeamNum() == forBlob.getTeamNum())
+		{
+			return true; // Allies can access from further away
+		}
+		else if (this.isOverlapping(forBlob))
+		{
+			return true; // Enemies can access when touching
+		}
+
+		return false;
 	}
 
 	else // has something packed
@@ -182,17 +207,25 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	Vec2f buttonpos(0, 0);
+
+	bool putting = caller.getCarriedBlob() !is null && caller.getCarriedBlob() !is this;
+	bool canput = putting && this.getInventory().canPutItem(caller.getCarriedBlob());
 	CBlob@ sneaky_player = getPlayerInside(this);
-	if (sneaky_player !is null)
+	// If there's a player inside and we aren't just dropping in an item
+	if (sneaky_player !is null && !(putting && canput))
 	{
 		if (sneaky_player.getTeamNum() == caller.getTeamNum())
 		{
 			CBitStream params;
 			params.write_u16( caller.getNetworkID() );
 			CButton@ button = caller.CreateGenericButton( 6, Vec2f(0,0), this, this.getCommandID("getout"), getTranslatedString("Get out"), params);
+			if (putting)
+			{
+				button.SetEnabled(false);
+			}
 			if (sneaky_player !is caller) // it's a teammate, so they have to be close to use button
 			{
-				button.SetEnabled(this.isOverlapping(caller) || caller.getCarriedBlob() is this);
+				button.enableRadius = 20.0f;
 			}
 		}
 		else // make fake buttons for enemy
@@ -208,12 +241,11 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			{
 				// Fake inventory button
 				CButton@ button = caller.CreateGenericButton(13, Vec2f(), this, this.getCommandID("getout"), getTranslatedString("Crate"), params);
-				button.SetEnabled(this.isOverlapping(caller));
+				button.enableRadius = 20.0f;
 			}
 		}
 	}
-	else
-	if (this.hasTag("unpackall"))
+	else if (this.hasTag("unpackall"))
 	{
 		caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), getTranslatedString("Unpack all"));
 	}
@@ -240,6 +272,16 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		CBitStream params;
 		params.write_u16( caller.getNetworkID() );
 		caller.CreateGenericButton( 4, Vec2f(0,0), this, this.getCommandID("getin"), getTranslatedString("Get inside"), params );
+	}
+	else if (this.getTeamNum() != caller.getTeamNum() && !this.isOverlapping(caller))
+	{
+		// We need a fake crate inventory button to hint to players that they need to get closer
+		// And also so they're unable to discern which crates have hidden players
+		if (caller.getCarriedBlob() is null || (putting && !canput))
+		{
+			CButton@ button = caller.CreateGenericButton(13, Vec2f(), this, this.getCommandID("getout"), getTranslatedString("Crate"));
+			button.SetEnabled(false); // they shouldn't be able to actually press it tho
+		}
 	}
 }
 
