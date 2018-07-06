@@ -64,10 +64,17 @@ void onInit(CBlob@ this)
 	{
 		ShopItem@ s = addShopItem(this, "Saw", "$saw$", "saw", Descriptions::saw, false);
 		s.customButton = true;
-		s.buttonwidth = 2;
+		s.buttonwidth = 1;
 		s.buttonheight = 1;
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::saw_wood);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::saw_stone);
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Crate", "$crate$", "crate", Descriptions::crate, false);
+		s.customButton = true;
+		s.buttonwidth = 1;
+		s.buttonheight = 1;
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::crate_wood);
 	}
 }
 

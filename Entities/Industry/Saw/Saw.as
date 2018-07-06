@@ -87,7 +87,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 void Blend(CBlob@ this, CBlob@ tobeblended)
 {
 	if (this is tobeblended || tobeblended.hasTag("sawed") ||
-	        tobeblended.hasTag("invincible") || !getSawOn(this))
+	        tobeblended.hasTag("invincible") || !getSawOn(this)
+			|| tobeblended.hasTag("saw_immune"))
 	{
 		return;
 	}
