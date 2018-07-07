@@ -72,6 +72,13 @@ void onInit(CBlob@ this)
 
 		}	 //END OF HACK
 	}
+	else
+	{
+		this.getAttachments().getAttachmentPointByName("PICKUP").offset = Vec2f(3, 4);
+		this.getAttachments().getAttachmentPointByName("PICKUP").offsetZ = -10;
+		this.getSprite().SetRelativeZ(-10.0f);
+		this.AddScript("BehindWhenAttached.as");
+	}
 
 	const uint unpackSecs = 3;
 	this.set_u32("unpack secs", unpackSecs);
