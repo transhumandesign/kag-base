@@ -544,11 +544,17 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )
 {
+	f32 dmg = damage;
+
+	if (customData == Hitters::builder)
+	{
+		dmg *= 4;
+	}
 	if (customData == Hitters::saw)
 	{
 		DumpOutItems(this, 0);
 	}
-	if (customData == Hitters::explosion && damage > 50.0f) // Inventory explosion
+	if (customData == Hitters::explosion && dmg > 50.0f) // Inventory explosion
 	{
 		this.Tag("exploded");
 		CBlob@ sneaky_player = getPlayerInside(this);
@@ -560,12 +566,12 @@ f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hit
 								  sneaky_player.getInitialHealth() * 2 - 0.25f, Hitters::explosion, true);
 		}
 	}
-	if (this.getHealth() - (damage / 2.0f) <= 0.0f)
+	if (this.getHealth() - (dmg / 2.0f) <= 0.0f)
 	{
 		DumpOutItems(this);
 	}
 
-	return damage;
+	return dmg;
 }
 
 void onDie(CBlob@ this)
