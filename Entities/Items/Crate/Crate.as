@@ -15,6 +15,9 @@ void onInit(CBlob@ this)
 	this.addCommandID("getin");
 	this.addCommandID("getout");
 	this.addCommandID("stop unpack");
+	this.addCommandID("boobytrap");
+
+	this.set_u32("boobytrap_cooldown_time", 0);
 
 	u8 frame = 0;
 	if (this.exists("frame"))
@@ -359,6 +362,24 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.server_Hit(this, this.getPosition(), Vec2f(), 100.0f, Hitters::crush, true);
 		this.server_Die();
 	}
+	else if (cmd == this.getCommandID("boobytrap"))
+	{
+		CBlob@ caller = getBlobByNetworkID(params.read_u16());
+		CBlob@ mine = getBlobByNetworkID(params.read_u16());
+		if (caller !is null && mine !is null && this.get_u32("boobytrap_cooldown_time") <= getGameTime())
+		{
+			this.server_PutOutInventory(mine);
+			Vec2f pos = this.getPosition();
+			pos.y = this.getTeamNum() == caller.getTeamNum() ? pos.y - 5
+						: caller.getPosition().y - caller.getRadius() - 5;
+			pos.y = Maths::Min(pos.y, this.getPosition().y - 5);
+			mine.setPosition(pos);
+			mine.setVelocity(Vec2f((caller.getPosition().x - mine.getPosition().x) / 30.0f, -5.0f));
+			mine.set_u8("mine_timer", 255);
+			mine.SendCommand(mine.getCommandID("mine_primed"));
+			this.set_u32("boobytrap_cooldown_time", getGameTime() + 30);
+		}
+	}
 }
 
 void Unpack(CBlob@ this)
@@ -428,6 +449,28 @@ void HideParachute(CBlob@ this)
 	{
 		parachute.SetVisible(false);
 		ParticlesFromSprite(parachute);
+	}
+}
+
+void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
+{
+	CInventory@ inv = this.getInventory();
+	CBlob@ mine = null;
+	for (int i = 0; i < inv.getItemsCount(); i++)
+	{
+		CBlob@ item = inv.getItem(i);
+		if (item.getName() == "mine" && item.getTeamNum() != forBlob.getTeamNum())
+		{
+			@mine = item;
+			break;
+		}
+	}
+	if (mine !is null)
+	{
+		CBitStream params;
+		params.write_u16(forBlob.getNetworkID());
+		params.write_u16(mine.getNetworkID());
+		this.SendCommand(this.getCommandID("boobytrap"), params);
 	}
 }
 
