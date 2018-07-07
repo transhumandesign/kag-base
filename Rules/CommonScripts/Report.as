@@ -183,6 +183,11 @@ void moderate(CRules@ this, CPlayer@ moderator, CPlayer@ baddie)
 // 	}
 // }
 
+void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
+{
+	isModerating = false;
+}
+
 void onRender(CRules@ this)
 {
 	if(isModerating)
