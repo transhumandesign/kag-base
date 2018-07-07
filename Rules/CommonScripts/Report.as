@@ -8,10 +8,12 @@
 bool isModerating;
 string moderatorUsername;
 string baddieUsername;
+int specTeam;
 
 void onInit(CRules@ this)
 {
 	isModerating = false;
+	specTeam = this.getSpectatorTeamNum();
 	// _moderator = null;
 	// _baddie = null;
 }
@@ -21,13 +23,9 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 	if((text_in == "!moderate" || text_in == "!m") && player.isMod())
 	{
 		//should get last person to be reported...
-
-		int specTeam = getRules().getSpectatorTeamNum();
-		CBlob@ blob = player.getBlob();
-		blob.server_SetPlayer(null);
-		blob.server_Die();
-		player.client_ChangeTeam(specTeam);
 		
+
+
 		return false; //false so it doesn't show as normal public chat
 	}
 	// reporting logic
@@ -41,7 +39,7 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 		if (tokens.length > 1)
 		{
-			if ((tokens[0] == "!report" || tokens[0] == "!r") && !security.isPlayerIgnored(player))
+			if ((tokens[0] == "!report" || tokens[0] == "!r") && !security.isPlayerIgnored(player) && player is getLocalPlayer())
 			{
 				//check if reported player exists
 				string baddieUsername = tokens[1];
@@ -57,8 +55,6 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 				else {
 					client_AddToChat("not found", SColor(255, 255, 0, 0));
 				}
-
-				return false; //false so it doesn't show as normal chat
 			}
 			else if((tokens[0] == "!moderate" || tokens[0] == "!m") && player.isMod())
 			{
@@ -80,9 +76,9 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 						moderate(this, player, baddie);
 					}
 				}
-				
-				return false; //false so it doesn't show as normal chat
 			}
+
+			return false; //false so it doesn't show as normal chat
 		}
 	}
 
@@ -136,40 +132,18 @@ void moderate(CRules@ this, CPlayer@ moderator, CPlayer@ baddie)
 
 	CCamera@ camera = getCamera();
 
-	int specTeam = this.getSpectatorTeamNum();
+	
 	moderator.client_ChangeTeam(specTeam);
-
-	camera.setTarget(baddieBlob);
+	onModerate(this, moderator, baddie);
 	isModerating = true;
+}
 
-	// int specTeam = this.getSpectatorTeamNum();
-	
-	// CBlob@ moderatorBlob = moderator is null ? moderator.getBlob() : null;
-	// CBlob@ baddieBlob = baddie is null ? baddie.getBlob() : null;
-
-	// moderatorBlob.server_SetPlayer(null);
-	// moderatorBlob.server_Die();
-	// moderator.client_ChangeTeam(specTeam);
-	// isModerating = true;
-
-	// CCamera@ camera = getCamera();
-
-	
-
-	// if (camera !is null && moderator.getTeamNum() == specTeam && moderator is getLocalPlayer())
-	// {
-	// 	camera.setTarget(null);
-
-	// 	if (baddieBlob !is null)
-	// 	{
-	// 		SetTargetPlayer(baddieBlob.getPlayer());
-	// 	}
-	// 	else
-	// 	{
-	// 		camera.setTarget(null);
-
-	// 	}
-	// }
+void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
+{
+	if(oldteam == specTeam)
+	{
+		isModerating = false;
+	}
 }
 
 // void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
@@ -177,84 +151,72 @@ void moderate(CRules@ this, CPlayer@ moderator, CPlayer@ baddie)
 // 	CCamera@ camera = getCamera();
 // 	if (camera !is null && player !is null && player is getLocalPlayer())
 // 	{
-// 		camera.setPosition(blob.getPosition());
-// 		camera.setTarget(blob);
-// 		camera.mousecamstyle = 1; // follow
+		
 // 	}
 // }
 
+<<<<<<< HEAD
 void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 {
 	isModerating = false;
 }
 
 void onRender(CRules@ this)
+=======
+//Change to spectator cam on death
+void onModerate(CRules@ this, CPlayer@ moderator, CPlayer@ baddie)
+>>>>>>> [...] can actually stop moderating
 {
-	if(isModerating)
-	{
-		CPlayer@ _baddie = getPlayerByUsername(baddieUsername);
-		CPlayer@ _moderator = getPlayerByUsername(moderatorUsername);
+	CCamera@ camera = getCamera();
+	CBlob@ moderatorBlob = moderator !is null ? moderator.getBlob() : null;
+	CBlob@ baddieBlob = baddie !is null ? baddie.getBlob() : null;
 
-		CCamera@ camera = getCamera();
-		CBlob@ moderatorBlob = _moderator !is null ? _moderator.getBlob() : null;
-		CBlob@ baddieBlob = _baddie !is null ? _baddie.getBlob() : null;
-
+	//Player died to someone
+	if (camera !is null && moderator is getLocalPlayer())
+	{	
 		if (moderatorBlob !is null)
 		{
 			moderatorBlob.ClearButtons();
 			moderatorBlob.ClearMenus();
+
 		}
 
 		if (baddieBlob !is null)
 		{
-			SetTargetPlayer(_baddie);
-			if (camera !is null && _moderator !is null && _moderator is getLocalPlayer())
-			{
-				camera.setPosition(baddieBlob.getPosition());
-				camera.mousecamstyle = 1; // follow
-			}
+			SetTargetPlayer(baddieBlob.getPlayer());
+			camera.setPosition(baddieBlob.getPosition());
+			camera.setTarget(baddieBlob);
+			camera.mousecamstyle = 1; // follow
 		}
 		else
 		{
 			camera.setTarget(null);
+
 		}
 
-		if (baddieBlob !is null /*&& getLocalPlayerBlob() is null*/)
-		{
-			GUI::SetFont("menu");
-			GUI::DrawText(
-				getTranslatedString("Moderating {CHARACTERNAME} ({USERNAME})")
-				.replace("{CHARACTERNAME}", _baddie.getCharacterName())
-				.replace("{USERNAME}", _baddie.getUsername()),
-				Vec2f(getScreenWidth() / 2 - 90, getScreenHeight() * (0.2f)),
-				Vec2f(getScreenWidth() / 2 + 90, getScreenHeight() * (0.2f) + 30),
-				SColor(0xffffffff), true, true
-			);
-		}
+	}
 
+}
+
+void onRender(CRules@ this)
+{
+	//death effect
+	CCamera@ camera = getCamera();
+	if (camera !is null && getLocalPlayerBlob() is null && getLocalPlayer() !is null)
+	{
+		camera.setPosition(baddieBlob.getPosition());
+	}
+
+	if (targetPlayer() !is null && getLocalPlayerBlob() is null)
+	{
 		GUI::SetFont("menu");
-
-		string text = "";
-		text = "You can use the movement keys and clicking to move the camera.";
-
-		if (text != "")
-		{
-			//translate
-			text = getTranslatedString(text);
-			//position post translation so centering works properly
-			Vec2f ul, lr;
-			ul = Vec2f(getScreenWidth() / 2.0, 3.0 * getScreenHeight() / 4);
-			Vec2f size;
-			GUI::GetTextDimensions(text, size);
-			ul -= size * 0.5;
-			lr = ul + size;
-			//wiggle up and down
-			f32 wave = Maths::Sin(getGameTime() / 10.0f) * 5.0f;
-			ul.y += wave;
-			lr.y += wave;
-			//draw
-			GUI::DrawButtonPressed(ul - Vec2f(10, 10), lr + Vec2f(10, 10));
-			GUI::DrawText(text, ul, SColor(0xffffffff));
-		}
+		GUI::DrawText(
+			getTranslatedString("Following {CHARACTERNAME} ({USERNAME})")
+			.replace("{CHARACTERNAME}", targetPlayer().getCharacterName())
+			.replace("{USERNAME}", targetPlayer().getUsername()),
+			Vec2f(getScreenWidth() / 2 - 90, getScreenHeight() * (0.2f)),
+			Vec2f(getScreenWidth() / 2 + 90, getScreenHeight() * (0.2f) + 30),
+			SColor(0xffffffff), true, true
+		);
 	}
 }
