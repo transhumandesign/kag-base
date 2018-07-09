@@ -3,19 +3,15 @@
 
 #define CLIENT_ONLY
 
-#include "Spectator.as";
-
 bool isModerating;
-string moderatorUsername;
-string baddieUsername;
+string _moderatorUsername;
+string _baddieUsername;
 int specTeam;
 
 void onInit(CRules@ this)
 {
 	isModerating = false;
 	specTeam = this.getSpectatorTeamNum();
-	// _moderator = null;
-	// _baddie = null;
 }
 
 bool onClientProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
@@ -58,22 +54,25 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 			}
 			else if((tokens[0] == "!moderate" || tokens[0] == "!m") && player.isMod())
 			{
-				baddieUsername = tokens[1];
-				string baddieCharacterName = baddieUsername;
-				CPlayer@ baddie = getPlayerByUsername(baddieUsername);
-				moderatorUsername = player.getUsername();
+				_baddieUsername = tokens[1];
+				string baddieCharacterName = _baddieUsername;
+				CPlayer@ baddie = getPlayerByUsername(_baddieUsername);
+				_moderatorUsername = player.getUsername();
 
 				if(baddie !is null)
 				{
-					if(baddie.hasTag("reported") && player.isMod())
+					if(player.isMod() && player is getLocalPlayer())
 					{
-						client_AddToChat("You're moderating " + baddieUsername, SColor(255, 255, 0, 0));
-						moderate(this, player, baddie);
-					}
-					else if(player.isMod())
-					{
-						client_AddToChat("The person you're moderating has not been reported, but you may do so anyway.", SColor(255, 255, 0, 0));
-						moderate(this, player, baddie);
+						if(baddie.hasTag("reported"))
+						{
+							client_AddToChat("You're moderating " + _baddieUsername, SColor(255, 255, 0, 0));
+							moderate(this, player, baddie);
+						}
+						else
+						{
+							client_AddToChat("The person you're moderating has not been reported, but you may do so anyway.", SColor(255, 255, 0, 0));
+							moderate(this, player, baddie);
+						}
 					}
 				}
 			}
@@ -122,20 +121,36 @@ void report(CPlayer@ moderator, CPlayer@ baddie)
 	}
 }
 
+//Change to spectator cam on moderate
 void moderate(CRules@ this, CPlayer@ moderator, CPlayer@ baddie)
 {
-	string baddieUsername = baddie.getUsername();
-	string baddieCharacterName = baddieUsername; //no, but idk
-
-	CBlob@ moderatorBlob = moderator is null ? moderator.getBlob() : null;
-	CBlob@ baddieBlob = baddie is null ? baddie.getBlob() : null;
-
 	CCamera@ camera = getCamera();
+	CBlob@ moderatorBlob = moderator.getBlob();
+	CBlob@ baddieBlob = baddie.getBlob();
 
-	
-	moderator.client_ChangeTeam(specTeam);
-	onModerate(this, moderator, baddie);
-	isModerating = true;
+	// moderatorBlob.server_SetPlayer(null);
+	// moderatorBlob.server_Die();
+	// moderator.client_ChangeTeam(specTeam);
+
+	if (camera !is null && moderator is getLocalPlayer())
+	{
+		isModerating = true;
+
+		// if (moderatorBlob !is null)
+		// {
+		// 	moderatorBlob.ClearButtons();
+		// 	moderatorBlob.ClearMenus();
+		// }
+
+		// if (baddieBlob !is null)
+		// {
+		// 	SetTargetPlayer(baddieBlob.getPlayer());
+		// }
+		// else
+		// {
+		// 	camera.setTarget(null);
+		// }
+	}
 }
 
 void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
@@ -146,77 +161,13 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 	}
 }
 
-// void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
-// {
-// 	CCamera@ camera = getCamera();
-// 	if (camera !is null && player !is null && player is getLocalPlayer())
-// 	{
-		
-// 	}
-// }
-
-<<<<<<< HEAD
-void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
-{
-	isModerating = false;
-}
-
-void onRender(CRules@ this)
-=======
-//Change to spectator cam on death
-void onModerate(CRules@ this, CPlayer@ moderator, CPlayer@ baddie)
->>>>>>> [...] can actually stop moderating
-{
-	CCamera@ camera = getCamera();
-	CBlob@ moderatorBlob = moderator !is null ? moderator.getBlob() : null;
-	CBlob@ baddieBlob = baddie !is null ? baddie.getBlob() : null;
-
-	//Player died to someone
-	if (camera !is null && moderator is getLocalPlayer())
-	{	
-		if (moderatorBlob !is null)
-		{
-			moderatorBlob.ClearButtons();
-			moderatorBlob.ClearMenus();
-
-		}
-
-		if (baddieBlob !is null)
-		{
-			SetTargetPlayer(baddieBlob.getPlayer());
-			camera.setPosition(baddieBlob.getPosition());
-			camera.setTarget(baddieBlob);
-			camera.mousecamstyle = 1; // follow
-		}
-		else
-		{
-			camera.setTarget(null);
-
-		}
-
-	}
-
-}
-
 void onRender(CRules@ this)
 {
-	//death effect
-	CCamera@ camera = getCamera();
-	if (camera !is null && getLocalPlayerBlob() is null && getLocalPlayer() !is null)
+	if(isModerating)
 	{
-		camera.setPosition(baddieBlob.getPosition());
-	}
+		CCamera@ camera = getCamera();
+		CPlayer@ baddie = getPlayerByUsername(_baddieUsername);
 
-	if (targetPlayer() !is null && getLocalPlayerBlob() is null)
-	{
-		GUI::SetFont("menu");
-		GUI::DrawText(
-			getTranslatedString("Following {CHARACTERNAME} ({USERNAME})")
-			.replace("{CHARACTERNAME}", targetPlayer().getCharacterName())
-			.replace("{USERNAME}", targetPlayer().getUsername()),
-			Vec2f(getScreenWidth() / 2 - 90, getScreenHeight() * (0.2f)),
-			Vec2f(getScreenWidth() / 2 + 90, getScreenHeight() * (0.2f) + 30),
-			SColor(0xffffffff), true, true
-		);
+		camera.setPosition(baddie.getBlob().getInterpolatedPosition());
 	}
 }
