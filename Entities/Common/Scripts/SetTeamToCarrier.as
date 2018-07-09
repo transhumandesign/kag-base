@@ -9,5 +9,9 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 
 void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
+	if (inventoryBlob.getName() == "crate")
+	{
+		return;
+	}
 	this.server_setTeamNum(inventoryBlob.getTeamNum());
 }

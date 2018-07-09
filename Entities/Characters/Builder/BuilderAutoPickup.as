@@ -1,5 +1,7 @@
 #define SERVER_ONLY
 
+#include "CratePickupCommon.as"
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().tickFrequency = 12;
@@ -8,6 +10,15 @@ void onInit(CBlob@ this)
 
 void Take(CBlob@ this, CBlob@ blob)
 {
+	CBlob@ carryblob = this.getCarriedBlob();
+	if (carryblob !is null && carryblob.getName() == "crate")
+	{
+		if (crateTake(carryblob, blob))
+		{
+			return;
+		}
+	}
+
 	const string blobName = blob.getName();
 
 	if (blobName == "mat_gold" || blobName == "mat_stone" ||

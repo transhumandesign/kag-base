@@ -92,6 +92,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		if (this.isInInventory()) return;
 
+		if (this.get_u8(MINE_STATE) == PRIMED) return;
+
 		this.set_u8(MINE_STATE, PRIMED);
 		this.getShape().checkCollisionsAgain = true;
 

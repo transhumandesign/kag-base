@@ -42,7 +42,7 @@ void onTick(CMovement@ this)
 		const string fallscreamtag = "_fallingscream";
 		if (vel.y > 0.2f)
 		{
-			if (vel.y > BaseFallSpeed() * 1.8f)
+			if (vel.y > BaseFallSpeed() * 1.8f && !blob.isInInventory())
 			{
 				if (!blob.hasTag(fallscreamtag))
 				{
