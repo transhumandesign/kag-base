@@ -368,6 +368,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ mine = getBlobByNetworkID(params.read_u16());
 		if (caller !is null && mine !is null && this.get_u32("boobytrap_cooldown_time") <= getGameTime())
 		{
+			this.set_u32("boobytrap_cooldown_time", getGameTime() + 30);
 			this.server_PutOutInventory(mine);
 			Vec2f pos = this.getPosition();
 			pos.y = this.getTeamNum() == caller.getTeamNum() ? pos.y - 5
@@ -377,7 +378,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			mine.setVelocity(Vec2f((caller.getPosition().x - mine.getPosition().x) / 30.0f, -5.0f));
 			mine.set_u8("mine_timer", 255);
 			mine.SendCommand(mine.getCommandID("mine_primed"));
-			this.set_u32("boobytrap_cooldown_time", getGameTime() + 30);
 		}
 	}
 }
