@@ -79,7 +79,7 @@ void Rules_SetVote(CRules@ this, VoteObject@ vote)
 		if (CanPlayerVote(vote, getLocalPlayer()))
 			client_AddToChat(getTranslatedString("--- A vote was started by {USER} ---").replace("{USER}", vote.byuser), vote_message_colour());
 		else
-			client_AddToChat(getTranslatedString("--- Vote \"{TITLE}\" was started by {USER}. Reason: {REASON} ---").replace("{TITLE}", getTranslatedString(vote.title)).replace("{USER}", vote.byuser).replace("{REASON}", getTranslatedString(vote.reason)), vote_message_colour()); //more info for server and those who cant see the vote
+			client_AddToChat(getTranslatedString("--- Vote \"Kick {KICKUSER}?\" was started by {USER}. Reason: {REASON} ---").replace("{KICKUSER}", getTranslatedString(vote.user_to_kick)).replace("{USER}", vote.byuser).replace("{REASON}", getTranslatedString(vote.reason)), vote_message_colour()); //more info for server and those who cant see the vote
 	}
 }
 
