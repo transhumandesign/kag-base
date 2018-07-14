@@ -55,12 +55,13 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 			else if((tokens[0] == "!moderate" || tokens[0] == "!m") && player.isMod())
 			{
 				_baddieUsername = tokens[1];
-				string baddieCharacterName = _baddieUsername;
 				CPlayer@ baddie = getPlayerByUsername(_baddieUsername);
-				_moderatorUsername = player.getUsername();
 
 				if(baddie !is null)
 				{
+					string baddieCharacterName = _baddieUsername;
+					_moderatorUsername = player.getUsername();
+
 					if(player.isMod() && player is getLocalPlayer())
 					{
 						if(baddie.hasTag("reported"))
@@ -124,50 +125,5 @@ void report(CPlayer@ moderator, CPlayer@ baddie)
 //Change to spectator cam on moderate
 void moderate(CRules@ this, CPlayer@ moderator, CPlayer@ baddie)
 {
-	CCamera@ camera = getCamera();
-	CBlob@ moderatorBlob = moderator.getBlob();
-	CBlob@ baddieBlob = baddie.getBlob();
-
-	// moderatorBlob.server_SetPlayer(null);
-	// moderatorBlob.server_Die();
-	// moderator.client_ChangeTeam(specTeam);
-
-	if (camera !is null && moderator is getLocalPlayer())
-	{
-		isModerating = true;
-
-		// if (moderatorBlob !is null)
-		// {
-		// 	moderatorBlob.ClearButtons();
-		// 	moderatorBlob.ClearMenus();
-		// }
-
-		// if (baddieBlob !is null)
-		// {
-		// 	SetTargetPlayer(baddieBlob.getPlayer());
-		// }
-		// else
-		// {
-		// 	camera.setTarget(null);
-		// }
-	}
-}
-
-void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
-{
-	if(oldteam == specTeam)
-	{
-		isModerating = false;
-	}
-}
-
-void onRender(CRules@ this)
-{
-	if(isModerating)
-	{
-		CCamera@ camera = getCamera();
-		CPlayer@ baddie = getPlayerByUsername(_baddieUsername);
-
-		camera.setPosition(baddie.getBlob().getInterpolatedPosition());
-	}
+	print(baddie.getBlob().getLightColor());
 }
