@@ -24,16 +24,15 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
 	///Get's the correct colour
 	
 	if (map.isTileGround( tile ) || map.isTileStone( tile ) ||
-        map.isTileBedrock( tile ) || map.isTileGold( tile ) ||
-        map.isTileThickStone( tile ) ||
+        map.isTileBedrock( tile ) || map.isTileThickStone( tile ) ||
         map.isTileCastle( tile ) || map.isTileWood( tile ) )
 	{
 		col = color_minimap_solid; //Foreground
 		
 		if (X != 0 && Y != 0 && X < map.tilemapwidth && Y < map.tilemapheight)
 		{
-			if(!map.isTileSolid(map.getTile(pos*8 + Vec2f(0,8))) || !map.isTileSolid(map.getTile(pos*8 + Vec2f(0,-8))) 
-			|| !map.isTileSolid(map.getTile(pos*8 + Vec2f(8,0))) || !map.isTileSolid(map.getTile(pos*8 + Vec2f(-8,0))))
+			if(isForegroundOutlineTile(map.getTile(pos*8 + Vec2f(0,8))) || isForegroundOutlineTile(map.getTile(pos*8 + Vec2f(0,-8))) 
+			|| isForegroundOutlineTile(map.getTile(pos*8 + Vec2f(8,0))) || isForegroundOutlineTile(map.getTile(pos*8 + Vec2f(-8,0))))
 			{
 				col = color_minimap_solid_edge; //Foreground edge
 			}
@@ -45,10 +44,23 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
 		
 		if (X != 0 && Y != 0 && X < map.tilemapwidth && Y < map.tilemapheight)
 		{
-			if(map.getTile(pos*8 + Vec2f(0,8)).type == CMap::tile_empty || map.getTile(pos*8 + Vec2f(0,-8)).type == CMap::tile_empty 
-			|| map.getTile(pos*8 + Vec2f(8,0)).type == CMap::tile_empty || map.getTile(pos*8 + Vec2f(-8,0)).type == CMap::tile_empty)
+			if(isBackgroundOutlineTile(map.getTile(pos*8 + Vec2f(0,8))) || isBackgroundOutlineTile(map.getTile(pos*8 + Vec2f(0,-8))) 
+			|| isBackgroundOutlineTile(map.getTile(pos*8 + Vec2f(8,0))) || isBackgroundOutlineTile(map.getTile(pos*8 + Vec2f(-8,0))))
 			{
 				col = color_minimap_back_edge; //Background edge
+			}
+		}
+	}
+	else if(map.isTileGold(tile))
+	{
+		col = color_minimap_gold; //Gold
+		
+		if (X != 0 && Y != 0 && X < map.tilemapwidth && Y < map.tilemapheight)
+		{
+			if(!map.isTileSolid(map.getTile(pos*8 + Vec2f(0,8))) || !map.isTileSolid(map.getTile(pos*8 + Vec2f(0,-8))) 
+			|| !map.isTileSolid(map.getTile(pos*8 + Vec2f(8,0))) || !map.isTileSolid(map.getTile(pos*8 + Vec2f(-8,0))))
+			{
+				col = color_minimap_gold_edge; //Gold edge
 			}
 		}
 	}
@@ -71,18 +83,16 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
 	{
 		col = col.getInterpolated(color_minimap_fire,0.5f);
 	}
-	
-	
-	///Marks Gold on the map
-	
-	if(map.isTileGold(tile)){
-		if(col == color_minimap_solid_edge)
-		{
-			col = color_minimap_gold_edge;
-		}
-		else
-		{
-			col = color_minimap_gold;
-		}
-	}
+}
+
+bool isForegroundOutlineTile(Tile tile){
+
+	return !getMap().isTileSolid(tile) || getMap().isTileGold(tile.type);
+
+}
+
+bool isBackgroundOutlineTile(Tile tile){
+
+	return tile.type == CMap::tile_empty || getMap().isTileGold(tile.type);
+
 }
