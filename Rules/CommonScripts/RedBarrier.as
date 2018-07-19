@@ -32,15 +32,42 @@ void onTick(CRules@ this)
 				{
 					Vec2f pos = b.getPosition();
 
-					f32 f = b.getMass() * 2.0f;
-
-					if (pos.x < middle)
+					//players clamped to edge
+					if (b.getPlayer() !is null)
 					{
-						b.AddForce(Vec2f(-f, -f * 0.1f));
+						Vec2f pos = b.getPosition();
+						if (pos.x >= x1 && pos.x <= x2)
+						{
+							Vec2f vel = b.getVelocity();
+							float margin = 0.01f;
+							float vel_base = 0.01f;
+							if (pos.x < middle)
+							{
+								pos.x = Maths::Min(x1 - margin, pos.x) - margin;
+								vel.x = Maths::Min(-vel_base, -Maths::Abs(vel.x));
+							}
+							else
+							{
+								pos.x = Maths::Max(x2 + margin, pos.x) + margin;
+								vel.x = Maths::Max(vel_base, Maths::Abs(vel.x));
+							}
+							b.setPosition(pos);
+							b.setVelocity(vel);
+						}
 					}
+					//other objects pushed softly (annoying for players apparently)
 					else
 					{
-						b.AddForce(Vec2f(f, -f * 0.1f));
+						f32 f = b.getMass() * 2.0f;
+
+						if (pos.x < middle)
+						{
+							b.AddForce(Vec2f(-f, -f * 0.1f));
+						}
+						else
+						{
+							b.AddForce(Vec2f(f, -f * 0.1f));
+						}
 					}
 				}
 			}
