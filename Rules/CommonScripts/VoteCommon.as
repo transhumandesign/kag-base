@@ -77,9 +77,38 @@ void Rules_SetVote(CRules@ this, VoteObject@ vote)
 		this.set("g_vote", vote);
 
 		if (CanPlayerVote(vote, getLocalPlayer()))
-			client_AddToChat(getTranslatedString("--- A vote was started by {USER} ---").replace("{USER}", vote.byuser), vote_message_colour());
+		{
+			client_AddToChat(
+				getTranslatedString("--- A vote was started by {USER} ---")
+					.replace("{USER}", vote.byuser),
+				vote_message_colour()
+			);
+		}
 		else
-			client_AddToChat(getTranslatedString("--- Vote \"Kick {KICKUSER}?\" was started by {USER}. Reason: {REASON} ---").replace("{KICKUSER}", getTranslatedString(vote.user_to_kick)).replace("{USER}", vote.byuser).replace("{REASON}", getTranslatedString(vote.reason)), vote_message_colour()); //more info for server and those who cant see the vote
+		{
+			//more info for server and those who cant see the vote
+			if (vote.user_to_kick != "")
+			{
+				//special case; votekick
+				client_AddToChat(
+					getTranslatedString("--- Vote \"Kick {KICKUSER}?\" was started by {USER}. Reason: {REASON} ---")
+						.replace("{KICKUSER}", getTranslatedString(vote.user_to_kick))
+						.replace("{USER}", vote.byuser)
+						.replace("{REASON}", getTranslatedString(vote.reason)),
+					vote_message_colour()
+				);
+			}
+			else
+			{
+				client_AddToChat(
+					getTranslatedString("--- Vote \"{TITLE}\" was started by {USER}. Reason: {REASON} ---")
+						.replace("{TITLE}", getTranslatedString(vote.title)).replace("{USER}", vote.byuser)
+						.replace("{REASON}", getTranslatedString(vote.reason)),
+					vote_message_colour()
+				);
+			}
+
+		}
 	}
 }
 
@@ -196,7 +225,7 @@ void Vote(VoteObject@ vote, CPlayer@ p, bool favour)
 		if (CanPlayerVote(vote, getLocalPlayer()) || getNet().isServer()) //include all in server logs
 		{
 
-			
+
 			client_AddToChat(getTranslatedString("--- {USER} Voted {DECISION} ---").replace("{USER}", p.getUsername()).replace("{DECISION}", getTranslatedString(favour ? "In Favour" : "Against")), vote_message_colour());
 		}
 	}

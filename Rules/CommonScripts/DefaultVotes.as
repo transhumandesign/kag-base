@@ -60,9 +60,14 @@ void onRestart(CRules@ this)
 void onTick(CRules@ this)
 {
 	if (g_lastVoteCounter < 60 * getTicksASecond()*required_minutes)
+	{
 		g_lastVoteCounter++;
+	}
+
 	if (g_lastNextmapCounter < 60 * getTicksASecond()*required_minutes_nextmap)
+	{
 		g_lastNextmapCounter++;
+	}
 }
 
 //VOTE KICK --------------------------------------------------------------------
@@ -82,10 +87,16 @@ class VoteKickFunctor : VoteFunctor
 	{
 		if (kickplayer !is null && outcome)
 		{
-			client_AddToChat(getTranslatedString("Votekick passed! {USER} will be kicked out.").replace("{USER}", kickplayer.getUsername()), vote_message_colour());
+			client_AddToChat(
+				getTranslatedString("Votekick passed! {USER} will be kicked out.")
+					.replace("{USER}", kickplayer.getUsername()),
+				vote_message_colour()
+			);
 
 			if (getNet().isServer())
+			{
 				getSecurity().ban(kickplayer, VoteKickTime, "Voted off"); //30 minutes ban
+			}
 		}
 	}
 };
@@ -134,7 +145,11 @@ class VoteKickLeaveFunctor : VotePlayerLeaveFunctor
 	{
 		if (player is kickplayer)
 		{
-			client_AddToChat(getTranslatedString("{USER} left early, acting as if they were kicked.").replace("{USER}", player.getUsername()), vote_message_colour());
+			client_AddToChat(
+				getTranslatedString("{USER} left early, acting as if they were kicked.")
+					.replace("{USER}", player.getUsername()),
+				vote_message_colour()
+			);
 			if (getNet().isServer())
 			{
 				getSecurity().ban(player, VoteKickTime, "Ran from vote");
@@ -177,10 +192,11 @@ class VoteNextmapFunctor : VoteFunctor
 		string charname = player.getCharacterName();
 		string username = player.getUsername();
 		//name differs?
-		if (charname != username &&
-				charname != player.getClantag() + username &&
-				charname != player.getClantag() + " " + username)
-		{
+		if (
+			charname != username &&
+			charname != player.getClantag() + username &&
+			charname != player.getClantag() + " " + username
+		) {
 			playername = charname + " (" + player.getUsername() + ")";
 		}
 		else
@@ -201,7 +217,11 @@ class VoteNextmapFunctor : VoteFunctor
 		}
 		else
 		{
-			client_AddToChat(getTranslatedString("{USER} needs to take a spoonful of cement! Play on!").replace("{USER}", playername), vote_message_colour());
+			client_AddToChat(
+				getTranslatedString("{USER} needs to take a spoonful of cement! Play on!")
+					.replace("{USER}", playername),
+				vote_message_colour()
+			);
 		}
 	}
 };
@@ -248,10 +268,11 @@ class VoteSurrenderFunctor : VoteFunctor
 		string charname = player.getCharacterName();
 		string username = player.getUsername();
 		//name differs?
-		if (charname != username &&
-				charname != player.getClantag() + username &&
-				charname != player.getClantag() + " " + username)
-		{
+		if (
+			charname != username &&
+			charname != player.getClantag() + username &&
+			charname != player.getClantag() + " " + username
+		) {
 			playername = charname + " (" + player.getUsername() + ")";
 		}
 		else
@@ -341,7 +362,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 		Menu::addSeparator(menu);
 
 		return;
-		
+
 	}
 
 	//and advance context menu when clicked
