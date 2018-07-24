@@ -37,7 +37,7 @@ void onRestart(CRules@ this)
 	CMap@ map = getMap();
 	if (map !is null)
 	{
-		map.SetBorderFadeWidth(16.0f);
+		map.SetBorderFadeWidth(24.0f);
 		map.SetBorderColourTop(SColor(0xff000000));
 		map.SetBorderColourLeft(SColor(0xff000000));
 		map.SetBorderColourRight(SColor(0xff000000));
