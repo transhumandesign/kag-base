@@ -390,10 +390,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ carrier = this.getAttachments().getAttachedBlob("PICKUP", 0);
 		if (carrier !is null)
 		{
-			if (DumpOutItems(this, 5.0f, carrier.getVelocity(), false))
-			{
-				this.getSprite().PlaySound("give.ogg");
-			}
+			DumpOutItems(this, 5.0f, carrier.getVelocity(), false);
 		}
 	}
 }
@@ -475,6 +472,11 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 	for (int i = 0; i < inv.getItemsCount(); i++)
 	{
 		CBlob@ item = inv.getItem(i);
+		if (item.hasTag("player"))
+		{
+			// Get out of there, can't grab players
+			forBlob.ClearGridMenus();
+		}
 		if (item.getName() == "mine" && item.getTeamNum() != forBlob.getTeamNum())
 		{
 			@mine = item;
@@ -673,6 +675,14 @@ CBlob@ getPlayerInside(CBlob@ this)
 bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_player = true)
 {
 	bool dumped_anything = false;
+	if (getNet().isClient())
+	{
+		if ((this.getInventory().getItemsCount() > 1)
+			 || (getPlayerInside(this) is null && this.getInventory().getItemsCount() > 0))
+		{
+			this.getSprite().PlaySound("give.ogg");
+		}
+	}
 	if (getNet().isServer())
 	{
 		Vec2f velocity = (init_velocity == Vec2f_zero) ? this.getOldVelocity() : init_velocity;
@@ -697,12 +707,12 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 				this.server_PutOutInventory(item);
 				if (pop_out_speed == 0)
 				{
-					item.setVelocity(init_velocity);
+					item.setVelocity(velocity);
 				}
 				else
 				{
 					float magnitude = (1 - XORRandom(3) * 0.25) * pop_out_speed;
-					item.setVelocity(init_velocity + getRandomVelocity(90, magnitude, 45));
+					item.setVelocity(velocity + getRandomVelocity(90, magnitude, 45));
 				}
 			}
 			else if (dump_player)
