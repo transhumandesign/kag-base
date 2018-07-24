@@ -51,11 +51,10 @@ void onInit(CBlob@ this)
 		this.set_u8("custom_hitter", Hitters::bomb_arrow);
 	}
 
-    if(arrowType == ArrowType::water)
-    {
-        this.Tag("splash ray cast");
-
-    }
+	if(arrowType == ArrowType::water)
+	{
+		this.Tag("splash ray cast");
+	}
 
 	CSprite@ sprite = this.getSprite();
 	//set a random frame
@@ -117,9 +116,10 @@ void onTick(CBlob@ this)
 		//prevent leaving the map
 		{
 			Vec2f pos = this.getPosition();
-			if (pos.x < 0.1f ||
-			        pos.x > (getMap().tilemapwidth * getMap().tilesize) - 0.1f)
-			{
+			if (
+				pos.x < 0.1f ||
+				pos.x > (getMap().tilemapwidth * getMap().tilesize) - 0.1f
+			) {
 				this.server_Die();
 				return;
 			}
@@ -198,20 +198,26 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 {
 	if (blob !is null && doesCollideWithBlob(this, blob) && !this.hasTag("collided"))
 	{
-		if (!solid && !blob.hasTag("flesh") && !specialArrowHit(blob) &&
-		        (blob.getName() != "mounted_bow" || this.getTeamNum() != blob.getTeamNum()))
-		{
+		if (
+			!solid && !blob.hasTag("flesh") &&
+			!specialArrowHit(blob) &&
+			(blob.getName() != "mounted_bow" || this.getTeamNum() != blob.getTeamNum())
+		) {
 			return;
 		}
 
 		Vec2f initVelocity = this.getOldVelocity();
 		f32 vellen = initVelocity.Length();
 		if (vellen < 0.1f)
+		{
 			return;
+		}
 
 		f32 dmg = 0.0f;
 		if (blob.getTeamNum() != this.getTeamNum())
+		{
 			dmg = getArrowDamage(this, vellen);
+		}
 
 		const u8 arrowType = this.get_u8("arrow type");
 		if (arrowType == ArrowType::water)
@@ -220,46 +226,74 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			this.server_Die();
 			return;
 		}
-		else
-		if (arrowType == ArrowType::bomb)
+		else if (arrowType == ArrowType::bomb)
 		{
-			this.server_Die();
-			return;
+			//apply a hard hit
+			dmg = 1.5f;
+
+			//move backwards a smidge for non-static bodies
+			//  we use the velocity instead of the normal because we
+			//  _might_ be past the middle of the object if we're going fast enough
+			//  we use between old and new position because old has not been interfered with
+			//  but might be too far behind (and we move back by velocity anyway)
+			CShape@ shape = blob.getShape();
+			if(shape !is null && !shape.isStatic())
+			{
+				Vec2f velnorm = this.getVelocity();
+				float vellen = Maths::Min(this.getRadius(), velnorm.Normalize() * (1.0f / 30.0f));
+				Vec2f betweenpos = (this.getPosition() + this.getOldPosition()) * 0.5;
+				this.setPosition(betweenpos - (velnorm * vellen));
+			}
 		}
 		else
 		{
 			// this isnt synced cause we want instant collision for arrow even if it was wrong
 			dmg = ArrowHitBlob(this, point1, initVelocity, dmg, blob, Hitters::arrow, arrowType);
-
-			if (dmg > 0.0f)
-			{
-				if (arrowType == ArrowType::fire)
-					this.server_Hit(blob, point1, initVelocity, dmg, Hitters::fire);
-				else
-					this.server_Hit(blob, point1, initVelocity, dmg, Hitters::arrow);
-			}
 		}
 
-		if (dmg > 0.0f)   // dont stick bomb arrows
+		if (dmg > 0.0f)
 		{
+			//determine the hit type
+			const u8 hit_type =
+				(arrowType == ArrowType::fire) ? Hitters::fire :
+				(arrowType == ArrowType::bomb) ? Hitters::bomb_arrow :
+				Hitters::arrow;
+
+			//perform the hit and tag so that another doesn't happen
+			this.server_Hit(blob, point1, initVelocity, dmg, hit_type);
 			this.Tag("collided");
+		}
+
+		//die _now_ for bomb arrow
+		if (arrowType == ArrowType::bomb)
+		{
+			if (!this.hasTag("dead"))
+			{
+				this.doTickScripts = false;
+				this.server_Die(); //explode
+			}
+			this.Tag("dead");
 		}
 	}
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
+	//don't collide with other projectiles
 	if(blob.hasTag("projectile"))
 	{
 		return false;
 	}
 
-	if (specialArrowHit(blob)) //anything to always hit
+	//anything to always hit
+	if (specialArrowHit(blob))
 	{
 		return true;
 	}
 
+	//definitely collide with non-team blobs
 	bool check = this.getTeamNum() != blob.getTeamNum();
+	//maybe collide with team structures
 	if (!check)
 	{
 		CShape@ shape = blob.getShape();
@@ -268,11 +302,15 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 	if (check)
 	{
-		if (this.getShape().isStatic() ||
-		        this.hasTag("collided") ||
-		        blob.hasTag("dead") ||
-		        blob.hasTag("ignore_arrow"))
-		{
+		if (
+			//we've collided
+			this.getShape().isStatic() ||
+			this.hasTag("collided") ||
+			//or they're dead
+			blob.hasTag("dead") ||
+			//or they ignore us
+			blob.hasTag("ignore_arrow")
+		) {
 			return false;
 		}
 		else
@@ -353,7 +391,6 @@ void AddArrowLayer(CBlob@ this, CBlob@ hitBlob, CSprite@ sprite, Vec2f worldPoin
 	}
 }
 
-
 f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData, const u8 arrowType)
 {
 	if (hitBlob !is null)
@@ -385,15 +422,13 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 		{
 			if (hitBlob.hasTag("flesh"))
 			{
+				if (velocity.Length() > arrowFastSpeed)
 				{
-					if (velocity.Length() > arrowFastSpeed)
-					{
-						this.getSprite().PlaySound("ArrowHitFleshFast.ogg");
-					}
-					else
-					{
-						this.getSprite().PlaySound("ArrowHitFlesh.ogg");
-					}
+					this.getSprite().PlaySound("ArrowHitFleshFast.ogg");
+				}
+				else
+				{
+					this.getSprite().PlaySound("ArrowHitFlesh.ogg");
 				}
 			}
 			else
@@ -408,42 +443,32 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 				}
 			}
 		}
-		else
+		else if (arrowType != ArrowType::normal)
 		{
-			if (arrowType != ArrowType::normal)
-				damage = 0.0f;
+			damage = 0.0f;
 		}
 
-		if (arrowType == ArrowType::bomb)
-		{
-			if (!this.hasTag("dead"))
-			{
-				this.doTickScripts = false;
-				this.server_Die(); //explode
-			}
-			this.Tag("dead");
-		}
-		else if (arrowType == ArrowType::fire)
+		if (arrowType == ArrowType::fire)
 		{
 			this.server_SetTimeToDie(0.5f);
 		}
 		else
 		{
-			//add arrow layer?
-			//currently we don't if its static,
-			//so we can walk on the arrow
-			/*
-			CSprite@ sprite = hitBlob.getSprite();
-			if (sprite !is null && !hitShield && arrowType != ArrowType::bomb)
-			{
-			    AddArrowLayer(this, hitBlob, sprite, worldPoint, velocity);
-			}*/
+			//stick into "map" blobs
 			if (hitBlob.getShape().isStatic())
 			{
 				ArrowHitMap(this, worldPoint, velocity, damage, Hitters::arrow);
 			}
+			//die otherwise
 			else
 			{
+				//add arrow layer disabled
+				/*
+				CSprite@ sprite = hitBlob.getSprite();
+				if (sprite !is null && !hitShield && arrowType != ArrowType::bomb)
+				{
+					AddArrowLayer(this, hitBlob, sprite, worldPoint, velocity);
+				}*/
 				this.server_Die();
 			}
 		}
@@ -539,10 +564,12 @@ void onDie(CBlob@ this)
 		if (pos.x >= 1 && pos.y >= 1)
 		{
 			Vec2f vel = this.getVelocity();
-			makeGibParticle("GenericGibs.png", pos, vel,
-			                1, _gib_r.NextRanged(4) + 4,
-			                Vec2f(8, 8), 2.0f, 20, "/thud",
-			                this.getTeamNum());
+			makeGibParticle(
+				"GenericGibs.png", pos, vel,
+				1, _gib_r.NextRanged(4) + 4,
+				Vec2f(8, 8), 2.0f, 20, "/thud",
+				this.getTeamNum()
+			);
 		}
 	}
 
@@ -642,13 +669,13 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 			hitBlob.AddForce(velocity * force);
 
 			// stun if shot real close
-
-			if (this.getTickSinceCreated() <= 4 &&
-			        speed > ArcherParams::shoot_max_vel * 0.845f &&
-			        hitBlob.hasTag("player"))
-			{
+			if (
+				this.getTickSinceCreated() <= 4 &&
+				speed > ArcherParams::shoot_max_vel * 0.845f &&
+				hitBlob.hasTag("player")
+			) {
 				SetKnocked(hitBlob, 20);
-				Sound::Play("/Stun", hitBlob.getPosition(), 1.0f, this.getSexNum() == 0 ? 1.0f : 2.0f);
+				Sound::Play("/Stun", hitBlob.getPosition(), 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 			}
 		}
 	}
