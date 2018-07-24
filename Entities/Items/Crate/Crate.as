@@ -81,7 +81,12 @@ void onInit(CBlob@ this)
 		this.getAttachments().getAttachmentPointByName("PICKUP").offsetZ = -10;
 		this.getSprite().SetRelativeZ(-10.0f);
 		this.AddScript("BehindWhenAttached.as");
+
+		this.Tag("dont deactivate");
 	}
+	// Kinda hacky, only normal crates ^ with "dont deactivate" will ignore "activated"
+	this.Tag("activated");
+
 
 	const uint unpackSecs = 3;
 	this.set_u32("unpack secs", unpackSecs);
@@ -380,6 +385,17 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			mine.SendCommand(mine.getCommandID("mine_primed"));
 		}
 	}
+	else if (cmd == this.getCommandID("activate"))
+	{
+		CBlob@ carrier = this.getAttachments().getAttachedBlob("PICKUP", 0);
+		if (carrier !is null)
+		{
+			if (DumpOutItems(this, 5.0f, carrier.getVelocity(), false))
+			{
+				this.getSprite().PlaySound("give.ogg");
+			}
+		}
+	}
 }
 
 void Unpack(CBlob@ this)
@@ -654,30 +670,54 @@ CBlob@ getPlayerInside(CBlob@ this)
 	return null;
 }
 
-void DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f)
+bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_player = true)
 {
+	bool dumped_anything = false;
 	if (getNet().isServer())
 	{
-		Vec2f velocity = this.getOldVelocity();
+		Vec2f velocity = (init_velocity == Vec2f_zero) ? this.getOldVelocity() : init_velocity;
 		CInventory@ inv = this.getInventory();
-		while (inv !is null && inv.getItemsCount() > 0)
+		//u8 target_items_left = dump_player ? 0 : 1;
+		u8 target_items_left = 0;
+		bool skipping_player = false;
+		while (inv !is null && (inv.getItemsCount() > target_items_left))
 		{
-			CBlob@ item = inv.getItem(0);
-			this.server_PutOutInventory(item);
+			CBlob@ item;
+			if (skipping_player)
+			{
+				@item = inv.getItem(1);
+			}
+			else
+			{
+				@item = inv.getItem(0);
+			}
 			if (!item.hasTag("player"))
 			{
+				dumped_anything = true;
+				this.server_PutOutInventory(item);
 				if (pop_out_speed == 0)
 				{
-					item.setVelocity(velocity);
+					item.setVelocity(init_velocity);
 				}
 				else
 				{
 					float magnitude = (1 - XORRandom(3) * 0.25) * pop_out_speed;
-					item.setVelocity(velocity + getRandomVelocity(90, magnitude, 45));
+					item.setVelocity(init_velocity + getRandomVelocity(90, magnitude, 45));
 				}
+			}
+			else if (dump_player)
+			{
+				// Handled in onRemoveFromInventory
+				this.server_PutOutInventory(item);
+			}
+			else // Don't dump player
+			{
+				skipping_player = true;
+				target_items_left++;
 			}
 		}
 	}
+	return dumped_anything;
 }
 
 // SPRITE
