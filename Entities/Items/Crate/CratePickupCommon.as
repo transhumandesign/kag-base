@@ -2,6 +2,11 @@
 
 bool crateTake(CBlob@ this, CBlob@ blob)
 {
+    if (this.exists("packed"))
+    {
+        return false;
+    }
+
     const string blobName = blob.getName();
 
     if (   blobName == "mat_gold"

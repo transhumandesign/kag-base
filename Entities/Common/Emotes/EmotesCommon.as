@@ -107,15 +107,15 @@ namespace Emotes
 	};
 }
 
-void set_emote(CBlob@ this, u8 emote, int time, CBlob@ sender = null)
+void set_emote(CBlob@ this, u8 emote, int time)
 {
 	if (emote >= Emotes::emotes_total)
 	{
 		emote = Emotes::off;
 	}
+
 	this.set_u8("emote", emote);
 	this.set_u32("emotetime", getGameTime() + time);
-
 	bool client = this.getPlayer() !is null && this.isMyPlayer();
 	this.Sync("emote", !client);
 	this.Sync("emotetime", !client);

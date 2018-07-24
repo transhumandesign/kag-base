@@ -81,7 +81,12 @@ void onInit(CBlob@ this)
 		this.getAttachments().getAttachmentPointByName("PICKUP").offsetZ = -10;
 		this.getSprite().SetRelativeZ(-10.0f);
 		this.AddScript("BehindWhenAttached.as");
+
+		this.Tag("dont deactivate");
 	}
+	// Kinda hacky, only normal crates ^ with "dont deactivate" will ignore "activated"
+	this.Tag("activated");
+
 
 	const uint unpackSecs = 3;
 	this.set_u32("unpack secs", unpackSecs);
@@ -368,6 +373,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ mine = getBlobByNetworkID(params.read_u16());
 		if (caller !is null && mine !is null && this.get_u32("boobytrap_cooldown_time") <= getGameTime())
 		{
+			this.set_u32("boobytrap_cooldown_time", getGameTime() + 30);
 			this.server_PutOutInventory(mine);
 			Vec2f pos = this.getPosition();
 			pos.y = this.getTeamNum() == caller.getTeamNum() ? pos.y - 5
@@ -377,7 +383,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			mine.setVelocity(Vec2f((caller.getPosition().x - mine.getPosition().x) / 30.0f, -5.0f));
 			mine.set_u8("mine_timer", 255);
 			mine.SendCommand(mine.getCommandID("mine_primed"));
-			this.set_u32("boobytrap_cooldown_time", getGameTime() + 30);
+		}
+	}
+	else if (cmd == this.getCommandID("activate"))
+	{
+		CBlob@ carrier = this.getAttachments().getAttachedBlob("PICKUP", 0);
+		if (carrier !is null)
+		{
+			DumpOutItems(this, 5.0f, carrier.getVelocity(), false);
 		}
 	}
 }
@@ -459,6 +472,11 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 	for (int i = 0; i < inv.getItemsCount(); i++)
 	{
 		CBlob@ item = inv.getItem(i);
+		if (item.hasTag("player"))
+		{
+			// Get out of there, can't grab players
+			forBlob.ClearGridMenus();
+		}
 		if (item.getName() == "mine" && item.getTeamNum() != forBlob.getTeamNum())
 		{
 			@mine = item;
@@ -654,18 +672,39 @@ CBlob@ getPlayerInside(CBlob@ this)
 	return null;
 }
 
-void DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f)
+bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_player = true)
 {
+	bool dumped_anything = false;
+	if (getNet().isClient())
+	{
+		if ((this.getInventory().getItemsCount() > 1)
+			 || (getPlayerInside(this) is null && this.getInventory().getItemsCount() > 0))
+		{
+			this.getSprite().PlaySound("give.ogg");
+		}
+	}
 	if (getNet().isServer())
 	{
-		Vec2f velocity = this.getOldVelocity();
+		Vec2f velocity = (init_velocity == Vec2f_zero) ? this.getOldVelocity() : init_velocity;
 		CInventory@ inv = this.getInventory();
-		while (inv !is null && inv.getItemsCount() > 0)
+		//u8 target_items_left = dump_player ? 0 : 1;
+		u8 target_items_left = 0;
+		bool skipping_player = false;
+		while (inv !is null && (inv.getItemsCount() > target_items_left))
 		{
-			CBlob@ item = inv.getItem(0);
-			this.server_PutOutInventory(item);
+			CBlob@ item;
+			if (skipping_player)
+			{
+				@item = inv.getItem(1);
+			}
+			else
+			{
+				@item = inv.getItem(0);
+			}
 			if (!item.hasTag("player"))
 			{
+				dumped_anything = true;
+				this.server_PutOutInventory(item);
 				if (pop_out_speed == 0)
 				{
 					item.setVelocity(velocity);
@@ -676,8 +715,19 @@ void DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f)
 					item.setVelocity(velocity + getRandomVelocity(90, magnitude, 45));
 				}
 			}
+			else if (dump_player)
+			{
+				// Handled in onRemoveFromInventory
+				this.server_PutOutInventory(item);
+			}
+			else // Don't dump player
+			{
+				skipping_player = true;
+				target_items_left++;
+			}
 		}
 	}
+	return dumped_anything;
 }
 
 // SPRITE
