@@ -294,7 +294,7 @@ void onTick(CBlob@ this)
 
 		if (knight.swordTimer >= KnightVars::slash_charge_limit)
 		{
-			Sound::Play("/Stun", pos, 1.0f, this.getSexNum() == 0 ? 1.0f : 2.0f);
+			Sound::Play("/Stun", pos, 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 			SetKnocked(this, 15);
 		}
 
@@ -1036,14 +1036,14 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	        )
 	        && blockAttack(hitBlob, velocity, 0.0f))
 	{
-		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 2.0f);
+		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 		SetKnocked(this, 30);
 	}
 
 	if (customData == Hitters::shield)
 	{
 		SetKnocked(hitBlob, 20);
-		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 2.0f);
+		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 	}
 }
 
