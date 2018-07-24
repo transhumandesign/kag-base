@@ -30,7 +30,7 @@ void onInit(CRules@ this)
 	onRestart(this);
 }
 
-bool need_sky_check = false;
+bool need_sky_check = true;
 void onRestart(CRules@ this)
 {
 	//map borders
@@ -66,9 +66,7 @@ void onTick(CRules@ this)
 				break;
 			}
 		}
-		if(!has_solid_tiles) {
-			map.SetBorderColourTop(SColor(0x80000000));
-		}
+		map.SetBorderColourTop(SColor(has_solid_tiles ? 0xff000000 : 0x80000000));
 	}
 }
 
