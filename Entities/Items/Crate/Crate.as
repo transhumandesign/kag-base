@@ -362,6 +362,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 			}
 			this.server_PutOutInventory(sneaky_player);
+			Vec2f velocity = this.getVelocity();
+			if (-5 < velocity.y && velocity.y < 5)
+			{
+				velocity.y = -5; // Leap out of crate
+			}
+			sneaky_player.setVelocity(velocity);
+			sneaky_player.getSprite().PlaySound("MigrantSayHello.ogg", 1.0f, sneaky_player.getSexNum() == 0 ? 1.0f : 1.25f);
 		}
 		// Attack self to pop out items
 		this.server_Hit(this, this.getPosition(), Vec2f(), 100.0f, Hitters::crush, true);
@@ -497,7 +504,14 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 	this.getSprite().PlaySound("thud.ogg");
 	if (blob.getName() == "keg")
 	{
-		this.Tag("medium weight");
+		if (blob.hasTag("exploding"))
+		{
+			this.Tag("heavy weight");
+		}
+		else
+		{
+			this.Tag("medium weight");
+		}
 	}
 }
 
@@ -505,23 +519,9 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 {
 	if (blob.hasTag("player"))
 	{
-		if (!this.hasTag("exploded"))
+		if (this.hasTag("exploded"))
 		{
-			this.getSprite().PlaySound("MigrantSayHello.ogg");
-			Vec2f velocity = this.getVelocity();
-			if (-5 < velocity.y && velocity.y < 5)
-			{
-				velocity.y = -5; // Leap out of crate
-			}
-			blob.setVelocity(velocity);
-			if (blob.exists("knocked"))
-			{
-				blob.set_u8("knocked", 2);
-			}
-		}
-		else // The crate exploded
-		{
-			this.getSprite().PlaySound("MigrantSayNo.ogg");
+			this.getSprite().PlaySound("MigrantSayNo.ogg", 1.0f, blob.getSexNum() == 0 ? 1.0f : 1.5f);
 			Vec2f velocity = this.getVelocity();
 			if (velocity.x > 0) // Blow them right
 			{
@@ -541,6 +541,14 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 				blob.set_u8("knocked", 30);
 			}
 		}
+		else
+		{
+			blob.setVelocity(this.getOldVelocity());
+			if (blob.exists("knocked"))
+			{
+				blob.set_u8("knocked", 2);
+			}
+		}
 	}
 
 	if (blob.getName() == "keg")
@@ -550,7 +558,8 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 			this.server_Hit(this, this.getPosition(), Vec2f(), 100.0f, Hitters::explosion, true);
 		}
 
-		this.Untag("medium weight"); // TODO: what if there can be multiple kegs?
+		this.Untag("medium weight");
+		this.Untag("heavy weight"); // TODO: what if there can be multiple kegs?
 	}
 
 	// die on empty crate
@@ -572,16 +581,34 @@ f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hit
 	{
 		DumpOutItems(this, 0);
 	}
-	if (customData == Hitters::explosion && dmg > 50.0f) // Inventory explosion
+	if (isExplosionHitter(customData) || customData == Hitters::keg)
 	{
-		this.Tag("exploded");
-		CBlob@ sneaky_player = getPlayerInside(this);
-		DumpOutItems(this, 10);
-		// Nearly kill the player
-		if (sneaky_player !is null)
+		if (dmg > 50.0f) // inventory explosion
 		{
-			hitterBlob.server_Hit(sneaky_player, this.getPosition(), Vec2f(),
-								  sneaky_player.getInitialHealth() * 2 - 0.25f, Hitters::explosion, true);
+			this.Tag("exploded");
+			CBlob@ sneaky_player = getPlayerInside(this);
+			DumpOutItems(this, 10);
+			// Nearly kill the player
+			if (sneaky_player !is null)
+			{
+				hitterBlob.server_Hit(sneaky_player, this.getPosition(), Vec2f(),
+									  sneaky_player.getInitialHealth() * 2 - 0.25f, Hitters::explosion, true);
+			}
+		}
+		else
+		{
+			if (customData == Hitters::keg)
+			{
+				dmg = Maths::Max(dmg, this.getInitialHealth() * 2); // Keg always kills crate
+			}
+			CBlob@ sneaky_player = getPlayerInside(this);
+			if (sneaky_player !is null)
+			{
+				bool should_teamkill = (sneaky_player.getTeamNum() != hitterBlob.getTeamNum()
+										|| customData == Hitters::keg);
+				hitterBlob.server_Hit(getPlayerInside(this), this.getPosition(), Vec2f_zero,
+									  dmg / 2, customData, should_teamkill);
+			}
 		}
 	}
 	if (this.getHealth() - (dmg / 2.0f) <= 0.0f)
@@ -705,7 +732,7 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 			{
 				dumped_anything = true;
 				this.server_PutOutInventory(item);
-				if (pop_out_speed == 0)
+				if (pop_out_speed == 0 || item.getName() == "keg")
 				{
 					item.setVelocity(velocity);
 				}
