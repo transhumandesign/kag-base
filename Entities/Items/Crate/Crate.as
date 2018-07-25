@@ -7,7 +7,11 @@
 #include "Help.as"
 #include "Hitters.as"
 
+//property name
 const string required_space = "required space";
+
+//proportion of distance allowed (1.0f == overlapping radius, 2.0f = within 1 extra radius)
+const float ally_allowed_distance = 1.5f;
 
 void onInit(CBlob@ this)
 {
@@ -203,7 +207,13 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 
 		if (this.getTeamNum() == forBlob.getTeamNum())
 		{
-			return true; // Allies can access from further away
+			f32 distSquared = (this.getPosition() - forBlob.getPosition()).LengthSquared();
+			f32 radSquared = (this.getRadius() + forBlob.getRadius()) * ally_allowed_distance;
+			radSquared *= radSquared;
+			if(distSquared < radSquared)
+			{
+				return true; // Allies can access from further away
+			}
 		}
 		else if (this.isOverlapping(forBlob))
 		{
