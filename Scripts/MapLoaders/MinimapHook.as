@@ -131,10 +131,6 @@ namespace MiniMap
 			map.isTileGold(tile.type);
 	}
 
-	//WARNING: rather this than pollute addcommandid namespace + deal with
-	//         initialisation order gotchas on net
-	u8 init_cmd = 20;
-
 	//setup the minimap as required on server or client
 	void Initialise()
 	{

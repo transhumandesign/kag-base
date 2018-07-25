@@ -133,7 +133,11 @@ void onRestart(CRules@ this)
 	barrier_set = false;
 	barrier_timer = 0;
 
+	//dummy these out
 	this.set_f32("barrier_x1", -1.0f);
+	this.set_f32("barrier_x2", -1.0f);
+	this.set_f32("barrier_y1", -1.0f);
+	this.set_f32("barrier_y2", -1.0f);
 	done_sync = false;
 }
 
@@ -227,7 +231,6 @@ void addBarrier()
 
 	if (map.getSectorAtPosition((ul + lr) * 0.5, "barrier") is null)
 	{
-
 		//actual barrier sector
 		map.server_AddSector(Vec2f(x1, y1), Vec2f(x2, y2), "barrier");
 
@@ -247,7 +250,9 @@ void removeBarrier()
 	f32 x1, x2, y1, y2;
 	getBarrierPositions(x1, x2, y1, y2);
 
-	Vec2f mid(x1 + x2 * 0.5, y2 - map.tilesize);
+	//remove at the bottom of the map rather than the middle
+	//to avoid potentially removing a no build zone from a hall or something
+	Vec2f mid((x1 + x2) * 0.5, (map.tilemapheight - 2) * map.tilesize);
 
 	map.RemoveSectorsAtPosition(mid, "barrier");
 	map.RemoveSectorsAtPosition(mid, "no build");

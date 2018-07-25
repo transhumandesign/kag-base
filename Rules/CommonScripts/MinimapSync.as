@@ -1,7 +1,13 @@
 //Handle Minimap Sync on client join
+//we could _probably_ rely on synced properties but they can cause quite a mess at startup
 
 #include "MinimapHook.as"
 
+//WARNING: rather this than pollute addcommandid namespace + deal with
+//         initialisation order gotchas on net
+u8 init_cmd = 20;
+
+//script local "should send now" flag
 bool needs_sync = false;
 
 void onInit(CRules@ this)
@@ -34,7 +40,7 @@ void onTick(CRules@ this)
 			//ask for minimap info
 			bt.write_bool(false);
 		}
-		this.SendCommand(MiniMap::init_cmd, bt);
+		this.SendCommand(init_cmd, bt);
 		//done for now
 		needs_sync = false;
 	}
@@ -42,7 +48,7 @@ void onTick(CRules@ this)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ bt)
 {
-	if (cmd == MiniMap::init_cmd)
+	if (cmd == init_cmd)
 	{
 		CMap@ map = getMap();
 
