@@ -21,8 +21,8 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
 	const SColor color_minimap_back_edge (0xffc4873a); //yep, same as above
 	const SColor color_minimap_back      (0xfff3ac5c);
 	const SColor color_minimap_open      (0x00edcca6);
-	const SColor color_minimap_gold      (0xfffbaa00);
-	const SColor color_minimap_gold_edge (0xffb15d18);
+	const SColor color_minimap_gold      (0xffffbd34);
+	const SColor color_minimap_gold_edge (0xffc56c22);
 
 	const SColor color_minimap_water     (0xff2cafde);
 	const SColor color_minimap_fire      (0xffd5543f);
