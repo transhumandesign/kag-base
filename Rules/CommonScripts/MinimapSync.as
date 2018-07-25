@@ -75,8 +75,6 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ bt)
 			this.set_bool("legacy_minimap", legacy_minimap);
 			this.set_bool("show_gold", show_gold);
 
-			print("GOT SYNC "+legacy_minimap+" "+show_gold);
-
 			//re-build the minimap
 			map.MakeMiniMap();
 		}
