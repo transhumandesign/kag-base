@@ -43,7 +43,7 @@ bool LoadMap(CMap@ map, const string& in fileName)
 
 	TDMPNGLoader loader();
 
-	map.legacyTileMinimap = false;
+	MiniMap::Initialise();
 
 	return loader.loadMap(map , fileName);
 }

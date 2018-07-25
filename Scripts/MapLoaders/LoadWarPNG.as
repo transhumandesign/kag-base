@@ -1,4 +1,4 @@
-// PNG loader base class - extend this to add your own PNG loading functionality!
+// war/ctf png loader
 
 #include "BasePNGLoader.as";
 #include "WAR_Technology.as";
@@ -163,8 +163,8 @@ bool LoadMap(CMap@ map, const string& in fileName)
 	print("LOADING WAR PNG MAP " + fileName);
 
 	WarPNGLoader loader();
-	
-	map.legacyTileMinimap = false;
+
+	MiniMap::Initialise();
 
 	return loader.loadMap(map , fileName);
 }

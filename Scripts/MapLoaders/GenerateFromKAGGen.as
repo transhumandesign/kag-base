@@ -8,7 +8,7 @@ bool loadMap(CMap@ _map, const string& in filename)
 {
 	CMap@ map = _map;
 
-	map.legacyTileMinimap = false;
+	MiniMap::Initialise();
 
 	if (!getNet().isServer() || filename == "")
 	{
