@@ -2,10 +2,13 @@
 // fileName is "" on client!
 
 #include "LoaderUtilities.as";
+#include "MinimapHook.as";
 
 bool loadMap(CMap@ _map, const string& in filename)
 {
 	CMap@ map = _map;
+
+	map.legacyTileMinimap = false;
 
 	if (!getNet().isServer() || filename == "")
 	{

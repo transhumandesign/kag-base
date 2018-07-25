@@ -6,93 +6,115 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
 {
 	int X = offset % map.tilemapwidth;
 	int Y = offset/map.tilemapwidth;
-	
-	Vec2f pos = Vec2f(X,Y);
-	
-	Tile ctile = map.getTile(pos*8);
-	
+
+	Vec2f pos = Vec2f(X, Y);
+
+	float ts = map.tilesize;
+	Tile ctile = map.getTile(pos * ts);
+
 	///Colours
-	
-	u32 color_minimap_solid_edge = 0xff844715;
-	u32 color_minimap_solid = 0xffc4873a;
-	u32 color_minimap_back_edge = 0xffc4873a; //yep, same as above
-	u32 color_minimap_back = 0xfff3ac5c;
-	u32 color_minimap_open = 0x00edcca6;
-	SColor color_minimap_gold = SColor(255,252,184,44);
-	SColor color_minimap_gold_edge = SColor(255,252,146,1);
-	
-	///Get's the correct colour
-	
+
+	const SColor color_minimap_solid_edge(0xff844715);
+	const SColor color_minimap_solid     (0xffc4873a);
+	const SColor color_minimap_back_edge (0xffc4873a); //yep, same as above
+	const SColor color_minimap_back      (0xfff3ac5c);
+	const SColor color_minimap_open      (0x00edcca6);
+	const SColor color_minimap_gold      (0xfffbaa00);
+	const SColor color_minimap_gold_edge (0xffb15d18);
+
+	const SColor color_minimap_water     (0xff2cafde);
+	const SColor color_minimap_fire      (0xffd5543f);
+
+	//neighbours
+	Tile tile_l = map.getTile(clampInsideMap(pos * ts - Vec2f(ts, 0), map));
+	Tile tile_r = map.getTile(clampInsideMap(pos * ts + Vec2f(ts, 0), map));
+	Tile tile_u = map.getTile(clampInsideMap(pos * ts - Vec2f(0, ts), map));
+	Tile tile_d = map.getTile(clampInsideMap(pos * ts + Vec2f(0, ts), map));
+
+	///figure out the correct colour
 	if (map.isTileGround( tile ) || map.isTileStone( tile ) ||
         map.isTileBedrock( tile ) || map.isTileThickStone( tile ) ||
         map.isTileCastle( tile ) || map.isTileWood( tile ) )
 	{
-		col = color_minimap_solid; //Foreground
-		
-		if (X != 0 && Y != 0 && X < map.tilemapwidth && Y < map.tilemapheight)
+		//Foreground
+		col = color_minimap_solid;
+
+		//Edge
+		if( isForegroundOutlineTile(tile_u, map) || isForegroundOutlineTile(tile_d, map) ||
+		    isForegroundOutlineTile(tile_l, map) || isForegroundOutlineTile(tile_r, map) )
 		{
-			if(isForegroundOutlineTile(map.getTile(pos*8 + Vec2f(0,8))) || isForegroundOutlineTile(map.getTile(pos*8 + Vec2f(0,-8))) 
-			|| isForegroundOutlineTile(map.getTile(pos*8 + Vec2f(8,0))) || isForegroundOutlineTile(map.getTile(pos*8 + Vec2f(-8,0))))
-			{
-				col = color_minimap_solid_edge; //Foreground edge
-			}
+			col = color_minimap_solid_edge;
+		}
+		else if( isGoldOutlineTile(tile_u, map, false) || isGoldOutlineTile(tile_d, map, false) ||
+		         isGoldOutlineTile(tile_l, map, false) || isGoldOutlineTile(tile_r, map, false) )
+		{
+			col = color_minimap_gold_edge;
 		}
 	}
 	else if(map.isTileBackground(ctile) && !map.isTileGrass(tile))
 	{
-		col = color_minimap_back; //Background
-		
-		if (X != 0 && Y != 0 && X < map.tilemapwidth && Y < map.tilemapheight)
+		//Background
+		col = color_minimap_back;
+
+		//Edge
+		if( isBackgroundOutlineTile(tile_u, map) || isBackgroundOutlineTile(tile_d, map) ||
+		    isBackgroundOutlineTile(tile_l, map) || isBackgroundOutlineTile(tile_r, map) )
 		{
-			if(isBackgroundOutlineTile(map.getTile(pos*8 + Vec2f(0,8))) || isBackgroundOutlineTile(map.getTile(pos*8 + Vec2f(0,-8))) 
-			|| isBackgroundOutlineTile(map.getTile(pos*8 + Vec2f(8,0))) || isBackgroundOutlineTile(map.getTile(pos*8 + Vec2f(-8,0))))
-			{
-				col = color_minimap_back_edge; //Background edge
-			}
+			col = color_minimap_back_edge;
 		}
 	}
 	else if(map.isTileGold(tile))
 	{
-		col = color_minimap_gold; //Gold
-		
-		if (X != 0 && Y != 0 && X < map.tilemapwidth && Y < map.tilemapheight)
+		//Gold
+		col = color_minimap_gold;
+
+		//Edge
+		if( isGoldOutlineTile(tile_u, map, true) || isGoldOutlineTile(tile_d, map, true) ||
+		    isGoldOutlineTile(tile_l, map, true) || isGoldOutlineTile(tile_r, map, true) )
 		{
-			if(!map.isTileSolid(map.getTile(pos*8 + Vec2f(0,8))) || !map.isTileSolid(map.getTile(pos*8 + Vec2f(0,-8))) 
-			|| !map.isTileSolid(map.getTile(pos*8 + Vec2f(8,0))) || !map.isTileSolid(map.getTile(pos*8 + Vec2f(-8,0))))
-			{
-				col = color_minimap_gold_edge; //Gold edge
-			}
+			col = color_minimap_gold_edge;
 		}
 	}
 	else
 	{
-		col = color_minimap_open; //Sky
+		//Sky
+		col = color_minimap_open;
 	}
 
-	
-	///Tints the world based on Fire/Water State
-	
-	const SColor color_minimap_water(0xff2cafde);
-	const SColor color_minimap_fire(0xffd5543f);
-
-	if (map.isInWater( pos*8 ) )
+	///Tint the map based on Fire/Water State
+	if (map.isInWater( pos * ts ) )
 	{
 		col = col.getInterpolated(color_minimap_water,0.5f);
 	}
-	else if (map.isInFire( pos*8 ) )
+	else if (map.isInFire( pos * ts ) )
 	{
 		col = col.getInterpolated(color_minimap_fire,0.5f);
 	}
 }
 
-bool isForegroundOutlineTile(Tile tile){
-
-	return !getMap().isTileSolid(tile) || getMap().isTileGold(tile.type);
-
+Vec2f clampInsideMap(Vec2f pos, CMap@ map)
+{
+	return Vec2f(
+		Maths::Clamp(pos.x, 0, map.tilemapwidth * map.tilesize),
+		Maths::Clamp(pos.y, 0, map.tilemapheight * map.tilesize)
+	);
 }
 
-bool isBackgroundOutlineTile(Tile tile){
+bool isForegroundOutlineTile(Tile tile, CMap@ map)
+{
+	return !map.isTileSolid(tile);
+}
 
-	return tile.type == CMap::tile_empty || getMap().isTileGold(tile.type);
+bool isBackgroundOutlineTile(Tile tile, CMap@ map)
+{
+	return tile.type == CMap::tile_empty ||
+		map.isTileGrass(tile.type) ||
+		map.isTileGold(tile.type);
+}
 
+bool isGoldOutlineTile(Tile tile, CMap@ map, bool is_gold)
+{
+	return is_gold ?
+		!map.isTileSolid(tile) :
+		map.isTileGold(tile.type);
 }

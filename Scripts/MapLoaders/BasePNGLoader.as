@@ -85,7 +85,7 @@ class PNGLoader
 		}
 		return false;
 	}
-	
+
 	// Queue an offset to be autotiled
 	void autotile(int offset)
 	{
@@ -93,16 +93,16 @@ class PNGLoader
 	}
 
 	void handlePixel(const SColor &in pixel, int offset)
-	{	
+	{
 		u8 alpha = pixel.getAlpha();
-		
+
 		if(alpha < 255)
 		{
 			alpha &= ~0x80;
 			const Vec2f position = getSpawnPosition(map, offset);
 
 			//print("ARGB = "+alpha+", "+pixel.getRed()+", "+pixel.getGreen()+", "+pixel.getBlue());
-			
+
 			// TODO future reader, if the new angelscript release has arrived; consider using named arguments for spawnBlob etc if it doesn't clutter the lines too much.
 			// It might be nice for things like the static argument.
 
@@ -112,7 +112,7 @@ class PNGLoader
 			// Alpha spawn and flag
 			case map_colors::alpha_spawn: autotile(offset); AddMarker(map, offset, (alpha & 0x01 == 0 ? "blue main spawn" : "red main spawn")); break;
 			case map_colors::alpha_flag:  autotile(offset); AddMarker(map, offset, (alpha & 0x01 == 0 ? "blue spawn"      : "red spawn"));      break;
-			
+
 			// Alpha various structures
 			case map_colors::alpha_stalagmite:      autotile(offset); spawnBlob(map, "stalagmite",                            255, position, getAngleFromChannel(alpha), true).set_u8("state", 1); /*stabbing*/ break;
 			case map_colors::alpha_ladder:          autotile(offset); spawnBlob(map, "ladder",          getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
@@ -121,7 +121,7 @@ class PNGLoader
 			case map_colors::alpha_trap_block:      autotile(offset); spawnBlob(map, "trap_block",      getTeamFromChannel(alpha), position,                             true); break;
 			case map_colors::alpha_wooden_door:     autotile(offset); spawnBlob(map, "wooden_door",     getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_wooden_platform: autotile(offset); spawnBlob(map, "wooden_platform", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
-			
+
 			// Mechanisms
 			case map_colors::alpha_pressure_plate:  autotile(offset); spawnBlob(map, "pressure_plate",                        255, position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_push_button:     autotile(offset); spawnBlob(map, "push_button",     getTeamFromChannel(alpha), position,                             true); break;
@@ -149,7 +149,7 @@ class PNGLoader
 			{
 				autotile(offset);
 				CBlob@ blob = spawnBlob(map, "lever", getTeamFromChannel(alpha), position, true);
-				
+
 				// | state          | binary    | hex  | dec |
 				// ---------------------vv--------------------
 				// | off            | 0000 0000 | 0x00 |   0 |
@@ -164,7 +164,7 @@ class PNGLoader
 			break;
 			case map_colors::alpha_magazine:
 			{
-				autotile(offset); 
+				autotile(offset);
 				CBlob@ blob = spawnBlob(map, "magazine", 255, position, true);
 
 				const string[] items = {
@@ -213,7 +213,7 @@ class PNGLoader
 			case map_colors::tile_wood:             map.SetTile(offset, CMap::tile_wood);             break;
 			case map_colors::tile_wood_back:        map.SetTile(offset, CMap::tile_wood_back);        break;
 			case map_colors::tile_grass:            map.SetTile(offset, CMap::tile_grass + map_random.NextRanged(3)); break;
-			
+
 			// Water
 			case map_colors::water_air:
 				map.server_setFloodWaterOffset(offset, true);
@@ -222,12 +222,12 @@ class PNGLoader
 				map.server_setFloodWaterOffset(offset, true);
 				map.SetTile(offset, CMap::tile_ground_back);
 			break;
-			
+
 			// Princess & necromancer
 			case map_colors::princess:             autotile(offset); spawnBlob(map, "princess",    offset, 6); break;
 			case map_colors::necromancer:          autotile(offset); spawnBlob(map, "necromancer", offset, 3); break;
 			case map_colors::necromancer_teleport: autotile(offset); AddMarker(map, offset, "necromancer teleport"); break;
-			
+
 			// Main spawns
 			case map_colors::blue_main_spawn:   autotile(offset); AddMarker(map, offset, "blue main spawn"); break;
 			case map_colors::red_main_spawn:    autotile(offset); AddMarker(map, offset, "red main spawn");  break;
@@ -239,8 +239,8 @@ class PNGLoader
 			case map_colors::gray_main_spawn:   autotile(offset); spawnHall(map, offset, 7); break;
 
 			// Red Barrier
-			case map_colors::redbarrier:    autotile(offset); AddMarker(map, offset, "red barrier");  break;
-			
+			case map_colors::redbarrier:     autotile(offset); AddMarker(map, offset, "red barrier");  break;
+
 			// Normal spawns
 			case map_colors::blue_spawn:     autotile(offset); AddMarker(map, offset, "blue spawn");   break;
 			case map_colors::red_spawn:      autotile(offset); AddMarker(map, offset, "red spawn");    break;
@@ -250,7 +250,7 @@ class PNGLoader
 			case map_colors::aqua_spawn:     autotile(offset); AddMarker(map, offset, "aqua spawn");   break;
 			case map_colors::teal_spawn:     autotile(offset); AddMarker(map, offset, "teal spawn");   break;
 			case map_colors::gray_spawn:     autotile(offset); AddMarker(map, offset, "gray spawn");   break;
-			
+
 			// Workshops
 			case map_colors::knight_shop:     autotile(offset); spawnBlob(map, "knightshop",  offset); break;
 			case map_colors::builder_shop:    autotile(offset); spawnBlob(map, "buildershop", offset); break;
@@ -267,11 +267,11 @@ class PNGLoader
 			case map_colors::kitchen:         autotile(offset); spawnBlob(map, "kitchen",     offset); break;
 			case map_colors::nursery:         autotile(offset); spawnBlob(map, "nursery",     offset); break;
 			case map_colors::research:        autotile(offset); spawnBlob(map, "research",    offset); break;
-			
+
 			case map_colors::workbench:       autotile(offset); spawnBlob(map, "workbench",   offset, 255, true); break;
 			case map_colors::campfire:        autotile(offset); spawnBlob(map, "fireplace",   offset, 255, true, Vec2f(0.0f, -4.0f)); break;
 			case map_colors::saw:             autotile(offset); spawnBlob(map, "saw",         offset); break;
-			
+
 			// Flora
 			case map_colors::tree:
 			case map_colors::tree + (1 << 4):
@@ -284,13 +284,13 @@ class PNGLoader
 			case map_colors::grain:   autotile(offset); offsets[grain_offset].push_back(offset); break;
 			case map_colors::flowers: autotile(offset); spawnBlob(map, "flowers", offset); break;
 			case map_colors::log:     autotile(offset); spawnBlob(map, "log",     offset); break;
-			
+
 			// Fauna
 			case map_colors::shark:   autotile(offset); spawnBlob(map, "shark",   offset); break;
 			case map_colors::fish:    autotile(offset); spawnBlob(map, "fishy",   offset).set_u8("age", (offset * 997) % 4); break;
 			case map_colors::bison:   autotile(offset); spawnBlob(map, "bison",   offset); break;
 			case map_colors::chicken: autotile(offset); spawnBlob(map, "chicken", offset, 255, false, Vec2f(0,-8)); break;
-			
+
 			// Ladders
 			case map_colors::ladder:
 			//case map_colors::tile_ladder_ground: // same as map_colors::ladder
@@ -299,13 +299,13 @@ class PNGLoader
 				autotile(offset);
 				offsets[ladder_offset].push_back( offset );
 			break;
-			
+
 			// Platforms
 			case map_colors::platform_up:    autotile(offset); spawnBlob(map, "wooden_platform", offset, 255, true); break;
 			case map_colors::platform_right: autotile(offset); spawnBlob(map, "wooden_platform", offset, 255, true, Vec2f_zero,  90); break;
 			case map_colors::platform_down:  autotile(offset); spawnBlob(map, "wooden_platform", offset, 255, true, Vec2f_zero, 180); break;
 			case map_colors::platform_left:  autotile(offset); spawnBlob(map, "wooden_platform", offset, 255, true, Vec2f_zero, -90); break;
-			
+
 			// Doors
 			case map_colors::wooden_door_h_blue:   autotile(offset); spawnBlob(map, "wooden_door", offset,   0, true); break;
 			case map_colors::wooden_door_v_blue:   autotile(offset); spawnBlob(map, "wooden_door", offset,   0, true, Vec2f_zero, 90); break;
@@ -319,18 +319,18 @@ class PNGLoader
 			case map_colors::stone_door_v_red:     autotile(offset); spawnBlob(map, "stone_door",  offset,   1, true, Vec2f_zero, 90); break;
 			case map_colors::stone_door_h_noteam:  autotile(offset); spawnBlob(map, "stone_door",  offset, 255, true); break;
 			case map_colors::stone_door_v_noteam:  autotile(offset); spawnBlob(map, "stone_door",  offset, 255, true, Vec2f_zero, 90); break;
-			
+
 			// Trapblocks
 			case map_colors::trapblock_blue:   autotile(offset); spawnBlob(map, "trap_block", offset,   0, true); break;
 			case map_colors::trapblock_red:    autotile(offset); spawnBlob(map, "trap_block", offset,   1, true); break;
 			case map_colors::trapblock_noteam: autotile(offset); spawnBlob(map, "trap_block", offset, 255, true); break;
-			
+
 			// Spikes
 			case map_colors::spikes:  offsets[spike_offset].push_back(offset); break;
 			case map_colors::spikes_ground: offsets[spike_offset].push_back(offset); map.SetTile(offset, CMap::tile_ground_back); break;
 			case map_colors::spikes_castle: offsets[spike_offset].push_back(offset); map.SetTile(offset, CMap::tile_castle_back); break;
 			case map_colors::spikes_wood:   offsets[spike_offset].push_back(offset); map.SetTile(offset, CMap::tile_wood_back);   break;
-			
+
 			// Misc stuff
 			case map_colors::drill: autotile(offset); spawnBlob(map, "drill", offset, -1); break;
 			case map_colors::trampoline:
@@ -353,17 +353,17 @@ class PNGLoader
 			case map_colors::sponge:      autotile(offset); spawnBlob(map, "sponge",  offset); break;
 			case map_colors::alpha_chest:
 			case map_colors::chest:       autotile(offset); spawnBlob(map, "chest",   offset); break;
-			
+
 			// Food
 			case map_colors::steak:       autotile(offset); spawnBlob(map, "steak", offset); break;
 			case map_colors::burger:      autotile(offset); spawnBlob(map, "food",  offset); break;
 			case map_colors::heart:       autotile(offset); spawnBlob(map, "heart", offset); break;
-			
+
 			// Ground siege
 			case map_colors::catapult:    autotile(offset); spawnVehicle(map, "catapult", offset, 0); break; // HACK: team for Challenge
 			case map_colors::ballista:    autotile(offset); spawnVehicle(map, "ballista", offset); break;
 			case map_colors::mountedbow:  autotile(offset); spawnBlob(map, "mounted_bow", offset, 255, true, Vec2f(0.0f, 4.0f)); break;
-			
+
 			// Water/air vehicles
 			case map_colors::longboat:    autotile(offset); spawnVehicle(map, "longboat", offset); break;
 			case map_colors::warboat:     autotile(offset); spawnVehicle(map, "warboat",  offset); break;
@@ -371,7 +371,7 @@ class PNGLoader
 			case map_colors::raft:        autotile(offset); spawnVehicle(map, "raft",     offset); break;
 			case map_colors::airship:     autotile(offset); spawnVehicle(map, "airship",  offset); break;
 			case map_colors::bomber:      autotile(offset); spawnVehicle(map, "bomber",   offset); break;
-			
+
 			// Ammo
 			case map_colors::bombs:       autotile(offset); AddMarker(map, offset, "mat_bombs"); break;
 			case map_colors::waterbombs:  autotile(offset); spawnBlob(map, "mat_waterbombs",  offset); break;
@@ -380,7 +380,7 @@ class PNGLoader
 			case map_colors::waterarrows: autotile(offset); spawnBlob(map, "mat_waterarrows", offset); break;
 			case map_colors::firearrows:  autotile(offset); spawnBlob(map, "mat_firearrows",  offset); break;
 			case map_colors::bolts:       autotile(offset); spawnBlob(map, "mat_bolts",       offset); break;
-			
+
 			// Mines, explosives
 			case map_colors::blue_mine:   autotile(offset); spawnBlob(map, "mine", offset, 0); break;
 			case map_colors::red_mine:    autotile(offset); spawnBlob(map, "mine", offset, 1); break;
@@ -388,12 +388,12 @@ class PNGLoader
 			case map_colors::boulder:     autotile(offset); spawnBlob(map, "boulder", offset, -1, false, Vec2f(8.0f, -8.0f)); break;
 			case map_colors::satchel:     autotile(offset); spawnBlob(map, "satchel", offset); break;
 			case map_colors::keg:         autotile(offset); spawnBlob(map, "keg", offset); break;
-			
+
 			// Materials
 			case map_colors::gold:        autotile(offset); spawnBlob(map, "mat_gold", offset); break;
 			case map_colors::stone:       autotile(offset); spawnBlob(map, "mat_stone", offset); break;
 			case map_colors::wood:        autotile(offset); spawnBlob(map, "mat_wood", offset); break;
-			
+
 			// Mooks
 			case map_colors::mook_knight:     autotile(offset); AddMarker(map, offset, "mook knight"); break;
 			case map_colors::mook_archer:     autotile(offset); AddMarker(map, offset, "mook archer"); break;
@@ -524,11 +524,11 @@ void PlaceMostLikelyTile(CMap@ map, int offset)
 	const TileType down = map.getTile(offset + map.tilemapwidth).type;
 	const TileType left = map.getTile(offset - 1).type;
 	const TileType right = map.getTile(offset + 1).type;
-	
+
 	if (up != CMap::tile_empty)
 	{
 		const TileType[] neighborhood = { up, down, left, right };
-		
+
 		if ((neighborhood.find(CMap::tile_castle) != -1) ||
 		    (neighborhood.find(CMap::tile_castle_back) != -1))
 		{
@@ -575,7 +575,7 @@ u16 getAngleFromChannel(u8 channel)
 		case 32: return 180;
 		case 48: return 270;
 	}
-	
+
 	return 0;
 }
 
@@ -587,7 +587,7 @@ u8 getChannelFromAngle(u16 angle)
 		case 180: return 32;
 		case 270: return 48;
 	}
-	
+
 	return 0;
 }
 
