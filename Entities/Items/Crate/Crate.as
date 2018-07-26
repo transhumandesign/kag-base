@@ -668,7 +668,7 @@ bool canUnpackHere(CBlob@ this)
 	//required vertical buffer for siege engines and boats
 	if(packed == "ballista" || packed == "catapult" || packed == "longboat" || packed == "warboat")
 	{
-		if(pos.y < 32)
+		if(pos.y < 40)
 		{
 			return false;
 		}
