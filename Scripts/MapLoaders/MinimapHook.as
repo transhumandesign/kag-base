@@ -16,16 +16,17 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
 
 	///Colours
 
-	const SColor color_minimap_solid_edge(0xff844715);
-	const SColor color_minimap_solid     (0xffc4873a);
-	const SColor color_minimap_back_edge (0xffc4873a); //yep, same as above
-	const SColor color_minimap_back      (0xfff3ac5c);
-	const SColor color_minimap_open      (0x00edcca6);
-	const SColor color_minimap_gold      (0xffffbd34);
-	const SColor color_minimap_gold_edge (0xffc56c22);
+	const SColor color_minimap_solid_edge   (0xff844715);
+	const SColor color_minimap_solid        (0xffc4873a);
+	const SColor color_minimap_back_edge    (0xffc4873a); //yep, same as above
+	const SColor color_minimap_back         (0xfff3ac5c);
+	const SColor color_minimap_open         (0x00edcca6);
+	const SColor color_minimap_gold         (0xffffbd34);
+	const SColor color_minimap_gold_edge    (0xffc56c22);
+	const SColor color_minimap_gold_exposed (0xfff0872c);
 
-	const SColor color_minimap_water     (0xff2cafde);
-	const SColor color_minimap_fire      (0xffd5543f);
+	const SColor color_minimap_water        (0xff2cafde);
+	const SColor color_minimap_fire         (0xffd5543f);
 
 	//neighbours
 	Tile tile_l = map.getTile(MiniMap::clampInsideMap(pos * ts - Vec2f(ts, 0), map));
@@ -81,7 +82,7 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
 		if( MiniMap::isGoldOutlineTile(tile_u, map, true) || MiniMap::isGoldOutlineTile(tile_d, map, true) ||
 		    MiniMap::isGoldOutlineTile(tile_l, map, true) || MiniMap::isGoldOutlineTile(tile_r, map, true) )
 		{
-			col = color_minimap_gold_edge;
+			col = color_minimap_gold_exposed;
 		}
 	}
 	else
