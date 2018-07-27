@@ -133,11 +133,15 @@ void onRestart(CRules@ this)
 	barrier_set = false;
 	barrier_timer = 0;
 
-	//dummy these out
-	this.set_f32("barrier_x1", -1.0f);
-	this.set_f32("barrier_x2", -1.0f);
-	this.set_f32("barrier_y1", -1.0f);
-	this.set_f32("barrier_y2", -1.0f);
+    if (isServer())
+	{
+	    //dummy these out
+		this.set_f32("barrier_x1", -1.0f);
+		this.set_f32("barrier_x2", -1.0f);
+		this.set_f32("barrier_y1", -1.0f);
+		this.set_f32("barrier_y2", -1.0f);
+	}
+
 	done_sync = false;
 }
 
