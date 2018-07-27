@@ -361,14 +361,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					caller.set_u8("knocked", 30);
 				}
 			}
+			this.Tag("crate escaped");
 			this.server_PutOutInventory(sneaky_player);
-			Vec2f velocity = this.getVelocity();
-			if (-5 < velocity.y && velocity.y < 5)
-			{
-				velocity.y = -5; // Leap out of crate
-			}
-			sneaky_player.setVelocity(velocity);
-			sneaky_player.getSprite().PlaySound("MigrantSayHello.ogg", 1.0f, sneaky_player.getSexNum() == 0 ? 1.0f : 1.25f);
 		}
 		// Attack self to pop out items
 		this.server_Hit(this, this.getPosition(), Vec2f(), 100.0f, Hitters::crush, true);
@@ -519,7 +513,7 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 {
 	if (blob.hasTag("player"))
 	{
-		if (this.hasTag("exploded"))
+		if (this.hasTag("crate exploded"))
 		{
 			this.getSprite().PlaySound("MigrantSayNo.ogg", 1.0f, blob.getSexNum() == 0 ? 1.0f : 1.5f);
 			Vec2f velocity = this.getVelocity();
@@ -540,6 +534,20 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 			{
 				blob.set_u8("knocked", 30);
 			}
+		}
+		else if (this.hasTag("crate escaped"))
+		{
+			Vec2f velocity = this.getOldVelocity();
+			if (-5 < velocity.y && velocity.y < 5)
+			{
+				velocity.y = -5; // Leap out of crate
+			}
+			Vec2f pos = this.getPosition();
+			pos.y -= 5;
+			blob.setPosition(pos);
+			blob.setVelocity(velocity);
+
+			blob.getSprite().PlaySound("MigrantSayHello.ogg", 1.0f, blob.getSexNum() == 0 ? 1.0f : 1.25f);
 		}
 		else
 		{
@@ -585,7 +593,7 @@ f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hit
 	{
 		if (dmg > 50.0f) // inventory explosion
 		{
-			this.Tag("exploded");
+			this.Tag("crate exploded");
 			CBlob@ sneaky_player = getPlayerInside(this);
 			DumpOutItems(this, 10);
 			// Nearly kill the player
