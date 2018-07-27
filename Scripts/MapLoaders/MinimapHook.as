@@ -108,8 +108,8 @@ namespace MiniMap
 	Vec2f clampInsideMap(Vec2f pos, CMap@ map)
 	{
 		return Vec2f(
-			Maths::Clamp(pos.x, 0, map.tilemapwidth * map.tilesize),
-			Maths::Clamp(pos.y, 0, map.tilemapheight * map.tilesize)
+			Maths::Clamp(pos.x, 0, (map.tilemapwidth - 0.1f) * map.tilesize),
+			Maths::Clamp(pos.y, 0, (map.tilemapheight - 0.1f) * map.tilesize)
 		);
 	}
 

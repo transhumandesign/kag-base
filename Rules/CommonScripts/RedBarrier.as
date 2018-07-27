@@ -182,7 +182,7 @@ void getBarrierPositions(f32 &out x1, f32 &out x2, f32 &out y1, f32 &out y2)
 
 	const f32 mapWidth = map.tilemapwidth * map.tilesize;
 	const f32 mapMiddle = mapWidth * 0.5f;
-	const f32 barrierWidth = Maths::Floor(BARRIER_PERCENT * map.tilemapwidth * 0.5f) * map.tilesize;
+	const f32 barrierWidth = Maths::Floor(BARRIER_PERCENT * map.tilemapwidth) * map.tilesize;
 	const f32 extraWidth = ((map.tilemapwidth % 2 == 1) ? 0.5f : 0.0f) * map.tilesize;
 
 	// set horizontal positions based on BARRIER_PERCENT
