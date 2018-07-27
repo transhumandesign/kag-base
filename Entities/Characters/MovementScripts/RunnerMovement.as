@@ -794,7 +794,7 @@ void HandleStuckAtTop(CBlob@ this)
 			float tx = pos.x;
 			for (int i = 0; i < rad && !found; i++)
 			{
-				for (int dir = -1; dir < 1 && !found; dir += 2)
+				for (int dir = -1; dir <= 1 && !found; dir += 2)
 				{
 					tx = pos.x + (dir * i) * map.tilesize;
 					if(!map.isTileSolid(Vec2f(tx, y)))
