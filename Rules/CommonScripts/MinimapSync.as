@@ -7,6 +7,13 @@
 //         initialisation order gotchas on net
 u8 init_cmd = 20;
 
+//limit amount of re-sync
+//someone will join with this zero and will take it on sync
+//iterates one each restart so players who were already here
+//will be "in sync" and will just get the restart sync;
+//their requests will be ignored
+u16 last_synced_i = 0;
+
 //script local "should send now" flag
 bool needs_sync = false;
 
@@ -19,6 +26,7 @@ void onRestart(CRules@ this)
 {
 	if (isClient() && !isServer())
 	{
+		last_synced_i++;
 		needs_sync = true;
 	}
 }
@@ -40,6 +48,7 @@ void onTick(CRules@ this)
 			//ask for minimap info
 			bt.write_bool(false);
 		}
+		bt.write_u16(last_synced_i);
 		this.SendCommand(init_cmd, bt);
 		//done for now
 		needs_sync = false;
@@ -62,7 +71,14 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ bt)
 		//(do nothing for localhost)
 		if (isServer() && !from_server)
 		{
-			needs_sync = true;
+			u16 temp_last_synced_i = 0;
+			if(!bt.saferead_u16(temp_last_synced_i)) error("MiniMap Sync: failed to read sync i");
+
+			//from someone new, effectively
+			if (last_synced_i != temp_last_synced_i)
+			{
+				needs_sync = true;
+			}
 		}
 		else if(isClient() && from_server)
 		{
@@ -73,6 +89,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ bt)
 			//note: error printed only; we want to write defaults still
 			if(!bt.saferead_bool(legacy_minimap)) error("MiniMap Sync: failed to read legacy_minimap");
 			if(!bt.saferead_bool(show_gold))      error("MiniMap Sync: failed to read show_gold");
+			if(!bt.saferead_bool(last_synced_i))  error("MiniMap Sync: failed to read sync i")
 
 			//write values
 			map.legacyTileMinimap = legacy_minimap;
