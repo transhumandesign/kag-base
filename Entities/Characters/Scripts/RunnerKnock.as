@@ -126,7 +126,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	if (time > 0)
 	{
-		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 2.0f);
+		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 		u8 currentstun = this.get_u8("knocked");
 		this.set_u8("knocked", Maths::Clamp(time, currentstun, 60));
 	}

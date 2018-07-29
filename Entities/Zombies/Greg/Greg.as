@@ -22,7 +22,7 @@ void pickRandTargetPos(CBlob@ this)
     Vec2f npos(Maths::Abs(gregRand.Next())%width, 20.0f + gregRand.Next()%40);
     this.set_Vec2f("target pos", npos);
     //printVec2f("greg go to", npos);
-    
+
     this.set_bool("use pos", true);
     resetTimeout(this);
 
@@ -135,7 +135,7 @@ void onTick(CBlob@ this)
                 this.set_s32("statue time", getGameTime() + 45);
                 Vec2f pos = this.getPosition();
                 pos.y += 16;
-                
+
 
                 CMap@ map = getMap();
                 pos.x -= 8;
@@ -218,7 +218,7 @@ void onTick(CBlob@ this)
             else if(target !is null && elapsed > 30*30) //go after player for a long time
             {
                 pickRandTargetPos(this);
-            
+
             }
 
         }
@@ -261,7 +261,7 @@ void onTick(CBlob@ this)
             this.SetFacingLeft(faceLeft);
 
         }
-        
+
         /*if(targetAttached)
         {
 	        CPlayer@ local = getLocalPlayer();
@@ -280,7 +280,7 @@ void onTick(CBlob@ this)
                 count += controls.isKeyJustPressed(KEY_KEY_C) ? 1 : 0;
                 count += controls.isKeyJustPressed(KEY_KEY_F) ? 1 : 0;
                 count += controls.isKeyJustPressed(KEY_KEY_E) ? 1 : 0;
-        
+
                 this.set_u16("struggle count", count);
                 //print("oggly booogly count: " + count);
 
@@ -476,11 +476,11 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 
         }
 
-        SetKnocked(blob, 60); //kock the player when we first pick them up so they can't fight back
+        SetKnocked(blob, 60); //knock the player when we first pick them up so they can't fight back
         blob.Tag("dazzled");
 
         //make player play the stunned sound
-        blob.getSprite().PlaySound("Stun.ogg", 1.0f, this.getSexNum() == 0 ? 1.0f : 2.0f);
+        blob.getSprite().PlaySound("Stun.ogg", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 
     }*/
 

@@ -3,6 +3,7 @@
 // PNG loader base class - extend this to add your own PNG loading functionality!
 
 #include "BasePNGLoader.as";
+#include "MinimapHook.as";
 
 // Custom map colors for challenges
 namespace challenge_colors
@@ -46,5 +47,6 @@ class ChallengePNGLoader : PNGLoader
 bool LoadMap(CMap@ map, const string& in fileName)
 {
 	print("LOADING CHALLENGE PNG MAP " + fileName);
+	MiniMap::Initialise();
 	return ChallengePNGLoader().loadMap(map, fileName);
 }

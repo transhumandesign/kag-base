@@ -1,6 +1,7 @@
 // TDM PNG loader base class - extend this to add your own PNG loading functionality!
 
 #include "BasePNGLoader.as";
+#include "MinimapHook.as";
 
 // TDM custom map colors
 namespace tdm_colors
@@ -41,6 +42,8 @@ bool LoadMap(CMap@ map, const string& in fileName)
 	print("LOADING TDM PNG MAP " + fileName);
 
 	TDMPNGLoader loader();
+
+	MiniMap::Initialise();
 
 	return loader.loadMap(map , fileName);
 }
