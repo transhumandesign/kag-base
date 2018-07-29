@@ -1,26 +1,25 @@
+//Report.as
 // report logic
 // wip
 
 #define CLIENT_ONLY
 
+const int r = 50;
 bool isModerating;
-string _moderatorUsername;
-string _baddieUsername;
-int specTeam;
 
 void onInit(CRules@ this)
 {
 	isModerating = false;
-	specTeam = this.getSpectatorTeamNum();
 }
 
 bool onClientProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
 {
+	//server security object
+	CSecurity@ security = getSecurity();
+
 	if((text_in == "!moderate" || text_in == "!m") && player.isMod())
 	{
-		//should get last person to be reported...
-		
-
+		moderate(this, player);
 
 		return false; //false so it doesn't show as normal public chat
 	}
@@ -30,53 +29,42 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 		// check if we have tokens
 		string[]@ tokens = text_in.split(" ");
 
-		//server security object
-		CSecurity@ security = getSecurity();
-
 		if (tokens.length > 1)
 		{
+			string baddieUsername = tokens[1];
+			CPlayer@ baddie = getPlayerByUsername(baddieUsername);
+			
 			if ((tokens[0] == "!report" || tokens[0] == "!r") && !security.isPlayerIgnored(player) && player is getLocalPlayer())
 			{
-				//check if reported player exists
-				string baddieUsername = tokens[1];
-				string baddieCharacterName = baddieUsername; //no, but idk
-				CPlayer@ baddie = getPlayerByUsername(baddieUsername);
-
-				if(baddie !is null)
+				if(baddie !is null && !player.isMod())
 				{
 					//if he exists start more reporting logic
-					report(player, baddie);
+					report(this, player, baddie);
 					client_AddToChat("You have reported: " + baddieUsername, SColor(255, 255, 0, 0));
 				}
 				else {
-					client_AddToChat("not found", SColor(255, 255, 0, 0));
+					client_AddToChat("Player not found", SColor(255, 255, 0, 0));
 				}
 			}
-			else if((tokens[0] == "!moderate" || tokens[0] == "!m") && player.isMod())
-			{
-				_baddieUsername = tokens[1];
-				CPlayer@ baddie = getPlayerByUsername(_baddieUsername);
+			// else if((tokens[0] == "!moderate" || tokens[0] == "!m") && player.isMod())
+			// {
+			// 	if(baddie !is null)
+			// 	{
+			// 		if(player.isMod() && player is getLocalPlayer())
+			// 		{
+			// 			if(baddie.hasTag("reported"))
+			// 			{
+			// 				client_AddToChat("You're moderating " + baddieUsername, SColor(255, 255, 0, 0));
+			// 			}
+			// 			else
+			// 			{
+			// 				client_AddToChat("The person you're moderating has not been reported, but you may do so anyway.", SColor(255, 255, 0, 0));
+			// 			}
 
-				if(baddie !is null)
-				{
-					string baddieCharacterName = _baddieUsername;
-					_moderatorUsername = player.getUsername();
-
-					if(player.isMod() && player is getLocalPlayer())
-					{
-						if(baddie.hasTag("reported"))
-						{
-							client_AddToChat("You're moderating " + _baddieUsername, SColor(255, 255, 0, 0));
-							moderate(this, player, baddie);
-						}
-						else
-						{
-							client_AddToChat("The person you're moderating has not been reported, but you may do so anyway.", SColor(255, 255, 0, 0));
-							moderate(this, player, baddie);
-						}
-					}
-				}
-			}
+			// 			moderate(this, player, baddie);
+			// 		}
+			// 	}
+			// }
 
 			return false; //false so it doesn't show as normal chat
 		}
@@ -85,7 +73,7 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 	return true;
 }
 
-void report(CPlayer@ moderator, CPlayer@ baddie)
+void report(CRules@ this, CPlayer@ moderator, CPlayer@ baddie)
 {
 	string baddieUsername = baddie.getUsername();
 	string baddieCharacterName = baddieUsername; //¯\_(ツ)_/¯
@@ -94,27 +82,16 @@ void report(CPlayer@ moderator, CPlayer@ baddie)
 	baddie.Tag("reported");
 
     //get all players in server
-    CBlob@[] allBlobs;
-	getBlobs(@allBlobs);
-	CPlayer@[] allPlayers;
-
-    for (u32 i = 0; i < allBlobs.length; i++)
-	{
-		if(allBlobs[i].hasTag("player"))
-		{
-			allPlayers.insertLast(allBlobs[i].getPlayer());
-		}
-    }
+    CBlob@[] players;
+	getBlobsByTag("player", @players);
 
 	//print message to mods
-	for (u32 i = 0; i < allPlayers.length; i++)
+	for (u8 i = 0; i < players.length; i++)
 	{
-		if(allPlayers[i].isMod())
+		if(players[i].getPlayer().isMod())
 		{
-			print("You're mod");
 			print("Reporting " + baddieUsername);
 			print("Reporting " + baddie.getUsername());
-			print("Reporting " + baddie.getCharacterName());
 			print("Reporting " + baddie.getTeamNum());
 			client_AddToChat("Report has been made of: " + baddieUsername, SColor(255, 255, 0, 0));
 			Sound::Play("ReportSound.ogg", moderator.getBlob().getPosition());
@@ -123,7 +100,25 @@ void report(CPlayer@ moderator, CPlayer@ baddie)
 }
 
 //Change to spectator cam on moderate
-void moderate(CRules@ this, CPlayer@ moderator, CPlayer@ baddie)
+void moderate(CRules@ this, CPlayer@ moderator)
 {
-	print(baddie.getBlob().getLightColor());
+	if (moderator is getLocalPlayer())
+	{
+		moderator.client_ChangeTeam(this.getSpectatorTeamNum());
+		getHUD().ClearMenus();
+	}
+	isModerating = true;
+	moderator.Tag("moderator");
+}
+
+void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
+{
+	print("changed team");
+	if(oldteam == this.getSpectatorTeamNum())
+	{
+		if(player.hasTag("moderator"))
+		{
+			player.Untag("moderator");
+		}
+	}
 }
