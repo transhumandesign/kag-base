@@ -2,30 +2,23 @@
 
 #define CLIENT_ONLY
 
-#include "HoverMessage.as";
+#include "HoverMessage.as"
 
 void onRender(CSprite@ this)
 {
-	CBlob@ blob = this.getBlob();
-
-	HoverMessage[]@ messages;
-	if (blob.get("messages", @messages))
+	if (this.getBlob().isMyPlayer())
 	{
-		for (int i = messages.length - 1; i >= 0; --i)
-		{
-			HoverMessage @message = messages[i];
-			message.update();
-			if (message.isExpired())
-				messages.removeAt(i);
-			else
-				message.draw(blob, i);
-		}
+		get_messages().render();
 	}
 }
 
 void onTick(CBlob@ this)
 {
 	if (!this.isMyPlayer()) return;
+
+	CPlayer@ player = this.getPlayer();
+
+	if (player is null) return;
 
 	//this is fairly expensive HOWEVER it's only for our player
 
@@ -48,8 +41,7 @@ void onTick(CBlob@ this)
 	for (int i = 0; i < inv.getItemsCount(); i++)
 	{
 		CBlob@ invitem = inv.getItem(i);
-		if (invitem.hasTag("material"))
-			inv_and_hands.push_back(invitem);
+		inv_and_hands.push_back(invitem);
 	}
 
 	//gather their names and amounts
@@ -85,9 +77,12 @@ void onTick(CBlob@ this)
 	//compare against previous
 
 	const string namescache_propname = "_inv_names_cache";
-	if(this.exists(namescache_propname))
+	// Store this on player so class swaps show material drops as well
+	// This has the side effect of keeping the information when you die...
+	// which can be good, so you know how many materials you lost when you died.
+	if(player.exists(namescache_propname))
 	{
-		string[] cached_names = this.get_string(namescache_propname).split(";;");
+		string[] cached_names = player.get_string(namescache_propname).split(";;");
 		for(int i = 0; i < cached_names.length; i++)
 		{
 			bool found = false;
@@ -107,7 +102,7 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-	this.set_string(namescache_propname, join(names, ";;"));
+	player.set_string(namescache_propname, join(names, ";;"));
 
 	for (int i = 0; i < names.length; i++)
 	{
@@ -118,16 +113,15 @@ void onTick(CBlob@ this)
 		string prop_string = "_inv_cache" + name;
 
 		int difference = amount;
-		if (this.exists(prop_string))
+		if (player.exists(prop_string))
 		{
-			difference = amount - this.get_s16(prop_string);
+			difference = amount - player.get_s16(prop_string);
 		}
-		this.set_s16(prop_string, amount);
+		player.set_s16(prop_string, amount);
 
 		if (difference != 0)
 		{
-			addMessage(this, HoverMessage(0, name, difference));
+			add_message(MaterialMessage(name, difference));
 		}
 	}
-
 }

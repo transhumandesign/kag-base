@@ -1,164 +1,442 @@
-// by Splittingred
+// Hover messages
 
-shared class HoverMessage
+#include "TeamColour.as"
+
+// Linear interpolation
+// TODO: expose in engine
+shared float lerp(float v0, float v1, float t)
 {
-	uint16 merge_id;
-	string name;
-	int quantity;
-	uint ticker;
-	f32 renderticker;
-	f32 xpos;
-	f32 ypos;
-	uint ttl;		 // time of expiry
-	uint fade_ratio; // % of alpha at ttl
+	return (1.0f - t) * v0 + t * v1;
+}
+
+shared Vec2f lerp(Vec2f v0, Vec2f v1, float t)
+{
+	return Vec2f(lerp(v0.x, v1.x, t),
+				 lerp(v0.y, v1.y, t));
+}
+
+shared class MessageToken
+{
+	string text;
 	SColor color;
+	Vec2f offset;
 
-	HoverMessage() {} // required for handles to work
-
-	HoverMessage(uint16 _merge_id, string _name, int _quantity, SColor _color = color_white, bool singularise = true, uint _ttl = 175, uint _fade_ratio = 90)
+	MessageToken(
+		const string&in p_text,
+		const SColor&in p_color = color_white,
+		const Vec2f&in p_offset = Vec2f()
+	)
 	{
-		if (_quantity >= 0 && _quantity < 2 && singularise)
-		{
-			_name = this.singularize(_name);
-		}
-
-		merge_id = _merge_id;
-		name = _name;
-		quantity = _quantity;
-		ticker = 0;
-		renderticker = 0.0f;
-		xpos = 0.0;
-		ypos = 0.0;
-		ttl = _ttl;
-		fade_ratio = _fade_ratio;
-		color = _color;
-	}
-
-	// draw the text
-	void draw(CBlob@ blob, int i)
-	{
-		GUI::SetFont("menu");
-		string m = this.message();
-		Vec2f pos = this.getPos(blob, m, i);
-		SColor color = this.getColor();
-		GUI::DrawText(m, pos, color);
-	}
-
-	// get message into a nice, friendly format
-	string message()
-	{
-		//short-circuit
-		if (quantity == 0)
-		{
-			return "";
-		}
-
-		const bool show_positive = true;
-		const bool show_negative = false;
-		//translate name
-		string _translated_name = name;
-		//(unless this is a kill message - todo: generalise this further)
-		if(merge_id != 1337)
-		{
-			_translated_name = getTranslatedString(_translated_name);
-		}
-		//positive messages
-		if(show_positive && quantity > 0)
-		{
-			return getTranslatedString("+{AMOUNT} {NAME}")
-				.replace("{AMOUNT}", ""+Maths::Abs(quantity))
-				.replace("{NAME}", _translated_name);
-		}
-		//negative messages
-		else if(show_negative && quantity < 0)
-		{
-			return getTranslatedString("-{AMOUNT} {NAME}")
-				.replace("{AMOUNT}", ""+Maths::Abs(quantity))
-				.replace("{NAME}", _translated_name);
-		}
-
-		return "";
-	}
-
-	// update message on every tick
-	void update()
-	{
-		ticker += 2;
-		renderticker += 2.0f * getRenderApproximateCorrectionFactor();
-	}
-
-	// see if this message is expired, or should be removed from GUI
-	bool isExpired()
-	{
-		return ticker > ttl;
-	}
-
-	// get the active color of the message. decrease proportionally by the fadeout ratio
-	private SColor getColor()
-	{
-		uint alpha = Maths::Max(0, 255 * (ttl - renderticker * fade_ratio / 100.0f) / ttl);
-		return SColor(alpha, color.getRed(), color.getGreen(), color.getBlue());
-	}
-
-	// get the position of the message. Store it to the object if no pos is already set. This allows us to do the
-	// hovering above where it was picked effect. Finally, slowly make it rise by decreasing by a multiple of the ticker
-	private Vec2f getPos(CBlob@ blob, string m, int i)
-	{
-		if (ypos == 0.0)
-		{
-			Vec2f pos2d = blob.getInterpolatedScreenPos();
-			int top = pos2d.y - 2.5f * blob.getHeight() - 20.0f;
-			Vec2f dim;
-			GUI::GetTextDimensions(m , dim);
-			dim.x = Maths::Min(dim.x, 200.0f);
-			xpos = pos2d.x - dim.x / 2;
-			ypos = top - 2 * dim.y - i * dim.y;
-		}
-
-		ypos -= renderticker / 40.0f;
-		return Vec2f(xpos, ypos);
-	}
-
-	// Singularize, or de-pluralize, a string
-	private string singularize(string str)
-	{
-		uint len = str.length();
-		string lastChar = str.substr(len - 1);
-
-		if (lastChar == "s")
-		{
-			str = str.substr(0, len - 1);
-		}
-
-		return str;
+		text = p_text;
+		color = p_color;
+		offset = p_offset;
 	}
 };
 
-HoverMessage@ addMessage(CBlob@ this, HoverMessage@ m)
+// Message type category
+// This is used to split messages into different categories which are then easier to manage
+// Messages of a given type are rendered together.
+// e.g. if you earn 200 stone, kill somebody, earn 100 wood, the resource messages will be shown together
+shared enum MessageTypes
 {
-	HoverMessage[]@ messages;
-	if (!this.get("messages", @messages))
+	MESSAGE_NONE,
+	MESSAGE_KILLSPREE,
+	MESSAGE_MATERIAL,
+	MESSAGE_TOTAL
+};
+
+// Base hover message class. Treat this as an abstract class; you *must* implement generate_tokens in
+// an inherited class and optionally can implement reset_time and try_merge. You also *must* assign
+// the hovermessage to a unique category.
+shared class HoverMessage
+{
+	// In the constructor from your inherited 
+	MessageTypes category;
+	
+	// Time left, in seconds, for the message display.
+	// This is updated by render().
+	// When the countdown reaches 0, the message is removed from the list.
+	float time_left;
+
+	// Message tokens. They are chunks of texts with their own color and offset, from a base offset.
+	MessageToken[] tokens;
+
+	HoverMessage()
 	{
-		@messages = HoverMessage[]();
-		this.set("messages", messages);
+		reset_time();
 	}
 
-	for (uint i = 0; i < messages.length; i++)
+	// Reset the timer to a value given in seconds.
+	// Override this if you want to change your message default duration.
+	void reset_time()
 	{
-		HoverMessage @message = messages[i];
+		time_left = 6.0f;
+	}
 
-		//merging messages
-		if ((message.merge_id != 0 && message.merge_id == m.merge_id) ||
-			message.name == m.name)
+	// Forces the tokens to be recreated. This is useful when merging messages or when needing to
+	// provide any update to the displayed message.
+	void refresh_tokens()
+	{
+		tokens.clear();
+		generate_tokens();
+	}
+
+	// You must override this in inherited classes!
+	// This is the function that, when called, generates tokens for this message from the internal data.
+	protected void generate_tokens() {}
+
+	// Unless you need to be able to merge messages (e.g. KillSpreeMessage or MaterialMessage),
+	// you do not need to override this. When adding a new message, HoverMessages will first try to merge
+	// the new message to every message of the *same category* in the list. This implies you can assume
+	// that any parameter passed to try_merge() will be of the type of your inherited class, so you can do
+	// MyCustomMessage@ message = cast<MyCustomMessage>(other);
+	// Return 'this' on success, 'null' on failure.
+	HoverMessage@ try_merge(HoverMessage@ other)
+	{
+		return null;
+	}
+
+	// Renders the tokens previously generated by generate_tokens().
+	// This updates time_left and the HoverMessages past offset and past total offsets.
+	void render(HoverMessages@ messages, Vec2f base_offset)
+	{
+		time_left -= getRenderDeltaTime();
+
+		for (int i = 0; i < tokens.length; ++i)
 		{
-			message.quantity += m.quantity;
-			message.name = m.name;
-			message.ticker = 0;
-			message.ypos = 0.0;
-			return message;
+			MessageToken@ t = tokens[i];
+
+			// Apply fade-out
+			t.color.setAlpha((t.color.getAlpha() / 255.f) * Maths::Clamp(time_left, 0.0f, 1.0f) * 255.0f);
+
+			// Kick-out effect: a subtle movement to the right applied along with the fade-out.
+			float kickout_effect = Maths::Clamp(1.0f - time_left, 0.0f, 1.0f) * 32.0f;
+
+			Vec2f text_dimensions;
+			GUI::GetTextDimensions(t.text, text_dimensions);
+
+			messages.past_offset = t.offset + text_dimensions;
+			messages.past_total_offset.x = Maths::Max(messages.past_total_offset.x, messages.past_offset.x);
+			messages.past_total_offset.y = Maths::Max(messages.past_total_offset.y, messages.past_offset.y);
+
+			GUI::DrawText(
+				t.text,
+				base_offset + t.offset + Vec2f(kickout_effect, 0.0f),
+				t.color
+			);
+		}
+	}
+};
+
+shared class PlayerMessageInfo
+{
+	u8 team;
+	string clantag;
+	string username;
+};
+
+/*
+	Killspree messages. Looks like:
+
+	  clantag character name
+		vvvvv vvvvvvvvvvv
+	+3  [RUS] randomguy40
+	    dog copper40
+	    Sedgewick
+*/
+shared class KillSpreeMessage : HoverMessage
+{
+	PlayerMessageInfo[] victims;
+
+	KillSpreeMessage(CPlayer@ player)
+	{
+		category = MESSAGE_KILLSPREE;
+
+		PlayerMessageInfo info;
+		info.team = player.getTeamNum();
+		info.clantag = player.getClantag();
+		info.username = player.getCharacterName();
+
+		victims.push_back(info);
+	}
+
+	void generate_tokens() override
+	{
+		string kill_counter = "+" + victims.length;
+		Vec2f offset;
+		GUI::GetTextDimensions(kill_counter, offset);
+		offset = Vec2f(offset.x + 12.0f, 0.0f);
+
+		tokens.push_back(MessageToken(kill_counter, SColor(255, 255, 0, 0)));
+
+		for (uint i = 0; i < victims.length; ++i)
+		{
+			string clantag = victims[i].clantag;
+
+			if (!clantag.isEmpty())
+			{
+				tokens.push_back(MessageToken(clantag, SColor(255, 127, 127, 127), offset));
+			}
+
+			Vec2f clantag_dimensions;
+			GUI::GetTextDimensions(clantag, clantag_dimensions);
+
+			string username = victims[i].username;
+
+			Vec2f username_dimensions;
+			GUI::GetTextDimensions(username, username_dimensions);
+
+			if (!username.isEmpty())
+			{
+				tokens.push_back(
+					MessageToken(
+						username,
+						getTeamColor(victims[i].team),
+						offset + Vec2f(clantag_dimensions.x + 6.0f, 0.0f)
+					)
+				);
+			}
+
+			offset.y += Maths::Max(clantag_dimensions.y, username_dimensions.y);
 		}
 	}
 
-	this.push("messages", m);
-	return m;
+	HoverMessage@ try_merge(HoverMessage@ other) override
+	{
+		KillSpreeMessage@ message = cast<KillSpreeMessage>(other);
+
+		for (uint i = 0; i < message.victims.length; ++i)
+		{
+			victims.push_back(message.victims[i]);
+		}
+
+		return this;
+	}
+};
+
+/*
+	Material change messages. Looks like:
+
+	-100 stone
+	-50 wood
+	+30 arrows
+*/
+shared class MaterialMessage : HoverMessage
+{
+	string material_name;
+	int quantity_change;
+
+	MaterialMessage(string p_name, int p_quantity)
+	{
+		material_name = getTranslatedString(p_name);
+		quantity_change = p_quantity;
+
+		category = MESSAGE_MATERIAL;
+	}
+
+	void reset_time() override
+	{
+		time_left = 2.0f;
+	}
+
+	void generate_tokens() override
+	{
+		string quantity_string;
+		SColor quantity_color;
+
+		if (quantity_change < 0)
+		{
+			quantity_string = "" + quantity_change;
+			quantity_color = SColor(255, 255, 150, 0);
+		}
+		else if (quantity_change == 0)
+		{
+			return;
+		}
+		else if (quantity_change > 0)
+		{
+			quantity_string = "+" + quantity_change;
+			quantity_color = SColor(255, 145, 255, 0);
+		}
+
+		Vec2f quantity_dimensions;
+		GUI::GetTextDimensions(quantity_string, quantity_dimensions);
+
+		tokens.push_back(MessageToken(quantity_string, quantity_color));
+		tokens.push_back(MessageToken(material_name, color_white, Vec2f(quantity_dimensions.x + 12.0f, 0.0f)));
+	}
+
+	HoverMessage@ try_merge(HoverMessage@ other) override
+	{
+		MaterialMessage@ message = cast<MaterialMessage>(other);
+
+		if (material_name == message.material_name)
+		{
+			quantity_change += message.quantity_change;
+			return this;
+		}
+
+		return null;
+	}
+}
+
+shared class HoverMessages
+{
+	private HoverMessage@[][] messages;
+
+	private Vec2f base_world_offset;
+	Vec2f past_total_offset;
+	Vec2f past_offset;
+
+	bool was_empty;
+
+	HoverMessages()
+	{
+		messages.resize(MESSAGE_TOTAL);
+	}
+
+	private HoverMessage@ try_merge(HoverMessage@ message)
+	{
+		for (int i = 0; i < messages[message.category].length; ++i)
+		{
+			HoverMessage@ result_message = messages[message.category][i].try_merge(@message);
+
+			if (result_message !is null)
+			{
+				result_message.reset_time();
+				return result_message;
+			}
+		}
+
+		return null;
+	}
+
+	HoverMessage@ add_message(HoverMessage@ message)
+	{
+		HoverMessage@ result_message = try_merge(@message);
+
+		if (result_message is null)
+		{
+			@result_message = @message;
+			messages[message.category].push_back(@message);
+		}
+
+		// Set the font because we need the right font size to be set for GUI::GetTextDimensions.
+		GUI::SetFont("menu");
+		result_message.refresh_tokens();
+
+		return @result_message;
+	}
+
+	// Determines a well aligned origin for the hover messages.
+	Vec2f determine_ideal_position()
+	{
+		CBlob@ blob = getLocalPlayerBlob();
+
+		if (blob is null)
+		{
+			return base_world_offset;
+		}
+
+		Vec2f pos = blob.getInterpolatedPosition();
+
+		// HACK: For some reason text dimensions need to be divided by two to get real values..? TODO figure out the issue in engine
+		pos -= Vec2f(past_total_offset.x * 0.5f * 0.5f, past_total_offset.y * 0.5f + 48.0f) / getCamera().targetDistance;
+
+		return pos;
+	}
+
+	void render()
+	{
+		Vec2f screen_position = getDriver().getScreenPosFromWorldPos(base_world_offset);
+
+		past_total_offset = Vec2f_zero;
+
+		GUI::SetFont("menu");
+
+		was_empty = true;
+
+		for (int c = 0; c < MESSAGE_TOTAL; ++c)
+		{
+			for (int i = 0; i < messages[c].length; ++i)
+			{
+				past_offset = Vec2f_zero;
+				
+				messages[c][i].render(@this, screen_position);
+
+				// Vertically offset the next message (of the same category)
+				screen_position.y += past_offset.y + 4.0f;
+
+				was_empty = false;
+			}
+
+			// Increase offset between different message categories.
+			// This adds up to the offset applied above!
+			if (!messages[c].isEmpty())
+			{
+				screen_position.y += 12.0f;
+			}
+		}
+
+		garbage_collect();
+
+		if (!was_empty)
+		{
+			// Subtly smooth out the movement for the messages
+			// This makes it look better when new notices are inserted and offset the ideal position
+			base_world_offset = lerp(
+				base_world_offset,
+				determine_ideal_position(),
+				0.7f * getRenderApproximateCorrectionFactor()
+			);
+		}
+		else
+		{
+			// This way, when the first message pops up it's right in place and doesn't need to move around
+			// It kicks in 1 frame too late, but that isn't even noticeable..
+			base_world_offset = determine_ideal_position();
+		}
+	}
+
+	// Remove faded away notices
+	void garbage_collect()
+	{
+		for (int c = 0; c < MESSAGE_TOTAL; ++c)
+		for (int i = 0; i < messages[c].length;)
+		{
+			if (messages[c][i].time_left <= 0.0f)
+			{
+				messages[c].erase(i);
+			}
+			else
+			{
+				++i;
+			}
+		}
+	}
+};
+
+// Returns the HoverMessages from rules, and creates it if not done already.
+HoverMessages@ get_messages()
+{
+	CRules@ rules = getRules();
+
+	HoverMessages@ messages;
+	rules.get("hover messages", @messages);
+
+	if (messages is null)
+	{
+		HoverMessages created_messages;
+		rules.set("hover messages", @created_messages);
+		return @created_messages;
+	}
+
+	return @messages;
+}
+
+// Adds a hover message to the list, which may get merged into existing ones.
+// e.g. add_message(MyCustomMessage(42, "hello"));
+HoverMessage@ add_message(HoverMessage@ message)
+{
+	return get_messages().add_message(message);
 }
