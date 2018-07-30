@@ -16,6 +16,6 @@ void onRender(CRules@ this)
 		string minutes = (MinutesToEnd < 10) ? "0" + MinutesToEnd : "" + MinutesToEnd;
 		string seconds = (secondsToEnd < 10) ? "0" + secondsToEnd : "" + secondsToEnd;
 		string time_message = getTranslatedString("Time left: {MIN}:{SEC}").replace("{MIN}", minutes).replace("{SEC}", seconds);
-		drawRulesFont(time_message, color_white, Vec2f(10, 140), Vec2f(getScreenWidth() - 20, 180), true, false);
+		drawRulesFont(time_message, color_white, Vec2f(10, 80), Vec2f(getScreenWidth() - 20, 120), true, false);
 	}
 }

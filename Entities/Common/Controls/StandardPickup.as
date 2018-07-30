@@ -13,10 +13,6 @@ void onInit(CBlob@ this)
 	CBlob@[] closestblobs;
 	this.set("closest blobs", closestblobs);
 
-	string[] recent;
-	this.set("recent pickups", recent);
-	this.set_u32("last pickup time", 0);
-
 //	this.addCommandID("detach"); in StandardControls
 
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
@@ -35,6 +31,8 @@ void onTick(CBlob@ this)
 	// drop / pickup / throw
 	if (this.isKeyJustPressed(key_pickup))
 	{
+		TapPickup(this);
+
 		CBlob @carryBlob = this.getCarriedBlob();
 
 		/*if (isTap( this ))	tap pickup
@@ -111,13 +109,6 @@ void onTick(CBlob@ this)
 			ClearPickupBlobs(this);
 		}
 	}
-
-	// erase recent pickups list
-
-	if (this.get_u32("last pickup time") + PICKUP_ERASE_TICKS < getGameTime())
-	{
-		RemoveLastRecentPickup(this);
-	}
 }
 
 void GatherPickupBlobs(CBlob@ this)
@@ -146,196 +137,249 @@ void ClearPickupBlobs(CBlob@ this)
 	this.clear("pickup blobs");
 }
 
-void RemoveLastRecentPickup(CBlob@ this)
-{
-	string[]@ recentPickups;
-	if (this.get("recent pickups", @recentPickups))
-	{
-		if (recentPickups.length > 0)
-		{
-			recentPickups.removeAt(0);
-			this.set_u32("last pickup time", getGameTime());
-		}
-	}
-}
-
 void FillAvailable(CBlob@ this, CBlob@[]@ available, CBlob@[]@ pickupBlobs)
 {
 	for (uint i = 0; i < pickupBlobs.length; i++)
 	{
 		CBlob @b = pickupBlobs[i];
 
-		if (b !is this && canBlobBePickedUp(this, b) && !isInRecentPickups(this, b))
+		if (b !is this && canBlobBePickedUp(this, b))
 		{
 			available.push_back(b);
 		}
 	}
 }
 
-f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
+f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 {
 	u32 gameTime = getGameTime();
 
-	const string name = b.getName();
+	const string thisname = this.getName(),
+		name = b.getName();
 	u32 unpackTime = b.get_u32("unpack time");
 
-	//special stuff - flags etc
+	const bool same_team = b.getTeamNum() != this.getTeamNum();
+	const bool material = b.hasTag("material");
+
+	// Military scale factor constants, NOT including military resources
+	const float factor_military = 0.4f,
+		factor_military_team = 0.6f,
+		factor_military_useful = 0.3f,
+		factor_military_lit = 0.2f,
+		factor_military_important = 0.15f,
+		factor_military_critical = 0.1f;
+
+	// Resource scale factor constants
+	const float factor_resource_boring = 0.7f,
+		factor_resource_useful = 0.5f,
+		factor_resource_useful_rare = 0.45f,
+		factor_resource_strategic = 0.4f,
+		factor_resource_critical = 0.3f;
+
+	// Generic scale factor constants
+	const float factor_very_boring = 1.0f,
+		factor_common = 0.9f,
+		factor_boring = 0.8f,
+		factor_very_important = 0.01f;
+
+	//// MISC ////
+
+	// Special stuff such as flags
 	if (b.hasTag("special"))
 	{
-		scale *= 0.01f;
+		return factor_very_important;
 	}
 
-	// exploding stuff + crates unpacking
-	if (b.hasTag("exploding") || unpackTime > gameTime)
+	//// MILITARY ////
 	{
-		scale *= 0.1f;
-	}
+		// Military stuff we don't want to pick up when in the same team and always considered lit
+		if (name == "mine" || name == "bomb" || name == "waterbomb")
+		{
+			// Make an exception to the team rule: when the explosive is the holder's
+			bool mine = b.getDamageOwnerPlayer() is this.getPlayer();
 
-	// combat items, important
-	if (name == "boulder" || name == "drill" || name == "keg" || name == "saw" ||
-	    name == "mine" || name == "satchel" || name == "crate")
-	{
-		scale *= 0.41f;
+			return (same_team && !mine) ? factor_military_team : factor_military_lit;
+		}
+
+		bool exploding = b.hasTag("exploding");
+
+		// Kegs, really matters when lit (exploding)
+		// But we still want a high priority so bombjumping with kegs is easier
+		if (name == "keg")
+		{
+			return exploding ? factor_military_critical : factor_military_important;
+		}
+
+		// Regular military stuff
+		if (name == "boulder" || name == "saw")
+		{
+			return factor_military;
+		}
+
+		if (name == "drill")
+		{
+			return thisname == "builder" ? factor_military_useful : factor_military;
+		}
+
+		if (name == "crate")
+		{
+			if (same_team)
+			{
+				return factor_military_team;
+			}
+
+			// Consider crates useful usually but unpacking enemy crates important
+			return (unpackTime > gameTime && !same_team) ? factor_military_important : factor_military_useful;
+		}
+
+		// Other exploding stuff we don't recognize
+		if (exploding)
+		{
+			return factor_military_lit;
+		}
 	}
 	
-	// builder materials
+	//// MATERIALS ////
+	if (material)
 	{
+		const bool builder = (thisname == "builder");
+
 		if (name == "mat_gold")
 		{
-			scale *= 0.7f;
+			return factor_resource_strategic;
 		}
+
 		if (name == "mat_stone")
 		{
-			scale *= 0.9f;
+			return builder ? factor_resource_useful_rare : factor_resource_boring;
 		}
+
+		if (name == "mat_wood")
+		{
+			return builder ? factor_resource_useful : factor_resource_boring;
+		}
+
+		const bool knight = (thisname == "knight");
+
+		if (name == "mat_bombs" || name == "mat_waterbombs")
+		{
+			return knight ? factor_resource_useful : factor_resource_boring;
+		}
+
+		const bool archer = (thisname == "archer");
+
+		if (name == "mat_arrows")
+		{
+			// Lower priority for regular arrows when the archer has more than 15 in the inventory
+			return archer && !this.hasBlob("mat_arrows", 15) ? factor_resource_useful : factor_resource_boring;
+		}
+
+		if (name == "mat_waterarrows" || name == "mat_firearrows" || name == "mat_bombarrows")
+		{
+			return archer ? factor_resource_useful_rare : factor_resource_boring;
+		}
+	}
+
+	//// MISC ////
+	if (name == "food" || name == "heart" || (name == "fishy" && b.hasTag("dead"))) // Wait, is there a better way to do that?
+	{
+		float factor_full_life = (thisname == "archer" ? factor_resource_useful : factor_resource_boring);
+		return this.getHealth() < this.getInitialHealth() ? factor_resource_critical : factor_full_life;
 	}
 	
 	//low priority
-	if (name == "log" || b.hasTag("player"))
+	if (name == "log" || b.hasTag("tree"))
 	{
-		scale *= 5.0f;
+		return factor_boring;
 	}
 
 	// super low priority, dead stuff - sick of picking up corpses
-	if (b.hasTag("dead") && name != "fishy")
+	if (b.hasTag("dead"))
 	{
-		scale *= 10.0f;
-		scale += 20.0f;
+		return factor_very_boring;
 	}
 
-	const string thisname = this.getName();
+	return factor_common;
+}
 
-	//per class material scaling - done last for perf reasons
-	if (b.hasTag("material"))
+f32 getPriorityPickupScale(CBlob@ this, CBlob@ b, f32 scale)
+{
+	return scale * getPriorityPickupScale(this, b);
+}
+
+CBlob@ getClosestAimedBlob(CBlob@ this, CBlob@[] available)
+{
+	CBlob@ closest;
+	float lowestScore = 16.0f; // TODO provide better sorting routines in the interface
+
+	for (int i = 0; i < available.length; ++i)
 	{
-		if (name == "mat_wood" || name == "mat_stone" || name == "mat_gold")
+		CBlob@ current = available[i];
+
+		float cursorDistance = (this.getAimPos() - current.getPosition()).Length();
+
+		float radius = current.getRadius();
+		if (radius > 3.0f && cursorDistance > current.getRadius() * 1.5f)
 		{
-			// scale based on how full the stack is
-			f32 stack_size = b.getQuantity();
-			f32 max_size = b.maxQuantity;
-			scale *= (1.25f - ((stack_size / max_size) / 2.0f));
-			// scaling will vary from 0.75 (full stack) to 1.25 (empty stack)
-			
-			if (thisname == "builder")
-			{
-				scale *= 0.25f;
-			}
-			else
-			{
-				scale *= 4.0f;
-				scale += 20.0f;
-			}
+			continue;
 		}
-		else if (name == "mat_bombs" || name == "mat_waterbombs")
+
+		if (cursorDistance < lowestScore)
 		{
-			if (thisname == "knight")
-			{
-				scale *= 0.25f;
-			}
-			else
-			{
-				scale *= 4.0f;
-				scale += 20.0f;
-			}
-		}
-		else if (name == "mat_arrows" || name == "mat_waterarrows" ||
-		         name == "mat_firearrows" || name == "mat_bombarrows")
-		{
-			if (thisname == "archer")
-			{
-				if (name == "mat_arrows")
-					scale *= 0.3f; //pick special arrows first
-				else
-					scale *= 0.25f;
-			}
-			else
-			{
-				scale *= 4.0f;
-				scale += 20.0f;
-			}
+			lowestScore = cursorDistance;
+			@closest = @current;
 		}
 	}
 
-	return scale;
+	return closest;
 }
 
 CBlob@ getClosestBlob(CBlob@ this)
 {
+	CBlob@ closest;
+
 	CBlob@[]@ pickupBlobs;
 	if (this.get("pickup blobs", @pickupBlobs))
 	{
 		Vec2f pos = this.getPosition();
-		Vec2f aimpos = this.getAimPos();
-		bool facingLeft = this.isFacingLeft();
-		pos += Vec2f(facingLeft ? -this.getRadius() : this.getRadius(), 0);
 
 		CBlob@[] available;
 		FillAvailable(this, available, pickupBlobs);
 
 		if (available.length == 0)
 		{
-			RemoveLastRecentPickup(this);
 			FillAvailable(this, available, pickupBlobs);
 		}
 
-		// sort by closest
-
-		CBlob@[] closest;
-		while (available.size() > 0)
+		if (!isTapPickup(this))
 		{
-			f32 closestDist = 999999.9f;
-			uint closestIndex = 999;
-
-			for (uint i = 0; i < available.length; i++)
+			CBlob@ closestAimed = getClosestAimedBlob(this, available);
+			if (closestAimed !is null)
 			{
-				CBlob @b = available[i];
-				Vec2f bpos = b.getPosition();
-				f32 dist = (bpos - pos).getLength();
-				dist = getPriorityPickupScale(this, b, dist);
-
-				if (dist < closestDist)
-				{
-					closestDist = dist;
-					closestIndex = i;
-				}
+				return closestAimed;
 			}
-
-			if (closestIndex >= 999)
-			{
-				break;
-			}
-
-			closest.push_back(available[closestIndex]);
-			available.erase(closestIndex);
 		}
 
-		if (closest.length > 0)
+		float closestFactor = 999999.9f;
+		
+		for (uint i = 0; i < available.length; ++i)
 		{
-			return closest[0];
+			CBlob @b = available[i];
+			Vec2f bpos = b.getPosition();
+
+			float dist = (bpos - pos).getLength();
+			float factor = dist / 30.0f;
+			factor += getPriorityPickupScale(this, b);
+
+			if (factor < closestFactor)
+			{
+				closestFactor = factor;
+				@closest = @b;
+			}
 		}
 	}
 
-	return null;
+	return closest;
 }
 
 bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
@@ -347,31 +391,6 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 	        && (!this.getMap().rayCastSolid(pos, pos2) || (this.isOverlapping(blob)) ) //overlapping fixes "in platform" issue
 	       );
 }
-
-void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
-{
-	if (attachedPoint.name == "PICKUP")
-	{
-		this.push("recent pickups", attached.getName());
-	}
-}
-
-bool isInRecentPickups(CBlob@ this, CBlob@ blob)
-{
-	string[]@ recentPickups;
-	const string name = blob.getName();
-	this.get("recent pickups", @recentPickups);
-	for (uint i = 0; i < recentPickups.length; i++)
-	{
-		if (recentPickups[i] == name)
-			return true;
-	}
-	return false;
-}
-
-// SPRITE
-
-
 
 void onInit(CSprite@ this)
 {

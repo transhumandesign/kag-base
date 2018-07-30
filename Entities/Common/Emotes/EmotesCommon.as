@@ -123,7 +123,23 @@ void set_emote(CBlob@ this, u8 emote, int time)
 
 void set_emote(CBlob@ this, u8 emote)
 {
-	set_emote(this, emote, 90);
+	if (this.isInInventory())
+	{
+		CBlob@ inventoryblob = this.getInventoryBlob();
+		if (inventoryblob !is null && inventoryblob.getName() == "crate"
+			&& inventoryblob.exists("emote"))
+		{
+			CBitStream params;
+			params.write_u8(emote);
+			params.write_u32(getGameTime() + 90);
+			inventoryblob.SendCommand(inventoryblob.getCommandID("emote"), params);
+			this.SendCommand(this.getCommandID("emote"), params);
+		}
+	}
+	else
+	{
+		set_emote(this, emote, 90);
+	}
 }
 
 bool is_emote(CBlob@ this, u8 emote = 255, bool checkBlank = false)

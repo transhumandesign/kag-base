@@ -131,7 +131,7 @@ void onTick(CBlob@ this)
 			}
 			else if (getGameTime() % heal_rate == 0)
 			{
-				if (requiresTreatment(patient))
+				if (requiresTreatment(this, patient))
 				{
 					if (patient.isMyPlayer())
 					{
@@ -162,7 +162,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	caller.getShape().getBoundingRect(c_tl, c_br);
 	bool isOverlapping = br.x - c_tl.x > 0.0f && br.y - c_tl.y > 0.0f && tl.x - c_br.x < 0.0f && tl.y - c_br.y < 0.0f;
 
-	if(!isOverlapping || !bedAvailable(this) || !requiresTreatment(caller))
+	if(!isOverlapping || !bedAvailable(this) || !requiresTreatment(this, caller))
 	{
 		this.set_Vec2f("shop offset", Vec2f_zero);
 	}
@@ -354,7 +354,7 @@ bool bedAvailable(CBlob@ this)
 	return true;
 }
 
-bool requiresTreatment(CBlob@ caller)
+bool requiresTreatment(CBlob@ this, CBlob@ caller)
 {
-	return caller.getHealth() < caller.getInitialHealth();
+	return caller.getHealth() < caller.getInitialHealth() && (!caller.isAttached() || caller.isAttachedTo(this));
 }

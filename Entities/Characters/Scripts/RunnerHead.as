@@ -9,37 +9,36 @@ const s32 NUM_HEADFRAMES = 4;
 const s32 NUM_UNIQUEHEADS = 30;
 const int FRAMES_WIDTH = 8 * NUM_HEADFRAMES;
 
-//handling DLCs
+//handling Heads pack DLCs
 
-class HeadsDLC {
-	string filename;
-	bool do_teamcolour;
-	bool do_skincolour;
-
-	HeadsDLC(string file, bool team, bool skin) {
-		filename = file;
-		do_teamcolour = team;
-		do_skincolour = skin;
-	}
-};
-
-const array<HeadsDLC> dlcs = {
-	//vanilla
-	HeadsDLC("Entities/Characters/Sprites/Heads.png", true, true),
-	//flags of the world
-	HeadsDLC("Entities/Characters/Sprites/Heads2.png", false, false)
-};
-
-const int dlcs_count = dlcs.length;
-
-int get_dlc_number(int headIndex)
+int getHeadsPackIndex(int headIndex)
 {
 	if (headIndex > 255) {
 		if ((headIndex % 256) > NUM_UNIQUEHEADS) {
-			return Maths::Min(dlcs_count - 1, Maths::Floor(headIndex / 255.0f));
+			return Maths::Min(getHeadsPackCount() - 1, Maths::Floor(headIndex / 255.0f));
 		}
 	}
 	return 0;
+}
+
+bool doTeamColour(int packIndex)
+{
+	switch(packIndex) {
+		case 1: //FOTW
+			return false;
+	}
+	//otherwise
+	return true;
+}
+
+bool doSkinColour(int packIndex)
+{
+	switch(packIndex) {
+		case 1: //FOTW
+			return false;
+	}
+	//otherwise
+	return true;
 }
 
 int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
@@ -104,7 +103,7 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 
 string getHeadTexture(int headIndex)
 {
-	return dlcs[get_dlc_number(headIndex)].filename;
+	return getHeadsPackByIndex(getHeadsPackIndex(headIndex)).filename;
 }
 
 void onPlayerInfoChanged(CSprite@ this)
@@ -114,18 +113,23 @@ void onPlayerInfoChanged(CSprite@ this)
 
 CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 {
-	this.RemoveSpriteLayer("head");
-	// add head
-	int dlc_number = get_dlc_number(headIndex);
-	HeadsDLC dlc = dlcs[dlc_number];
-	CSpriteLayer@ head = this.addSpriteLayer("head", dlc.filename, 16, 16,
-	                     (dlc.do_teamcolour ? this.getBlob().getTeamNum() : 0),
-	                     (dlc.do_skincolour ? this.getBlob().getSkinNum() : 0));
 	CBlob@ blob = this.getBlob();
 
+	// get dlc pack info
+	int headsPackIndex = getHeadsPackIndex(headIndex);
+	HeadsPack@ pack = getHeadsPackByIndex(headsPackIndex);
+
+	// add head
+	this.RemoveSpriteLayer("head");
+	CSpriteLayer@ head = this.addSpriteLayer(
+		"head", pack.filename, 16, 16,
+		(doTeamColour(headsPackIndex) ? this.getBlob().getTeamNum() : 0),
+		(doSkinColour(headsPackIndex) ? this.getBlob().getSkinNum() : 0)
+	);
+
 	// set defaults
-	headIndex = headIndex % 256; // DLC heads
-	s32 headFrame = getHeadFrame(blob, headIndex, dlc_number == 0);
+	headIndex = headIndex % 256; // wrap DLC heads into "pack space"
+	s32 headFrame = getHeadFrame(blob, headIndex, headsPackIndex == 0);
 
 	blob.set_s32("head index", headFrame);
 	if (head !is null)
@@ -158,10 +162,12 @@ void onGib(CSprite@ this)
 		Vec2f pos = blob.getPosition();
 		Vec2f vel = blob.getVelocity();
 		f32 hp = Maths::Min(Maths::Abs(blob.getHealth()), 2.0f) + 1.5;
-		makeGibParticle(getHeadTexture(blob.getHeadNum()),
-		                pos, vel + getRandomVelocity(90, hp , 30),
-		                framex, framey, Vec2f(16, 16),
-		                2.0f, 20, "/BodyGibFall", blob.getTeamNum());
+		makeGibParticle(
+			getHeadTexture(blob.getHeadNum()),
+			pos, vel + getRandomVelocity(90, hp , 30),
+			framex, framey, Vec2f(16, 16),
+			2.0f, 20, "/BodyGibFall", blob.getTeamNum()
+		);
 	}
 }
 

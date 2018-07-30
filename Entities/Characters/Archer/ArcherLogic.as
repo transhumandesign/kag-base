@@ -329,7 +329,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			//didn't fire
 			if (archer.legolas_arrows == ArcherParams::legolas_arrows_count)
 			{
-				Sound::Play("/Stun", pos, 1.0f, this.getSexNum() == 0 ? 1.0f : 2.0f);
+				Sound::Play("/Stun", pos, 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 				SetKnocked(this, 15);
 			}
 			else if (pressed)
@@ -622,6 +622,8 @@ bool checkGrappleStep(CBlob@ this, ArcherInfo@ archer, CMap@ map, const f32 dist
 		archer.grapple_id = 0;
 
 		archer.grapple_ratio = Maths::Max(0.2, Maths::Min(archer.grapple_ratio, dist / archer_grapple_length));
+
+		archer.grapple_pos.y = Maths::Max(0.0, archer.grapple_pos.y);
 
 		if (canSend(this)) SyncGrapple(this);
 
@@ -1080,7 +1082,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 
 		if (blockAttack(hitBlob, velocity, 0.0f))
 		{
-			this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 2.0f);
+			this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 			SetKnocked(this, 30);
 		}
 	}

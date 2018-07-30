@@ -29,7 +29,13 @@ void onRender(CRules@ this)
 	Vec2f tl = getTopLeft();
 	Vec2f br = tl + dim;
 	Vec2f text_dim;
-	GUI::GetTextDimensions(vote.title, text_dim);
+
+	string vote_title = getTranslatedString(vote.title);
+	printf(vote.user_to_kick + "");
+	if (vote.user_to_kick != "")
+		vote_title = 	vote_title.replace("{USER}", vote.user_to_kick);
+
+	GUI::GetTextDimensions(vote_title, text_dim);
 
 	if (can_cancel || can_force_pass)
 		br += Vec2f(0, text_dim.y);
@@ -37,9 +43,9 @@ void onRender(CRules@ this)
 	GUI::DrawPane(tl, br, SColor(0x80ffffff));
 
 	GUI::SetFont("menu");
-	GUI::DrawText(vote.title, tl + Vec2f(Maths::Max(dim.x / 2 - text_dim.x / 2, 3.0), 3), color_white);
+	GUI::DrawText(vote_title, tl + Vec2f(Maths::Max(dim.x / 2 - text_dim.x / 2, 3.0), 3), color_white);
 
-	GUI::DrawText(getTranslatedString("Reason: {REASON}").replace("{REASON}", vote.reason), tl + Vec2f(3, 3 + text_dim.y * 2), color_white);
+	GUI::DrawText(getTranslatedString("Reason: {REASON}").replace("{REASON}", getTranslatedString(vote.reason)), tl + Vec2f(3, 3 + text_dim.y * 2), color_white);
 	GUI::DrawText(getTranslatedString("Cast by: {USER}").replace("{USER}", vote.byuser), tl + Vec2f(3, 3 + text_dim.y * 3), color_white);
 	GUI::DrawText(getTranslatedString("[O] - Yes"), tl + Vec2f(20, 3 + text_dim.y * 4), SColor(0xff30bf30));
 	GUI::DrawText(getTranslatedString("[P] - No"), tl + Vec2f(120, 3 + text_dim.y * 4), SColor(0xffbf3030));
@@ -50,7 +56,7 @@ void onRender(CRules@ this)
 	if (can_cancel)
 		GUI::DrawText(getTranslatedString("Ctrl+P Cancel"), tl + Vec2f(95, 3 + text_dim.y * 5), SColor(0xffbf3030));
 
-	GUI::DrawText(getTranslatedString("Click to close ({TIMELEFT}s").replace("{TIMELEFT}", "" + Maths::Ceil(vote.timeremaining / 30.0f)), br - Vec2f(175, 7 + text_dim.y), color_white);
+	GUI::DrawText(getTranslatedString("Click to close ({TIMELEFT}s)").replace("{TIMELEFT}", "" + Maths::Ceil(vote.timeremaining / 30.0f)), br - Vec2f(175, 7 + text_dim.y), color_white);
 }
 
 bool g_have_voted = false;

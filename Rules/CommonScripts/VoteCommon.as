@@ -50,6 +50,7 @@ class VoteObject
 	string title;
 	string reason;
 	string byuser;
+	string user_to_kick = "";
 	string forcePassFeature;
 
 	u16[] players; //id of players that have voted explicitly
@@ -76,10 +77,38 @@ void Rules_SetVote(CRules@ this, VoteObject@ vote)
 		this.set("g_vote", vote);
 
 		if (CanPlayerVote(vote, getLocalPlayer()))
-			client_AddToChat("--- A vote was started by " + vote.byuser + " ---", vote_message_colour());
+		{
+			client_AddToChat(
+				getTranslatedString("--- A vote was started by {USER} ---")
+					.replace("{USER}", vote.byuser),
+				vote_message_colour()
+			);
+		}
 		else
-			client_AddToChat("--- Vote \"" + vote.title + "\" was started by " + vote.byuser
-			                 + ". Reason: " + vote.reason + " ---", vote_message_colour()); //more info for server and those who cant see the vote
+		{
+			//more info for server and those who cant see the vote
+			if (vote.user_to_kick != "")
+			{
+				//special case; votekick
+				client_AddToChat(
+					getTranslatedString("--- Vote \"Kick {KICKUSER}?\" was started by {USER}. Reason: {REASON} ---")
+						.replace("{KICKUSER}", getTranslatedString(vote.user_to_kick))
+						.replace("{USER}", vote.byuser)
+						.replace("{REASON}", getTranslatedString(vote.reason)),
+					vote_message_colour()
+				);
+			}
+			else
+			{
+				client_AddToChat(
+					getTranslatedString("--- Vote \"{TITLE}\" was started by {USER}. Reason: {REASON} ---")
+						.replace("{TITLE}", getTranslatedString(vote.title)).replace("{USER}", vote.byuser)
+						.replace("{REASON}", getTranslatedString(vote.reason)),
+					vote_message_colour()
+				);
+			}
+
+		}
 	}
 }
 
@@ -115,11 +144,7 @@ void PassVote(VoteObject@ vote)
 
 	if (vote.onvotepassed is null) return;
 	bool outcome = vote.current_yes > vote.current_no + 1;//vote.required_percent * vote.maximum_votes;
-
-	client_AddToChat("--- Vote " + (outcome ? "passed: " : "failed: ") +
-	                 (vote.current_yes) + " vs " + (vote.current_no) +
-	                 " (out of " + vote.maximum_votes + ")" +
-	                 " ---", vote_message_colour());
+	client_AddToChat(getTranslatedString("--- Vote {OUTCOME}: {YESCOUNT} vs {NOCOUNT} (out of {MAXVOTES}) ---").replace("{OUTCOME}", getTranslatedString(outcome ? "passed" : "failed")).replace("{YESCOUNT}", vote.current_yes + "").replace("{NOCOUNT}", vote.current_no + "").replace("{MAXVOTES}", vote.maximum_votes + ""), vote_message_colour());
 	vote.onvotepassed.Pass(outcome);
 }
 
@@ -127,7 +152,7 @@ void ForcePassVote(VoteObject@ vote, CPlayer@ player)
 {
 	if (vote is null || vote.timeremaining < 0) return;
 	vote.timeremaining = -1; // so the gui hides and another vote can start
-	client_AddToChat("--- Admin " + player.getUsername() + " forced vote to pass ---");
+	client_AddToChat(getTranslatedString("--- Admin {USER} forced vote to pass ---").replace("{USER}", player.getUsername()));
 	vote.onvotepassed.Pass(true);
 }
 
@@ -138,11 +163,11 @@ void CancelVote(VoteObject@ vote, CPlayer@ player = null)
 
 	if (player !is null)
 	{
-		client_AddToChat("--- Vote cancelled by admin " + player.getUsername() + " ---", vote_message_colour());
+		client_AddToChat(getTranslatedString("--- Vote cancelled by admin {USER} ---").replace("{USER}", player.getUsername()), vote_message_colour());
 	}
 	else
 	{
-		client_AddToChat("--- Vote cancelled ---", vote_message_colour());
+		client_AddToChat(getTranslatedString("--- Vote cancelled ---"), vote_message_colour());
 	}
 }
 
@@ -199,8 +224,9 @@ void Vote(VoteObject@ vote, CPlayer@ p, bool favour)
 
 		if (CanPlayerVote(vote, getLocalPlayer()) || getNet().isServer()) //include all in server logs
 		{
-			client_AddToChat("--- " + p.getUsername() + " Voted " +
-			                 (favour ? "In Favour" : "Against") + " ---", vote_message_colour());
+
+
+			client_AddToChat(getTranslatedString("--- {USER} Voted {DECISION} ---").replace("{USER}", p.getUsername()).replace("{DECISION}", getTranslatedString(favour ? "In Favour" : "Against")), vote_message_colour());
 		}
 	}
 }

@@ -19,10 +19,10 @@ enum kick_reason
 	kick_reason_hacker,
 	kick_reason_teamkiller,
 	kick_reason_spammer,
-	kick_reason_afk,
+	kick_reason_non_participation,
 	kick_reason_count,
 };
-string[] kick_reason_string = { "Griefer", "Hacker", "Teamkiller", "Spammer", "AFK" };
+string[] kick_reason_string = { "Griefer", "Hacker", "Teamkiller", "Chat Spam", "Non-Participation" };
 
 string g_kick_reason = kick_reason_string[kick_reason_griefer]; //default
 
@@ -60,9 +60,14 @@ void onRestart(CRules@ this)
 void onTick(CRules@ this)
 {
 	if (g_lastVoteCounter < 60 * getTicksASecond()*required_minutes)
+	{
 		g_lastVoteCounter++;
+	}
+
 	if (g_lastNextmapCounter < 60 * getTicksASecond()*required_minutes_nextmap)
+	{
 		g_lastNextmapCounter++;
+	}
 }
 
 //VOTE KICK --------------------------------------------------------------------
@@ -82,10 +87,16 @@ class VoteKickFunctor : VoteFunctor
 	{
 		if (kickplayer !is null && outcome)
 		{
-			client_AddToChat("Votekick passed! " + kickplayer.getUsername() + " will be kicked out.", vote_message_colour());
+			client_AddToChat(
+				getTranslatedString("Votekick passed! {USER} will be kicked out.")
+					.replace("{USER}", kickplayer.getUsername()),
+				vote_message_colour()
+			);
 
 			if (getNet().isServer())
+			{
 				getSecurity().ban(kickplayer, VoteKickTime, "Voted off"); //30 minutes ban
+			}
 		}
 	}
 };
@@ -107,12 +118,12 @@ class VoteKickCheckFunctor : VoteCheckFunctor
 		if (!getSecurity().checkAccess_Feature(player, "mark_player")) return false;
 
 		if (reason.find(kick_reason_string[kick_reason_griefer]) != -1 || //reason contains "Griefer"
-		        reason.find(kick_reason_string[kick_reason_teamkiller]) != -1 || //or TKer
-		        reason.find(kick_reason_string[kick_reason_afk]) != -1) //or AFK
+				reason.find(kick_reason_string[kick_reason_teamkiller]) != -1 || //or TKer
+				reason.find(kick_reason_string[kick_reason_non_participation]) != -1) //or AFK
 		{
 			return (player.getTeamNum() == kickplayer.getTeamNum() || //must be same team
-			        kickplayer.getTeamNum() == getRules().getSpectatorTeamNum() || //or they're spectator
-			        getSecurity().checkAccess_Feature(player, "mark_any_team"));   //or has mark_any_team
+					kickplayer.getTeamNum() == getRules().getSpectatorTeamNum() || //or they're spectator
+					getSecurity().checkAccess_Feature(player, "mark_any_team"));   //or has mark_any_team
 		}
 
 		return true; //spammer, hacker (custom?)
@@ -134,7 +145,11 @@ class VoteKickLeaveFunctor : VotePlayerLeaveFunctor
 	{
 		if (player is kickplayer)
 		{
-			client_AddToChat(player.getUsername() + " left early, acting as if they were kicked.", vote_message_colour());
+			client_AddToChat(
+				getTranslatedString("{USER} left early, acting as if they were kicked.")
+					.replace("{USER}", player.getUsername()),
+				vote_message_colour()
+			);
 			if (getNet().isServer())
 			{
 				getSecurity().ban(player, VoteKickTime, "Ran from vote");
@@ -154,9 +169,10 @@ VoteObject@ Create_Votekick(CPlayer@ player, CPlayer@ byplayer, string reason)
 	@vote.canvote = VoteKickCheckFunctor(player, reason);
 	@vote.playerleave = VoteKickLeaveFunctor(player);
 
-	vote.title = "Kick " + player.getUsername() + "?";
+	vote.title = "Kick {USER}?";
 	vote.reason = reason;
 	vote.byuser = byplayer.getUsername();
+	vote.user_to_kick = player.getUsername();
 	vote.forcePassFeature = "ban";
 	vote.cancel_on_restart = false;
 
@@ -176,10 +192,11 @@ class VoteNextmapFunctor : VoteFunctor
 		string charname = player.getCharacterName();
 		string username = player.getUsername();
 		//name differs?
-		if (charname != username &&
-		        charname != player.getClantag() + username &&
-		        charname != player.getClantag() + " " + username)
-		{
+		if (
+			charname != username &&
+			charname != player.getClantag() + username &&
+			charname != player.getClantag() + " " + username
+		) {
 			playername = charname + " (" + player.getUsername() + ")";
 		}
 		else
@@ -200,7 +217,11 @@ class VoteNextmapFunctor : VoteFunctor
 		}
 		else
 		{
-			client_AddToChat(playername + " needs to take a spoonful of cement! Play on!", vote_message_colour());
+			client_AddToChat(
+				getTranslatedString("{USER} needs to take a spoonful of cement! Play on!")
+					.replace("{USER}", playername),
+				vote_message_colour()
+			);
 		}
 	}
 };
@@ -247,10 +268,11 @@ class VoteSurrenderFunctor : VoteFunctor
 		string charname = player.getCharacterName();
 		string username = player.getUsername();
 		//name differs?
-		if (charname != username &&
-		        charname != player.getClantag() + username &&
-		        charname != player.getClantag() + " " + username)
-		{
+		if (
+			charname != username &&
+			charname != player.getClantag() + username &&
+			charname != player.getClantag() + " " + username
+		) {
 			playername = charname + " (" + player.getUsername() + ")";
 		}
 		else
@@ -282,7 +304,7 @@ class VoteSurrenderFunctor : VoteFunctor
 		}
 		else
 		{
-			client_AddToChat(playername + " needs to take a spoonful of cement! Play on!", vote_message_colour());
+			client_AddToChat(getTranslatedString("{USER} needs to take a spoonful of cement! Play on!").replace("{USER}", playername), vote_message_colour());
 		}
 	}
 };
@@ -336,21 +358,22 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 
 	if (Rules_AlreadyHasVote(rules))
 	{
-		Menu::addContextItem(menu, "(Vote already in progress)", "DefaultVotes.as", "void CloseMenu()");
+		Menu::addContextItem(menu, getTranslatedString("(Vote already in progress)"), "DefaultVotes.as", "void CloseMenu()");
 		Menu::addSeparator(menu);
 
 		return;
+
 	}
 
 	//and advance context menu when clicked
-	CContextMenu@ votemenu = Menu::addContextMenu(menu, "Start a Vote");
+	CContextMenu@ votemenu = Menu::addContextMenu(menu, getTranslatedString("Start a Vote"));
 	Menu::addSeparator(menu);
 
 	//vote options menu
 
-	CContextMenu@ kickmenu = Menu::addContextMenu(votemenu, "Kick");
-	CContextMenu@ mapmenu = Menu::addContextMenu(votemenu, "Next Map");
-	CContextMenu@ surrendermenu = Menu::addContextMenu(votemenu, "Surrender");
+	CContextMenu@ kickmenu = Menu::addContextMenu(votemenu, getTranslatedString("Kick"));
+	CContextMenu@ mapmenu = Menu::addContextMenu(votemenu, getTranslatedString("Next Map"));
+	CContextMenu@ surrendermenu = Menu::addContextMenu(votemenu, getTranslatedString("Surrender"));
 	Menu::addSeparator(votemenu); //before the back button
 
 	bool can_skip_wait = getSecurity().checkAccess_Feature(me, "skip_votewait");
@@ -359,21 +382,28 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 	if (getSecurity().checkAccess_Feature(me, "mark_player"))
 	{
 		if (g_lastVoteCounter < 60 * getTicksASecond()*required_minutes
-		        && (!can_skip_wait || g_haveStartedVote))
+				&& (!can_skip_wait || g_haveStartedVote))
 		{
-			Menu::addInfoBox(kickmenu, "Can't Start Vote", "Voting requires a " + required_minutes + " min wait\n" +
-			                 "after each started vote to\n" +
-			                 "prevent spamming/abuse.\n");
+			string cantstart_info = getTranslatedString(
+				"Voting requires a {REQUIRED_MIN} min wait\n" +
+				"after each started vote to\n" +
+				"prevent spamming/abuse.\n"
+			).replace("{REQUIRED_MIN}", "" + required_minutes);
+
+			Menu::addInfoBox(kickmenu, getTranslatedString("Can't Start Vote"), cantstart_info);
 		}
 		else
 		{
-			Menu::addInfoBox(kickmenu, "Vote Kick", "Vote to kick a player on your team\nout of the game.\n\n" +
-			                 "- use responsibly\n" +
-			                 "- report any abuse of this feature.\n" +
-			                 "\nTo Use:\n\n" +
-			                 "- select a reason from the\n     list (default is griefing).\n" +
-			                 "- select a name from the list.\n" +
-			                 "- everyone votes.\n");
+			string votekick_info = getTranslatedString(
+				"Vote to kick a player on your team\nout of the game.\n\n" +
+				"- use responsibly\n" +
+				"- report any abuse of this feature.\n" +
+				"\nTo Use:\n\n" +
+				"- select a reason from the\n     list (default is griefing).\n" +
+				"- select a name from the list.\n" +
+				"- everyone votes.\n"
+			);
+			Menu::addInfoBox(kickmenu, getTranslatedString("Vote Kick"), votekick_info);
 
 			Menu::addSeparator(kickmenu);
 
@@ -382,7 +412,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			{
 				CBitStream params;
 				params.write_u8(i);
-				Menu::addContextItemWithParams(kickmenu, kick_reason_string[i], "DefaultVotes.as", "Callback_KickReason", params);
+				Menu::addContextItemWithParams(kickmenu, getTranslatedString(kick_reason_string[i]), "DefaultVotes.as", "Callback_KickReason", params);
 			}
 
 			Menu::addSeparator(kickmenu);
@@ -398,8 +428,8 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 
 				int player_team = player.getTeamNum();
 				if ((player_team == me.getTeamNum() || player_team == this.getSpectatorTeamNum()
-				        || getSecurity().checkAccess_Feature(me, "mark_any_team"))
-				        && (!getSecurity().checkAccess_Feature(player, "kick_immunity")))
+						|| getSecurity().checkAccess_Feature(me, "mark_any_team"))
+						&& (!getSecurity().checkAccess_Feature(player, "kick_immunity")))
 				{
 					string descriptor = player.getCharacterName();
 
@@ -408,23 +438,37 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 
 					if(g_lastUsernameVoted == player.getUsername())
 					{
+						string title = getTranslatedString(
+							"Cannot kick {USER}"
+						).replace("{USER}", descriptor);
+						string info = getTranslatedString(
+							"You started a vote for\nthis person last time.\n\nSomeone else must start the vote."
+						);
 						//no-abuse box
 						Menu::addInfoBox(
 							kickmenu,
-							"Cannot kick " + descriptor,
-							"You started a vote for\nthis person last time.\n\nSomeone else must start the vote."
+							title,
+							info
 						);
 					}
 					else
 					{
-						CContextMenu@ usermenu = Menu::addContextMenu(kickmenu, "Kick " + descriptor);
-						Menu::addInfoBox(usermenu, "Kicking " + descriptor, "Make sure you're voting to kick\nthe person you meant.\n");
+						string kick = getTranslatedString("Kick {USER}").replace("{USER}", descriptor);
+						string kicking = getTranslatedString("Kicking {USER}").replace("{USER}", descriptor);
+						string info = getTranslatedString( "Make sure you're voting to kick\nthe person you meant.\n" );
+
+						CContextMenu@ usermenu = Menu::addContextMenu(kickmenu, kick);
+						Menu::addInfoBox(usermenu, kicking, info);
 						Menu::addSeparator(usermenu);
 
 						CBitStream params;
 						params.write_u16(player.getNetworkID());
 
-						Menu::addContextItemWithParams(usermenu, "Yes, I'm sure", "DefaultVotes.as", "Callback_Kick", params);
+						Menu::addContextItemWithParams(
+							usermenu, getTranslatedString("Yes, I'm sure"),
+							"DefaultVotes.as", "Callback_Kick",
+							params
+						);
 						added = true;
 
 						Menu::addSeparator(usermenu);
@@ -434,14 +478,23 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 
 			if (!added)
 			{
-				Menu::addContextItem(kickmenu, "(No-one available)", "DefaultVotes.as", "void CloseMenu()");
+				Menu::addContextItem(
+					kickmenu, getTranslatedString("(No-one available)"),
+					"DefaultVotes.as", "void CloseMenu()"
+				);
 			}
 		}
 	}
 	else
 	{
-		Menu::addInfoBox(kickmenu, "Can't vote", "You cannot vote to kick\n" +
-		                 "players on this server\n");
+		Menu::addInfoBox(
+			kickmenu,
+			getTranslatedString("Can't vote"),
+			getTranslatedString(
+				"You are now allowed to votekick\n" +
+				"players on this server\n"
+			)
+		);
 	}
 	Menu::addSeparator(kickmenu);
 
@@ -449,20 +502,26 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 	if (getSecurity().checkAccess_Feature(me, "map_vote"))
 	{
 		if (g_lastNextmapCounter < 60 * getTicksASecond()*required_minutes_nextmap
-		        && (!can_skip_wait || g_haveStartedVote))
+				&& (!can_skip_wait || g_haveStartedVote))
 		{
-			Menu::addInfoBox(mapmenu, "Can't Start Vote", "Voting for next map\n" +
-			                 "requires a " + required_minutes_nextmap + " min wait\n" +
-			                 "after each started vote\n" +
-			                 "to prevent spamming.\n");
+			string cantstart_info = getTranslatedString(
+				"Voting for next map\n" +
+				"requires a {NEXTMAP_MINS} min wait\n" +
+				"after each started vote\n" +
+				"to prevent spamming.\n"
+			).replace("{NEXTMAP_MINS}", "" + required_minutes_nextmap);
+			Menu::addInfoBox( mapmenu, getTranslatedString("Can't Start Vote"), cantstart_info);
 		}
 		else
 		{
-			Menu::addInfoBox(mapmenu, "Vote Next Map", "Vote to change the map\nto the next in cycle.\n\n" +
-			                 "- report any abuse of this feature.\n" +
-			                 "\nTo Use:\n\n" +
-			                 "- select a reason from the list.\n" +
-			                 "- everyone votes.\n");
+			string nextmap_info = getTranslatedString(
+				"Vote to change the map\nto the next in cycle.\n\n" +
+				"- report any abuse of this feature.\n" +
+				"\nTo Use:\n\n" +
+				"- select a reason from the list.\n" +
+				"- everyone votes.\n"
+			);
+			Menu::addInfoBox(mapmenu, getTranslatedString("Vote Next Map"), nextmap_info);
 
 			Menu::addSeparator(mapmenu);
 			//reasons
@@ -470,14 +529,20 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			{
 				CBitStream params;
 				params.write_u8(i);
-				Menu::addContextItemWithParams(mapmenu, nextmap_reason_string[i], "DefaultVotes.as", "Callback_NextMap", params);
+				Menu::addContextItemWithParams(mapmenu, getTranslatedString(nextmap_reason_string[i]), "DefaultVotes.as", "Callback_NextMap", params);
 			}
 		}
 	}
 	else
 	{
-		Menu::addInfoBox(mapmenu, "Can't vote", "You cannot vote to change\n" +
-		                 "the map on this server\n");
+		Menu::addInfoBox(
+			mapmenu,
+			getTranslatedString("Can't vote"),
+			getTranslatedString(
+				"You are not allowed to vote\n" +
+				"to change the map on this server\n"
+			)
+		);
 	}
 	Menu::addSeparator(mapmenu);
 
@@ -485,33 +550,59 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 	//(shares nextmap counter to prevent nextmap/surrender spam)
 	if (!this.isMatchRunning() && !can_skip_wait)
 	{
-		Menu::addInfoBox(surrendermenu, "Can't Start Vote", "Voting for surrender\n" +
-		                 "is not allowed before the game starts.\n");
+		Menu::addInfoBox(
+			surrendermenu,
+			getTranslatedString("Can't Start Vote"),
+			getTranslatedString(
+				"Voting for surrender\n" +
+				"is not allowed before the game starts.\n"
+			)
+		);
 	}
 	else if (g_lastNextmapCounter < 60 * getTicksASecond()*required_minutes_nextmap
-	         && (!can_skip_wait || g_haveStartedVote))
+			 && (!can_skip_wait || g_haveStartedVote))
 	{
-		Menu::addInfoBox(surrendermenu, "Can't Start Vote", "Voting for surrender\n" +
-		                 "requires a " + required_minutes_nextmap + " min wait\n" +
-		                 "after each started vote\n" +
-		                 "to prevent spamming.\n");
+		string cantstart_info = getTranslatedString(
+			"Voting for surrender\n" +
+			"requires a {NEXTMAP_MINS} min wait\n" +
+			"after each started vote\n" +
+			"to prevent spamming.\n"
+		).replace("{NEXTMAP_MINS}", "" + required_minutes_nextmap);
+		Menu::addInfoBox(surrendermenu, getTranslatedString("Can't Start Vote"), cantstart_info);
 	}
 	else if (me.getTeamNum() == rules.getSpectatorTeamNum())
 	{
-		Menu::addInfoBox(surrendermenu, "Can't Start Vote", "Voting for surrender\n" +
-		                 "is not available as a spectator\n");
+		Menu::addInfoBox(
+			surrendermenu,
+			getTranslatedString("Can't Start Vote"),
+			getTranslatedString(
+				"Voting for surrender\n" +
+				"is not available as a spectator\n"
+			)
+		);
 	}
 	else
 	{
-		Menu::addInfoBox(surrendermenu, "Vote Surrender", "Vote to end the game\nin favour of the enemy team.\n\n" +
-		                 "- report any abuse of this feature.\n" +
-		                 "\nTo Use:\n\n" +
-		                 "- select surrender if you're sure.\n" +
-		                 "- everyone votes.\n");
+		Menu::addInfoBox(
+			surrendermenu,
+			getTranslatedString("Vote Surrender"),
+			getTranslatedString(
+				"Vote to end the game\nin favour of the enemy team.\n\n" +
+				"- report any abuse of this feature.\n" +
+				"\nTo Use:\n\n" +
+				"- select surrender if you're sure.\n" +
+				"- everyone votes.\n"
+			)
+		);
 
 		Menu::addSeparator(surrendermenu);
 		CBitStream params;
-		Menu::addContextItemWithParams(surrendermenu, "We Surrender! (I'm sure)", "DefaultVotes.as", "Callback_Surrender", params);
+		Menu::addContextItemWithParams(
+			surrendermenu,
+			getTranslatedString("We Surrender! (I'm sure)"),
+			"DefaultVotes.as", "Callback_Surrender",
+			params
+		);
 	}
 	Menu::addSeparator(surrendermenu);
 }

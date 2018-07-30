@@ -20,6 +20,13 @@ void onTick(CMovement@ this)
 		return;
 	}
 
+	if( //(ultimately in charge of this blob's movement)
+		(blob.isMyPlayer()) ||
+		(blob.isBot() && isServer())
+	) {
+		HandleStuckAtTop(blob);
+	}
+
 	const bool left		= blob.isKeyPressed(key_left);
 	const bool right	= blob.isKeyPressed(key_right);
 	const bool up		= blob.isKeyPressed(key_up);
@@ -42,7 +49,7 @@ void onTick(CMovement@ this)
 		const string fallscreamtag = "_fallingscream";
 		if (vel.y > 0.2f)
 		{
-			if (vel.y > BaseFallSpeed() * 1.8f)
+			if (vel.y > BaseFallSpeed() * 1.8f && !blob.isInInventory())
 			{
 				if (!blob.hasTag(fallscreamtag))
 				{
@@ -242,16 +249,16 @@ void onTick(CMovement@ this)
 		                    map.isTileSolid(pos + Vec2f(-x_ts, y_ts));
 		if (!surface_left)
 		{
-			surface_left = checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts - map.tilesize)) ||
-			               checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts));
+			surface_left = checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts - map.tilesize), blob) ||
+			               checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts), blob);
 		}
 
 		bool surface_right = map.isTileSolid(pos + Vec2f(x_ts, y_ts - map.tilesize)) ||
 		                     map.isTileSolid(pos + Vec2f(x_ts, y_ts));
 		if (!surface_right)
 		{
-			surface_right = checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts - map.tilesize)) ||
-			                checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts));
+			surface_right = checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts - map.tilesize), blob) ||
+			                checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts), blob);
 		}
 
 		//not checking blobs for this - perf
@@ -735,7 +742,8 @@ void CleanUp(CMovement@ this, CBlob@ blob, RunnerMoveVars@ moveVars)
 }
 
 //TODO: fix flags sync and hitting so we dont need this
-bool checkForSolidMapBlob(CMap@ map, Vec2f pos)
+// blob is an optional parameter to check collisions for, e.g. you don't want enemies to climb a trapblock
+bool checkForSolidMapBlob(CMap@ map, Vec2f pos, CBlob@ blob = null)
 {
 	CBlob@ _tempBlob; CShape@ _tempShape;
 	@_tempBlob = map.getBlobAtPosition(pos);
@@ -756,9 +764,52 @@ bool checkForSolidMapBlob(CMap@ map, Vec2f pos)
 				}
 			}
 
+			if (blob !is null && !blob.doesCollideWithBlob(_tempBlob))
+			{
+				return false;
+			}
+
 			return true;
 		}
 	}
 
 	return false;
+}
+
+//move us if we're stuck at the top of the map
+void HandleStuckAtTop(CBlob@ this)
+{
+	Vec2f pos = this.getPosition();
+	//at top of map
+	if (pos.y < 16.0f)
+	{
+		CMap@ map = getMap();
+		float y = 2.5f * map.tilesize;
+		//solid underneath
+		if (map.isTileSolid(Vec2f(pos.x, y)))
+		{
+			//"stuck"; check left and right
+			int rad = 10;
+			bool found = false;
+			float tx = pos.x;
+			for (int i = 0; i < rad && !found; i++)
+			{
+				for (int dir = -1; dir <= 1 && !found; dir += 2)
+				{
+					tx = pos.x + (dir * i) * map.tilesize;
+					if(!map.isTileSolid(Vec2f(tx, y)))
+					{
+						found = true;
+					}
+				}
+			}
+			if (found)
+			{
+				Vec2f towards(tx - pos.x, -1);
+				towards.Normalize();
+				this.setPosition(pos + towards * 0.5f);
+				this.AddForce(towards * 10.0f);
+			}
+		}
+	}
 }

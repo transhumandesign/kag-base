@@ -139,9 +139,8 @@ bool CollapseToGround(CBlob@ this, f32 angle)
 
 					if (dist > 24.0f && angle > 20.0f)
 					{
-						//TODO maybe stun here? hitting sucks
 						hitsomething = true;
-						//SetKnocked(hi.blob, 15);no work
+						SetKnocked(hi.blob, 15, true);
 					}
 				}
 				else // map
