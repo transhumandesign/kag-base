@@ -168,7 +168,8 @@ void onRender(CRules@ this)
 }
 
 //extra area of no build around the barrier
-const float noBuildExtra = 8.0f * 3.0f;
+//const float noBuildExtra = 8.0f * 3.0f;
+const float noBuildExtra = 0.0f; // as for now, make the nobuild match the red barrier
 
 void getBarrierPositions(f32 &out x1, f32 &out x2, f32 &out y1, f32 &out y2)
 {
