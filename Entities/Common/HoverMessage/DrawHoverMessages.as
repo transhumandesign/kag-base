@@ -77,12 +77,9 @@ void onTick(CBlob@ this)
 	//compare against previous
 
 	const string namescache_propname = "_inv_names_cache";
-	// Store this on player so class swaps show material drops as well
-	// This has the side effect of keeping the information when you die...
-	// which can be good, so you know how many materials you lost when you died.
-	if(player.exists(namescache_propname))
+	if(this.exists(namescache_propname))
 	{
-		string[] cached_names = player.get_string(namescache_propname).split(";;");
+		string[] cached_names = this.get_string(namescache_propname).split(";;");
 		for(int i = 0; i < cached_names.length; i++)
 		{
 			bool found = false;
@@ -102,7 +99,7 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-	player.set_string(namescache_propname, join(names, ";;"));
+	this.set_string(namescache_propname, join(names, ";;"));
 
 	for (int i = 0; i < names.length; i++)
 	{
@@ -113,11 +110,11 @@ void onTick(CBlob@ this)
 		string prop_string = "_inv_cache" + name;
 
 		int difference = amount;
-		if (player.exists(prop_string))
+		if (this.exists(prop_string))
 		{
-			difference = amount - player.get_s16(prop_string);
+			difference = amount - this.get_s16(prop_string);
 		}
-		player.set_s16(prop_string, amount);
+		this.set_s16(prop_string, amount);
 
 		if (difference != 0)
 		{

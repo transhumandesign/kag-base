@@ -83,7 +83,7 @@ shared class HoverMessage
 
 	// You must override this in inherited classes!
 	// This is the function that, when called, generates tokens for this message from the internal data.
-	protected void generate_tokens() {}
+	void generate_tokens() {}
 
 	// Unless you need to be able to merge messages (e.g. KillSpreeMessage or MaterialMessage),
 	// you do not need to override this. When adding a new message, HoverMessages will first try to merge
@@ -361,7 +361,7 @@ shared class HoverMessages
 			for (int i = 0; i < messages[c].length; ++i)
 			{
 				past_offset = Vec2f_zero;
-				
+
 				messages[c][i].render(@this, screen_position);
 
 				// Vertically offset the next message (of the same category)
