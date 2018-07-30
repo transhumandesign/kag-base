@@ -17,6 +17,9 @@ u16 last_synced_i = 0;
 //script local "should send now" flag
 bool needs_sync = false;
 
+//
+bool needs_regen = true;
+
 void onInit(CRules@ this)
 {
 	onRestart(this);
@@ -26,8 +29,13 @@ void onRestart(CRules@ this)
 {
 	if (isClient() && !isServer())
 	{
-		last_synced_i++;
 		needs_sync = true;
+	}
+
+	if(isServer())
+	{
+		//new generation
+		last_synced_i++;
 	}
 }
 
@@ -52,6 +60,12 @@ void onTick(CRules@ this)
 		this.SendCommand(init_cmd, bt);
 		//done for now
 		needs_sync = false;
+	}
+
+	if(needs_regen)
+	{
+		getMap().MakeMiniMap();
+		needs_regen = false;
 	}
 }
 
@@ -85,11 +99,12 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ bt)
 			//recv minimap props
 			bool legacy_minimap = false;
 			bool show_gold = true;
+			u16 old_last_synced_i = last_synced_i;
 
 			//note: error printed only; we want to write defaults still
 			if(!bt.saferead_bool(legacy_minimap)) error("MiniMap Sync: failed to read legacy_minimap");
 			if(!bt.saferead_bool(show_gold))      error("MiniMap Sync: failed to read show_gold");
-			if(!bt.saferead_bool(last_synced_i))  error("MiniMap Sync: failed to read sync i")
+			if(!bt.saferead_u16(last_synced_i))   error("MiniMap Sync: failed to read sync i");
 
 			//write values
 			map.legacyTileMinimap = legacy_minimap;
@@ -99,7 +114,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ bt)
 			this.set_bool("show_gold", show_gold);
 
 			//re-build the minimap
-			map.MakeMiniMap();
+			//(prevents re-rebuilding)
+			if(last_synced_i != old_last_synced_i)
+			{
+				needs_regen = true;
+			}
 		}
 	}
 }
