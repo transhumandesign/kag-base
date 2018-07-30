@@ -17,7 +17,7 @@ u16 last_synced_i = 0;
 //script local "should send now" flag
 bool needs_sync = false;
 
-//
+//script local "should rebuild map" flag
 bool needs_regen = true;
 
 void onInit(CRules@ this)
