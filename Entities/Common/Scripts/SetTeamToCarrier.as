@@ -4,6 +4,10 @@
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 {
+	if (this.getName() == "crate" && !this.exists("packed"))
+	{
+		return;
+	}
 	this.server_setTeamNum(attached.getTeamNum());
 }
 

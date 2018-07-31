@@ -36,7 +36,7 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 			
 			if ((tokens[0] == "!report" || tokens[0] == "!r") && !security.isPlayerIgnored(player) && player is getLocalPlayer())
 			{
-				if(baddie !is null && !player.isMod())
+				if(baddie !is null && player.isMod())
 				{
 					//if he exists start more reporting logic
 					report(this, player, baddie);
@@ -124,6 +124,37 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 }
 
 CPlayer@ closestMatch(const string& in username)
+{
+	int ocurrances = 0;
+	CBlob@[] players;
+	getBlobsByTag("player", @players);
+
+	string[] usernames;
+	string[] possibleMatches;
+
+	for(int i = 0; i < players.length(); i++)
+	{
+		usernames[i] = players[i].getPlayer().getUsername();
+	}
+
+	for(int i = 0; i < usernames.length(); i++)
+	{
+		if (usernames[i].findFirst(username, 0) > 0)
+		{
+			ocurrances++;
+			possibleMatches[i] = usernames[i];
+		}
+	}
+
+	if(possibleMatches.length() == 1)
+	{
+		return getPlayerByUsername(possibleMatches[1]);
+	}
+
+	return null;
+}
+
+CPlayer@ closestMatch(const string username)
 {
 	int ocurrances = 0;
 	CBlob@[] players;
