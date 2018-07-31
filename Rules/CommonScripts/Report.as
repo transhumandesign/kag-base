@@ -122,3 +122,34 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 		}
 	}
 }
+
+CPlayer@ closestMatch(const string& in username)
+{
+	int ocurrances = 0;
+	CBlob@[] players;
+	getBlobsByTag("player", @players);
+
+	string[] usernames;
+	string[] possibleMatches;
+
+	for(int i = 0; i < players.length(); i++)
+	{
+		usernames[i] = players[i].getPlayer().getUsername();
+	}
+
+	for(int i = 0; i < usernames.length(); i++)
+	{
+		if (usernames[i].findFirst(username, 0) > 0)
+		{
+			ocurrances++;
+			possibleMatches[i] = usernames[i];
+		}
+	}
+
+	if(possibleMatches.length() == 1)
+	{
+		return getPlayerByUsername(possibleMatches[1]);
+	}
+
+	return null;
+}
