@@ -12,7 +12,7 @@ u8 init_cmd = 20;
 //iterates one each restart so players who were already here
 //will be "in sync" and will just get the restart sync;
 //their requests will be ignored
-u16 last_synced_i = 0;
+u8 last_synced_i = 0;
 
 //script local "should send now" flag
 bool needs_sync = false;
@@ -34,8 +34,9 @@ void onRestart(CRules@ this)
 
 	if(isServer())
 	{
-		//new generation
-		last_synced_i++;
+		//next generation
+		//(avoid zero; people join with zero)
+		last_synced_i = Maths::Max(last_synced_i + 1, 1);
 	}
 }
 
@@ -56,7 +57,7 @@ void onTick(CRules@ this)
 			//ask for minimap info
 			bt.write_bool(false);
 		}
-		bt.write_u16(last_synced_i);
+		bt.write_u8(last_synced_i);
 		this.SendCommand(init_cmd, bt);
 		//done for now
 		needs_sync = false;
@@ -85,26 +86,27 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ bt)
 		//(do nothing for localhost)
 		if (isServer() && !from_server)
 		{
-			u16 temp_last_synced_i = 0;
-			if(!bt.saferead_u16(temp_last_synced_i)) error("MiniMap Sync: failed to read sync i");
+			u8 cl_last_synced_i = 0;
+			if(!bt.saferead_u8(cl_last_synced_i)) error("MiniMap Sync: failed to read sync i");
 
 			//from someone new, effectively
-			if (last_synced_i != temp_last_synced_i)
+			if (last_synced_i != cl_last_synced_i)
 			{
 				needs_sync = true;
 			}
 		}
+		//only read server messages
 		else if(isClient() && from_server)
 		{
 			//recv minimap props
 			bool legacy_minimap = false;
 			bool show_gold = true;
-			u16 old_last_synced_i = last_synced_i;
+			u8 old_last_synced_i = last_synced_i;
 
 			//note: error printed only; we want to write defaults still
 			if(!bt.saferead_bool(legacy_minimap)) error("MiniMap Sync: failed to read legacy_minimap");
 			if(!bt.saferead_bool(show_gold))      error("MiniMap Sync: failed to read show_gold");
-			if(!bt.saferead_u16(last_synced_i))   error("MiniMap Sync: failed to read sync i");
+			if(!bt.saferead_u8(last_synced_i))    error("MiniMap Sync: failed to read sync i");
 
 			//write values
 			map.legacyTileMinimap = legacy_minimap;
