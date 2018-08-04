@@ -4,7 +4,7 @@
 
 #define CLIENT_ONLY
 
-const int r = 50;
+// const int r = 50;
 bool isModerating;
 
 void onInit(CRules@ this)
@@ -14,39 +14,128 @@ void onInit(CRules@ this)
 
 bool onClientProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
 {
-	//server security object
-	CSecurity@ security = getSecurity();
+	CSecurity@ security = getSecurity();												//server security object
 
 	if((text_in == "!moderate" || text_in == "!m") && player.isMod())
 	{
 		moderate(this, player);
 
-		return false; //false so it doesn't show as normal public chat
+		return false;																	//false so it doesn't show as normal public chat
 	}
-	// reporting logic
-	else if (text_in.substr(0, 1) == "!")
+	else if(text_in.substr(0, 1) == "!")												//reporting logic
 	{
-		// check if we have tokens
-		string[]@ tokens = text_in.split(" ");
+		string[]@ tokens = text_in.split(" ");											//check if we have tokens
 
 		if (tokens.length > 1)
 		{
 			string baddieUsername = tokens[1];
-			CPlayer@ baddie = getPlayerByUsername(baddieUsername);
+			string match = closestMatch(baddieUsername);
+			CPlayer@ baddie = getPlayerByUsername(match);
+
+			//print(closestMatch(baddieUsername).getUsername());
 			
-			if ((tokens[0] == "!report" || tokens[0] == "!r") && !security.isPlayerIgnored(player) && player is getLocalPlayer())
+			// print("the username used will be '" + match + "'");
+			
+			if((tokens[0] == "!report" || tokens[0] == "!r") && !security.isPlayerIgnored(player) && player is getLocalPlayer())
 			{
-				if(baddie !is null && player.isMod())
+				if(baddie !is null)
 				{
-					//if he exists start more reporting logic
-					report(this, player, baddie);
+					report(this, player, baddie);										//if he exists start more reporting logic
 					client_AddToChat("You have reported: " + baddieUsername, SColor(255, 255, 0, 0));
-				}
-				else {
+				} else {
 					client_AddToChat("Player not found", SColor(255, 255, 0, 0));
 				}
 			}
-			// else if((tokens[0] == "!moderate" || tokens[0] == "!m") && player.isMod())
+
+			return false;																//false so it doesn't show as normal chat
+		}
+	}
+
+	return true;
+}
+
+void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
+{
+	baddie.Tag("reported");																//tag player as reported
+	string baddieUsername = baddie.getUsername();
+	string baddieCharacterName = baddieUsername;										//¯\_(ツ)_/¯
+
+    CBlob@[] players;																	//get all players in server
+	getBlobsByTag("player", @players);
+
+	for (u8 i = 0; i < players.length; i++)												//print message to mods
+	{
+		if(players[i].getPlayer().isMod())
+		{
+			// print("Reporting " + baddieUsername);
+			// print("Reporting " + baddie.getUsername());
+			// print("Team number: " + baddie.getTeamNum());
+			client_AddToChat("Report has been made of: " + baddieUsername, SColor(255, 255, 0, 0));
+			Sound::Play("ReportSound.ogg", players[i].getPosition());
+		}
+	}
+}
+
+void moderate(CRules@ this, CPlayer@ moderator)											//Change to spectator cam on moderate
+{
+	if (moderator is getLocalPlayer())
+	{
+		moderator.client_ChangeTeam(this.getSpectatorTeamNum());
+		getHUD().ClearMenus();
+	}
+
+	isModerating = true;
+	moderator.Tag("moderator");
+}
+
+// void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
+// {
+// 	// print("changed team");
+// 	if(oldteam == this.getSpectatorTeamNum())
+// 	{
+// 		if(player.hasTag("moderator"))
+// 		{
+// 			player.Untag("moderator");
+// 		}
+// 	}
+// }
+
+string closestMatch(const string username)
+{
+	CBlob@[] players;
+	getBlobsByTag("player", @players);
+	// print("there are " + formatInt(players.length(), "", 0) + "players");
+
+	array<string> usernames;
+	array<int> matches;
+
+	for(int i = 0; i < players.length(); i++)
+	{
+		usernames.insertLast(players[i].getPlayer().getUsername());
+		// print(players[i].getPlayer().getUsername());
+	}
+
+	// print("usernames: " + formatInt(usernames.length(), "", 0));
+
+	for(int i = 0; i < usernames.length(); i++)
+	{
+		// print("searching");
+		if (usernames[i].toLower().findFirst(username.toLower(), 0) >= 0)
+		{
+			// print("found");
+			matches.insertLast(i);
+		}
+	}
+
+	// print("matches: " + formatInt(matches.length(), "", 0));
+
+	// print("closest match '" + usernames[matches[0]] + "'");
+	return usernames[matches[0]];
+}
+
+
+
+// else if((tokens[0] == "!moderate" || tokens[0] == "!m") && player.isMod())
 			// {
 			// 	if(baddie !is null)
 			// 	{
@@ -65,122 +154,3 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 			// 		}
 			// 	}
 			// }
-
-			return false; //false so it doesn't show as normal chat
-		}
-	}
-
-	return true;
-}
-
-void report(CRules@ this, CPlayer@ moderator, CPlayer@ baddie)
-{
-	string baddieUsername = baddie.getUsername();
-	string baddieCharacterName = baddieUsername; //¯\_(ツ)_/¯
-
-	//tag player as reported
-	baddie.Tag("reported");
-
-    //get all players in server
-    CBlob@[] players;
-	getBlobsByTag("player", @players);
-
-	//print message to mods
-	for (u8 i = 0; i < players.length; i++)
-	{
-		if(players[i].getPlayer().isMod())
-		{
-			print("Reporting " + baddieUsername);
-			print("Reporting " + baddie.getUsername());
-			print("Reporting " + baddie.getTeamNum());
-			client_AddToChat("Report has been made of: " + baddieUsername, SColor(255, 255, 0, 0));
-			Sound::Play("ReportSound.ogg", moderator.getBlob().getPosition());
-		}
-	}
-}
-
-//Change to spectator cam on moderate
-void moderate(CRules@ this, CPlayer@ moderator)
-{
-	if (moderator is getLocalPlayer())
-	{
-		moderator.client_ChangeTeam(this.getSpectatorTeamNum());
-		getHUD().ClearMenus();
-	}
-	isModerating = true;
-	moderator.Tag("moderator");
-}
-
-void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
-{
-	print("changed team");
-	if(oldteam == this.getSpectatorTeamNum())
-	{
-		if(player.hasTag("moderator"))
-		{
-			player.Untag("moderator");
-		}
-	}
-}
-
-CPlayer@ closestMatch(const string& in username)
-{
-	int ocurrances = 0;
-	CBlob@[] players;
-	getBlobsByTag("player", @players);
-
-	string[] usernames;
-	string[] possibleMatches;
-
-	for(int i = 0; i < players.length(); i++)
-	{
-		usernames[i] = players[i].getPlayer().getUsername();
-	}
-
-	for(int i = 0; i < usernames.length(); i++)
-	{
-		if (usernames[i].findFirst(username, 0) > 0)
-		{
-			ocurrances++;
-			possibleMatches[i] = usernames[i];
-		}
-	}
-
-	if(possibleMatches.length() == 1)
-	{
-		return getPlayerByUsername(possibleMatches[1]);
-	}
-
-	return null;
-}
-
-CPlayer@ closestMatch(const string username)
-{
-	int ocurrances = 0;
-	CBlob@[] players;
-	getBlobsByTag("player", @players);
-
-	string[] usernames;
-	string[] possibleMatches;
-
-	for(int i = 0; i < players.length(); i++)
-	{
-		usernames[i] = players[i].getPlayer().getUsername();
-	}
-
-	for(int i = 0; i < usernames.length(); i++)
-	{
-		if (usernames[i].findFirst(username, 0) > 0)
-		{
-			ocurrances++;
-			possibleMatches[i] = usernames[i];
-		}
-	}
-
-	if(possibleMatches.length() == 1)
-	{
-		return getPlayerByUsername(possibleMatches[1]);
-	}
-
-	return null;
-}

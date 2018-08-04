@@ -33,7 +33,7 @@ const int r = 35;
 void onInit(CRules@ this)
 {
 	// Setup();
-	int cb_id = Render::addScript(Render::layer_prehud, "ReportRender.as", "ReportRenderFunction", 0.0f);
+	int cb_id = Render::addScript(Render::layer_postworld, "ReportRender.as", "ReportRenderFunction", 0.0f);
 }
 
 void onRestart(CRules@ this)
@@ -49,15 +49,15 @@ void ReportRenderFunction(int id)
 	getBlobsByTag("player", @players);
 	if(player !is null && player.hasTag("moderator"))
     {
-        print("You're moderating");
+        // print("You're moderating");
         for (u8 i = 0; i < players.length; i++)
         {
             if(players[i].getPlayer().hasTag("reported"))
             {
                 for(u8 j = 0; j < 6; j++)
                 {
-                    print("he's moderating");
-                    RenderLine(SColor(255,255,0,0), Vec2f(players[i].getPosition().x + (r*Maths::Cos(j*60 * (Maths::Pi / 180.f))), players[i].getPosition().y + (r*Maths::Sin(j*60 * (Maths::Pi / 180.f)))), Vec2f(players[i].getPosition().x + (r*Maths::Cos((j+1)*60 * (Maths::Pi / 180.f))), players[i].getPosition().y + (r*Maths::Sin((j+1)*60 * Maths::Pi / 180.f))), 0.8f, players[i].getSprite().getZ() + 0.1f);
+                    // print("he's moderating");
+                    RenderLine(SColor(255, 255, 0, 0), Vec2f(players[i].getPosition().x + (r * Maths::Cos(j * 60 * (Maths::Pi / 180.f))), players[i].getPosition().y + (r * Maths::Sin(j * 60 * (Maths::Pi / 180.f)))), Vec2f(players[i].getPosition().x + (r * Maths::Cos((j + 1) * 60 * (Maths::Pi / 180.f))), players[i].getPosition().y + (r * Maths::Sin((j + 1) * 60 * Maths::Pi / 180.f))), 0.8f, players[i].getSprite().getZ() + 0.1f);
                 }
                 
             }
