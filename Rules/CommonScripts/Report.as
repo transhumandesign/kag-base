@@ -4,7 +4,6 @@
 
 #define CLIENT_ONLY
 
-// const int r = 50;
 bool isModerating;
 
 void onInit(CRules@ this)
@@ -24,26 +23,28 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 	}
 	else if(text_in.substr(0, 1) == "!")												//reporting logic
 	{
-		string[]@ tokens = text_in.split(" ");											//check if we have tokens
+		string[]@ tokens = text_in.split(" ");
 
-		if (tokens.length > 1)
+		if(tokens.length > 1)															//check if we have tokens
 		{
-			string baddieUsername = tokens[1];
-			string match = closestMatch(baddieUsername);
-			CPlayer@ baddie = getPlayerByUsername(match);
-
-			//print(closestMatch(baddieUsername).getUsername());
-			
-			// print("the username used will be '" + match + "'");
-			
 			if((tokens[0] == "!report" || tokens[0] == "!r") && !security.isPlayerIgnored(player) && player is getLocalPlayer())
 			{
-				if(baddie !is null)
+				string baddieUsername = tokens[1];
+				string match = closestMatch(baddieUsername);
+
+				if(match != "")
 				{
-					report(this, player, baddie);										//if he exists start more reporting logic
-					client_AddToChat("You have reported: " + baddieUsername, SColor(255, 255, 0, 0));
+					CPlayer@ baddie = getPlayerByUsername(match);
+
+					if(baddie !is null)
+					{
+						report(this, player, baddie);										//if he exists start more reporting logic
+						client_AddToChat("You have reported: " + match, SColor(255, 255, 0, 0));
+					} else {
+						client_AddToChat("Player not found", SColor(255, 255, 0, 0));
+					}
 				} else {
-					client_AddToChat("Player not found", SColor(255, 255, 0, 0));
+					client_AddToChat("Username not found", SColor(255, 255, 0, 0));
 				}
 			}
 
@@ -56,10 +57,21 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 {
-	baddie.Tag("reported");																//tag player as reported
+	if(!baddie.hasTag("reported") && !baddie.exists("reportCount"))
+	{
+		baddie.Tag("reported");																//tag player as reported
+		baddie.set_u8("reportCount", 1);
+		baddie.Sync("reportCount", true);
+		print("report count is: " + formatInt(baddie.get_u8("reportCount"), "", 0));
+	} else {
+		baddie.add_u8("reportCount", 1);
+		baddie.Sync("reportCount", true);
+		print("report count is: " + formatInt(baddie.get_u8("reportCount"), "", 0));
+	}
+	
+	
 	string baddieUsername = baddie.getUsername();
 	string baddieCharacterName = baddieUsername;										//¯\_(ツ)_/¯
-
     CBlob@[] players;																	//get all players in server
 	getBlobsByTag("player", @players);
 
@@ -80,34 +92,37 @@ void moderate(CRules@ this, CPlayer@ moderator)											//Change to spectator 
 {
 	if (moderator is getLocalPlayer())
 	{
+		CCamera@ camera = getCamera();
+		CMap@ map = getMap();
+
 		moderator.client_ChangeTeam(this.getSpectatorTeamNum());
 		getHUD().ClearMenus();
+		camera.setPosition(Vec2f(map.getMapDimensions().x / 2, map.getMapDimensions().y / 2));
 	}
 
 	isModerating = true;
 	moderator.Tag("moderator");
 }
 
-// void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
-// {
-// 	// print("changed team");
-// 	if(oldteam == this.getSpectatorTeamNum())
-// 	{
-// 		if(player.hasTag("moderator"))
-// 		{
-// 			player.Untag("moderator");
-// 		}
-// 	}
-// }
+void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
+{
+	// print("changed team");
+	if(oldteam == this.getSpectatorTeamNum())
+	{
+		if(player.hasTag("moderator"))
+		{
+			player.Untag("moderator");
+		}
+	}
+}
 
 string closestMatch(const string username)
 {
 	CBlob@[] players;
 	getBlobsByTag("player", @players);
-	// print("there are " + formatInt(players.length(), "", 0) + "players");
 
-	array<string> usernames;
-	array<int> matches;
+	string[] usernames;
+	int[] matches;
 
 	for(int i = 0; i < players.length(); i++)
 	{
@@ -115,22 +130,21 @@ string closestMatch(const string username)
 		// print(players[i].getPlayer().getUsername());
 	}
 
-	// print("usernames: " + formatInt(usernames.length(), "", 0));
-
 	for(int i = 0; i < usernames.length(); i++)
 	{
-		// print("searching");
 		if (usernames[i].toLower().findFirst(username.toLower(), 0) >= 0)
 		{
-			// print("found");
 			matches.insertLast(i);
 		}
 	}
 
-	// print("matches: " + formatInt(matches.length(), "", 0));
-
-	// print("closest match '" + usernames[matches[0]] + "'");
-	return usernames[matches[0]];
+	if(matches.length() > 0)
+	{
+		return usernames[matches[0]];
+	}
+	else{
+		return "";
+	}
 }
 
 

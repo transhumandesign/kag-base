@@ -33,7 +33,7 @@ const int r = 35;
 void onInit(CRules@ this)
 {
 	// Setup();
-	int cb_id = Render::addScript(Render::layer_postworld, "ReportRender.as", "ReportRenderFunction", 0.0f);
+	int cb_id = Render::addScript(Render::layer_prehud, "ReportRender.as", "ReportRenderFunction", 0.0f);
 }
 
 void onRestart(CRules@ this)
@@ -54,12 +54,20 @@ void ReportRenderFunction(int id)
         {
             if(players[i].getPlayer().hasTag("reported"))
             {
+                Vec2f pos = players[i].getPosition();
+                Vec2f worldPos = getDriver().getScreenPosFromWorldPos(pos);
+                Vec2f screenPos = Vec2f(getScreenWidth() * 0.8f, getScreenHeight() * 0.8f);
+
+                // print("he's moderating");
+
                 for(u8 j = 0; j < 6; j++)
                 {
-                    // print("he's moderating");
-                    RenderLine(SColor(255, 255, 0, 0), Vec2f(players[i].getPosition().x + (r * Maths::Cos(j * 60 * (Maths::Pi / 180.f))), players[i].getPosition().y + (r * Maths::Sin(j * 60 * (Maths::Pi / 180.f)))), Vec2f(players[i].getPosition().x + (r * Maths::Cos((j + 1) * 60 * (Maths::Pi / 180.f))), players[i].getPosition().y + (r * Maths::Sin((j + 1) * 60 * Maths::Pi / 180.f))), 0.8f, players[i].getSprite().getZ() + 0.1f);
+                    RenderLine(SColor(255, 255, 0, 0), Vec2f(pos.x + (r * Maths::Cos(j * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin(j * 60 * (Maths::Pi / 180.f)))), Vec2f(pos.x + (r * Maths::Cos((j + 1) * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin((j + 1) * 60 * Maths::Pi / 180.f))), 0.8f, players[i].getSprite().getZ() + 0.1f);
+                    
                 }
-                
+
+                GUI::DrawShadowedTextCentered(players[i].getPlayer().getUsername() + " has " + players[i].get_u8("reportCount") + " reports.", Vec2f(worldPos.x, worldPos.y - 40), SColor(255, 255, 0, 0));
+                GUI::DrawShadowedTextCentered(players[i].getPlayer().getUsername() + " has " + formatInt(players[i].get_u8("reportCount"), "", 0) + " reports.", screenPos, SColor(255, 255, 0, 0));
             }
         }
     }
