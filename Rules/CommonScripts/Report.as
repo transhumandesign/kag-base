@@ -36,12 +36,15 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 				{
 					CPlayer@ baddie = getPlayerByUsername(match);
 
-					if(baddie !is null)
+					if(baddie !is null && !player.hasTag("reported" + baddie.getUsername()))
 					{
 						report(this, player, baddie);										//if he exists start more reporting logic
 						client_AddToChat("You have reported: " + match, SColor(255, 255, 0, 0));
-					} else {
+					} else if(!player.hasTag("reported" + baddie.getUsername()))
+					{
 						client_AddToChat("Player not found", SColor(255, 255, 0, 0));
+					} else {
+						client_AddToChat("You already reported " + baddie.getUsername(), SColor(255, 255, 0, 0));
 					}
 				} else {
 					client_AddToChat("Username not found", SColor(255, 255, 0, 0));
@@ -57,17 +60,15 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 {
-	if(!baddie.hasTag("reported") && !baddie.exists("reportCount"))
+	if(!baddie.hasTag("reported") && !baddie.exists("reportCount") && !player.hasTag("reported" + baddie.getUsername()))
 	{
+		player.Tag("reported" + baddie.getUsername());
 		baddie.Tag("reported");																//tag player as reported
 		baddie.set_u8("reportCount", 1);
-		baddie.Sync("reportCount", true);
-		print("report count is: " + formatInt(baddie.get_u8("reportCount"), "", 0));
-	} else {
+	} else if(!player.hasTag("reported" + baddie.getUsername()))
+	{
 		baddie.add_u8("reportCount", 1);
-		baddie.Sync("reportCount", true);
-		print("report count is: " + formatInt(baddie.get_u8("reportCount"), "", 0));
-	}
+	} 
 	
 	
 	string baddieUsername = baddie.getUsername();
@@ -146,25 +147,3 @@ string closestMatch(const string username)
 		return "";
 	}
 }
-
-
-
-// else if((tokens[0] == "!moderate" || tokens[0] == "!m") && player.isMod())
-			// {
-			// 	if(baddie !is null)
-			// 	{
-			// 		if(player.isMod() && player is getLocalPlayer())
-			// 		{
-			// 			if(baddie.hasTag("reported"))
-			// 			{
-			// 				client_AddToChat("You're moderating " + baddieUsername, SColor(255, 255, 0, 0));
-			// 			}
-			// 			else
-			// 			{
-			// 				client_AddToChat("The person you're moderating has not been reported, but you may do so anyway.", SColor(255, 255, 0, 0));
-			// 			}
-
-			// 			moderate(this, player, baddie);
-			// 		}
-			// 	}
-			// }

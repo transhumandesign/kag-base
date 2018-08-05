@@ -4,72 +4,53 @@
 
 const int r = 35;
 
-// void Setup()
-// {
-// 	//ensure texture for our use exists
-// 	if(!Texture::exists(test_name))
-// 	{
-// 		if(!Texture::createBySize(test_name, 8, 8))
-// 		{
-// 			warn("texture creation failed");
-// 		}
-// 		else
-// 		{
-// 			ImageData@ edit = Texture::data(test_name);
-
-// 			for(int i = 0; i < edit.size(); i++)
-// 			{
-// 				edit[i] = SColor((((i + i / 8) % 2) == 0) ? 0xff707070 : 0xff909090);
-// 			}
-
-// 			if(!Texture::update(test_name, edit))
-// 			{
-// 				warn("texture update failed");
-// 			}
-// 		}
-// 	}
-// }
-
 void onInit(CRules@ this)
 {
-	// Setup();
 	int cb_id = Render::addScript(Render::layer_prehud, "ReportRender.as", "ReportRenderFunction", 0.0f);
 }
-
-void onRestart(CRules@ this)
-{
-	// Setup();
-}
-
 
 void ReportRenderFunction(int id)
 {
     CPlayer@ player = getLocalPlayer();
-	CBlob@[] players;
-	getBlobsByTag("player", @players);
+
 	if(player !is null && player.hasTag("moderator"))
     {
-        // print("You're moderating");
-        for (u8 i = 0; i < players.length; i++)
-        {
-            if(players[i].getPlayer().hasTag("reported"))
-            {
-                Vec2f pos = players[i].getPosition();
-                Vec2f worldPos = getDriver().getScreenPosFromWorldPos(pos);
-                Vec2f screenPos = Vec2f(getScreenWidth() * 0.8f, getScreenHeight() * 0.8f);
+        CBlob@[] players;
+        getBlobsByTag("player", @players);
 
-                // print("he's moderating");
+		CBlob@[] reported;
+		for (u8 i = 0; i < players.length; i++)
+		{
+			if(players[i].getPlayer().hasTag("reported"))
+			{
+				reported.insertLast(players[i]);
+			}
+		}
 
-                for(u8 j = 0; j < 6; j++)
-                {
-                    RenderLine(SColor(255, 255, 0, 0), Vec2f(pos.x + (r * Maths::Cos(j * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin(j * 60 * (Maths::Pi / 180.f)))), Vec2f(pos.x + (r * Maths::Cos((j + 1) * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin((j + 1) * 60 * Maths::Pi / 180.f))), 0.8f, players[i].getSprite().getZ() + 0.1f);
-                    
-                }
+		if(reported.length() > 0)											//draw side pane with reported players
+		{
+			Vec2f screenPos = Vec2f(getScreenWidth() * 0.9f, getScreenHeight() * 0.70f);
+			GUI::SetFont("menu");
+			GUI::DrawPane(Vec2f(screenPos.x - 90, screenPos.y - 10), Vec2f(screenPos.x + 90, screenPos.y + (reported.length() * 18) - 5), SColor(128, 0, 0, 0));
+			
+			for (u8 i = 0; i < reported.length; i++)
+			{
+				Vec2f pos = reported[i].getPosition();
+				Vec2f worldPos = getDriver().getScreenPosFromWorldPos(pos);
+				
+				for(u8 j = 0; j < 6; j++)									//draw hexagon around reported players, this one line hexagon is a thing of beauty.
+				{
+					RenderLine(SColor(255, 255, 0, 0), Vec2f(pos.x + (r * Maths::Cos(j * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin(j * 60 * (Maths::Pi / 180.f)))), Vec2f(pos.x + (r * Maths::Cos((j + 1) * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin((j + 1) * 60 * Maths::Pi / 180.f))), 0.8f, reported[i].getSprite().getZ() + 0.1f);
+				}
 
-                GUI::DrawShadowedTextCentered(players[i].getPlayer().getUsername() + " has " + players[i].get_u8("reportCount") + " reports.", Vec2f(worldPos.x, worldPos.y - 40), SColor(255, 255, 0, 0));
-                GUI::DrawShadowedTextCentered(players[i].getPlayer().getUsername() + " has " + formatInt(players[i].get_u8("reportCount"), "", 0) + " reports.", screenPos, SColor(255, 255, 0, 0));
-            }
-        }
+				GUI::DrawPane(Vec2f(worldPos.x - 80, worldPos.y - 50), Vec2f(worldPos.x + 80, worldPos.y - 30), SColor(128, 0, 0, 0));
+				GUI::DrawShadowedTextCentered(reported[i].getPlayer().getUsername() + " has " + reported[i].getPlayer().get_u8("reportCount") + " reports.", Vec2f(worldPos.x, worldPos.y - 40), SColor(255, 255, 0, 0));
+				GUI::DrawShadowedTextCentered(reported[i].getPlayer().getUsername() + " has " + reported[i].getPlayer().get_u8("reportCount") + " reports.", Vec2f(screenPos.x, screenPos.y + (i * 18)), SColor(255, 255, 0, 0));
+			}
+
+		}
+
+        
     }
 }
 
