@@ -83,7 +83,7 @@ class IconWheelMenuEntry : WheelMenuEntry
 			texture_name,
 			frame,
 			frame_size,
-			position + offset - frame_size,
+			position + (offset - frame_size * 0.5f) * scale * 2.0f,
 			scale,
 			get_color()
 		);
