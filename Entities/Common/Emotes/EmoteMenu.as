@@ -31,8 +31,8 @@ void onInit(CRules@ rules)
 		entry.texture_name = "Emoticons.png";
 		entry.frame = Emotes::names.find(names[i+1]);
 		entry.frame_size = Vec2f(32.0f, 32.0f);
-		entry.offset = Vec2f(0.0f, -4.0f);
 		entry.scale = 1.0f;
+		entry.offset = Vec2f(0.0f, -3.0f);
 		menu.entries.push_back(@entry);
 	}
 }
