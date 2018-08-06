@@ -12,6 +12,11 @@ void onRender(CSprite@ this)
 	}
 }
 
+void onInit(CBlob@ this)
+{
+	this.getCurrentScript().tickFrequency = 5;
+}
+
 void onTick(CBlob@ this)
 {
 	if (!this.isMyPlayer()) return;
