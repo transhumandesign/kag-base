@@ -136,6 +136,8 @@ class WheelMenu
 
 	void determine_hovered()
 	{
+	    WheelMenuEntry@ previously_hovered = @hovered;
+
 		@hovered = null;
 
 		Vec2f cursor = getControls().getMouseScreenPos();
@@ -144,6 +146,11 @@ class WheelMenu
 		if (is_cursor_in_range(cursor, WheelMenu::hover_distance))
 		{
 			@hovered = get_entry_from_position(cursor);
+
+            if (previously_hovered !is hovered)
+			{
+			    Sound::Play("select.ogg");
+			}
 		}
 	}
 
@@ -251,21 +258,28 @@ class WheelMenu
 	// i.e. when hovering an option selects it automatically.
 	WheelMenuEntry@ get_selected(bool auto_selection = false)
 	{
+	    WheelMenuEntry@ entry = null;
+
 		if (auto_selection)
 		{
 			Vec2f origin = getDriver().getScreenCenterPos();
 
 			if (is_cursor_in_range(getControls().getMouseScreenPos(), WheelMenu::auto_selection_distance))
 			{
-				return @hovered;
+			    @entry = @hovered;
 			}
 		}
 		else
 		{
-			return @hovered;
+		    @entry = @hovered;
 		}
 
-		return null;
+        if (entry !is null)
+		{
+		    Sound::Play("buttonclick.ogg");
+		}
+
+        return @entry;
 	}
 
 	void add_entry(WheelMenuEntry@ entry)
