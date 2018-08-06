@@ -4,18 +4,18 @@
 
 // Linear interpolation
 // TODO: expose in engine
-shared float lerp(float v0, float v1, float t)
+float lerp(float v0, float v1, float t)
 {
 	return (1.0f - t) * v0 + t * v1;
 }
 
-shared Vec2f lerp(Vec2f v0, Vec2f v1, float t)
+Vec2f lerp(Vec2f v0, Vec2f v1, float t)
 {
 	return Vec2f(lerp(v0.x, v1.x, t),
 				 lerp(v0.y, v1.y, t));
 }
 
-shared class MessageToken
+class MessageToken
 {
 	string text;
 	SColor color;
@@ -37,7 +37,7 @@ shared class MessageToken
 // This is used to split messages into different categories which are then easier to manage
 // Messages of a given type are rendered together.
 // e.g. if you earn 200 stone, kill somebody, earn 100 wood, the resource messages will be shown together
-shared enum MessageTypes
+enum MessageTypes
 {
 	MESSAGE_NONE,
 	MESSAGE_KILLSPREE,
@@ -48,7 +48,7 @@ shared enum MessageTypes
 // Base hover message class. Treat this as an abstract class; you *must* implement generate_tokens in
 // an inherited class and optionally can implement reset_time and try_merge. You also *must* assign
 // the hovermessage to a unique category.
-shared class HoverMessage
+class HoverMessage
 {
 	// In the constructor from your inherited 
 	MessageTypes category;
@@ -128,7 +128,7 @@ shared class HoverMessage
 	}
 };
 
-shared class PlayerMessageInfo
+class PlayerMessageInfo
 {
 	u8 team;
 	string clantag;
@@ -144,7 +144,7 @@ shared class PlayerMessageInfo
 	    dog copper40
 	    Sedgewick
 */
-shared class KillSpreeMessage : HoverMessage
+class KillSpreeMessage : HoverMessage
 {
 	PlayerMessageInfo[] victims;
 
@@ -221,7 +221,7 @@ shared class KillSpreeMessage : HoverMessage
 	-50 wood
 	+30 arrows
 */
-shared class MaterialMessage : HoverMessage
+class MaterialMessage : HoverMessage
 {
 	string material_name;
 	int quantity_change;
@@ -280,7 +280,7 @@ shared class MaterialMessage : HoverMessage
 	}
 }
 
-shared class HoverMessages
+class HoverMessages
 {
 	private HoverMessage@[][] messages;
 
