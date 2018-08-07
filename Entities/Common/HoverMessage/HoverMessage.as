@@ -58,12 +58,16 @@ class HoverMessage
 	// When the countdown reaches 0, the message is removed from the list.
 	float time_left;
 
+	// Mark the hover message to be garbage collected regardless of the time left
+	bool force_gc;
+
 	// Message tokens. They are chunks of texts with their own color and offset, from a base offset.
 	MessageToken[] tokens;
 
 	HoverMessage()
 	{
 		reset_time();
+		force_gc = false;
 	}
 
 	// Reset the timer to a value given in seconds.
@@ -295,7 +299,7 @@ class HoverMessages
 		messages.resize(MESSAGE_TOTAL);
 	}
 
-	private HoverMessage@ try_merge(HoverMessage@ message)
+	private HoverMessage@ try_merge(HoverMessage@ message, bool reset_time_on_merge)
 	{
 		for (int i = 0; i < messages[message.category].length; ++i)
 		{
@@ -303,17 +307,21 @@ class HoverMessages
 
 			if (result_message !is null)
 			{
-				result_message.reset_time();
-				return result_message;
+				if (reset_time_on_merge)
+				{
+					result_message.reset_time();
+				}
+
+				return @result_message;
 			}
 		}
 
 		return null;
 	}
 
-	HoverMessage@ add_message(HoverMessage@ message)
+	HoverMessage@ add_message(HoverMessage@ message, bool reset_time_on_merge)
 	{
-		HoverMessage@ result_message = try_merge(@message);
+		HoverMessage@ result_message = try_merge(@message, reset_time_on_merge);
 
 		if (result_message is null)
 		{
@@ -378,8 +386,6 @@ class HoverMessages
 			}
 		}
 
-		garbage_collect();
-
 		if (!was_empty)
 		{
 			// Subtly smooth out the movement for the messages
@@ -404,7 +410,8 @@ class HoverMessages
 		for (int c = 0; c < MESSAGE_TOTAL; ++c)
 		for (int i = 0; i < messages[c].length;)
 		{
-			if (messages[c][i].time_left <= 0.0f)
+			if (messages[c][i].time_left <= 0.0f
+			 || messages[c][i].force_gc)
 			{
 				messages[c].erase(i);
 			}
@@ -436,7 +443,7 @@ HoverMessages@ get_messages()
 
 // Adds a hover message to the list, which may get merged into existing ones.
 // e.g. add_message(MyCustomMessage(42, "hello"));
-HoverMessage@ add_message(HoverMessage@ message)
+HoverMessage@ add_message(HoverMessage@ message, bool reset_time_on_merge = true)
 {
-	return get_messages().add_message(message);
+	return get_messages().add_message(message, reset_time_on_merge);
 }
