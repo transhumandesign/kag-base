@@ -14,6 +14,16 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		return;
 	}
 
+	string blobName = blob.getName();
+
+	if (blobName == "mat_bombs" || (blobName == "satchel" && !blob.hasTag("exploding")) || blobName == "mat_waterbombs")
+	{
+		if (this.server_PutInInventory(blob))
+		{
+			return;
+		}
+	}
+
 	CBlob@ carryblob = this.getCarriedBlob();
 	if (carryblob !is null && carryblob.getName() == "crate")
 	{
@@ -21,12 +31,5 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		{
 			return;
 		}
-	}
-
-	string blobName = blob.getName();
-
-	if (blobName == "mat_bombs" || (blobName == "satchel" && !blob.hasTag("exploding")) || blobName == "mat_waterbombs")
-	{
-		this.server_PutInInventory(blob);
 	}
 }
