@@ -14,15 +14,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		return;
 	}
 
-	CBlob@ carryblob = this.getCarriedBlob();
-	if (carryblob !is null && carryblob.getName() == "crate")
-	{
-		if (crateTake(carryblob, blob))
-		{
-			return;
-		}
-	}
-
 	string blobName = blob.getName();
 
 	if (blobName == "mat_arrows")
@@ -67,6 +58,18 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	if (blobName == "mat_firearrows" || blobName == "mat_bombarrows" ||
 	        blobName == "mat_waterarrows")
 	{
-		this.server_PutInInventory(blob);
+		if (this.server_PutInInventory(blob))
+		{
+			return;
+		}
+	}
+
+	CBlob@ carryblob = this.getCarriedBlob(); // For crate detection
+	if (carryblob !is null && carryblob.getName() == "crate")
+	{
+		if (crateTake(carryblob, blob))
+		{
+			return;
+		}
 	}
 }
