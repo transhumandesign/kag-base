@@ -18,15 +18,18 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(6, 2));
+	this.set_Vec2f("shop menu size", Vec2f(4, 4));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
 
 	// TODO: Better information + icons like the vehicle shop, also make boats not suck
 	{
-		ShopItem@ s = addShopItem(this, "Dinghy", "$dinghy$", "dinghy", "$dinghy$\n\n\n" + Descriptions::dinghy);
-		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::dinghy);
+		ShopItem@ s = addShopItem(this, "Dinghy (wood)", "$dinghy$", "dinghy", "$dinghy$\n\n\n" + Descriptions::dinghy);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::dinghy_wood);
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Dinghy (coins)", "$dinghy$", "dinghy", "$dinghy$\n\n\n" + Descriptions::dinghy);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::dinghy);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Longboat", "$longboat$", "longboat", "$longboat$\n\n\n" + Descriptions::longboat, false, true);
