@@ -168,7 +168,8 @@ void onRender(CRules@ this)
 }
 
 //extra area of no build around the barrier
-const float noBuildExtra = 8.0f * 3.0f;
+//(unpopular)
+const float noBuildExtra = 0.0f;
 
 void getBarrierPositions(f32 &out x1, f32 &out x2, f32 &out y1, f32 &out y2)
 {
@@ -238,8 +239,11 @@ void addBarrier()
 		//actual barrier sector
 		map.server_AddSector(Vec2f(x1, y1), Vec2f(x2, y2), "barrier");
 
-		//no build sector
-		map.server_AddSector(Vec2f(x1 - noBuildExtra, y1), Vec2f(x2 + noBuildExtra, y2), "no build");
+		if(noBuildExtra > 0.0f)
+		{
+			//no build sector
+			map.server_AddSector(Vec2f(x1 - noBuildExtra, y1), Vec2f(x2 + noBuildExtra, y2), "no build");
+		}
 	}
 }
 
@@ -254,9 +258,13 @@ void removeBarrier()
 	f32 x1, x2, y1, y2;
 	getBarrierPositions(x1, x2, y1, y2);
 
-	//remove at the bottom of the map rather than the middle
-	//to avoid potentially removing a no build zone from a hall or something
-	Vec2f mid((x1 + x2) * 0.5, (map.tilemapheight - 2) * map.tilesize);
+	Vec2f mid(
+		//(exact middle of the zone horizontally)
+		(x1 + x2) * 0.5,
+		//remove at the bottom of the map rather than the middle
+		//to avoid potentially removing a no build zone from a hall or something
+		(map.tilemapheight - 2) * map.tilesize
+	);
 
 	map.RemoveSectorsAtPosition(mid, "barrier");
 	map.RemoveSectorsAtPosition(mid, "no build");

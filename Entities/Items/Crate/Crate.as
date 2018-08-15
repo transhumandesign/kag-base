@@ -11,10 +11,12 @@
 const string required_space = "required space";
 
 //proportion of distance allowed (1.0f == overlapping radius, 2.0f = within 1 extra radius)
-const float ally_allowed_distance = 1.5f;
+const float ally_allowed_distance = 2.0f;
 
 void onInit(CBlob@ this)
 {
+	this.checkInventoryAccessibleCarefully = true;
+
 	this.addCommandID("unpack");
 	this.addCommandID("getin");
 	this.addCommandID("getout");
@@ -207,10 +209,10 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 
 		if (this.getTeamNum() == forBlob.getTeamNum())
 		{
-			f32 distSquared = (this.getPosition() - forBlob.getPosition()).LengthSquared();
-			f32 radSquared = (this.getRadius() + forBlob.getRadius()) * ally_allowed_distance;
-			radSquared *= radSquared;
-			if(distSquared < radSquared)
+			f32 dist = (this.getPosition() - forBlob.getPosition()).Length();
+			f32 rad = (this.getRadius() + forBlob.getRadius());
+
+			if(dist < rad * ally_allowed_distance)
 			{
 				return true; // Allies can access from further away
 			}

@@ -10,15 +10,6 @@ void onInit(CBlob@ this)
 
 void Take(CBlob@ this, CBlob@ blob)
 {
-	CBlob@ carryblob = this.getCarriedBlob();
-	if (carryblob !is null && carryblob.getName() == "crate")
-	{
-		if (crateTake(carryblob, blob))
-		{
-			return;
-		}
-	}
-
 	const string blobName = blob.getName();
 
 	if (blobName == "mat_gold" || blobName == "mat_stone" ||
@@ -26,10 +17,19 @@ void Take(CBlob@ this, CBlob@ blob)
 	{
 		if ((this.getDamageOwnerPlayer() is blob.getPlayer()) || getGameTime() > blob.get_u32("autopick time"))
 		{
-			if (!this.server_PutInInventory(blob))
+			if (this.server_PutInInventory(blob))
 			{
-				// we couldn't fit it in
+				return;
 			}
+		}
+	}
+
+	CBlob@ carryblob = this.getCarriedBlob();
+	if (carryblob !is null && carryblob.getName() == "crate")
+	{
+		if (crateTake(carryblob, blob))
+		{
+			return;
 		}
 	}
 }
