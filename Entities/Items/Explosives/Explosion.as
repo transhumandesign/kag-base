@@ -433,7 +433,7 @@ bool canExplosionDamage(CMap@ map, Vec2f tpos, TileType t)
 	if (blob !is null)
 	{
 		string name = blob.getName();
-		hasValidFrontBlob = (name == "wooden_door" || name == "stone_door" || name == "trap_block");
+		hasValidFrontBlob = (name == "wooden_door" || name == "stone_door" || name == "trap_block" || name == "wooden_platform");
 	}
 	return map.getSectorAtPosition(tpos, "no build") is null &&
 	       (t != CMap::tile_ground_d0 && t != CMap::tile_stone_d0) && //don't _destroy_ ground, hit until its almost dead tho
