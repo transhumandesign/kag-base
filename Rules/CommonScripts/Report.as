@@ -30,24 +30,20 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 			if((tokens[0] == "!report" || tokens[0] == "!r") && !security.isPlayerIgnored(player) && player is getLocalPlayer())
 			{
 				string baddieUsername = tokens[1];
-				string match = closestMatch(baddieUsername);
+				CPlayer@ baddie = getReportedPlayer(baddieUsername);
 
-				if(match != "")
+				if(baddie !is null)
 				{
-					CPlayer@ baddie = getPlayerByUsername(match);
-
-					if(baddie !is null && !player.hasTag("reported" + baddie.getUsername()))
+					if(!player.hasTag("reported" + baddie.getUsername()))
 					{
 						report(this, player, baddie);										//if he exists start more reporting logic
-						client_AddToChat("You have reported: " + match, SColor(255, 255, 0, 0));
-					} else if(!player.hasTag("reported" + baddie.getUsername()))
+						client_AddToChat("You have reported: " + baddie.getCharacterName() + " (" + baddie.getUsername() + ")", SColor(255, 255, 0, 0));
+					} else if(player.hasTag("reported" + baddie.getUsername()))
 					{
-						client_AddToChat("Player not found", SColor(255, 255, 0, 0));
-					} else {
-						client_AddToChat("You already reported " + baddie.getUsername(), SColor(255, 255, 0, 0));
+						client_AddToChat("You have already reported this player recently.", SColor(255, 255, 0, 0));
 					}
 				} else {
-					client_AddToChat("Username not found", SColor(255, 255, 0, 0));
+					client_AddToChat("Player not found", SColor(255, 255, 0, 0));
 				}
 			}
 
@@ -70,9 +66,9 @@ void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 		baddie.add_u8("reportCount", 1);
 	} 
 	
-	
 	string baddieUsername = baddie.getUsername();
-	string baddieCharacterName = baddieUsername;										//¯\_(ツ)_/¯
+	string baddieCharacterName = baddie.getCharacterName();								//¯\_(ツ)_/¯
+
     CBlob@[] players;																	//get all players in server
 	getBlobsByTag("player", @players);
 
@@ -83,7 +79,7 @@ void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 			// print("Reporting " + baddieUsername);
 			// print("Reporting " + baddie.getUsername());
 			// print("Team number: " + baddie.getTeamNum());
-			client_AddToChat("Report has been made of: " + baddieUsername, SColor(255, 255, 0, 0));
+			client_AddToChat("Report has been made of: " + baddieCharacterName + " (" + baddieUsername + ")", SColor(255, 255, 0, 0));
 			Sound::Play("ReportSound.ogg", players[i].getPosition());
 		}
 	}
@@ -117,33 +113,63 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 	}
 }
 
-string closestMatch(const string username)
+CPlayer@ getReportedPlayer(string name)
 {
 	CBlob@[] players;
 	getBlobsByTag("player", @players);
 
-	string[] usernames;
-	int[] matches;
+	for(int i = 0; i < players.length(); i++)
+	{
+		if (players[i].getPlayer().getCharacterName() == name || players[i].getPlayer().getUsername() == name)
+		{
+			return players[i].getPlayer();
+		}
+	}
+
+	CPlayer@[] matches;
 
 	for(int i = 0; i < players.length(); i++)
 	{
-		usernames.insertLast(players[i].getPlayer().getUsername());
-		// print(players[i].getPlayer().getUsername());
-	}
-
-	for(int i = 0; i < usernames.length(); i++)
-	{
-		if (usernames[i].toLower().findFirst(username.toLower(), 0) >= 0)
+		if (players[i].getPlayer().getCharacterName().toLower().findFirst(name.toLower(), 0) >= 0)
 		{
-			matches.insertLast(i);
+			matches.push_back(players[i].getPlayer());
+		} else if (players[i].getPlayer().getUsername().toLower().findFirst(name.toLower(), 0) >= 0)
+		{
+			matches.push_back(players[i].getPlayer());
 		}
 	}
 
 	if(matches.length() > 0)
 	{
-		return usernames[matches[0]];
+		if(matches.length() == 1)
+		{
+			return matches[0];
+		} else {
+			client_AddToChat("Closest options are:");
+			for(int i = 0; i < matches.length(); i++)
+			{
+				client_AddToChat("- " + matches[i].getCharacterName() + " (" + matches[i].getCharacterName() + ")");
+			}
+
+			return null;
+		}
 	}
-	else{
-		return "";
+
+	return null;
+}
+
+CPlayer@ getPlayerByCharactername(string name)
+{
+	CBlob@[] players;
+	getBlobsByTag("player", @players);
+
+	for(int i = 0; i < players.length(); i++)
+	{
+		if(name == players[i].getPlayer().getCharacterName())
+		{
+			return players[i].getPlayer();
+		}
 	}
+
+	return null;
 }
