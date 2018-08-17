@@ -118,17 +118,21 @@ namespace MiniMap
 		return !map.isTileSolid(tile);
 	}
 
-	bool isBackgroundOutlineTile(Tile tile, CMap@ map)
+	bool isOpenAirTile(Tile tile, CMap@ map)
 	{
 		return tile.type == CMap::tile_empty ||
-			map.isTileGrass(tile.type) ||
-			map.isTileGold(tile.type);
+			map.isTileGrass(tile.type);
+	}
+
+	bool isBackgroundOutlineTile(Tile tile, CMap@ map)
+	{
+		return isOpenAirTile(tile, map);
 	}
 
 	bool isGoldOutlineTile(Tile tile, CMap@ map, bool is_gold)
 	{
 		return is_gold ?
-			!map.isTileSolid(tile) :
+			!map.isTileSolid(tile.type) :
 			map.isTileGold(tile.type);
 	}
 

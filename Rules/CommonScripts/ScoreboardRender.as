@@ -243,6 +243,9 @@ void onRenderScoreboard(CRules@ this)
 			if (specx < bottomright.x - 100)
 			{
 				string name = p.getCharacterName();
+				if (p.getCharacterName() != p.getUsername())
+					name = p.getCharacterName() + " (" + p.getUsername() + ")";
+
 				if (i != spectators.length - 1)
 					name += ",";
 				GUI::GetTextDimensions(name, textdim);
