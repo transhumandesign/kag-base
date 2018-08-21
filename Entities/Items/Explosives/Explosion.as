@@ -501,7 +501,8 @@ bool HitBlob(CBlob@ this, CBlob@ hit_blob, f32 radius, f32 damage, const u8 hitt
 	                bombforce, dam,
 	                hitter, hitter == Hitters::water || //hit with water
 	                isOwnerBlob(this, hit_blob) ||	//allow selfkill with bombs
-	                should_teamkill || hit_blob.hasTag("dead") || hit_blob.hasTag("explosion always teamkill") //hit all corpses ("dead" tag)
+	                should_teamkill || hit_blob.hasTag("dead") || //hit all corpses ("dead" tag)
+					hit_blob.hasTag("explosion always teamkill") // check for override with tag
 	               );
 	return true;
 }
