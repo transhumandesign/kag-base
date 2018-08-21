@@ -427,7 +427,7 @@ void BombermanExplosion(CBlob@ this, f32 radius, f32 damage, f32 map_damage_radi
 
 bool canExplosionDamage(CMap@ map, Vec2f tpos, TileType t)
 {
-	CBlob@ blob = map.getBlobAtPosition(tpos);
+	CBlob@ blob = map.getBlobAtPosition(tpos); // TODO: make platform get detected
 	bool hasValidFrontBlob = false;
 	bool isBackwall = (t == CMap::tile_castle_back || t == CMap::tile_castle_back_moss || t == CMap::tile_wood_back);
 	if (blob !is null)
