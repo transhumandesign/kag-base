@@ -1,6 +1,5 @@
 //Report.as
 // report logic
-// wip
 
 #define CLIENT_ONLY
 
@@ -54,40 +53,79 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 	return true;
 }
 
+void onTick(CRules@ this)
+{
+	int time = Time();
+
+	CPlayer@[] players;
+	for(int i = 0; i < getPlayersCount(); i++)
+	{
+		players.push_back(getPlayer(i));
+	}
+
+	CPlayer@[] reported;
+	for(int i = 0; i < players.length(); i++)
+	{
+		if(players[i].hasTag("reported"))
+		{
+			reported.push_back(players[i]);
+		}
+	}
+
+	for(int i = 0; i < players.length(); i++)
+	{
+		for(int j = 0; j < reported.length(); j++)
+		{
+			if(players[i].hasTag("reported" + reported[j].getUsername()) && players[i].exists("reportedAt"))
+			{
+				if(Time() - players[i].get_u32("reportedAt") >= (0.5 * 60))
+				{
+					players[i].Untag("reported" + reported[j].getUsername());
+					players[i].clear("reportedAt");
+				}
+			}
+		}
+	}
+}
+
 void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 {
 	if(!baddie.hasTag("reported") && !baddie.exists("reportCount") && !player.hasTag("reported" + baddie.getUsername()))
 	{
 		player.Tag("reported" + baddie.getUsername());
+		player.set_u32("reportedAt", Time());
 		baddie.Tag("reported");																//tag player as reported
 		baddie.set_u8("reportCount", 1);
 	} else if(!player.hasTag("reported" + baddie.getUsername()))
 	{
+		player.Tag("reported" + baddie.getUsername());
+		player.set_u32("reportedAt", Time());
 		baddie.add_u8("reportCount", 1);
 	} 
 	
 	string baddieUsername = baddie.getUsername();
 	string baddieCharacterName = baddie.getCharacterName();								//¯\_(ツ)_/¯
 
-    CBlob@[] players;																	//get all players in server
-	getBlobsByTag("player", @players);
+    CPlayer@[] players;																	//get all players in server
+	
+	for(int i = 0; i < getPlayersCount(); i++)
+	{
+		players.push_back(getPlayer(i));
+	}
 
 	for (u8 i = 0; i < players.length; i++)												//print message to mods
 	{
-		if(players[i].getPlayer().isMod())
+		if(players[i].isMod())
 		{
-			// print("Reporting " + baddieUsername);
-			// print("Reporting " + baddie.getUsername());
-			// print("Team number: " + baddie.getTeamNum());
 			client_AddToChat("Report has been made of: " + baddieCharacterName + " (" + baddieUsername + ")", SColor(255, 255, 0, 0));
-			Sound::Play("ReportSound.ogg", players[i].getPosition());
+			Sound::Play("ReportSound.ogg");
 		}
 	}
 }
 
 void moderate(CRules@ this, CPlayer@ moderator)											//Change to spectator cam on moderate
 {
-	if (moderator is getLocalPlayer())
+	if(moderator is getLocalPlayer())
 	{
 		CCamera@ camera = getCamera();
 		CMap@ map = getMap();
@@ -103,7 +141,6 @@ void moderate(CRules@ this, CPlayer@ moderator)											//Change to spectator 
 
 void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 {
-	// print("changed team");
 	if(oldteam == this.getSpectatorTeamNum())
 	{
 		if(player.hasTag("moderator"))
@@ -120,7 +157,7 @@ CPlayer@ getReportedPlayer(string name)
 
 	for(int i = 0; i < players.length(); i++)
 	{
-		if (players[i].getPlayer().getCharacterName() == name || players[i].getPlayer().getUsername() == name)
+		if(players[i].getPlayer().getCharacterName() == name || players[i].getPlayer().getUsername() == name)
 		{
 			return players[i].getPlayer();
 		}
@@ -130,10 +167,10 @@ CPlayer@ getReportedPlayer(string name)
 
 	for(int i = 0; i < players.length(); i++)
 	{
-		if (players[i].getPlayer().getCharacterName().toLower().findFirst(name.toLower(), 0) >= 0)
+		if(players[i].getPlayer().getCharacterName().toLower().findFirst(name.toLower(), 0) >= 0)
 		{
 			matches.push_back(players[i].getPlayer());
-		} else if (players[i].getPlayer().getUsername().toLower().findFirst(name.toLower(), 0) >= 0)
+		} else if(players[i].getPlayer().getUsername().toLower().findFirst(name.toLower(), 0) >= 0)
 		{
 			matches.push_back(players[i].getPlayer());
 		}
