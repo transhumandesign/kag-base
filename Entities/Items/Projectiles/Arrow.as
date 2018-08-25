@@ -545,12 +545,17 @@ void FireUp(CBlob@ this)
 	if (map !is null)
 	{
 		// burninate
+		/*
 		if (!isTeamStructureNear(this))
 		{
 			map.server_setFireWorldspace(burnpos, true);
 			map.server_setFireWorldspace(this.get_Vec2f("fire pos") + head * 0.4f, true);
 			map.server_setFireWorldspace(this.getPosition() , true); //burn where i am as well
 		}
+		*/
+		map.server_setFireWorldspace(burnpos, true);
+		map.server_setFireWorldspace(this.get_Vec2f("fire pos") + head * 0.4f, true);
+		map.server_setFireWorldspace(this.getPosition() , true); //burn where i am as well
 	}
 }
 
