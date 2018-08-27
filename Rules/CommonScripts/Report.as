@@ -78,10 +78,10 @@ void onTick(CRules@ this)
 		{
 			if(players[i].hasTag("reported" + reported[j].getUsername()) && players[i].exists("reportedAt"))
 			{
-				if(Time() - players[i].get_u32("reportedAt") >= (0.5 * 60))
+				if(Time() - players[i].get_u32("reportedAt") >= (5 * 60))
 				{
-					players[i].Untag("reported" + reported[j].getUsername());
-					players[i].clear("reportedAt");
+					players[i].Untag("reported" + reported[j].getUsername());				//let player report same baddie again
+					players[i].set_u32("reportedAt", 0);
 				}
 			}
 		}
@@ -90,35 +90,37 @@ void onTick(CRules@ this)
 
 void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 {
-	if(!baddie.hasTag("reported") && !baddie.exists("reportCount") && !player.hasTag("reported" + baddie.getUsername()))
+	if(!player.hasTag("reported" + baddie.getUsername()))
 	{
 		player.Tag("reported" + baddie.getUsername());
 		player.set_u32("reportedAt", Time());
-		baddie.Tag("reported");																//tag player as reported
-		baddie.set_u8("reportCount", 1);
-	} else if(!player.hasTag("reported" + baddie.getUsername()))
-	{
-		player.Tag("reported" + baddie.getUsername());
-		player.set_u32("reportedAt", Time());
-		baddie.add_u8("reportCount", 1);
-	} 
-	
-	string baddieUsername = baddie.getUsername();
-	string baddieCharacterName = baddie.getCharacterName();								//¯\_(ツ)_/¯
 
-    CPlayer@[] players;																	//get all players in server
-	
-	for(int i = 0; i < getPlayersCount(); i++)
-	{
-		players.push_back(getPlayer(i));
-	}
-
-	for (u8 i = 0; i < players.length; i++)												//print message to mods
-	{
-		if(players[i].isMod())
+		if(!baddie.hasTag("reported") && !baddie.exists("reportCount"))
 		{
-			client_AddToChat("Report has been made of: " + baddieCharacterName + " (" + baddieUsername + ")", SColor(255, 255, 0, 0));
-			Sound::Play("ReportSound.ogg");
+			baddie.Tag("reported");																//tag player as reported
+			baddie.set_u8("reportCount", 1);
+
+		} else {
+			baddie.add_u8("reportCount", 1);
+		}
+
+		string baddieUsername = baddie.getUsername();
+		string baddieCharacterName = baddie.getCharacterName();								//¯\_(ツ)_/¯
+
+		CPlayer@[] players;																	//get all players in server
+		
+		for(int i = 0; i < getPlayersCount(); i++)
+		{
+			players.push_back(getPlayer(i));
+		}
+
+		for (u8 i = 0; i < players.length; i++)												//print message to mods
+		{
+			if(players[i].isMod())
+			{
+				client_AddToChat("Report has been made of: " + baddieCharacterName + " (" + baddieUsername + ")", SColor(255, 255, 0, 0));
+				Sound::Play("ReportSound.ogg");
+			}
 		}
 	}
 }
