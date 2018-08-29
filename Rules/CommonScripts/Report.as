@@ -1,9 +1,14 @@
 //Report.as
 // report logic
-// wip
 
 #define CLIENT_ONLY
 
+//time (in seconds) between repeated reports
+const u32 reportRepeatTime = 5 * 60;
+
+SColor reportMessageColor(255, 255, 0, 0);
+
+//(current moderation behaviour)
 bool isModerating;
 
 void onInit(CRules@ this)
@@ -34,16 +39,19 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 				if(baddie !is null)
 				{
-					if(!player.hasTag("reported" + baddie.getUsername()))
+					if(reportAllowed(player, baddie))
 					{
 						report(this, player, baddie);										//if he exists start more reporting logic
-						client_AddToChat("You have reported: " + baddie.getCharacterName() + " (" + baddie.getUsername() + ")", SColor(255, 255, 0, 0));
-					} else if(player.hasTag("reported" + baddie.getUsername()))
-					{
-						client_AddToChat("You have already reported this player recently.", SColor(255, 255, 0, 0));
+						client_AddToChat("You have reported: " + baddie.getCharacterName() + " (" + baddie.getUsername() + ")", reportMessageColor);
 					}
-				} else {
-					client_AddToChat("Player not found", SColor(255, 255, 0, 0));
+					else if(player.hasTag("reported" + baddie.getUsername()))
+					{
+						client_AddToChat("You have already reported this player recently.", reportMessageColor);
+					}
+				}
+				else
+				{
+					client_AddToChat("Player not found", reportMessageColor);
 				}
 			}
 
@@ -54,40 +62,54 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 	return true;
 }
 
+bool reportAllowed(CPlayer@ player, CPlayer@ baddie)
+{
+	if (player is null or baddie is null) return false;
+
+	bool allowed =
+		// (never reported this player)
+		!player.hasTag("reported" + baddie.getUsername())
+		// (expire after however long)
+		|| s32(Time() - player.get_u32("reportedAt")) > reportRepeatTime;
+
+	return allowed;
+}
+
 void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 {
-	if(!baddie.hasTag("reported") && !baddie.exists("reportCount") && !player.hasTag("reported" + baddie.getUsername()))
+	if(reportAllowed(player, baddie))
 	{
 		player.Tag("reported" + baddie.getUsername());
-		baddie.Tag("reported");																//tag player as reported
-		baddie.set_u8("reportCount", 1);
-	} else if(!player.hasTag("reported" + baddie.getUsername()))
-	{
-		baddie.add_u8("reportCount", 1);
-	} 
-	
-	string baddieUsername = baddie.getUsername();
-	string baddieCharacterName = baddie.getCharacterName();								//¯\_(ツ)_/¯
+		player.set_u32("reportedAt", Time());
 
-    CBlob@[] players;																	//get all players in server
-	getBlobsByTag("player", @players);
+		//tag player as reported
+		baddie.Tag("reported");
 
-	for (u8 i = 0; i < players.length; i++)												//print message to mods
-	{
-		if(players[i].getPlayer().isMod())
+		//initialise if it's missing
+		if(!baddie.exists("reportCount"))
 		{
-			// print("Reporting " + baddieUsername);
-			// print("Reporting " + baddie.getUsername());
-			// print("Team number: " + baddie.getTeamNum());
-			client_AddToChat("Report has been made of: " + baddieCharacterName + " (" + baddieUsername + ")", SColor(255, 255, 0, 0));
-			Sound::Play("ReportSound.ogg", players[i].getPosition());
+			baddie.set_u8("reportCount", 0);
+		}
+		//increment the report count
+		baddie.add_u8("reportCount", 1);
+
+		string baddieUsername = baddie.getUsername();
+		string baddieCharacterName = baddie.getCharacterName();
+
+		//print message to mods
+		CPlayer@ localPlayer = getLocalPlayer();
+		if (localPlayer.isMod())
+		{
+			client_AddToChat("Report has been made of: " + baddieCharacterName + " (" + baddieUsername + ")", reportMessageColor);
+			Sound::Play("ReportSound.ogg");
 		}
 	}
 }
 
-void moderate(CRules@ this, CPlayer@ moderator)											//Change to spectator cam on moderate
+//Change to spectator cam on starting moderatation
+void moderate(CRules@ this, CPlayer@ moderator)
 {
-	if (moderator is getLocalPlayer())
+	if(moderator !is null && moderator is getLocalPlayer())
 	{
 		CCamera@ camera = getCamera();
 		CMap@ map = getMap();
@@ -103,7 +125,7 @@ void moderate(CRules@ this, CPlayer@ moderator)											//Change to spectator 
 
 void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 {
-	// print("changed team");
+	//remove moderator tag for people re-joining play
 	if(oldteam == this.getSpectatorTeamNum())
 	{
 		if(player.hasTag("moderator"))
@@ -115,43 +137,47 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 
 CPlayer@ getReportedPlayer(string name)
 {
-	CBlob@[] players;
-	getBlobsByTag("player", @players);
-
-	for(int i = 0; i < players.length(); i++)
+	//search for exact matches
+	for(int i = 0; i < getPlayerCount(); i++)
 	{
-		if (players[i].getPlayer().getCharacterName() == name || players[i].getPlayer().getUsername() == name)
+		CPlayer@ p = getPlayer(i);
+		if(p.getCharacterName() == name || p.getUsername() == name)
 		{
-			return players[i].getPlayer();
+			return p;
 		}
 	}
 
+	//search for partial matches
 	CPlayer@[] matches;
-
-	for(int i = 0; i < players.length(); i++)
+	for(int i = 0; i < getPlayerCount(); i++)
 	{
-		if (players[i].getPlayer().getCharacterName().toLower().findFirst(name.toLower(), 0) >= 0)
-		{
-			matches.push_back(players[i].getPlayer());
-		} else if (players[i].getPlayer().getUsername().toLower().findFirst(name.toLower(), 0) >= 0)
-		{
-			matches.push_back(players[i].getPlayer());
+		CPlayer@ p = getPlayer(i);
+		if( //partial match on
+			//char name
+			p.getCharacterName().toLower().findFirst(name.toLower(), 0) >= 0
+			//or username
+			|| p.getUsername().toLower().findFirst(name.toLower(), 0) >= 0
+		) {
+			matches.push_back(p);
 		}
 	}
 
+	//found any matches?
 	if(matches.length() > 0)
 	{
+		//only one? great!
 		if(matches.length() == 1)
 		{
 			return matches[0];
-		} else {
+		}
+		//otherwise ambiguous
+		else
+		{
 			client_AddToChat("Closest options are:");
 			for(int i = 0; i < matches.length(); i++)
 			{
-				client_AddToChat("- " + matches[i].getCharacterName() + " (" + matches[i].getCharacterName() + ")");
+				client_AddToChat("- " + matches[i].getCharacterName() + " (" + matches[i].getUsername() + ")");
 			}
-
-			return null;
 		}
 	}
 
@@ -160,14 +186,12 @@ CPlayer@ getReportedPlayer(string name)
 
 CPlayer@ getPlayerByCharactername(string name)
 {
-	CBlob@[] players;
-	getBlobsByTag("player", @players);
-
-	for(int i = 0; i < players.length(); i++)
+	for(int i = 0; i < getPlayerCount(); i++)
 	{
-		if(name == players[i].getPlayer().getCharacterName())
+		CPlayer@ p = getPlayer(i);
+		if(name == p.getCharacterName())
 		{
-			return players[i].getPlayer();
+			return p;
 		}
 	}
 
