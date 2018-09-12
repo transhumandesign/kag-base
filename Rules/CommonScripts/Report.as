@@ -93,8 +93,12 @@ void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 		//increment the report count
 		baddie.add_u8("reportCount", 1);
 
+		string playerUsername = player.getUsername();
 		string baddieUsername = baddie.getUsername();
 		string baddieCharacterName = baddie.getCharacterName();
+
+		//notify discord bot
+		tcpr("*REPORT " + playerUsername + " " + baddieUsername + " " + baddie.get_u8("reportCount"));
 
 		//print message to mods
 		CPlayer@ localPlayer = getLocalPlayer();
