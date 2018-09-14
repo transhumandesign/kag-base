@@ -329,7 +329,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			//didn't fire
 			if (archer.legolas_arrows == ArcherParams::legolas_arrows_count)
 			{
-				Sound::Play("/Stun", pos, 1.0f, this.getSexNum() == 0 ? 1.0f : 2.0f);
+				Sound::Play("/Stun", pos, 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 				SetKnocked(this, 15);
 			}
 			else if (pressed)
@@ -1082,7 +1082,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 
 		if (blockAttack(hitBlob, velocity, 0.0f))
 		{
-			this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 2.0f);
+			this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 			SetKnocked(this, 30);
 		}
 	}

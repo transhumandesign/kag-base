@@ -11,6 +11,10 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 
 void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
+	if (inventoryBlob.getName() == "crate")
+	{
+		return;
+	}
 	CPlayer@ player = inventoryBlob.getPlayer();
 	if(player !is null)
 	{

@@ -1,6 +1,10 @@
 #include "Hitters.as"
 
 const u32 VANISH_BODY_SECS = 45;
+const f32 CARRIED_BLOB_VEL_SCALE = 1.0;
+const f32 MEDIUM_CARRIED_BLOB_VEL_SCALE = 0.8;
+const f32 HEAVY_CARRIED_BLOB_VEL_SCALE = 0.6;
+
 
 void onInit(CBlob@ this)
 {
@@ -62,11 +66,11 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 				{
 					if (this.getHealth() > gibHealth / 2.0f)
 					{
-						this.getSprite().PlaySound("WilhelmShort.ogg", this.getSexNum() == 0 ? 1.0f : 2.0f);
+						this.getSprite().PlaySound("WilhelmShort.ogg", this.getSexNum() == 0 ? 1.0f : 1.5f);
 					}
 					else if (this.getHealth() > gibHealth)
 					{
-						this.getSprite().PlaySound("Wilhelm.ogg", 1.0f, this.getSexNum() == 0 ? 1.0f : 2.0f);
+						this.getSprite().PlaySound("Wilhelm.ogg", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 					}
 				}
 			}
@@ -90,7 +94,20 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		this.getShape().getVars().onladder = false;
 		this.getShape().checkCollisionsAgain = true;
 		this.getShape().SetGravityScale(1.0f);
-		// fall out of attachments/seats // drop all held things
+		//set velocity to blob in hand
+        CBlob@ carried = this.getCarriedBlob();
+        if(carried !is null){
+            Vec2f current_vel = this.getVelocity() * CARRIED_BLOB_VEL_SCALE;
+            if(carried.hasTag("medium weight"))
+                current_vel = current_vel * MEDIUM_CARRIED_BLOB_VEL_SCALE;
+            else if(carried.hasTag("heavy weight"))
+                current_vel = current_vel * HEAVY_CARRIED_BLOB_VEL_SCALE;
+            //the item is detatched from the player before setting the velocity
+            //otherwise it wont go anywhere
+            this.server_DetachFrom(carried);
+            carried.setVelocity(current_vel);
+        }
+        // fall out of attachments/seats // drop all held things
 		this.server_DetachAll();
 
 		StuffFallsOut(this);
@@ -143,6 +160,6 @@ void StuffFallsOut(CBlob@ this)
 	{
 		CBlob @blob = inv.getItem(0);
 		this.server_PutOutInventory(blob);
-		blob.setVelocity(getRandomVelocity(90, 4.0f, 40));
+		blob.setVelocity(this.getVelocity() + getRandomVelocity(90, 4.0f, 40));
 	}
 }

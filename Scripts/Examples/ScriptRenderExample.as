@@ -4,7 +4,7 @@
 //
 //  try adding this to a CBlob's or CRules's script list
 //
-//  tap the taunt button (V by default) to swap between "effects"
+//  tap the eat button (V by default) to swap between "effects"
 //
 //  blob will render the current effect for whatever blob it's added to
 //  (the builder is good for testing in sandbox)
@@ -24,13 +24,13 @@
 //    Render::layer_objects         //after the objects (sprites, particles)
 //    Render::layer_floodlayers     //after the flood layers
 //    Render::layer_postworld       //after the entire world
-
+//
 // hud layers:
 //    Render::layer_prehud          //after the black world borders but before the rest of the HUD
 //    Render::layer_posthud         //after the rest of the HUD
 //
 // non-rendered layers
-//    Render::layer_count           //total layer count - useful for looping around
+//    Render::layer_count           //total layer count - useful for looping through the layers if needed for anything
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ void ChangeIfNeeded()
 	CControls@ c = getControls();
 	if (c is null) return;
 
-	if (c.isKeyJustPressed(c.getActionKeyKey(AK_TAUNTS)) && last_changed != getGameTime())
+	if (c.isKeyJustPressed(c.getActionKeyKey(AK_EAT)) && last_changed != getGameTime())
 	{
 		last_changed = getGameTime();
 		render_type = (render_type + 1) % render_type_count;

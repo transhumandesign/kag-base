@@ -19,7 +19,7 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(4, 3));
+	this.set_Vec2f("shop menu size", Vec2f(4, 4));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
 
@@ -68,6 +68,14 @@ void onInit(CBlob@ this)
 		s.buttonheight = 1;
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::saw_wood);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::saw_stone);
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Crate (wood)", "$crate$", "crate", Descriptions::crate, false);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::crate_wood);
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Crate (coins)", "$crate$", "crate", Descriptions::crate, false);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::crate);
 	}
 }
 

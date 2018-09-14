@@ -30,14 +30,14 @@ void onInit(CRules@ this)
 	onRestart(this);
 }
 
-bool need_sky_check = false;
+bool need_sky_check = true;
 void onRestart(CRules@ this)
 {
 	//map borders
 	CMap@ map = getMap();
 	if (map !is null)
 	{
-		map.SetBorderFadeWidth(16.0f);
+		map.SetBorderFadeWidth(24.0f);
 		map.SetBorderColourTop(SColor(0xff000000));
 		map.SetBorderColourLeft(SColor(0xff000000));
 		map.SetBorderColourRight(SColor(0xff000000));
@@ -66,9 +66,7 @@ void onTick(CRules@ this)
 				break;
 			}
 		}
-		if(!has_solid_tiles) {
-			map.SetBorderColourTop(SColor(0x80000000));
-		}
+		map.SetBorderColourTop(SColor(has_solid_tiles ? 0xff000000 : 0x80000000));
 	}
 }
 

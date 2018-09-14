@@ -1,5 +1,7 @@
 #define SERVER_ONLY
 
+#include "CratePickupCommon.as"
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().tickFrequency = 12;
@@ -15,10 +17,19 @@ void Take(CBlob@ this, CBlob@ blob)
 	{
 		if ((this.getDamageOwnerPlayer() is blob.getPlayer()) || getGameTime() > blob.get_u32("autopick time"))
 		{
-			if (!this.server_PutInInventory(blob))
+			if (this.server_PutInInventory(blob))
 			{
-				// we couldn't fit it in
+				return;
 			}
+		}
+	}
+
+	CBlob@ carryblob = this.getCarriedBlob();
+	if (carryblob !is null && carryblob.getName() == "crate")
+	{
+		if (crateTake(carryblob, blob))
+		{
+			return;
 		}
 	}
 }

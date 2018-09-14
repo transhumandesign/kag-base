@@ -71,11 +71,22 @@ void onTick(CBlob@ this)
 			CBlob@ b = getBlobByNetworkID(id);
 			if (b !is null)
 			{
+				//check return conditions
 				if (!b.isAttached() && !b.isAttached() && b.hasTag("return"))
 				{
 					//sync tag, flag can play sounds
 					this.SendCommand(this.getCommandID(flag_return));
 					b.Untag("return"); //local
+
+					this.server_AttachTo(b, "FLAG");
+					b.SetFacingLeft(this.isFacingLeft());
+				}
+
+				if (b.hasTag("stalemate_return"))
+				{
+					b.server_DetachAll();
+					this.SendCommand(this.getCommandID(flag_return));
+					b.Untag("stalemate_return"); //local
 
 					this.server_AttachTo(b, "FLAG");
 					b.SetFacingLeft(this.isFacingLeft());
@@ -88,7 +99,7 @@ void onTick(CBlob@ this)
 				this.getMap().RemoveSectorsAtPosition(pos, "no build", this.getNetworkID());
 				//this.getMap().server_AddSector(pos + Vec2f(-12, -8), pos + Vec2f(12, 16), "no build", "", this.getNetworkID());
                 this.server_Die();
-            
+
 			}
 		}
 		else

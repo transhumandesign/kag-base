@@ -1,5 +1,7 @@
 #define SERVER_ONLY
 
+#include "CratePickupCommon.as"
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().removeIfTag = "dead";
@@ -56,6 +58,18 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	if (blobName == "mat_firearrows" || blobName == "mat_bombarrows" ||
 	        blobName == "mat_waterarrows")
 	{
-		this.server_PutInInventory(blob);
+		if (this.server_PutInInventory(blob))
+		{
+			return;
+		}
+	}
+
+	CBlob@ carryblob = this.getCarriedBlob(); // For crate detection
+	if (carryblob !is null && carryblob.getName() == "crate")
+	{
+		if (crateTake(carryblob, blob))
+		{
+			return;
+		}
 	}
 }

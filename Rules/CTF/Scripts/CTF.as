@@ -25,6 +25,9 @@ void Config(CTFCore@ this)
 	s32 warmUpTimeSeconds = cfg.read_s32("warmup_time", 30);
 	this.warmUpTime = (getTicksASecond() * warmUpTimeSeconds);
 
+	s32 stalemateTimeSeconds = cfg.read_s32("stalemate_time", 30);
+	this.stalemateTime = (getTicksASecond() * stalemateTimeSeconds);
+
 	//how long for the game to play out?
 	s32 gameDurationMinutes = cfg.read_s32("game_time", -1);
 	if (gameDurationMinutes <= 0)
@@ -284,6 +287,8 @@ shared class CTFCore : RulesCore
 	s32 warmUpTime;
 	s32 gameDuration;
 	s32 spawnTime;
+	s32 stalemateTime;
+	s32 stalemateOutcomeTime;
 
 	s32 minimum_players_in_team;
 
@@ -296,7 +301,8 @@ shared class CTFCore : RulesCore
 
 	CTFCore(CRules@ _rules, RespawnSystem@ _respawns)
 	{
-		spawnTime=0;
+		spawnTime = 0;
+		stalemateOutcomeTime = 6; //seconds
 		super(_rules, _respawns);
 	}
 
@@ -347,6 +353,7 @@ shared class CTFCore : RulesCore
 		 */
 
 		RulesCore::Update(); //update respawns
+		CheckStalemate();
 		CheckTeamWon();
 
 	}
@@ -575,6 +582,81 @@ shared class CTFCore : RulesCore
 			rules.SetGlobalMessage("{WINNING_TEAM} wins the game!");
 			rules.AddGlobalMessageReplacement("WINNING_TEAM", winteam.name);
 		}
+	}
+
+	void CheckStalemate()
+	{
+		//Stalemate code courtesy of Pirate-Rob
+
+		//cant stalemate outside of match time
+		if (!rules.isMatchRunning()) return;
+
+		//stalemate disabled in config?
+		if (stalemateTime < 0) return;
+
+		// get all the flags
+		CBlob@[] flags;
+		getBlobsByName(flag_name(), @flags);
+
+		//figure out if there's currently a stalemate condition
+		bool stalemate = true;
+		for (uint i = 0; i < flags.length; i++)
+		{
+			CBlob@ flag = flags[i];
+			CBlob@ holder = flag.getAttachments().getAttachedBlob("FLAG");
+			//If any flag is held by an ally (ie the flag base), no stalemate
+			if (holder !is null && holder.getTeamNum() == flag.getTeamNum())
+			{
+				stalemate = false;
+				break;
+			}
+		}
+
+		if(stalemate)
+		{
+			if(!rules.exists("stalemate_breaker"))
+			{
+				rules.set_s16("stalemate_breaker", stalemateTime);
+			}
+			else
+			{
+				rules.sub_s16("stalemate_breaker", 1);
+			}
+
+			int stalemate_seconds_remaining = Maths::Ceil(rules.get_s16("stalemate_breaker") / 30.0f);
+			if(stalemate_seconds_remaining > 0)
+			{
+				rules.SetGlobalMessage("Stalemate: both teams have no uncaptured flags.\nFlags returning in: {TIME}");
+				rules.AddGlobalMessageReplacement("TIME", ""+stalemate_seconds_remaining);
+			}
+			else
+			{
+				rules.set_s16("stalemate_breaker", -(stalemateOutcomeTime * 30));
+
+				//flags tagged serverside for return
+				for (uint i = 0; i < flags.length; i++)
+				{
+					CBlob@ flag = flags[i];
+					flag.Tag("stalemate_return");
+				}
+			}
+		}
+		else
+		{
+			int stalemate_timer = rules.get_s16("stalemate_breaker");
+			if(stalemate_timer > -10 && stalemate_timer != stalemateTime)
+			{
+				rules.SetGlobalMessage("");
+				rules.set_s16("stalemate_breaker", stalemateTime);
+			}
+			else if(stalemate_timer <= -10)
+			{
+				rules.SetGlobalMessage("Stalemate resolved: Flags returned.");
+				rules.add_s16("stalemate_breaker", 1);
+			}
+		}
+
+		rules.Sync("stalemate_breaker", true);
 	}
 
 	void addKill(int team)

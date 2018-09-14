@@ -7,6 +7,13 @@ const f32 probability = 1.0f; //between 0 and 1
 
 void dropHeart(CBlob@ this)
 {
+	// newb handicap - dont drop hearts from newbs
+	if (this.getPlayer() != null)
+	{
+		if (Time_DaysSince(this.getPlayer().getRegistrationTime()) <= 14)
+			return;
+	}
+
 	if (!this.hasTag("dropped heart")) //double check
 	{
 		CPlayer@ killer = this.getPlayerOfRecentDamage();

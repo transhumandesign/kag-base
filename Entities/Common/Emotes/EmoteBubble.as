@@ -4,6 +4,8 @@
 
 void onInit(CBlob@ blob)
 {
+	blob.addCommandID("emote");
+
 	CSprite@ sprite = blob.getSprite();
 	blob.set_u8("emote", Emotes::off);
 	blob.set_u32("emotetime", 0);
@@ -27,11 +29,7 @@ void onInit(CBlob@ blob)
 		emote.SetVisible(false);
 		emote.SetHUD(true);
 	}
-
-	AddBubblesToMenu(blob);
 }
-
-
 
 void onTick(CBlob@ blob)
 {
@@ -43,7 +41,7 @@ void onTick(CBlob@ blob)
 		CSpriteLayer@ emote = sprite.getSpriteLayer("bubble");
 
 		const u8 index = blob.get_u8("emote");
-		if (is_emote(blob, index) && !blob.hasTag("dead"))
+		if (is_emote(blob, index) && !blob.hasTag("dead") && !blob.isInInventory())
 		{
 			blob.getCurrentScript().tickFrequency = 1;
 			if (emote !is null)
@@ -52,7 +50,7 @@ void onTick(CBlob@ blob)
 				emote.animation.frame = index;
 
 				emote.ResetTransform();
-				
+
 				CCamera@ camera = getCamera();
 				if (camera !is null)
 				{
@@ -68,59 +66,18 @@ void onTick(CBlob@ blob)
 	}
 }
 
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("emote"))
+	{
+		u8 emote = params.read_u8();
+		u32 emotetime = params.read_u32();
+		this.set_u8("emote", emote);
+		this.set_u32("emotetime", emotetime);
+	}
+}
+
 void onClickedBubble(CBlob@ this, int index)
 {
 	set_emote(this, index);
-}
-
-void AddBubblesToMenu(CBlob@ this)
-{
-	this.LoadBubbles("Entities/Common/Emotes/Emoticons.png");
-
-	//for (int i = Emotes::skull; i < Emotes::cog; i++) {
-	//    if (i != Emotes::pickup && i != Emotes::blank && i != Emotes::dots) {
-	//        this.AddBubble( "", i );
-	//    }
-	//}
-
-	this.AddBubble("", Emotes::right);
-
-	this.AddBubble("", Emotes::cross);
-	this.AddBubble("", Emotes::laugh);
-	this.AddBubble("", Emotes::smile);
-	this.AddBubble("", Emotes::check);
-	this.AddBubble("", Emotes::troll);
-	this.AddBubble("", Emotes::wat);
-
-	this.AddBubble("", Emotes::down);
-
-	this.AddBubble("", Emotes::derp);
-	this.AddBubble("", Emotes::mad);
-	this.AddBubble("", Emotes::disappoint);
-	this.AddBubble("", Emotes::frown);
-	this.AddBubble("", Emotes::cry);
-	this.AddBubble("", Emotes::archer);
-	this.AddBubble("", Emotes::knight);
-	this.AddBubble("", Emotes::builder);
-
-	this.AddBubble("", Emotes::left);
-
-	this.AddBubble("", Emotes::sweat);
-	this.AddBubble("", Emotes::heart);
-	this.AddBubble("", Emotes::skull);
-	this.AddBubble("", Emotes::flex);
-	this.AddBubble("", Emotes::finger);
-	this.AddBubble("", Emotes::thumbsdown);
-	this.AddBubble("", Emotes::thumbsup);
-
-	this.AddBubble("", Emotes::up);
-
-	this.AddBubble("", Emotes::ladder);
-	this.AddBubble("", Emotes::attn);
-	this.AddBubble("", Emotes::question);
-	this.AddBubble("", Emotes::fire);
-	this.AddBubble("", Emotes::wall);
-	this.AddBubble("", Emotes::note);
-
-	//derp note
 }

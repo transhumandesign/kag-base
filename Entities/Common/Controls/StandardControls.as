@@ -157,6 +157,45 @@ void onTick(CBlob@ this)
 	}
 
 	CBlob @carryBlob = this.getCarriedBlob();
+	
+
+	// bubble menu
+
+	if (this.isKeyJustPressed(key_bubbles))
+	{
+		Tap(this);
+	}
+
+	/*else dont use this cause menu won't be release/clickable
+	if (this.isKeyJustReleased(key_bubbles))
+	{
+	    this.ClearBubbleMenu();
+	} */
+
+	// in crate
+
+	if (this.isInInventory())
+	{
+		if (this.isKeyJustPressed(key_pickup))
+		{
+			CBlob@ invblob = this.getInventoryBlob();
+			// Use the inventoryblob command if it has one (crate for example)
+			if (invblob.hasCommandID("getout"))
+			{
+				CBitStream params;
+				params.write_u16(this.getNetworkID());
+				invblob.SendCommand(invblob.getCommandID("getout"), params);
+			}
+			else
+			{
+				this.SendCommand(this.getCommandID("getout"));
+			}
+		}
+
+		return;
+	}
+
+	// no more stuff possible while in crate...
 
 	// inventory menu
 
@@ -217,34 +256,6 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-
-	// in crate
-
-	if (this.isInInventory())
-	{
-		if (this.isKeyJustPressed(key_pickup))
-		{
-			this.SendCommand(this.getCommandID("getout"));
-		}
-
-		return;
-	}
-
-	// no more stuff possible while in crate...
-
-	// bubble menu
-
-	if (this.isKeyJustPressed(key_bubbles))
-	{
-		this.CreateBubbleMenu();
-		Tap(this);
-	}
-
-	/*else dont use this cause menu won't be release/clickable
-	if (this.isKeyJustReleased(key_bubbles))
-	{
-	    this.ClearBubbleMenu();
-	} */
 
 	// release action1 to click buttons
 

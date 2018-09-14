@@ -11,7 +11,6 @@ void onTick( CRules@ this )
 void onInit(CRules@ this)
 {
     onRestart(this);
-
 }
 
 void onRestart( CRules@ this )
@@ -41,6 +40,9 @@ void onRestart( CRules@ this )
 
 	this.set_CBitStream("ctf_serialised_team_hud", bt);
 	this.Sync("ctf_serialised_team_hud", true);
+
+	//set for all clients to ensure safe sync
+	this.set_s16("stalemate_breaker", 0);
 
 }
 

@@ -70,7 +70,7 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 			//copy position, explode from centre of carrier
 			pos = doomed.getPosition();
 			//kill players if we're in their inventory (even water bombs for now)
-			if (doomed.hasTag("player") && !doomed.hasTag("invincible"))
+			if ((doomed.hasTag("player") || doomed.getName() == "crate") && !doomed.hasTag("invincible"))
 			{
 				this.server_Hit(doomed, pos, Vec2f(), 100.0f, Hitters::explosion, true);
 			}
@@ -427,8 +427,17 @@ void BombermanExplosion(CBlob@ this, f32 radius, f32 damage, f32 map_damage_radi
 
 bool canExplosionDamage(CMap@ map, Vec2f tpos, TileType t)
 {
+	CBlob@ blob = map.getBlobAtPosition(tpos); // TODO: make platform get detected
+	bool hasValidFrontBlob = false;
+	bool isBackwall = (t == CMap::tile_castle_back || t == CMap::tile_castle_back_moss || t == CMap::tile_wood_back);
+	if (blob !is null)
+	{
+		string name = blob.getName();
+		hasValidFrontBlob = (name == "wooden_door" || name == "stone_door" || name == "trap_block" || name == "wooden_platform");
+	}
 	return map.getSectorAtPosition(tpos, "no build") is null &&
-	       (t != CMap::tile_ground_d0 && t != CMap::tile_stone_d0); //don't _destroy_ ground, hit until its almost dead tho
+	       (t != CMap::tile_ground_d0 && t != CMap::tile_stone_d0) && //don't _destroy_ ground, hit until its almost dead tho
+		   !(hasValidFrontBlob && isBackwall); // don't destroy backwall if there is a door or trap block
 }
 
 bool canExplosionDestroy(CMap@ map, Vec2f tpos, TileType t)
@@ -492,7 +501,8 @@ bool HitBlob(CBlob@ this, CBlob@ hit_blob, f32 radius, f32 damage, const u8 hitt
 	                bombforce, dam,
 	                hitter, hitter == Hitters::water || //hit with water
 	                isOwnerBlob(this, hit_blob) ||	//allow selfkill with bombs
-	                should_teamkill || hit_blob.hasTag("dead")			//hit all corpses
+	                should_teamkill || hit_blob.hasTag("dead") || //hit all corpses ("dead" tag)
+					hit_blob.hasTag("explosion always teamkill") // check for override with tag
 	               );
 	return true;
 }
