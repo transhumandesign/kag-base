@@ -13,6 +13,7 @@ bool isModerating;
 
 void onInit(CRules@ this)
 {
+	this.addCommandID("notify");
 	isModerating = false;
 }
 
@@ -53,13 +54,23 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 				{
 					client_AddToChat("Player not found", reportMessageColor);
 				}
-			}
 
-			return false;																//false so it doesn't show as normal chat
+				return false;																//false so it doesn't show as normal chat
+			} else {
+
+				return true;
+			}
 		}
 	}
 
 	return true;
+}
+
+void onCommand( CRules@ this, u8 cmd, CBitStream @params ){
+    if(getNet().isClient() && this.getCommandID("notify") == cmd){
+        client_AddToChat(params.read_string(), SColor(255, 255, 0, 0));
+		Sound::Play("ReportSound.ogg");
+    }
 }
 
 bool reportAllowed(CPlayer@ player, CPlayer@ baddie)
@@ -100,13 +111,9 @@ void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 		//notify discord bot
 		tcpr("*REPORT " + playerUsername + " " + baddieUsername + " " + baddie.get_u8("reportCount"));
 
-		//print message to mods
-		CPlayer@ localPlayer = getLocalPlayer();
-		if (localPlayer.isMod())
-		{
-			client_AddToChat("Report has been made of: " + baddieCharacterName + " (" + baddieUsername + ")", reportMessageColor);
-			Sound::Play("ReportSound.ogg");
-		}
+		CBitStream params;
+        params.write_string("Report has been made of: " + baddieCharacterName + " (" + baddieUsername + ")");
+        this.SendCommand(this.getCommandID("notify"), params);
 	}
 }
 
@@ -201,3 +208,14 @@ CPlayer@ getPlayerByCharactername(string name)
 
 	return null;
 }
+
+// void notifyMods() {
+	
+// 	//print message to mods
+// 	CPlayer@ localPlayer = getLocalPlayer();
+// 	if (localPlayer.isMod())
+// 	{
+// 		client_AddToChat("Report has been made of: " + baddieCharacterName + " (" + baddieUsername + ")", reportMessageColor);
+// 		Sound::Play("ReportSound.ogg");
+// 	}
+// }
