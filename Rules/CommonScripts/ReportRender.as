@@ -11,55 +11,61 @@ void onInit(CRules@ this)
 
 void ReportRenderFunction(int id)
 {
-    CPlayer@ player = getLocalPlayer();
+    if (isClient())
+	{
+		CPlayer@ player = getLocalPlayer();
 
-	if(player !is null && player.hasTag("moderator"))
-    {
-        CPlayer@[] players;
-        
-		for(int i = 0; i < getPlayerCount(); i++)
+		if(player !is null && player.hasTag("moderator"))
 		{
-			CPlayer@ p = getPlayer(i);
-			players.push_back(p);
-		}
-
-		CPlayer@[] reported;
-		for (u8 i = 0; i < players.length; i++)
-		{
-			CPlayer@ p = getPlayer(i);
-			if(p.hasTag("reported"))
-			{
-				reported.insertLast(p);
-			}
-		}
-
-		if(reported.length() > 0)											//draw side pane with reported players
-		{
-			Vec2f screenPos = Vec2f(getScreenWidth() * 0.9f, getScreenHeight() * 0.70f);
-			GUI::SetFont("menu");
-			GUI::DrawPane(Vec2f(screenPos.x - 90, screenPos.y - 10), Vec2f(screenPos.x + 90, screenPos.y + (reported.length() * 18) - 5), SColor(128, 0, 0, 0));
+			CPlayer@[] players;
 			
-			for (u8 i = 0; i < reported.length; i++)
+			for(int i = 0; i < getPlayerCount(); i++)
 			{
-				CPlayer@ p = reported[i];
-				CBlob@ b = p.getBlob();
-				Vec2f pos = b.getPosition();
-				Vec2f worldPos = getDriver().getScreenPosFromWorldPos(pos);
-				
-				for(u8 j = 0; j < 6; j++)									//draw hexagon around reported players, this one line hexagon is a thing of beauty.
+				CPlayer@ p = getPlayer(i);
+				if(p !is null)
 				{
-					RenderLine(SColor(255, 255, 0, 0), Vec2f(pos.x + (r * Maths::Cos(j * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin(j * 60 * (Maths::Pi / 180.f)))), Vec2f(pos.x + (r * Maths::Cos((j + 1) * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin((j + 1) * 60 * Maths::Pi / 180.f))), 0.8f, b.getSprite().getZ() + 0.1f);
+					players.push_back(p);
 				}
-
-				GUI::DrawPane(Vec2f(worldPos.x - 80, worldPos.y - 50), Vec2f(worldPos.x + 80, worldPos.y - 30), SColor(128, 0, 0, 0));
-				GUI::DrawShadowedTextCentered(p.getUsername() + " has " + p.get_u8("reportCount") + " reports.", Vec2f(worldPos.x, worldPos.y - 40), SColor(255, 255, 0, 0));
-				GUI::DrawShadowedTextCentered(p.getUsername() + " has " + p.get_u8("reportCount") + " reports.", Vec2f(screenPos.x, screenPos.y + (i * 18)), SColor(255, 255, 0, 0));
 			}
 
-		}
+			CPlayer@[] reported;
+			for (u8 i = 0; i < players.length; i++)
+			{
+				CPlayer@ p = getPlayer(i);
+				if(p !is null && p.hasTag("reported"))
+				{
+					reported.insertLast(p);
+				}
+			}
 
-        
-    }
+			if(reported.length() > 0)											//draw side pane with reported players
+			{
+				Vec2f screenPos = Vec2f(getScreenWidth() * 0.9f, getScreenHeight() * 0.70f);
+				GUI::SetFont("menu");
+				GUI::DrawPane(Vec2f(screenPos.x - 90, screenPos.y - 10), Vec2f(screenPos.x + 90, screenPos.y + (reported.length() * 18) - 5), SColor(128, 0, 0, 0));
+				
+				for (u8 i = 0; i < reported.length; i++)
+				{
+					CPlayer@ p = reported[i];
+					if (p !is null)
+					{
+						CBlob@ b = p.getBlob();
+						Vec2f pos = b.getPosition();
+						Vec2f worldPos = getDriver().getScreenPosFromWorldPos(pos);
+						
+						for(u8 j = 0; j < 6; j++)									//draw hexagon around reported players, this one line hexagon is a thing of beauty.
+						{
+							RenderLine(SColor(255, 255, 0, 0), Vec2f(pos.x + (r * Maths::Cos(j * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin(j * 60 * (Maths::Pi / 180.f)))), Vec2f(pos.x + (r * Maths::Cos((j + 1) * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin((j + 1) * 60 * Maths::Pi / 180.f))), 0.8f, b.getSprite().getZ() + 0.1f);
+						}
+
+						GUI::DrawPane(Vec2f(worldPos.x - 80, worldPos.y - 50), Vec2f(worldPos.x + 80, worldPos.y - 30), SColor(128, 0, 0, 0));
+						GUI::DrawShadowedTextCentered(p.getUsername() + " has " + p.get_u8("reportCount") + " reports.", Vec2f(worldPos.x, worldPos.y - 40), SColor(255, 255, 0, 0));
+						GUI::DrawShadowedTextCentered(p.getUsername() + " has " + p.get_u8("reportCount") + " reports.", Vec2f(screenPos.x, screenPos.y + (i * 18)), SColor(255, 255, 0, 0));
+					}
+				}
+			}
+		}
+	}
 }
 
 const string lineTextureName = "report texture";
