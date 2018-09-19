@@ -17,24 +17,21 @@ void ReportRenderFunction(int id)
 
 		if(player !is null && player.hasTag("moderator"))
 		{
-			CPlayer@[] players;
-			
-			for(int i = 0; i < getPlayerCount(); i++)
-			{
-				CPlayer@ p = getPlayer(i);
-				if(p !is null)
-				{
-					players.push_back(p);
-				}
-			}
-
 			CPlayer@[] reported;
-			for (u8 i = 0; i < players.length; i++)
+			for (u8 i = 0; i < getPlayerCount(); i++)
 			{
 				CPlayer@ p = getPlayer(i);
+				CBlob@ b = p.getBlob();
 				if(p !is null && p.hasTag("reported"))
 				{
-					reported.insertLast(p);
+					if(p.isMod() && b is null)
+					{
+						continue;
+					}
+					else
+					{
+						reported.push_back(p);
+					}
 				}
 			}
 
@@ -50,16 +47,20 @@ void ReportRenderFunction(int id)
 					if (p !is null)
 					{
 						CBlob@ b = p.getBlob();
-						Vec2f pos = b.getPosition();
-						Vec2f worldPos = getDriver().getScreenPosFromWorldPos(pos);
-						
-						for(u8 j = 0; j < 6; j++)									//draw hexagon around reported players, this one line hexagon is a thing of beauty.
+						if (b !is null)
 						{
-							RenderLine(SColor(255, 255, 0, 0), Vec2f(pos.x + (r * Maths::Cos(j * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin(j * 60 * (Maths::Pi / 180.f)))), Vec2f(pos.x + (r * Maths::Cos((j + 1) * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin((j + 1) * 60 * Maths::Pi / 180.f))), 0.8f, b.getSprite().getZ() + 0.1f);
-						}
+							Vec2f pos = b.getPosition();
+							Vec2f worldPos = getDriver().getScreenPosFromWorldPos(pos);
+							
+							for(u8 j = 0; j < 6; j++)									//draw hexagon around reported players, this one line hexagon is a thing of beauty.
+							{
+								RenderLine(SColor(255, 255, 0, 0), Vec2f(pos.x + (r * Maths::Cos(j * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin(j * 60 * (Maths::Pi / 180.f)))), Vec2f(pos.x + (r * Maths::Cos((j + 1) * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin((j + 1) * 60 * Maths::Pi / 180.f))), 0.8f, b.getSprite().getZ() + 0.1f);
+							}
 
-						GUI::DrawPane(Vec2f(worldPos.x - 80, worldPos.y - 50), Vec2f(worldPos.x + 80, worldPos.y - 30), SColor(128, 0, 0, 0));
-						GUI::DrawShadowedTextCentered(p.getUsername() + " has " + p.get_u8("reportCount") + " reports.", Vec2f(worldPos.x, worldPos.y - 40), SColor(255, 255, 0, 0));
+							GUI::DrawPane(Vec2f(worldPos.x - 80, worldPos.y - 50), Vec2f(worldPos.x + 80, worldPos.y - 30), SColor(128, 0, 0, 0));
+							GUI::DrawShadowedTextCentered(p.getUsername() + " has " + p.get_u8("reportCount") + " reports.", Vec2f(worldPos.x, worldPos.y - 40), SColor(255, 255, 0, 0));
+						}
+						
 						GUI::DrawShadowedTextCentered(p.getUsername() + " has " + p.get_u8("reportCount") + " reports.", Vec2f(screenPos.x, screenPos.y + (i * 18)), SColor(255, 255, 0, 0));
 					}
 				}

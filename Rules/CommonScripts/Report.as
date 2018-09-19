@@ -62,7 +62,7 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 }
 
 void onCommand( CRules@ this, u8 cmd, CBitStream @params ){
-    if (getNet().isClient() && this.getCommandID("notify") == cmd)
+    if (isClient() && this.getCommandID("notify") == cmd)
 	{
 		if (getLocalPlayer().isMod())
 		{
@@ -70,7 +70,7 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params ){
 			Sound::Play("ReportSound.ogg");
 		}
     }
-	else if (/*getNet().isClient() &&*/ this.getCommandID("report") == cmd)
+	else if (isServer() && /*isClient() &&*/ this.getCommandID("report") == cmd)
 	{
 		print("This is COMMAND");
 		string reportParams = params.read_string();
@@ -85,25 +85,27 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params ){
 		print("Player username: " + player.getUsername());
 		print("Baddie username: " + baddie.getUsername());
 
+
+		//tag player
 		player.Tag("reported" + baddie.getUsername());
 		if(player.hasTag("reported" + baddie.getUsername()))
 		{
 			print("player is tagged with reported baddie");
 		}
-		player.set_u32("reportedAt", Time());
-		if(player.exists("reportedAt"))
+		player.set_u32("reported" + baddie.getUsername() + "At", Time());
+		if(player.exists("reported" + baddie.getUsername() + "At"))
 		{
 			print("player has variable reportedAt");
 		}
 
-		//tag player as reported
+		//tag baddie as reported
 		baddie.Tag("reported");
 		if(baddie.hasTag("reported"))
 		{
 			print("baddie is tagged with reported");
 		}
 
-		//initialise if it's missing
+		//initialise reportCount if it's missing
 		if(!baddie.exists("reportCount"))
 		{
 			baddie.set_u8("reportCount", 0);
@@ -112,11 +114,18 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params ){
 				print("made reportCount var");
 			}
 		}
+
 		//increment the report count
+		print("baddies reportCount is:" + baddie.get_u8("reportCount"));
 		baddie.add_u8("reportCount", 1);
 		print("baddies reportCount is:" + baddie.get_u8("reportCount"));
+
+		player.Sync("reported" + baddie.getUsername(), true);
+		player.Sync("reported" + baddie.getUsername() + "At", true);
+		baddie.Sync("reported", true);
+		baddie.Sync("reportCount", true);
 	}
-	else if (getNet().isServer() && this.getCommandID("report") == cmd)
+	else if (isServer() && this.getCommandID("report") == cmd)
 	{
 		print("This is COMMAND");
 		string reportParams = params.read_string();
@@ -139,7 +148,7 @@ bool reportAllowed(CPlayer@ player, CPlayer@ baddie)
 		// (never reported this player)
 		!player.hasTag("reported" + baddie.getUsername())
 		// (expire after however long)
-		|| s32(Time() - player.get_u32("reportedAt")) > reportRepeatTime;
+		|| s32(Time() - player.get_u32("reported" + baddie.getUsername() + "At")) > reportRepeatTime;
 
 	return allowed;
 }
