@@ -70,7 +70,7 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params ){
 			Sound::Play("ReportSound.ogg");
 		}
     }
-	else if (isServer() && /*isClient() &&*/ this.getCommandID("report") == cmd)
+	else if (isServer() && this.getCommandID("report") == cmd)
 	{
 		print("This is COMMAND");
 		string reportParams = params.read_string();
@@ -170,27 +170,6 @@ void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 		CBitStream params;
         params.write_string("Report has been made of: " + baddieCharacterName + " (" + baddieUsername + ")");
         this.SendCommand(this.getCommandID("notify"), params);
-
-		// player.Tag("reported" + baddie.getUsername());
-		// player.set_u32("reportedAt", Time());
-
-		// //tag player as reported
-		// baddie.Tag("reported");
-
-		// //initialise if it's missing
-		// if(!baddie.exists("reportCount"))
-		// {
-		// 	baddie.set_u8("reportCount", 0);
-		// }
-		// //increment the report count
-		// baddie.add_u8("reportCount", 1);
-
-
-
-		// //notify discord bot
-		// tcpr("*REPORT " + playerUsername + " " + baddieUsername + " " + baddie.get_u8("reportCount"));
-
-		
 	}
 }
 
@@ -284,14 +263,3 @@ CPlayer@ getPlayerByCharactername(string name)
 
 	return null;
 }
-
-// void notifyMods() {
-	
-// 	//print message to mods
-// 	CPlayer@ localPlayer = getLocalPlayer();
-// 	if (localPlayer.isMod())
-// 	{
-// 		client_AddToChat("Report has been made of: " + baddieCharacterName + " (" + baddieUsername + ")", reportMessageColor);
-// 		Sound::Play("ReportSound.ogg");
-// 	}
-// }
