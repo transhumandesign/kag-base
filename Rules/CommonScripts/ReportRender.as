@@ -52,9 +52,14 @@ void ReportRenderFunction(int id)
 							Vec2f pos = b.getPosition();
 							Vec2f worldPos = getDriver().getScreenPosFromWorldPos(pos);
 							
-							for(u8 j = 0; j < 6; j++)									//draw hexagon around reported players, this one line hexagon is a thing of beauty.
+							for(u8 j = 0; j < 6; j++)									//draw hexagon around reported players.
 							{
-								RenderLine(SColor(255, 255, 0, 0), Vec2f(pos.x + (r * Maths::Cos(j * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin(j * 60 * (Maths::Pi / 180.f)))), Vec2f(pos.x + (r * Maths::Cos((j + 1) * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin((j + 1) * 60 * Maths::Pi / 180.f))), 0.8f, b.getSprite().getZ() + 0.1f);
+								RenderLine(	SColor(255, 255, 0, 0),						//color
+											Vec2f(pos.x + (r * Maths::Cos(j * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin(j * 60 * (Maths::Pi / 180.f)))),			//start line
+											Vec2f(pos.x + (r * Maths::Cos((j + 1) * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin((j + 1) * 60 * Maths::Pi / 180.f))),//end line
+											0.8f,										//weight
+											b.getSprite().getZ() + 0.1f 				//z level
+											);
 							}
 
 							GUI::DrawPane(Vec2f(worldPos.x - 80, worldPos.y - 50), Vec2f(worldPos.x + 80, worldPos.y - 30), SColor(128, 0, 0, 0));
