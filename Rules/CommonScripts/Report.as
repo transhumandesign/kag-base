@@ -14,8 +14,6 @@ void onInit(CRules@ this)
 
 bool onClientProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
 {
-	CSecurity@ security = getSecurity();												//server security object
-
 	if((text_in == "!moderate" || text_in == "!m") && player.isMod())
 	{
 		moderate(this, player);
@@ -28,32 +26,32 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 		if(tokens.length > 1)															//check if we have tokens
 		{
-			if((tokens[0] == "!report" || tokens[0] == "!r") && !security.isPlayerIgnored(player) && player is getLocalPlayer())
+			if(tokens[0] == "!report" || tokens[0] == "!r")
 			{
-				string baddieUsername = tokens[1];
-				CPlayer@ baddie = getReportedPlayer(baddieUsername);
-
-				if(baddie !is null)
+				if(player is getLocalPlayer())
 				{
-					if(reportAllowed(player, baddie))
+					string baddieUsername = tokens[1];
+					CPlayer@ baddie = getReportedPlayer(baddieUsername);
+
+					if(baddie !is null)
 					{
-						report(this, player, baddie);										//if he exists start more reporting logic
-						client_AddToChat("You have reported: " + baddie.getCharacterName() + " (" + baddie.getUsername() + ")", reportMessageColor);
+						if(reportAllowed(player, baddie))
+						{
+							report(this, player, baddie);										//if he exists start more reporting logic
+							client_AddToChat("You have reported: " + baddie.getCharacterName() + " (" + baddie.getUsername() + ")", reportMessageColor);
+						}
+						else if(player.hasTag("reported" + baddie.getUsername()))
+						{
+							client_AddToChat("You have already reported this player recently.", reportMessageColor);
+						}
 					}
-					else if(player.hasTag("reported" + baddie.getUsername()))
+					else
 					{
-						client_AddToChat("You have already reported this player recently.", reportMessageColor);
+						client_AddToChat("Player not found", reportMessageColor);
 					}
 				}
-				else
-				{
-					client_AddToChat("Player not found", reportMessageColor);
-				}
-
-				return false;																//false so it doesn't show as normal chat
-			} else {
-
-				return true;
+				//false for everyone so it doesn't show as normal chat
+				return false;
 			}
 		}
 	}
