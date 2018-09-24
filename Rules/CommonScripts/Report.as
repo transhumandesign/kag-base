@@ -72,53 +72,27 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params ){
     }
 	else if (isServer() && this.getCommandID("report") == cmd)
 	{
-		print("This is COMMAND");
 		string reportParams = params.read_string();
 		string[]@ tokens = reportParams.split(" ");
 		CPlayer@ player = getPlayerByUsername(tokens[0]);
 		CPlayer@ baddie = getPlayerByUsername(tokens[1]);
-		print("BEGIN PARAMS");
-		print(reportParams);
-		print("END PARAMS");
-		print("TOKEN 0:" + tokens[0]);
-		print("TOKEN 1:" + tokens[1]);
-		print("Player username: " + player.getUsername());
-		print("Baddie username: " + baddie.getUsername());
-
 
 		//tag player
 		player.Tag("reported" + baddie.getUsername());
-		if(player.hasTag("reported" + baddie.getUsername()))
-		{
-			print("player is tagged with reported baddie");
-		}
+
 		player.set_u32("reported" + baddie.getUsername() + "At", Time());
-		if(player.exists("reported" + baddie.getUsername() + "At"))
-		{
-			print("player has variable reportedAt");
-		}
 
 		//tag baddie as reported
 		baddie.Tag("reported");
-		if(baddie.hasTag("reported"))
-		{
-			print("baddie is tagged with reported");
-		}
 
 		//initialise reportCount if it's missing
 		if(!baddie.exists("reportCount"))
 		{
 			baddie.set_u8("reportCount", 0);
-			if(baddie.exists("reportCount"))
-			{
-				print("made reportCount var");
-			}
 		}
 
 		//increment the report count
-		print("baddies reportCount is:" + baddie.get_u8("reportCount"));
 		baddie.add_u8("reportCount", 1);
-		print("baddies reportCount is:" + baddie.get_u8("reportCount"));
 
 		player.Sync("reported" + baddie.getUsername(), true);
 		player.Sync("reported" + baddie.getUsername() + "At", true);
@@ -127,7 +101,6 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params ){
 	}
 	else if (isServer() && this.getCommandID("report") == cmd)
 	{
-		print("This is COMMAND");
 		string reportParams = params.read_string();
 		string[]@ tokens = reportParams.split(" ");
 		CPlayer@ player = getPlayerByUsername(tokens[0]);
@@ -157,7 +130,6 @@ void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 {
 	if(reportAllowed(player, baddie) && player !is baddie)
 	{
-		print("This is REPORT");
 		string playerUsername = player.getUsername();
 		string baddieUsername = baddie.getUsername();
 		string baddieCharacterName = baddie.getCharacterName();
