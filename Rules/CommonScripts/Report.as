@@ -18,13 +18,15 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 	{
 		moderate(this, player);
 
-		return false;																	//false so it doesn't show as normal public chat
+		//false so it doesn't show as normal public chat
+		return false;
 	}
-	else if(text_in.substr(0, 1) == "!")												//reporting logic
+	else if(text_in.substr(0, 1) == "!")
 	{
 		string[]@ tokens = text_in.split(" ");
 
-		if(tokens.length > 1)															//check if we have tokens
+		//check if we have tokens
+		if(tokens.length > 1)
 		{
 			if(tokens[0] == "!report" || tokens[0] == "!r")
 			{
@@ -35,9 +37,10 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 					if(baddie !is null)
 					{
+						//if he exists start more reporting logic
 						if(reportAllowed(player, baddie))
 						{
-							report(this, player, baddie);										//if he exists start more reporting logic
+							report(this, player, baddie);
 							client_AddToChat("You have reported: " + baddie.getCharacterName() + " (" + baddie.getUsername() + ")", reportMessageColor);
 						}
 						else if(player.hasTag("reported" + baddie.getUsername()))
