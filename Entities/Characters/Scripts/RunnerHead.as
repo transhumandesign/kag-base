@@ -8,6 +8,7 @@
 const s32 NUM_HEADFRAMES = 4;
 const s32 NUM_UNIQUEHEADS = 30;
 const int FRAMES_WIDTH = 8 * NUM_HEADFRAMES;
+string[] tourneyWinners = {"BassHunter", "Cohen", "Bunnie", "karolloPL"}; //line 138 for temp hack ~r
 
 //handling Heads pack DLCs
 
@@ -108,21 +109,46 @@ string getHeadTexture(int headIndex)
 
 void onPlayerInfoChanged(CSprite@ this)
 {
-	LoadHead(this, this.getBlob().getHeadNum());
+	for (uint i = 0; i < tourneyWinners.length; i++)
+    {
+		if(this.getBlob().getPlayer().getUsername() == tourneyWinners[i])
+		{
+			LoadHead(this, 0, true);
+		}
+		else
+		{
+			LoadHead(this, this.getBlob().getHeadNum(), false);
+		}
+	
+	}
 }
 
-CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
+CSpriteLayer@ LoadHead(CSprite@ this, int headIndex, bool tourneyHead)
 {
 	CBlob@ blob = this.getBlob();
 
 	// get dlc pack info
 	int headsPackIndex = getHeadsPackIndex(headIndex);
 	HeadsPack@ pack = getHeadsPackByIndex(headsPackIndex);
+	string dirtyHack = pack.filename;
 
 	// add head
 	this.RemoveSpriteLayer("head");
+	//couldn't figure out how to do it the proper way in time, use this for now ~r
+	if(blob.getPlayer().getUsername() == "Basshunter" || blob.getPlayer().getUsername() == "Cohen")
+	{
+		dirtyHack = "tourneywinner1.png";
+	}
+	else if(blob.getPlayer().getUsername() == "Bunnie" || blob.getPlayer().getUsername() == "karolloPL")
+	{
+		dirtyHack = "tourneywinner2.png";
+	}
+	else
+	{
+		dirtyHack = pack.filename;
+	}
 	CSpriteLayer@ head = this.addSpriteLayer(
-		"head", pack.filename, 16, 16,
+		"head", dirtyHack, 16, 16,
 		(doTeamColour(headsPackIndex) ? this.getBlob().getTeamNum() : 0),
 		(doSkinColour(headsPackIndex) ? this.getBlob().getSkinNum() : 0)
 	);
@@ -195,7 +221,18 @@ void onTick(CSprite@ this)
 	// load head when player is set or it is AI
 	if (head is null && (blob.getPlayer() !is null || (blob.getBrain() !is null && blob.getBrain().isActive()) || blob.getTickSinceCreated() > 3))
 	{
-		@head = LoadHead(this, blob.getHeadNum());
+		for (uint i = 0; i < tourneyWinners.length; i++) //doesnt work? hardcoded on line 138 ~r
+        {
+			if(blob.getPlayer().getUsername() == tourneyWinners[i])
+			{
+				@head = LoadHead(this, 0, true);
+			}
+			else
+			{
+				@head = LoadHead(this, blob.getHeadNum(), false);
+			}
+		
+		}	
 	}
 
 	if (head !is null)

@@ -3,6 +3,10 @@
 CPlayer@ hoveredPlayer;
 Vec2f hoveredPos;
 
+string[] bronze;
+string[] silver;
+string[] gold;
+
 //returns the bottom
 float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emblem)
 {
@@ -34,6 +38,7 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 	GUI::DrawText(getTranslatedString("Kills"), Vec2f(bottomright.x - 190, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Deaths"), Vec2f(bottomright.x - 120, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("KDR"), Vec2f(bottomright.x - 50, topleft.y), SColor(0xffffffff));
+	GUI::DrawText("Badges", Vec2f(bottomright.x - 520, topleft.y), SColor(0xffffffff)); // TODO: use getTranslatedString rather than constant string;
 
 	topleft.y += stepheight * 0.5f;
 
@@ -120,6 +125,56 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 			GUI::DrawText(playername, topleft + Vec2f(name_buffer, 0), namecolour);
 		}
 
+		int farleft = 505;
+
+		int num = 0;
+		for (int i = 0; i < gold.length; i++)
+		{
+			if (gold[i] == username)
+			{
+				num += 1;
+			}
+		}
+
+		if (num > 0)
+		{
+			GUI::DrawText("" + num, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
+			GUI::DrawIcon("Medals_", 0, Vec2f(16, 16), Vec2f(bottomright.x - farleft, topleft.y), 0.5f, p.getTeamNum());
+			farleft -= 35;
+		}
+
+		num = 0;
+		for (int i = 0; i < silver.length; i++)
+		{
+			if (silver[i] == username)
+			{
+				num += 1;
+			}
+		}
+
+		if (num > 0)
+		{
+			GUI::DrawText("" + num, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
+			GUI::DrawIcon("Medals_", 1, Vec2f(16, 16), Vec2f(bottomright.x - farleft, topleft.y), 0.5f, p.getTeamNum());
+			farleft -= 35;
+		}
+
+		num = 0;
+		for (int i = 0; i < bronze.length; i++)
+		{
+			if (bronze[i] == username)
+			{
+				num += 1;
+			}
+		}
+
+		if (num > 0)
+		{
+			GUI::DrawText("" + num, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
+			GUI::DrawIcon("Medals_", 2, Vec2f(16, 16), Vec2f(bottomright.x - farleft, topleft.y), 0.5f, p.getTeamNum());
+			farleft -= 35; // dunno why this is here
+		}
+		
 		GUI::DrawText("" + username, Vec2f(bottomright.x - 400, topleft.y), namecolour);
 		GUI::DrawText("" + ping_in_ms, Vec2f(bottomright.x - 260, topleft.y), SColor(0xffffffff));
 		GUI::DrawText("" + p.getKills(), Vec2f(bottomright.x - 190, topleft.y), SColor(0xffffffff));
@@ -243,9 +298,6 @@ void onRenderScoreboard(CRules@ this)
 			if (specx < bottomright.x - 100)
 			{
 				string name = p.getCharacterName();
-				if (p.getCharacterName() != p.getUsername())
-					name = p.getCharacterName() + " (" + p.getUsername() + ")";
-
 				if (i != spectators.length - 1)
 					name += ",";
 				GUI::GetTextDimensions(name, textdim);
@@ -281,6 +333,13 @@ void onInit(CRules@ this)
 	{
 		this.set_u32("match_time", 0);
 		this.Sync("match_time", true);
+	}
+	{
+		ConfigFile cfg;
+		cfg.loadFile("tourney_data");
+		cfg.readIntoArray_string(bronze, "bronze");
+		cfg.readIntoArray_string(silver, "silver");
+		cfg.readIntoArray_string(gold, "gold");
 	}
 }
 
