@@ -13,63 +13,80 @@ void ReportRenderFunction(int id)
 {
     if (isClient())
 	{
-		CPlayer@ player = getLocalPlayer();
+		CRules@ this = getRules();
 
-		if(player !is null && player.hasTag("moderator"))
+		CPlayer@ local_player = getLocalPlayer();
+
+		if(local_player !is null)
 		{
-			CPlayer@[] reported;
-			for (u8 i = 0; i < getPlayerCount(); i++)
+			string l_p_name = local_player.getUsername();
+
+			if(this.get_bool(l_p_name + "_moderator"))
 			{
-				CPlayer@ p = getPlayer(i);
-				CBlob@ b = p.getBlob();
-				if(p !is null && p.hasTag("reported"))
+				
+				CPlayer@[] reported;
+				for (u8 i = 0; i < getPlayerCount(); i++)
 				{
-					if(p.isMod() && b is null)
+					CPlayer@ p = getPlayer(i);
+					string p_name = p.getUsername();
+					CBlob@ b = p.getBlob();
+					if((p !is null) && (this.get_u8(p_name + "_report_count") > 0))
 					{
-						continue;
-					}
-					else
-					{
-						reported.push_back(p);
+						if(p.isMod() && b is null)
+						{
+							continue;
+						}
+						else
+						{
+							reported.push_back(p);
+						}
 					}
 				}
-			}
 
-			if(reported.length() > 0)											//draw side pane with reported players
-			{
-				Vec2f screenPos = Vec2f(getScreenWidth() * 0.9f, getScreenHeight() * 0.70f);
-				GUI::SetFont("menu");
-				GUI::DrawPane(Vec2f(screenPos.x - 90, screenPos.y - 10), Vec2f(screenPos.x + 90, screenPos.y + (reported.length() * 18) - 5), SColor(128, 0, 0, 0));
-
-				for (u8 i = 0; i < reported.length; i++)
+				if(reported.length() > 0)											//draw side pane with reported players
 				{
-					CPlayer@ p = reported[i];
-					if (p !is null)
-					{
-						int report_count = p.get_u8("reportCount");
-						//TODO: translation friendly!
-						string report_text = p.getUsername() + " has " + report_count + " report" + (report_count > 1 ? "s" : "") + ".";
-						CBlob@ b = p.getBlob();
-						if (b !is null)
-						{
-							Vec2f pos = b.getPosition();
-							Vec2f worldPos = getDriver().getScreenPosFromWorldPos(pos);
+					Vec2f screenPos = Vec2f(getScreenWidth() * 0.9f, getScreenHeight() * 0.70f);
+					GUI::SetFont("menu");
+					GUI::DrawPane(Vec2f(screenPos.x - 90, screenPos.y - 10), Vec2f(screenPos.x + 90, screenPos.y + (reported.length() * 18) - 5), SColor(128, 0, 0, 0));
 
-							for(u8 j = 0; j < 6; j++)									//draw hexagon around reported players.
+					for (u8 i = 0; i < reported.length; i++)
+					{
+						CPlayer@ p = reported[i];
+						if (p !is null)
+						{
+							string p_name = p.getUsername();
+							int report_count = this.get_u8(p_name + "_report_count");
+
+							//TODO: translation friendly!
+							string report_text = p.getUsername() + " has " + report_count + " report" + (report_count > 1 ? "s" : "") + ".";
+
+							CBlob@ b = p.getBlob();
+							if (b !is null)
 							{
-								RenderLine(	SColor(255, 255, 0, 0),						//color
-											Vec2f(pos.x + (r * Maths::Cos(j * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin(j * 60 * (Maths::Pi / 180.f)))),			//start line
-											Vec2f(pos.x + (r * Maths::Cos((j + 1) * 60 * (Maths::Pi / 180.f))), pos.y + (r * Maths::Sin((j + 1) * 60 * Maths::Pi / 180.f))),//end line
-											0.8f,										//weight
-											b.getSprite().getZ() + 0.1f 				//z level
-											);
+								Vec2f b_pos = b.getPosition();
+								Vec2f world_pos = getDriver().getScreenPosFromWorldPos(b_pos);
+
+								//draw hexagon around reported players.
+								for(u8 j = 0; j < 6; j++)
+								{
+									RenderLine(	//color
+												SColor(255, 255, 0, 0),
+												//start line
+												Vec2f(b_pos.x + (r * Maths::Cos(j * 60 * (Maths::Pi / 180.f))), b_pos.y + (r * Maths::Sin(j * 60 * (Maths::Pi / 180.f)))),
+												//end line
+												Vec2f(b_pos.x + (r * Maths::Cos((j + 1) * 60 * (Maths::Pi / 180.f))), b_pos.y + (r * Maths::Sin((j + 1) * 60 * Maths::Pi / 180.f))),
+												//weight
+												0.8f,
+												//z level
+												b.getSprite().getZ() + 0.1f);
+								}
+
+								GUI::DrawPane(Vec2f(world_pos.x - 80, world_pos.y - 50), Vec2f(world_pos.x + 80, world_pos.y - 30), SColor(128, 0, 0, 0));
+								GUI::DrawShadowedTextCentered(report_text, Vec2f(world_pos.x, world_pos.y - 40), SColor(255, 255, 0, 0));
 							}
 
-							GUI::DrawPane(Vec2f(worldPos.x - 80, worldPos.y - 50), Vec2f(worldPos.x + 80, worldPos.y - 30), SColor(128, 0, 0, 0));
-							GUI::DrawShadowedTextCentered(report_text, Vec2f(worldPos.x, worldPos.y - 40), SColor(255, 255, 0, 0));
+							GUI::DrawShadowedTextCentered(report_text, Vec2f(screenPos.x, screenPos.y + (i * 18)), SColor(255, 255, 0, 0));
 						}
-
-						GUI::DrawShadowedTextCentered(report_text, Vec2f(screenPos.x, screenPos.y + (i * 18)), SColor(255, 255, 0, 0));
 					}
 				}
 			}

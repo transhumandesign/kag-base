@@ -2,7 +2,7 @@
 // report logic
 
 //time (in seconds) between repeated reports
-const u32 reportRepeatTime = 5 * 60;
+const u32 reportRepeatTime = 1 * 60;
 
 const SColor reportMessageColor(255, 255, 0, 0);
 
@@ -18,31 +18,36 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 	{
 		moderate(this, player);
 
-		return false;																	//false so it doesn't show as normal public chat
+		//false so it doesn't show as normal public chat
+		return false;
 	}
-	else if(text_in.substr(0, 1) == "!")												//reporting logic
+	else if(text_in.substr(0, 1) == "!")
 	{
 		string[]@ tokens = text_in.split(" ");
 
-		if(tokens.length > 1)															//check if we have tokens
+		//check if we have tokens
+		if(tokens.length > 1)
 		{
 			if(tokens[0] == "!report" || tokens[0] == "!r")
 			{
 				if(player is getLocalPlayer())
 				{
-					string baddieUsername = tokens[1];
-					CPlayer@ baddie = getReportedPlayer(baddieUsername);
+					string p_name = player.getUsername();
+					string b_name = tokens[1];
+					CPlayer@ baddie = getReportedPlayer(b_name);
+					string baddie_name = baddie.getUsername();
 
 					if(baddie !is null)
 					{
-						if(reportAllowed(player, baddie))
+						if(reportAllowed(this, player, baddie))
 						{
-							report(this, player, baddie);										//if he exists start more reporting logic
-							client_AddToChat("You have reported: " + baddie.getCharacterName() + " (" + baddie.getUsername() + ")", reportMessageColor);
+							//if he exists start more reporting logic
+							report(this, player, baddie);
+							client_AddToChat("You have reported: " + baddie.getCharacterName() + " (" + baddie_name + ")", reportMessageColor);
 						}
-						else if(player.hasTag("reported" + baddie.getUsername()))
+						else if(this.get_u32(p_name + "_reported_at") > 0)
 						{
-							client_AddToChat("You have already reported this player recently.", reportMessageColor);
+							client_AddToChat("You have already reported a player recently.", reportMessageColor);
 						}
 					}
 					else
@@ -50,6 +55,7 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 						client_AddToChat("Player not found", reportMessageColor);
 					}
 				}
+
 				//false for everyone so it doesn't show as normal chat
 				return false;
 			}
@@ -59,114 +65,140 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 	return true;
 }
 
-void onCommand( CRules@ this, u8 cmd, CBitStream @params ){
-    if (isClient() && this.getCommandID("notify") == cmd)
+//on new player join we must initialize the required variables
+void onNewPlayerJoin(CRules@ this, CPlayer@ player)
+{
+	if(isServer())
 	{
-		if (getLocalPlayer().isMod())
+		string p_name = player.getUsername();
+
+		if(!this.exists(p_name + "_report_count"))
 		{
-			client_AddToChat(params.read_string(), reportMessageColor);
-			Sound::Play("ReportSound.ogg");
+			this.set_u8(p_name + "_report_count", 0);
 		}
+		if(!this.exists(p_name + "_reported_at"))
+		{
+			this.set_u32(p_name + "_reported_at", 0);
+		}
+
+		this.set_bool(p_name + "_moderator", false);
+
+		this.Sync(p_name + "_report_count", true);
+		this.Sync(p_name + "_reported_at", true);
+		this.Sync(p_name + "_moderator", true);
+	}
+	
+}
+
+void onCommand(CRules@ this, u8 cmd, CBitStream @params){
+    if (isClient() && this.getCommandID("report") == cmd)
+    {
+        if (getLocalPlayer().isMod())
+        {
+            string p_name = params.read_string();
+            string b_name = params.read_string();
+
+            CPlayer@ baddie = getPlayerByUsername(b_name);
+
+            if(baddie !is null){
+                client_AddToChat("Report has been made of: " + baddie.getCharacterName() + " (" + b_name + ")", reportMessageColor);
+                Sound::Play("ReportSound.ogg");
+            }
+        }
     }
 	else if (isServer() && this.getCommandID("report") == cmd)
 	{
-		string reportParams = params.read_string();
-		string[]@ tokens = reportParams.split(" ");
-		CPlayer@ player = getPlayerByUsername(tokens[0]);
-		CPlayer@ baddie = getPlayerByUsername(tokens[1]);
+		string p_name = params.read_string();
+        string b_name = params.read_string();
 
-		//tag player
-		player.Tag("reported" + baddie.getUsername());
+        CPlayer@ player = getPlayerByUsername(p_name);
+        CPlayer@ baddie = getPlayerByUsername(b_name);
 
-		player.set_u32("reported" + baddie.getUsername() + "At", Time());
-
-		//tag baddie as reported
-		baddie.Tag("reported");
-
-		//initialise reportCount if it's missing
-		if(!baddie.exists("reportCount"))
+		//server gets info from client and decides if it will report baddie
+		if(player !is baddie)
 		{
-			baddie.set_u8("reportCount", 0);
+			//initialise report_count if it's missing
+			if(!this.exists(b_name + "_report_count"))
+			{
+				this.set_u8(b_name + "_report_count", 0);
+			}
+
+			//initialise reported timer if it's missing
+			if(!this.exists(p_name + "_reported_at"))
+			{
+				this.set_u32(p_name + "_reported_at", 0);
+			}
+
+			//set time at which player reported baddie
+			this.set_u32(p_name + "_reported_at", Time());
+			//increment baddie's report count
+			this.add_u8(b_name + "_report_count", 1);
+
+			//sync props to clients
+			this.Sync(p_name + "_reported_at", true);
+			this.Sync(b_name + "_report_count", true);
+
+			tcpr("*REPORT " + p_name + " " + b_name + " " + this.get_u8(b_name + "_report_count"));
 		}
-
-		//increment the report count
-		baddie.add_u8("reportCount", 1);
-
-		player.Sync("reported" + baddie.getUsername(), true);
-		player.Sync("reported" + baddie.getUsername() + "At", true);
-		baddie.Sync("reported", true);
-		baddie.Sync("reportCount", true);
-	}
-	else if (isServer() && this.getCommandID("report") == cmd)
-	{
-		string reportParams = params.read_string();
-		string[]@ tokens = reportParams.split(" ");
-		CPlayer@ player = getPlayerByUsername(tokens[0]);
-		CPlayer@ baddie = getPlayerByUsername(tokens[1]);
-
-		string playerUsername = player.getUsername();
-		string baddieUsername = baddie.getUsername();
-
-		tcpr("*REPORT " + playerUsername + " " + baddieUsername + " " + baddie.get_u8("reportCount"));
 	}
 }
 
-bool reportAllowed(CPlayer@ player, CPlayer@ baddie)
+bool reportAllowed(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 {
 	if (player is null or baddie is null) return false;
 
-	bool allowed =
-		// (never reported this player)
-		!player.hasTag("reported" + baddie.getUsername())
-		// (expire after however long)
-		|| s32(Time() - player.get_u32("reported" + baddie.getUsername() + "At")) > reportRepeatTime;
+	string p_name = player.getUsername();
+	//hasn't reported in a while
+	bool allowed = s32(Time() - this.get_u32(p_name + "_reported_at")) > reportRepeatTime;
 
 	return allowed;
 }
 
 void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 {
-	if(reportAllowed(player, baddie) && player !is baddie)
-	{
 		string playerUsername = player.getUsername();
 		string baddieUsername = baddie.getUsername();
 		string baddieCharacterName = baddie.getCharacterName();
 
-		//propagate report to clients if they are relevant e.g. send report counts
-		CBitStream reportParams;
-		reportParams.write_string(player.getUsername() + " " + baddie.getUsername());
-		this.SendCommand(this.getCommandID("report"), reportParams);
-
-		CBitStream params;
-        params.write_string("Report has been made of: " + baddieCharacterName + " (" + baddieUsername + ")");
-        this.SendCommand(this.getCommandID("notify"), params);
-	}
+		//send report information to server
+        CBitStream report_params;
+        report_params.write_string(player.getUsername());
+        report_params.write_string(baddie.getUsername());
+        this.SendCommand(this.getCommandID("report"), report_params);
 }
 
-//Change to spectator cam on starting moderatation
-void moderate(CRules@ this, CPlayer@ moderator)
+//moderation logic
+void moderate(CRules@ this, CPlayer@ player)
 {
-	if(moderator !is null && moderator is getLocalPlayer())
+	if(player !is null && player is getLocalPlayer())
 	{
-		CCamera@ camera = getCamera();
-		CMap@ map = getMap();
+		if(isClient())
+		{
+			string p_name = player.getUsername();
+			CCamera@ camera = getCamera();
+			CMap@ map = getMap();
 
-		moderator.client_ChangeTeam(this.getSpectatorTeamNum());
-		getHUD().ClearMenus();
-		camera.setPosition(Vec2f(map.getMapDimensions().x / 2, map.getMapDimensions().y / 2));
+			//change to spectator cam
+			player.client_ChangeTeam(this.getSpectatorTeamNum());
+			getHUD().ClearMenus();
+			camera.setPosition(Vec2f(map.getMapDimensions().x / 2, map.getMapDimensions().y / 2));
+
+			//so the interface is drawn
+			this.set_bool(p_name + "_moderator", true);
+		}
 	}
-
-	moderator.Tag("moderator");
 }
 
 void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 {
+	string p_name = player.getUsername();
+
 	//remove moderator tag for people re-joining play
 	if(oldteam == this.getSpectatorTeamNum())
 	{
-		if(player.hasTag("moderator"))
+		if(this.get_bool(p_name + "_moderator"))
 		{
-			player.Untag("moderator");
+			this.set_bool(p_name + "_moderator", false);
 		}
 	}
 }
