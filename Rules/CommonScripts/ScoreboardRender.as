@@ -1,11 +1,8 @@
 #include "ScoreboardCommon.as";
+#include "Accolades.as";
 
 CPlayer@ hoveredPlayer;
 Vec2f hoveredPos;
-
-string[] bronze;
-string[] silver;
-string[] gold;
 
 //returns the bottom
 float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emblem)
@@ -127,54 +124,29 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 
 		int farleft = 505;
 
-		int num = 0;
-		for (int i = 0; i < gold.length; i++)
-		{
-			if (gold[i] == username)
-			{
-				num += 1;
-			}
-		}
+		Accolades@ acc = getPlayerAccolades(username);
 
-		if (num > 0)
+		if (acc.gold > 0)
 		{
-			GUI::DrawText("" + num, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
+			GUI::DrawText("" + acc.gold, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
 			GUI::DrawIcon("Medals_", 0, Vec2f(16, 16), Vec2f(bottomright.x - farleft, topleft.y), 0.5f, p.getTeamNum());
 			farleft -= 35;
 		}
 
-		num = 0;
-		for (int i = 0; i < silver.length; i++)
+		if (acc.silver > 0)
 		{
-			if (silver[i] == username)
-			{
-				num += 1;
-			}
-		}
-
-		if (num > 0)
-		{
-			GUI::DrawText("" + num, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
+			GUI::DrawText("" + acc.silver, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
 			GUI::DrawIcon("Medals_", 1, Vec2f(16, 16), Vec2f(bottomright.x - farleft, topleft.y), 0.5f, p.getTeamNum());
 			farleft -= 35;
 		}
 
-		num = 0;
-		for (int i = 0; i < bronze.length; i++)
+		if (acc.bronze > 0)
 		{
-			if (bronze[i] == username)
-			{
-				num += 1;
-			}
-		}
-
-		if (num > 0)
-		{
-			GUI::DrawText("" + num, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
+			GUI::DrawText("" + acc.bronze, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
 			GUI::DrawIcon("Medals_", 2, Vec2f(16, 16), Vec2f(bottomright.x - farleft, topleft.y), 0.5f, p.getTeamNum());
 			farleft -= 35; // dunno why this is here
 		}
-		
+
 		GUI::DrawText("" + username, Vec2f(bottomright.x - 400, topleft.y), namecolour);
 		GUI::DrawText("" + ping_in_ms, Vec2f(bottomright.x - 260, topleft.y), SColor(0xffffffff));
 		GUI::DrawText("" + p.getKills(), Vec2f(bottomright.x - 190, topleft.y), SColor(0xffffffff));
@@ -333,13 +305,6 @@ void onInit(CRules@ this)
 	{
 		this.set_u32("match_time", 0);
 		this.Sync("match_time", true);
-	}
-	{
-		ConfigFile cfg;
-		cfg.loadFile("tourney_data");
-		cfg.readIntoArray_string(bronze, "bronze");
-		cfg.readIntoArray_string(silver, "silver");
-		cfg.readIntoArray_string(gold, "gold");
 	}
 }
 

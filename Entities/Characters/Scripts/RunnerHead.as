@@ -4,11 +4,11 @@
 #include "PaletteSwap.as"
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
+#include "Accolades.as"
 
 const s32 NUM_HEADFRAMES = 4;
 const s32 NUM_UNIQUEHEADS = 30;
 const int FRAMES_WIDTH = 8 * NUM_HEADFRAMES;
-string[] tourneyWinners = {"BassHunter", "Cohen", "Bunnie", "karolloPL"}; //line 138 for temp hack ~r
 
 //handling Heads pack DLCs
 
@@ -109,55 +109,67 @@ string getHeadTexture(int headIndex)
 
 void onPlayerInfoChanged(CSprite@ this)
 {
-	for (uint i = 0; i < tourneyWinners.length; i++)
-    {
-		if(this.getBlob().getPlayer().getUsername() == tourneyWinners[i])
-		{
-			LoadHead(this, 0, true);
-		}
-		else
-		{
-			LoadHead(this, this.getBlob().getHeadNum(), false);
-		}
-	
-	}
+	LoadHead(this, this.getBlob().getHeadNum());
 }
 
-CSpriteLayer@ LoadHead(CSprite@ this, int headIndex, bool tourneyHead)
+CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 {
 	CBlob@ blob = this.getBlob();
+
+	// strip old head
+	this.RemoveSpriteLayer("head");
 
 	// get dlc pack info
 	int headsPackIndex = getHeadsPackIndex(headIndex);
 	HeadsPack@ pack = getHeadsPackByIndex(headsPackIndex);
-	string dirtyHack = pack.filename;
+	string texture_file = pack.filename;
 
-	// add head
-	this.RemoveSpriteLayer("head");
-	//couldn't figure out how to do it the proper way in time, use this for now ~r
-	if(blob.getPlayer().getUsername() == "Basshunter" || blob.getPlayer().getUsername() == "Cohen")
+	bool override_frame = false;
+
+	//(has default head set)
+	bool defaultHead = (headIndex == 255 || headIndex == NUM_UNIQUEHEADS);
+	if(defaultHead)
 	{
-		dirtyHack = "tourneywinner1.png";
-	}
-	else if(blob.getPlayer().getUsername() == "Bunnie" || blob.getPlayer().getUsername() == "karolloPL")
-	{
-		dirtyHack = "tourneywinner2.png";
+		print("default head");
+		//accolade custom head handling
+		//todo: consider pulling other custom head stuff out to here
+		CPlayer@ p = blob.getPlayer();
+		if (p !is null && !p.isBot())
+		{
+			print("get accolades");
+			Accolades@ acc = getPlayerAccolades(p.getUsername());
+			print("acc time " + acc.customHeadAwarded);
+			print("time now " + Time());
+			print("days since " + Time_DaysSince(acc.customHeadAwarded));
+			if (acc.hasCustomHead())
+			{
+				texture_file = "Sprites/" + acc.customHeadTexture + ".png";
+				headIndex = acc.customHeadIndex;
+				headsPackIndex = 0;
+				override_frame = true;
+			}
+		}
 	}
 	else
 	{
-		dirtyHack = pack.filename;
+		print("not default head");
 	}
+
+	//add new head
 	CSpriteLayer@ head = this.addSpriteLayer(
-		"head", dirtyHack, 16, 16,
+		"head", texture_file, 16, 16,
 		(doTeamColour(headsPackIndex) ? this.getBlob().getTeamNum() : 0),
 		(doSkinColour(headsPackIndex) ? this.getBlob().getSkinNum() : 0)
 	);
 
-	// set defaults
+	//
 	headIndex = headIndex % 256; // wrap DLC heads into "pack space"
-	s32 headFrame = getHeadFrame(blob, headIndex, headsPackIndex == 0);
 
-	blob.set_s32("head index", headFrame);
+	// figure out head frame
+	s32 headFrame = override_frame ?
+		headIndex * NUM_HEADFRAMES:
+		getHeadFrame(blob, headIndex, headsPackIndex == 0);
+
 	if (head !is null)
 	{
 		Animation@ anim = head.addAnimation("default", 0, false);
@@ -168,6 +180,11 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex, bool tourneyHead)
 
 		head.SetFacingLeft(blob.isFacingLeft());
 	}
+
+	//setup gib properties
+	blob.set_s32("head index", headFrame);
+	blob.set_string("head texture", texture_file);
+
 	return head;
 }
 
@@ -189,7 +206,7 @@ void onGib(CSprite@ this)
 		Vec2f vel = blob.getVelocity();
 		f32 hp = Maths::Min(Maths::Abs(blob.getHealth()), 2.0f) + 1.5;
 		makeGibParticle(
-			getHeadTexture(blob.getHeadNum()),
+			blob.get_string("head texture"),
 			pos, vel + getRandomVelocity(90, hp , 30),
 			framex, framey, Vec2f(16, 16),
 			2.0f, 20, "/BodyGibFall", blob.getTeamNum()
@@ -221,18 +238,7 @@ void onTick(CSprite@ this)
 	// load head when player is set or it is AI
 	if (head is null && (blob.getPlayer() !is null || (blob.getBrain() !is null && blob.getBrain().isActive()) || blob.getTickSinceCreated() > 3))
 	{
-		for (uint i = 0; i < tourneyWinners.length; i++) //doesnt work? hardcoded on line 138 ~r
-        {
-			if(blob.getPlayer().getUsername() == tourneyWinners[i])
-			{
-				@head = LoadHead(this, 0, true);
-			}
-			else
-			{
-				@head = LoadHead(this, blob.getHeadNum(), false);
-			}
-		
-		}	
+		@head = LoadHead(this, blob.getHeadNum());
 	}
 
 	if (head !is null)
