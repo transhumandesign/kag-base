@@ -35,10 +35,10 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 					string p_name = player.getUsername();
 					string b_name = tokens[1];
 					CPlayer@ baddie = getReportedPlayer(b_name);
-					string baddie_name = baddie.getUsername();
 
 					if(baddie !is null)
 					{
+						string baddie_name = baddie.getUsername();
 						if(reportAllowed(this, player, baddie))
 						{
 							//if he exists start more reporting logic
