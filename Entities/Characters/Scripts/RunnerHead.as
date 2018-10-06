@@ -130,17 +130,12 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	bool defaultHead = (headIndex == 255 || headIndex == NUM_UNIQUEHEADS);
 	if(defaultHead)
 	{
-		print("default head");
 		//accolade custom head handling
 		//todo: consider pulling other custom head stuff out to here
 		CPlayer@ p = blob.getPlayer();
 		if (p !is null && !p.isBot())
 		{
-			print("get accolades");
 			Accolades@ acc = getPlayerAccolades(p.getUsername());
-			print("acc time " + acc.customHeadAwarded);
-			print("time now " + Time());
-			print("days since " + Time_DaysSince(acc.customHeadAwarded));
 			if (acc.hasCustomHead())
 			{
 				texture_file = "Sprites/" + acc.customHeadTexture + ".png";
@@ -152,7 +147,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	}
 	else
 	{
-		print("not default head");
+		//not default head; do not use accolades data
 	}
 
 	//add new head
@@ -167,7 +162,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 
 	// figure out head frame
 	s32 headFrame = override_frame ?
-		headIndex * NUM_HEADFRAMES:
+		(headIndex * NUM_HEADFRAMES) :
 		getHeadFrame(blob, headIndex, headsPackIndex == 0);
 
 	if (head !is null)
