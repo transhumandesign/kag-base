@@ -52,7 +52,7 @@ class Accolades
 					github_contributor = true;
 				} else if (s1 == "community") {
 					community_contributor = true;
-				} else if (s1 == "maps") {
+				} else if (s1 == "map") {
 					map_contributor = true;
 				}
 
