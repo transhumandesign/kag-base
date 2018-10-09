@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 //a container and parser for the specific accolades awarded to a player
-class Accolades
+shared class Accolades
 {
 	//player these accolades are for
 	string username = "";
