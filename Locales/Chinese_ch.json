@@ -1,0 +1,865 @@
+// KING ARTHUR'S GOLD TRANSLATION FILE
+// This file contains translation for various text in the game.
+
+// INSTRUCTIONS:
+// The file format is JSON, but also supports comments, which being by //. Text from the beginning of a comment to the end of the line is ignored.
+// This file is named after the locale that enables it, and should be in format of Language_languagecode.json, e.g. French_fr.json. Spaces in filenames are not supported, please do not insert spaces in the language name.
+
+// Each line looks like this: "English original text": "Translated text",
+// Not respecting the format will cause the translation not to load.
+
+// $something$ may sometimes appear. This often matches icons or text styles. You *can* move them around in the translation, but you *cannot* change its content.
+// {something} may sometimes appear. This is a variable that may change and that will be translated by the game, if required. You *can* move them around in the translation, but you *cannot* change its content by itself; though the substitued variable may get translated independently.
+// Unindented (without spacing before) comments often indicates files or scripts that depends on translations that follows, for convenience.
+
+// FOR ANY NEW TRANSLATION, PLEASE KEEP THIS HEADER, THE FILE STRUCTURE, INDENT STYLE AND THE COMMENTS AS-IS.
+// REMEMBER: You do **ONLY** need to change the right-side text. If translations suddenly stop working, check your `cl_locale` variable and make sure the JSON file structure was not damaged.
+
+{
+
+//// SCOREBOARD ////
+//ScoreboardCommon.as
+	"Match time: {TIME}": "比赛时间: {TIME}",
+	"h ": "时",
+	"m ": "分",
+	"s ": "秒",
+
+//ScoreboardRender.as
+	"Players: {PLAYERCOUNT}":"玩家人数: {PLAYERCOUNT}",
+	"Player"      			:"玩家",
+	"Username"    			:"用户名",
+	"Ping"        			:"Ping",
+	"Kills"       			:"击杀",
+	"Deaths"      			:"死亡",
+	"KDR"         			:"击杀死亡比",
+	"Spectators:" 			:"观战者:",
+	"and more ..."			:"更多...",
+
+//BuilderInventory.as
+	"Stop building\n": "停止建造\n",
+	"Requires\n": "需要\n",
+
+//CommonBuilderBlocks.as
+	"Stone Block\nBasic building block"                     :"石块\n基础建造方块",
+	"Back Stone Wall\nExtra support"                        :"石背景墙\n额外支撑",
+	"Stone Door\nPlace next to walls"                       :"石门\n贴墙放置",
+	"Wood Block\nCheap block\nwatch out for fire!"          :"木块\n廉价方块\n小心火烛!",
+	"Back Wood Wall\nCheap extra support"                   :"木背景墙\n廉价额外支撑",
+	"Wooden Door\nPlace next to walls"                      :"木门\n贴墙放置",
+	"Trap Block\nOnly enemies can pass"                     :"陷阱方块\n仅敌方可过",
+	"Ladder\nAnyone can climb it"                           :"梯\n双方皆可攀爬",
+	"Wooden Platform\nOne way platform"                     :"木平台\n单向平台",
+	"Spikes\nPlace on Stone Block\nfor Retracting Trap"     :"刺\n置于石块\n则可伸缩",
+	"Workshop\nStand in an open space\nand tap this button.":"工坊\n于开阔地\n按此按钮",
+	"Workshop"                                              :"工坊",
+	"Workbench"                                             :"工作台",
+	"Wire"          :"电线",
+	"Elbow"         :"拐线",
+	"Tee"           :"T 形线",
+	"Junction"      :"十字线",
+	"Diode"         :"半导体",
+	"Resistor"      :"电阻",
+	"Inverter"      :"非门",
+	"Oscillator"    :"振荡器",
+	"Transistor"    :"三极管",
+	"Toggle"        :"触发器",
+	"Randomizer"    :"随机发生器",
+	"Lever"         :"拉杆",
+	"Button"        :"按钮",
+	"Coin Slot"     :"投币孔",
+	"Pressure Plate":"压力板",
+	"Motion Sensor" :"运动传感器",
+	"Lamp"          :"灯",
+	"Emitter"       :"发射器",
+	"Receiver"      :"接受器",
+	"Magazine"      :"箭匣",
+	"Bolter"        :"弹射器",
+	"Dispenser"     :"发射器",
+	"Obstructor"    :"路障",
+	"Spiker"        :"钉刺",
+
+//Production.as
+	"\n\nrequires\n{MISSING}\nAdd materials in storage.":"\n\n需要\n{MISSING}\n添加材料",
+	"Producing {ITEM}..."                               :"正在生产 {ITEM}...",
+	"{ITEM} available on respawn"                       :"重生时 {ITEM} 可用",
+	"{ITEM} limit reached."                             :"{ITEM} 已达上限",
+
+//FactoryAnim.as
+	"Requires a Worker from the Hall to work here.":"需要从大厅派遣劳工",
+
+//Hall.as
+	"Units"                                   :"单位",
+	"Another worker has been hired!"          :"新增雇佣劳工!",
+	"Supplies will drop at your halls."       :"补给会空投至大厅.",
+	"Buy a worker for {MIGRANT_COST} Gold"    :"以 {MIGRANT_COST} 黄金购买劳工",
+	"Buy worker: Requires {MIGRANT_COST} Gold":"购买劳工: 需要 {MIGRANT_COST} 黄金",
+
+//TunnelTravel.as
+	"Travel":"穿过隧道",
+	"Travel (requires Transport Tunnels)":"穿过隧道(需要出口)",
+	"Pick tunnel to travel":"挖掘隧道以便通行",
+	"Return to base":"返回基地", //OLD
+	"Travel right":"向右移动",
+	"Travel left":"向左移动",
+	"You are here":"已在此处",
+
+//ResearchGUI.as
+	"Click the items you vote to research!"                           :"点击选择研发项目",
+	"Yellow paths show what will be researched when the match starts.":"黄色标示即将研发项目",
+	"Red path items can only be bought for gold at trader."           :"红色标示此物品不可以黄金于交易者处购买",
+	"(available)"                                                     :"(可用)",
+	"(researching - {TIME}s)"                                         :"(研发中 - 剩余 {TIME} 秒 )",
+	"(click to vote)"                                                 :"(点击以投票)",
+
+//Sign.as
+	"The big brown fox jumped over the shaggy chocolate.": "巨大棕狐越过蓬乱巧克力",
+
+//PlayerCamera.as
+	"Following {CHARACTERNAME} ({USERNAME})": "跟随 {CHARACTERNAME} ({USERNAME})",
+
+//ShowTipOnDeath.as
+	"Tip: {TIP}": "提示: {TIP}",
+
+//TimeToEnd.as
+	"Time is up!\n{TEAM} wins the game!":"时间到!\n{TEAM} 获胜!",
+	"Time is up!\nIt's a tie!"          :"时间到!\n平局!",
+	"Time left: {MIN}:{SEC}"            :"剩余时间: {MIN}:{SEC}",
+	
+//TauntAI.as
+	"haha!": "哈哈!",
+	"heheheh": "嘿嘿嘿!",
+	"noob!": "菜鸡!",
+	
+	"Your mother was a hamster!": "你妈过去是仓鼠!",
+	"Your father smelt of elderberries!": "你爸闻过接骨木!",
+	"Go away or I shall taunt you a second time.": "再不滚就再来一遍.",
+	"Go and boil your bottom!": "回去烧开你的腚!",
+	
+	"heeelp!": "救-",
+	"ouch!": "哎呦!",
+	"damnit!": "见鬼!",
+	"dangit!": "该死!",
+	"oof!": "唔!",
+	"...": "...",
+	"You'll be sorry!": "你会后悔的!",
+	"I'll get you!": "我要抓住你了!",
+	
+	"I'll be back": "我会回来的",
+	"Save me barry!": "救救我男爵!",
+	
+	"It's just a flesh wound.": "新伤口罢了.",
+	"yeargh!": "呀嘿!",
+
+//// SOLO GAME MODES ////
+//Tutorial01.as
+	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"移动 & 跳跃\n\n$KEY_A$$KEY_W$$KEY_D$",
+	"$sign$Go to the right and\n\nbe sure to read these signs.":"$sign$ 向右走\n\n确保看到了这些标语!",
+	"$Jab$Practice the sword JAB\n\non the dummy.\n\nAim with mouse and tap $LMB$":"$Jab$练习剑术\n\n瞄准靶标\n\n以鼠标指针瞄准并点击$LMB$",
+	"Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!":"练习劈斩.\n\n按住 $LMB$ 续力\n\n看到这个$Tutorial_Slash$姿势后 \n 松开$LMB$!",
+	"Practice the DOUBLE SLASH.\n\nHOLD $LMB$ until spark$Tutorial_Slash2$\n\n\nQuickly TAP $LMB$ 2 times!":"练习连斩\n\n按住$LMB$直至出现$Tutorial_Slash2$ 闪光\n\n\n 之后快速双击$LMB$",
+	"Before entering this room charge your sword $Tutorial_Slash2$\n\nand then quickly\nwalk inside and slash!":"进入房间前进行二段续力$Tutorial_Slash2$\n\n之后快速地\n走进房间连斩",
+	"HOLD $RMB$ to shield.\n\nUse mouse to aim shield.":"按住 $RMB$ 进行格挡\n\n使用鼠标调整角度",
+	"Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$":"墙上奔跑\n\n按住 $KEY_D$$KEY_W$",
+	"Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$":"骑士可破坏木块木门与泥土，攻击墙壁得以穿过$LMB$",
+	"Automatically pickup things used by your class.":"此职业可使用的物品会被自动收集",
+	"Press $KEY_SPACE$ to light bomb\n\nAim with mouse.\n\nAgain $KEY_SPACE$ throw it.":"按 $KEY_SPACE$ 可以引燃炸弹\n\n使用鼠标瞄准\n\n再次按 $KEY_SPACE$ 投掷炸弹",
+	"Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.":"盾牌降落$Tutorial_Glide$\n\n\n从高处跳下下落过程中鼠标向上\n并按住 $RMB$ 打开盾牌作为降落伞",
+
+//Tutorial02.as
+	"Stand on the enemy hall$hall$ to capture it.":"站在敌方大厅$hall$ 可以将其占领",
+	"Halls are respawn points and can be used to switch class.":"大厅可以作为出生点同时可以更换职业",
+	"In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.":"在大厅里切换职业到弓手 $ARCHER$.\n\n按住 $KEY_E$,\n\n使用鼠标选择职业 $CLASSCHANGE$ 之后松开按键",
+	"As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!":"弓手 $Tutorial_Archer$\n\n\n使用鼠标瞄准\n\n按住 $LMB$ 续力\n\n松开后射击",
+	"Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$":"使用抓钩$Tutorial_Grapple$\n\n\n鼠标向上瞄准以抓住天花板\n\n按住 $RMB$\n\n按住$KEY_D$荡至右侧",
+	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"结合抓钩与墙上奔跑到达这里\n\n按住 $RMB$\n\n同时按住跑与跳 $KEY_D$$KEY_W$",
+	"HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!":"按住 $LMB$ 直到出现闪光 $Tutorial_Archer2$\n\n\n接着再按 $LMB$ 进行射击\n\n三连发 适于近战",
+	"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!":"$Tutorial_Archer2$\n\n\n练习提前续力以便开门时以三连射杀死骑士",
+	"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.":"使用抓钩$Tutorial_Grapple$ 荡过去\n\n按住$RMB$\n\n向天花板灯$lantern$的方向伸出抓钩\n\n按住 $KEY_D$\n\n在需要停下时松开抓钩",
+
+//Tutorial03.as
+	"$lantern$\nPickup the lantern $KEY_C$":"$lantern$\n捡起灯 $KEY_C$",
+	"Drop is the same as pickup $KEY_C$":"再按相同的按键可以放下灯 $KEY_C$",
+	"Activate/Deactivate things\n   $KEY_SPACE$\n\n\n$lantern$ On/Off":"激活/停止 相关物件\n   $KEY_SPACE$\n\n\n$lantern$ On/Off",
+	"By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$":"题外话：你可以在屏幕顶端看到小地图 按 $KEY_M$ 可以隐藏或展开小地图",
+	"Switch class to BUILDER  $BUILDER$\n\nGo to Hall. HOLD $KEY_E$ and mouse over$CLASSCHANGE$":"切换到职业：工人 $BUILDER$\n\n前往大厅\n按$KEY_E$并用鼠标选择 $CLASSCHANGE$",
+	"The passage is blocked here. As builder, dig your way through.\n\nPoint mouse at block\n\nHOLD $RMB$":"通道被堵住了...\n作为工人你可以挖出通路\n鼠标指向想要挖掘的方块\n\n按住 $RMB$进行挖掘",
+	"$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.":"$Tree$\n\n 伐木 \n\n鼠标指针指向树后按住 $RMB$ ",
+	"$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":"$log$ 劈原木\n\n以得到木材$mat_wood$\n\n鼠标指向原木后按住 $RMB$",
+	"$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)":"$ladder$ \n\n建造梯子\n\n按住 $KEY_F$ (物品栏按键)\n\n鼠标停留在梯子上后松开物品栏按键\n\n建造梯子需要木材 $mat_wood$",
+	"Place by pointing with mouse and pressing $LMB$":"使用鼠标选择建筑位置\n按 $LMB$确认建造",
+	"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.":"$Pick$ \n\n 建造一座桥\n\n$KEY_F$ $Swap$ $Help_Block1$\n\n\n同时尝试一下不同的方块看看用途",
+	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"可水平建造的方块是有限的 继续水平建造则需要额外的支撑",
+	"$Pick$  $BlockStone$\n\nMine some stone $RMB$":"$Pick$  $BlockStone$\n\n挖掘一些石头 $RMB$",
+	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\n装填投石车\n\n按住 $KEY_E$, 点击 $mat_stone$",
+	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$ \n\n\n站在射击位置(图中 $down_arrow$ 处)\n\n按 $KEY_S$进入\n\n按住 $LMB$进行续力\n\n(司机位于中部\n顶部为发射槽)",
+	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"最后一件事\n\n在多人游戏时 不要不好意思向别人求助\n\n按$KEY_ENTER$进行交谈 \n\n\n也可以使用表情\n\n按住 $KEY_Q$",
+	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"以上只涵盖了基础教程 在游玩的过程中你会学到更多 \n\n 现在可以试试其他单人模式或是加入多人游戏",
+
+//TutorialCTF01.as
+	"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":
+	"夺旗模式是初学者最基础的游戏模式 目标是夺取敌方旗帜并将其带回己方旗帜",
+	"Killing enemies, building structures and generally being useful for your team will give you coins.\n\nCoins allow you to purchase ammo, weapons & tools in workshops. First thing, as an example on how it will look when you kill an enemy:\n\nKill those chicken and get their coins!\n\n$chicken$":
+	"杀死敌人或者建造建筑可以得到金币\n\n金币可以用于购买武器与工具\n\n体会下杀敌时获得金币的感觉金币可以用于购买武器与工具吧：\n\n杀死这群鸡得到金币\n\n$chicken$",
+	"Go to the Tent and switch class to BUILDER.\n\nPress $KEY_E$ while standing\n\non the Tent.\n\n\n\n$tent$\n\n\n":
+	"走到帐篷边，将职业转换至工人\n\n站在帐篷边按 $KEY_E$ \n\n$tent$\n\n\n",
+	"If you've switched to builder in the Tent now you can build workshops for your team.\n\n\nHold $KEY_F$ and select $building$":
+	"如果你已经切换至工人了 现在你就可以为你的队伍建造工坊\n\n\n按 $KEY_F$, 选择 $building$",
+	"If you don't have wood:\n$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.\n\n\n$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":
+	"若没有木材\n\n$Tree$ 就伐木吧\n\n\n按住 $RMB$ 并指向树\n\n\n$log$ 可以被劈成木材\n\n劈原木 $mat_wood$\n\n按住 $RMB$ 并指向原木",
+	"Press $KEY_E$ on the frame\n\nto convert it to a proper workshop. Some will require additional resources, go gather them!":
+	"对着框架按 $KEY_E$ 将其建成我们所需的工坊\n\n一些建筑需要额外的材料 收集材料去吧",
+	"Workshops allow you to buy items in them for coins which you get for doing useful things for your team.\n\nClass workshops allow you to switch class in them.\n\nThe tunnel allows you to quickly move from place to place (at least 2 required).\n\nTry them out!\n\n\n$tunnel$\n":
+	"工坊里可以花钱买道具以帮助你的团队\n\n同时你可以在各个职业的工坊切换到相应职业\n\n两个隧道之间可以进行快速传送\n\n快试试吧\n\n\n$tunnel$\n",
+	"To conclude this tutorial go get the red flag and bring it back to your blue flag. \n\nPress $KEY_ESC$ to go to menu\n\nand exit after you're done.":
+	"最后，把红旗运回到你的蓝旗\n\n完成后 按$KEY_ESC$ 退出",
+
+//TutorialTTH01.as
+	"The goal of Take the Halls is for your team to capture all the halls on the map.\n\nYou can easily see them in the minimap on top of the screen.\n\n$KEY_M$ to toggle the\n\nminimap.":
+	"Le but de la capture de halls est de capturer tous les halls de la carte à l'aide de votre équipe.\n\nVous pouvez facilement les voir avec la mini-carte en haut de l'écran.\n\n$KEY_M$ pour (dés)activer la\n         mini-carte.",
+	"A white colored Hall is neutral. It belongs to the people of this land. Capture it by standing inside of it.":
+	"Un hall blanc est neutre. Il appartient aux gens de cette terre. Capturez-le en vous en rapprochant.",
+	"Hold $KEY_E$ and press $CLASSCHANGE$\n\nto change class to BUILDER\n\n\n$RESEARCH$\n\n\nPress this button to view your teams research tree.\n\nThe whole team can vote here on what technology they want. Not all techs can be achieved, decide wisely!":
+	"Enfoncez $KEY_E$\n\npuis appuyez sur $CLASSCHANGE$\n\npour devenir CONSTRUCTEUR\n\n\n$RESEARCH$\n\n\nAppuyez sur ce bouton pour voir l'arbre de recherche de l'équipe.\n\nToute l'équipe peut voter pour des recherche qui l'intéresse. Toutes les technologies ne peuvent pas être recherchées à la fois, choisissez bien!",
+	"$crate$\n\nPress $KEY_E$ on the crate'\n\n(if it has dropped from the sky) to get supply materials!":
+	"$crate$\n\nAppuyez sur $KEY_E$ sur la caisse\n\n(si elle est larguée du ciel) pour récupérer des matériaux!",
+	"If you've switched to builder in the Hall now you can build workshops for your team.\n\nWorkshops are basically factories which make ammo & weapons automatically for you.\n\nGo to an empty spot.\n\nHold $KEY_F$ and select $building$.":
+	"Si vous êtes un constructeur, vous pouvez construire des ateliers pour votre équipe.\n\nLes ateliers sont des sortes d'usines qui fabriquent munitions et armes automatiquement pour vous.\n\nAllez à un endroit dégagé.\n\nAppuyez sur $KEY_F$ et\n\nchoisissez $building$.",
+	"After converting to a workshop you can see a worker appeared inside of it.\n$migrant$\n\n\nHe came from the hall.\n\nYou can only build as many functional workshops as there are workers in your hall.":
+	"Une fois que votre atelier est construit, un travailleur y apparaît.\n$migrant$\n\n\nIl vient du hall.\n\nVous ne pouvez pas construire plus d'ateliers qu'il y a de travailleurs dans un hall proche.",
+	"Press $KEY_E$ on the frame\n\n$building$\n\nto convert it to a proper workshop. Select one (the unavailable ones are waiting for research in the hall to complete).":
+	"Appuyez sur $KEY_E$ dans votre atelier.\n\nChoisissez le type de l'atelier (ceux qui ne sont pas disponibles n'ont pas encore été recherchés au hall).",
+	"Hold $KEY_E$ on a workshop to see\n\nwhat it is producing. Green indicates it's done.\n\n\nTry out the different shops!":
+	"Enfoncez $KEY_E$ dans un atelier pour voir         ce qu'il s'y produit. En vert, la production est terminée, et vous pouvez utiliser l'objet produit.\n\n\nEssayez d'autres ateliers!",
+	"$trader$\n\n\nYou see a trader in his shop below.\n\nPress $KEY_E$ on the trader to buy.\n\nYou can buy the following:\n\nTechnology scrolls - give you quick access to a tech without the need for long research\n\nMagic scrolls - check the descriptions!\n\nExchange materials for gold and vice versa. This is useful when one of the resources is lacking on the map.":
+	"$trader$\n\n\nVous pouvez voir un marchand dans son magasin en bas.\n\nAppuyez sur $KEY_E$ à côté du marchand.\n\nVous pouvez achetez ceci:\n\nDes parchemins de technologies - bien que coûteux, ils vous permettent d'obtenir une technologie même si elle n'est pas encore recherchée ou n'est plus recherchable.\n\nParchemins magiques - voyez les descriptions!\n\nÉchangez des matériaux contre de l'or, et inversement. C'est utile lorsqu'il manque de certaines ressources sur la carte.",
+	"Dig the gold $RMB$.\n\nGet enough to buy the Scroll of Drought from the trader.\n\n$scroll$":
+	"Récupérez de l'or $RMB$.\n\nAyez-en assez pour acheter le parchemin d'évaporation auprès du marchand.\n\n$scroll$",
+	"$scroll$\n\nOnce you have the scroll press $KEY_E$ to use it!":
+	"$scroll$\n\nLorsque vous avez le parchemin, appuyez sur $KEY_E$",
+	"If you have more than one hall you can quickly move between them.\n\nHold $KEY_E$ and\n\nselect the blue travel button.":
+	"Si vous avez plus d'un hall, vous pouvez les traverser par leur tunnel.\n\nEnfoncez $KEY_E$ et\n\nsélectionnez le bouton bleu de traversée.",
+	"Those are the basics you need to know about Take the Halls. The rest can be learned when playing online by observation. This game mode is simple but complexity comes from great strategy. See you on the battlefield!\n\nPress $KEY_ESC$ to get out.":
+	"Ce sont les bases que vous aviez à apprendre pour le TTH. Vous pouvez apprendre le reste en jouant en ligne en observant les autres. Ce mode de jeu est simple à la base, mais sa complexité vient de sa stratégie. En espérant vous voir sur le champ de bataille!\n\nAppuyez sur $KEY_ESC$ pour quitter.",
+//Challenge_PrincessStart
+	"   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.":
+	"   Au sommet d'une falaise escarpée, protégée par une armée de vaillants chevaliers, se dresse la fortresse du guerrier démoniaque Sedgewick. Au plus profond de son donjon, Sedgewick tient captive la charmante princesse Geti.\n\n    Tu es le Guerrier du Roi. Seul, avec ton épée et ton bouclier, tu devras combattre Sedgewick et sauver la belle Geti.\n\n    Laisse peurs et autres préoccupations derrière toi. Concentre-toi sur ton objectif, garde ton sang-froid, accepte que la mort puisse te guetter. Tel est le dessein du chevalier.",
+	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .":
+	"   Et ainsi l'aventure s'achève. Le maléfique Sedgewick est vaincu, la belle Geti saine et sauve. Pour la première fois dans l'Histoire, la contrée baigne dans la paix et l'amour. Mais pour le Guerrier du Roi, la lutte n'est jamais terminée...",
+	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .":
+	"   Et ainsi l'aventure s'achève. Le maléfique Sedgewick est vaincu, la belle Geti morte à tes pieds. Pour la première fois dans l'Histoire, la contrée baigne dans la paix et l'amour, mais pleure la mort de leur princesse bien-aimée...",
+//Sandbox.as
+	"Welcome to King Arthur's Gold":"欢迎来到亚瑟王宝藏",
+	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"这是沙盒模式\n放松一下吧\n\n按 ESC 查看按键设定\n玩得开心",
+//Sandbox gamemode.cfg
+	"Build whatever your heart desires. Respect other folk's creations!":"随心所欲地建造吧 但请尊重他人的造物!",
+
+//// VOTES ////
+//VoteCore.as
+	"Reason: {REASON}"            :"理由: {REASON}",
+	"Cast by: {USER}"             :"发起人: {USER}",
+	"[O] - Yes"                   :"[O] - 是",
+	"[P] - No"                    :"[P] - 否",
+	"Ctrl+O Pass"                 :"Ctrl+O 弃权",
+	"CTRL+P Cancel"               :"Ctrl+P 取消",
+	"Click to close ({TIMELEFT}s)":"点击关闭 ({TIMELEFT}秒)",
+
+//TDM_Interface.as
+	"WARMUP"                                   :"热身",
+	"KILLS: {CURRENT}/{LIMIT}"                 :"杀敌: {CURRENT}/{LIMIT}",
+	"SUDDEN DEATH"                             :"即刻死亡",
+	"In Queue to Respawn..."                   :"等待复活...",
+	"No Respawning - Wait for the Game to End.":"无法复活 - 等待游戏结束",
+
+//// RESUPPLIES ////
+//CTF_GiveSpawnItems.as
+	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"距下次补给 {SEC}{TIMESUFFIX}, {ACTION}!",
+	"Go Fight"                                     :"去战斗吧",
+	"Go Build"                                     :"来建造吧",
+	"Prepare for Battle"                           :"战斗准备",
+	" seconds"                                     :" 秒",
+	" second"                                      :" 秒",
+
+//// RESPAWNING ////
+//CTF_Interface.as
+//WAR_Interface.as
+//TDM_Interface.as
+//Sandbox_Interface.as
+//CTF_PickSpawn.as
+	"Respawning in: {SEC}" :"复活剩余: {SEC}",
+	"approximatively never":"几乎从来没有",
+	"Pick spawn point"     :"选择出生点",
+	"Spawn at {ITEM}"      :"重生于 {ITEM}",
+	"respawn is contested" :"重生被干扰",
+	"No spawns available!" :"无剩余重生次数",
+
+//WAR_Interface.as
+	"DEFEND THE HALL!"                           :"防守大厅!",
+	"DEFEND THE HALL!\n           $DEFEND_THIS$" :"防守大厅!\n           $DEFEND_THIS$",
+	"BUILD WORKSHOPS\n           $BUILD$"        :"建造工坊\n           $BUILD$",
+	"BUILD DEFENSES\n           $BUILD$"         :"建造防御工事\n           $BUILD$",
+	"CAPTURE THE HALL!\n           $DEFEND_THIS$":"占领大厅!\n           $DEFEND_THIS$",
+	"$ATTACK_LEFT$ATTACK!"                       :"$ATTACK_LEFT$进攻!",
+	"ATTACK!$ATTACK_RIGHT$"                      :"进攻!$ATTACK_RIGHT$",
+	"ATTACK!\n           $ATTACK_THIS$"          :"进攻!\n           $ATTACK_THIS$",
+
+//Descriptions.as
+	"Bombs for Knight only.":"骑士专用的炸弹",
+	"Arrows for Archer and mounted bow.":"弓手与弩使用的箭",
+	"Highly explosive powder keg for Knight only.":"骑士专用的桶装炸药",
+
+	"A stone throwing, ridable siege engine, requiring a crew of two.":"可驾驶投石的攻城器械，需要一至两人操作",
+	"A bolt-firing pinpoint accurate siege engine, requiring a crew of two. Allows respawn and class change.":"可射箭的精准打击攻城器械 需要两人操作 可以作为重生点与更换职业",
+	"Piercing bolts for ballista.":"弩车使用的箭",
+	"For Ballista\nTurns its piercing bolts into a shaped explosive charge.":"弩车专用\n将其升级为爆炸箭",
+
+	"A small boat with two rowing positions and a large space for cargo.":"可以两个人划的小船，有较大的货仓",
+	"A fast rowing boat used for quickly getting across water.":"快速渡河用的高速浆船",
+	"A slow armoured boat which acts also as a water base for respawn and class change.":"低速装甲船，可作为水上基地用于重生与更换职业",
+
+	//"A siege engine designed to break open walls and fortifications.":"Un véhicule de siège pour défoncer les murs et les fortifications.",
+	"Raw stone material.":"石料",
+	"Raw wood material.":"木材",
+	"Lanterns help with mining in the dark, and lighten the mood.":"灯，方便黑暗中挖矿，同时也照亮心灵",
+	"A circular saw that turns tree logs into wood material.":"圆锯，将原木加工为木材",
+	//"A trading post. Requires a trader to reside inside.":"Magasin du marchand. Nécessite qu'un marchand y réside..",
+	//"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies.": "Excalibur, épée légendaire du Roi Arthur, assortie de pouvoirs magiques pour conquérir les ennemis",
+	"A simple wooden ladder for climbing over defenses.":"简易木梯，用于跨过防御工事",
+	"A stone boulder useful for crushing enemies.":"巨石，碾碎敌人",
+	"An empty wooden crate for storing and transporting inventory.":"木箱，用于贮藏运输材料",
+	"An explosive mine. Triggered by contact with an enemy.":"高爆地雷，接触敌人时爆炸",
+	//"Fire satchel for Knight only.":"Sac inflammable pour le chevalier seulement",
+	"A health regenerating heart.":"生命回复",
+	//"A sack for storing more inventory on your back.":"",
+	"A seedling of an oak tree ready for planting.":"橡木种子，可栽培",
+	"A seedling of a pine tree ready for planting.":"松树种子，可栽培",
+	"A decorative flower seedling.":"装饰用花朵的种子，可栽培",
+	"Grain used as food.":"作为食物的谷物",
+	"Wooden swing door.":"木制门",
+	"Stone spikes used as a defense around fortifications.":"石制尖刺用于前线防御",
+	"A trampoline used for bouncing and jumping over enemy walls.":"蹦床，用以跳过敌人的城墙",
+	"A stationary arrow-firing death machine.":"火矢死亡机器",
+	"Fire arrows used to set wooden structures on fire.":"火箭用于点燃木质建筑",
+
+	"A tunnel for quick transportation.":"隧道，用于快速穿梭",
+	"Bucket for storing water. Useful for fighting fires.":"可以乘水的木桶，用于灭火",
+	"A wooden bucket pre-filled with water for fighting fires.":"装满水的木桶",
+	"A generic factory. Requires Research Room, technology upgrade and big enough population to produce items.":"通用工厂，需要研究室，科技升级与人口才能生产物品",
+	//"Kitchen produces food which heal wounds.":"Кухня производит продукты питания, которые лечат раны.",
+	//"A plant nursery with grain, oak and pine tree seeds.":"",
+	//"Barracks allow changing class to Archer or Knight.":"Барраки позволяют изменить класс на лучника или рыцаря.",
+	//"A storage than can hold materials and items and share them with other storages.":"Хранилище,которое может хранить материалы и предметы, а также делить их с другими хранилищами.",
+	"A mining drill. Increases speed of digging and gathering resources, but gains only half the possible resources.":"挖矿用的钻，加速挖掘但资源获得量减半",
+	"Bombs for Knights & arrows for Archers.\nAutomatically distributed on respawn.":"骑士用炸弹与弓手用箭\n重生时自动分配",
+	"Items used for blowing stuff up.":"用于爆破的物品",
+	"Items used for lighting things on fire.":"用于纵火的物品",
+	//"When team is in possession of stone construction technology it allows builders to make stone walls, doors, traps and spikes.":""
+	//"Dorm increases population count and allows spawning and healing inside. Requires a migrant.":""
+	"Research room.":"研究室",
+	"Water arrows for Archer. Can extinguish fires and stun enemies.":"水箭，弓手专用，可灭火与眩晕敌人",
+	"Bomb arrows for Archer.":"爆炸箭，弓手专用",
+	"Water bomb for Knight. Can extinguish fires and stun enemies.":"水炸弹，骑士专用，可灭火与眩晕敌人",
+	"Water absorbing sponge. Useful for unflooding tunnels and reducing water stuns.":"吸水海绵，可以处理隧道进水与防御水炸弹眩晕",
+	"Builder workshop for building utilities and changing class to Builder":"工人工坊，提供工具，可以切换至工人",
+	"Knight workshop for building explosives and changing class to Knight":"骑士工坊，提供炸弹，可以切换至骑士",
+	"Archer workshop for building arrows and changing class to Archer":"弓手工坊，提供工具，可以切换至弓手",
+	"Siege workshop for building wheeled siege engines":"攻城工坊，提供有轮攻城器械",
+	"Naval workshop for building boats":"海事工坊，可造船",
+	"Place of merriment and healing":"休息与疗伤的场所",
+	"A Cache for storing your materials, items and armaments.":"储物箱，用于存储材料物品武器",
+	"A refreshing mug of beer.":"一杯提神啤酒",
+	"A hearty meal to get you back on your feet.":"一顿丰盛大餐",
+	"A suspiciously undercooked egg, maybe it will hatch.":"神奇的蛋，或许会孵出小鸡",
+	"A burger to go.":"可以带走吃的汉堡",
+
+	"This magic scroll when cast will turn all nearby enemies into a pile of bloody gibs.":"卷轴，可以将附近敌人化为肉末",
+	"This magic scroll will evaporate all water in a large surrounding orb.":"卷轴，蒸发附近所有水",
+
+//// HELPS ////
+//DrawHelp.as
+	"$!!!$$GREEN$WATCH THESE FOR          .          GAMEPLAY HELP$GREEN$\n\n\n$KEY_ESC$ CHECK CONTROLS\n\n$KEY_F1$ HELP ON/OFF\n\n(click to remove this)\n\n      $DEFEND_THIS$":
+	"$!!!$$GREEN$显示\n           游戏帮助$\n\n\n$KEY_ESC$ 查看控制设置\n\n$KEY_F1$ 帮助 开/关\n\n(点击移除这些)\n      $DEFEND_THIS$",
+
+//BasicHelps.as
+	" $down_arrow$ Hop inside  $KEY_S$"                :" $down_arrow$ 进入 $KEY_S$",
+	" Get out  $KEY_W$"                                :" 离开 $KEY_W$",
+	"$trader$ Buy    $KEY_E$"                          :"$trader$ 购买 $KEY_E$",
+	"$CLASSCHANGE$ Change class    $KEY_E$"            :"$CLASSCHANGE$ 切换职业 $KEY_E$",
+	"${ITEM}$ $Rotate$ Rotate    $KEY_SPACE$"          :"${ITEM}$ $Rotate$ 旋转 $KEY_SPACE$",
+	"$trap_block$ Opens on enemy"                      :"$trap_block$ 仅敌人可通过",
+	"$spikes$ Retracts on enemy if on stone $STONE$"   :"$spikes$ 若建在石块上敌人通过时放出 $STONE$",
+	"$wooden_platform$  $Rotate$ Rotate    $KEY_SPACE$":"$wooden_platform$  $Rotate$ 旋转    $KEY_SPACE$",
+	"$ladder$  $Rotate$ Rotate    $KEY_SPACE$"         :"$ladder$  $Rotate$ 旋转 $KEY_SPACE$",
+	"Change class    $KEY_E$"                          :"切换职业 $KEY_E$",
+	"$lantern$ On/Off     $KEY_SPACE$"                 :"$lantern$ 开/关 $KEY_SPACE$",
+	"$lantern$ Pick up    $KEY_C$"                     :"$lantern$ 捡起 $KEY_C$",
+	//"$satchel$ Light     $KEY_SPACE$"                :"$satchel$ Allumer $KEY_SPACE$",               //NOT USED
+	//"$satchel$ Only KNIGHT can light satchel"        :"$satchel$ Seuls les CHEVALIERS peuvent alummer les bombes!", //NOT USED
+	//"$satchel$ THROW!    $KEY_SPACE$"                :"$satchel$ LANCER! $KEY_SPACE$",              //NOT USED
+	"$log$ Chop $mat_wood$   $RMB$"                    :"$log$ 劈 $mat_wood$   $RMB$",
+	"$keg$Pick up    $KEY_C$"                          :"$keg$捡起 $KEY_C$",
+	"$keg$Light    $KEY_SPACE$"                        :"$keg$点燃 $KEY_SPACE$",
+	"$keg$Only KNIGHT can light keg"                   :"$keg$仅骑士可点燃桶装炸药",
+	"$keg$THROW!    $KEY_SPACE$"                       :"$keg$投掷    $KEY_SPACE$",
+	"$mat_bombs$THROW!    $KEY_SPACE$"                 :"$mat_bombs$投掷 $KEY_SPACE$",
+	"$crate$Pick up    $KEY_C$"                        :"$crate$捡起 $KEY_C$",
+	"${VEHICLE}$Drive     $KEY_A$ $KEY_S$ $KEY_D$"     :"${VEHICLE}$驾驶 $KEY_A$ $KEY_S$ $KEY_D$",
+	"${VEHICLE}$FIRE     $KEY_HOLD$$LMB$"              :"${VEHICLE}$开火 $KEY_HOLD$$LMB$",
+	"${VEHICLE}$FIRE     $LMB$"                        :"${VEHICLE}$开火 $LMB$",
+	"$food$Take out food  $KEY_HOLD$$KEY_F$"           :"$food$带走食物 $KEY_HOLD$$KEY_F$",
+	"$boulder$ Pick up    $KEY_C$"                     :"$boulder$ 捡起 $KEY_C$",
+	"$building$Construct    $KEY_E$"                   :"$building$建造 $KEY_E$",
+	"$building$Use    $KEY_E$"                         :"$building$使用 $KEY_E$",
+
+//Factory.as
+	"$workshop$Convert workshop    $KEY_E$": "$workshop$改造成工坊$KEY_E$",
+	"Check production    $KEY_E$": "检查产品 $KEY_E$",
+	"Requires a free worker from Hall":"需要大厅的闲置劳工",
+	"Convert Workshop":"改造为工坊",
+	"Convert Workshop\n\n$RED$Requires {TECH_NAME}\n from Hall\n$RED$            $RESEARCH$\n\n":"改造为工坊\n\n$RED$需要 \"{TECH_NAME}\"\n大厅科技\n$RED$                 $RESEARCH$\n\n",
+	"Upgrade to...":"升级为",
+
+	//"Saw":"Scie", //in blobs
+	//"Ballista":"Baliste", //in blobs
+	"Bomb Ammo":"炸弹武器",
+	//"Catapult":"Catapulte", //in blobs
+	"Demolition":"拆除",
+	"Bakery":"饭店",
+	"Longboat":"长船",
+	"Military Supplies":"军需补给",
+	"Pyrotechnics":"火器",
+	//"War Boat":"Navire de guerre", //in blobs
+	"Water Ammo":"水炸弹",
+
+//Saw.as
+	"Turn Saw On":"开启",
+	"Turn Saw Off":"关闭",
+
+//Crate.as
+	"Unpack all":"全部组装",
+	"Stop {ITEM}":"停止 {ITEM}",
+	"Unpack {ITEM}":" 组装{ITEM}",
+	"Unpack {ITEM}   $KEY_E$": "组装 {ITEM}   $KEY_E$",
+	"Can't unpack {ITEM} here": "不能在此处组装 {ITEM}",
+
+//Scroll.as
+	"$scroll$Pick up    $KEY_C$": "$scroll$捡起 $KEY_C$",
+	"$scroll$Use in *first* Hall     $KEY_E$": "$scroll$在第一个大厅使用 $KEY_E$",
+	"$scroll$Use magic scroll    $KEY_E$": "$scroll$使用魔法卷轴 $KEY_E$",
+
+//KnightLogic.as
+	"$Jab$Jab        $LMB$": "$Jab$突刺 $LMB$",
+	"$Shield$Shield    $KEY_HOLD$$RMB$": "$Shield$盾反 $KEY_HOLD$$RMB$",
+	"$Slash$ Slash!    $KEY_HOLD$$LMB$": "$Slash$ 斩! $KEY_HOLD$$LMB$",
+
+//BuilderLogic.as
+	"$Pick$Dig/Chop  $KEY_HOLD$$RMB$": "$Pick$挖/伐 $KEY_HOLD$$RMB$",
+
+//BuilderInventory.as
+	"$Build$Build/Place  $LMB$": "$Build$建造/放置 $LMB$",
+
+//ArcherLogic.as
+	"Hide    $KEY_S$": "隐蔽 $KEY_S$",
+	"$Grapple$ Grappling hook    $RMB$": "$Grapple$ 抓钩 $RMB$",
+	"$arrow$Fire arrow   $KEY_HOLD$$LMB$": "$arrow$火箭 $KEY_HOLD$$LMB$",
+
+//RunnerDefault.as
+	"${ATTACHED}$Throw    $KEY_C$": "${ATTACHED}$投掷 $KEY_C$",
+
+//TreeSync.as
+	"$Axe$$Tree$Chop tree    $RMB$": "$Axe$$Tree$伐木 $RMB$",
+	"$Tree$Climb tree    $KEY_W$": "$Tree$爬树 $KEY_W$",
+
+//TradingMenu.as
+	"Out of stock. Come back later.":"售磬，请稍后再来",
+
+//HelpfulDeathTips.cfg
+	"To hide these tips, and other in-game help, hit F1.": "Pour cacher ces conseils et l'aide en jeu, appuyez sur F1.",
+	"Enemies can use your tunnels so protect them well!": "Les ennemis peuvent utiliser vos tunnels! Vous devez bien les protéger.",
+	"Spikes will stun you for a short time.": "Les pointes vous étourdissent un court moment.",
+	"Saws will kill you instantly": "Les scies en marche vous tuent instantanément.",
+	"Spikes placed on stone blocks behave differently, than if placed on other blocks. Experiment!": "Les pointes placées sur les murs de pierre agissent différemment. Essayez!",
+	"As an archer you can move faster using the grappling hook.": "En tant qu'archer, vous pouvez vous déplacer plus vite avec votre grappin.",
+	"You can put out fires using water bombs or water arrows (as well as a bucket of water)!": "Vous pouvez éteindre les feux avec des seaux d'eau, mais aussi avec des bombes à eau et des flèches à eau!",
+	"As a knight, jabbing isn't always effective, try charging for a slash!": "En tant que chevalier, vous vous renderez compte que le coup simple n'est pas toujours efficace. Essayez de charger un slash!",
+	"A builder can be more useful on the front lines than in his base. But keep your eyes open over there!": "Un constructeur peut être plus utile sur le champ de bataille que dans la base. Cependant, vous ne pourrez pas vous défendre tout seul.",
+	"Wood blocks and backwalls can be set on fire, try using stone alongside the wood!":"Les murs et les parois de bois peuvent prendre feu, protégez-les avec de la pierre et évitez que le feu se propage!",
+	"Don't run wildly into the battlefield with a keg, you might have it stolen!": "Ne foncez pas tête baissée avec un tonneau sur le champ de bataille, l'ennemi peut le voler!",
+	"Pay attention to the ground, there may be a trap waiting!": "Regardez où vous mettez les pieds, un piège pourrait vous attendre!",
+	"Bomb arrows can be used to collapse towers quickly.": "Les flèches-bombes sont utiles pour faire écrouler des tours rapidement.",
+	"If you see materials on the ground, take them to a builder or put them in your storage!": "Si vous trouvez des matériaux au sol, rangez-les dans votre entrepôt ou donnez-les à un constructeur!",
+	"Water bombs and water arrows stun your enemies for an easy kill.": "Les flèches d'eau et les bombes à eau étourdissent l'ennemi, le rendant vulnérable.",
+	"Pay attention to your minimap for enemy tunnelers.": "Observez votre mini-carte, vous pourriez y trouver des ennemis qui creusent un tunnel.",
+	"Don't let siege weapons fall into the wrong hands!": "Ne laissez pas vos véhicules de siège tomber entre de mauvaises mains!",
+	"Immobilise siege weapons to prevent them from accidentally falling off a cliff!": "Immobilisez véhicules de siège pour qu'ils ne tombent pas d'une fallaise!",
+	"Press [SPACE] to light and throw a bomb, [C] to pickup.": "Appuyez sur [SPACE] pour allumer et lancer une bombe, [C] pour en ramasser.",
+	"Keep your ballistae safe - if an enemy takes it, they can use it against you!": "Gardez votre baliste bien protégée - si un ennemi capture la vôtre, cela risque de mal tourner!",
+	"Drills can be cooled down by jumping into water or running around.": "Les perceuses peuvent être refroidies plus rapidement en les laissant dans l'eau ou en se déplaçant.",
+	"Enemies can use your workshops. Don't let them buy explosives in your base!": "Les ennemis peuvent utiliser vos ateliers! Ne les laissez pas acheter des explosifs dans votre base!",
+	"Teamwork is the key to success!": "Le travail d'équipe, c'est la clé du succès!",
+	"Try to help your team mates if the situation gets tight.": "Aidez vos équipiers si ça tourne mal pour vous.",
+	"As a knight, you can put your shield up in the air to glide.": "En tant que chevalier, vous pouvez diriger le bouclier vers le haut pour planer un peu.",
+	"Wood blocks are cheaper than stone blocks, but are also weaker and can catch fire.": "Les murs de bois sont certes moins cher que les murs de pierre, mais ils sont fragiles et peuvent prendre feu.",
+	"1 bomb can deal up to 3 hearts of damage.": "1 bombe peut causer 3 points de dégâts, donc blesser à mort n'importe quel archer ou constructeur.",
+	"Drills are a fast way to dig, but only yield 50%. Don't use them on precious gold or during build time!": "Les perceuses sont rapides, mais ne donnent que la moitié des ressources. Évitez de gaspiller l'or ou les ressources de votre base!",
+	"Good players can play any class when needed.": "Les meilleurs joueurs sont ceux qui peuvent jouer avec n'importe quelle classe quand il le faut.",
+	"Make sure you're helping your team advance; don't just hide out in the back!": "Ne vous cachez pas dans votre base, et aidez votre équipe à avancer!",
+	"Ride a shark on land and press up to pick him up.": "Vous pouvez attraper un requin sur la terre ferme, en appuyant sur haut après de l'avoir chevauché.",
+	"A red name indicates a server admin - ask them for help if you need it.": "Les administrateurs ont leur pseudonyme en rouge. Si vous avez besoin d'aide, demandez leur-en.",
+	"A bush plus a mine equals happy fun time.": "Buisson + mine = un moment de fun inégalable.",
+	"Enemies can walk through your doors if open them. Don't let them in!":"N'ouvrez pas vos portes à vos adversaires!",
+	"If you see an object/body holding a door open - move it away!":"Si vous voyez un objet ou un cadavre bloquer une porte en position ouverte, bougez-le!",
+	"Visit the KAG forums for more friendly help and advice!": "Visitez les forums KAG pour obtenir de l'aide et des conseils!",
+	"A bomb's timer lasts four seconds before exploding": "Une bombe explose quatre secondes après avoir été allumée.",
+	"When you light a bomb, let the fuse burn down before throwing it so your enemy can't react!": "Quand vous allumez une bombe, vous n'avez pas à la jeter directement. Si vous patientez un peu, l'ennemi n'aura pas le temps de réagir.",
+	"If you're throwing a bomb, jump in the direction that you're aiming to throw further!": "Si vous jetez une bombe, sautez dans la direction désirée pour la lancer plus loin!",
+	"Try bomb jumping: drop a bomb on the ground, then jump and shield downwards as it explodes!": "Essayez le \"saut-bombe\": jetez une bombe au sol, puis sauter en visant le bouclier vers le bas lorsqu'elle explose!",
+	"If your enemy throws a bomb too early, you can pick it up with [C] and throw it back!": "Si un ennemi lance une bombe trop tôt, renvoyez-la en la ramassant et en la relançant! Cela marche aussi pour les bombes à eau.",
+	"You risk walking into mines or traps in dark tunnels - be careful or take a lantern!": "Les tunnels sombres sont l'endroit parfait pour des pièges et des mines - faites attention ou amenez une lanterne avec vous!",
+	"Retracting spikes deal less damage and have a delay, but are less likely to hurt your own team.": "Les pointes rétractables (posées sur un mur de pierre) font moins de dégâts et ne s'activent qu'avec un délai, mais elles ne s'activent pas toutes seules sur vos alliés.",
+	"Supporting solid walls with backwalling is important but often overlooked.": "Rajouter des parois de support pour les murs est important mais trop souvent oublié.",
+	"Collect hearts, dead fish and grain in your inventory so you can heal later on.": "Ramassez des coeurs, des poissons morts ou des graines dans votre inventaire pour pouvoir vous soigner plus tard.",
+	"Team mates will not be happy if you light a lantern in their secret tunnel.": "Vos alliés ne vont pas apprécier que vous allumiez une lanterne dans un tunnel bien caché.",
+	"As a builder, block up the enemy doors to trap them in their own base.": "En tant que constructeur, bloquez les portes ennemies. Ils seront alors bloqués dans leur propre base.",
+	"Kill/death ratios are not the ultimate aim of the game, winning the match is.": "Gonfler ses ratios de victimes/morts est alléchant, mais gagner le match est d'autant plus important.",
+	"Make sure you're spending your coins after you've gained a decent amount!": "Dépensez votre argent lorsque vous avez récolté suffisamment de pièces!",
+	"No class is bad when the player is good.": "Aucune classe n'est mauvaise quand le joueur est bon.",
+	"Prioritize building flag protection and forward towers over traps during build time.": "Construire des protections pour les drapeaux et des tours proches du champ de bataille est plus important que de construire des pièges lors de la phase de construction.",
+	"Going knight and heading forwards is often more helpful to your team than endlessly fortifying your base.": "Jouer en tant que chevalier et avancer est souvent plus utile que de fortifier éternellement sa base.",
+	"The best defense is a good offense!": "La meilleure attaque, c'est une bonne défense, pas vrai?",
+	"No matter how majestic your tower is, with no offensive units you will lose.": "Votre tour a beau être gigantesque, sans attaquants vous ne gagnerez pas.",
+	"Mines are most effective near the enemy base - not your own!": "Les mines sont plus efficaces vers la base ennemie que vers la vôtre!",
+	"As archer, you can put a mine in your inventory, grapple to the opponent's base, and place it there.": "En tant qu'archer, vous pouvez placer une mine chez l'ennemi en la transportant dans votre inventaire.",
+	"If you put a mine in your inventory, it can pop out when you die, potentially killing enemies and destroying structures.": "Si vous mourrez avec une mine dans votre inventaire, elle tombera au sol à votre mort, détruisant potentiellement structures et tuant des ennemis.",
+	"Hearts, dead fish, grain, burgers and steaks all heal you.": "Si vous étiez aventurier autrefois et puis que vous vous êtes pris une flèche dans le genou, vous pouvez vous soigner avec des coeurs, des poissons morts, des graines, des burgers et des steaks.",
+	"Always try and have a few water buckets ready in case anything catches on fire.": "Préparez des seaux d'eau au cas où quelque chose prenne feu.",
+	"Archers shouldn't be afraid to get up close and personal when the situation requires it.": "Les archers doivent être prêts à se rapprocher du conflit quand la situation le requiert.",
+	"Kegs can hurt both your team and the enemy - use them wisely.": "Les tonneaux d'explosifs sont dangereux aussi bien pour l'ennemi que pour votre équipe. Faites attention.",
+	"You can climb arrows that are stuck in blocks to climb upwards.": "Vous pouvez escalader les flèches coincées dans des murs.",
+	"Archers can make arrow ladders by shooting arrows at tower walls.": "Les archers peuvent tirer des flèches contre le mur pour que des alliés puissent les escalader.",
+	"Hold chickens to glide further.": "Transportez des poules pour planer encore plus loin.",
+	"There is a red barrier during build phase which will disappear on match start": "Il y a une barrière rouge durant la phase de construction, qui disaparaît au début du combat.",
+	"Don't be afraid to let people know you're new - they may lend a helping hand.": "N'ayez pas peur de dire aux gens que vous êtes nouveau! Ils seront contents de vous aider.",
+	"Try to get video evidence of people griefing or hacking first before yelling for an admin.": "Si vous voyez un tricheur ou un griefeur, tentez d'obtenir une preuve vidéo plutôt que d'appeler un administrateur immédiatement.",
+	"Press E around dead bodies to check for useful things in enemy (or ally) corpses!": "Bonjour. Ce message n'est pas censé apparaître, mais ce n'est pas trop grave. Pour m'excuser de ne pas fournir de conseil cette fois-ci, voici un cookie. :)", // OUTDATED!
+	"Charged arrows from close range will stun enemies, even if they shield!": "Des flèches chargées à courte portée va étourdir l'ennemi, même si il lève son bouclier!",
+	"Falling blocks can damage you - be careful!": "Des murs qui s'écroulent peuvent vous blesser!",
+	"Dropped from a high place, kegs can explode on impact.": "Des tonneaux d'explosifs allumés peuvent exploser en cas de contact brusque.",
+	"Stationary archers are an easy target - make sure to keep moving.": "Des archers immobiles sont des proies faciles. Déplacez-vous ou mourrez noblement.",
+	"See all those resources dropped by dead players? Your builders could sure use those.": "Vos constructeurs raffolent des ressources oubliées par vos ennemis. Ramenez leur-en!",
+	"Gold servers are official while blue servers are modded.": "Les serveurs en jaune sont officiels, ceux en bleus sont moddés.",
+	"If your doors are shaking, they will fall without adjacent block!": "Si vos portes menaçent de tomber, c'est que vous devez construire un mur adjacent!",
+	"It's dangerous to go alone.": "Il est dangereux de partir seul.",
+	"Make sure to return to your tent during build phase (and afterwards) for a hefty resupply!": "Retournez régulièrement à votre tente, surtout lors de la phase de construction, pour obtenir des ravitaillements!",
+	"You can rebind your keys in the settings to suit your play style and preferences.": "Vous pouvez changer les contrôles dans les préférences.",
+	"Knights can surf on water and slide on ground by shielding downward.": "Les guerriers peuvent surfer sur l'eau et glisser sur le sol en visant le sol avec le bouclier.",
+	"Your main base should be finished by the end of the build period, builders should focus on forward defenses.": "Votre base principale devrait être finie à la fin de la phase de construction. Les constructeurs devraient alors se concentrer sur des défenses sur le champ de bataille.",
+	"When knights shield upward, other players can stand on them to get past obstacles.": "Lorsque les chevaliers visent le haut avec leur bouclier, il est possible pour ses équipiers de le monter.",
+	"Not all arrows need to be triple shots! Single shots are more consistent.": "Tous les tirs de flèche n'ont pas à être des triple tirs! Les tirs simples sont plus consistents.",
+	"You can replace wood with stone without breaking the block. This is a good way to stop fires before they spread.": "Vous pouvez remplacer le bois par de la pierre sans casser le bloc. C'est un bon moyen d'arrêter les feux avant qu'ils ne se propagent.",
+	"More than one game has been lost because a flag-runner couldn't get back into their base - make ways in and out!": "Plus d'une partie a été perdue parce qu'un allié transportant le drapeau ennemi n'a pas pu revenir dans la base. Laissez divers moyens d'y entrer et d'en sortir!",
+	"Fish, chickens, and even bushes all have uses. Don't randomly attack them.": "Les poules, les poissons et même les buissons peuvent être utiles. Ne les détruisez pas sans raison.",
+	"Quarters (food shop) in a forward base helps keep pressure on the enemy.": "Des quartiers (magasin de nourriture) dans une base avancée sur le champ de bataille peuvent permettre de faire pression sur l'ennemi.",
+	"If you want a shop built, build it yourself! If a builder hasn't built it already, they probably won't.": "Si vous voulez qu'un atelier en particulier soit construit, faites-le vous même! Les autres constructeurs sont peut être déjà occupés.",
+	"Downward platforms at the top of a tower will help prevent enemies from climbing over.": "Des plateformes orientées vers le bas, placées en haut d'une tour, empêchent les ennemis de la traverser.",
+	"Stomping enemies is great tactic, but be careful - jump from too high and you'll die if you miss.": "Écraser les ennemis est à la fois drôle et efficace, mais sautez de trop haut et manquez de l'ennemi et vous mourrez bêtement.",
+	"Buy eggs to replenish your stock of chickens.": "Achetez des œufs pour ravitailler votre stock de poules.",
+	"Knights can use their swords to destroy wooden blocks and doors, but not stone": "Les guerriers peuvent utiliser leurs épées pour casser leurs murs et les portes de bois, mais pas ceux en pierre.",
+	"Doors and siege weapons are vulnerable to explosives.": "Les portes et les véhicules de sièges sont tous deux très vulnérables aux explosifs.",
+	"Bison can be tamed with burgers.": "Les bisons peuvent être apprivoisés avec des burgers.",
+	"Resources can be resupplied by changing classes in workshops, not just at the tent!": "Vous pouvez être ravitaillé dans les ateliers de classes, pas seulement à la tente!",
+
+//Requirements.as
+	"Wood":"木材",
+	"Stone":"石料",
+	"Gold":"黄金",
+	"{COINS_QUANTITY} $COIN$ required\n":"需要 {COINS_QUANTITY} $COIN$\n",
+
+//// BLOB NAMES ////
+	"Migrant":"移民",
+	"Magic Orb":"魔石",
+	"Sedgwick":"灯芯草",
+	"Princess Geti":"下知 公主",
+	"Building in Construction":"未完成建筑",
+	"Archer Shop":"弓手商店",
+	"Boat Shop":"船舶商店",
+	"Builder Shop":"工人商店",
+	"Knight Shop":"骑士商店",
+	"Quarters":"食肆",
+	"Storage":"仓库",
+	"Storage Cache":"仓储",
+	"Vehicle Shop":"载具商店",
+	"Drill":"钻",
+	"Workshop":"工坊",
+	"Fireplace":"篝火",
+	"Hall":"大厅",
+	"Barracks":"军营", //OLD
+	"Bed":"床",
+	//"Dormitory":"", //OLD
+	"Kitchen":"厨房", //OLD
+	"Seeds":"种子",
+	"Nursery":"看护屋", //OLD
+	"Research":"研究", //OLD
+	"Mill Saw":"锯",
+	"Saw":"锯",
+	"Trader":"商人",
+	"Trading Post":"贸易站",
+	"Travel Tunnel":"快速通行隧道",
+	"Workbench":"工作台",
+	"Boulder":"巨石",
+	"Bucket":"桶",
+	"Crate":"箱",
+	"Bomb":"炸弹",
+	"Keg":"桶装炸药",
+	"Mine":"地雷",
+	"Satchel":"Satchel", //OLD
+	"Water Bomb":"水炸弹",
+	"Burger":"汉堡",
+	"Heart":"心",
+	"Lantern":"灯",
+	"Wood Log":"原木",
+	//"Powerup":"", //OLD
+	"Arrow":"箭",
+	"Arrows":"箭",
+	"Ballista Bolt":"弩车用矢",
+	"Ballista Bolts":"弩车用矢",
+	"Scroll":"卷轴",
+	"Scroll of Drought":"干旱卷轴",
+	"Scroll of Carnage":"屠杀卷轴",
+	"Sponge":"海绵",
+	"Bomb Arrow":"爆炸箭",
+	"Fire Arrows":"火箭",
+	"Water Arrows":"水箭",
+	"Gold":"黄金",
+	"Stone":"石料",
+	"Wood":"木材",
+	"Bomb":"炸弹",
+	"Water Bombs":"水炸弹",
+	"Wisent":"野牛",
+	"Chicken":"鸡",
+	"Egg":"蛋",
+	"Fishy":"鱼",
+	"Shark":"鲨",
+	"Steak":"牛排",
+	"Bush":"树丛",
+	"Grain":"谷物",
+	"Grain Plant":"庄稼",
+	"Flowers":"花",
+	"Seed":"种子",
+	"Pine Seed":"松树种子",
+	"Oak Seed":"橡木种子",
+	"Bushy Tree":"茂密树木",
+	"Pine Tree":"松树",
+	"Very Important Flag":"非常重要的旗帜",
+	"Flag Base":"旗帜基地",
+	"Dummy":"模型",
+	"Tent":"帐篷",
+	"Sign":"标记",
+	"Team base":"队伍基地",
+	"Bolter":"弹射器",
+	"Dispenser":"发射器",
+	"Lamp":"灯",
+	"Obstructor":"路障",
+	"Magazine":"箭匣",
+	"Coin Slot":"投币孔",
+	"Lever":"拉杆",
+	"Button":"按钮",
+	"Stone Door":"石门",
+	"Wooden Door":"木门",
+	"Ladder":"梯",
+	"Mounted Bow":"弩箭",
+	"Wooden Platform":"木平台",
+	"Spikes":"刺",
+	"Trampoline":"蹦床",
+	"Trap Block":"陷阱方块",
+	"Airship":"空艇", // OLD
+	"Bomber":"炸弹投掷器", //OLD
+	"Ballista":"弩车",
+	"Dinghy":"餐车",
+	"Long Boat":"长舟",
+	"Raft":"筏",
+	"War Boat":"战船",
+	"Large Door":"大门", //OLD
+	"Catapult":"投石车",
+	"Catapult Rock":"投石",
+
+//// INVENTORY NAMES ////
+	"Backpack":"背包",
+	"Load":"装填",
+	"Bomber Compartment":"bombardier", //OLD
+	"Boat Compartment":"船组件",
+	"Team Storage":"团队储藏",
+	"Tech Scrolls":"科技卷轴", // OLD
+	"Storage":"仓库",
+
+//// BUTTONS AND OTHER ////
+	"Buy":"买", //CTF Shops
+	"Shop":"商店", //Shop.as (menu desc) & TradingMenu.as (btn)
+	"Swap Class":"更换职业", //OneClassAvailable.as & TentLogic.as (btns)
+	"Swap class":"更换职业", //StandardRespawnCommand.as (menu desc)
+	"Change class":"更换职业", //Hall.as, TDM_Ruins.as, WAR_base.as, Ballista.as, WarBoat.as
+	"Trade":"交易",
+
+//// SCROLLS ////
+//ScrollDrought.as
+	"Use this to dry up an orb of water.":"蒸发附近的所有水",
+	"Use this to turn all stone in the area into gold":"将附近所有石头变成黄金",
+	"Use this to make all visible enemies instantly turn into a pile of gibs.":"将目之所及的所有敌人化为肉屑",
+
+//// UI ////
+	"OK": "确认",
+	"Cancel": "取消",
+
+//Loading
+	//TODO implement in engine
+	"Precaching files...": "载入文件...",
+	"Loading blobs...": "载入方块...",
+	"Loading configs...": "载入配置...",
+	"Receiving scripts...": "接受脚本...",
+	"Determining changed scripts...": "查找改变脚本...",
+	"Building downloaded scripts...": "编译下载好的脚本...",
+	"Be nice to each other, read books and do your homework.": "对他人友好 读书 做作业",
+	"Authenticating to server...": "服务器验证...",
+	
+//Login
+	//TODO incomplete
+	"Username:": "用户名:",
+	"Password:": "密码:",
+	"Remember me": "记住我",
+	"Create Account": "新建账户",
+	"Forgot?": "忘记了?",
+	"Offline": "离线模式",
+	"PLAY": "开始游戏",
+
+//Titlescreen
+	"Solo": "单人模式",
+	"Multiplayer": "多人模式",
+	"Quit": "退出",
+	"Forum": "论坛",
+	"News": "新闻",
+	"Discord": "Discord",
+	"IRC": "IRC",
+	"Wiki": "Wiki",
+
+//Solo
+	"TUTORIALS": "教程",
+	"Basics": "基本操作",
+	"Capture the Flag": "夺旗模式",
+	"Take the Halls": "占点模式",
+	
+	"Save the Princess": "拯救公主",
+	
+	"Challenges!": "挑战!",
+	
+	"Sandbox": "沙盒",
+
+//Multiplayer
+	"Simple Join": "快速加入",
+	"Don't Care": "随便",
+	"Pick Game Size:": "选择游戏大小:",
+	"<8 Players": "<8 人",
+	"8-20 Players": "8 至 20 人",
+	">20 Players": ">20 人",
+	"Choose Game Mode:": "选择游戏模式:",
+	"Capture The Flag": "夺旗模式",
+	"Take The Halls": "占点模式",
+	"Team Deathmatch": "团队死斗", //i have no fucking clue why it shows reversed in the button. specifically here.
+	//"Sandbox": "Bac à sable", //already translated
+	"Co-op Challenge": "合作挑战",
+	"Custom Content": "自定义内容",
+	"Play!": "开始游戏!",
+	
+	"Browse servers": "查看服务器列表",
+	
+	"Connect to...": "连接到...",
+	"IP:Port": "IP:端口号",
+	//"Password:": "Mot de passe:", //already translated
+	
+//ESC menu
+	"Change Team": "更换队伍",
+	"Suicide": "自杀",
+	"Start a Vote": "开启投票",
+	"Admin": "管理员",
+	"Ignore Player": "屏蔽玩家",
+	"Servers": "服务器列表",
+	"Settings": "设置",
+	"Quit to menu": "返回主选单",
+	
+//Settings->Player
+	"Player": "玩家",
+	"Gender:": "性别:",
+	"Head packs:": "头像包:",
+	"Standard": "标准",
+	"Flags of The World": "万国旗",
+	"BUY": "买",
+	"Head:": "头部:",
+	"Clantag:": "社群:",
+
+//Settings->Controls
+	"Controls": "控制选项",
+	"Change keys:": "更改按键:",
+	"(Unused keys, for mods)": "(无用按键，仅在部分mod 中使用)",
+	"Press key/mouse to change to...": "按下你想设置的按键...",
+	"Keys Double-Bound": "按键冲突",
+	"This key is being used by another action or is reserved; results may not be as you expected!\n\nYou have been warned!": "此按键已被其他操作占用或者被系统保留。结果可能不会如你所预期的那样\n\n特此警告",
+	"Left": "左", //TODO in engine
+	"Right": "右",
+	"Up": "上",
+	"Down": "下",
+	"Action 1": "动作 1",
+	"Action 2": "动作 2",
+	"Action 3": "动作 3",
+	"Inventory": "物品栏",
+	"Use": "使用物品",
+	"Pickup": "捡起物品",
+	"Zoom in": "放大",
+	"Zoom out": "缩小",
+	"Emoticons": "表情",
+	"Map key": "小地图",
+	"Mark Player": "标记玩家",
+	"Taunts": "挑衅",
+	"Misc Menu": "杂项",
+
+//Settings->Video
+	"Video": "视频",
+	"Smooth shader": "平滑着色",
+	"\nSmooths the game screen using hq2x filter (will lower performance)\n": "\n 使用 hq2x 过滤器使得游戏画面更加顺滑(会降低性能)\n",
+	"Faster graphics": "快速图像",
+	"\nCheck this if the game is choppy or slow\n": "\n若游戏运行缓慢卡顿请勾选此选项\n",
+	"Uncap framerate": "无上限FPS",
+	"\nCheck this to have unlimited FPS (uncheck if you have slow performance!)\n": "\n勾选此选项取消最高 FPS 限制 (如果游戏运行缓慢请不要勾选!)\n",
+	"VSync - Requires Restart": "垂直同步 - 需要重启生效",
+	"\nSync rendering with monitor refresh rate (prevents tearing)\n": "\n以显示器刷新率适配游戏帧率 (防止画面撕裂)\n",
+
+//Settings->Sound
+	"Sound": "声音",
+	"Sound Volume:": "音效音量:",
+	"Music Volume:": "音乐音量:",
+	"Game music": "游戏音乐",
+	"\nTurn on\\off the game music.\n": "\n打开/关闭游戏背景音乐\n",
+	"Menu music": "菜单音乐",
+	"\nTurn on\\off the menu music.\n": "\n打开/关闭菜单背景音乐\n",
+	"Swap audio channels": "交换左右声道",
+	"\nTick this if your sound is backwards.\n": "\n如果你的声道相反请勾选\n",
+
+//Settings->Misc
+	"Misc": "杂项",
+	"Fixed camera": "固定视角",
+	"\nFixed camera = platform style; Not fixed camera = Soldat/mouse look style\n": "\n固定视角 = 普通 2D 平台游戏视角; 不锁定视角 = 使用鼠标操纵\n",
+	"Kids safe": "和谐",
+	"Chat Filter": "聊天消息过滤器",
+	"Show Team-Mates Names": "显示队伍成员的名字",
+	"Show Minimap": "显示小地图",
+	"Show Chat Bubbles": "显示聊天气泡",
+	"Snap Camera To Pixel": "拉近视角至像素",
+	"Language (EXPERIMENTAL):": "语言 (实验支持):",
+	"Language:": "语言:",
+	"Experimental feature warning": "实验功能警告",
+	"Language support is still EXPERIMENTAL!\nThe translations might be incomplete or inaccurate.\nSome translations will need a restart to apply.": "多语言支持还在实验中\n翻译会有缺失与谬误\n一些翻译需要重启游戏",
+
+//LANGUAGE NAMES
+	"French": "Français",
+	"Polish": "Polonais",
+	"English": "Anglais",
+	"Russian": "Russe"
+	"Chinese": "中文"
+}
