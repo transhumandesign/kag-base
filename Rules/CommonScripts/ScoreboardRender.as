@@ -1,4 +1,5 @@
 #include "ScoreboardCommon.as";
+#include "Accolades.as";
 
 CPlayer@ hoveredPlayer;
 Vec2f hoveredPos;
@@ -34,6 +35,7 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 	GUI::DrawText(getTranslatedString("Kills"), Vec2f(bottomright.x - 190, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Deaths"), Vec2f(bottomright.x - 120, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("KDR"), Vec2f(bottomright.x - 50, topleft.y), SColor(0xffffffff));
+	GUI::DrawText("Badges", Vec2f(bottomright.x - 520, topleft.y), SColor(0xffffffff)); // TODO: use getTranslatedString rather than constant string;
 
 	topleft.y += stepheight * 0.5f;
 
@@ -118,6 +120,31 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 		{
 			//draw name alone
 			GUI::DrawText(playername, topleft + Vec2f(name_buffer, 0), namecolour);
+		}
+
+		int farleft = 505;
+
+		Accolades@ acc = getPlayerAccolades(username);
+
+		if (acc.gold > 0)
+		{
+			GUI::DrawText("" + acc.gold, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
+			GUI::DrawIcon("Medals_", 0, Vec2f(16, 16), Vec2f(bottomright.x - farleft, topleft.y), 0.5f, p.getTeamNum());
+			farleft -= 35;
+		}
+
+		if (acc.silver > 0)
+		{
+			GUI::DrawText("" + acc.silver, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
+			GUI::DrawIcon("Medals_", 1, Vec2f(16, 16), Vec2f(bottomright.x - farleft, topleft.y), 0.5f, p.getTeamNum());
+			farleft -= 35;
+		}
+
+		if (acc.bronze > 0)
+		{
+			GUI::DrawText("" + acc.bronze, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
+			GUI::DrawIcon("Medals_", 2, Vec2f(16, 16), Vec2f(bottomright.x - farleft, topleft.y), 0.5f, p.getTeamNum());
+			farleft -= 35; // dunno why this is here
 		}
 
 		GUI::DrawText("" + username, Vec2f(bottomright.x - 400, topleft.y), namecolour);
@@ -243,9 +270,6 @@ void onRenderScoreboard(CRules@ this)
 			if (specx < bottomright.x - 100)
 			{
 				string name = p.getCharacterName();
-				if (p.getCharacterName() != p.getUsername())
-					name = p.getCharacterName() + " (" + p.getUsername() + ")";
-
 				if (i != spectators.length - 1)
 					name += ",";
 				GUI::GetTextDimensions(name, textdim);

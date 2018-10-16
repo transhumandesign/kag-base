@@ -4,6 +4,7 @@
 #include "PaletteSwap.as"
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
+#include "Accolades.as"
 
 const s32 NUM_HEADFRAMES = 4;
 const s32 NUM_UNIQUEHEADS = 30;
@@ -115,23 +116,55 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 {
 	CBlob@ blob = this.getBlob();
 
+	// strip old head
+	this.RemoveSpriteLayer("head");
+
 	// get dlc pack info
 	int headsPackIndex = getHeadsPackIndex(headIndex);
 	HeadsPack@ pack = getHeadsPackByIndex(headsPackIndex);
+	string texture_file = pack.filename;
 
-	// add head
-	this.RemoveSpriteLayer("head");
+	bool override_frame = false;
+
+	//(has default head set)
+	bool defaultHead = (headIndex == 255 || headIndex == NUM_UNIQUEHEADS);
+	if(defaultHead)
+	{
+		//accolade custom head handling
+		//todo: consider pulling other custom head stuff out to here
+		CPlayer@ p = blob.getPlayer();
+		if (p !is null && !p.isBot())
+		{
+			Accolades@ acc = getPlayerAccolades(p.getUsername());
+			if (acc.hasCustomHead())
+			{
+				texture_file = "Sprites/" + acc.customHeadTexture + ".png";
+				headIndex = acc.customHeadIndex;
+				headsPackIndex = 0;
+				override_frame = true;
+			}
+		}
+	}
+	else
+	{
+		//not default head; do not use accolades data
+	}
+
+	//add new head
 	CSpriteLayer@ head = this.addSpriteLayer(
-		"head", pack.filename, 16, 16,
+		"head", texture_file, 16, 16,
 		(doTeamColour(headsPackIndex) ? this.getBlob().getTeamNum() : 0),
 		(doSkinColour(headsPackIndex) ? this.getBlob().getSkinNum() : 0)
 	);
 
-	// set defaults
+	//
 	headIndex = headIndex % 256; // wrap DLC heads into "pack space"
-	s32 headFrame = getHeadFrame(blob, headIndex, headsPackIndex == 0);
 
-	blob.set_s32("head index", headFrame);
+	// figure out head frame
+	s32 headFrame = override_frame ?
+		(headIndex * NUM_HEADFRAMES) :
+		getHeadFrame(blob, headIndex, headsPackIndex == 0);
+
 	if (head !is null)
 	{
 		Animation@ anim = head.addAnimation("default", 0, false);
@@ -142,6 +175,11 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 
 		head.SetFacingLeft(blob.isFacingLeft());
 	}
+
+	//setup gib properties
+	blob.set_s32("head index", headFrame);
+	blob.set_string("head texture", texture_file);
+
 	return head;
 }
 
@@ -163,7 +201,7 @@ void onGib(CSprite@ this)
 		Vec2f vel = blob.getVelocity();
 		f32 hp = Maths::Min(Maths::Abs(blob.getHealth()), 2.0f) + 1.5;
 		makeGibParticle(
-			getHeadTexture(blob.getHeadNum()),
+			blob.get_string("head texture"),
 			pos, vel + getRandomVelocity(90, hp , 30),
 			framex, framey, Vec2f(16, 16),
 			2.0f, 20, "/BodyGibFall", blob.getTeamNum()
