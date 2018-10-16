@@ -2,14 +2,14 @@
 
 namespace Trampoline
 {
-	const string TIMER = "trampoline_timer";
-	const u16 COOLDOWN = 7;
+	// const string TIMER = "trampoline_timer";
+	// const u16 COOLDOWN = 7;
 	const u8 SCALAR = 10;
 }
 
 void onInit(CBlob@ this)
 {
-	this.set_u32(Trampoline::TIMER, 0);
+	// this.set_u32(Trampoline::TIMER, 0);
 
 	this.getShape().getConsts().collideWhenAttached = true;
 
@@ -54,36 +54,36 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	//cant bounce while held by something attached to something else
 	if (holder !is null && holder.isAttached()) return;
 
-	if (this.get_u32(Trampoline::TIMER) < getGameTime())
+	// if (this.get_u32(Trampoline::TIMER) < getGameTime())
+	// {
+	Vec2f velocity_old = blob.getOldVelocity();
+	if (velocity_old.Length() < 1.0f) return;
+
+	float angle = this.getAngleDegrees();
+
+	Vec2f direction = Vec2f(0.0f, -1.0f);
+	direction.RotateBy(angle);
+
+	float velocity_angle = direction.AngleWith(velocity_old);
+
+	if (Maths::Abs(velocity_angle) > 90)
 	{
-		Vec2f velocity_old = blob.getOldVelocity();
-		if (velocity_old.Length() < 1.0f) return;
+		// this.set_u32(Trampoline::TIMER, getGameTime() + Trampoline::COOLDOWN);
 
-		float angle = this.getAngleDegrees();
+		Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
+		velocity.RotateBy(angle);
 
-		Vec2f direction = Vec2f(0.0f, -1.0f);
-		direction.RotateBy(angle);
+		blob.setVelocity(velocity);
 
-		float velocity_angle = direction.AngleWith(velocity_old);
-
-		if (Maths::Abs(velocity_angle) > 90)
+		CSprite@ sprite = this.getSprite();
+		if (sprite !is null)
 		{
-			this.set_u32(Trampoline::TIMER, getGameTime() + Trampoline::COOLDOWN);
-
-			Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
-			velocity.RotateBy(angle);
-
-			blob.setVelocity(velocity);
-
-			CSprite@ sprite = this.getSprite();
-			if (sprite !is null)
-			{
-				sprite.SetAnimation("default");
-				sprite.SetAnimation("bounce");
-				sprite.PlaySound("TrampolineJump.ogg");
-			}
+			sprite.SetAnimation("default");
+			sprite.SetAnimation("bounce");
+			sprite.PlaySound("TrampolineJump.ogg");
 		}
 	}
+	// }
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
