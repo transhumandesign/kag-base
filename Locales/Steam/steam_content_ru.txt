@@ -188,4 +188,5 @@ King Arthur's Gold is Copyright © 2011-2017 Transhuman Design, All Rights Reser
 
 ###############################################################################
 # Credits:
+Translated by Diprog.
 Flags of the world are translated by Biurza.
