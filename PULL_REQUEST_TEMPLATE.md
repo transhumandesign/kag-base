@@ -4,25 +4,25 @@
 ## Description
 A few sentences describing the overall goals of the pull request's commits.
 
-## Related Issue(s)
-List related issue(s):
-
-branch | PR
------- | ------
-other_pr_production | [link]()
-other_pr_master | [link]()
-
-
-## Progress
-- [ ] Tests
-- [ ] Documentation
-
 
 ## Steps to Test or Reproduce
-Outline the steps to test or reproduce the PR here.
+Outline the steps to test or reproduce the PR here. If you added new features and want to explain how to use them, do so here.
+
+
+### Optional Git Instructions:
+
+* Windows
 
 ```sh
 git pull --prune
 git checkout <feature_branch>
-bundle; script/server
+cd ..
+runlocalhost.bat
+```
+
+* Linux
+```sh
+git pull --prune
+git checkout <feature_branch>
+../runlocalhost
 ```
