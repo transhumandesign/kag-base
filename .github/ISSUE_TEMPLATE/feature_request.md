@@ -1,14 +1,10 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
+about: Suggest a new idea for the game
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-
-A clear and concise description of what the problem is. Ex. [...] is super imbalanced and should be reworked
-
-**Describe the solution you'd like**
+**Describe the feature**
 
 A clear and concise description of what you want to happen.
 
