@@ -5,6 +5,7 @@ CPlayer@ hoveredPlayer;
 Vec2f hoveredPos;
 
 int hovered_accolade = -1;
+bool draw_age = false;
 
 //returns the bottom
 float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emblem)
@@ -33,6 +34,15 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 	topleft.y += stepheight * 2;
 
 	const int accolades_start = 650;
+	const int age_start = accolades_start + 100;
+
+	draw_age = false;
+	for(int i = 0; i < players.length; i++) {
+		if (players[i].getRegistrationTime() > 0) {
+			draw_age = true;
+			break;
+		}
+	}
 
 	//draw player table header
 	GUI::DrawText(getTranslatedString("Player"), Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
@@ -42,6 +52,10 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 	GUI::DrawText(getTranslatedString("Deaths"), Vec2f(bottomright.x - 120, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("KDR"), Vec2f(bottomright.x - 50, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Accolades"), Vec2f(bottomright.x - accolades_start, topleft.y), SColor(0xffffffff));
+	if(draw_age)
+	{
+		GUI::DrawText(getTranslatedString("Age"), Vec2f(bottomright.x - age_start, topleft.y), SColor(0xffffffff));
+	}
 
 	topleft.y += stepheight * 0.5f;
 
@@ -126,6 +140,94 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 		{
 			//draw name alone
 			GUI::DrawText(playername, topleft + Vec2f(name_buffer, 0), namecolour);
+		}
+
+		if (draw_age)
+		{
+			//draw account age indicator
+			int regtime = p.getRegistrationTime();
+			if (regtime > 0)
+			{
+				int reg_month = Time_Month(regtime);
+				int reg_day = Time_MonthDate(regtime);
+				int reg_year = Time_Year(regtime);
+
+				int days = Time_DaysSince(regtime);
+
+				int age_icon_start = 32;
+				int icon = 0;
+				//less than a month?
+				if (days < 28)
+				{
+					int week = days / 7;
+					icon = week;
+				}
+				else
+				{
+					//we use 30 day "months" here
+					//for simplicity and consistency of badge allocation
+					int months = days / 30;
+					if (months < 12)
+					{
+						age_icon_start = 36;
+						switch(months) {
+							case 0:
+							case 1:
+								icon = 0;
+								break;
+							case 2:
+								icon = 1;
+								break;
+							case 3:
+							case 4:
+							case 5:
+								icon = 2;
+								break;
+							case 6:
+							case 7:
+							case 8:
+								icon = 3;
+								break;
+							case 9:
+							case 10:
+							case 11:
+							default:
+								icon = 4;
+								break;
+						}
+					}
+					else
+					{
+						//check if its cake day
+						if (
+							reg_day == Time_MonthDate() &&
+							reg_month == Time_Month()
+						) {
+							age_icon_start = 32;
+							icon = 9;
+						}
+						else
+						{
+							//check if we're in the extra "remainder" days from using 30 month days
+							if(days < 366)
+							{
+								//(9 months badge still)
+								age_icon_start = 36;
+								icon = 4;
+							}
+							else
+							{
+								//years delta
+								age_icon_start = 32 + 16;
+								icon = Maths::Clamp(Time_Year() - reg_year, 0, 9);
+							}
+						}
+					}
+				}
+
+				GUI::DrawIcon("AccoladeBadges", age_icon_start + icon, Vec2f(16, 16), Vec2f(bottomright.x - age_start + 8, topleft.y), 0.5f, p.getTeamNum());
+			}
+
 		}
 
 		int accolades_x = accolades_start;
