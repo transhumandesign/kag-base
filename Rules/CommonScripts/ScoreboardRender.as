@@ -4,6 +4,8 @@
 CPlayer@ hoveredPlayer;
 Vec2f hoveredPos;
 
+int hovered_accolade = -1;
+
 //returns the bottom
 float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emblem)
 {
@@ -11,7 +13,9 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 		return topleft.y;
 	Vec2f orig = topleft; //save for later
 
-	f32 stepheight = 16;
+	f32 lineheight = 16;
+	f32 padheight = 2;
+	f32 stepheight = lineheight + padheight;
 	Vec2f bottomright(getScreenWidth() - 100, topleft.y + (players.length + 5.5) * stepheight);
 	GUI::DrawPane(topleft, bottomright, team.color);
 
@@ -28,6 +32,8 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 
 	topleft.y += stepheight * 2;
 
+	const int accolades_start = 650;
+
 	//draw player table header
 	GUI::DrawText(getTranslatedString("Player"), Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Username"), Vec2f(bottomright.x - 400, topleft.y), SColor(0xffffffff));
@@ -35,7 +41,7 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 	GUI::DrawText(getTranslatedString("Kills"), Vec2f(bottomright.x - 190, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Deaths"), Vec2f(bottomright.x - 120, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("KDR"), Vec2f(bottomright.x - 50, topleft.y), SColor(0xffffffff));
-	GUI::DrawText("Badges", Vec2f(bottomright.x - 520, topleft.y), SColor(0xffffffff)); // TODO: use getTranslatedString rather than constant string;
+	GUI::DrawText(getTranslatedString("Accolades"), Vec2f(bottomright.x - accolades_start, topleft.y), SColor(0xffffffff));
 
 	topleft.y += stepheight * 0.5f;
 
@@ -48,7 +54,7 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 		CPlayer@ p = players[i];
 
 		topleft.y += stepheight;
-		bottomright.y = topleft.y + stepheight;
+		bottomright.y = topleft.y + lineheight;
 
 		bool playerHover = mousePos.y > topleft.y && mousePos.y < topleft.y + 15;
 
@@ -60,17 +66,17 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 
 		Vec2f lineoffset = Vec2f(0, -2);
 
-		u32 playercolour = (p.getBlob() is null || p.getBlob().hasTag("dead")) ? 0xffaaaaaa : 0xffc0c0c0;
+		u32 underlinecolor = 0xff404040;
+		u32 playercolour = (p.getBlob() is null || p.getBlob().hasTag("dead")) ? 0xff505050 : 0xff808080;
 		if (playerHover)
 		{
-			playercolour = 0xffffffff;
+			playercolour = 0xffcccccc;
 			@hoveredPlayer = p;
 			hoveredPos = topleft;
 			hoveredPos.x = bottomright.x - 150;
-
 		}
 
-		GUI::DrawLine2D(Vec2f(topleft.x, bottomright.y + 1) + lineoffset, Vec2f(bottomright.x, bottomright.y + 1) + lineoffset, SColor(0xff404040));
+		GUI::DrawLine2D(Vec2f(topleft.x, bottomright.y + 1) + lineoffset, Vec2f(bottomright.x, bottomright.y + 1) + lineoffset, SColor(underlinecolor));
 		GUI::DrawLine2D(Vec2f(topleft.x, bottomright.y) + lineoffset, bottomright + lineoffset, SColor(playercolour));
 
 		string tex = "";
@@ -122,29 +128,64 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 			GUI::DrawText(playername, topleft + Vec2f(name_buffer, 0), namecolour);
 		}
 
-		int farleft = 505;
+		int accolades_x = accolades_start;
 
 		Accolades@ acc = getPlayerAccolades(username);
 
-		if (acc.gold > 0)
-		{
-			GUI::DrawText("" + acc.gold, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
-			GUI::DrawIcon("Medals_", 0, Vec2f(16, 16), Vec2f(bottomright.x - farleft, topleft.y), 0.5f, p.getTeamNum());
-			farleft -= 35;
-		}
+		//(remove crazy amount of duplicate code)
+		int[] badges_encode = {
+			//count,                icon,  show_text, spacing
 
-		if (acc.silver > 0)
-		{
-			GUI::DrawText("" + acc.silver, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
-			GUI::DrawIcon("Medals_", 1, Vec2f(16, 16), Vec2f(bottomright.x - farleft, topleft.y), 0.5f, p.getTeamNum());
-			farleft -= 35;
-		}
+			//misc accolades
+			(acc.community_contributor ?
+				1 : 0),             4,     0,         24,
+			(acc.github_contributor ?
+				1 : 0),             5,     0,         24,
+			(acc.map_contributor ?
+				1 : 0),             6,     0,         24,
 
-		if (acc.bronze > 0)
+			//tourney badges
+			acc.gold,               0,     1,         40,
+			acc.silver,             1,     1,         40,
+			acc.bronze,             2,     1,         40,
+			acc.participation,      3,     1,         40,
+
+			//(final dummy)
+			0, 0, 0, 0,
+		};
+
+		for(int bi = 0; bi < badges_encode.length; bi += 4)
 		{
-			GUI::DrawText("" + acc.bronze, Vec2f(bottomright.x - farleft - 15, topleft.y), SColor(0xffffffff));
-			GUI::DrawIcon("Medals_", 2, Vec2f(16, 16), Vec2f(bottomright.x - farleft, topleft.y), 0.5f, p.getTeamNum());
-			farleft -= 35; // dunno why this is here
+			int amount    = badges_encode[bi+0];
+			int icon      = badges_encode[bi+1];
+			int show_text = badges_encode[bi+2];
+			int spacing   = badges_encode[bi+3];
+
+			if(amount > 0)
+			{
+				float x = bottomright.x - accolades_x;
+
+				GUI::DrawIcon("AccoladeBadges", icon, Vec2f(16, 16), Vec2f(x, topleft.y), 0.5f, p.getTeamNum());
+				if (show_text > 0)
+				{
+					string label_text = "" + amount;
+					int label_center_offset = label_text.size() < 2 ? 4 : 0;
+					GUI::DrawText(
+						label_text,
+						Vec2f(x + 15 + label_center_offset, topleft.y),
+						SColor(0xffffffff)
+					);
+				}
+
+				if (playerHover && mousePos.x > x && mousePos.x < x + 16)
+				{
+					hovered_accolade = icon;
+				}
+			}
+
+			//handle repositioning
+			accolades_x -= spacing;
+
 		}
 
 		GUI::DrawText("" + username, Vec2f(bottomright.x - 400, topleft.y), namecolour);
@@ -153,10 +194,6 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 		GUI::DrawText("" + p.getDeaths(), Vec2f(bottomright.x - 120, topleft.y), SColor(0xffffffff));
 		GUI::DrawText(("" + getKDR(p)).substr(0, 4), Vec2f(bottomright.x - 50, topleft.y), SColor(0xffffffff));
 	}
-
-	/*orig.x -= stepheight*3;
-	orig.y -= stepheight*3;
-	GUI::DrawIconDirect("emblem.png", orig, emblem, Vec2f(32, 32), 1.5, 0, SColor(0xffffffff));*/
 
 	return topleft.y;
 
@@ -238,15 +275,23 @@ void onRenderScoreboard(CRules@ this)
 
 	}
 
+	//(reset)
+	hovered_accolade = -1;
+
+	//draw the scoreboards
+
 	if (localTeam == 0)
 		topleft.y = drawScoreboard(blueplayers, topleft, this.getTeam(0), Vec2f(0, 0));
 	else
 		topleft.y = drawScoreboard(redplayers, topleft, this.getTeam(1), Vec2f(32, 0));
+
 	topleft.y += 52;
+
 	if (localTeam == 1)
 		topleft.y = drawScoreboard(blueplayers, topleft, this.getTeam(0), Vec2f(0, 0));
 	else
 		topleft.y = drawScoreboard(redplayers, topleft, this.getTeam(1), Vec2f(32, 0));
+
 	topleft.y += 52;
 
 	if (spectators.length > 0)
@@ -283,11 +328,40 @@ void onRenderScoreboard(CRules@ this)
 				break;
 			}
 		}
+
+		topleft.y += 52;
 	}
 
 	drawPlayerCard(hoveredPlayer, hoveredPos);
 
+	drawAccoladeHover(hovered_accolade, Vec2f(getScreenWidth() * 0.5, topleft.y));
 
+}
+
+void drawAccoladeHover(int hovered_accolade, Vec2f centre_top)
+{
+	if( //(invalid/"unset" hover)
+		hovered_accolade < 0
+		|| hovered_accolade >= accolade_description.length
+	) {
+		return;
+	}
+
+	string desc = accolade_description[hovered_accolade];
+
+	Vec2f size(0, 0);
+	GUI::GetTextDimensions(desc, size);
+
+	Vec2f tl = centre_top - Vec2f(size.x / 2, 0);
+	Vec2f br = tl + size;
+
+	//margin
+	Vec2f expand(8, 8);
+	tl -= expand;
+	br += expand;
+
+	GUI::DrawPane(tl, br, SColor(0xffffffff));
+	GUI::DrawText(desc, tl + expand, SColor(0xffffffff));
 }
 
 void onTick(CRules@ this)

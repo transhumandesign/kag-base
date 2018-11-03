@@ -25,7 +25,6 @@ void onInit(CBlob@ this)
 	// TODO: Better information + icons like the vehicle shop, also make boats not suck
 	{
 		ShopItem@ s = addShopItem(this, "Dinghy", "$dinghy$", "dinghy", "$dinghy$\n\n\n" + Descriptions::dinghy);
-		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::dinghy);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::dinghy_wood);
 	}
 	{

@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 //a container and parser for the specific accolades awarded to a player
-class Accolades
+shared class Accolades
 {
 	//player these accolades are for
 	string username = "";
@@ -202,3 +202,16 @@ Accolades@ getPlayerAccolades(string username)
 
 	return h;
 }
+
+//(based on the frame order in the badges file)
+string[] accolade_description = {
+	//tourney
+	"Gold Medal - for Placing 1st in a Suitable Community Tournament",
+	"Silver Medal - for Placing 2nd in a Suitable Community Tournament",
+	"Bronze Medal - for Placing 3rd in a Suitable Community Tournament",
+	"Participation Ribbon - for Participating in a Suitable Community Tournament",
+	//misc
+	"Community Contributor - for significantly contributing to the KAG community in some way",
+	"Github Contributor - for significantly contributing to an issue or pull request on the KAG GitHub",
+	"Map Contributor - for contributing to the official map cycle"
+};
