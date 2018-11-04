@@ -135,6 +135,11 @@ void onTick(CBlob@ this)
 
 	const bool myplayer = this.isMyPlayer();
 
+	if (getNet().isClient() && !this.isInInventory() && myplayer)  //Knight charge cursor
+	{
+		SwordCursorUpdate(this, knight);
+	}
+
 	//with the code about menus and myplayer you can slash-cancel;
 	//we'll see if knights dmging stuff while in menus is a real issue and go from there
 	if (knocked > 0)// || myplayer && getHUD().hasMenus())
@@ -619,6 +624,36 @@ void onTick(CBlob@ this)
 	{
 		knight_clear_actor_limits(this);
 	}
+
+
+}
+
+void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
+{
+		if (knight.swordTimer >= KnightVars::slash_charge_level2 || knight.doubleslash || knight.state == KnightStates::sword_power_super)
+		{
+			getHUD().SetCursorFrame(10);
+		}
+		else if (knight.swordTimer >= KnightVars::slash_charge)
+		{
+			getHUD().SetCursorFrame(9);
+		}
+		else if (knight.state == KnightStates::normal)
+		{
+			getHUD().SetCursorFrame(0);
+		}
+		else if (knight.swordTimer <= KnightVars::slash_charge && knight.state == KnightStates::sword_drawn)
+		{
+			int frame = 1 + (knight.swordTimer * 8.5) / KnightVars::slash_charge;
+			if (knight.swordTimer <= 3) //prevent from appearing when jabbing/jab spamming
+			{
+				getHUD().SetCursorFrame(0);
+			}
+			else
+			{
+				getHUD().SetCursorFrame(frame);
+			}
+		}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
