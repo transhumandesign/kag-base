@@ -41,53 +41,57 @@ __NOTE:__ if you're a tester, it's recommended that you patch your non-base file
 
 This process is common to many repositories, but there are a few KAG-specific tips included as well.
 
-__Think of something to do!__
+- __Think of something to do!__
 
-Coming up with good changes that would help the game can be tricky, but it's the first step towards any contribution.
+	Coming up with good changes that would help the game can be tricky, but it's the first step towards any contribution.
 
-Once you have an idea, talking about it in discord is a good way to gauge interest. If it's a big change, it's recommended to run it past a developer first!
+	Once you have an idea, talking about it in discord is a good way to gauge interest.
 
-__Work in a named branch__
+	If it's a big change, it's recommended to run it past a developer first!
 
-We suggest that you don't work in `master`, and try to avoid github's automatic `patch-n` branch naming. Name your branch something related to your feature like `new-bison-sprites` (use `kebab-case`). This makes issuing a pull request much less confusing when you get up to that stage, and leads to a more informative paper trail afterwards.
+- __Work in a named branch__
 
-__Keep changes separate__
+	We suggest that you don't work in `master`, and try to avoid github's automatic `patch-n` branch naming, as it's no better than a random number identifier. Name your branch something related to your feature like `new-bison-sprites` (use `kebab-case`).
 
-If you're doing concurrent work on multiple new features, please ensure that you're working on separate features in separate branches.
+	Working in a named branch makes issuing a pull request much less confusing when you get up to that stage, and leads to a more informative paper trail afterwards.
 
-We won't generally accept PRs that are a big grab-bag of changes, so to save you the work of separating the changes later it is best to keep them separate to begin with.
+- __Keep changes separate__
 
-You're welcome to merge all your feature branches into your own master branch for testing of course!
+	If you're doing concurrent work on multiple new features, please ensure that you're working on separate features in separate branches, to keep the PRs small and manageable.
 
-We recommend that you _do_ merge any upstream changes from `kag-base/master` into your branch from time to time, especially if you're getting ready to submit! This helps ensure that merging your changes goes as smoothly as possible. Just be careful not to merge any of your own stray changes in at the same time.
+	We won't generally accept PRs that are a big grab-bag of changes, so to save you the work of separating the changes later it is best to keep them separate to begin with.
 
-__Make and test your changes__
+	You're welcome to merge all your feature branches into your own master branch for testing of course!
 
-Now that you've got everything set up, it's time to do the actual work! Modify scripts, images, or config files to your heart's content to implement whatever it is you have schemed up.
+	We recommend that you _do_ merge any upstream changes from `kag-base/master` into your branch from time to time, especially if you're getting ready to submit! This helps ensure that merging your changes goes as smoothly as possible. Just be careful not to merge any of your own stray changes in at the same time.
 
-Try to commit often! Don't worry too much about a messy history at first - you'll get the hang of it.
+- __Make and test your changes__
 
-__Submitting your pull request__
+	Now that you've got everything set up, it's time to do the actual work! Modify scripts, images, or config files to your heart's content to implement whatever it is you have schemed up.
 
-Once your changes are ready for us to review for integration, it's time to actually submit the pull request! You can see a detailed overview from github [here](https://help.github.com/articles/about-pull-requests/).
+	Try to commit often! Don't worry too much about a messy history at first - you'll get the hang of it.
 
-Pick a good, descriptive name that lets us know what it is that your PR contributes. _Added Support for Logging Match Outcomes_ is a fine name! _Match Logging Changes_ is a bit less good.
+- __Submitting your pull request__
 
-Also, try to include as detailed a description as you can manage; this makes reviewers' lives easier checking if changes make sense, and provides a good jumping-off-point for a discussion where needed.
+	Once your changes are ready for us to review for integration, it's time to actually submit the pull request! You can see a detailed overview from github [here](https://help.github.com/articles/about-pull-requests/). We've got a PR template to keep formatting consistent.
 
-Screenshots and gifs of your contribution are encouraged :)
+	Pick a good, descriptive name that lets us know what it is that your PR contributes. _Added Support for Logging Match Outcomes_ is a fine name! _Logging Changes_ is a bit less good.
 
-If your github account name is not identical to your KAG username, or you'd like to use a different name, please let us know who we should credit for the contribution!
+	Also, try to include as detailed a description as you can manage; this makes reviewers' lives easier when checking if changes make sense, and provides a good jumping-off-point for a discussion where needed.
 
-__If your pull request requires changes__
+	Screenshots and gifs of your contribution are encouraged! :)
 
-Try not to be discouraged! We will generally optimistically merge as many changes as we can, but sometimes changes just aren't ready for primetime, or aren't suitable for the community.
+	If your github account name is not identical to your KAG username, or you'd like to use a different name, please let us know who we should credit for the contribution!
 
-We ask that you engage with us and the community about your changes in the PR discussion thread on github, or in `#development` on discord. We're sure to be able to work something out!
+- __If your pull request requires changes__
 
-__Once your pull request is merged__
+	Try not to be discouraged! We will generally optimistically merge as many changes as we can, but sometimes changes just aren't ready for primetime, or aren't suitable for the community.
 
-Celebrate! Your changes will be included with the next public release of the game for everyone to enjoy. We look forward to more contributions from you in the future!
+	We ask that you engage with us and the community about your changes in the PR discussion thread on github, or in `#development` on discord. We're sure to be able to work something out!
+
+- __Once your pull request is merged__
+
+	Celebrate! Your changes will be included with the next public release of the game for everyone to enjoy. We look forward to more contributions from you in the future!
 
 ## Commit Message Format
 
@@ -126,17 +130,17 @@ Less important (and more strange)
 
 ## Help, I don't know git!
 
-That's ok! It's not great for big changes, but if you just want to correct a typo or tweak a number or two, or provide some more translations, you can do everything from within the github site.
+That's ok! It's not a _great_ situation to be in for big changes, but if you just want to correct a typo or tweak a number or two, or provide some more translations, you can do everything from within the github site.
 
-Get in touch in the #development channel on discord and we'll help you on a case-by-base basis.
+If you'd like help with git or github, get in touch in the `#development` channel on discord and there'll usually be someone to help you on a case-by-base basis.
 
 ## How can I help, I don't know how to code or draw or anything!
 
-That's ok too! There are plenty of non-development contributions you can make, such as raising [issues](https://github.com/transhumandesign/kag-base/issues), discussing [existing pull requests](https://github.com/transhumandesign/kag-base/pulls), applying to help with [testing](https://forum.thd.vg/threads/accepting-new-testers.25141/) the game, or answering questions about the game in `#help` on discord.
+That's ok too! There are plenty of non-development contributions you can make, such as raising [issues](https://github.com/transhumandesign/kag-base/issues), discussing [existing pull requests](https://github.com/transhumandesign/kag-base/pulls), applying to help with [testing](https://forum.thd.vg/threads/accepting-new-testers.25141/) the game, or answering questions about the game in `#help` on discord. You can also just vote in the `#democracy` polls on discord to help make your priorities known.
 
 ## How does this work, legally?
 
-You agree to give THD irrevokable commercial and distribution rights to your contribution.
+You agree to give THD irrevokable commercial and distribution rights to any submitted contributions.
 
 You retain rights to use your contribution for other purposes and projects as you see fit - but we need to be able to use it without restriction as part of King Arthur's Gold, which is a commercial product at the time of writing.
 
@@ -151,3 +155,9 @@ We may be able to organise engine access if you have a good contribution history
 Unless organised ahead of time, contribution is made on a volunteer/gratis basis. Your reward is that your changes make the game better for everyone, everywhere, and that you're fostering a culture of collaboration that will improve the sustainability of the game :)
 
 However, we are willing to negotiate compensation for big/interesting changes - we'd love to hear from you if you have something in mind!
+
+## My question wasn't answered...
+
+Ask in `#development` and someone should be able to help you out!
+
+## Thanks for reading!
