@@ -121,7 +121,7 @@ The important style points to remain consistent with are:
 
 Less important (and more strange)
 
-- `void VoidFunctionIsUpperCamel()`, `CBlob@ NonVoidIsLowerCamel()` - this is an inherited practice from MM. It's _fairly_ consistent across the codebase, but there are a few places that break the "rule". It's a strange one in any case. Sorry about that.
+- `void VoidFunctionIsUpperCamel()`, `CBlob@ nonVoidIsLowerCamel()` - this is an inherited practice from MM. It's _fairly_ consistent across the codebase, but there are a few places that break the "rule". It's a strange one in any case. Sorry about that.
 - Use the shorthand type names that specify width (`s32`, `u32`, `s16`, `u16`, `s8`, `u8`) as this helps when thinking about networking/blob property overhead (could you use a smaller type?).
 
 ## Help, I don't know git!
