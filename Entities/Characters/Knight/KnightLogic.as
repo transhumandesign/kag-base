@@ -638,10 +638,13 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 		{
 			getHUD().SetCursorFrame(9);
 		}
-		else if (knight.state == KnightStates::normal)
+		// the yellow circle stays for the duration of a slash, helpful for newplayers (note: you cant attack while its yellow)
+		else if (knight.state == KnightStates::normal) // disappear after slash is done
+		// the yellow circle dissapears after mouse button release, more intuitive for improving slash timing
+		// else if (knight.swordTimer == 0) (disappear right after mouse release)
 		{
-			getHUD().SetCursorFrame(0);
-		}
+    getHUD().SetCursorFrame(0);
+	  }
 		else if (knight.swordTimer <= KnightVars::slash_charge && knight.state == KnightStates::sword_drawn)
 		{
 			int frame = 1 + (knight.swordTimer * 8.5) / KnightVars::slash_charge;
