@@ -229,8 +229,8 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 					else
 					{
 						//figure out birthday
-						int month_delta = reg_month - Time_Month();
-						int day_delta = reg_day - Time_MonthDate();
+						int month_delta = Time_Month() - reg_month;
+						int day_delta = Time_MonthDate() - reg_day;
 						int birthday_delta = -1;
 
 						if (month_delta < 0 || month_delta == 0 && day_delta < 0)
