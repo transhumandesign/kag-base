@@ -1,7 +1,6 @@
 //knight HUD
 #include "/Entities/Common/GUI/ActorHUDStartPos.as";
 
-
 const string iconsFilename = "Entities/Characters/Knight/KnightIcons.png";
 const int slotsSize = 6;
 
