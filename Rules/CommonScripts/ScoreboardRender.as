@@ -228,11 +228,27 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 					}
 					else
 					{
+						//figure out birthday
+						int month_delta = reg_month - Time_Month();
+						int day_delta = reg_day - Time_MonthDate();
+						int birthday_delta = -1;
+
+						if (month_delta < 0 || month_delta == 0 && day_delta < 0)
+						{
+							birthday_delta = -1;
+						}
+						else if (month_delta == 0 && day_delta == 0)
+						{
+							birthday_delta = 0;
+						}
+						else
+						{
+							birthday_delta = 1;
+						}
+
 						//check if its cake day
-						if (
-							reg_day == Time_MonthDate() &&
-							reg_month == Time_Month()
-						) {
+						if (birthday_delta == 0)
+						{
 							icon = 9;
 						}
 						else
@@ -246,7 +262,15 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 							else
 							{
 								//years delta
-								icon = Maths::Clamp((Time_Year() - reg_year) - 1, 0, 9);
+								icon = (Time_Year() - reg_year) - 1;
+								//before or after birthday?
+								if (birthday_delta == -1)
+								{
+									icon -= 1;
+								}
+								//ensure sane
+								icon = Maths::Clamp(icon, 0, 9);
+								//shift line
 								icon += 16;
 							}
 						}
