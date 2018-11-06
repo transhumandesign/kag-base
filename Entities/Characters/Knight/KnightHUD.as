@@ -1,6 +1,6 @@
 //knight HUD
-
 #include "/Entities/Common/GUI/ActorHUDStartPos.as";
+
 
 const string iconsFilename = "Entities/Characters/Knight/KnightIcons.png";
 const int slotsSize = 6;
@@ -28,6 +28,7 @@ void ManageCursors(CBlob@ this)
 		else
 		{
 			getHUD().SetCursorImage("Entities/Characters/Knight/KnightCursor.png", Vec2f(32, 32));
+			getHUD().SetCursorOffset(Vec2f(-32, -32));
 		}
 	}
 }
@@ -67,5 +68,3 @@ void onRender(CSprite@ this)
 
 	GUI::DrawIcon(iconsFilename, frame, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -16), 1.0f);
 }
-
-
