@@ -68,7 +68,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 		if (Maths::Abs(velocity_angle) > 90)
 		{
-			this.set_u32(Trampoline::TIMER, getGameTime() + Trampoline::COOLDOWN);
+			//this.set_u32(Trampoline::TIMER, getGameTime() + Trampoline::COOLDOWN);
 
 			Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
 			velocity.RotateBy(angle);
