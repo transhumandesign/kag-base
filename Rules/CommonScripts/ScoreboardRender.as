@@ -5,7 +5,37 @@ CPlayer@ hoveredPlayer;
 Vec2f hoveredPos;
 
 int hovered_accolade = -1;
+int hovered_age = -1;
 bool draw_age = false;
+
+string[] age_description = {
+	"New Player - Welcome them to the game!",
+	//first month
+	"This player has 1 to 2 weeks of experience",
+	"This player has 2 to 3 weeks of experience",
+	"This player has 3 to 4 weeks of experience",
+	//first year
+	"This player has 1 to 2 months of experience",
+	"This player has 2 to 3 months of experience",
+	"This player has 3 to 6 months of experience",
+	"This player has 6 to 9 months of experience",
+	"This player has 9 to 12 months of experience",
+	//cake day
+	"Cake Day - it's this player's KAG Birthday!",
+	//(gap in the sheet)
+	"", "", "", "", "", "",
+	//established player
+	"This player has 1 year of experience",
+	"This player has 2 years of experience",
+	"This player has 3 years of experience",
+	"This player has 4 years of experience",
+	"This player has 5 years of experience",
+	"This player has 6 years of experience",
+	"This player has 7 years of experience",
+	"This player has 8 years of experience",
+	"This player has 9 years of experience",
+	"This player has over a decade of experience"
+};
 
 //returns the bottom
 float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emblem)
@@ -169,7 +199,6 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 					int months = days / 30;
 					if (months < 12)
 					{
-						age_icon_start = 36;
 						switch(months) {
 							case 0:
 							case 1:
@@ -195,6 +224,7 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 								icon = 4;
 								break;
 						}
+						icon += 4;
 					}
 					else
 					{
@@ -203,7 +233,6 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 							reg_day == Time_MonthDate() &&
 							reg_month == Time_Month()
 						) {
-							age_icon_start = 32;
 							icon = 9;
 						}
 						else
@@ -212,20 +241,26 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 							if(days < 366)
 							{
 								//(9 months badge still)
-								age_icon_start = 36;
-								icon = 4;
+								icon = 8;
 							}
 							else
 							{
 								//years delta
-								age_icon_start = 32 + 16;
-								icon = Maths::Clamp(Time_Year() - reg_year, 0, 9);
+								icon = Maths::Clamp((Time_Year() - reg_year) - 1, 0, 9);
+								icon += 16;
 							}
 						}
 					}
 				}
 
-				GUI::DrawIcon("AccoladeBadges", age_icon_start + icon, Vec2f(16, 16), Vec2f(bottomright.x - age_start + 8, topleft.y), 0.5f, p.getTeamNum());
+				float x = bottomright.x - age_start + 8;
+				float extra = 8;
+				GUI::DrawIcon("AccoladeBadges", age_icon_start + icon, Vec2f(16, 16), Vec2f(x, topleft.y), 0.5f, p.getTeamNum());
+
+				if (playerHover && mousePos.x > x - extra && mousePos.x < x + 16 + extra)
+				{
+					hovered_age = icon;
+				}
 			}
 
 		}
@@ -379,6 +414,7 @@ void onRenderScoreboard(CRules@ this)
 
 	//(reset)
 	hovered_accolade = -1;
+	hovered_age = -1;
 
 	//draw the scoreboards
 
@@ -436,20 +472,26 @@ void onRenderScoreboard(CRules@ this)
 
 	drawPlayerCard(hoveredPlayer, hoveredPos);
 
-	drawAccoladeHover(hovered_accolade, Vec2f(getScreenWidth() * 0.5, topleft.y));
+	drawHoverExplanation(hovered_accolade, hovered_age, Vec2f(getScreenWidth() * 0.5, topleft.y));
 
 }
 
-void drawAccoladeHover(int hovered_accolade, Vec2f centre_top)
+void drawHoverExplanation(int hovered_accolade, int hovered_age, Vec2f centre_top)
 {
 	if( //(invalid/"unset" hover)
-		hovered_accolade < 0
-		|| hovered_accolade >= accolade_description.length
+		(hovered_accolade < 0
+		 || hovered_accolade >= accolade_description.length) &&
+		(hovered_age < 0
+		 || hovered_age >= age_description.length)
 	) {
 		return;
 	}
 
-	string desc = accolade_description[hovered_accolade];
+	string desc = getTranslatedString(
+		(hovered_accolade >= 0) ?
+			accolade_description[hovered_accolade] :
+			age_description[hovered_age]
+	);
 
 	Vec2f size(0, 0);
 	GUI::GetTextDimensions(desc, size);
