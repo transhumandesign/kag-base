@@ -643,8 +643,8 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 		// the yellow circle dissapears after mouse button release, more intuitive for improving slash timing
 		// else if (knight.swordTimer == 0) (disappear right after mouse release)
 		{
-    getHUD().SetCursorFrame(0);
-	  }
+			getHUD().SetCursorFrame(0);
+		}
 		else if (knight.swordTimer <= KnightVars::slash_charge && knight.state == KnightStates::sword_drawn)
 		{
 			int frame = 1 + (knight.swordTimer * 8.5) / KnightVars::slash_charge;
