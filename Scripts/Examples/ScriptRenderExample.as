@@ -451,7 +451,9 @@ void RenderHUDWidgetFor(CBlob@ this)
 
 	if(render_type == render_type_screenspace)
 	{
-		//default transform for hud layers is screenspace
+		Render::SetTransformScreenspace();
+
+		//we're rendering in screen space
 		//so these positions are 0,0 to screenwidth, screenheight
 
 		//semitransparent sin-scaling rect, small margin
