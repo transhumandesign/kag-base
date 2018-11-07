@@ -53,16 +53,18 @@
 // or else the contents will get overwritten strangely
 ///////////////////////////////////////////////////////////////////////////////
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // coordinate concerns
 //
-// currently, all layers are in **world space**
+// you can set the rendering transformation interactively using the
+// following functions:
 //
-// this means that any hud stuff in screen space will need to be translated
-//   from there to world space each time
+//	Render::SetTransformWorldspace    - coordinates in world space
+//	Render::SetTransformScreenspace   - coordinates in "screen pixel" space
+//	Render::SetTransform              - coordinates in some arbitrary space
 //
-// world/screen/arbitrary transformation functions may be provided in future
+// the transformation will be automatically reverted between script
+// render calls, so there's no need to "clean up" the transformation
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -108,6 +110,7 @@ void Setup()
 //toggle through each render type to give a working example of each call
 
 enum _render_type {
+	//world types
 	render_type_tris,
 	render_type_tris_indexed,
 	render_type_tris_cols,
@@ -117,10 +120,17 @@ enum _render_type {
 	render_type_raw_tris,
 	render_type_raw_tris_indexed,
 	render_type_raw_quads,
+	//hud types
+	render_type_screenspace,
 	render_type_count,
 }
 int render_type = render_type_tris;
 int last_changed = 0;
+
+bool isWorldRenderType(int t)
+{
+	return t < int(render_type_screenspace);
+}
 
 void ChangeIfNeeded()
 {
@@ -152,7 +162,8 @@ void onTick(CBlob@ this)
 void onInit(CRules@ this)
 {
 	Setup();
-	int cb_id = Render::addScript(Render::layer_objects, "ScriptRenderExample.as", "ExampleRulesRenderFunction", 0.0f);
+	int cb_id =     Render::addScript(Render::layer_objects, "ScriptRenderExample.as", "ExampleRulesRenderFunction", 0.0f);
+	int hud_cb_id = Render::addScript(Render::layer_prehud, "ScriptRenderExample.as", "ExampleRulesHUDRenderFunction", 0.0f);
 }
 
 void onRestart(CRules@ this)
@@ -188,6 +199,16 @@ void ExampleRulesRenderFunction(int id)
 	}
 }
 
+void ExampleRulesHUDRenderFunction(int id)
+{
+	CBlob@[] players;
+	getBlobsByTag("player", @players);
+	for (uint i = 0; i < players.length; i++)
+	{
+		RenderHUDWidgetFor(players[i]);
+	}
+}
+
 
 //we will build our meshes into here
 //for "high performance" stuff you'll generally want to keep them persistent
@@ -201,13 +222,8 @@ u16[] v_i;
 //this is the highest performance option
 Vertex[] v_raw;
 
-void RenderWidgetFor(CBlob@ this)
+void ClearRenderState()
 {
-	Vec2f p = this.getInterpolatedPosition();
-	CMap@ map = getMap();
-
-	string render_texture_name = test_name;
-
 	//nuke out last invocation's data
 	v_pos.clear();
 	v_uv.clear();
@@ -215,16 +231,29 @@ void RenderWidgetFor(CBlob@ this)
 	v_i.clear();
 	v_raw.clear();
 
+	//we are rendering after the world
+	//so we can alpha blend relatively safely, although it will still misbehave
+	//when rendering over other alpha-blended stuff
+	Render::SetAlphaBlend(true);
+}
+
+void RenderWidgetFor(CBlob@ this)
+{
+	//early-out for any non-world types
+	if (!isWorldRenderType(render_type)) return;
+
+	Vec2f p = this.getInterpolatedPosition();
+	CMap@ map = getMap();
+
+	string render_texture_name = test_name;
+
+	ClearRenderState();
+
 	float x_size = 16;
 	float y_size = 16;
 
 	//render just behind our character
 	f32 z = this.getSprite().getZ() - 0.1;
-
-	//we are rendering after the world
-	//so we can alpha blend relatively safely, although it will still behave
-	//when rendering over other alpha-blended stuff
-	Render::SetAlphaBlend(true);
 
 	if (render_type == render_type_tris)
 	{
@@ -408,4 +437,40 @@ void RenderWidgetFor(CBlob@ this)
 			Render::RawQuads(render_texture_name, v_raw);
 		}
 	}
+}
+
+void RenderHUDWidgetFor(CBlob@ this)
+{
+	//early-out for any non-screen types
+	if (isWorldRenderType(render_type)) return;
+
+	ClearRenderState();
+
+	string render_texture_name = test_name;
+	float z = 0;
+
+	if(render_type == render_type_screenspace)
+	{
+		//default transform for hud layers is screenspace
+		//so these positions are 0,0 to screenwidth, screenheight
+
+		//semitransparent sin-scaling rect, small margin
+
+		SColor col(0x80ffffff);
+
+		float w = getDriver().getScreenWidth();
+		float h = getDriver().getScreenHeight() * Maths::Abs(Maths::Sin(getGameTime() * 0.01));
+		float ma = 10;
+		w = Maths::Max(0, w - ma * 2);
+		h = Maths::Max(0, h - ma * 2);
+
+		v_raw.push_back(Vertex(ma,      ma,      z, 0, 0, col));
+		v_raw.push_back(Vertex(ma,      ma + h,  z, 0, 1, col));
+		v_raw.push_back(Vertex(ma + w,  ma + h,  z, 1, 1, col));
+		v_raw.push_back(Vertex(ma + w,  ma,      z, 1, 0, col));
+
+		Render::RawQuads(render_texture_name, v_raw);
+	}
+
+	//TODO: example for Render::SetTransform()
 }
