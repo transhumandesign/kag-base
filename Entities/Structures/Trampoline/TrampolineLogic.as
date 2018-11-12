@@ -6,6 +6,7 @@ namespace Trampoline
 	const u16 COOLDOWN = 7;
 	const u8 SCALAR = 10;
 	const bool SAFETY = true;
+	const int COOLDOWN_LIMIT = 8;
 }
 
 class TrampolineCooldown{
@@ -64,17 +65,22 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	TrampolineCooldown@[]@ cooldowns;
 	if(!this.get(Trampoline::TIMER, @cooldowns)) return;
 
-	if(Trampoline::SAFETY && cooldowns.length > 8) cooldowns.clear();
+	//shred old cooldown if we have too many
+	if(Trampoline::SAFETY && cooldowns.length > Trampoline::COOLDOWN_LIMIT) cooldowns.removeAt(0);
 
 	u16 netid = blob.getNetworkID();
 	bool block = false;
-	for(int i = 0; i < cooldowns.length; i++){
-		if(netid == cooldowns[i].netid && cooldowns[i].timer >= getGameTime()){
-			block = true;
-		}
-		if(cooldowns[i].timer < getGameTime()){
+	for(int i = 0; i < cooldowns.length; i++)
+	{
+		if(cooldowns[i].timer < getGameTime())
+		{
 			cooldowns.removeAt(i);
 			i--;
+		}
+		else if(netid == cooldowns[i].netid)
+		{
+			block = true;
+			break;
 		}
 	}
 	if (!block)
