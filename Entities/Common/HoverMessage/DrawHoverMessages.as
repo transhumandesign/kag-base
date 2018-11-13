@@ -2,30 +2,56 @@
 
 #define CLIENT_ONLY
 
-#include "HoverMessage.as";
+#include "HoverMessage.as"
 
 void onRender(CSprite@ this)
 {
-	CBlob@ blob = this.getBlob();
-
-	HoverMessage[]@ messages;
-	if (blob.get("messages", @messages))
+	if (this.getBlob().isMyPlayer())
 	{
-		for (int i = messages.length - 1; i >= 0; --i)
-		{
-			HoverMessage @message = messages[i];
-			message.update();
-			if (message.isExpired())
-				messages.removeAt(i);
-			else
-				message.draw(blob, i);
-		}
+		HoverMessages@ messages = @get_messages();
+		messages.garbage_collect();
+		messages.render();
 	}
+}
+
+class InventoryItemCache
+{
+	string blob_name;
+	string name;
+	int quantity;
+
+	InventoryItemCache(
+		const string&in p_blob_name,
+		const string&in p_name,
+		int p_quantity
+	)
+	{
+		blob_name = p_blob_name;
+		name = p_name;
+		quantity = p_quantity;
+	}
+};
+
+const string[] ignored_material_losses = {
+	// Arrows. Intentionally left special arrows missing.
+	"mat_arrows",
+
+	"mat_bombs",
+	"mat_waterbombs",
+};
+
+void onInit(CBlob@ this)
+{
+	this.getCurrentScript().tickFrequency = 5;
 }
 
 void onTick(CBlob@ this)
 {
 	if (!this.isMyPlayer()) return;
+
+	CPlayer@ player = this.getPlayer();
+
+	if (player is null) return;
 
 	//this is fairly expensive HOWEVER it's only for our player
 
@@ -45,28 +71,27 @@ void onTick(CBlob@ this)
 	}
 
 	//inv
-	for (int i = 0; i < inv.getItemsCount(); i++)
+	for (uint i = 0; i < inv.getItemsCount(); i++)
 	{
 		CBlob@ invitem = inv.getItem(i);
-		if (invitem.hasTag("material"))
-			inv_and_hands.push_back(invitem);
+		inv_and_hands.push_back(invitem);
 	}
 
 	//gather their names and amounts
-	string[] names;
-	int[] amounts;
-	for (int i = 0; i < inv_and_hands.length; i++)
+	InventoryItemCache[] current_caches;
+	for (uint i = 0; i < inv_and_hands.length; i++)
 	{
 		CBlob@ b = inv_and_hands[i];
 		string name = b.getInventoryName();
-		int amount = b.getQuantity();
+		string blob_name = b.getName();
+		int quantity = b.getQuantity();
 
 		bool found = false;
-		for (int j = 0; j < names.length; j++)
+		for (uint j = 0; j < current_caches.length; j++)
 		{
-			if (names[j] == name)
+			if (current_caches[j].blob_name == blob_name)
 			{
-				amounts[j] += amount;
+				current_caches[j].quantity += quantity;
 				found = true;
 				break;
 			}
@@ -74,60 +99,65 @@ void onTick(CBlob@ this)
 
 		if (!found)
 		{
-			names.push_back(name);
-			amounts.push_back(amount);
+			current_caches.push_back(InventoryItemCache(blob_name, name, quantity));
 		}
 	}
 
-	//effectively assert
-	if (names.length != amounts.length) return;
+	string prop_string = "past inventory cache";
 
-	//compare against previous
-
-	const string namescache_propname = "_inv_names_cache";
-	if(this.exists(namescache_propname))
+	InventoryItemCache[]@ past_caches;
+	if (!this.get(prop_string, @past_caches))
 	{
-		string[] cached_names = this.get_string(namescache_propname).split(";;");
-		for(int i = 0; i < cached_names.length; i++)
+		// Initialize to default
+		@past_caches = @InventoryItemCache[]();
+	}
+
+	// Insert a dummy cache item for items from the past caches missing in the current caches
+	for (uint i = 0; i < past_caches.length; ++i)
+	{
+		bool found = false;
+		for (uint j = 0; j < current_caches.length; ++j)
 		{
-			bool found = false;
-			for (int j = 0; j < names.length; j++)
+			if (current_caches[j].blob_name == past_caches[i].blob_name)
 			{
-				if(names[j] == cached_names[i])
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+		{
+			current_caches.push_back(InventoryItemCache(past_caches[i].blob_name, past_caches[i].name, 0));
+		}
+	}
+
+	// Find entries we can compare directly
+	for (uint i = 0; i < current_caches.length; ++i)
+	for (uint j = 0; j < past_caches.length; ++j)
+	{
+		if (past_caches[j].blob_name == current_caches[i].blob_name)
+		{
+			int quantity_diff = current_caches[i].quantity - past_caches[j].quantity;
+			bool ignore_loss = ignored_material_losses.find(current_caches[i].blob_name) != -1;
+			bool is_ignored_loss = quantity_diff < 0 && ignore_loss;
+			bool do_reset_time = !is_ignored_loss;
+
+			if (quantity_diff != 0)
+			{
+				MaterialMessage@ message = cast<MaterialMessage>(add_message(
+					MaterialMessage(current_caches[i].name, quantity_diff),
+					do_reset_time
+				));
+
+				if (message.quantity_change < 0 && ignore_loss)
 				{
-					found = true;
-					break;
+					message.force_gc = true;
 				}
 			}
-			//found a missing item
-			if(!found)
-			{
-				names.push_back(cached_names[i]);
-				amounts.push_back(0);
-			}
-		}
-	}
-	this.set_string(namescache_propname, join(names, ";;"));
 
-	for (int i = 0; i < names.length; i++)
-	{
-		//if any different/missing, hovermessage!
-		string name = names[i];
-		int amount = amounts[i];
-
-		string prop_string = "_inv_cache" + name;
-
-		int difference = amount;
-		if (this.exists(prop_string))
-		{
-			difference = amount - this.get_s16(prop_string);
-		}
-		this.set_s16(prop_string, amount);
-
-		if (difference != 0)
-		{
-			addMessage(this, HoverMessage(0, name, difference));
+			break;
 		}
 	}
 
+	this.set(prop_string, @current_caches);
 }
