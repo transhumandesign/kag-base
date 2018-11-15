@@ -26,8 +26,9 @@ shared class Accolades
 	int customHeadMonths = 0;               //"months"; really multiples of 31 days
 
 	bool github_contributor = false;        //PR accepted
-	bool community_contributor = false;     //forum/game mods, tourney organisers
+	bool community_contributor = false;     //long time mods/admins/hosts, tourney organisers
 	bool map_contributor = false;           //official mapcycle (at any point)
+	bool moderation_contributor = false;    //official forum/discord/ingame admin, (at any point, not "dishonourably discharged")
 
 	Accolades(ConfigFile@ cfg, string _username)
 	{
@@ -54,6 +55,8 @@ shared class Accolades
 					community_contributor = true;
 				} else if (s1 == "map") {
 					map_contributor = true;
+				} else if (s1 == "moderator") {
+					moderation_contributor = true;
 				}
 
 				//2-part accolades
@@ -213,5 +216,6 @@ string[] accolade_description = {
 	//misc
 	"Community Contributor - for significantly contributing to the KAG community in some way",
 	"Github Contributor - for significantly contributing to an issue or pull request on the KAG GitHub",
-	"Map Contributor - for contributing to the official map cycle"
+	"Map Contributor - for contributing to the official map cycle",
+	"Moderation Contributor - for contributing to moderating the game, forums, or discord"
 };

@@ -63,7 +63,7 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 
 	topleft.y += stepheight * 2;
 
-	const int accolades_start = 650;
+	const int accolades_start = 680;
 	const int age_start = accolades_start + 100;
 
 	draw_age = false;
@@ -289,42 +289,62 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 
 		}
 
-		int accolades_x = accolades_start;
-
+		//render player accolades
 		Accolades@ acc = getPlayerAccolades(username);
-
-		//(remove crazy amount of duplicate code)
-		int[] badges_encode = {
-			//count,                icon,  show_text, spacing
-
-			//misc accolades
-			(acc.community_contributor ?
-				1 : 0),             4,     0,         24,
-			(acc.github_contributor ?
-				1 : 0),             5,     0,         24,
-			(acc.map_contributor ?
-				1 : 0),             6,     0,         24,
-
-			//tourney badges
-			acc.gold,               0,     1,         40,
-			acc.silver,             1,     1,         40,
-			acc.bronze,             2,     1,         40,
-			acc.participation,      3,     1,         40,
-
-			//(final dummy)
-			0, 0, 0, 0,
-		};
-
-		for(int bi = 0; bi < badges_encode.length; bi += 4)
+		if (acc !is null)
 		{
-			int amount    = badges_encode[bi+0];
-			int icon      = badges_encode[bi+1];
-			int show_text = badges_encode[bi+2];
-			int spacing   = badges_encode[bi+3];
+			//(remove crazy amount of duplicate code)
+			int[] badges_encode = {
+				//count,                icon,  show_text, group
 
-			if(amount > 0)
+				//misc accolades
+				(acc.community_contributor ?
+					1 : 0),             4,     0,         0,
+				(acc.github_contributor ?
+					1 : 0),             5,     0,         0,
+				(acc.map_contributor ?
+					1 : 0),             6,     0,         0,
+				(acc.moderation_contributor ?
+					1 : 0),             7,     0,         0,
+
+				//tourney badges
+				acc.gold,               0,     1,         1,
+				acc.silver,             1,     1,         1,
+				acc.bronze,             2,     1,         1,
+				acc.participation,      3,     1,         1,
+
+				//(final dummy)
+				0, 0, 0, 0,
+			};
+			//encoding per-group
+			int[] group_encode = {
+				//singles
+				accolades_start,                24,
+				//medals
+				accolades_start - (24 * 4 + 12), 38,
+			};
+
+			for(int bi = 0; bi < badges_encode.length; bi += 4)
 			{
-				float x = bottomright.x - accolades_x;
+				int amount    = badges_encode[bi+0];
+				int icon      = badges_encode[bi+1];
+				int show_text = badges_encode[bi+2];
+				int group     = badges_encode[bi+3];
+
+				int group_idx = group * 2;
+
+				if(
+					//non-awarded
+					amount <= 0
+					//erroneous
+					|| group_idx < 0
+					|| group_idx >= group_encode.length
+				) continue;
+
+				int group_x = group_encode[group_idx];
+				int group_step = group_encode[group_idx+1];
+
+				float x = bottomright.x - group_x;
 
 				GUI::DrawIcon("AccoladeBadges", icon, Vec2f(16, 16), Vec2f(x, topleft.y), 0.5f, p.getTeamNum());
 				if (show_text > 0)
@@ -342,12 +362,13 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 				{
 					hovered_accolade = icon;
 				}
+
+				//handle repositioning
+				group_encode[group_idx] -= group_step;
+
 			}
-
-			//handle repositioning
-			accolades_x -= spacing;
-
 		}
+
 
 		GUI::DrawText("" + username, Vec2f(bottomright.x - 400, topleft.y), namecolour);
 		GUI::DrawText("" + ping_in_ms, Vec2f(bottomright.x - 260, topleft.y), SColor(0xffffffff));
