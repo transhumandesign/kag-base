@@ -58,6 +58,15 @@ void onTick(CBlob@ this)
 
 	if (can_return)
 	{
+		CMap@ map = this.getMap();
+		if (map !is null)
+		{
+			if (this.getPosition().y >= map.getMapDimensions().y)
+			{
+				returncount = return_time;
+			}
+		}
+
 		bool fast_return = shouldFastReturn(this);
 
 		if (returncount < return_time)
