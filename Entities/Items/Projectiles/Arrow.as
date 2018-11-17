@@ -396,7 +396,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 	if (hitBlob !is null)
 	{
 		Pierce(this, hitBlob);
-		if (this.hasTag("collided")) return 0.0f;
+		if (this.hasTag("collided") || hitBlob.hasTag("migrant")) return 0.0f;
 
 		// check if invincible + special -> add force here
 		if(specialArrowHit(hitBlob))
