@@ -56,10 +56,8 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 			return false;
 		}
 
-		const bool still = (this.getShape().vellen < 0.01f);
-
-		if (this.isKeyPressed(key_down) &&
-		        this.isOnGround() && still)
+		CSprite@ sprite = this.getSprite();
+		if (sprite !is null && sprite.isAnimation("crouch"))
 		{
 			CShape@ s = blob.getShape();
 			if (s !is null && !s.isStatic() &&
