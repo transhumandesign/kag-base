@@ -529,6 +529,20 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 	}
 
 	this.set_Vec2f("fire pos", (worldPoint + (norm * 0.5f)));
+
+	CBlob@[] blobsInRadius;
+	if (this.getMap().getBlobsInRadius(worldPoint, this.getRadius() * 1.3f, @blobsInRadius))
+	{
+		for (uint i = 0; i < blobsInRadius.length; i++)
+		{
+			CBlob @b = blobsInRadius[i];
+			if (b.getName() == "grain_plant")
+			{
+				this.server_Hit(b, worldPoint, Vec2f(0, 0), velocity.Length() / 7.0f, Hitters::arrow);
+				break;
+			}
+		}
+	}
 }
 
 void FireUp(CBlob@ this)
