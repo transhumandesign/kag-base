@@ -3,24 +3,6 @@
 
 These strings are provided to allow localisation of the steam content.
 
-They are not read directly by the game.
-
-# Guidelines:
-
-You do not need to translate the headings "# Description:" etc - these are just
-to separate the strings into logical sections for you.
-
-BBCode images should be left "as is".
-
-BBCode tags should probably  be "semantically" preserved between descriptions.
-They don't appear to be used on the store pages in most contexts though.
-
-Please issue a pull request for this file with the correct locale suffix if you
-contribute to localisation. Copy this file as a starting point if a copy for
-your locale does not already exist.
-
-	(eg Locale/Steam/store_content_ru.txt for Russian)
-
 ###############################################################################
 # King Arthur's Gold
 
