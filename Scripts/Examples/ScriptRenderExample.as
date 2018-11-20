@@ -483,6 +483,7 @@ void RenderHUDWidgetFor(CBlob@ this)
 		Render::SetTransform(identity, identity);
 
 		//we're rendering in device coords
+		//this can be useful for stretching a texture over the screen very simply
 
 		SColor col(0x80ffffff);
 
@@ -495,6 +496,8 @@ void RenderHUDWidgetFor(CBlob@ this)
 	}
 	else if(render_type == render_type_3d)
 	{
+		//3d wiggle cube example
+
 		//z buffer rendering
 		Render::SetAlphaBlend(false);
 		Render::SetZBuffer(true, true);
