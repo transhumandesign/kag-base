@@ -19,7 +19,7 @@ Please issue a pull request for this file with the correct locale suffix if you
 contribute to localisation. Copy this file as a starting point if a copy for
 your locale does not already exist.
 
-	(eg Locale/Steam/store_content_ru.txt for Russian)
+	(eg Locale/Steam/steam_content_ru.txt for Russian)
 
 ###############################################################################
 # King Arthur's Gold
