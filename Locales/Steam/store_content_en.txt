@@ -131,6 +131,22 @@ List of flags currently supported:
 [*]Kenya
 [*]Somalia
 [*]Sudan
+[*]Georgia
+[*]Greece
+[*]Syria
+[*]Syrian Independence Flag
+[*]Mali
+[*]Austria
+[*]Estonia
+[*]Tunisia
+[*]Libya
+[*]Lithuania
+[*]The Faroe Islands
+[*]Puerto Rico
+[*]Cuba
+[*]Greenland
+[*]Dominican Republic
+[*]Iraq
 [*]Jolly Roger
 [*]Rainbow
 [/list]
