@@ -122,9 +122,11 @@ enum _render_type {
 	render_type_raw_quads,
 	//hud types
 	render_type_screenspace,
+	render_type_identity,
+	render_type_3d,
 	render_type_count,
 }
-int render_type = render_type_tris;
+int render_type = render_type_3d;
 int last_changed = 0;
 
 bool isWorldRenderType(int t)
@@ -473,6 +475,86 @@ void RenderHUDWidgetFor(CBlob@ this)
 
 		Render::RawQuads(render_texture_name, v_raw);
 	}
+	else if(render_type == render_type_identity)
+	{
+		float[] identity;
+		Matrix::MakeIdentity(identity);
 
-	//TODO: example for Render::SetTransform()
+		Render::SetTransform(identity, identity);
+
+		//we're rendering in device coords
+
+		SColor col(0x80ffffff);
+
+		v_raw.push_back(Vertex(-1, -1,  0.1, 0, 0, col));
+		v_raw.push_back(Vertex(-1,  1,  0.1, 0, 1, col));
+		v_raw.push_back(Vertex( 1,  1,  0.1, 1, 1, col));
+		v_raw.push_back(Vertex( 1, -1,  0.1, 1, 0, col));
+
+		Render::RawQuads(render_texture_name, v_raw);
+	}
+	else if(render_type == render_type_3d)
+	{
+		//z buffer rendering
+		Render::SetAlphaBlend(false);
+		Render::SetZBuffer(true, true);
+		//clear the screen z completely
+		//so we have a fresh buffer for our rendering layer
+		Render::ClearZ();
+
+		float[] view;
+		float t = getGameTime();
+		Matrix::MakeIdentity(view);
+		Matrix::SetTranslation(view,
+			Maths::Sin(t * 0.0831f) * 2.2f,
+			Maths::Cos(t * 0.0313f) * 2.2f,
+			10 + Maths::Sin(t * 0.1f) * 2.2f
+		);
+		Matrix::SetRotationDegrees(view,
+			t * 1.31f,
+			t * 2.23f,
+			t * 3.1f
+		);
+		float[] proj;
+		//Matrix::MakeOrtho(proj, 10, 10, 10);
+		float ratio = f32(getDriver().getScreenWidth()) / f32(getDriver().getScreenHeight());
+		Matrix::MakePerspective(proj,
+			Maths::Pi / 2.0f,
+			ratio,
+			0.1, 100
+		);
+
+		Render::SetTransform(view, proj);
+
+		//cube
+		v_raw.push_back(Vertex(-1, -1, -1,  0, 0, SColor(0xffff0000)));
+		v_raw.push_back(Vertex(-1,  1, -1,  0, 1, SColor(0xff00ff00)));
+		v_raw.push_back(Vertex( 1,  1, -1,  1, 1, SColor(0xff0000ff)));
+		v_raw.push_back(Vertex( 1, -1, -1,  1, 0, SColor(0xffffffff)));
+		v_raw.push_back(Vertex(-1, -1,  1,  0, 0, SColor(0xffff0000)));
+		v_raw.push_back(Vertex(-1,  1,  1,  0, 1, SColor(0xff00ff00)));
+		v_raw.push_back(Vertex( 1,  1,  1,  1, 1, SColor(0xff0000ff)));
+		v_raw.push_back(Vertex( 1, -1,  1,  1, 0, SColor(0xffffffff)));
+
+		//generate index buffer
+		float[] quad_faces = {
+			0, 1, 2, 3,
+			0, 1, 5, 4,
+			2, 1, 5, 6,
+			2, 3, 7, 6,
+			0, 3, 7, 4,
+			4, 5, 6, 7,
+		};
+		for(int i = 0; i < quad_faces.length; i += 4)
+		{
+			int id_0 = quad_faces[i+0];
+			int id_1 = quad_faces[i+1];
+			int id_2 = quad_faces[i+2];
+			int id_3 = quad_faces[i+3];
+			v_i.push_back(id_0); v_i.push_back(id_1); v_i.push_back(id_3);
+			v_i.push_back(id_1); v_i.push_back(id_2); v_i.push_back(id_3);
+		}
+
+		Render::RawTrianglesIndexed(render_texture_name, v_raw, v_i);
+	}
 }
