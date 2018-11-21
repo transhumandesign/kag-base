@@ -207,6 +207,16 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	}
 }
 
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	if (blob.hasTag("ignore_saw"))
+	{
+		return false;
+	}
+	
+	return true;
+}
+
 //we have contact!
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
