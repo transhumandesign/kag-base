@@ -480,7 +480,7 @@ void RenderHUDWidgetFor(CBlob@ this)
 		float[] identity;
 		Matrix::MakeIdentity(identity);
 
-		Render::SetTransform(identity, identity);
+		Render::SetTransform(identity, identity, identity);
 
 		//we're rendering in device coords
 		//this can be useful for stretching a texture over the screen very simply
@@ -505,21 +505,28 @@ void RenderHUDWidgetFor(CBlob@ this)
 		//so we have a fresh buffer for our rendering layer
 		Render::ClearZ();
 
-		float[] view;
 		float t = getGameTime();
+
+		//spinning cube
+		float[] model;
+		Matrix::MakeIdentity(model);
+		Matrix::SetRotationDegrees(model,
+			t * 1.31f,
+			t * 2.23f,
+			t * 3.1f
+		);
+
+		//camera zoom in/out
+		float[] view;
 		Matrix::MakeIdentity(view);
 		Matrix::SetTranslation(view,
 			Maths::Sin(t * 0.0831f) * 2.2f,
 			Maths::Cos(t * 0.0313f) * 2.2f,
 			10 + Maths::Sin(t * 0.1f) * 2.2f
 		);
-		Matrix::SetRotationDegrees(view,
-			t * 1.31f,
-			t * 2.23f,
-			t * 3.1f
-		);
+
+		//perspective transform
 		float[] proj;
-		//Matrix::MakeOrtho(proj, 10, 10, 10);
 		float ratio = f32(getDriver().getScreenWidth()) / f32(getDriver().getScreenHeight());
 		Matrix::MakePerspective(proj,
 			Maths::Pi / 2.0f,
@@ -527,7 +534,7 @@ void RenderHUDWidgetFor(CBlob@ this)
 			0.1, 100
 		);
 
-		Render::SetTransform(view, proj);
+		Render::SetTransform(model, view, proj);
 
 		//cube
 		v_raw.push_back(Vertex(-1, -1, -1,  0, 0, SColor(0xffff0000)));
