@@ -55,20 +55,6 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 		{
 			return false;
 		}
-
-		const bool still = (this.getShape().vellen < 0.01f);
-
-		if (this.isKeyPressed(key_down) &&
-		        this.isOnGround() && still)
-		{
-			CShape@ s = blob.getShape();
-			if (s !is null && !s.isStatic() &&
-			        !blob.hasTag("ignore crouch"))
-			{
-				return false;
-			}
-		}
-
 	}
 
 	return true;

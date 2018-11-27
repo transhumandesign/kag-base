@@ -170,6 +170,7 @@ void onTick(CSprite@ this)
 		else
 		{
 			this.SetAnimation("shield_raised");
+			blob.Tag("crouch dodge");
 
 			if (direction == 1)
 			{

@@ -5,6 +5,7 @@ void defaultIdleAnim(CSprite@ this, CBlob@ blob, int direction)
 	if (blob.isKeyPressed(key_down))
 	{
 		this.SetAnimation("crouch");
+		blob.Tag("crouch dodge");
 	}
 	else if (is_emote(blob, 255, true))
 	{
