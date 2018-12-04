@@ -56,7 +56,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 			return false;
 		}
 
-		const bool still = (this.getShape().vellen < 0.01f);
+		const bool still = !this.isKeyPressed(key_left) && !this.isKeyPressed(key_right);
 
 		if (this.isKeyPressed(key_down) &&
 		        this.isOnGround() && still)
