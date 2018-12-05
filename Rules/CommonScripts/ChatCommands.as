@@ -21,7 +21,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 	// your command's name (i.e., !cool)
 	//
 	// Then decide what you want to have
-	// the command do.
+	// the command do
 	//
 	// Here are a few bits of code you can put in there
 	// to make your command do something:
