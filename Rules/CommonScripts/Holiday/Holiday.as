@@ -60,7 +60,7 @@ void onRestart(CRules@ this)
                 break;
             }
         }
-        sync = true;
+        if(holiday != holiday_cache) sync = true;//only sync when there is actually something to be synced. this
     }
 }
 

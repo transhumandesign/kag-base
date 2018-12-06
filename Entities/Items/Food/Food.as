@@ -1,5 +1,7 @@
 void onInit(CBlob@ this)
 {
+	this.Tag("ignore_saw");
+	
 	if (this.exists("food name"))
 	{
 		this.setInventoryName(this.get_string("food name"));

@@ -96,9 +96,20 @@ void turnOffFire(CBlob@ this)
 	this.getSprite().PlaySound("/ExtinguishFire.ogg");
 }
 
+void turnOnFire(CBlob@ this)
+{
+	this.SetLight(true);
+	this.set_u8("arrow type", ArrowType::fire);
+	this.Tag("fire source");
+	this.getSprite().SetAnimation("fire arrow");
+	this.getSprite().PlaySound("/FireFwoosh.ogg");
+}
+
 void onTick(CBlob@ this)
 {
 	CShape@ shape = this.getShape();
+
+	const u8 arrowType = this.get_u8("arrow type");
 
 	f32 angle;
 	bool processSticking = true;
@@ -138,6 +149,12 @@ void onTick(CBlob@ this)
 
 			processSticking = false;
 		}
+
+		// ignite arrow
+		if (arrowType == ArrowType::normal && this.isInFlames())
+		{
+			turnOnFire(this);
+		}
 	}
 
 	// sticking
@@ -163,8 +180,6 @@ void onTick(CBlob@ this)
 		this.setPosition(this.get_Vec2f("lock"));
 		shape.SetStatic(true);
 	}
-
-	const u8 arrowType = this.get_u8("arrow type");
 
 	// fire arrow
 	if (arrowType == ArrowType::fire)
@@ -529,6 +544,20 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 	}
 
 	this.set_Vec2f("fire pos", (worldPoint + (norm * 0.5f)));
+
+	CBlob@[] blobsInRadius;
+	if (this.getMap().getBlobsInRadius(worldPoint, this.getRadius() * 1.3f, @blobsInRadius))
+	{
+		for (uint i = 0; i < blobsInRadius.length; i++)
+		{
+			CBlob @b = blobsInRadius[i];
+			if (b.getName() == "grain_plant")
+			{
+				this.server_Hit(b, worldPoint, Vec2f(0, 0), velocity.Length() / 7.0f, Hitters::arrow);
+				break;
+			}
+		}
+	}
 }
 
 void FireUp(CBlob@ this)

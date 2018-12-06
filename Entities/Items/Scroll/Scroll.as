@@ -3,6 +3,8 @@
 
 void onInit(CBlob@ this)
 {
+	this.Tag("ignore_saw");
+	
 	this.server_setTeamNum(-1);
 	//team - force blue unless special
 	int team = (this.exists("team colour") ? this.get_u8("team colour") : 0);
