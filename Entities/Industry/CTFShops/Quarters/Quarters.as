@@ -122,7 +122,7 @@ void onTick(CBlob@ this)
 		CBlob@ patient = bed.getOccupied();
 		if (patient !is null)
 		{
-			if (bed.isKeyJustPressed(key_up))
+			if (bed.isKeyJustPressed(key_up) || patient.getHealth() == 0)
 			{
 				if (isServer)
 				{

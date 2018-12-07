@@ -37,6 +37,12 @@ void onRender(CSprite@ this)
 		return;
 	}
 
+	//behind solid blocks
+	if (localBlob.getMap().rayCastSolid(localBlob.getPosition(), blob.getPosition()))
+	{
+		return;
+	}
+
 	// dont draw if angle is upside down
 	f32 angle = blob.getAngleDegrees();
 
