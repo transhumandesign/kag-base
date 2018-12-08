@@ -442,7 +442,7 @@ void DrawBow(CSprite@ this, CBlob@ blob, ArcherInfo@ archer, f32 armangle, const
 
 	// fire arrow particles
 
-	if (arrowType == ArrowType::fire && getGameTime() % 6 == 0)
+	if (arrowType == ArrowType::fire && hasArrows(blob) && getGameTime() % 6 == 0)
 	{
 		Vec2f offset = Vec2f(12.0f, 0.0f);
 
@@ -462,7 +462,7 @@ void DrawBowEffects(CSprite@ this, CBlob@ blob, ArcherInfo@ archer, const u8 arr
 
 	if (arrowType == ArrowType::fire)
 	{
-		if (IsFiring(blob))
+		if (IsFiring(blob) && hasArrows(blob))
 		{
 			blob.SetLight(true);
 			blob.SetLightRadius(blob.getRadius() * 2.0f);
