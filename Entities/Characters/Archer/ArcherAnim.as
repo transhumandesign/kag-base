@@ -474,7 +474,7 @@ void DrawBowEffects(CSprite@ this, CBlob@ blob, ArcherInfo@ archer, const u8 arr
 	}
 
 	//quiver
-	bool has_arrows = blob.get_bool("has_arrow");
+	bool has_arrows = hasAnyArrows(blob);
 	doQuiverUpdate(this, has_arrows, true);
 }
 
