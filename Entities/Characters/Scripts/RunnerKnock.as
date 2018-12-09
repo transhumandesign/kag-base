@@ -1,6 +1,7 @@
 // stun
 #include "/Entities/Common/Attacks/Hitters.as";
 #include "Knocked.as";
+#include "ShieldCommon.as";
 
 void onInit(CBlob@ this)
 {
