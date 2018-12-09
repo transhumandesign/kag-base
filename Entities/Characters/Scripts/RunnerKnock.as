@@ -108,9 +108,16 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		bool has_sponge = sponge !is null;
 		bool wet_sponge = false;
 
-		bool undefended = (force || !this.hasTag("shielded"));
-		if ((customData == Hitters::water_stun && undefended) ||
-		        customData == Hitters::water_stun_force)
+		bool defended = this.hasTag("shielded");
+
+		// If the class has a shield (check for ShieldVars) then check that the shield is pointing in the right direction
+		if (getShieldVars(this) !is null) {
+			if (!blockAttack(this, velocity, damage))
+				defended = false;
+		}
+
+		if (customData == Hitters::water_stun && !defended
+			|| customData == Hitters::water_stun_force)
 		{
 			if (has_sponge)
 			{
@@ -120,6 +127,12 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			else
 			{
 				time = 45;
+			}
+
+			// Halve the stun if it was blocked
+			if (defended) {
+				Sound::Play("ShieldHit.ogg", this.getPosition(), this.isMyPlayer() ? 1.3f : 0.7f);
+				time *= 0.5;
 			}
 
 			this.Tag("dazzled");
