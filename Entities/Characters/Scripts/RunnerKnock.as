@@ -117,6 +117,10 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 				defended = false;
 		}
 
+		// Don't allow the player to shield their own water explosives
+		if (hitterBlob.getDamageOwnerPlayer() is this.getPlayer())
+			defended = false;
+
 		if (customData == Hitters::water_stun && !defended
 			|| customData == Hitters::water_stun_force)
 		{
