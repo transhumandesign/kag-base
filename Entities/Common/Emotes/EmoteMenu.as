@@ -41,7 +41,11 @@ void onTick(CRules@ rules)
 {
 	CBlob@ blob = getLocalPlayerBlob();
 
-	if (blob is null) return;
+	if (blob is null)
+	{
+		set_active_wheel_menu(null);
+		return;
+	}
 
 	WheelMenu@ menu = get_wheel_menu("emotes");
 

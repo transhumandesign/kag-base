@@ -28,18 +28,18 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 	//
 	// blob.server_Hit(blob, blob.getPosition(), Vec2f(0, 0), 10.0f, 0);
 	// Deals 10 damage to the player that used that command (20 hearts)
-	// 
+	//
 	// CBlob@ b = server_CreateBlob('mat_wood', -1, pos);
 	// insert your blob/the thing you want to spawn at 'mat_wood'
 	//
 	// player.server_setCoins(player.getCoins() + 100);
 	// Adds 100 coins to the player's coins
 	//-----------------END-----------------//
-	
+
 	// cannot do commands while dead
-	
+
 	if (player is null)
-		return true; 
+		return true;
 
 	CBlob@ blob = player.getBlob(); // now, when the code references "blob," it means the player who called the command
 
@@ -47,12 +47,12 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 	{
 		return true;
 	}
-	
+
 	Vec2f pos = blob.getPosition(); // grab player position (x, y)
 	int team = blob.getTeamNum(); // grab player team number (for i.e. making all flags you spawn be your team's flags)
 
 	// MODDERS --- WRITE ALL COMMANDS BELOW!!
-	
+
 	// commands that don't rely on sv_test being on (sv_test = 1)
 
 	if (text_in == "!killme")
@@ -80,7 +80,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			print("[" + blob.getName() + " " + blob.getNetworkID() + "] ");
 		}
 	}
-	
+
 	if (this.gamemode_name == "Sandbox" || sv_test == true) // if the game mode is Sandbox OR if sv_test is true, you can use these commands
 	{
 		if (text_in == "!allmats") // 500 wood, 500 stone, 100 gold
@@ -98,7 +98,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		else if (text_in == "!woodstone") // 250 wood, 500 stone
 		{
 			CBlob@ b = server_CreateBlob('mat_wood', -1, pos);
-			
+
 			for (int i = 0; i < 2; i++)
 			{
 				CBlob@ b = server_CreateBlob('mat_stone', -1, pos);
@@ -107,7 +107,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		else if (text_in == "!stonewood") // 500 wood, 250 stone
 		{
 			CBlob@ b = server_CreateBlob('mat_stone', -1, pos);
-			
+
 			for (int i = 0; i < 2; i++)
 			{
 				CBlob@ b = server_CreateBlob('mat_wood', -1, pos);
@@ -174,7 +174,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				CBlob@ b = server_CreateBlob('mat_bombs', -1, pos);
 			}
 		}
-		else if (text_in == "!spawnwater" && player.isMod()) 
+		else if (text_in == "!spawnwater" && player.isMod())
 		{
 			getMap().server_setFloodWaterWorldspace(pos, true);
 		}

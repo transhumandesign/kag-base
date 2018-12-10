@@ -39,8 +39,8 @@
 //ShowGameMode.as //You can translate here any game mode names
 	"  Gamemode: {GAMEMODE}":"  Игровой режим: {GAMEMODE}",
 	"\n  Server: {SERVERNAME}\n":"\n  Сервер: {SERVERNAME}\n",
-	"CTF":"CTF",
-	"TTH":"TTH",
+	//"CTF":"CTF", //already exists in GAMEMODE INFO
+	//"TTH":"TTH", //Already exists in GAMEMODE INFO
 	"TDM":"TDM",
 
 //BuilderInventory.as
@@ -155,7 +155,7 @@
 	"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.":"Используйте\nсвой крюк-кошку$Tutorial_Grapple$.\n\n\nЗАЖМИТЕ$RMB$, наведясь на\n\nпотолок в ту точку, где\n\nустановлен фонарь $lantern$.\n\nЗАЖМИТЕ $KEY_D$и ОТПУСТИТЕ\n\n$RMB$ перед остановкой.",
 
 //Tutorial03.as
-	"$lantern$\nPickup the lantern $KEY_C$":"$lantern$\nПоднимите фонарь. $KEY_C$",
+	"$lantern$\nPickup the lantern $KEY_C$":"$lantern$\nВозьмите фонарь. $KEY_C$",
 	"Drop is the same as pickup $KEY_C$":"Бросить предмет можно той же кнопкой. $KEY_C$",
 	"Activate/Deactivate things\n   $KEY_SPACE$\n\n\n$lantern$ On/Off":"Активация/деактивация предметов:\n   $KEY_SPACE$\n\n\n$lantern$ On/Off",
 	"By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$":"Кстати, в верхней части экрана есть мини-карта. Используйте \n\n$KEY_M$ для\n         включения/отключения\n         мини-карты.",
@@ -164,7 +164,7 @@
 	"$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.":"$Tree$\n\nСрубите дерево - \n\nДЕРЖИТЕ $RMB$\n\nи наведите мышь на основание дерева.",
 	"$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":"$log$\n\nРазрубите дерево\nв $mat_wood$\n\nНаведите мышь на бревно и\n\nДЕРЖИТЕ $RMB$.",
 	"$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)":"$ladder$\n\nВыберите лестницу для строительства.\n\nДЕРЖИТЕ $KEY_F$(кнопка\n                           инвентаря)\n\nНаведите курсор на лестницу и отпустите кнопку инвентаря.\n\n(требуется$mat_wood$)",
-	"Place by pointing with mouse and pressing $LMB$":"Поставьте лестницу, наведя\n\n мышь и нажав$LMB$",
+	"Place by pointing with mouse and pressing $LMB$":"Поставьте лестницу с помощью$LMB$ в место курсора.",
 	"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.":"$Pick$\n\nПостройте мост.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nИспользуйте разные блоки, чтобы узнать, как они работают.",
 	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"Учтите, что вы не сможете бесконечно строить по горизонтали. Вам придется построить опору снизу для того, чтобы продолжить строительство.",
 	"$Pick$  $BlockStone$\n\nMine some stone $RMB$":"$Pick$  $BlockStone$\n\nВыкопайте немного камня.\n\n $RMB$",
@@ -175,7 +175,7 @@
 
 //TutorialCTF01.as
 	"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":
-	"Захват флага - это простой режим игры, подходящий для новичков. Цель режима проста - украсть флаг у противника и донести его до своего.",
+	"Захват флага - это самый простой режим игры для новичков. Правила просты - украдите флаг противника и принесите его к своему флагу.",
 	"Killing enemies, building structures and generally being useful for your team will give you coins.\n\nCoins allow you to purchase ammo, weapons & tools in workshops. First thing, as an example on how it will look when you kill an enemy:\n\nKill those chicken and get their coins!\n\n$chicken$":
 	"За убийства врагов и постройку сооружений вы получаете монеты.\n\nМонеты позволяют вам покупать боеприпасы, оружие и инструменты в мастерских. Для начала покажем наглядно, как это происходит.\n\nУбейте этих куриц и отберите их деньги!\n$chicken$",
 	"Go to the Tent and switch class to BUILDER.\n\nPress $KEY_E$ while standing\n\non the Tent.\n\n\n\n$tent$\n\n\n":
@@ -699,11 +699,9 @@
 	"Builder Shop":"Магазин строителей",
 	"Knight Shop":"Рыцарский магазин",
 	"Quarters":"Казарма",
-	"Storage":"Склад",
 	"Storage Cache":"Склад",
 	"Vehicle Shop":"Магазин осадных орудий",
 	"Drill":"Бур",
-	"Workshop":"Мастерская",
 	"Fireplace":"Костёр",
 	"Hall":"База",
 	"Barracks":"Казармы", //OLD
@@ -719,7 +717,6 @@
 	"Trading Post":"Торговый пост",
 	"Travel Tunnel":"Тоннель",
 	"Transport Tunnel":"Тоннель",
-	"Workbench":"Верстак",
 	"Boulder":"Валун",
 	"Bucket":"Ведро",
 	"Filled Bucket":"Ведро с водой",
@@ -770,14 +767,6 @@
 	"Tent":"Палатка",
 	"Sign":"Табличка",
 	"Team base":"База команды",
-	"Bolter":"Болтер",
-	"Dispenser":"Раздатчик",
-	"Lamp":"Лампа",
-	"Obstructor":"Выдвижной блок",
-	"Magazine":"Отсек для стрел",
-	"Coin Slot":"Монетоприёмник",
-	"Lever":"Рычаг",
-	"Button":"Кнопка",
 	"Stone Door":"Каменная дверь",
 	"Wooden Door":"Деревянная дверь",
 	"Ladder":"Лестница",
@@ -932,7 +921,7 @@
 //guiLogin.xml
 	"Username:":"Имя пользователя:",
 	"Remember me":"Запомнить меня",
-	"Create Account":"Создать аккаунт",
+	"Create Account":"Регистрация",
 	"Offline":"Оффлайн",
 	"Forgot?":"Забыли?",
 	"PLAY":"Играть",
@@ -965,9 +954,9 @@
 	">20 Players":">20 игроков",
 	"Don't Care":"Без разницы",
 	"Choose Game Mode:":"Выберите игровой режим",
-	"Capture The Flag":"Захват флага",
-	"Take The Halls":"Захват баз",
-	"Team Deathmatch":"Командный бой насмерть",
+	//"Capture The Flag":"Захват флага", //Already exists in GAMEMODE INFO
+	//"Take The Halls":"Захват баз",  //Already exists in GAMEMODE INFO
+	//"Team Deathmatch":"Командный бой насмерть", //Already exists in GAMEMODE INFO
 	"Sandbox":"Песочница",
 	"Co-op Challenge":"Испытания",
 	"Custom Content":"Пользовательский контент",
@@ -1010,12 +999,12 @@
 //guiSolo.xml
 	"(start here)":"(начинать отсюда)",
 	"TUTORIALS":"ОБУЧЕНИЕ",
-	"Save the Princess":"Спаси принцессу",
+	//"Save the Princess":"Спаси принцессу", //Already exists in GAMEMODE INFO
 	"Challenges!":"Испытания!",
 	"Tutorials":"Обучение",
 	"Basics":"Основы",
-	"Capture the Flag":"Захват флага",
-	"Take the Halls":"Захват баз",
+	//"Capture the Flag":"Захват флага",  //Already exists in GAMEMODE INFO
+	//"Take the Halls":"Захват баз", //Already exists in GAMEMODE INFO
 //guiStarter.xml
 	"King Arthur's Gold":"King Arthur's Gold",
 	"KAG Community":"Сообщество KAG",
@@ -1049,7 +1038,7 @@
 	"Spectate":                                      "Наблюдать",
 	"OK":                                            "OK",
 	"Beginner":                                      "Для новичков",
-	"Ping":                                          "Пинг",
+	//"Ping":                                          "Пинг", //Already exists in ScoreboardRender.as
 	"Player Count":                                  "Количество игроков",
 	"Map Size":                                      "Размер карты",
 	"Game Mode":                                     "Игровой режим",
@@ -1124,13 +1113,13 @@
 	"Teamkiller":				"Убийство своих",
 	"Chat Spam":				"Спам в чате",
 	"Non-Participation":		"Неучастие в игре",
-	"Voting requires a {REQUIRED_MIN} min wait\nafter each started vote to\nprevent spamming/abuse.\n":"Для голосования требуется ожидание в {REQUIRED_MIN} мин\nпосле каждого голосования,\nчтобы предотвратить спам или злоупотребление этой функцией.",
+	"Voting requires a {REQUIRED_MIN} min wait\nafter each started vote to\nprevent spamming/abuse.\n":"После каждого голосования\nнужно ждать {REQUIRED_MIN} мин,\nчтобы избежать спама или\nголосований без причины.",
 	"Vote to kick a player on your team\nout of the game.\n\n- use responsibly\n- report any abuse of this feature.\n\nTo Use:\n\n- select a reason from the\n     list (default is griefing).\n- select a name from the list.\n- everyone votes.\n":"Проголосовать за исключение\nиз игры игрока вашей команды.\n\n- использовать ответственно\n- сообщайте о любом злоупотреблении этой функцией.\n\nКак использовать:\n\n- Выберите причину из списка\n     (гриферство по умолчанию).\n- выберите имя из списка.\n- голосуют все.\n",
 	"Cannot kick {USER}":"Нельзя исключить {USER}",
-	"You started a vote for\nthis person last time.\n\nSomeone else must start the vote.":"В последний раз вы начинали\nголосование за исключение\nэтого человека.\n\nКто-то другой должен начать\nголосование.",
+	"You started a vote for\nthis person last time.\n\nSomeone else must start the vote.":"Последнее голосование против\nэтого человека начинали тоже вы.\n\nКто-то другой должен начать\nголосование.",
 	"Kick {USER}":"Исключить {USER}",
 	"Kicking {USER}":"Исключаем {USER}",
-	"Make sure you're voting to kick\nthe person you meant.\n":"Убедитесь, что вы не\nголосуете за исключение\nтого, кого не хотели исключать.",
+	"Make sure you're voting to kick\nthe person you meant.\n":"Убедитесь, что вы исключаете\nтого, кого хотели.",
 	"Yes, I'm sure":"Да, исключить",
 	"(No-one available)":"(не за кого голосовать)",
 	"Can't vote":"Нельзя проголосовать",
@@ -1139,17 +1128,17 @@
 	"Next Map":"Следующая карта",
 	"Map Ruined":"Карта уничтожена",
 	"Stalemate":"Игра слишком затянулась",
-	"Game Bugged":"Игра сломана",
+	"Game Bugged":"Игра сломалась",
 	"Skip to next map?":"Перейти к следующей карте?",
-	"Voting for next map\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"Для голосования за\nследующую карту\nтреубется ожидание в {NEXTMAP_MINS} мин\nпосле каждого голосования,\nчтобы предотвратить спам.\n",
-	"Vote to change the map\nto the next in cycle.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select a reason from the list.\n- everyone votes.\n":"Голосование за смену карты\nна следующую из списка.\n\n- сообщайте о любом злоупотреблении этой функцией.\n\nКак использовать:\n\n- выберите причину из списка.\n- голосуют все.\n",
-	"Vote Next Map":"Голосование за следующую карту",
+	"Voting for next map\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"После каждого голосования\nза смену карты\nнужно ждать {NEXTMAP_MINS} мин,\nчтобы избежать спама.\n",
+	"Vote to change the map\nto the next in cycle.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select a reason from the list.\n- everyone votes.\n":"Голосование за смену карты\nна следующую из списка.\n\n- сообщайте о любом злоупотреблении этой функцией.\n\nКак использовать:\n\n- выберите причину из списка.\n- все голосуют.\n",
+	"Vote Next Map":"Голосование за смену карты",
 	"You are not allowed to vote\nto change the map on this server\n":"Вам не разрешено голосовать\nза смену карты на\nэтом сервере.",
 	//vote surrender menu
 	"Surrender":"Сдаться",
 	"Surrender to the enemy?":"Сдаться противнику?",
 	"Voting for surrender\nis not allowed before the game starts.\n":"Сдаваться до начала игры запрещено.",
-	"Voting for surrender\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"Для голосования за то,\nчтобы сдаться\nтреубется ожидание в {NEXTMAP_MINS} мин\nпосле каждого голосования,\nчтобы предотвратить спам.\n",
+	"Voting for surrender\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"После каждого голосования\nнужно ждать {NEXTMAP_MINS} мин,\nчтобы избежать спама.",
 	"Voting for surrender\nis not available as a spectator\n":"Будучи зрителем, нельзя сдаваться.",
 	"Vote Surrender":"Сдаться",
 	"Vote to end the game\nin favour of the enemy team.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select surrender if you're sure.\n- everyone votes.\n":"Голосование за окончание игры\nв пользу вражеской команды.\n\n- сообщайте о любом злоупотреблении этой функцией.\n\nКак использовать:\n\n- сдавайтесь только если вы уверены.\n- голосуют все.\n",
@@ -1174,7 +1163,7 @@
 	"Back":					"Назад",
 	"Change Team":				"Сменить команду",
 	"Switch to Team {NUMBER}":		"Перейти в команду {NUMBER}", //(not used in vanilla)
-	"Spectator":				"Зритель",
+	// "Spectator":				"Зритель", //Already exists in TeamMenu.as
 	"Spectators":				"Зрители",
 	"Suicide":				"Самоубийство",
 	"Admin":				"Администрирование",
@@ -1204,10 +1193,47 @@
 	"Servers":				"Серверы",
 	"Help":					"Помощь",
 	"Manual":				"Руководство",
-	"Wiki":					"Вики",
-	"Settings":				"Настройки",
 	"Map Utilities":			"Инструменты для карты",
 	"Map Filename":				"Имя файла",
 	"Save Map":				"Сохранить карту",
-	"Quit to Main Menu":			"Выйти в главное меню"
+	"Quit to Main Menu":			"Выйти в главное меню",
+
+// EmotesCommon.as
+	"Show emoticon":"Показать эмоцию",
+	"Point Right":"Показать вправо",
+	"Laughing":"Смех",
+	"Smiling":"Улыбка",
+	"Skull":"Череп",
+	"Laughing Crying":"Животик надорвёшь", //Истерический смех
+	"Awkward Laughing":"Неловкий смех",
+	"Smug":"Самодовольная ухмылка",
+	"Troll":"Затроллил",
+	"What":"Что?",
+	"Point Down":"Показать вниз",
+	"Derp":"Ой, неудачно получилось", //Неудачно получилось
+	"Mad":"Да, похоже, ты в бешенстве", //Злость
+	"Disappointed":"Разочарование",
+	"Frown":"Грустный взгляд",
+	"Crying":"Плач",
+	//"Archer":"",
+	//"Knight":"",
+	//"Builder":"",
+	"Point left":"Показать влево",
+	//"Heart":"",
+	"Love":"Любовь",
+	"Kiss":"Поцелуй",
+	"Flex":"Мамин силач",
+	"Rude Gesture":"Грубый жест",
+	"Thumbs Down":"Палец вниз",
+	"Thumbs Up":"Палец вверх",
+	//"OK":"",
+	"Point Up":"Показать вверх",
+	"Thinking":"Размышление",
+	"Sweat Drop":"Пот",
+	//"Ladder":"",
+	"Attention":"Внимание",
+	"Question":"Вопрос",
+	"Fire":"Огонь",
+	"Wall":"Стена",
+	"Musical Note":"Музыкальная нота"
 }

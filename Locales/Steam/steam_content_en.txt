@@ -1,0 +1,208 @@
+###############################################################################
+# Steam Strings - For Translation Purposes
+
+These strings are provided to allow localisation of the steam content.
+
+They are not read directly by the game.
+
+# Guidelines:
+
+You do not need to translate the headings "# Description:" etc - these are just
+to separate the strings into logical sections for you.
+
+BBCode images should be left "as is".
+
+BBCode tags should probably  be "semantically" preserved between descriptions.
+They don't appear to be used on the store pages in most contexts though.
+
+Please issue a pull request for this file with the correct locale suffix if you
+contribute to localisation. Copy this file as a starting point if a copy for
+your locale does not already exist.
+
+	(eg Locale/Steam/steam_content_ru.txt for Russian)
+
+###############################################################################
+# King Arthur's Gold
+
+# Description:
+
+[img]{STEAM_APP_IMAGE}/extras/gif_overview01.png[/img]  .  [img]{STEAM_APP_IMAGE}/extras/gif_overview02.png[/img]
+
+[h2]2D Physics + Class/Team-Based Multiplayer + Medieval War/Building game[/h2]
+
+A few things you can do in King Arthur's Gold:
+
+[list]
+[*] [b]DESTROY [/b]the enemy castles with physics and explosives
+[*] [b]BUILD [/b]Defenses With Freeform Building
+[*] Use the environment to [b]BURN [/b]or drown enemies
+[*] [b]DRIVE [/b]siege machines with your teammates
+[*] Freedom to run, board ships, [b]DIG [/b]tunnels or fly in the air
+[*] Interact with a [b]LIVING [/b]animal and plant world
+[*] [b]FIGHT [/b]with 32 unpredictable humans in multiplayer
+[*] Singleplayer, cooperative and competitive game [b]MODES[/b]
+[*] [b]CUSTOMIZE [/b]with 60+ unique heads
+[*] [b]CREATE [/b]your own adventure with community created mods & scripts
+[/list]
+
+[img]{STEAM_APP_IMAGE}/extras/gif_overview03.png[/img]
+
+King Arthur's Gold blends the cooperative aspects of [i]Lost Vikings[/i], mashes them with the full destructibility of [i]Worms[/i] and the visual style and action of [i]Metal Slug[/i], brought to you by the creators of [i]Soldat[/i].
+
+# Short Description:
+
+Would you like to [b]demolish [/b]your opponents fortress and [b]collapse [/b]it with 2D PHYSICS? Would you enjoy [b]building [/b]castles, traps and siege machines in MULTIPLAYER?
+
+###############################################################################
+# King Arthur's Gold: Flags of the World Heads Pack
+
+# Description:
+
+This Cosmetic DLC adds over 120 unique heads (over 60 per gender) to King Arthur's Gold.
+
+Each head represents a flag of the world. There are also Jolly Roger and Rainbow/Pride flags.
+Use them to celebrate your heritage and bring some colour onto the battlefield!
+
+Preview:
+
+[list]
+[img]{STEAM_APP_IMAGE}/extras/flag_heads_preview.png[/img]
+[/list]
+
+List of flags currently supported:
+
+[list]
+[*]Poland
+[*]Australia
+[*]England
+[*]Ireland
+[*]Scotland
+[*]Wales
+[*]New Zealand
+[*]Australian Aboriginal
+[*]Tino Rangatiratanga (Maori)
+[*]Canada
+[*]USA
+[*]Italy
+[*]Germany
+[*]Russia
+[*]France
+[*]Netherlands
+[*]Sweden
+[*]Norway
+[*]Spain
+[*]Belgium
+[*]Finland
+[*]Denmark
+[*]Portugal
+[*]Turkey
+[*]Iceland
+[*]Switzerland
+[*]Hungary
+[*]Belarus
+[*]Slovakia
+[*]Latvia
+[*]Israel
+[*]Palestine
+[*]Czech Republic
+[*]Ukraine
+[*]Mexico
+[*]Chile
+[*]Brazil
+[*]Argentina
+[*]Jamaica
+[*]Papua New Guinea
+[*]Tonga
+[*]Samoa
+[*]Korea
+[*]China
+[*]Singapore
+[*]Thailand
+[*]Japan
+[*]Hong Kong
+[*]Malaysia
+[*]Taiwan
+[*]Indonesia
+[*]Philipines
+[*]India
+[*]Vietnam
+[*]South Africa
+[*]Egypt
+[*]Kenya
+[*]Somalia
+[*]Sudan
+[*]Georgia
+[*]Greece
+[*]Syria
+[*]Syrian Independence Flag
+[*]Mali
+[*]Austria
+[*]Estonia
+[*]Tunisia
+[*]Libya
+[*]Lithuania
+[*]The Faroe Islands
+[*]Puerto Rico
+[*]Cuba
+[*]Greenland
+[*]Dominican Republic
+[*]Iraq
+[*]Jolly Roger
+[*]Rainbow
+[/list]
+
+Requests for missing countries/nations etc will be considered via the support email.
+
+# Short Description:
+
+This Cosmetic DLC adds over 120 unique heads (over 60 per gender) representing flags of the world to King Arthur's Gold.
+
+###############################################################################
+# King Arthur's Gold: Fantasy Heads Pack
+
+# Description:
+
+Bring a high fantasy flavour to King Arthur's Gold! Enjoy playing as your favourite fantasy races and help support continued development!
+
+This theme was voted as a favourite out of four by the community, and we're excited to bring you the second DLC for KAG to Steam. These high quality, unique heads will help you stand out from the crowd.
+
+[img]{STEAM_APP_IMAGE}/extras/PromoPreview.png[/img]
+
+[b]Full list of included heads:[/b]
+[list]
+[*]Hobbit
+[*]Gnome
+[*]Dwarf Soldier
+[*]Dwarf Miner
+[*]Forest Elf
+[*]Dark Wraith
+[*]Wizard/Witch (Light and Dark versions)
+[*]High Elf
+[*]Ranger
+[*]Paladin
+[*]Heavy Knight
+[*]Squire
+[*]Goblin
+[*]Orc
+[*]Cyclops Troll
+[*]Imp
+[/list]
+All heads are included for male and female genders.
+
+# Short Description:
+
+Bring a high fantasy flavour to King Arthur's Gold! As voted by the community, these exclusive heads help you become a dwarf, elf, goblin, ranger, wizard, witch, hobbit, dark wraith, and more!
+
+###############################################################################
+# Misc/Shared Content
+
+(these lines are used for all packages)
+
+# Legal Line:
+
+King Arthur's Gold is Copyright © 2011-2017 Transhuman Design, All Rights Reserved.
+
+###############################################################################
+# Thanks!
+
+Thank you for your help localising the game!

@@ -67,21 +67,40 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		//get sponge
 		CBlob@ sponge = null;
-		//find the sponge with lowest absorbed
-		CInventory@ inv = this.getInventory();
-		if (inv !is null)
+
 		{
-			u8 lowest_absorbed = 100;
-			for (int i = 0; i < inv.getItemsCount(); i++)
+			//find the sponge with highest absorbed amount
+			CBlob@[] sponges;
+			//gather held sponge if exists
+			//(first, so carried sponge is prioritised if equal)
+			CBlob@ carryblob = this.getCarriedBlob();
+			if (carryblob !is null && carryblob.getName() == "sponge")
 			{
-				CBlob@ invitem = inv.getItem(i);
-				if(invitem.getName() == "sponge")
+				sponges.push_back(carryblob);
+			}
+			//gather inventory
+			CInventory@ inv = this.getInventory();
+			if (inv !is null)
+			{
+				for (int i = 0; i < inv.getItemsCount(); i++)
 				{
-					if(invitem.get_u8("absorbed") < lowest_absorbed)
+					CBlob@ invitem = inv.getItem(i);
+					if(invitem.getName() == "sponge")
 					{
-						lowest_absorbed = invitem.get_u8("absorbed");
-						@sponge = invitem;
+						sponges.push_back(invitem);
 					}
+				}
+			}
+			//check all
+			int highest_absorbed = -1;
+			for(int i = 0; i < sponges.length; i++)
+			{
+				CBlob@ current_sponge = sponges[i];
+				int absorbed = current_sponge.get_u8("absorbed");
+				if(absorbed > highest_absorbed)
+				{
+					highest_absorbed = absorbed;
+					@sponge = current_sponge;
 				}
 			}
 		}

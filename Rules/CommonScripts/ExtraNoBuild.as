@@ -17,7 +17,7 @@ void onRestart(CRules@ this)
 	const u16 mapWidth = map.tilemapwidth * map.tilesize;
 	const u16 mapHeight = map.tilemapheight * map.tilesize;
 	const u8 barrierWidth = 2 * map.tilesize;
-	const u8 barrierHeight = 2 * map.tilesize;
+	const u8 barrierHeight = 3 * map.tilesize;
 
 	// Ceiling
 	Vec2f tlCeiling = Vec2f_zero;

@@ -1,5 +1,7 @@
 // character was placed in crate
 
+#include "CrouchCommon.as";
+
 void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
 	this.doTickScripts = true; // run scripts while in crate
@@ -56,14 +58,12 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 			return false;
 		}
 
-		const bool still = (this.getShape().vellen < 0.01f);
+		const bool still = !this.isKeyPressed(key_left) && !this.isKeyPressed(key_right);
 
-		if (this.isKeyPressed(key_down) &&
-		        this.isOnGround() && still)
+		if (isCrouching(this))
 		{
-			CShape@ s = blob.getShape();
-			if (s !is null && !s.isStatic() &&
-			        !blob.hasTag("ignore crouch"))
+			CShape@ shape = this.getShape();
+			if (shape !is null && !shape.isStatic())
 			{
 				return false;
 			}
