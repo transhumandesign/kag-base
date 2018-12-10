@@ -30,14 +30,7 @@ void onTick(CBlob@ this)
 {
 	if (this.getSprite().isAnimation("fire"))
 	{
-		if (XORRandom(3) == 0)
-		{
-			makeSmokeParticle(this.getPosition(), -0.05f);
-
-			this.getSprite().SetEmitSoundPaused(false);
-		}
-		else
-			makeFireParticle(this.getPosition() + getRandomVelocity(90.0f, 3.0f, 360.0f));
+		makeFireParticle(this.getPosition() + getRandomVelocity(90.0f, 3.0f, 90.0f));
 	}
 
 	if (this.isInWater())
@@ -77,18 +70,13 @@ void onInit(CSprite@ this)
 
 	if (fire !is null)
 	{
-		fire.SetRelativeZ(100);
+		fire.SetRelativeZ(1);
+		fire.SetOffset(Vec2f(-2.0f, -4.0f));
 		{
-			Animation@ anim = fire.addAnimation("bigfire", 6, true);
+			Animation@ anim = fire.addAnimation("fire", 6, true);
 			anim.AddFrame(1);
 			anim.AddFrame(2);
 			anim.AddFrame(3);
-		}
-		{
-			Animation@ anim = fire.addAnimation("smallfire", 6, true);
-			anim.AddFrame(4);
-			anim.AddFrame(5);
-			anim.AddFrame(6);
 		}
 		fire.SetVisible(true);
 	}
