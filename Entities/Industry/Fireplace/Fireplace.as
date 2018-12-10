@@ -1,10 +1,9 @@
 ﻿// Fireplace
 
 #include "ProductionCommon.as";
-#include "Requirements.as"
-#include "MakeFood.as"
-#include "FireParticle.as"
-#include "MakeDustParticle.as";
+#include "Requirements.as";
+#include "MakeFood.as";
+#include "FireParticle.as";
 #include "Hitters.as";
 
 void onInit(CBlob@ this)
