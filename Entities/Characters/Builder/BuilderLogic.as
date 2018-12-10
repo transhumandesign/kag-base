@@ -96,6 +96,8 @@ void onTick(CBlob@ this)
 		this.get("hitdata", @hitdata);
 		hitdata.blobID = 0;
 		hitdata.tilepos = bc.buildable ? bc.tileAimPos : Vec2f(-8, -8);
+
+		this.Tag("allow crouch");
 	}
 
 	// get rid of the built item

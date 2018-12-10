@@ -587,6 +587,8 @@ void onTick(CBlob@ this)
 					setShieldDirection(this, Vec2f(horiz, -3));
 				}
 			}
+
+			this.Tag("allow crouch");
 		}
 
 		// shield up = collideable
