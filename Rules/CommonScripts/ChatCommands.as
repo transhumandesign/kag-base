@@ -55,11 +55,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 	// commands that don't rely on sv_test being on (sv_test = 1)
 
-	if (text_in == "!killme")
-	{
-		blob.server_Hit(blob, blob.getPosition(), Vec2f(0, 0), 1000.0f, 0);
-	}
-	if (text_in == "!suicide")
+	if (text_in == "!killme" || text_in == "!suicide")
 	{
 		blob.server_Hit(blob, blob.getPosition(), Vec2f(0, 0), 1000.0f, 0);
 	}
@@ -81,7 +77,8 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		}
 	}
 
-	if (this.gamemode_name == "Sandbox" || sv_test == true) // if the game mode is Sandbox OR if sv_test is true, you can use these commands
+	// if the game mode is Sandbox OR if sv_test is true, you can use these commands
+	if (this.gamemode_name == "Sandbox" || sv_test == true)
 	{
 		if (text_in == "!allmats") // 500 wood, 500 stone, 100 gold
 		{
@@ -135,7 +132,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 	// these all require sv_test - no spawning without it
 	// some also require the player to have mod status (!spawnwater)
 
-	if (sv_test) // is on ("true" or 1)
+	if (sv_test)
 	{
 		if (text_in == "!tree") // pine tree (seed)
 		{
@@ -195,9 +192,9 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		{
 			player.server_setCoins(player.getCoins() + 100);
 		}
-		else if (text_in == "!coinoverload") // + 1000000 coins
+		else if (text_in == "!coinoverload") // + 10000 coins
 		{
-			player.server_setCoins(player.getCoins() + 1000000);
+			player.server_setCoins(player.getCoins() + 10000);
 		}
 		else if (text_in == "!fishyschool") // spawns 12 fishies
 		{
@@ -235,29 +232,35 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 			if (tokens.length > 1)
 			{
+				//(see above for crate parsing example)
 				if (tokens[0] == "!crate")
 				{
 					int frame = tokens[1] == "catapult" ? 1 : 0;
 					string description = tokens.length > 2 ? tokens[2] : tokens[1];
 					server_MakeCrate(tokens[1], description, frame, -1, Vec2f(pos.x, pos.y));
 				}
+				// eg. !team 2
 				else if (tokens[0] == "!team")
 				{
-					int team = parseInt(tokens[1]); // i.e. !team 2
-					blob.server_setTeamNum(team); // Picks team color from the TeamPalette.png (0 is blue, 1 is red, and so forth - if it runs out of colors, it uses the grey "neutral" color)
+					// Picks team color from the TeamPalette.png (0 is blue, 1 is red, and so forth - if it runs out of colors, it uses the grey "neutral" color)
+					int team = parseInt(tokens[1]);
+					blob.server_setTeamNum(team);
+					// We should consider if this should change the player team as well, or not.
 				}
 				else if (tokens[0] == "!scroll")
 				{
 					string s = tokens[1];
 					for (uint i = 2; i < tokens.length; i++)
+					{
 						s += " " + tokens[i];
+					}
 					server_MakePredefinedScroll(pos, s);
 				}
 
 				return true;
 			}
 
-			// try to spawn an actor with this name !actor
+			// otherwise, try to spawn an actor with this name !actor
 			string name = text_in.substr(1, text_in.size());
 
 			if (server_CreateBlob(name, team, pos) is null)
