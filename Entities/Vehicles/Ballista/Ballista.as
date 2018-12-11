@@ -235,7 +235,7 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (caller.getTeamNum() == this.getTeamNum() && isOverlapping(this, caller) && !caller.isAttached())
+	if (isOverlapping(this, caller) && !caller.isAttached())
 	{
 		if (!isAnotherRespawnClose(this) && !isFlipped(this))
 		{
@@ -244,7 +244,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(0, -4), this, SpawnCmd::buildMenu, getTranslatedString("Change class"), params);
 		}
 
-		if (!Vehicle_AddFlipButton(this, caller))
+		if (!Vehicle_AddFlipButton(this, caller) && caller.getTeamNum() == this.getTeamNum())
 		{
 			Vehicle_AddLoadAmmoButton(this, caller);
 		}
