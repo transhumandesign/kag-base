@@ -12,7 +12,8 @@ void Take(CBlob@ this, CBlob@ blob)
 {
 	const string blobName = blob.getName();
 
-	if (blobName == "mat_gold" && pickupCriteria(this, blob, 50) ||
+	if (
+		blobName == "mat_gold" && pickupCriteria(this, blob, 50) ||
 		blobName == "mat_stone" ||
 		blobName == "mat_wood"
 	) {
