@@ -57,6 +57,14 @@ void onTick(CSprite@ this)
 
 }
 
+void onTick(CBlob@ this)
+{
+	if (this.isInFlames() && !this.hasTag("exploding"))
+	{
+		this.SendCommand(this.getCommandID("activate"));
+	}
+}
+
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	if (getNet().isServer())
@@ -87,6 +95,22 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		case Hitters::sword:
 		case Hitters::arrow:
 			damage *= 0.25f; //quarter damage from these
+			break;
+		case Hitters::water:
+			if (hitterBlob.getName() == "bucket" && this.hasTag("exploding"))
+			{
+				this.SendCommand(this.getCommandID("deactivate"));
+			}
+		case Hitters::keg:
+			if (!this.hasTag("exploding"))
+			{
+				this.SendCommand(this.getCommandID("activate"));
+			}
+			//set fuse to shortest fuse time - either current time or new random time
+			//so it doesn't explode at the exact same time as hitter keg
+			this.set_s32("explosion_timer", Maths::Min(this.get_s32("explosion_timer"), getGameTime() + XORRandom(this.get_f32("keg_time")) / 3));
+
+			damage *= 0.0f; //invincible to allow keg chain reaction
 			break;
 		default:
 			damage *= 0.5f; //half damage from everything else
