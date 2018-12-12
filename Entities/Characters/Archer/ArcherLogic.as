@@ -271,6 +271,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 	CSprite@ sprite = this.getSprite();
 	bool ismyplayer = this.isMyPlayer();
 	bool hasarrow = archer.has_arrow;
+	bool hasnormal = hasArrows(this, ArrowType::normal);
 	s8 charge_time = archer.charge_time;
 	u8 charge_state = archer.charge_state;
 	const bool pressed_action2 = this.isKeyPressed(key_action2);
@@ -282,18 +283,11 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		{
 			hasarrow = hasArrows(this);
 
-			if (!hasarrow)
+			if (!hasarrow && hasnormal)
 			{
 				// set back to default
-				for (uint i = 0; i < ArrowType::count; i++)
-				{
-					hasarrow = hasArrows(this, i);
-					if (hasarrow)
-					{
-						archer.arrow_type = i;
-						break;
-					}
-				}
+				archer.arrow_type = ArrowType::normal;
+				hasarrow = hasnormal;
 			}
 		}
 
@@ -375,10 +369,10 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			charge_state = ArcherParams::readying;
 			hasarrow = hasArrows(this);
 
-			if (!hasarrow)
+			if (!hasarrow && hasnormal)
 			{
 				archer.arrow_type = ArrowType::normal;
-				hasarrow = hasArrows(this);
+				hasarrow = hasnormal;
 
 			}
 
