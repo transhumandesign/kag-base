@@ -213,6 +213,19 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 {
 	if (blob !is null && doesCollideWithBlob(this, blob) && !this.hasTag("collided"))
 	{
+		const u8 arrowType = this.get_u8("arrow type");
+
+		if (arrowType == ArrowType::normal)
+		{
+			if (
+				blob.getName() == "fireplace" &&
+				blob.getSprite().isAnimation("fire") &&
+				this.getTickSinceCreated() > 1 //forces player to shoot through fire
+			) {
+				turnOnFire(this);
+			}
+		}
+
 		if (
 			!solid && !blob.hasTag("flesh") &&
 			!specialArrowHit(blob) &&
@@ -234,7 +247,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			dmg = getArrowDamage(this, vellen);
 		}
 
-		const u8 arrowType = this.get_u8("arrow type");
 		if (arrowType == ArrowType::water)
 		{
 			blob.Tag("force_knock"); //stun on collide

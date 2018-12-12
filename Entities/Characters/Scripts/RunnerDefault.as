@@ -26,7 +26,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	this.Untag("allow crouch");
+	this.Untag("prevent crouch");
 	DoKnockedUpdate(this);
 }
 

@@ -386,6 +386,8 @@ void onTick(CBlob@ this)
 		else if (knight.state >= KnightStates::sword_cut_mid &&
 		         knight.state <= KnightStates::sword_cut_down) // cut state
 		{
+			this.Tag("prevent crouch");
+
 			if (delta == DELTA_BEGIN_ATTACK)
 			{
 				Sound::Play("/SwordSlash", this.getPosition());
@@ -412,6 +414,8 @@ void onTick(CBlob@ this)
 		else if (knight.state == KnightStates::sword_power ||
 		         knight.state == KnightStates::sword_power_super)
 		{
+			this.Tag("prevent crouch");
+
 			//setting double
 			if (knight.state == KnightStates::sword_power_super &&
 			        this.isKeyJustPressed(key_action1))
@@ -550,6 +554,7 @@ void onTick(CBlob@ this)
 				setShieldDirection(this, Vec2f(horiz, 2));
 				setShieldAngle(this, SHIELD_BLOCK_ANGLE_SLIDING);
 			}
+			this.Tag("prevent crouch");
 		}
 		else if (walking)
 		{
@@ -565,6 +570,8 @@ void onTick(CBlob@ this)
 			{
 				setShieldDirection(this, Vec2f(horiz, -3));
 			}
+
+			this.Tag("prevent crouch");
 		}
 		else
 		{
@@ -587,8 +594,6 @@ void onTick(CBlob@ this)
 					setShieldDirection(this, Vec2f(horiz, -3));
 				}
 			}
-
-			this.Tag("allow crouch");
 		}
 
 		// shield up = collideable
