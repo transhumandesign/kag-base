@@ -1,3 +1,5 @@
+//used to determine if a player is crouching or not
+//(not safe to use before their logic script has been run during ontick)
 bool isCrouching(CBlob@ this)
 {
 	return
