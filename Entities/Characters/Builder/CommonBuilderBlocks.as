@@ -107,14 +107,14 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 	else if(TTH)
 	{
 		{
-			BuildBlock b(0, "factory", "$building$", "Workshop");
+			BuildBlock b(0, "factory", "$building$", "Factory\nAn item-producing factory\nRequires migrant");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", WARCosts::factory_wood);
 			b.buildOnGround = true;
 			b.size.Set(40, 24);
 			blocks[0].insertAt(9, b);
 		}
 		{
-			BuildBlock b(0, "workbench", "$workbench$", "Workbench");
+			BuildBlock b(0, "workbench", "$workbench$", "Workbench\nCreate trampolines, saws, and more");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", WARCosts::workbench_wood);
 			b.buildOnGround = true;
 			b.size.Set(32, 16);
