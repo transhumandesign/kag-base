@@ -36,7 +36,7 @@ void onInit(CBlob@ this)
 
 	this.set_TileType("background tile", CMap::tile_wood_back);
 
-	SetHelp(this, "help use", "builder", getTranslatedString("$workshop$Convert workshop    $KEY_E$"), "", 3);
+	SetHelp(this, "help use", "builder", getTranslatedString("$workshop$Convert factory    $KEY_E$"), "", 3);
 
 	if (hasTech(this))
 	{
