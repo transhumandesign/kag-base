@@ -75,7 +75,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (!hasTech(this) && caller.isOverlapping(this))
 	{
-		caller.CreateGenericButton(12, Vec2f(0, 0), this, this.getCommandID("upgrade factory menu"), getTranslatedString("Convert Workshop"), params);
+		caller.CreateGenericButton(12, Vec2f(0, 0), this, this.getCommandID("upgrade factory menu"), getTranslatedString("Convert Factory"), params);
 	}
 	else
 	{
