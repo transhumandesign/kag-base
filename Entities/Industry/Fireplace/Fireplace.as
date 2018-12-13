@@ -48,10 +48,38 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (blob !is null)
 	{
+		// Convert items (and animals) into food blobs (different textures and names from your regular !food)
 		if (blob.getName() == "fishy" && this.getSprite().isAnimation("fire"))
 		{
 			blob.getSprite().PlaySound("SparkleShort.ogg");
-			CBlob@ food = server_MakeFood(blob.getPosition(), "Cooked Fish", 1);
+			CBlob@ food = server_MakeFood(blob.getPosition(), "Cooked Fish", 1); // Cooked Fish
+			if (food !is null) {
+				food.setVelocity(blob.getVelocity().opMul(0.5f));
+			}
+			blob.server_Die();
+		}
+		else if (blob.getName() == "steak" && this.getSprite().isAnimation("fire"))
+		{
+			blob.getSprite().PlaySound("SparkleShort.ogg");
+			CBlob@ food = server_MakeFood(blob.getPosition(), "Cooked Steak", 0); // Cooked Steak
+			if (food !is null) {
+				food.setVelocity(blob.getVelocity().opMul(0.5f));
+			}
+			blob.server_Die();
+		}
+		else if (blob.getName() == "grain" && this.getSprite().isAnimation("fire"))
+		{
+			blob.getSprite().PlaySound("SparkleShort.ogg");
+			CBlob@ food = server_MakeFood(blob.getPosition(), "Bread", 4); // Bread
+			if (food !is null) {
+				food.setVelocity(blob.getVelocity().opMul(0.5f));
+			}
+			blob.server_Die();
+		}
+		else if (blob.getName() == "egg" && this.getSprite().isAnimation("fire"))
+		{
+			blob.getSprite().PlaySound("SparkleShort.ogg");
+			CBlob@ food = server_MakeFood(blob.getPosition(), "Cake", 5); // Cake
 			if (food !is null) {
 				food.setVelocity(blob.getVelocity().opMul(0.5f));
 			}
