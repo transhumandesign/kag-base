@@ -187,7 +187,7 @@ CBlob@ MakeSingleItem(CBlob@ this, ShopItem@ item)
 		{
 			//printf("MAKE FOOD " + item.name + " " + item.customData );
 			server_TakeRequirements(inv, item.requirements);
-			return server_MakeFood(spawnPos, item.name, item.customData);
+			return server_MakeFood(spawnPos, "Bread", 4); // spawn Bread food blob for the Bakery Factory
 		}
 		else // everything else
 		{
@@ -403,8 +403,8 @@ bool hasLimitReached(CBlob@ this, ShopItem@ item)
 
 					if (item.blobName == "food")
 					{
-						if (blob.get_string("food name") == item.name)
-							count++;
+						if (blob.get_string("food name") == "Bread")
+							count++;						// limits the amount of food blobs with the name "Bread" (3)
 					}
 					else
 					{
