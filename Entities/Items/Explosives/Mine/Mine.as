@@ -3,7 +3,7 @@
 #include "Hitters.as";
 #include "Explosion.as";
 
-const u8 MINE_PRIMING_TIME = 45;
+const u8 MINE_PRIMING_TIME = 30;
 
 const string MINE_STATE = "mine_state";
 const string MINE_TIMER = "mine_timer";
@@ -64,7 +64,7 @@ void onTick(CBlob@ this)
 	if(getNet().isServer())
 	{
 		//tick down
-		if(this.getVelocity().LengthSquared() < 1.0f && !this.isAttached())
+		if(!this.isAttached())
 		{
 			u8 timer = this.get_u8(MINE_TIMER);
 			timer++;
