@@ -10,6 +10,7 @@
 
 const f32 config_offset = -4.0f;
 const string shiny_layer = "shiny bit";
+const Vec2f quiverOffset = Vec2f(-10.0f, 2.0f + config_offset);
 
 void onInit(CSprite@ this)
 {
@@ -76,15 +77,51 @@ void LoadSprites(CSprite@ this)
 
 	//quiver
 	this.RemoveSpriteLayer("quiver");
-	CSpriteLayer@ quiver = this.addTexturedSpriteLayer("quiver", texname , 16, 16);
+	CSpriteLayer@ quiver = this.addSpriteLayer("quiver", "ArcherQuiver.png" , 16, 16);
 
 	if (quiver !is null)
 	{
 		Animation@ anim = quiver.addAnimation("default", 0, false);
-		anim.AddFrame(67);
-		anim.AddFrame(66);
-		quiver.SetOffset(Vec2f(-10.0f, 2.0f + config_offset));
+		anim.AddFrame(1);
+		anim.AddFrame(0);
+		quiver.SetOffset(quiverOffset);
 		quiver.SetRelativeZ(-0.1f);
+	}
+
+	//quiver water
+	this.RemoveSpriteLayer("quiverwater");
+	CSpriteLayer@ quiverWater = this.addSpriteLayer("quiverwater", "ArcherQuiver.png" , 16, 16, 0, 0);
+
+	if (quiverWater !is null)
+	{
+		Animation@ anim = quiverWater.addAnimation("default", 0, false);
+		anim.AddFrame(2);
+		quiverWater.SetOffset(quiverOffset);
+		quiverWater.SetRelativeZ(-0.1f);
+	}
+
+	//quiver bomb
+	this.RemoveSpriteLayer("quiverbomb");
+	CSpriteLayer@ quiverBomb = this.addSpriteLayer("quiverbomb", "ArcherQuiver.png" , 16, 16);
+
+	if (quiverBomb !is null)
+	{
+		Animation@ anim = quiverBomb.addAnimation("default", 0, false);
+		anim.AddFrame(3);
+		quiverBomb.SetOffset(quiverOffset);
+		quiverBomb.SetRelativeZ(-0.1f);
+	}
+
+	//quiver fire
+	this.RemoveSpriteLayer("quiverfire");
+	CSpriteLayer@ quiverFire = this.addSpriteLayer("quiverfire", "ArcherQuiver.png" , 16, 16);
+
+	if (quiverFire !is null)
+	{
+		Animation@ anim = quiverFire.addAnimation("default", 0, false);
+		anim.AddFrame(4);
+		quiverFire.SetOffset(Vec2f(-10.0f, 2.0f + config_offset));
+		quiverFire.SetRelativeZ(-0.1f);
 	}
 
 	//grapple
@@ -166,7 +203,7 @@ void onTick(CSprite@ this)
 			this.RemoveSpriteLayer(shiny_layer);
 		}
 
-		doQuiverUpdate(this, false, true);
+		doQuiverUpdate(this, true);
 		doRopeUpdate(this, null, null);
 
 		Vec2f vel = blob.getVelocity();
@@ -474,8 +511,7 @@ void DrawBowEffects(CSprite@ this, CBlob@ blob, ArcherInfo@ archer, const u8 arr
 	}
 
 	//quiver
-	bool has_arrows = hasAnyArrows(blob);
-	doQuiverUpdate(this, has_arrows, true);
+	doQuiverUpdate(this, true);
 }
 
 bool IsFiring(CBlob@ blob)
@@ -529,18 +565,32 @@ void doRopeUpdate(CSprite@ this, CBlob@ blob, ArcherInfo@ archer)
 	//GUI::DrawLine(blob.getPosition(), archer.grapple_pos, SColor(255,255,255,255));
 }
 
-void doQuiverUpdate(CSprite@ this, bool has_arrows, bool quiver)
+void doQuiverUpdate(CSprite@ this, bool quiver)
 {
 	CSpriteLayer@ quiverLayer = this.getSpriteLayer("quiver");
+	CSpriteLayer@ quiverWater = this.getSpriteLayer("quiverwater");
+	CSpriteLayer@ quiverBomb  = this.getSpriteLayer("quiverbomb");
+	CSpriteLayer@ quiverFire  = this.getSpriteLayer("quiverfire");
+	
 	CBlob@ blob = this.getBlob();
 
-	if (quiverLayer !is null)
-	{
+	if (
+		quiverLayer !is null &&
+		quiverWater !is null &&
+		quiverBomb !is null &&
+		quiverFire !is null
+	) {
 		if (not this.isVisible()) {
 			quiverLayer.SetVisible(false);
+			quiverWater.SetVisible(false);
+			quiverBomb.SetVisible(false);
+			quiverFire.SetVisible(false);
 			return;
 		}
 		quiverLayer.SetVisible(true);
+		quiverWater.SetVisible(true);
+		quiverBomb.SetVisible(true);
+		quiverFire.SetVisible(true);
 
 		if (quiver)
 		{
@@ -578,12 +628,23 @@ void doQuiverUpdate(CSprite@ this, bool has_arrows, bool quiver)
 			if (easy)
 			{
 				quiverLayer.SetOffset(off);
+				quiverWater.SetOffset(off);
+				quiverBomb.SetOffset(off);
+				quiverFire.SetOffset(off);
 			}
 
 			quiverLayer.ResetTransform();
+			quiverWater.ResetTransform();
+			quiverBomb.ResetTransform();
+			quiverFire.ResetTransform();
 			quiverLayer.RotateBy(quiverangle, Vec2f(0.0f, 0.0f));
+			quiverWater.RotateBy(quiverangle, Vec2f(0.0f, 0.0f));
+			quiverBomb.RotateBy(quiverangle, Vec2f(0.0f, 0.0f));
+			quiverFire.RotateBy(quiverangle, Vec2f(0.0f, 0.0f));
 
-			if (has_arrows)
+			// use hasAnyArrows(blob) if quiver should always be completely full
+			// with normal arrows, regardless of if the player has no normal arrows
+			if (hasArrows(blob, ArrowType::normal))
 			{
 				quiverLayer.animation.frame = 1;
 			}
@@ -591,10 +652,17 @@ void doQuiverUpdate(CSprite@ this, bool has_arrows, bool quiver)
 			{
 				quiverLayer.animation.frame = 0;
 			}
+
+			quiverWater.SetVisible(hasArrows(blob, ArrowType::water));
+			quiverBomb.SetVisible(hasArrows(blob, ArrowType::bomb));
+			quiverFire.SetVisible(hasArrows(blob, ArrowType::fire));
 		}
 		else
 		{
 			quiverLayer.SetVisible(false);
+			quiverWater.SetVisible(false);
+			quiverBomb.SetVisible(false);
+			quiverFire.SetVisible(false);
 		}
 	}
 }
