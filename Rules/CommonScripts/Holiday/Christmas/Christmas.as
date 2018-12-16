@@ -25,6 +25,18 @@ void onRestart(CRules@ this)
 	map.AddBackground("Rules/CommonScripts/Holiday/Christmas/Sprites/BackgroundTrees_Christmas.png", Vec2f(0.0f,  -5.0f), Vec2f(0.4f, 0.4f), color_white);
 	map.AddBackground("Rules/CommonScripts/Holiday/Christmas/Sprites/BackgroundIsland_Christmas.png", Vec2f(0.0f, 0.0f), Vec2f(0.6f, 0.6f), color_white);
 
+	CBlob@[] bushes;
+
+	getBlobsByName("bush", @bushes);
+
+	if (bushes.length > 0)
+	{
+		for (uint i = 0; i < bushes.length; i++)
+		{
+			bushes[i].getSprite().ReloadSprite("Rules/CommonScripts/Holiday/Christmas/Sprites/Bushes_Christmas.png");
+		}
+	}
+
 	if (!getNet().isServer())
     	return;
 
@@ -60,23 +72,11 @@ void onRestart(CRules@ this)
 			}
 		}
 	}
-
-	blobs.clear();
-
-	getBlobsByName("bush", @blobs);
-
-	if (blobs.length > 0)
-	{
-		for (uint i = 0; i < blobs.length; i++)
-		{
-			blobs[i].getSprite().ReloadSprite("Rules/CommonScripts/Holiday/Christmas/Sprites/Bushes_Christmas.png");
-		}
-	}
 }
 
 void onTick(CRules@ this)
 {
-    if (!getNet().isServer() || this.isWarmup() || !(rules.gamemode_name == "CTF" || rules.gamemode_name == "TTH"))
+    if (!getNet().isServer() || this.isWarmup() || !(this.gamemode_name == "CTF" || this.gamemode_name == "TTH"))
     	return;
 
     if (!this.exists("present timer"))
