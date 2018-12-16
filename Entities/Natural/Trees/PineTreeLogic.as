@@ -21,6 +21,13 @@ void onInit(CBlob@ this)
 void GrowSprite(CSprite@ this, TreeVars@ vars)
 {
 	CBlob@ blob = this.getBlob();
+
+	string sprite_path = "Entities/Natural/Trees/Trees.png";
+	if (blob.exists("Layer sprite"))
+	{
+		sprite_path = blob.get_string("Layer sprite");
+	}
+
 	if (vars is null)
 		return;
 
@@ -47,7 +54,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 			if (segment.grown_times == 1)
 			{
-				CSpriteLayer@ newsegment = this.addSpriteLayer("segment " + i, "Entities/Natural/Trees/Trees.png" , 16, 16, 0, 0);
+				CSpriteLayer@ newsegment = this.addSpriteLayer("segment " + i, sprite_path , 16, 16, 0, 0);
 
 				if (newsegment !is null)
 				{
@@ -85,7 +92,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 			}
 			else if (segment.grown_times == 2 && segment.height > 2)
 			{
-				CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i, "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
+				CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i, sprite_path , 32, 32, 0, 0);
 
 				if (newsegment !is null)
 				{
@@ -118,7 +125,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 				if (i == 0) //add roots
 				{
 					f32 flipsign = 1.0f;
-					CSpriteLayer@ newsegment = this.addSpriteLayer("roots", "Entities/Natural/Trees/Trees.png" , 32, 16, 0, 0);
+					CSpriteLayer@ newsegment = this.addSpriteLayer("roots", sprite_path , 32, 16, 0, 0);
 
 					if (newsegment !is null)
 					{
@@ -136,7 +143,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 				else if (segment.height > 2 && segment.height <= vars.max_height)  //add leaves
 				{
 					bool flip = false;
-					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves side " + i, "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
+					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves side " + i, sprite_path , 32, 32, 0, 0);
 
 					if (newsegment !is null)
 					{
@@ -154,7 +161,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 					if (XORRandom(2) == 0)
 					{
-						CSpriteLayer@ secondnewsegment = this.addSpriteLayer("leaves doubleside " + i, "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
+						CSpriteLayer@ secondnewsegment = this.addSpriteLayer("leaves doubleside " + i, sprite_path , 32, 32, 0, 0);
 
 						if (secondnewsegment !is null)
 						{
