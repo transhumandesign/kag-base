@@ -44,7 +44,7 @@ void onRestart(CRules@ this)
         Holiday[] calendar = {
               Holiday("Birthday", 116 + server_leap - 1, 3)
             , Holiday("Halloween", 303 + server_leap - 1, 3)
-            , Holiday("Christmas", 358 + server_leap - 1, 3)
+            , Holiday("Christmas", 359 + server_leap - 5, 7)
         };
 
         s16 holiday_date;
