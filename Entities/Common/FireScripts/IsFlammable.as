@@ -5,6 +5,8 @@
 
 Random _r();
 
+const int fire_spread_ticks = 12;
+
 void onInit(CBlob@ this)
 {
 	this.getShape().getConsts().isFlammable = true;
@@ -46,10 +48,17 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	return damage;
 }
 
-void BurnRandomNear(Vec2f pos)
+void BurnNear(Vec2f pos)
 {
-	Vec2f p = pos + Vec2f((_r.NextFloat() - 0.5f) * 16.0f, (_r.NextFloat() - 0.5f) * 16.0f);
-	getMap().server_setFireWorldspace(p, true);
+	CMap@ map = getMap();
+	if (map is null)
+	{
+		return;
+	}
+	map.server_setFireWorldspace(pos - Vec2f(map.tilesize, 0.0f), true); // left
+	map.server_setFireWorldspace(pos + Vec2f(map.tilesize, 0.0f), true); // right
+	map.server_setFireWorldspace(pos - Vec2f(0.0f, map.tilesize), true); // up
+	map.server_setFireWorldspace(pos + Vec2f(0.0f, map.tilesize), true); // down
 }
 
 //ensure it spreads correctly for one-hit tiles etc
@@ -57,7 +66,7 @@ void onDie(CBlob@ this)
 {
 	if (this.hasTag(burning_tag) && this.hasTag(spread_fire_tag))
 	{
-		BurnRandomNear(this.getPosition());
+		BurnNear(this.getPosition());
 	}
 }
 
@@ -87,9 +96,9 @@ void onTick(CBlob@ this)
 	else if (burn_time > 0)
 	{
 		//burninating the other tiles
-		if ((burn_time % 8) == 0 && this.hasTag(spread_fire_tag))
+		if ((burn_time % fire_spread_ticks) == 0 && this.hasTag(spread_fire_tag))
 		{
-			BurnRandomNear(pos);
+			BurnNear(pos);
 		}
 
 		//burninating the actor
