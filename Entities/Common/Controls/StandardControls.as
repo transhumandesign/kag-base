@@ -166,6 +166,13 @@ void onTick(CBlob@ this)
 		Tap(this);
 	}
 
+	// taunt menu
+
+	if (this.isKeyJustPressed(key_taunts))
+	{
+		Tap(this);
+	}
+
 	/*else dont use this cause menu won't be release/clickable
 	if (this.isKeyJustReleased(key_bubbles))
 	{
