@@ -419,7 +419,16 @@ class PNGLoader
 			// load trees only at the ground
 			if(!map.isTileSolid(map.getTile(offset + map.tilemapwidth))) return;
 
-			CBlob@ tree = server_CreateBlobNoInit( map_random.NextRanged(35) < 21 ? "tree_pine" : "tree_bushy" );
+			CBlob@ tree;
+			CRules@ rules = getRules();
+			if(rules.hasScript("Christmas.as"))//if gamemode has Christmas.as
+			{
+				@tree = server_CreateBlobNoInit("tree_christmas");//load christmas trees
+			}
+			else//otherwise just load default trees
+			{
+				@tree = server_CreateBlobNoInit( map_random.NextRanged(35) < 21 ? "tree_pine" : "tree_bushy" );
+			}
 			if(tree !is null)
 			{
 				tree.Tag("startbig");
