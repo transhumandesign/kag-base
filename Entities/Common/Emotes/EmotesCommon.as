@@ -52,6 +52,7 @@ namespace Emotes
 		kiss,
 		pickup,
 		raised,
+		clap,
 
 		emotes_total,
 		off
@@ -103,7 +104,8 @@ namespace Emotes
 		"love",
 		"kiss",
 		"pickup",
-		"raised"
+		"raised",
+		"clap",
 	};
 }
 
