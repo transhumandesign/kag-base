@@ -1,7 +1,7 @@
-// character was placed in crate
-
+//needed for crouch logic
 #include "CrouchCommon.as";
 
+// character was placed in crate
 void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
 	this.doTickScripts = true; // run scripts while in crate

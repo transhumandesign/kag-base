@@ -268,8 +268,19 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 
 void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 {
-	CSprite@ sprite = this.getSprite();
+	//are we responsible for this actor?
 	bool ismyplayer = this.isMyPlayer();
+	bool responsible = ismyplayer;
+	if (isServer() && !ismyplayer)
+	{
+		CPlayer@ p = this.getPlayer();
+		if (p !is null)
+		{
+			responsible = p.isBot();
+		}
+	}
+	//
+	CSprite@ sprite = this.getSprite();
 	bool hasarrow = archer.has_arrow;
 	bool hasnormal = hasArrows(this, ArrowType::normal);
 	s8 charge_time = archer.charge_time;
@@ -277,7 +288,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 	const bool pressed_action2 = this.isKeyPressed(key_action2);
 	Vec2f pos = this.getPosition();
 
-	if (ismyplayer)
+	if (responsible)
 	{
 		if ((getGameTime() + this.getNetworkID()) % 10 == 0)
 		{
@@ -292,7 +303,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		}
 
 		this.set_bool("has_arrow", hasarrow);
-		this.Sync("has_arrow", false);
+		this.Sync("has_arrow", isServer());
 
 		archer.stab_delay = 0;
 	}
@@ -376,10 +387,10 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 			}
 
-			if (ismyplayer)
+			if (responsible)
 			{
 				this.set_bool("has_arrow", hasarrow);
-				this.Sync("has_arrow", false);
+				this.Sync("has_arrow", isServer());
 			}
 
 			charge_time = 0;
@@ -450,7 +461,9 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			}
 
 			if (charge_time >= ArcherParams::shoot_period)
+			{
 				sprite.SetEmitSoundPaused(true);
+			}
 		}
 		else if (charge_state == ArcherParams::no_arrows)
 		{
@@ -504,11 +517,11 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 	// my player!
 
-	if (ismyplayer)
+	if (responsible)
 	{
 		// set cursor
 
-		if (!getHUD().hasButtons())
+		if (ismyplayer && !getHUD().hasButtons())
 		{
 			int frame = 0;
 			//	print("archer.charge_time " + archer.charge_time + " / " + ArcherParams::shoot_period );
@@ -591,10 +604,6 @@ void onTick(CBlob@ this)
 	}
 
 	ManageGrapple(this, archer);
-
-	// vvvvvvvvvvvvvv CLIENT-SIDE ONLY vvvvvvvvvvvvvvvvvvv
-
-	if (!getNet().isClient()) return;
 
 	if (this.isInInventory()) return;
 
