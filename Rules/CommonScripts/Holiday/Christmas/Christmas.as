@@ -133,6 +133,13 @@ void DrawSnow(int id)
 {
 	InitSnow();
 
+	//disable if holiday has ended
+	if (getRules().get_string("holiday") != "Christmas")
+	{
+		Render::RemoveScript(id);
+		return;
+	}
+
 	float[] trnsfm;
 	for(int i = 0; i < 3; i++)
 	{
