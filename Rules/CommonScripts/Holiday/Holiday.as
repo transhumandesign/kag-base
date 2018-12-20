@@ -44,7 +44,7 @@ void onRestart(CRules@ this)
         Holiday[] calendar = {
               Holiday("Birthday", 116 + server_leap - 1, 3)
             , Holiday("Halloween", 303 + server_leap - 1, 3)
-            , Holiday("Christmas", 358 + server_leap - 1, 3)
+            , Holiday("Christmas", 358 + server_leap - 5, 7)
         };
 
         s16 holiday_date;
@@ -57,15 +57,18 @@ void onRestart(CRules@ this)
             if(server_date - holiday_date >= 0 && server_date < holiday_date + holiday_length)
             {
                 holiday = calendar[i].m_name;
+                print("Holiday: "+holiday);
                 break;
             }
         }
-        if(holiday != holiday_cache) sync = true;//only sync when there is actually something to be synced. this
+        sync = true;
     }
 }
 
-void onTick(CRules@ this){
-    if(getNet().isServer() && sync){
+void onTick(CRules@ this)
+{
+    if(getNet().isServer() && sync)
+    {
         CBitStream params;
         params.write_string(holiday);
         params.write_string(holiday_cache);
@@ -74,8 +77,10 @@ void onTick(CRules@ this){
     }
 }
 
-void onCommand(CRules@ this, u8 cmd, CBitStream@ params){
-    if(cmd == this.getCommandID(SYNC_HOLIDAY_ID)){
+void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
+{
+    if(cmd == this.getCommandID(SYNC_HOLIDAY_ID))
+    {
         string holiday_ = params.read_string();
         string holiday_cache_ = params.read_string();
         if(holiday_ != holiday_cache_)
