@@ -314,6 +314,7 @@ void AddProductionItemsFromTech(CBlob@ this, const string &in defname)
 			if (s !is null)
 			{
 				s.ticksToMake = item.ticksToMake * getTicksASecond();
+				s.customData = item.customData;
 			}
 		}
 

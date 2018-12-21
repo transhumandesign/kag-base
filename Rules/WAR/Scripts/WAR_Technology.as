@@ -57,7 +57,11 @@ void SetupScrolls(CRules@ this)
 		def.timeSecs = t * 12;
 		def.connections.push_back("military basics");
 		//	def.connections.push_back("mounted bow");
-		addScrollItemsToArray("Burger", "food", m * 10, false, 3, @def.items);
+
+		ScrollItem[]@ items = def.items;
+		addScrollItemsToArray("Bread", "food", m * 10, false, 3, items);
+		items[0].customData = 3;
+
 		all.scrolls.set("healing", def);
 	}
 
