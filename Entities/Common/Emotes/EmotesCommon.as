@@ -60,52 +60,52 @@ namespace Emotes
 
 	//careful to keep these in sync!
 	const string[] names = {
-		"skull", // in wheel by default
-		"blueflag", // in wheel by default
-		"note", // in wheel by default
-		"right", // in wheel by default
-		"smile", // in wheel by default
-		"redflag", // in wheel by default
-		"flex", // in wheel by default
-		"down", // in wheel by default
-		"frown", // in wheel by default
-		"troll", // in wheel by default
-		"finger", // in wheel by default
-		"left", // in wheel by default
-		"mad", // in wheel by default
-		"archer", // in wheel by default
-		"sweat", // in wheel by default
-		"up", // in wheel by default
-		"laugh", // in wheel by default
-		"knight", // in wheel by default
-		"question", // in wheel by default
-		"thumbsup", // in wheel by default
-		"wat", // in wheel by default
-		"builder", // in wheel by default
-		"disappoint", // in wheel by default
-		"thumbsdown", // in wheel by default
-		"drool", //
-		"ladder", // in wheel by default
-		"attn", // in wheel by default
-		"okhand", // in wheel by default
-		"cry", // in wheel by default
-		"wall", // in wheel by default
-		"heart", // in wheel by default
-		"fire", // in wheel by default
-		"wink", // in wheel by default
-		"cool", // in wheel by default
+		"skull",
+		"blueflag",
+		"note",
+		"right",
+		"smile",
+		"redflag",
+		"flex",
+		"down",
+		"frown",
+		"troll",
+		"finger",
+		"left",
+		"mad",
+		"archer",
+		"sweat",
+		"up",
+		"laugh",
+		"knight",
+		"question",
+		"thumbsup",
+		"wat",
+		"builder",
+		"disappoint",
+		"thumbsdown",
+		"drool",
+		"ladder",
+		"attn",
+		"okhand",
+		"cry",
+		"wall",
+		"heart",
+		"fire",
+		"wink",
+		"cool",
 		"dots",
-		"cog", // in wheel by default
-		"think", // in wheel by default
-		"laughcry", // in wheel by default
-		"derp", // in wheel by default
-		"awkward", // in wheel by default
-		"smug", // in wheel by default
-		"love", // in wheel by default
-		"kiss", // in wheel by default
+		"cog",
+		"think",
+		"laughcry",
+		"derp",
+		"awkward",
+		"smug",
+		"love",
+		"kiss",
 		"pickup",
-		"raised", // in wheel by default
-		"clap", // in wheel by default
+		"raised",
+		"clap"
 	};
 }
 
