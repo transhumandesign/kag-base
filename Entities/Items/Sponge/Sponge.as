@@ -95,7 +95,7 @@ void onTick(CBlob@ this)
 }
 
 //sprite
-	
+
 void onInit(CSprite@ this)
 {
 	this.getCurrentScript().tickFrequency = 15;
