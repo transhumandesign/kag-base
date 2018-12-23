@@ -51,10 +51,9 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-	else if (!this.isAttached()) //destroy
+	else if (!this.isAttached() && this.getTicksToDie() <= 0) //auto destroy
 	{
 		this.server_SetTimeToDie(5.0f);
-		this.getCurrentScript().runFlags |= Script::remove_after_this;
 	}
 
 	//dry out sponge
@@ -85,6 +84,12 @@ void onTick(CBlob@ this)
 				}
 			}
 		}
+	}
+
+	//cancel auto destroy
+	if ((this.isAttached() || absorbed < ABSORB_COUNT) && this.getTicksToDie() > 0)
+	{
+		this.server_SetTimeToDie(0.0f);
 	}
 
 	//reduce cooldown time
