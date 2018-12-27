@@ -85,7 +85,8 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return !this.hasAttached() &&
 	       (!this.isInWater() || this.isOnMap()) &&
-	       this.getOldVelocity().LengthSquared() < 4.0f;
+	       this.getOldVelocity().LengthSquared() < 4.0f &&
+		   this.getTeamNum() == byBlob.getTeamNum();
 }
 
 void onTick(CBlob@ this)
