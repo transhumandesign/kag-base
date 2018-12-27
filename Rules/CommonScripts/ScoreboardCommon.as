@@ -43,6 +43,58 @@ SColor getNameColour(CPlayer@ p)
 
 }
 
+//similar to the one in RunnerHead.as
+int getHeadFrame(CPlayer@ player, int headIndex, bool default_pack)
+{
+	if(headIndex < NUM_UNIQUEHEADS)
+	{
+		return headIndex * NUM_HEADFRAMES;
+	}
+
+	//special heads logic for default heads pack
+	if(default_pack && (headIndex == 255 || headIndex == NUM_UNIQUEHEADS))
+	{
+		CRules@ rules = getRules();
+		bool holidayhead = false;
+		if(rules !is null && rules.exists("holiday"))
+		{
+			const string HOLIDAY = rules.get_string("holiday");
+			if(HOLIDAY == "Halloween")
+			{
+				headIndex = NUM_UNIQUEHEADS + 43;
+				holidayhead = true;
+			}
+			else if(HOLIDAY == "Christmas")
+			{
+				headIndex = NUM_UNIQUEHEADS + 61;
+				holidayhead = true;
+			}
+		}
+
+		//if nothing special set
+		if(!holidayhead)
+		{
+			u16 classnum = player.getScoreboardFrame();
+			switch (classnum)
+			{
+				case 3:
+					headIndex = NUM_UNIQUEHEADS + 1;
+					break;
+				case 2:
+					headIndex = NUM_UNIQUEHEADS + 2;
+					break;
+				case 1:
+				default:
+					headIndex = NUM_UNIQUEHEADS;
+					break;
+			}
+		}
+	}
+
+	return (((headIndex - NUM_UNIQUEHEADS / 2) * 2) +
+	        (player.getSex() == 0 ? 0 : 1)) * NUM_HEADFRAMES;
+}
+
 void setSpectatePlayer(string username)
 {
     CPlayer@ player = getLocalPlayer();
