@@ -46,16 +46,12 @@ void onTick(CBlob@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (blob !is null)
+	if (blob !is null && this.getSprite().isAnimation("fire"))
 	{
-		if (blob.getName() == "fishy" && this.getSprite().isAnimation("fire"))
+		CBlob@ food = cookFood(blob);
+		if (food !is null)
 		{
-			blob.getSprite().PlaySound("SparkleShort.ogg");
-			CBlob@ food = server_MakeFood(blob.getPosition(), "Cooked Fish", 1);
-			if (food !is null) {
-				food.setVelocity(blob.getVelocity().opMul(0.5f));
-			}
-			blob.server_Die();
+			food.setVelocity(blob.getVelocity().opMul(0.5f));
 		}
 	}
 }

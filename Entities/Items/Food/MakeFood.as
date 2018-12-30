@@ -25,3 +25,43 @@ ShopItem@ addFoodItem(CBlob@ this, const string &in foodName, const u8 spriteInd
 	}
 	return item;
 }
+
+CBlob@ cookFood(CBlob@ this)
+{
+	string cookedName;
+	u8 spriteIndex;
+
+	if (this.getName() == "fishy")
+	{
+		cookedName = "Cooked Fish";
+		spriteIndex = 1;
+	}
+	else if (this.getName() == "steak")
+	{
+		cookedName = "Cooked Steak";
+		spriteIndex = 0;
+	}
+	else if (this.getName() == "grain")
+	{
+		cookedName = "Bread";
+		spriteIndex = 4;
+	}
+	else if (this.getName() == "egg")
+	{
+		cookedName = "Cake";
+		spriteIndex = 5;
+	}
+	else
+	{
+		return null;
+	}
+
+	CBlob@ food = server_MakeFood(this.getPosition(), cookedName, spriteIndex);
+	if (food !is null)
+	{
+		this.server_Die();
+		food.getSprite().PlaySound("SparkleShort.ogg");
+		return food;
+	}
+	return null;
+}
