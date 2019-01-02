@@ -60,6 +60,7 @@ CBlob@ cookFood(CBlob@ this)
 	if (food !is null)
 	{
 		this.server_Die();
+		food.setVelocity(this.getVelocity());
 		food.getSprite().PlaySound("SparkleShort.ogg");
 		return food;
 	}

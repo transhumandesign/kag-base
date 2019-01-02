@@ -8,7 +8,8 @@
 
 void onInit(CBlob@ this)
 {
-	this.getShape().getConsts().mapCollisions = false;
+	// this.getShape().getConsts().mapCollisions = false;
+	this.getShape().getConsts().rotates = false;
 	this.getCurrentScript().tickFrequency = 9;
 	this.getSprite().SetEmitSound("CampfireSound.ogg");
 	this.getSprite().SetAnimation("fire");
@@ -45,7 +46,7 @@ void onTick(CBlob@ this)
 
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
-{
+{	
 	if (blob !is null && this.getSprite().isAnimation("fire"))
 	{
 		CBlob@ food = cookFood(blob);
