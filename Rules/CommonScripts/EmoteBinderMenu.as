@@ -8,7 +8,7 @@ const array<u8> EXCLUDED_EMOTES = {
 	Emotes::pickup
 };
 const u8 MENU_WIDTH = 9;
-const u8 MENU_HEIGHT = Maths::Ceil((Emotes::emotes_total - EXCLUDED_EMOTES.length) / MENU_WIDTH) + 2;
+const u8 MENU_HEIGHT = Maths::Ceil((Emotes::emotes_total - EXCLUDED_EMOTES.length - 1) / MENU_WIDTH) + 2;
 
 int selected = -1;
 
@@ -25,14 +25,14 @@ void onInit(CRules@ this)
 	}
 }
 
-void NewMenu()
+void NewEmotesMenu()
 {
 	//ensure a keybind isn't selected
 	selected = -1;
-	ShowMenu();
+	ShowEmotesMenu();
 }
 
-void ShowMenu()
+void ShowEmotesMenu()
 {
 	CPlayer@ player = getLocalPlayer();
 	if (player !is null)
@@ -70,7 +70,10 @@ void ShowMenu()
 			}
 			
 			//fill in extra slots in emote grid
-			menu.FillUpRow();
+			if (menu.getButtonsCount() % MENU_WIDTH != 0)
+			{
+				menu.FillUpRow();
+			}
 
 			//separator with info
 			CGridButton@ separator = menu.AddTextButton("Select a keybind below, then select the emote you want", Vec2f(MENU_WIDTH, 1));
@@ -142,7 +145,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 		cfg.saveFile("EmoteBindings.cfg");
 
 		//update keybinds in menu
-		ShowMenu();
+		ShowEmotesMenu();
 	}
 	else if (cmd == this.getCommandID("select keybind"))
 	{
@@ -152,12 +155,6 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 	{
 		getHUD().ClearMenus(true);
 	}
-}
-
-void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
-{
-	//add button to main menu
-	Menu::addContextItem(menu, getTranslatedString("Bind Emotes"), "EmoteBinderMenu.as", "void NewMenu()");
 }
 
 string getIconName(u8 emoteIndex)
