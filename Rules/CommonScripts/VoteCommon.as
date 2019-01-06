@@ -76,6 +76,9 @@ void Rules_SetVote(CRules@ this, VoteObject@ vote)
 	{
 		this.set("g_vote", vote);
 
+		//voter automatically votes in favour
+		Vote(vote, getPlayerByUsername(vote.byuser), true);
+
 		if (CanPlayerVote(vote, getLocalPlayer()))
 		{
 			client_AddToChat(
@@ -183,6 +186,10 @@ bool CanPlayerVote(VoteObject@ vote, CPlayer@ player)
 
 	if (vote.canvote is null)
 		return true;
+
+	//can't vote on a vote against yourself
+	if (player.getUsername() == vote.user_to_kick)
+		return false;
 
 	return vote.canvote.PlayerCanVote(player);
 }

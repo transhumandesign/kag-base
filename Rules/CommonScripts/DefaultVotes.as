@@ -642,6 +642,10 @@ void Callback_Kick(CBitStream@ params)
 	CPlayer@ other_player = getPlayerByNetworkId(id);
 	if (other_player is null) return;
 
+	//can't start vote against yourself
+	if (other_player.getUsername() == me.getUsername())
+		return;
+
 	if (getSecurity().checkAccess_Feature(other_player, "kick_immunity"))
 		return;
 
