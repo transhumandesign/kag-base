@@ -180,18 +180,26 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 	const float factor_very_boring = 1.0f,
 		factor_common = 0.9f,
 		factor_boring = 0.8f,
-		factor_very_important = 0.01f;
+		factor_important = 0.025f,
+		factor_very_important = 0.01f,
+		factor_super_important = 0.001f;
 
 	//// MISC ////
 
 	// Special stuff such as flags
 	if (b.hasTag("special"))
 	{
-		return factor_very_important;
+		return factor_super_important;
 	}
 
 	//// MILITARY ////
 	{
+		// special mine check for unarmed enemy mines
+		if (name == "mine" && b.hasTag("mine_priming") && !same_team)
+		{
+			return factor_important;
+		}
+
 		// Military stuff we don't want to pick up when in the same team and always considered lit
 		if (name == "mine" || name == "bomb" || name == "waterbomb")
 		{
@@ -207,7 +215,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 		// But we still want a high priority so bombjumping with kegs is easier
 		if (name == "keg")
 		{
-			return exploding ? factor_military_critical : factor_military_important;
+			return exploding ? factor_very_important : factor_military_important;
 		}
 
 		// Regular military stuff
