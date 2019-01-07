@@ -574,30 +574,48 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 
 void FireUp(CBlob@ this)
 {
+	Vec2f thisPos = this.getPosition();
 	Vec2f burnpos;
 	Vec2f head = Vec2f(this.getRadius() * 1.2f, 0.0f);
 	f32 angle = this.getAngleDegrees();
 	head.RotateBy(-angle);
-	burnpos = this.getPosition() + head;
-
+	burnpos = thisPos + head * 0.5f;
 
 	// this.getMap() NULL ON ONDIE!
 	CMap@ map = getMap();
 	if (map !is null)
 	{
-		// burninate
-		/*
-		if (!isTeamStructureNear(this))
+		if (isTileFlammable(burnpos))
 		{
-			map.server_setFireWorldspace(burnpos, true);
-			map.server_setFireWorldspace(this.get_Vec2f("fire pos") + head * 0.4f, true);
-			map.server_setFireWorldspace(this.getPosition() , true); //burn where i am as well
+			MakeFireCross(burnpos);
 		}
-		*/
-		map.server_setFireWorldspace(burnpos, true);
-		map.server_setFireWorldspace(this.get_Vec2f("fire pos") + head * 0.4f, true);
-		map.server_setFireWorldspace(this.getPosition() , true); //burn where i am as well
 	}
+}
+
+void MakeFireCross(Vec2f burnpos)
+{
+	/*
+	fire starting pattern
+	X -> fire | O -> not fire
+
+	[O] [X] [O]
+	[X] [X] [X]
+	[O] [X] [O]
+	*/
+
+	CMap@ map = getMap();
+
+	map.server_setFireWorldspace(burnpos, true); // center
+	map.server_setFireWorldspace(burnpos - Vec2f(map.tilesize, 0.0f), true); // left
+	map.server_setFireWorldspace(burnpos + Vec2f(map.tilesize, 0.0f), true); // right
+	map.server_setFireWorldspace(burnpos - Vec2f(0.0f, map.tilesize), true); // up
+	map.server_setFireWorldspace(burnpos + Vec2f(0.0f, map.tilesize), true); // down
+}
+
+bool isTileFlammable(Vec2f worldPos)
+{
+	Tile tile = getMap().getTile(worldPos);
+	return (tile.flags & Tile::FLAMMABLE) != 0;
 }
 
 //random object used for gib spawning
