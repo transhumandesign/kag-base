@@ -152,6 +152,8 @@ void Pierce(CBlob@ this, Vec2f velocity, const f32 angle)
 
 			if (blob !is null)
 			{
+				if (blob.getShape().getConsts().platform && !CollidesWithPlatform(this, blob, velocity))
+					continue;
 
 				if (!doesCollideWithBlob(this, blob) || LimitedAttack_has_hit_actor(this, blob))
 					continue;
@@ -200,9 +202,7 @@ void BallistaHitBlob(CBlob@ this, Vec2f hit_position, Vec2f velocity, const f32 
 		this.getSprite().PlaySound("ArrowHitFleshFast.ogg");
 	else this.getSprite().PlaySound("ArrowHitGroundFast.ogg");
 
-	if (!blob.getShape().isStatic()
-	        || blob.getShape().getConsts().platform
-	        && !CollidesWithPlatform(this, blob, velocity))
+	if (!blob.getShape().isStatic())
 		return;
 
 	if (blob.getHealth() > 0.0f)
@@ -212,7 +212,6 @@ void BallistaHitBlob(CBlob@ this, Vec2f hit_position, Vec2f velocity, const f32 
 
 		if (blob.hasTag("wooden"))
 		{
-
 			this.setVelocity(velocity * 0.5f);
 
 			u8 blocks_pierced = this.get_u8("blocks_pierced");
@@ -298,17 +297,11 @@ void SetStatic(CBlob@ this, const f32 angle)
 
 bool CollidesWithPlatform(CBlob@ this, CBlob@ blob, Vec2f velocity)
 {
+	f32 platform_angle = blob.getAngleDegrees();	
+	Vec2f direction = Vec2f(0.0f, -1.0f);
+	direction.RotateBy(platform_angle);
+	float velocity_angle = direction.AngleWith(velocity);
 
-	f32 bolt_angle = (-velocity).Angle() - 270.0f;
-	f32 platform_angle = blob.getAngleDegrees();
-
-	if (bolt_angle > 0.0f)
-		bolt_angle -= 360.0f;
-
-	if (platform_angle == 0.0f)
-		platform_angle = 360.0f;
-
-	return !(Maths::Abs(-bolt_angle - platform_angle) % 360.0f < 125.0f);
-
+	return !(velocity_angle > -90.0f && velocity_angle < 90.0f);
 }
 
