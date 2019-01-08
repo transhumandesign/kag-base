@@ -423,8 +423,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			{
 				CPlayer@ player = getPlayer(i);
 
-				//if(player is me) continue; //don't display ourself for kicking
-				//commented out for max lols
+				if (player is me) continue; //don't display ourself for kicking
 
 				int player_team = player.getTeamNum();
 				if ((player_team == me.getTeamNum() || player_team == this.getSpectatorTeamNum()
@@ -641,10 +640,6 @@ void Callback_Kick(CBitStream@ params)
 
 	CPlayer@ other_player = getPlayerByNetworkId(id);
 	if (other_player is null) return;
-
-	//can't start vote against yourself
-	if (other_player.getUsername() == me.getUsername())
-		return;
 
 	if (getSecurity().checkAccess_Feature(other_player, "kick_immunity"))
 		return;
