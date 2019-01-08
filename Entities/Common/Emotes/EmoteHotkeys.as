@@ -87,40 +87,45 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	CControls@ controls = getControls();
-	if (controls.isKeyJustPressed(KEY_KEY_1))
+
+	//don't emote when using shop hotkeys
+	if (!(controls.isKeyPressed(KEY_LSHIFT) || controls.isKeyPressed(KEY_RSHIFT)))
 	{
-		set_emote(this, emote_1);
-	}
-	else if (controls.isKeyJustPressed(KEY_KEY_2))
-	{
-		set_emote(this, emote_2);
-	}
-	else if (controls.isKeyJustPressed(KEY_KEY_3))
-	{
-		set_emote(this, emote_3);
-	}
-	else if (controls.isKeyJustPressed(KEY_KEY_4))
-	{
-		set_emote(this, emote_4);
-	}
-	else if (controls.isKeyJustPressed(KEY_KEY_5))
-	{
-		set_emote(this, emote_5);
-	}
-	else if (controls.isKeyJustPressed(KEY_KEY_6))
-	{
-		set_emote(this, emote_6);
-	}
-	else if (controls.isKeyJustPressed(KEY_KEY_7))
-	{
-		set_emote(this, emote_7);
-	}
-	else if (controls.isKeyJustPressed(KEY_KEY_8))
-	{
-		set_emote(this, emote_8);
-	}
-	else if (controls.isKeyJustPressed(KEY_KEY_9))
-	{
-		set_emote(this, emote_9);
+		if (controls.isKeyJustPressed(KEY_KEY_1))
+		{
+			set_emote(this, emote_1);
+		}
+		else if (controls.isKeyJustPressed(KEY_KEY_2))
+		{
+			set_emote(this, emote_2);
+		}
+		else if (controls.isKeyJustPressed(KEY_KEY_3))
+		{
+			set_emote(this, emote_3);
+		}
+		else if (controls.isKeyJustPressed(KEY_KEY_4))
+		{
+			set_emote(this, emote_4);
+		}
+		else if (controls.isKeyJustPressed(KEY_KEY_5))
+		{
+			set_emote(this, emote_5);
+		}
+		else if (controls.isKeyJustPressed(KEY_KEY_6))
+		{
+			set_emote(this, emote_6);
+		}
+		else if (controls.isKeyJustPressed(KEY_KEY_7))
+		{
+			set_emote(this, emote_7);
+		}
+		else if (controls.isKeyJustPressed(KEY_KEY_8))
+		{
+			set_emote(this, emote_8);
+		}
+		else if (controls.isKeyJustPressed(KEY_KEY_9))
+		{
+			set_emote(this, emote_9);
+		}
 	}
 }
