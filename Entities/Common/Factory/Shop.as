@@ -122,6 +122,12 @@ void BuyShopItem(CBlob@ this, CBitStream @params)
 	if (caller is null) { return; }
 	CInventory@ inv = caller.getInventory();
 
+	if (this.getHealth() <= 0)
+	{
+		caller.ClearMenus();
+		return;
+	}
+
 	if (inv !is null && isInRadius(this, caller))
 	{
 		ShopItem[]@ shop_items;

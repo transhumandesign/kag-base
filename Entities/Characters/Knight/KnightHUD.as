@@ -27,7 +27,7 @@ void ManageCursors(CBlob@ this)
 		else
 		{
 			getHUD().SetCursorImage("Entities/Characters/Knight/KnightCursor.png", Vec2f(32, 32));
-			getHUD().SetCursorOffset(Vec2f(-32, -32));
+			getHUD().SetCursorOffset(Vec2f(-22, -22));
 		}
 	}
 }

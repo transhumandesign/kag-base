@@ -21,7 +21,7 @@ namespace Material
 
     uint8 frames = animation.getFramesCount();
     uint16 quantity = this.getQuantity();
-    uint8 index = frames * (quantity - 1) / this.maxQuantity;
+    uint8 index = (frames - 1) * quantity / this.maxQuantity;
 
     // Animation frame update
     animation.SetFrameIndex(index);

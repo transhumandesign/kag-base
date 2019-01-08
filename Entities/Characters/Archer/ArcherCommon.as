@@ -178,6 +178,18 @@ bool hasArrows(CBlob@ this, u8 arrowType)
 	return this.getBlobCount(arrowTypeNames[arrowType]) > 0;
 }
 
+bool hasAnyArrows(CBlob@ this)
+{
+	for (uint i = 0; i < ArrowType::count; i++)
+	{
+		if (hasArrows(this, i))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 void SetArrowType(CBlob@ this, const u8 type)
 {
 	ArcherInfo@ archer;

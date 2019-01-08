@@ -85,6 +85,7 @@ void onTick(CBlob@ this)
 			moveVars.walkFactor = 0.5f;
 			moveVars.jumpFactor = 0.5f;
 		}
+		this.Tag("prevent crouch");
 	}
 
 	if(ismyplayer && this.isKeyPressed(key_action1) && !this.isKeyPressed(key_inventory)) //Don't let the builder place blocks if he/she is selecting which one to place

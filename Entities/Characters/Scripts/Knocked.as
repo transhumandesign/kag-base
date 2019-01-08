@@ -60,6 +60,8 @@ void DoKnockedUpdate(CBlob@ this)
 		{
 			this.Untag("dazzled");
 		}
+
+		this.Tag("prevent crouch");
 	}
 	else
 	{
