@@ -732,13 +732,16 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 
 			hitBlob.AddForce(velocity * force);
 
+			// check if shielded
+			const bool hitShield = hitBlob.hasTag("shielded") && blockAttack(hitBlob, vel, 0.0f);
+
 			// stun if shot real close
 			if (
 				this.getTickSinceCreated() <= 4 &&
 				speed > ArcherParams::shoot_max_vel * 0.845f &&
 				hitBlob.hasTag("player")
 			) {
-				SetKnocked(hitBlob, 20);
+				SetKnocked(hitBlob, hitShield ? 25 : 35);
 				Sound::Play("/Stun", hitBlob.getPosition(), 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 			}
 		}
