@@ -96,7 +96,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		this.getShape().SetGravityScale(1.0f);
 		//set velocity to blob in hand
         CBlob@ carried = this.getCarriedBlob();
-        if(carried !is null){
+        if(carried !is null)
+        {
             Vec2f current_vel = this.getVelocity() * CARRIED_BLOB_VEL_SCALE;
             if(carried.hasTag("medium weight"))
                 current_vel = current_vel * MEDIUM_CARRIED_BLOB_VEL_SCALE;

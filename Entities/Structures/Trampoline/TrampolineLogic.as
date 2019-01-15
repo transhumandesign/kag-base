@@ -62,6 +62,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	//cant bounce while held by something attached to something else
 	if (holder !is null && holder.isAttached()) return;
 
+	//prevent knights from flying using trampolines
+	if (blob.getPosition().y > this.getPosition().y && this.getAngleDegrees() == 0)
+		return;
+
 	TrampolineCooldown@[]@ cooldowns;
 	if(!this.get(Trampoline::TIMER, @cooldowns)) return;
 

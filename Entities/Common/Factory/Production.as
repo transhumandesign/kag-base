@@ -42,8 +42,8 @@ void onTick(CBlob@ this)
 		}
 		return;
 	}
-	// only if prudcing...
 
+	// only if producing...
 	for (uint i = 0 ; i < items.length; i++)
 	{
 		ShopItem @item = items[i];
@@ -177,7 +177,9 @@ CBlob@ MakeSingleItem(CBlob@ this, ShopItem@ item)
 		const string blobName = item.spawnInCrate ? "crate" : item.blobName;
 		Vec2f spawnPos = this.getPosition() + getRandomVelocity(90.0f, 6.0f, 360.0f);
 		if (this.exists("production offset"))
+		{
 			spawnPos += this.get_Vec2f("production offset");
+		}
 
 		if (blobName == "seed")	// MakeSeed - this needs to be done differently by some global name cache - to make standard foods, scrolls, seeds etc and not waste space of specific data
 		{

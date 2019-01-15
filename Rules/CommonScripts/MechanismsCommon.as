@@ -152,7 +152,7 @@ shared void packet_AddChangeAnimation(CBitStream@ stream, u16 id, string animati
 shared void packet_SendStream(CRules@ this, CBitStream@ stream)
 {
 	stream.write_u8(PACKET_END);
-	this.SendCommand(this.getCommandID("_packet"), stream);
+	this.SendCommand(this.getCommandID("mechanisms_packet"), stream);
 }
 
 void packet_RecvStream(CRules@ this, CBitStream@ stream)
