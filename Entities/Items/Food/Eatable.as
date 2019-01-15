@@ -1,5 +1,4 @@
-
-const string heal_id = "heal command";
+#include "EatCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -9,29 +8,6 @@ void onInit(CBlob@ this)
 	}
 
 	this.addCommandID(heal_id);
-}
-
-void Heal(CBlob@ this, CBlob@ blob)
-{
-	bool exists = getBlobByNetworkID(this.getNetworkID()) !is null;
-	if (getNet().isServer() && blob.hasTag("player") && blob.getHealth() < blob.getInitialHealth() && !this.hasTag("healed") && exists)
-	{
-		CBitStream params;
-		params.write_u16(blob.getNetworkID());
-
-		u8 heal_amount = 255; //in quarter hearts, 255 means full hp
-
-		if (this.getName() == "heart")	    // HACK
-		{
-			heal_amount = 4;
-		}
-
-		params.write_u8(heal_amount);
-
-		this.SendCommand(this.getCommandID(heal_id), params);
-
-		this.Tag("healed");
-	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
@@ -76,7 +52,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 	if (getNet().isServer() && !blob.hasTag("dead"))
 	{
-		Heal(this, blob);
+		Heal(blob, this);
 	}
 }
 
@@ -84,7 +60,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	if (getNet().isServer())
 	{
-		Heal(this, attached);
+		Heal(attached, this);
 	}
 }
 
@@ -92,7 +68,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 {
 	if (getNet().isServer())
 	{
-		Heal(this, detached);
+		Heal(detached, this);
 	}
 }
 
