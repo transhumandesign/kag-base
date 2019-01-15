@@ -579,12 +579,6 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 	archer.charge_state = charge_state;
 	archer.has_arrow = hasarrow;
 
-	//cannot crouch while charging arrow
-	if (charge_state != 0)
-	{
-		this.Tag("prevent crouch");
-	}
-
 }
 
 void onTick(CBlob@ this)

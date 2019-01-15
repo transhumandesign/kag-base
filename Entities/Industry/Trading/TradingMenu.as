@@ -54,7 +54,8 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		CBitStream params;
 		params.write_u16(caller.getNetworkID());
-		caller.CreateGenericButton("$trade$", Vec2f_zero, this, this.getCommandID("stock"), getTranslatedString("Shop"), params);
+		CButton@ button = caller.CreateGenericButton("$trade$", Vec2f_zero, this, this.getCommandID("stock"), getTranslatedString("Shop"), params);
+		button.enableRadius = 32;
 	}
 }
 

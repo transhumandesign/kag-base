@@ -36,7 +36,7 @@ void onInit(CBlob@ this)
 
 	this.set_TileType("background tile", CMap::tile_wood_back);
 
-	SetHelp(this, "help use", "builder", getTranslatedString("$workshop$Convert workshop    $KEY_E$"), "", 3);
+	SetHelp(this, "help use", "builder", getTranslatedString("$workshop$Convert factory    $KEY_E$"), "", 3);
 
 	if (hasTech(this))
 	{
@@ -75,7 +75,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (!hasTech(this) && caller.isOverlapping(this))
 	{
-		caller.CreateGenericButton(12, Vec2f(0, 0), this, this.getCommandID("upgrade factory menu"), getTranslatedString("Convert Workshop"), params);
+		caller.CreateGenericButton(12, Vec2f(0, 0), this, this.getCommandID("upgrade factory menu"), getTranslatedString("Convert Factory"), params);
 	}
 	else
 	{
@@ -314,6 +314,7 @@ void AddProductionItemsFromTech(CBlob@ this, const string &in defname)
 			if (s !is null)
 			{
 				s.ticksToMake = item.ticksToMake * getTicksASecond();
+				s.customData = item.customData;
 			}
 		}
 

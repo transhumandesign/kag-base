@@ -52,6 +52,7 @@ namespace Emotes
 		kiss,
 		pickup,
 		raised,
+		clap,
 
 		emotes_total,
 		off
@@ -103,7 +104,8 @@ namespace Emotes
 		"love",
 		"kiss",
 		"pickup",
-		"raised"
+		"raised",
+		"clap"
 	};
 }
 
@@ -153,3 +155,46 @@ bool is_emote(CBlob@ this, u8 emote = 255, bool checkBlank = false)
 	return time > getGameTime() && index != Emotes::off && (!checkBlank || (index != Emotes::dots));
 }
 
+//helper - allow integer entries as well as name entries
+u8 read_emote(ConfigFile@ cfg, string name, u8 default_value)
+{
+	string attempt = cfg.read_string(name, "");
+	if (attempt != "")
+	{
+		//replace quoting and semicolon
+		//TODO: how do we not have a string lib for this?
+		string[] check_str = {";",   "\"", "\"",  "'",  "'"};
+		bool[] check_pos =   {false, true, false, true, false};
+		for(int i = 0; i < check_str.length; i++)
+		{
+			string check = check_str[i];
+			if(check_pos[i]) //check front
+			{
+				if(attempt.substr(0, 1) == check)
+				{
+					attempt = attempt.substr(1, attempt.size() - 1);
+				}
+			}
+			else //check back
+			{
+				if(attempt.substr(attempt.size() - 1, 1) == check)
+				{
+					attempt = attempt.substr(0, attempt.size() - 1);
+				}
+			}
+		}
+		//match
+		for(int i = 0; i < Emotes::names.length; i++)
+		{
+			if(attempt == Emotes::names[i])
+			{
+				return i;
+			}
+		}
+
+		//fallback to u8 read
+		u8 read_val = cfg.read_u8(name, default_value);
+		return read_val;
+	}
+	return default_value;
+}
