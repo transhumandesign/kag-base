@@ -13,7 +13,7 @@ namespace WheelMenu
 
 	const float item_distance = 0.4f;
 
-	const float hover_distance = 0.05f;
+	const float hover_distance = 0.07f;
 	const float auto_selection_distance = 0.3f;
 
 	const Vec2f center_pane_padding(16.0f, 32);
