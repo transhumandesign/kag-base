@@ -538,6 +538,12 @@ void drawHoverExplanation(int hovered_accolade, int hovered_age, Vec2f centre_to
 			age_description[hovered_age]
 	);
 
+	//TODO: remember to remove this and add a real indicator!
+	if (hoveredPlayer !is null)
+	{
+		desc += "\n\n support tier: " + hoveredPlayer.getSupportTier();
+	}
+
 	Vec2f size(0, 0);
 	GUI::GetTextDimensions(desc, size);
 
