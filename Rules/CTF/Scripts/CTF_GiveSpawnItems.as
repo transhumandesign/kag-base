@@ -46,24 +46,16 @@ bool GiveSpawnResources(CRules@ this, CBlob@ blob, CPlayer@ player, CTFPlayerInf
 
 	if (blob.getName() == "builder")
 	{
-		u8 bonus = 0;
-		u8 warmup_bonus = 0;
-		if (this.exists("tent quarry upgrade" + player.getTeamNum()) && this.get_bool("tent quarry upgrade" + player.getTeamNum()))
-		{
-			bonus = 20;
-			warmup_bonus = 50;
-		}
-
 		if (this.isWarmup())
 		{
 			ret = SetMaterials(blob, "mat_wood", 300) || ret;
-			ret = SetMaterials(blob, "mat_stone", 100 + warmup_bonus) || ret;
+			ret = SetMaterials(blob, "mat_stone", 100) || ret;
 
 		}
 		else
 		{
 			ret = SetMaterials(blob, "mat_wood", 100) || ret;
-			ret = SetMaterials(blob, "mat_stone", 30 + bonus) || ret;
+			ret = SetMaterials(blob, "mat_stone", 30) || ret;
 		}
 
 		if (ret)
