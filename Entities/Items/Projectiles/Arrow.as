@@ -478,7 +478,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 		if (arrowType == ArrowType::fire)
 		{
 			this.server_SetTimeToDie(0.5f);
-			
+
 			if (hitBlob.getName() == "keg" && !hitBlob.hasTag("exploding"))
 			{
 				hitBlob.SendCommand(hitBlob.getCommandID("activate"));
@@ -579,21 +579,22 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 
 void FireUp(CBlob@ this)
 {
-	Vec2f thisPos = this.getPosition();
-	Vec2f burnpos;
-	Vec2f head = Vec2f(this.getRadius() * 1.2f, 0.0f);
-	f32 angle = this.getAngleDegrees();
-	head.RotateBy(-angle);
-	burnpos = thisPos + head * 0.5f;
-
-	// this.getMap() NULL ON ONDIE!
 	CMap@ map = getMap();
-	if (map !is null)
+	if (map is null) return;
+
+	Vec2f pos = this.getPosition();
+	Vec2f head = Vec2f(map.tilesize * 0.8f, 0.0f);
+	f32 angle = this.getAngleDegrees();
+	head.RotateBy(angle);
+	Vec2f burnpos = pos + head;
+
+	if (isTileFlammable(burnpos))
 	{
-		if (isTileFlammable(burnpos))
-		{
-			MakeFireCross(burnpos);
-		}
+		MakeFireCross(burnpos);
+	}
+	else if (isTileFlammable(pos))
+	{
+		MakeFireCross(pos);
 	}
 }
 
