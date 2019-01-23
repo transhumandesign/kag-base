@@ -11,11 +11,17 @@ const u8 MENU_WIDTH = 9;
 const u8 MENU_HEIGHT = Maths::Ceil((Emotes::emotes_total - EXCLUDED_EMOTES.length - 1) / MENU_WIDTH) + 2;
 const string SELECTED_PROP = "selected emote: ";
 
+const string EMOTE_CMD = "emote command";
+enum EMOTE_SUBCMD {
+	BIND_EMOTE,
+	SELECT_KEYBIND,
+	CLOSE_MENU,
+	EMOTE_SUBCMD_COUNT
+};
+
 void onInit(CRules@ this)
 {
-	this.addCommandID("bind emote");
-	this.addCommandID("select keybind");
-	this.addCommandID("close menu");
+	this.addCommandID(EMOTE_CMD);
 
 	//load emote icons
 	for (u16 i = 0; i < Emotes::emotes_total; i++)
@@ -32,8 +38,7 @@ void NewEmotesMenu()
 		//select first keybind to begin with
 		string propname = SELECTED_PROP + player.getUsername();
 		getRules().set_u8(propname, 0);
-		getRules().Sync(propname, true);
-		
+
 		ShowEmotesMenu(player);
 	}
 }
@@ -47,7 +52,7 @@ void ShowEmotesMenu(CPlayer@ player)
 	CRules@ rules = getRules();
 	Vec2f center = getDriver().getScreenCenterPos();
 	string description = getTranslatedString("Emote Hotkey Binder");
-	
+
 	//display main grid menu
 	CGridMenu@ menu = CreateGridMenu(center, null, Vec2f(MENU_WIDTH, MENU_HEIGHT), description);
 	if (menu !is null)
@@ -56,9 +61,12 @@ void ShowEmotesMenu(CPlayer@ player)
 
 		//press escape to close
 		CBitStream params;
+
+		params.write_u8(CLOSE_MENU);
 		params.write_string(player.getUsername());
-		menu.AddKeyCommand(KEY_ESCAPE, rules.getCommandID("close menu"), params);
-		menu.SetDefaultCommand(rules.getCommandID("close menu"), params);
+
+		menu.AddKeyCommand(KEY_ESCAPE, rules.getCommandID(EMOTE_CMD), params);
+		menu.SetDefaultCommand(rules.getCommandID(EMOTE_CMD), params);
 
 		//display emote grid
 		for (int i = 0; i < Emotes::emotes_total; i++)
@@ -69,11 +77,12 @@ void ShowEmotesMenu(CPlayer@ player)
 			}
 
 			CBitStream params;
+			params.write_u8(BIND_EMOTE);
 			params.write_string(player.getUsername());
 			params.write_u8(i);
-			CGridButton@ button = menu.AddButton(getIconName(i), description, rules.getCommandID("bind emote"), Vec2f(1, 1), params);
+			CGridButton@ button = menu.AddButton(getIconName(i), description, rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
 		}
-		
+
 		//fill in extra slots in emote grid
 		if (menu.getButtonsCount() % MENU_WIDTH != 0)
 		{
@@ -107,14 +116,15 @@ void ShowEmotesMenu(CPlayer@ player)
 
 		string propname = SELECTED_PROP + player.getUsername();
 		u8 selected = rules.get_u8(propname);
-		
+
 		//display row of current emote keybinds
 		for (int i = 0; i < 9; i++)
 		{
 			CBitStream params;
+			params.write_u8(SELECT_KEYBIND);
 			params.write_string(player.getUsername());
 			params.write_u8(i);
-			CGridButton@ button = menu.AddButton(getIconName(emoteBinds[i]), "Select key " + (i + 1), rules.getCommandID("select keybind"), Vec2f(1, 1), params);
+			CGridButton@ button = menu.AddButton(getIconName(emoteBinds[i]), "Select key " + (i + 1), rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
 			button.selectOneOnClick = true;
 			// button.hoverText = "     Key " + (i + 1) + "\n";
 
@@ -129,13 +139,21 @@ void ShowEmotesMenu(CPlayer@ player)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
-	CPlayer@ caller = getPlayerByUsername(params.read_string());
-	if (caller is null || !caller.isMyPlayer())
+	string name;
+	u8 subcmd;
+
+	if(!params.saferead_u8(subcmd)) return;
+	if(!params.saferead_string(name)) return;
+
+	CPlayer@ caller = getPlayerByUsername(name);
+
+	//check validity so far
+	if (caller is null || !caller.isMyPlayer() || subcmd >= EMOTE_SUBCMD_COUNT)
 	{
 		return;
 	}
 
-	if (cmd == this.getCommandID("bind emote"))
+	if (subcmd == BIND_EMOTE)
 	{
 		string propname = SELECTED_PROP + caller.getUsername();
 		u8 selected = this.get_u8(propname);
@@ -146,7 +164,9 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 			return;
 		}
 
-		u8 emote = params.read_u8();
+		u8 emote;
+		if(!params.saferead_u8(emote)) return;
+
 		string key = "emote_" + (selected + 1);
 
 		//get emote bindings cfg file
@@ -164,15 +184,24 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 		//update keybinds in menu
 		ShowEmotesMenu(caller);
 	}
-	else if (cmd == this.getCommandID("select keybind"))
+	else if (subcmd == SELECT_KEYBIND)
 	{
+		u8 emote;
+		if(!params.saferead_u8(emote)) return;
+
 		string propname = SELECTED_PROP + caller.getUsername();
-		this.set_u8(propname, params.read_u8());
-		this.Sync(propname, true);
+		this.set_u8(propname, emote);
 	}
-	else if (cmd == this.getCommandID("close menu"))
+	else if (subcmd == CLOSE_MENU)
 	{
 		getHUD().ClearMenus(true);
+	}
+
+	//trigger a reload of the blob's emote bindings either way
+	CBlob@ cblob = caller.getBlob();
+	if (cblob !is null)
+	{
+		cblob.Tag("reload emotes");
 	}
 }
 
