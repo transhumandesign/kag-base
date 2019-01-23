@@ -5,7 +5,7 @@
 const string counter_prop = "capture ticks";
 const string raid_tag = "under raid";
 const int capture_half_seconds = 30;
-const int short_capture_half_seconds = 15;
+const int short_capture_half_seconds = 10;
 const int capture_radius = 80;
 
 const string friendly_prop = "capture friendly count";
