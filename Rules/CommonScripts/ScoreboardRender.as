@@ -541,7 +541,7 @@ void drawHoverExplanation(int hovered_accolade, int hovered_age, Vec2f centre_to
 	//TODO: remember to remove this and add a real indicator!
 	if (hoveredPlayer !is null)
 	{
-		desc += "\n\n support tier: " + hoveredPlayer.getSupportTier();
+		desc += "\n\n " + getTranslatedString("support tier: {SUPPORT_TIER}").replace("{SUPPORT_TIER}", "" + hoveredPlayer.getSupportTier());
 	}
 
 	Vec2f size(0, 0);

@@ -90,7 +90,7 @@ void ShowEmotesMenu(CPlayer@ player)
 		}
 
 		//separator with info
-		CGridButton@ separator = menu.AddTextButton("Select a keybind below, then select the emote you want", Vec2f(MENU_WIDTH, 1));
+		CGridButton@ separator = menu.AddTextButton(getTranslatedString("Select a keybind below, then select the emote you want"), Vec2f(MENU_WIDTH, 1));
 		separator.clickable = false;
 		separator.SetEnabled(false);
 
@@ -124,7 +124,7 @@ void ShowEmotesMenu(CPlayer@ player)
 			params.write_u8(SELECT_KEYBIND);
 			params.write_string(player.getUsername());
 			params.write_u8(i);
-			CGridButton@ button = menu.AddButton(getIconName(emoteBinds[i]), "Select key " + (i + 1), rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
+			CGridButton@ button = menu.AddButton(getIconName(emoteBinds[i]), getTranslatedString("Select key {KEY_NUM}").replace("{KEY_NUM}", (i + 1) + ""), rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
 			button.selectOneOnClick = true;
 			// button.hoverText = "     Key " + (i + 1) + "\n";
 
