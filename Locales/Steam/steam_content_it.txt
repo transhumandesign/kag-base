@@ -1,0 +1,209 @@
+###############################################################################
+# Steam Strings - For Translation Purposes
+
+These strings are provided to allow localisation of the steam content.
+
+They are not read directly by the game.
+
+# Guidelines:
+
+You do not need to translate the headings "# Description:" etc - these are just
+to separate the strings into logical sections for you.
+
+BBCode images should be left "as is".
+
+BBCode tags should probably  be "semantically" preserved between descriptions.
+They don't appear to be used on the store pages in most contexts though.
+
+Please issue a pull request for this file with the correct locale suffix if you
+contribute to localisation. Copy this file as a starting point if a copy for
+your locale does not already exist.
+
+	(eg Locale/Steam/steam_content_ru.txt for Russian)
+
+###############################################################################
+# King Arthur's Gold
+
+# Description:
+
+[img]{STEAM_APP_IMAGE}/extras/gif_overview01.png[/img]  .  [img]{STEAM_APP_IMAGE}/extras/gif_overview02.png[/img]
+
+[h2]Fisica 2D + Multiplayer basato su Classi e Squadre + Battaglie medioevali e Gioco di Costruzioni[/h2]
+
+Alcune cose che puoi fare in King Arthur's Gold:
+
+[list]
+[*] [b]DISTRUGGI [/b]i castelli nemici con la fisica e gli esplosivi
+[*] [b]COSTRUISCI [/b]le difese con libertà di movimento
+[*] Usa l'ambientazione per [b]BRUCIARE [/b]o annegare i nemici
+[*] [b]GUIDA [/b]le macchine d'assedio con i tuoi compagni
+[*] Corri, sali a bordo delle imbarcazioni, [b]SCAVA [/b]tunnel o vola nel cielo in totale libertà
+[*] Interagisci con un mondo animale e vegetale [b]VIVO[/b]
+[*] [b]COMBATTI [/b]con 32 imprevedibili umani in multiplayer
+[*] [b]MODALITÀ [/b] di gioco singleplayer, cooperative e competitive
+[*] [b]PERSONALIZZA [/b] il personaggio con 60+ teste singolari
+[*] [b]CREA [/b]la tua avventura con le mod e gli script creati dalla community
+[/list]
+
+[img]{STEAM_APP_IMAGE}/extras/gif_overview03.png[/img]
+
+King Arthur's Gold fonde gli aspetti cooperativi di [i]Lost Vikings[/i], con la piena distruttibilità di [i]Worms[/i] e con lo stile visuale e l'azione di [i]Metal Slug[/i]. Ideato dai creatori di [i]Soldat[/i].
+
+# Short Description:
+
+Ti piacerebbe [b]demolire [/b]le fortezze dei tuoi nemici e [b]abbatterle [/b]con la FISICA 2D? Ti piacerebbe [b]costruire [/b]castelli, trappole e macchine d'assedio in un gioco MULTIPLAYER?
+
+###############################################################################
+# King Arthur's Gold: Flags of the World Heads Pack
+
+# Description:
+
+Questo DLC cosmetico aggiunge oltre 120 nuove teste (più di 60 per genere) a King Arthur's Gold.
+
+Ogni testa rappresenta un bandiera del mondo. Ci sono anche quelle di Jolly Roger e la bandiera Arcobaleno/Pride.
+Usale per celebrare il tuo retaggio e porta un po' di colore sul campo di battaglia!
+
+Anteprima:
+
+[list]
+[img]{STEAM_APP_IMAGE}/extras/flag_heads_preview.png[/img]
+[/list]
+
+Lista di bandiere attualmente supportate:
+
+[list]
+[*]Polonia
+[*]Australia
+[*]Inghilterra
+[*]Irlanda
+[*]Scozia
+[*]Galles
+[*]Nuova Zelanda
+[*]Aborigeni australiani
+[*]Tino Rangatiratanga (Maori)
+[*]Canada
+[*]Stati Uniti d'America
+[*]Italia
+[*]Germania
+[*]Russia
+[*]Francia
+[*]Olanda
+[*]Svezia
+[*]Norvegia
+[*]Spagna
+[*]Belgio
+[*]Finlandia
+[*]Danimarca
+[*]Portogallo
+[*]Turchia
+[*]Islanda
+[*]Svizzera
+[*]Ungheria
+[*]Bielorussia
+[*]Slovacchia
+[*]Lettonia
+[*]Israele
+[*]Palestina
+[*]Repubblica Ceca
+[*]Ucraina
+[*]Messico
+[*]Chile
+[*]Brasile
+[*]Argentina
+[*]Giamaica
+[*]Papua Nuova Guinea
+[*]Tonga
+[*]Samoa
+[*]Corea
+[*]Cina
+[*]Singapore
+[*]Tailandia
+[*]Giappone
+[*]Hong Kong
+[*]Malaysia
+[*]Taiwan
+[*]Indonesia
+[*]Filippine
+[*]India
+[*]Vietnam
+[*]Sud Africa
+[*]Egitto
+[*]Kenya
+[*]Somalia
+[*]Sudan
+[*]Georgia
+[*]Grecia
+[*]Siria
+[*]Bandiera dell'Indipendenza della Siria
+[*]Mali
+[*]Austria
+[*]Estonia
+[*]Tunisia
+[*]Libia
+[*]Lituania
+[*]Isole Faroe
+[*]Porto Rico
+[*]Cuba
+[*]Groenlandia
+[*]Repubblica Dominicana
+[*]Iraq
+[*]Jolly Roger
+[*]Arcobaleno
+[/list]
+
+Le richieste per paesi o nazioni mancanti, ecc... saranno prese in considerazione via email di supporto.
+
+# Short Description:
+
+Questo DLC cosmetico aggiunge oltre 120 nuove teste (più di 60 per genere) rappresentanti le bandiere del mondo in King Arthur's Gold.
+
+###############################################################################
+# King Arthur's Gold: Fantasy Heads Pack
+
+# Description:
+
+Aggiungi quel sapore di fantasy a King Arthur's Gold! Divertiti a giocare nei panni della tua preferita razza fantasy e aiuta a continuare lo sviluppo del gioco!
+
+This theme was voted as a favourite out of four by the community, and we're excited to bring you the second DLC for KAG to Steam. These high quality, unique heads will help you stand out from the crowd.
+Questo tema è stato votato dalla community come preferito tra i 4 disponibili. Siamo contenti di portarvi il secondo DLC di KAG per Steam. Queste uniche teste di alta qualità ti permetteranno di risaltare tra la folla.
+
+[img]{STEAM_APP_IMAGE}/extras/PromoPreview.png[/img]
+
+[b]Lista completa delle teste incluse:[/b]
+[list]
+[*]Hobbit
+[*]Gnomo
+[*]Nano Soldato
+[*]Nano Minatore
+[*]Elfo della Foresta
+[*]Spettro Oscuro
+[*]Stregone/Strega (versioni di Luce e Buio)
+[*]Alto Elfo
+[*]Ranger
+[*]Paladino
+[*]Cavaliere Pesante
+[*]Scudiero
+[*]Goblin
+[*]Orco
+[*]Troll Ciclope
+[*]Diavoletto
+[/list]
+Tutte le teste hanno la versione maschile e femminile inclusa.
+
+# Short Description:
+
+Aggiungi quel sapore di fantasy a King Arthur's Gold! Queste teste esclusive, votate dalla community, ti faranno divenatare un nano, un elfo, un goblin, un ranger, uno stregone, una strega, un hobbit, uno spettro oscuro e tanti altri!
+
+###############################################################################
+# Misc/Shared Content
+
+(these lines are used for all packages)
+
+# Legal Line:
+
+King Arthur's Gold is Copyright © 2011-2017 Transhuman Design, All Rights Reserved.
+
+###############################################################################
+# Thanks!
+
+Thank you for your help localising the game!

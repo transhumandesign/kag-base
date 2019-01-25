@@ -1,6 +1,7 @@
 // stun
 #include "/Entities/Common/Attacks/Hitters.as";
 #include "Knocked.as";
+#include "ShieldCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -67,21 +68,40 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		//get sponge
 		CBlob@ sponge = null;
-		//find the sponge with lowest absorbed
-		CInventory@ inv = this.getInventory();
-		if (inv !is null)
+
 		{
-			u8 lowest_absorbed = 100;
-			for (int i = 0; i < inv.getItemsCount(); i++)
+			//find the sponge with highest absorbed amount
+			CBlob@[] sponges;
+			//gather held sponge if exists
+			//(first, so carried sponge is prioritised if equal)
+			CBlob@ carryblob = this.getCarriedBlob();
+			if (carryblob !is null && carryblob.getName() == "sponge")
 			{
-				CBlob@ invitem = inv.getItem(i);
-				if(invitem.getName() == "sponge")
+				sponges.push_back(carryblob);
+			}
+			//gather inventory
+			CInventory@ inv = this.getInventory();
+			if (inv !is null)
+			{
+				for (int i = 0; i < inv.getItemsCount(); i++)
 				{
-					if(invitem.get_u8("absorbed") < lowest_absorbed)
+					CBlob@ invitem = inv.getItem(i);
+					if(invitem.getName() == "sponge")
 					{
-						lowest_absorbed = invitem.get_u8("absorbed");
-						@sponge = invitem;
+						sponges.push_back(invitem);
 					}
+				}
+			}
+			//check all
+			int highest_absorbed = -1;
+			for(int i = 0; i < sponges.length; i++)
+			{
+				CBlob@ current_sponge = sponges[i];
+				int absorbed = current_sponge.get_u8("absorbed");
+				if(absorbed > highest_absorbed)
+				{
+					highest_absorbed = absorbed;
+					@sponge = current_sponge;
 				}
 			}
 		}
@@ -89,9 +109,22 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		bool has_sponge = sponge !is null;
 		bool wet_sponge = false;
 
-		bool undefended = (force || !this.hasTag("shielded"));
-		if ((customData == Hitters::water_stun && undefended) ||
-		        customData == Hitters::water_stun_force)
+		bool defended = this.hasTag("shielded");
+
+		// If the class has a shield (check for ShieldVars) then check that the shield is pointing in the right direction
+		if (getShieldVars(this) !is null && !blockAttack(this, velocity, damage))
+		{
+			defended = false;
+		}
+
+		// Don't allow the player to shield their own water explosives
+		if (hitterBlob.getDamageOwnerPlayer() is this.getPlayer())
+		{
+			defended = false;
+		}
+
+		if (customData == Hitters::water_stun && !defended
+			|| customData == Hitters::water_stun_force)
 		{
 			if (has_sponge)
 			{
@@ -101,6 +134,13 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			else
 			{
 				time = 45;
+			}
+
+			// Halve the stun if it was blocked
+			if (defended)
+			{
+				Sound::Play("ShieldHit.ogg", this.getPosition(), this.isMyPlayer() ? 1.3f : 0.7f);
+				time *= 0.5;
 			}
 
 			this.Tag("dazzled");

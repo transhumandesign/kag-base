@@ -134,7 +134,7 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (this.getTeamNum() == caller.getTeamNum() && !Vehicle_AddFlipButton(this, caller) && isOverlapping(this, caller) && !caller.isAttached())
+	if (!Vehicle_AddFlipButton(this, caller) && this.getTeamNum() == caller.getTeamNum() && isOverlapping(this, caller) && !caller.isAttached())
 	{
 		Vehicle_AddLoadAmmoButton(this, caller);
 	}

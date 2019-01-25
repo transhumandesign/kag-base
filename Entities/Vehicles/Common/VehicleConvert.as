@@ -4,17 +4,20 @@
 
 const string counter_prop = "capture ticks";
 const string raid_tag = "under raid";
-const int capture_seconds = 15;
+const int capture_half_seconds = 30;
+const int short_capture_half_seconds = 10;
 const int capture_radius = 80;
 
 const string friendly_prop = "capture friendly count";
 const string enemy_prop = "capture enemy count";
 
+const string short_raid_tag = "short raid time";
+
 void onInit(CBlob@ this)
 {
 	this.addCommandID("convert");
-	this.getCurrentScript().tickFrequency = 30;
-	this.set_s16(counter_prop, capture_seconds);
+	this.getCurrentScript().tickFrequency = 15;
+	this.set_s16(counter_prop, GetCaptureTime(this));
 	this.set_s16(friendly_prop, 0);
 	this.set_s16(enemy_prop, 0);
 }
@@ -71,13 +74,13 @@ void onTick(CBlob@ this)
 			}
 		}
 
-		int ticks = capture_seconds;
+		int ticks = GetCaptureTime(this);
 		if (this.hasTag(raid_tag))
 		{
 			ticks = this.get_s16(counter_prop);
 		}
 
-		if (attackersCount > 0 || ticks < capture_seconds)
+		if (attackersCount > 0 || ticks < GetCaptureTime(this))
 		{
 			//convert
 			if (attackersCount > friendlyCount)
@@ -87,7 +90,7 @@ void onTick(CBlob@ this)
 			//un-convert gradually
 			else if (attackersCount < friendlyCount || attackersCount == 0)
 			{
-				ticks = Maths::Min(ticks + 1, capture_seconds);
+				ticks = Maths::Min(ticks + 1, GetCaptureTime(this));
 			}
 
 			this.set_s16(counter_prop, ticks);
@@ -118,7 +121,7 @@ void onTick(CBlob@ this)
 		this.set_s16(friendly_prop, 0);
 		this.set_s16(enemy_prop, 0);
 
-		this.set_s16(counter_prop, capture_seconds);
+		this.set_s16(counter_prop, GetCaptureTime(this));
 		this.Untag(raid_tag);
 		sync = true;
 	}
@@ -162,6 +165,15 @@ void ConvertPoint(CBlob@ this, const string pointName)
 	}
 }
 
+int GetCaptureTime(CBlob@ blob)
+{
+	if (blob.hasTag(short_raid_tag))
+	{
+		return short_capture_half_seconds;
+	}
+	return capture_half_seconds;
+}
+
 
 // alert and capture progress bar
 
@@ -199,6 +211,6 @@ void onRender(CSprite@ this)
 	s32 captureTime = blob.get_s16(counter_prop);
 	GUI::DrawProgressBar(Vec2f(pos2d.x - hwidth + padding, pos2d.y + hheight - 18 - padding),
 	                     Vec2f(pos2d.x + hwidth - padding, pos2d.y + hheight - padding),
-	                     1.0f - float(captureTime) / float(capture_seconds));
+	                     1.0f - float(captureTime) / float(GetCaptureTime(blob)));
 
 }

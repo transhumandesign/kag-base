@@ -54,7 +54,7 @@ void onTick(CBlob@ this)
 		CMap@ map = this.getMap();
 		Tile tile = map.getTile(pos);
 
-		if (map.isTileBackgroundNonEmpty(tile))
+		if (map.isTileBackgroundNonEmpty(tile) && this.getTickSinceCreated() > 9.0f - vellen*0.42f) // prevent hitting backtiles if just created.
 		{
 			if (isServer)
 			{
@@ -111,6 +111,16 @@ bool canHitBlob(CBlob@ this, CBlob@ blob)
 	return (this.getTeamNum() != blob.getTeamNum() || blob.getShape().isStatic())
 	       && !blob.hasTag("invincible");
 
+}
+
+bool CollidesWithPlatform(CBlob@ this, CBlob@ blob, Vec2f velocity)
+{
+	f32 platform_angle = blob.getAngleDegrees();	
+	Vec2f direction = Vec2f(0.0f, -1.0f);
+	direction.RotateBy(platform_angle);
+	float velocity_angle = direction.AngleWith(velocity);
+
+	return !(velocity_angle > -90.0f && velocity_angle < 90.0f);
 }
 
 void HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
@@ -176,6 +186,9 @@ void Pierce(CBlob @this)
 
 			if (hi.blob !is null) // blob
 			{
+				if (hi.blob.getShape().getConsts().platform && !CollidesWithPlatform(this, hi.blob, this.getVelocity()))
+				return;
+
 				if (canHitBlob(this, hi.blob))
 				{
 					hit = true;

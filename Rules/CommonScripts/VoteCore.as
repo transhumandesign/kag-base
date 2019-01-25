@@ -19,9 +19,9 @@ void onRender(CRules@ this)
 	VoteObject@ vote = Rules_getVote(this);
 	CPlayer@ me = getLocalPlayer();
 
-	const bool can_force_pass = vote.forcePassFeature != ""
-	                            && (getSecurity().checkAccess_Feature(me, vote.forcePassFeature)
-	                                || getSecurity().checkAccess_Command(me, vote.forcePassFeature));
+	const bool can_force_pass = vote.forcePassFeature != "" &&
+	                            (getSecurity().checkAccess_Feature(me, vote.forcePassFeature) ||
+	                             getSecurity().checkAccess_Command(me, vote.forcePassFeature));
 	const bool can_cancel = getSecurity().checkAccess_Feature(me, "vote_cancel");
 
 	if ((!CanPlayerVote(vote, me) && !can_force_pass && !can_cancel) || g_have_voted) return;
@@ -31,14 +31,17 @@ void onRender(CRules@ this)
 	Vec2f text_dim;
 
 	string vote_title = getTranslatedString(vote.title);
-	printf(vote.user_to_kick + "");
 	if (vote.user_to_kick != "")
-		vote_title = 	vote_title.replace("{USER}", vote.user_to_kick);
+	{
+		vote_title = vote_title.replace("{USER}", vote.user_to_kick);
+	}
 
 	GUI::GetTextDimensions(vote_title, text_dim);
 
 	if (can_cancel || can_force_pass)
+	{
 		br += Vec2f(0, text_dim.y);
+	}
 
 	GUI::DrawPane(tl, br, SColor(0x80ffffff));
 
@@ -51,10 +54,14 @@ void onRender(CRules@ this)
 	GUI::DrawText(getTranslatedString("[P] - No"), tl + Vec2f(120, 3 + text_dim.y * 4), SColor(0xffbf3030));
 
 	if (can_force_pass)
+	{
 		GUI::DrawText(getTranslatedString("Ctrl+O Pass"), tl + Vec2f(3, 3 + text_dim.y * 5), SColor(0xff30bf30));
+	}
 
 	if (can_cancel)
+	{
 		GUI::DrawText(getTranslatedString("Ctrl+P Cancel"), tl + Vec2f(95, 3 + text_dim.y * 5), SColor(0xffbf3030));
+	}
 
 	GUI::DrawText(getTranslatedString("Click to close ({TIMELEFT}s)").replace("{TIMELEFT}", "" + Maths::Ceil(vote.timeremaining / 30.0f)), br - Vec2f(175, 7 + text_dim.y), color_white);
 }

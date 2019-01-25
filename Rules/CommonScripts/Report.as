@@ -129,6 +129,12 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params){
 				this.set_u32(p_name + "_reported_at", 0);
 			}
 
+			//initialise x reported y if it's missing, this will forbid a plyer from reporting another player multiple times
+			if(!this.exists(p_name + "_reported_" + b_name))
+			{
+				this.set_bool(p_name + "_reported_" + b_name, true);
+			}
+
 			//set time at which player reported baddie
 			this.set_u32(p_name + "_reported_at", Time());
 			//increment baddie's report count
@@ -137,6 +143,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params){
 			//sync props to clients
 			this.Sync(p_name + "_reported_at", true);
 			this.Sync(b_name + "_report_count", true);
+			this.Sync(p_name + "_reported_" + b_name, true);
 
 			tcpr("*REPORT " + p_name + " " + b_name + " " + this.get_u8(b_name + "_report_count"));
 		}
@@ -148,6 +155,14 @@ bool reportAllowed(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 	if (player is null or baddie is null) return false;
 
 	string p_name = player.getUsername();
+	string b_name = baddie.getUsername();
+
+	//unique player can not report another unique player more than once
+	if (this.get_bool(p_name + "_reported_" + b_name))
+	{
+		return false;
+	}
+	
 	//hasn't reported in a while
 	bool allowed = s32(Time() - this.get_u32(p_name + "_reported_at")) > reportRepeatTime;
 

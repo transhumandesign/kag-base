@@ -228,8 +228,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 			CBlob@ victimblob = victim.getBlob();
 			if (killerblob !is null && victimblob !is null && killerblob.isMyPlayer() && killerblob !is victimblob)
 			{
-				HoverMessage m(1337, victimblob.getInventoryName(), 1, SColor(255, 255, 20, 20), false);
-				addMessage(killerblob, m);
+				add_message(KillSpreeMessage(victim));
 			}
 		}
 	}
