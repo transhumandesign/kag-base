@@ -483,6 +483,8 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 			{
 				hitBlob.SendCommand(hitBlob.getCommandID("activate"));
 			}
+
+			this.set_Vec2f("override fire pos", hitBlob.getPosition());
 		}
 		else
 		{
@@ -560,8 +562,7 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 		this.server_SetTimeToDie(FIRE_IGNITE_TIME);
 	}
 
-	this.set_Vec2f("fire pos", (worldPoint + (norm * 0.5f)));
-
+	//kill any grain plants we shot the base of
 	CBlob@[] blobsInRadius;
 	if (this.getMap().getBlobsInRadius(worldPoint, this.getRadius() * 1.3f, @blobsInRadius))
 	{
@@ -588,17 +589,21 @@ void FireUp(CBlob@ this)
 	head.RotateBy(angle);
 	Vec2f burnpos = pos + head;
 
-	if (isTileFlammable(burnpos))
+	if(this.exists("override fire pos"))
 	{
-		MakeFireCross(burnpos);
+		MakeFireCross(this, this.get_Vec2f("override fire pos"));
 	}
-	else if (isTileFlammable(pos))
+	else if (isFlammableAt(burnpos))
 	{
-		MakeFireCross(pos);
+		MakeFireCross(this, burnpos);
+	}
+	else if (isFlammableAt(pos))
+	{
+		MakeFireCross(this, pos);
 	}
 }
 
-void MakeFireCross(Vec2f burnpos)
+void MakeFireCross(CBlob@ this, Vec2f burnpos)
 {
 	/*
 	fire starting pattern
@@ -611,17 +616,59 @@ void MakeFireCross(Vec2f burnpos)
 
 	CMap@ map = getMap();
 
-	map.server_setFireWorldspace(burnpos, true); // center
-	map.server_setFireWorldspace(burnpos - Vec2f(map.tilesize, 0.0f), true); // left
-	map.server_setFireWorldspace(burnpos + Vec2f(map.tilesize, 0.0f), true); // right
-	map.server_setFireWorldspace(burnpos - Vec2f(0.0f, map.tilesize), true); // up
-	map.server_setFireWorldspace(burnpos + Vec2f(0.0f, map.tilesize), true); // down
+	const float ts = map.tilesize;
+
+	//align to grid
+	burnpos = Vec2f(
+		(Maths::Floor(burnpos.x / ts) + 0.5f) * ts,
+		(Maths::Floor(burnpos.y / ts) + 0.5f) * ts
+	);
+
+	Vec2f[] positions = {
+		burnpos, // center
+		burnpos - Vec2f(ts, 0.0f), // left
+		burnpos + Vec2f(ts, 0.0f), // right
+		burnpos - Vec2f(0.0f, ts), // up
+		burnpos + Vec2f(0.0f, ts) // down
+	};
+
+	for (int i = 0; i < positions.length; i++)
+	{
+		Vec2f pos = positions[i];
+		//set map on fire
+		map.server_setFireWorldspace(pos, true);
+
+		//set blob on fire
+		CBlob@ b = map.getBlobAtPosition(pos);
+		//skip self or nothing there
+		if(b is null || b is this) continue;
+
+		//only hit static blobs
+		CShape@ s = b.getShape();
+		if (s !is null && s.isStatic())
+		{
+			this.server_Hit(b, this.getPosition(), this.getVelocity(), 0.5f, Hitters::fire);
+		}
+	}
 }
 
-bool isTileFlammable(Vec2f worldPos)
+bool isFlammableAt(Vec2f worldPos)
 {
-	Tile tile = getMap().getTile(worldPos);
-	return (tile.flags & Tile::FLAMMABLE) != 0;
+	CMap@ map = getMap();
+	//check for flammable tile
+	Tile tile = map.getTile(worldPos);
+	if ((tile.flags & Tile::FLAMMABLE) != 0)
+	{
+		return true;
+	}
+	//check for flammable blob
+	CBlob@ b = map.getBlobAtPosition(worldPos);
+	if (b !is null && b.isFlammable())
+	{
+		return true;
+	}
+	//nothing flammable here!
+	return false;
 }
 
 //random object used for gib spawning
@@ -645,7 +692,7 @@ void onDie(CBlob@ this)
 
 	const u8 arrowType = this.get_u8("arrow type");
 
-	if (arrowType == ArrowType::fire)
+	if (arrowType == ArrowType::fire && isServer())
 	{
 		FireUp(this);
 	}

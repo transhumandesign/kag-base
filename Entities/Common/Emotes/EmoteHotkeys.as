@@ -36,6 +36,12 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	if(this.hasTag("reload emotes"))
+	{
+		this.Untag("reload emotes");
+		onInit(this);
+	}
+
 	CControls@ controls = getControls();
 	if (controls.isKeyJustPressed(KEY_KEY_1))
 	{

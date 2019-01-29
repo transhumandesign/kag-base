@@ -101,6 +101,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			{
 				this.SendCommand(this.getCommandID("deactivate"));
 			}
+			break;
 		case Hitters::keg:
 			if (!this.hasTag("exploding"))
 			{

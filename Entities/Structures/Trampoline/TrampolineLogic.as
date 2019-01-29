@@ -63,8 +63,19 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	if (holder !is null && holder.isAttached()) return;
 
 	//prevent knights from flying using trampolines
-	if (blob.getPosition().y > this.getPosition().y && this.getAngleDegrees() == 0)
+
+	//get angle difference between entry angle and the facing angle
+	Vec2f pos_delta = (blob.getPosition() - this.getPosition()).RotateBy(90);
+	float delta_angle = Maths::Abs(-pos_delta.Angle() - this.getAngleDegrees());
+	if (delta_angle > 180)
+	{
+		delta_angle = 360 - delta_angle;
+	}
+	//if more than 90 degrees out, no bounce
+	if (delta_angle > 90)
+	{
 		return;
+	}
 
 	TrampolineCooldown@[]@ cooldowns;
 	if(!this.get(Trampoline::TIMER, @cooldowns)) return;
