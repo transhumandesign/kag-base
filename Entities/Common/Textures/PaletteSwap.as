@@ -122,8 +122,10 @@ string PaletteSwapTexture(string in_tex, string palette_filename, int palette_in
 	{
 		int digest = 0;
 		for(int i = 0; i < palette_filename.length; i++)
+		{
 			digest = digest * 31 + palette_filename[i];
-		digest = (digest ^ (digest >> 16)) & 0xffff;
+		}
+		digest = (digest ^ (digest >> 13) ^ (digest << 7)) & 0xffff;
 		filename_digest = formatInt(digest, "0h", 4).substr(0,4);
 	}
 
