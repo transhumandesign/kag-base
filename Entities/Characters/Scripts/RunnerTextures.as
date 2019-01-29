@@ -23,6 +23,8 @@ shared class RunnerTextures
 	PixelOffsetsCache male_offsets;
 	PixelOffsetsCache female_offsets;
 
+	string shortname;
+
 	string male_shortname;
 	string female_shortname;
 
@@ -31,9 +33,11 @@ shared class RunnerTextures
 
 	bool loaded;
 
-	RunnerTextures(string shortname, string texture_prefix)
+	RunnerTextures(string _shortname, string texture_prefix)
 	{
 		loaded = false;
+
+		shortname = _shortname;
 
 		male_shortname = shortname+"_male";
 		female_shortname = shortname+"_female";
@@ -171,7 +175,8 @@ RunnerTextures@ getRunnerTextures(CSprite@ sprite)
 //ensure the right texture is used
 void ensureCorrectRunnerTexture(CSprite@ sprite, string shortname, string texture_prefix)
 {
-	if(getRunnerTextures(sprite) is null)
+	RunnerTextures@ tex = getRunnerTextures(sprite);
+	if(tex is null || tex.shortname != shortname)
 	{
 		//first time set up
 		addRunnerTextures(sprite, shortname, texture_prefix);
@@ -180,7 +185,7 @@ void ensureCorrectRunnerTexture(CSprite@ sprite, string shortname, string textur
 	{
 		//just set the texture
 		CBlob@ b = sprite.getBlob();
-		b.set("head_offsets", getRunnerTextures(sprite).cached_offsets(sprite));
+		b.set("head_offsets", tex.cached_offsets(sprite));
 		setRunnerTexture(sprite);
 	}
 }

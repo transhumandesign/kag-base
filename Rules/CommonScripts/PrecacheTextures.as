@@ -17,9 +17,14 @@ namespace _precache {
 	int team_count = 2;
 	int skin_count = 1;
 	array<string> textures_names = {
+		//base armour
 		"archer, Archer, 32, 32",
 		"knight, Knight, 32, 32",
-		"builder, Builder, 32, 32"
+		"builder, Builder, 32, 32",
+		//capes
+		"archer_cape, ArcherCape, 32, 32",
+		"knight_cape, KnightCape, 32, 32",
+		"builder_cape, BuilderCape, 32, 32"
 	};
 
 	void runner_textures()
@@ -55,6 +60,10 @@ namespace _precache {
 						string texname = getRunnerTeamTexture(tex, g, t, s);
 						//(debug)
 						//print("cached: "+texname);
+						if(isServer())
+						{
+							getNet().server_KeepConnectionsAlive();
+						}
 					}
 				}
 			}
