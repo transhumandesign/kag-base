@@ -129,7 +129,7 @@ void setRunnerTexture(CSprite@ sprite)
 //call this in oninit from the script housing the object
 //it'll change the texture of the sprite to the one for the right gender as well
 
-RunnerTextures@ fetchFromRules(string shortname, string texture_prefix)
+RunnerTextures@ fetchRunnerTexture(string shortname, string texture_prefix)
 {
 	RunnerTextures@ tex = null;
 	string rules_key = "runner_tex_"+shortname+"_"+texture_prefix;
@@ -137,7 +137,7 @@ RunnerTextures@ fetchFromRules(string shortname, string texture_prefix)
 	{
 		getRules().set(rules_key, RunnerTextures(shortname, texture_prefix));
 		//re-fetch
-		return fetchFromRules(shortname, texture_prefix);
+		return fetchRunnerTexture(shortname, texture_prefix);
 	}
 	return tex;
 }
@@ -145,7 +145,7 @@ RunnerTextures@ fetchFromRules(string shortname, string texture_prefix)
 RunnerTextures@ addRunnerTextures(CSprite@ sprite, string shortname, string texture_prefix)
 {
 	//fetch it or set it up
-	RunnerTextures@ tex = fetchFromRules(shortname, texture_prefix);
+	RunnerTextures@ tex = fetchRunnerTexture(shortname, texture_prefix);
 	//load it out
 	tex.Load(sprite);
 	//store needed stuff in blob

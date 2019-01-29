@@ -39,7 +39,7 @@ namespace _precache {
 
 			Vec2f framesize = Vec2f(parseInt(chunks[2]), parseInt(chunks[3]));
 
-			RunnerTextures@ tex = fetchFromRules(chunks[0], chunks[1]);
+			RunnerTextures@ tex = fetchRunnerTexture(chunks[0], chunks[1]);
 			if(tex is null) {
 				warn("failed to precache texture: "+textures_names[i]);
 				continue;
