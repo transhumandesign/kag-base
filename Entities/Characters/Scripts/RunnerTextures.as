@@ -180,14 +180,15 @@ void ensureCorrectRunnerTexture(CSprite@ sprite, string shortname, string textur
 	{
 		//first time set up
 		addRunnerTextures(sprite, shortname, texture_prefix);
+		ensureCorrectRunnerTexture(sprite, shortname, texture_prefix);
+		return;
 	}
-	else
-	{
-		//just set the texture
-		CBlob@ b = sprite.getBlob();
-		b.set("head_offsets", tex.cached_offsets(sprite));
-		setRunnerTexture(sprite);
-	}
+	//just set the texture
+	CBlob@ b = sprite.getBlob();
+	b.set("head_offsets", tex.cached_offsets(sprite));
+	setRunnerTexture(sprite);
+
+	print(""+sprite.getTextureName());
 }
 
 //get the head offset for the sprite
