@@ -18,7 +18,9 @@
 //		you should check ahead of time and just use the existing texture
 //		rather than recolouring every load
 //
-//		totally ignores transparent pixels as an optimisation
+//		totally ignores fully transparent pixels as an optimisation
+//
+//		remaps the rgb of partly transparent pixels while preserving the alpha
 //
 //		note: this is the low-level texture creation function - see below for "easymode"
 //
@@ -34,6 +36,13 @@ bool CreatePaletteSwappedTexture(ImageData@ input, string output_name, ImageData
 	if(Texture::exists(output_name))
 		return false;
 
+	if(!Texture::createFromData(output_name, input))
+		return false;
+
+	//done, no colouring required
+	if(palette_index == 0)
+		return true;
+
 	//read out the relevant palette colours
 	array<SColor> in_colours;
 	array<SColor> out_colours;
@@ -43,13 +52,7 @@ bool CreatePaletteSwappedTexture(ImageData@ input, string output_name, ImageData
 		out_colours.push_back(palette.get(palette_index, i));
 	}
 
-	if(!Texture::createFromData(output_name, input))
-		return false;
-
-	//done, no colouring required
-	if(palette_index == 0)
-		return true;
-
+	//get the existing data
 	ImageData@ edit = Texture::data(output_name);
 
 	if(edit is null)
@@ -58,29 +61,8 @@ bool CreatePaletteSwappedTexture(ImageData@ input, string output_name, ImageData
 		return false;
 	}
 
-	for(int i = 0; i < edit.size(); i++)
-	{
-		SColor c = edit[i];
-
-		//skip transparent pixels
-		if(c.getAlpha() == 0) continue;
-
-		//search the pixels array and recolour
-		for(int p = 0; p < in_colours.length; p++)
-		{
-			SColor inp = in_colours[p];
-			SColor oup = out_colours[p];
-			if(c.getRed() == inp.getRed() &&
-				c.getGreen() == inp.getGreen() &&
-				c.getBlue() == inp.getBlue())
-			{
-				c.setRed(oup.getRed());
-				c.setGreen(oup.getGreen());
-				c.setBlue(oup.getBlue());
-			}
-		}
-		edit[i] = c;
-	}
+	//do the remap
+	edit.remap(in_colours, out_colours, 1, true, true);
 
 	if(!Texture::update(output_name, edit))
 	{
@@ -117,15 +99,11 @@ string PaletteSwapTexture(string in_tex, string palette_filename, int palette_in
 
 	palette_index = Maths::Min(palette_index, palette.width() - 1);
 
-	//digest the palette filename to include alongside
+	//digest the palette filename to include alongside, so that different pallettes
+	//end up with different texture names that aren't too long
 	string filename_digest = "";
 	{
-		int digest = 0;
-		for(int i = 0; i < palette_filename.length; i++)
-		{
-			digest = digest * 31 + palette_filename[i];
-		}
-		digest = (digest ^ (digest >> 13) ^ (digest << 7)) & 0xffff;
+		int digest = palette_filename.getHash() & 0xffff;
 		filename_digest = formatInt(digest, "0h", 4).substr(0,4);
 	}
 
