@@ -187,8 +187,6 @@ void ensureCorrectRunnerTexture(CSprite@ sprite, string shortname, string textur
 	CBlob@ b = sprite.getBlob();
 	b.set("head_offsets", tex.cached_offsets(sprite));
 	setRunnerTexture(sprite);
-
-	print(""+sprite.getTextureName());
 }
 
 //get the head offset for the sprite
