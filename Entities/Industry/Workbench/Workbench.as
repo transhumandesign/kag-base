@@ -21,6 +21,8 @@ void InitWorkshop(CBlob@ this)
 {
 	InitCosts(); //read from cfg
 
+	AddIconToken("$_buildershop_filled_bucket$", "Bucket.png", Vec2f(16, 16), 1);
+
 	this.set_Vec2f("shop offset", Vec2f_zero);
 	this.set_Vec2f("shop menu size", Vec2f(4, 5));
 
@@ -33,16 +35,25 @@ void InitWorkshop(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::bucket_wood);
 	}
 	{
+		ShopItem@ s = addShopItem(this, "Filled Bucket", "$_buildershop_filled_bucket$", "filled_bucket", Descriptions::filled_bucket, false);
+		s.spawnNothing = true;
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::bucket_wood);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::filled_bucket);
+	}
+	{
 		ShopItem@ s = addShopItem(this, "Sponge", "$sponge$", "sponge", Descriptions::sponge, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::sponge_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Trampoline", "$trampoline$", "trampoline", Descriptions::trampoline, false);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::trampoline_wood);
+		ShopItem@ s = addShopItem(this, "Boulder", "$boulder$", "boulder", Descriptions::boulder, false);
+		s.customButton = true;
+		s.buttonwidth = 2;
+		s.buttonheight = 1;
+		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", WARCosts::boulder_stone);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Crate", "$crate$", "crate", Descriptions::crate, false);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::crate_wood);
+		ShopItem@ s = addShopItem(this, "Trampoline", "$trampoline$", "trampoline", Descriptions::trampoline, false);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::trampoline_wood);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Drill", "$drill$", "drill", Descriptions::drill, false);
@@ -51,17 +62,35 @@ void InitWorkshop(CBlob@ this)
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Saw", "$saw$", "saw", Descriptions::saw, false);
+		s.customButton = true;
+		s.buttonwidth = 2;
+		s.buttonheight = 1;
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::saw_wood);
 		AddRequirement(s.requirements, "tech", "saw", "Saw Technology");
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Dinghy", "$dinghy$", "dinghy", Descriptions::dinghy, false);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::dinghy_wood);
-		AddRequirement(s.requirements, "tech", "dinghy", "Dinghy Technology");
+		ShopItem@ s = addShopItem(this, "Crate (wood)", "$crate$", "crate", Descriptions::crate, false);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::crate_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Boulder", "$boulder$", "boulder", Descriptions::boulder, false);
-		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", WARCosts::boulder_stone);
+		ShopItem@ s = addShopItem(this, "Crate (coins)", "$crate$", "crate", Descriptions::crate, false);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::crate);
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Fireplace", "$fireplace$", "fireplace", Descriptions::fireplace, false);
+		s.customButton = true;
+		s.buttonwidth = 2;
+		s.buttonheight = 1;
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::fireplace_wood);
+		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::fireplace_stone);
+	}
+	{
+		ShopItem@ s = addShopItem(this, "Dinghy", "$dinghy$", "dinghy", Descriptions::dinghy, false);
+		s.customButton = true;
+		s.buttonwidth = 2;
+		s.buttonheight = 1;
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::dinghy_wood);
+		AddRequirement(s.requirements, "tech", "dinghy", "Dinghy Technology");
 	}
 }
 
@@ -79,6 +108,22 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		bool producing = params.read_bool();
 		string blobName = params.read_string();
 		u8 s_index = params.read_u8();
+
+		CBlob@ callerBlob = getBlobByNetworkID(callerID);
+		if (callerBlob is null)
+		{
+			return;
+		}
+
+		if (blobName == "filled_bucket")
+		{
+			CBlob@ b = server_CreateBlobNoInit("bucket");
+			b.setPosition(callerBlob.getPosition());
+			b.server_setTeamNum(callerBlob.getTeamNum());
+			b.Tag("_start_filled");
+			b.Init();
+			callerBlob.server_Pickup(b);
+		}
 
 		// check spam
 		//if (blobName != "factory" && isSpammed( blobName, this.getPosition(), 12 ))

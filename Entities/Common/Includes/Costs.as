@@ -24,7 +24,7 @@ namespace CTFCosts
 	//BuilderShop.as
 	s32 lantern_wood, bucket_wood, filled_bucket, sponge, boulder_stone,
 		trampoline_wood, saw_wood, saw_stone, drill_stone, drill,
-		crate_wood, crate;
+		crate_wood, crate, fireplace_wood, fireplace_stone;
 
 	//BoatShop.as
 	s32 dinghy, dinghy_wood, longboat, longboat_wood, warboat;
@@ -124,6 +124,8 @@ void InitCosts()
 	CTFCosts::drill =                       ReadCost(cfg, "cost_drill"              , 25);
 	CTFCosts::crate_wood =                  ReadCost(cfg, "cost_crate_wood"         , 150);
 	CTFCosts::crate =                       ReadCost(cfg, "cost_crate"              , 20);
+	CTFCosts::fireplace_wood =              ReadCost(cfg, "cost_fireplace_wood"     , 100);
+	CTFCosts::fireplace_stone =             ReadCost(cfg, "cost_fireplace_stone"    , 100);
 
 	//BoatShop.as
 	CTFCosts::dinghy =                      ReadCost(cfg, "cost_dinghy"             , 25);
