@@ -126,6 +126,8 @@ void Extinguish(CBlob@ this)
 	this.getSprite().SetAnimation("nofire");
 	this.getSprite().SetEmitSoundPaused(true);
 	this.getSprite().PlaySound("/ExtinguishFire.ogg");
+
+	this.set_f32("fire time", 0);
 	
 	CSpriteLayer@ fire = this.getSprite().getSpriteLayer("fire_animation_large");
 	if (fire !is null)
@@ -161,4 +163,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		Extinguish(this);
 	}
 	return damage;
+}
+
+bool canBePickedUp(CBlob@ this, CBlob@ blob)
+{
+	return this.getSprite().isAnimation("nofire");
 }
