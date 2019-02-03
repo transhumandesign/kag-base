@@ -397,6 +397,11 @@ s16 woodTilUpgrade(CBlob@ this)
 	return upgradeAmount(this, upgrade_level) - wood_amount;
 }
 
+bool isInRadius(CBlob@ this, CBlob @caller)	
+{	
+	return ((this.getPosition() - caller.getPosition()).Length() < this.getRadius() * 2.0f + caller.getRadius());	
+}
+
 ////////////////////////////////////////////////////
 //Interactions
 ////////////////////////////////////////////////////
