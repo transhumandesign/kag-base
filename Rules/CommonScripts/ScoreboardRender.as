@@ -1,6 +1,5 @@
 #include "ScoreboardCommon.as";
 #include "Accolades.as";
-#include "RunnerHead.as";
 
 CPlayer@ hoveredPlayer;
 Vec2f hoveredPos;
@@ -41,7 +40,7 @@ string[] age_description = {
 //returns the bottom
 float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emblem)
 {
-	if (players.size() <= 0)
+	if (players.size() <= 0 || team is null)
 		return topleft.y;
 	Vec2f orig = topleft; //save for later
 
@@ -149,35 +148,12 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 		string playername = p.getCharacterName();
 		string clantag = p.getClantag();
 
-		//head vars
-		int headIndex = p.getHead();
-		int headsPackIndex = getHeadsPackIndex(headIndex);
-		HeadsPack@ headsPack = getHeadsPackByIndex(headsPackIndex);
-		string textureFile = headsPack.filename;
-		int teamIndex = doTeamColour(headsPackIndex) ? p.getTeamNum() : 0;
-		bool overrideHead = false;
+		//head icon
+		int headIndex = p.get_s32("head index");
+		string headTexture = p.get_string("head texture");
+		int teamIndex = p.get_s32("head team");
 
-		//accolade head check
-		bool defaultHead = (headIndex == 255 || headIndex == NUM_UNIQUEHEADS);
-		if (defaultHead && !p.isBot())
-		{
-			Accolades@ acc = getPlayerAccolades(p.getUsername());
-			if (acc.hasCustomHead())
-			{
-				textureFile = "Sprites/" + acc.customHeadTexture + ".png";
-				headIndex = acc.customHeadIndex;
-				headsPackIndex = 0;
-				overrideHead = true;
-			}
-		}
-
-		//override head index if accolade head
-		headIndex = overrideHead ?
-			(headIndex * NUM_HEADFRAMES) :
-			getHeadFrame(p, headIndex, headsPackIndex == 0);
-
-		//display head icon
-		GUI::DrawIcon(textureFile, headIndex, Vec2f(16, 16), topleft + Vec2f(22, -12), 1.0f, teamIndex);
+		GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + Vec2f(22, -12), 1.0f, teamIndex);
 
 		//have to calc this from ticks
 		s32 ping_in_ms = s32(p.getPing() * 1000.0f / 30.0f);
