@@ -11,7 +11,7 @@ const string shiny_layer = "shiny bit";
 
 void onInit(CSprite@ this)
 {
-	addRunnerTextures(this, "knight", "Knight");
+	LoadSprites(this);
 
 	// add blade
 	this.RemoveSpriteLayer("chop");
@@ -43,7 +43,28 @@ void onInit(CSprite@ this)
 
 void onPlayerInfoChanged(CSprite@ this)
 {
-	ensureCorrectRunnerTexture(this, "knight", "Knight");
+	LoadSprites(this);
+}
+
+void LoadSprites(CSprite@ this)
+{
+	int armour = PLAYER_ARMOUR_STANDARD;
+
+	CPlayer@ p = this.getBlob().getPlayer();
+	if(p !is null)
+	{
+		armour = p.getArmourSet();
+	}
+
+	switch(armour)
+	{
+	case PLAYER_ARMOUR_STANDARD:
+		ensureCorrectRunnerTexture(this, "knight", "Knight");
+		break;
+	case PLAYER_ARMOUR_CAPE:
+		ensureCorrectRunnerTexture(this, "knight_cape", "KnightCape");
+		break;
+	}
 }
 
 void onTick(CSprite@ this)

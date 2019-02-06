@@ -17,9 +17,14 @@ namespace _precache {
 	int team_count = 2;
 	int skin_count = 1;
 	array<string> textures_names = {
+		//base armour
 		"archer, Archer, 32, 32",
 		"knight, Knight, 32, 32",
-		"builder, Builder, 32, 32"
+		"builder, Builder, 32, 32",
+		//capes
+		"archer_cape, ArcherCape, 32, 32",
+		"knight_cape, KnightCape, 32, 32",
+		"builder_cape, BuilderCape, 32, 32"
 	};
 
 	void runner_textures()
@@ -34,7 +39,7 @@ namespace _precache {
 
 			Vec2f framesize = Vec2f(parseInt(chunks[2]), parseInt(chunks[3]));
 
-			RunnerTextures@ tex = fetchFromRules(chunks[0], chunks[1]);
+			RunnerTextures@ tex = fetchRunnerTexture(chunks[0], chunks[1]);
 			if(tex is null) {
 				warn("failed to precache texture: "+textures_names[i]);
 				continue;
@@ -55,6 +60,10 @@ namespace _precache {
 						string texname = getRunnerTeamTexture(tex, g, t, s);
 						//(debug)
 						//print("cached: "+texname);
+						if(isServer())
+						{
+							getNet().server_KeepConnectionsAlive();
+						}
 					}
 				}
 			}

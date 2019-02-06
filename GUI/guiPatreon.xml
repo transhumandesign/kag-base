@@ -1,0 +1,264 @@
+<?xml version="1.0"?>
+<irr_gui>
+
+	<attributes>
+		<enum name="Skin" value="burning" />
+		<color name="3DDarkShadow" value="fa323232" />
+		<color name="3DShadow" value="fa828282" />
+		<color name="3DFace" value="fad2d2d2" />
+		<color name="3DHighlight" value="faffffff" />
+		<color name="3DLight" value="fad2d2d2" />
+		<color name="ActiveBorder" value="faffffff" />
+		<color name="ActiveCaption" value="faffffff" />
+		<color name="AppWorkspace" value="fa646464" />
+		<color name="ButtonText" value="fa0a0a0a" />
+		<color name="GrayText" value="fa828282" />
+		<color name="Highlight" value="fa7e8c79" />
+		<color name="HighlightText" value="faffffff" />
+		<color name="InactiveBorder" value="faa5a5a5" />
+		<color name="InactiveCaption" value="fa1e1e1e" />
+		<color name="ToolTip" value="fa000000" />
+		<color name="ToolTipBackground" value="faffffe1" />
+		<color name="ScrollBar" value="fae6e6e6" />
+		<color name="Window" value="faffffff" />
+		<color name="WindowSymbol" value="fa0a0a0a" />
+		<color name="Icon" value="faffffff" />
+		<color name="IconHighlight" value="fa08246b" />
+		<color name="GrayWindowSymbol" value="00000000" />
+		<color name="Editable" value="00000000" />
+		<color name="GrayEditable" value="00000000" />
+		<color name="FocusedEditable" value="00000000" />
+		<int name="ScrollBarSize" value="23" />
+		<int name="MenuHeight" value="30" />
+		<int name="WindowButtonWidth" value="15" />
+		<int name="CheckBoxWidth" value="18" />
+		<int name="MessageBoxWidth" value="500" />
+		<int name="MessageBoxHeight" value="200" />
+		<int name="ButtonWidth" value="80" />
+		<int name="ButtonHeight" value="30" />
+		<int name="TextDistanceX" value="6" />
+		<int name="TextDistanceY" value="0" />
+		<int name="TitleBarTextX" value="47" />
+		<int name="TitleBarTextY" value="8" />
+		<int name="MessageBoxGapSpace" value="15" />
+		<int name="MessageBoxMinTextWidth" value="0" />
+		<int name="MessageBoxMaxTextWidth" value="500" />
+		<int name="MessageBoxMinTextHeight" value="0" />
+		<int name="MessageBoxMaxTextHeight" value="99999" />
+		<string name="MessageBoxOkay" value="OK" />
+		<string name="MessageBoxCancel" value="Cancel" />
+		<string name="MessageBoxYes" value="Yes" />
+		<string name="MessageBoxNo" value="No" />
+		<string name="WindowButtonClose" value="Close" />
+		<string name="WindowButtonMaximize" value="Maximize" />
+		<string name="WindowButtonMinimize" value="Minimize" />
+		<string name="WindowButtonRestore" value="Restore" />
+		<int name="windowMaximize" value="225" />
+		<int name="windowRestore" value="226" />
+		<int name="windowClose" value="227" />
+		<int name="windowMinimize" value="228" />
+		<int name="windowResize" value="242" />
+		<int name="cursorUp" value="229" />
+		<int name="cursorDown" value="230" />
+		<int name="cursorLeft" value="231" />
+		<int name="cursorRight" value="232" />
+		<int name="menuMore" value="232" />
+		<int name="checkBoxChecked" value="233" />
+		<int name="dropDown" value="234" />
+		<int name="smallCursorUp" value="235" />
+		<int name="smallCursorDown" value="236" />
+		<int name="radioButtonChecked" value="237" />
+		<int name="moreLeft" value="238" />
+		<int name="moreRight" value="239" />
+		<int name="moreUp" value="240" />
+		<int name="moreDown" value="241" />
+		<int name="expand" value="543" />
+		<int name="collapse" value="244" />
+		<int name="file" value="245" />
+		<int name="directory" value="246" />
+	</attributes>
+
+  <!-- WINDOW 1 -->
+
+  <element type="window">
+
+    <attributes>
+      <int name="Id" value="24010" />
+      <string name="Caption" value="" />
+      <rect name="Rect" value="0, 0, 500, 460" />
+      <position name="MinSize" value="1, 1" />
+      <position name="MaxSize" value="0, 0" />
+      <enum name="LeftAlign" value="center" />
+      <enum name="RightAlign" value="center" />
+      <enum name="TopAlign" value="center" />
+      <enum name="BottomAlign" value="center" />
+      <bool name="Visible" value="true" />
+      <bool name="Enabled" value="true" />
+      <bool name="TabStop" value="true" />
+      <bool name="TabGroup" value="true" />
+      <int name="TabOrder" value="2" />
+      <bool name="NoClip" value="false" />
+      <bool name="IsDraggable" value="true" />
+      <bool name="DrawBackground" value="true" />
+      <bool name="DrawTitlebar" value="false" />
+      <bool name="IsCloseVisible" value="false" />
+      <bool name="IsMinVisible" value="false" />
+      <bool name="IsRestoreVisible" value="false" />
+    </attributes>
+
+    <element type="staticText">
+
+        <attributes>
+          <int name="Id" value="-1" />
+          <string name="Caption" value="Support KAG On Patreon!" />
+          <rect name="Rect" value="0, 0, 500, 30" />
+          <position name="MinSize" value="1, 1" />
+          <position name="MaxSize" value="0, 0" />
+          <enum name="LeftAlign" value="upperLeft" />
+          <enum name="RightAlign" value="upperLeft" />
+          <enum name="TopAlign" value="upperLeft" />
+          <enum name="BottomAlign" value="upperLeft" />
+          <bool name="Visible" value="true" />
+          <bool name="Enabled" value="true" />
+          <bool name="TabStop" value="false" />
+          <bool name="TabGroup" value="true" />
+          <int name="TabOrder" value="-1" />
+          <bool name="NoClip" value="false" />
+          <bool name="Border" value="false" />
+          <bool name="OverrideColorEnabled" value="false" />
+          <bool name="OverrideBGColorEnabled" value="false" />
+          <bool name="WordWrap" value="true" />
+          <bool name="Background" value="false" />
+          <color name="OverrideColor" value="ffffffff" />
+          <color name="BGColor" value="ffd2d2d2" />
+          <enum name="HTextAlign" value="center" />
+          <enum name="VTextAlign" value="center" />
+        </attributes>
+
+      </element>
+
+    <element type="image">
+
+      <attributes>
+        <int name="Id" value="24013" />
+        <string name="Caption" value="" />
+        <rect name="Rect" value="20, 30, 480, 260" />
+        <position name="MinSize" value="1, 1" />
+        <position name="MaxSize" value="0, 0" />
+        <enum name="LeftAlign" value="center" />
+        <enum name="RightAlign" value="center" />
+        <enum name="TopAlign" value="center" />
+        <enum name="BottomAlign" value="center" />
+        <bool name="Visible" value="true" />
+        <bool name="Enabled" value="true" />
+        <bool name="TabStop" value="false" />
+        <bool name="TabGroup" value="false" />
+        <int name="TabOrder" value="-1" />
+        <bool name="NoClip" value="false" />
+        <texture name="Texture" value="GUI/patreon.png" />
+        <bool name="UseAlphaChannel" value="true" />
+        <color name="Color" value="ffffffff" />
+        <bool name="ScaleImage" value="false" />
+      </attributes>
+
+    </element>
+
+    <element type="staticText">
+
+        <attributes>
+          <int name="Id" value="-1" />
+          <string name="Caption" value="Support the game with a monthly pledge, and choose from a variety of rewards at different tiers.
+
+Rewards include access to heads packs, priority server access, discord rewards, fancy capes, and even custom heads!
+
+Proceeds go to continued hosting and development of King Arthur's Gold." />
+          <rect name="Rect" value="20, 280, 480, 370" />
+          <position name="MinSize" value="1, 1" />
+          <position name="MaxSize" value="0, 0" />
+          <enum name="LeftAlign" value="upperLeft" />
+          <enum name="RightAlign" value="upperLeft" />
+          <enum name="TopAlign" value="upperLeft" />
+          <enum name="BottomAlign" value="upperLeft" />
+          <bool name="Visible" value="true" />
+          <bool name="Enabled" value="true" />
+          <bool name="TabStop" value="false" />
+          <bool name="TabGroup" value="true" />
+          <int name="TabOrder" value="-1" />
+          <bool name="NoClip" value="false" />
+          <bool name="Border" value="false" />
+          <bool name="OverrideColorEnabled" value="false" />
+          <bool name="OverrideBGColorEnabled" value="false" />
+          <bool name="WordWrap" value="true" />
+          <bool name="Background" value="false" />
+          <color name="OverrideColor" value="ffffffff" />
+          <color name="BGColor" value="ffd2d2d2" />
+          <enum name="HTextAlign" value="center" />
+          <enum name="VTextAlign" value="center" />
+        </attributes>
+
+      </element>
+
+    <element type="button">
+
+      <attributes>
+        <int name="Id" value="24012" />
+        <string name="Caption" value="Find Out More!" />
+        <rect name="Rect" value="20, 410, 220, 440" />
+        <position name="MinSize" value="1, 1" />
+        <position name="MaxSize" value="0, 0" />
+        <enum name="LeftAlign" value="center" />
+        <enum name="RightAlign" value="center" />
+        <enum name="TopAlign" value="center" />
+        <enum name="BottomAlign" value="center" />
+        <bool name="Visible" value="true" />
+        <bool name="Enabled" value="true" />
+        <bool name="TabStop" value="true" />
+        <bool name="TabGroup" value="false" />
+        <int name="TabOrder" value="1" />
+        <bool name="NoClip" value="false" />
+        <bool name="PushButton" value="false" />
+        <texture name="Image" value="" />
+        <rect name="ImageRect" value="0, 0, 0, 0" />
+        <texture name="PressedImage" value="" />
+        <rect name="PressedImageRect" value="0, 0, 0, 0" />
+        <bool name="UseAlphaChannel" value="false" />
+        <bool name="Border" value="true" />
+        <bool name="ScaleImage" value="false" />
+      </attributes>
+
+    </element>
+
+    <element type="button">
+
+      <attributes>
+        <int name="Id" value="24011" />
+        <string name="Caption" value="Close" />
+        <rect name="Rect" value="280, 410, 480, 440" />
+        <position name="MinSize" value="1, 1" />
+        <position name="MaxSize" value="0, 0" />
+        <enum name="LeftAlign" value="center" />
+        <enum name="RightAlign" value="center" />
+        <enum name="TopAlign" value="center" />
+        <enum name="BottomAlign" value="center" />
+        <bool name="Visible" value="true" />
+        <bool name="Enabled" value="true" />
+        <bool name="TabStop" value="true" />
+        <bool name="TabGroup" value="false" />
+        <int name="TabOrder" value="1" />
+        <bool name="NoClip" value="false" />
+        <bool name="PushButton" value="false" />
+        <texture name="Image" value="" />
+        <rect name="ImageRect" value="0, 0, 0, 0" />
+        <texture name="PressedImage" value="" />
+        <rect name="PressedImageRect" value="0, 0, 0, 0" />
+        <bool name="UseAlphaChannel" value="false" />
+        <bool name="Border" value="true" />
+        <bool name="ScaleImage" value="false" />
+      </attributes>
+
+    </element>
+
+   </element>
+
+</irr_gui>
+
