@@ -128,7 +128,7 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 			CMap@ map = this.getMap();
 
 			//adjust grapple
-			u8 retractRate = 0.8f / getTicksASecond();
+			f32 retractRate = 0.8f / getTicksASecond();
 			if (this.isKeyPressed(key_up))
 			{
 				archer.grapple_ratio_target -= retractRate;
@@ -142,7 +142,7 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 
 			//reel in
 			//TODO: sound
-			u8 reelRate = 1.0f / getTicksASecond();
+			f32 reelRate = 1.0f / getTicksASecond();
 			if (archer.grapple_ratio > archer.grapple_ratio_target)
 			{
 				archer.grapple_ratio -= reelRate;
