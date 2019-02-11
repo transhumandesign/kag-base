@@ -23,6 +23,7 @@
 //ScoreboardRender.as
 	"Players: {PLAYERCOUNT}":"Игроков: {PLAYERCOUNT}",
 	"Player"                :"Игрок",
+	"Accolades"             :"Достижения",
 	"Username"              :"Имя",
 	"Ping"                  :"Пинг",
 	"Kills"                 :"Убийства",
@@ -1198,9 +1199,10 @@
 	"Save Map":				"Сохранить карту",
 	"Quit to Main Menu":			"Выйти в главное меню",
 
-// EmotesCommon.as
-	"Show emoticon":"Показать эмоцию",
-	"Point Right":"Показать вправо",
+// EmoteMenu.as and WheelMenuCommon.as
+	"Select emote":"Выберите эмоцию",
+	"(no selection)":"(ничего не выбрано)",
+	"Point right":"Показать вправо",
 	"Laughing":"Смех",
 	"Smiling":"Улыбка",
 	"Skull":"Череп",
@@ -1209,7 +1211,7 @@
 	"Smug":"Самодовольная ухмылка",
 	"Troll":"Затроллил",
 	"What":"Что?",
-	"Point Down":"Показать вниз",
+	"Point down":"Показать вниз",
 	"Derp":"Ой, неудачно получилось", //Неудачно получилось
 	"Mad":"Да, похоже, ты в бешенстве", //Злость
 	"Disappointed":"Разочарование",
@@ -1224,16 +1226,64 @@
 	"Kiss":"Поцелуй",
 	"Flex":"Мамин силач",
 	"Rude Gesture":"Грубый жест",
-	"Thumbs Down":"Палец вниз",
-	"Thumbs Up":"Палец вверх",
+	"Thumbs down":"Палец вниз",
+	"Thumbs up":"Палец вверх",
 	//"OK":"",
-	"Point Up":"Показать вверх",
+	"Point up":"Показать вверх",
 	"Thinking":"Размышление",
-	"Sweat Drop":"Пот",
+	"Sweat drop":"Пот",
 	//"Ladder":"",
 	"Attention":"Внимание",
 	"Question":"Вопрос",
 	"Fire":"Огонь",
 	"Wall":"Стена",
-	"Musical Note":"Музыкальная нота"
+	"Musical note":"Музыкальная нота",
+
+// EmoteBinderMenu.as
+	"Bindings":"Привязки",
+	"Bind Emotes":"Привязка эмоций",
+	"Emote Hotkey Binder":"Привязка клавиш для эмоций",
+	"Select a keybind below, then select the emote you want":"Выберите клавишу ниже, затем выберите эмоцию",
+	"Select key {KEY_NUM}":"Выбрать клавишу {KEY_NUM}",
+
+// Accolades
+	"support tier: {SUPPORT_TIER}":"уровень поддержки: {SUPPORT_TIER}",
+	"New Player - Welcome them to the game!":"Новый игрок - поприветствуйте его!",
+	"This player has 1 to 2 weeks of experience":"У этого игрока 1-2 недели опыта в игре",
+	"This player has 2 to 3 weeks of experience":"У этого игрока 2-3 недели опыта в игре",
+	"This player has 3 to 4 weeks of experience":"У этого игрока 3-4 недели опыта в игре",
+	"This player has 1 to 2 months of experience":"У этого игрока 1-2 месяца опыта в игре",
+	"This player has 2 to 3 months of experience":"У этого игрока 2-3 месяца опыта в игре",
+	"This player has 3 to 6 months of experience":"У этого игрока 3-6 месяцев опыта в игре",
+	"This player has 6 to 9 months of experience":"У этого игрока 6-9 месяцев опыта в игре",
+	"This player has 9 to 12 months of experience":"У этого игрока 9-12 месяцев опыта в игре",
+	"Cake Day - it's this player's KAG Birthday!":"День тортов - у этого игрока сегодня день рождения!",
+	"This player has 1 year of experience":"У этого игрока 1 год опыта в игре",
+	"This player has 2 years of experience":"У этого игрока 2 года опыта в игре",
+	"This player has 3 years of experience":"У этого игрока 3 года опыта в игре",
+	"This player has 4 years of experience":"У этого игрока 4 года опыта в игре",
+	"This player has 5 years of experience":"У этого игрока 5 лет опыта в игре",
+	"This player has 6 years of experience":"У этого игрока 6 лет опыта в игре",
+	"This player has 7 years of experience":"У этого игрока 7 лет опыта в игре",
+	"This player has 8 years of experience":"У этого игрока 8 лет опыта в игре",
+	"This player has 9 years of experience":"У этого игрока 9 лет опыта в игре",
+	"This player has over a decade of experience":"У этого игрока уже больше 10-ти лет опыта в игре",
+	//tourney
+	"Gold Medal - for Placing 1st in a Suitable Community Tournament":
+	"Золотая медаль - за первое место в турнире",
+	"Silver Medal - for Placing 2nd in a Suitable Community Tournament":
+	"Серебряная медаль - за второе место в турнире",
+	"Bronze Medal - for Placing 3rd in a Suitable Community Tournament":
+	"Бронзовая медаль - за третье место в турнире",
+	"Participation Ribbon - for Participating in a Suitable Community Tournament":
+	"Лента за участие - за участие в турнире",
+	//misc
+	"Community Contributor - for significantly contributing to the KAG community in some way":
+	"Вклад в сообщество - за значительный вклад каким-либо образом в сообщество KAG",
+	"Github Contributor - for significantly contributing to an issue or pull request on the KAG GitHub":
+	"Вклад в разработку на Github - за значительный вклад в репозиторий KAG на GitHub",
+	"Map Contributor - for contributing to the official map cycle":
+	"Разработчик карт - за вклад в официальный цикл карт",
+	"Moderation Contributor - for contributing to moderating the game, forums, or discord":
+	"Вклад в модерацию - за вклад в модерирование игры, форумов или сервера Discord"
 }
