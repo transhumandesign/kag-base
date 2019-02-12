@@ -181,15 +181,6 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	blob.set_s32("head team", team);
 	blob.set_s32("head skin", skin);
 
-	//properties for scoreboard head icon
-	if (player !is null)
-	{
-		player.set_s32("head index", headFrame);
-		player.set_string("head texture", texture_file);
-		player.set_s32("head team", team);
-		player.set_s32("head skin", skin);
-	}
-
 	return head;
 }
 

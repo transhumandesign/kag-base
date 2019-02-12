@@ -149,11 +149,24 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 		string clantag = p.getClantag();
 
 		//head icon
-		int headIndex = p.get_s32("head index");
-		string headTexture = p.get_string("head texture");
-		int teamIndex = p.get_s32("head team");
 
-		GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + Vec2f(22, -12), 1.0f, teamIndex);
+		//TODO: consider maybe the skull emoji for dead players?
+		int headIndex = 0;
+		string headTexture = "";
+		int teamIndex = p.getTeamNum();
+
+		CBlob@ b = p.getBlob();
+		if (b !is null)
+		{
+			headIndex = b.get_s32("head index");
+			headTexture = b.get_string("head texture");
+			teamIndex = b.get_s32("head team");
+		}
+
+		if (headTexture != "")
+		{
+			GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + Vec2f(22, -12), 1.0f, teamIndex);
+		}
 
 		//have to calc this from ticks
 		s32 ping_in_ms = s32(p.getPing() * 1000.0f / 30.0f);
