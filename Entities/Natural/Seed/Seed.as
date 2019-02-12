@@ -1,29 +1,31 @@
-// Flowers logic
+// Seed logic
 
 #include "../Scripts/canGrow.as";
 
-//sprites to load by index
+//sprites to load by index in MakeSeed.as
 const string[] seed_sprites =
 {
-	"Entities/Natural/Seed/Seed.png",       //normal seed
-	"Entities/Natural/Seed/Seed.png",       //grain seed
-	"Entities/Natural/Trees/Trees.png",     //pine
-	"Entities/Natural/Trees/Trees.png",     //bushy
-	"Entities/Natural/Farming/Grain.png",   //grains
-	"Entities/Natural/Seed/Seed.png",  //bush
-	"Entities/Natural/Seed/Seed.png",  //flowers
+	"Entities/Natural/Seed/Seed.png",       	//normal seed
+	"Entities/Natural/Seed/Seed.png",       	//grain seed
+	"Entities/Natural/Trees/Trees.png",     	//pine
+	"Entities/Natural/Trees/Trees.png",     	//bushy
+	"Entities/Natural/Trees/AppleSeed.png",	//apple tree
+	"Entities/Natural/Farming/Grain.png",   	//grain (food)
+	"Entities/Natural/Seed/Seed.png",  			//bush
+	"Entities/Natural/Seed/Seed.png" 			//flowers
 };
 
 // names of seeds
 const string[] seed_names =
 {
-	"Seed",           //normal seed
-	"Grain Seed",     //grain seed
-	"Pine Seed",        //pine
-	"Oak Seed",     //bushy
-	"Grain",       //grains
-	"Bush seed",    //bush
-	"Flower seed"   //flowers
+	"Seed",           		//normal seed
+	"Grain Seed",     		//grain seed
+	"Pine Seed",       	 	//pine
+	"Oak Seed",     		//bushy
+	"Apple Tree Seed",		//apple tree
+	"Grain",       			//grain (food)
+	"Bush Seed",    		//bush
+	"Flower Seed"   		//flowers
 };
 
 const u32 OPT_TICK = 31;
@@ -130,7 +132,7 @@ void onTick(CBlob@ this)
 		{
 			float rad = f32(this.get_u8("created_blob_radius")) - this.getRadius();
 			CBlob@ b = server_CreateBlob(this.get_string("seed_grow_blobname"), -1, this.getPosition() + Vec2f(0, rad));
-			/*if(b !is null) //not needed, pushes out of the ground unecessarily
+			/*if(b !is null) //not needed, pushes out of the ground unnecessarily
 			{
 			    b.getShape().PutOnGround();
 			}*/
