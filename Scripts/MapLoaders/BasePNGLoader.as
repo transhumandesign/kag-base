@@ -418,8 +418,9 @@ class PNGLoader
 		{
 			// load trees only at the ground
 			if(!map.isTileSolid(map.getTile(offset + map.tilemapwidth))) return;
-
-			CBlob@ tree = server_CreateBlobNoInit( map_random.NextRanged(35) < 21 ? "tree_pine" : "tree_bushy" );
+			
+			// choose what type of tree we're gonna spawn
+			CBlob@ tree = server_CreateBlobNoInit( map_random.NextRanged(35) < 21 ? "tree_pine" : (map_random.NextRanged(45) < 21 ? "tree_bushy" : "tree_apple") );
 			if(tree !is null)
 			{
 				tree.Tag("startbig");
@@ -957,7 +958,7 @@ void getInfoFromBlob(CBlob@ this, SColor &out color, Vec2f &out offset)
 	{
 		color = map_colors::grain;
 	}
-	else if(name == "tree_pine" || name == "tree_bushy")
+	else if(name == "tree_pine" || name == "tree_bushy" || name == "tree_apple")
 	{
 		color = map_colors::tree;
 	}
