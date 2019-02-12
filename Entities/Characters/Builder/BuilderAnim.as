@@ -33,6 +33,8 @@ void LoadSprites(CSprite@ this)
 		armour = p.getArmourSet();
 	}
 
+	print("builder armour: "+armour);
+
 	switch(armour)
 	{
 	case PLAYER_ARMOUR_STANDARD:

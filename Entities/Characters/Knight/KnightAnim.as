@@ -56,6 +56,8 @@ void LoadSprites(CSprite@ this)
 		armour = p.getArmourSet();
 	}
 
+	print("knight armour: "+armour);
+
 	switch(armour)
 	{
 	case PLAYER_ARMOUR_STANDARD:
