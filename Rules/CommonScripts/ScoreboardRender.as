@@ -40,12 +40,12 @@ string[] age_description = {
 //returns the bottom
 float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emblem)
 {
-	if (players.size() <= 0)
+	if (players.size() <= 0 || team is null)
 		return topleft.y;
 	Vec2f orig = topleft; //save for later
 
 	f32 lineheight = 16;
-	f32 padheight = 2;
+	f32 padheight = 6;
 	f32 stepheight = lineheight + padheight;
 	Vec2f bottomright(getScreenWidth() - 100, topleft.y + (players.length + 5.5) * stepheight);
 	GUI::DrawPane(topleft, bottomright, team.color);
@@ -148,11 +148,18 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 		string playername = p.getCharacterName();
 		string clantag = p.getClantag();
 
+		//head icon
+		int headIndex = p.get_s32("head index");
+		string headTexture = p.get_string("head texture");
+		int teamIndex = p.get_s32("head team");
+
+		GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + Vec2f(22, -12), 1.0f, teamIndex);
+
 		//have to calc this from ticks
 		s32 ping_in_ms = s32(p.getPing() * 1000.0f / 30.0f);
 
 		//how much room to leave for names and clantags
-		float name_buffer = 24.0f;
+		float name_buffer = 56.0f;
 		Vec2f clantag_actualsize(0, 0);
 
 		//render the player + stats
@@ -374,7 +381,7 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 		GUI::DrawText("" + ping_in_ms, Vec2f(bottomright.x - 260, topleft.y), SColor(0xffffffff));
 		GUI::DrawText("" + p.getKills(), Vec2f(bottomright.x - 190, topleft.y), SColor(0xffffffff));
 		GUI::DrawText("" + p.getDeaths(), Vec2f(bottomright.x - 120, topleft.y), SColor(0xffffffff));
-		GUI::DrawText(("" + getKDR(p)).substr(0, 4), Vec2f(bottomright.x - 50, topleft.y), SColor(0xffffffff));
+		GUI::DrawText("" + formatFloat(getKDR(p), "", 0, 2), Vec2f(bottomright.x - 50, topleft.y), SColor(0xffffffff));
 	}
 
 	return topleft.y;
