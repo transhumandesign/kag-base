@@ -4,8 +4,6 @@
 const int PATRON_EXTRA_SLOTS = 2;
 int onProcessFullJoin(CRules@ this, APIPlayer@ user)
 {
-	print("user full join debug: support tier "+user.supportTier);
-
 	//allow royal guard and up supporters in
 	if(
 		//user is good supporter
