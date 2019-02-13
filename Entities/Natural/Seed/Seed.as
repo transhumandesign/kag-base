@@ -1,6 +1,6 @@
 // Flowers logic
 
-#include "../Scripts/canGrow.as";
+#include "canGrow.as";
 
 //sprites to load by index
 const string[] seed_sprites =
