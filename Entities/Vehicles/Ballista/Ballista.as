@@ -261,6 +261,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		CBlob@ blob = getBlobByNetworkID(params.read_netid());
 		const u8 charge = params.read_u8();
+		
+		// check for valid bolt
+		if (blob.getName() != "ballista_bolt"){
+			// Output warning
+			warn("Attempted to launch invalid object!");
+			return;
+		}
+		
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v))
 		{
