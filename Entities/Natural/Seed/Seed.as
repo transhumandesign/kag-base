@@ -9,10 +9,10 @@ const string[] seed_sprites =
 	"Entities/Natural/Seed/Seed.png",       	//grain seed
 	"Entities/Natural/Trees/Trees.png",     	//pine
 	"Entities/Natural/Trees/Trees.png",     	//bushy
-	"Entities/Natural/Trees/AppleSeed.png",	//apple tree
+	"Entities/Natural/Trees/AppleSeed.png",		//apple tree
 	"Entities/Natural/Farming/Grain.png",   	//grain (food)
-	"Entities/Natural/Seed/Seed.png",  			//bush
-	"Entities/Natural/Seed/Seed.png" 			//flowers
+	"Entities/Natural/Seed/Seed.png",  		//bush
+	"Entities/Natural/Seed/Seed.png" 		//flowers
 };
 
 // names of seeds
@@ -22,7 +22,7 @@ const string[] seed_names =
 	"Grain Seed",     		//grain seed
 	"Pine Seed",       	 	//pine
 	"Oak Seed",     		//bushy
-	"Apple Tree Seed",		//apple tree
+	"Apple Seed",			//apple tree
 	"Grain",       			//grain (food)
 	"Bush Seed",    		//bush
 	"Flower Seed"   		//flowers
