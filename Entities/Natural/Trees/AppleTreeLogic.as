@@ -2,6 +2,8 @@
 
 #include "TreeSync.as"
 
+const uint8 apple_count = 2;
+
 void onInit(CBlob@ this)
 {
 	InitVars(this);
@@ -27,42 +29,46 @@ void onInit(CBlob@ this)
 // Grow the apples
 void GrowApples(CBlob@ this)
 {
-	if (getNet().isServer())
-	{
-		// Apple 1 and Apple 2
-		InitApples(this);
-	}
+    if (getNet().isServer())
+    {
+        for (uint8 i = 0; i < apple_count; i++)
+        {
+	    // Apple 1 and Apple 2
+            InitApples(this, i);
+        }
+    }
 }
 
 // Apple 1 and Apple 2
-void InitApples(CBlob@ this)
+void InitApples(CBlob@ this, uint8 apple_id)
 {
-	for (int i = 0; i < 2; i++)
-	{	
-		// pos
-		Vec2f offset = this.getPosition();
-		int v = this.isFacingLeft() ? 0 : 1;
-		switch (i)
-		{
-			case 0: offset = (offset + Vec2f(8 + v, -35)); break;
-			case 1: offset = (offset + Vec2f(-8 + v, -33)); break;
-		}
-		
-		// create
-		CBlob@ apple = server_CreateBlob('apple', -1, offset);
-		if (apple !is null)
-		{
-			this.set_u16("apple" + i, apple.getNetworkID());
+    // pos
+    Vec2f offset = this.getPosition();
+    int v = this.isFacingLeft() ? 0 : 1;
 
-			CShape@ shape = apple.getShape();
+    if (apple_id == 0) // Apple 1
+    {
+        offset = (offset + Vec2f(8 + v, -35));
+    }
+    else if (apple_id == 1) // Apple 2
+    {
+        offset = (offset + Vec2f(-8 + v, -33));
+    }
 
-			// the apple is on the tree, so make it hang/static
-			if (shape !is null)
-			{
-				shape.SetStatic(true);
-			}
-		}
-	}
+    // create
+    CBlob@ apple = server_CreateBlob('apple', -1, offset);
+    if (apple !is null)
+    {
+        this.set_u16("apple" + apple_id, apple.getNetworkID());
+
+        CShape@ shape = apple.getShape();
+
+        // the apple is on the tree, so make it hang/static
+        if (shape !is null)
+        {
+            shape.SetStatic(true);
+        }
+    }
 }
 
 // Sprites
