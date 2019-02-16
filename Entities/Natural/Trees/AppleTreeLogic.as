@@ -29,61 +29,38 @@ void GrowApples(CBlob@ this)
 {
 	if (getNet().isServer())
 	{
-		// Apple 1
-		InitFirstApple(this);
-	
-		// Apple 2
-		InitSecondApple(this);
+		// Apple 1 and Apple 2
+		InitApples(this);
 	}
 }
 
-// Workaround to odd switch requirements ("cannot set a variable in a switch statement") logic in void GrowApples
-// Apple 1
-void InitFirstApple(CBlob@ this)
+// Apple 1 and Apple 2
+void InitApples(CBlob@ this)
 {
-	// pos
-	Vec2f offset = this.getPosition();
-	int v = this.isFacingLeft() ? 0 : 1;
-	offset = (offset + Vec2f(8 + v, -35));
-	
-	// create
-	CBlob@ apple1 = server_CreateBlob('apple', -1, offset);
-	if (apple1 !is null)
-	{
-		// make it referable
-		this.set_u16("apple1", apple1.getNetworkID());
-
-		CShape@ shape1 = apple1.getShape();
-		
-		// the apple is on the tree, so make it hang/static
-		if (shape1 !is null)
+	for (int i = 0; i < 2; i++)
+	{	
+		// pos
+		Vec2f offset = this.getPosition();
+		int v = this.isFacingLeft() ? 0 : 1;
+		switch (i)
 		{
-			shape1.SetStatic(true);
+			case 0: offset = (offset + Vec2f(8 + v, -35)); break;
+			case 1: offset = (offset + Vec2f(-8 + v, -33)); break;
 		}
-	}
-}
-
-// Apple 2
-void InitSecondApple(CBlob@ this)
-{
-	// pos
-	Vec2f offset = this.getPosition();
-	int v = this.isFacingLeft() ? 0 : 1;
-	offset = (offset + Vec2f(-8 + v, -33));
-	
-	// create
-	CBlob@ apple2 = server_CreateBlob('apple', -1, offset);
-	if (apple2 !is null)
-	{
-		// make it referable
-		this.set_u16("apple2", apple2.getNetworkID());
-
-		CShape@ shape2 = apple2.getShape();
 		
-		// the apple is on the tree, so make it hang/static
-		if (shape2 !is null)
+		// create
+		CBlob@ apple = server_CreateBlob('apple', -1, offset);
+		if (apple !is null)
 		{
-			shape2.SetStatic(true);
+			this.set_u16("apple" + i, apple.getNetworkID());
+
+			CShape@ shape = apple.getShape();
+
+			// the apple is on the tree, so make it hang/static
+			if (shape !is null)
+			{
+				shape.SetStatic(true);
+			}
 		}
 	}
 }
@@ -348,31 +325,22 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 void onDie(CBlob@ this)
 {
-	// Drop apples on death if they still exist
-	// Apple 1
-	CBlob@ apple1 = getBlobByNetworkID(this.get_u16("apple1"));
-    if (apple1 !is null)
-    {            
-        CShape@ shape1 = apple1.getShape();
-        if (shape1 !is null)
-        {
-            shape1.SetStatic(false);
-        }
-    }
-	// Apple 2
-	CBlob@ apple2 = getBlobByNetworkID(this.get_u16("apple2"));
-    if (apple2 !is null)
-    {            
-        CShape@ shape2 = apple2.getShape();
-        if (shape2 !is null)
-        {
-            shape2.SetStatic(false);
-        }
-    }
+    // Drop apples on death if they still exist
+	for (int i = 0; i < 2; i++)
+	{	
+		CBlob@ apple = getBlobByNetworkID(this.get_u16("apple" + i)); // Apple 1 and Apple 2
+		if (apple !is null)
+		{            
+			CShape@ shape = apple.getShape();
+			if (shape !is null)
+			{
+				shape.SetStatic(false);
+			}
+		}
+	}
 }
 
-// Just in case ;)
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
-	return false;
+	return false; // Just in case ;)
 }
