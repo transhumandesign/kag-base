@@ -20,7 +20,7 @@ void Heal(CBlob@ this, CBlob@ food)
 			heal_amount = 4; // full heart
 		} else if (food.getName() == "apple")
 		{
-			heal_amount = 4; // quarter heat
+			heal_amount = 4; // full heart
 		}
 
 		params.write_u8(heal_amount);
