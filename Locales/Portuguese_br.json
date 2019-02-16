@@ -326,10 +326,10 @@
 	"You are now allowed to votekick\nplayers on this server\n":"Você não pode expulsar\njogadores desse servidor\n",
 	//vote map menu
 	"Next Map":"Próximo Mapa",
-	"Map Ruined":"Mapa Arruiando",
+	"Map Ruined":"Mapa Arruinado",
 	"Stalemate":"Empasse",
-	"Game Bugged":"Jogo bugado",
-	"Skip to next map?":"Pular para próximo map?",
+	"Game Bugged":"Jogo travado",
+	"Skip to next map?":"Pular para próximo mapa?",
 	"Voting for next map\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"Votar para próximo mapa\nprescisa de {NEXTMAP_MINS} minutos de \nespera do último voto\npara previnir abuso.\n",
 	"Vote to change the map\nto the next in cycle.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select a reason from the list.\n- everyone votes.\n":"Votar para mudar mapa\npara o próximo da lista.\n\nReporte qualquer abuso dessa função.\n\nPara usar:\n\nselecione um motivo.\nTodo mundo vota.\n",
 	"Vote Next Map":"Votar Próximo Mapa",
