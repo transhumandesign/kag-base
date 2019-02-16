@@ -29,17 +29,11 @@ void GrowApples(CBlob@ this)
 {
 	if (getNet().isServer())
 	{
-		for (int i = 0; i < 2; i++)
-		{	
-			switch (i)
-			{
-				// Apple 1
-				case 0: InitFirstApple(this); break;
+		// Apple 1
+		InitFirstApple(this);
 	
-				// Apple 2
-				case 1: InitSecondApple(this); break;
-			}
-		}
+		// Apple 2
+		InitSecondApple(this);
 	}
 }
 
