@@ -13,6 +13,8 @@ const string buzz_prop = "drill timer";
 const string heat_prop = "drill heat";
 const u8 heat_max = 150;
 
+const string last_drill_prop = "drill last active";
+
 const u8 heat_add = 6;
 const u8 heat_add_constructed = 2;
 const u8 heat_add_blob = heat_add * 2;
@@ -121,6 +123,8 @@ void onInit(CBlob@ this)
 	this.set_s8("place45 distance", 1);
 	this.Tag("place45 perp");
 	this.set_u8(heat_prop, 0);
+
+	this.set_u32(last_drill_prop, 0);
 }
 
 void onTick(CBlob@ this)
@@ -205,9 +209,16 @@ void onTick(CBlob@ this)
 			}
 
 			const u8 delay_amount = inwater ? 20 : 8;
-			bool skip = ((gametime + this.getNetworkID()) % delay_amount) != 0;
+			bool skip = (gametime < this.get_u32(last_drill_prop) + delay_amount);
 
-			if (skip) return;
+			if (skip)
+			{
+				return;
+			}
+			else
+			{
+				this.set_u32(last_drill_prop, gametime); // update last drill time
+			}
 
 			// delay drill
 			{
