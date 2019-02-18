@@ -2,6 +2,8 @@
 
 #include "ClassSelectMenu.as"
 #include "StandardRespawnCommand.as"
+#include "StandardControlsCommon.as"
+#include "RespawnCommandCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -19,6 +21,23 @@ void onInit(CBlob@ this)
 	this.Tag("change class drop inventory");
 
 	this.getSprite().SetZ(-50.0f);   // push to background
+}
+
+void onTick(CBlob@ this)
+{
+	//quick switch class
+	CBlob@ blob = getLocalPlayerBlob();
+	if (blob !is null && blob.isMyPlayer())
+	{
+		if (
+			isInRadius(this, blob) && //blob close enough to ruins
+			blob.isKeyJustReleased(key_use) && //just released e
+			isTap(blob, 7) && //tapped e
+			blob.getTickSinceCreated() > 1 //prevents infinite loop of swapping class
+		) {
+			CycleClass(this, blob);
+		}
+	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
@@ -43,8 +62,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (canChangeClass(this, caller))
 	{
-		Vec2f pos = this.getPosition();
-		if ((pos - caller.getPosition()).Length() < this.getRadius())
+		if (isInRadius(this, caller))
 		{
 			BuildRespawnMenuFor(this, caller);
 		}
@@ -57,4 +75,9 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 
 	// warning: if we don't have this button just spawn menu here we run into that infinite menus game freeze bug
+}
+
+bool isInRadius(CBlob@ this, CBlob @caller)
+{
+	return (this.getPosition() - caller.getPosition()).Length() < this.getRadius();
 }
