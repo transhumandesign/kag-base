@@ -795,10 +795,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("shoot arrow"))
 	{
-		Vec2f arrowPos = params.read_Vec2f();
-		Vec2f arrowVel = params.read_Vec2f();
-		u8 arrowType = params.read_u8();
-		bool legolas = params.read_bool();
+		Vec2f arrowPos;
+		if (!params.saferead_Vec2f(arrowPos)) return;
+		Vec2f arrowVel;
+		if (!params.saferead_Vec2f(arrowVel)) return;
+		u8 arrowType;
+		if (!params.saferead_u8(arrowType)) return;
+		bool legolas;
+		if (!params.saferead_bool(legolas)) return;
 
 		ArcherInfo@ archer;
 		if (!this.get("archerInfo", @archer))
@@ -1090,4 +1094,3 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		}
 	}
 }
-
