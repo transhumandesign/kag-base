@@ -18,9 +18,21 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
 
+	string cachefilename = "../Cache/" + emote_config_file;
 	ConfigFile cfg = ConfigFile();
-	if (cfg.loadFile("../Cache/" + emote_config_file) ||
-		cfg.loadFile(emote_config_file))
+
+	//attempt to load from cache first
+	bool loaded = false;
+	if(CFileMatcher(cachefilename).getFirst() == cachefilename && cfg.loadFile(cachefilename))
+	{
+		loaded = true;
+	}
+	else if (cfg.loadFile(emote_config_file))
+	{
+		loaded = true;
+	}
+
+	if (loaded)
 	{
 		emote_1 = read_emote(cfg, "emote_1", Emotes::attn);
 		emote_2 = read_emote(cfg, "emote_2", Emotes::smile);
