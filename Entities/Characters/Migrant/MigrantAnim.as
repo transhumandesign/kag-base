@@ -3,7 +3,6 @@
 
 void onInit(CSprite@ this)
 {
-	RunnerTextures@ runner_tex = addRunnerTextures(this, "migrant", "Migrant");
 	LoadSprites(this);
 }
 

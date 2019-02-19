@@ -274,6 +274,22 @@ shared bool createAndLoadPixelOffsets(string texname, string from_file, Vec2f fr
 {
 	if(!Texture::systemEnabled()) return false;
 	if(!Texture::createFromFile(texname, from_file)) return false;
-	into.EnsureLoaded(Texture::data(texname), framesize, col);
+
+	//get data
+	ImageData@ data = Texture::data(texname);
+	if(data is null) return false;
+	//remap
+	array<SColor> clean;
+	for(int i = 0; i < col.length; i++) {
+		SColor c = col[i];
+		c.setAlpha(1);
+		clean.push_back(c);
+	}
+	data.remap(col, clean, 1, true, false);
+	if(!Texture::update(texname, data)) {
+		warn("failed to update texture "+texname+" with clean pixel offsets");
+	}
+	//load
+	into.EnsureLoaded(data, framesize, col);
 	return true;
 }

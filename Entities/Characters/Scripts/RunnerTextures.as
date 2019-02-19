@@ -23,6 +23,8 @@ shared class RunnerTextures
 	PixelOffsetsCache male_offsets;
 	PixelOffsetsCache female_offsets;
 
+	string shortname;
+
 	string male_shortname;
 	string female_shortname;
 
@@ -31,9 +33,11 @@ shared class RunnerTextures
 
 	bool loaded;
 
-	RunnerTextures(string shortname, string texture_prefix)
+	RunnerTextures(string _shortname, string texture_prefix)
 	{
 		loaded = false;
+
+		shortname = _shortname;
 
 		male_shortname = shortname+"_male";
 		female_shortname = shortname+"_female";
@@ -125,7 +129,7 @@ void setRunnerTexture(CSprite@ sprite)
 //call this in oninit from the script housing the object
 //it'll change the texture of the sprite to the one for the right gender as well
 
-RunnerTextures@ fetchFromRules(string shortname, string texture_prefix)
+RunnerTextures@ fetchRunnerTexture(string shortname, string texture_prefix)
 {
 	RunnerTextures@ tex = null;
 	string rules_key = "runner_tex_"+shortname+"_"+texture_prefix;
@@ -133,7 +137,7 @@ RunnerTextures@ fetchFromRules(string shortname, string texture_prefix)
 	{
 		getRules().set(rules_key, RunnerTextures(shortname, texture_prefix));
 		//re-fetch
-		return fetchFromRules(shortname, texture_prefix);
+		return fetchRunnerTexture(shortname, texture_prefix);
 	}
 	return tex;
 }
@@ -141,7 +145,7 @@ RunnerTextures@ fetchFromRules(string shortname, string texture_prefix)
 RunnerTextures@ addRunnerTextures(CSprite@ sprite, string shortname, string texture_prefix)
 {
 	//fetch it or set it up
-	RunnerTextures@ tex = fetchFromRules(shortname, texture_prefix);
+	RunnerTextures@ tex = fetchRunnerTexture(shortname, texture_prefix);
 	//load it out
 	tex.Load(sprite);
 	//store needed stuff in blob
@@ -171,18 +175,18 @@ RunnerTextures@ getRunnerTextures(CSprite@ sprite)
 //ensure the right texture is used
 void ensureCorrectRunnerTexture(CSprite@ sprite, string shortname, string texture_prefix)
 {
-	if(getRunnerTextures(sprite) is null)
+	RunnerTextures@ tex = getRunnerTextures(sprite);
+	if(tex is null || tex.shortname != shortname)
 	{
 		//first time set up
 		addRunnerTextures(sprite, shortname, texture_prefix);
+		ensureCorrectRunnerTexture(sprite, shortname, texture_prefix);
+		return;
 	}
-	else
-	{
-		//just set the texture
-		CBlob@ b = sprite.getBlob();
-		b.set("head_offsets", getRunnerTextures(sprite).cached_offsets(sprite));
-		setRunnerTexture(sprite);
-	}
+	//just set the texture
+	CBlob@ b = sprite.getBlob();
+	b.set("head_offsets", tex.cached_offsets(sprite));
+	setRunnerTexture(sprite);
 }
 
 //get the head offset for the sprite
