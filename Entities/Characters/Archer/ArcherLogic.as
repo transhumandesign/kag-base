@@ -804,6 +804,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		bool legolas;
 		if (!params.saferead_bool(legolas)) return;
 
+		if (arrowType >= arrowTypeNames.length) return;
+
 		ArcherInfo@ archer;
 		if (!this.get("archerInfo", @archer))
 		{
