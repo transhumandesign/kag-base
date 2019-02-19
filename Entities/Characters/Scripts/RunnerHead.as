@@ -138,7 +138,13 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 			Accolades@ acc = getPlayerAccolades(player.getUsername());
 			if (acc.hasCustomHead())
 			{
-				texture_file = "Sprites/" + acc.customHeadTexture + ".png";
+				string texture_spec = acc.customHeadTexture;
+				//correct the spec for special-case patreon heads
+				if(texture_spec == "PATREON") {
+					texture_spec = "PatreonHeads";
+				}
+
+				texture_file = "Sprites/" + texture_spec + ".png";
 				headIndex = acc.customHeadIndex;
 				headsPackIndex = 0;
 				override_frame = true;

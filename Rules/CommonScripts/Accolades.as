@@ -111,16 +111,17 @@ shared class Accolades
 	bool hasCustomHead()
 	{
 		bool hashead = false;
+		if (customHeadTexture == "PATREON")
+		{
+			CPlayer@ p = getPlayerByUsername(username);
+			if(p !is null)
+			{
+				hashead = (p.getSupportTier() >= SUPPORT_TIER_ROUNDTABLE);
+			}
+		}
+
 		if (customHeadAwarded > 0)
 		{
-			if (customHeadTexture == "PATREON")
-			{
-				CPlayer@ p = getPlayerByUsername(username);
-				if(p !is null)
-				{
-					hashead = (p.getSupportTier() >= SUPPORT_TIER_ROUNDTABLE);
-				}
-			}
 			//not current patron?
 			if(!hashead)
 			{
