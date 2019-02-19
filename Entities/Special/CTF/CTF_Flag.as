@@ -211,13 +211,17 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("capture"))
 	{
-		Sound::Play("/flag_score.ogg");
+		u16 id;
+		if (!params.saferead_u16(id)) return;
 
-		string name;
-		if (!params.saferead_string(name)) return;
+		CBlob@ blob = getBlobByNetworkID(id);
+		if (blob !is null && blob.getPlayer() !is null)
+		{
+			needsmessage = true;
+			message = "captured by " + blob.getPlayer().getUsername() + "!";
 
-		needsmessage = true;
-		message = "captured by " + name + "!";
+			Sound::Play("/flag_score.ogg");
+		}
 	}
 	else if (cmd == this.getCommandID("return"))
 	{
