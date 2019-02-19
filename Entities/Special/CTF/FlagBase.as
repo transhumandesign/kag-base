@@ -161,16 +161,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			{
 				blob.server_AttachTo(b, "PICKUP"); //attach to player
 
-				CPlayer@ player = blob.getPlayer();
-
-				string name = "someone";
-				if (player !is null)
-				{
-					name = player.getUsername();
-				}
-
 				CBitStream params;
-				params.write_string(name);
+				params.write_u16(blob.getNetworkID());
 
 				b.SendCommand(b.getCommandID("pickup"), params);
 			}
