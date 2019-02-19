@@ -6,7 +6,9 @@ Vec2f hoveredPos;
 
 int hovered_accolade = -1;
 int hovered_age = -1;
+int hovered_tier = -1;
 bool draw_age = false;
+bool draw_tier = false;
 
 string[] age_description = {
 	"New Player - Welcome them to the game!",
@@ -37,6 +39,14 @@ string[] age_description = {
 	"This player has over a decade of experience"
 };
 
+string[] tier_description = {
+	"", //f2p players, no description
+	"This player is a Squire Supporter",
+	"This player is a Knight Supporter",
+	"This player is a Royal Guard Supporter",
+	"This player is a Round Table Supporter",
+};
+
 //returns the bottom
 float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emblem)
 {
@@ -63,8 +73,8 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 
 	topleft.y += stepheight * 2;
 
-	const int accolades_start = 680;
-	const int age_start = accolades_start + 100;
+	const int accolades_start = 660;
+	const int age_start = accolades_start + 80;
 
 	draw_age = false;
 	for(int i = 0; i < players.length; i++) {
@@ -73,6 +83,15 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 			break;
 		}
 	}
+
+	draw_tier = false;
+	for(int i = 0; i < players.length; i++) {
+		if (players[i].getSupportTier() > 0) {
+			draw_tier = true;
+			break;
+		}
+	}
+	const int tier_start = (draw_age ? age_start : accolades_start) + 80;
 
 	//draw player table header
 	GUI::DrawText(getTranslatedString("Player"), Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
@@ -85,6 +104,10 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 	if(draw_age)
 	{
 		GUI::DrawText(getTranslatedString("Age"), Vec2f(bottomright.x - age_start, topleft.y), SColor(0xffffffff));
+	}
+	if(draw_tier)
+	{
+		GUI::DrawText(getTranslatedString("Tier"), Vec2f(bottomright.x - tier_start, topleft.y), SColor(0xffffffff));
 	}
 
 	topleft.y += stepheight * 0.5f;
@@ -192,9 +215,9 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 			GUI::DrawText(playername, topleft + Vec2f(name_buffer, 0), namecolour);
 		}
 
+		//draw account age indicator
 		if (draw_age)
 		{
-			//draw account age indicator
 			int regtime = p.getRegistrationTime();
 			if (regtime > 0)
 			{
@@ -304,6 +327,25 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 				if (playerHover && mousePos.x > x - extra && mousePos.x < x + 16 + extra)
 				{
 					hovered_age = icon;
+				}
+			}
+
+		}
+
+		//draw support tier
+		if(draw_tier)
+		{
+			int tier = p.getSupportTier();
+			if(tier > 0)
+			{
+				int tier_icon_start = 16;
+				float x = bottomright.x - age_start + 8;
+				float extra = 8;
+				GUI::DrawIcon("AccoladeBadges", tier_icon_start + tier, Vec2f(16, 16), Vec2f(x, topleft.y), 0.5f, p.getTeamNum());
+
+				if (playerHover && mousePos.x > x - extra && mousePos.x < x + 16 + extra)
+				{
+					hovered_tier = tier;
 				}
 			}
 
@@ -480,6 +522,7 @@ void onRenderScoreboard(CRules@ this)
 	//(reset)
 	hovered_accolade = -1;
 	hovered_age = -1;
+	hovered_tier = -1;
 
 	//draw the scoreboards
 
@@ -537,17 +580,19 @@ void onRenderScoreboard(CRules@ this)
 
 	drawPlayerCard(hoveredPlayer, hoveredPos);
 
-	drawHoverExplanation(hovered_accolade, hovered_age, Vec2f(getScreenWidth() * 0.5, topleft.y));
+	drawHoverExplanation(hovered_accolade, hovered_age, hovered_tier, Vec2f(getScreenWidth() * 0.5, topleft.y));
 
 }
 
-void drawHoverExplanation(int hovered_accolade, int hovered_age, Vec2f centre_top)
+void drawHoverExplanation(int hovered_accolade, int hovered_age, int hovered_tier, Vec2f centre_top)
 {
 	if( //(invalid/"unset" hover)
 		(hovered_accolade < 0
 		 || hovered_accolade >= accolade_description.length) &&
 		(hovered_age < 0
-		 || hovered_age >= age_description.length)
+		 || hovered_age >= age_description.length) &&
+		(hovered_tier < 0
+		 || hovered_tier >= tier_description.length)
 	) {
 		return;
 	}
@@ -555,14 +600,10 @@ void drawHoverExplanation(int hovered_accolade, int hovered_age, Vec2f centre_to
 	string desc = getTranslatedString(
 		(hovered_accolade >= 0) ?
 			accolade_description[hovered_accolade] :
-			age_description[hovered_age]
+			hovered_age >= 0 ?
+				age_description[hovered_age] :
+				tier_description[hovered_tier]
 	);
-
-	//TODO: remember to remove this and add a real indicator!
-	if (hoveredPlayer !is null)
-	{
-		desc += "\n\n " + getTranslatedString("support tier: {SUPPORT_TIER}").replace("{SUPPORT_TIER}", "" + hoveredPlayer.getSupportTier());
-	}
 
 	Vec2f size(0, 0);
 	GUI::GetTextDimensions(desc, size);
