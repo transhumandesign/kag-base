@@ -26,16 +26,20 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	//quick switch class
-	CBlob@ blob = getLocalPlayerBlob();
-	if (blob !is null && blob.isMyPlayer())
+	if(isClient())
 	{
-		if (
-			isInRadius(this, blob) && //blob close enough to ruins
-			blob.isKeyJustReleased(key_use) && //just released e
-			isTap(blob, 7) && //tapped e
-			blob.getTickSinceCreated() > 1 //prevents infinite loop of swapping class
-		) {
-			CycleClass(this, blob);
+		CBlob@ blob = getLocalPlayerBlob();
+		if (blob !is null && blob.isMyPlayer())
+		{
+			if (
+				isInRadius(this, blob) && //blob close enough to ruins
+				blob.isKeyJustReleased(key_use) && //just released e
+				isTap(blob, 7) && //tapped e
+				blob.getTickSinceCreated() > 1 //prevents infinite loop of swapping class
+			) {
+				Menu::CloseAllMenus();
+				CycleClass(this, blob);
+			}
 		}
 	}
 }
