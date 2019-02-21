@@ -18,6 +18,7 @@ void InitRespawnCommand(CBlob@ this)
 
 bool canChangeClass(CBlob@ this, CBlob@ blob)
 {
+    if(blob.hasTag("switch class")) return false;
 
 	Vec2f tl, br, _tl, _br;
 	this.getShape().getBoundingRect(tl, br);
