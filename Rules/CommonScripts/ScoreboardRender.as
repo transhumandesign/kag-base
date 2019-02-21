@@ -585,10 +585,10 @@ void onRenderScoreboard(CRules@ this)
 
 		float fullOffset = (scoreboardHeight + scoreboardMargin) - screenHeight;
 
-		if(scrollOffset < fullOffset && mousePos.y > screenHeight*0.75f) {
+		if(scrollOffset < fullOffset && mousePos.y > screenHeight*0.83f) {
 			scrollOffset += scrollSpeed;
 		}
-		else if(scrollOffset > 0.0f && mousePos.y < screenHeight*0.25f) {
+		else if(scrollOffset > 0.0f && mousePos.y < screenHeight*0.16f) {
 			scrollOffset -= scrollSpeed;
 		}
 
