@@ -1,5 +1,8 @@
 void onInit(CBlob@ this)
 {
+	if(this.hasTag("invincibility done")) {
+		return;
+	}
 	this.Tag("invincible");
 
 	if (!this.exists("spawn immunity time"))
@@ -30,6 +33,9 @@ void onTick(CBlob@ this)
 	if (!immunity || this.getPlayer() is null)
 	{
 		this.Untag("invincible");
+		this.Tag("invincibility done");
+		this.Sync("invincibility done", true);
+
 		this.getCurrentScript().runFlags |= Script::remove_after_this;
 		this.getSprite().setRenderStyle(RenderStyle::normal);
 	}
