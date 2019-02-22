@@ -233,7 +233,7 @@
 	"Moderation Contributor - for contributing to moderating the game, forums, or discord": "Contribuidor da Moderação - por contribuir ao moderar o jogo, fóruns ou discord",
 
 	//Age
-	"New Player - Welcome them to the game!": "Novo Jogador - Receba-os no jogo!",
+	"New Player - Welcome them to the game!": "Novo Jogador - Receba-o no jogo!",
 	//First Month
 	"This player has 1 to 2 weeks of experience": "Esse jogador tem 1 a 2 semanas de experiência",
 	"This player has 2 to 3 weeks of experience": "Esse jogador tem 2 a 3 semanas de experiência",
@@ -272,7 +272,7 @@
 	"KILLS: {CURRENT}/{LIMIT}": "ABATES: {CURRENT}/{LIMIT}",
 	"SUDDEN DEATH": "MORTE SÚBITA",
 	"In Queue to Respawn...": "Esperando para renascer...",
-	"No Respawning - Wait for the Game to End.": "Sem renascer - Espere o fim da partida.",
+	"No Respawning - Wait for the Game to End.": "Sem renascimento - Espere o fim da partida.",
 
 //WAR_Interface.as
 	"DEFEND THE HALL!"                           : "PROTEJA O QUARTEL!",
@@ -446,8 +446,8 @@
 	"Servers": "Lista de servidores",
 	"Settings": "Configuração",
 	"Back":	"Voltar",
-	"Switch to Team {NUMBER}": "Muda para time {NUMBER}", //(not used in vanilla)
-	// "Spectator": "Espectador", //Already exists in TeamMenu.as
+	"Switch to Team {NUMBER}": "Mudar para time {NUMBER}", //(not used in vanilla)
+	"Spectator": "Espectador",
 	"Spectators": "Espectadores",
 	"Suicide": "Suicídio",
 	"Admin": "Administração",
@@ -979,6 +979,8 @@
 
 ////TAUNTS AND EMOTES////
 // EmotesCommon.as
+	"Bind Emotes": "Atribuir emotes",
+	"Bindings": "Atribuições",
 	"Select emote": "Selecionar emoticon",
 	"Show emoticon": "Mostrar emoticon",
 	"Point right": "Apontar para direita",
@@ -1237,7 +1239,19 @@
 	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!": "Este é um modo para relaxar.\n\nPressione ESC para ver os controles.\nSe divirta!",
 
 //Challenge Minigames
-	//TODO
+	"Kill all the Campers": "Mate todos os arqueiros",
+	"Reach the end before time runs out!": "Chegue ao final antes que o tempo acabe!",
+	"Climb the tower!": "Escale a torre!",
+	"Kill the Red Scum!": "Mate os Vermelhos!",
+ 	"Run away from the tidal wave!": "Corra da inundação!",
+ 	"Save the princess!": "Resgate a princesa!",
+
+	"High scores": "Pontuações",
+	"Most kills:": "Mais abates:",
+	"Round lost!": "Perdeu a rodada!",
+	"Fastest individual time:": "Melhor tempo sozinho:",
+	"You made it!": "Você conseguiu!",
+	"You won!": "Você venceu!",
 
 //Sandbox gamemode.cfg
 	"Build whatever your heart desires. Respect other folk's creations!": "Construa o que quiser. Respeite a construção dos outros!",
