@@ -1,6 +1,7 @@
 void onInit(CBlob@ this)
 {
-	if(this.hasTag("invincibility done")) {
+	if(this.hasTag("invincibility done"))
+	{
 		return;
 	}
 	this.Tag("invincible");
