@@ -38,12 +38,6 @@ void onTick(CBlob@ this)
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
-	if (detached.getName() == "catapult") // rock n' roll baby
-	{
-		this.getShape().getConsts().mapCollisions = false;
-		this.getShape().getConsts().collidable = false;
-		this.getCurrentScript().tickFrequency = 3;
-	}
 	this.set_u8("launch team", detached.getTeamNum());
 }
 
@@ -58,7 +52,6 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	{
 		this.getShape().getConsts().mapCollisions = true;
 		this.getShape().getConsts().collidable = true;
-		this.getCurrentScript().tickFrequency = 1;
 	}
 	this.set_u8("launch team", attached.getTeamNum());
 }

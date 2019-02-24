@@ -225,6 +225,12 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 		{
 			SetKnocked(bullet, 30);
 		}
+
+		if (bullet.getName() == "boulder") // rock n' roll baby
+		{
+			bullet.getShape().getConsts().mapCollisions = false;
+			bullet.getShape().getConsts().collidable = false;
+		}
 	}
 
 	// we override the default time because we want to base it on charge
