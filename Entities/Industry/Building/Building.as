@@ -95,6 +95,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			this.getSprite().PlaySound("/Construct.ogg");
 			this.getSprite().getVars().gibbed = true;
 			this.server_Die();
+			caller.ClearMenus();
 
 			// open factory upgrade menu immediately
 			if (item.getName() == "factory")
