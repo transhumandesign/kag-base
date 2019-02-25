@@ -16,7 +16,7 @@ int getHeadsPackIndex(int headIndex)
 {
 	if (headIndex > 255) {
 		if ((headIndex % 256) > NUM_UNIQUEHEADS) {
-			return Maths::Min(getHeadsPackCount() - 1, Maths::Floor(headIndex / 255.0f));
+			return Maths::Min(getHeadsPackCount() - 1, Maths::Floor(headIndex / 256.0f));
 		}
 	}
 	return 0;
