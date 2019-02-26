@@ -1,4 +1,7 @@
 {
+  "GUI/Fonts/DejaVu/DejaVuSans.ttf": "GUI/Fonts/SourceHan/SourceHanSansCN-Regular.ttf",
+  "GUI/Fonts/DejaVu/DejaVuSans-Bold.ttf": "GUI/Fonts/SourceHan/SourceHanSansCN-Bold.ttf",
+
   "Match time: {TIME}": "比赛时间: {TIME}",
   "h ": "时 ",
   "m ": "分 ",
