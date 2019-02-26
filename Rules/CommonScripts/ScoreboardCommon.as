@@ -1,3 +1,5 @@
+#include "AdminRedToggleCommon.as"
+
 f32 getKDR(CPlayer@ p)
 {
 	return p.getKills() / Maths::Max(f32(p.getDeaths()), 1.0f);
@@ -11,7 +13,7 @@ SColor getNameColour(CPlayer@ p)
         c = SColor(0xffb400ff); //dev
     } else if (p.isGuard()) {
         c = SColor(0xffa0ffa0); //guard
-    } else if (getSecurity().checkAccess_Feature(p, "admin_color") || p.isRCON()) {
+    } else if (isAdmin(p) && redNameEnabled(getRules(), p)) {
         c = SColor(0xfffa5a00); //admin
     } else if (p.isMyPlayer()) {
         c = SColor(0xffffEE44); //my player
