@@ -67,7 +67,7 @@ bool onServerProcessChat(CRules@ this, const string &in textIn, string &out text
         if (this.exists(toggleID))
         {
             bool visible = !this.get_bool(toggleID);
-          	sendNameColorCommand(this, player, visible);
+            sendNameColorCommand(this, player, visible);
             return false;
         }
     }
