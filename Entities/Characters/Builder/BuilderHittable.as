@@ -6,7 +6,7 @@ const string[] builder_alwayshit =
 {
 	//handmade
 	"workbench",
-	//"fireplace",
+	"fireplace",
 	"ladder",
 
 	//faketiles

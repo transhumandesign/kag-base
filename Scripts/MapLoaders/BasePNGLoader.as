@@ -269,7 +269,7 @@ class PNGLoader
 			case map_colors::research:        autotile(offset); spawnBlob(map, "research",    offset); break;
 
 			case map_colors::workbench:       autotile(offset); spawnBlob(map, "workbench",   offset, 255, true); break;
-			case map_colors::campfire:        autotile(offset); spawnBlob(map, "fireplace",   offset, 255, true, Vec2f(0.0f, -4.0f)); break;
+			case map_colors::campfire:        autotile(offset); spawnBlob(map, "fireplace",   offset, 255); break;
 			case map_colors::saw:             autotile(offset); spawnBlob(map, "saw",         offset); break;
 
 			// Flora
