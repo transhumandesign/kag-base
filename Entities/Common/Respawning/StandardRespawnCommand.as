@@ -193,6 +193,7 @@ void PutInvInStorage(CBlob@ blob)
 		}
 }
 
+const bool enable_quickswap = false;
 void CycleClass(CBlob@ this, CBlob@ blob)
 {
 	//get available classes
