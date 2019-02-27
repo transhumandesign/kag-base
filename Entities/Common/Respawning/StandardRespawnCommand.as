@@ -19,7 +19,6 @@ void InitRespawnCommand(CBlob@ this)
 bool canChangeClass(CBlob@ this, CBlob@ blob)
 {
     if(blob.hasTag("switch class")) return false;
-	if (blob.getShape() is null) return false;
 
 	Vec2f tl, br, _tl, _br;
 	this.getShape().getBoundingRect(tl, br);
@@ -84,22 +83,6 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				if (caller !is null && canChangeClass(this, caller))
 				{
 					string classconfig = params.read_string();
-
-					// check for valid class
-					bool classFound = false;
-					PlayerClass[]@ classes;
-					if (!this.get("playerclasses", @classes)) return;
-					for (uint i = 0 ; i < classes.length; i++)
-					{
-						PlayerClass @pclass = classes[i];
-						if (pclass.configFilename == classconfig)
-						{
-							classFound = true;
-						}
-					}
-
-					if (!classFound) return;
-
 					CBlob @newBlob = server_CreateBlob(classconfig, caller.getTeamNum(), this.getRespawnPosition());
 
 					if (newBlob !is null)
