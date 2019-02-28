@@ -18,6 +18,8 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
 
+	this.addCommandID("prevent emotes");
+
 	string cachefilename = "../Cache/" + emote_config_file;
 	ConfigFile cfg = ConfigFile();
 
@@ -43,6 +45,14 @@ void onInit(CBlob@ this)
 		emote_7 = read_emote(cfg, "emote_7", Emotes::troll);
 		emote_8 = read_emote(cfg, "emote_8", Emotes::disappoint);
 		emote_9 = read_emote(cfg, "emote_9", Emotes::ladder);
+	}
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("prevent emotes"))
+	{
+		set_emote(this, Emotes::off);
 	}
 }
 
