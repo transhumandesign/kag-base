@@ -55,11 +55,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 	// commands that don't rely on sv_test being on (sv_test = 1)
 
-	if (text_in == "!killme" || text_in == "!suicide")
-	{
-		blob.server_Hit(blob, blob.getPosition(), Vec2f(0, 0), 1000.0f, 0);
-	}
-	else if (text_in == "!bot" && player.isMod()) // TODO: whoaaa check seclevs
+	if (text_in == "!bot" && player.isMod()) // TODO: whoaaa check seclevs
 	{
 		CPlayer@ bot = AddBot("Henry"); //when there are multiple "Henry" bots, they'll be differentiated by a number (i.e. Henry2)
 		return true;
