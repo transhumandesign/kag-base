@@ -370,7 +370,7 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 					1 : 0),             5,     0,         0,
 				(acc.map_contributor ?
 					1 : 0),             6,     0,         0,
-				(acc.moderation_contributor && redNameEnabled(getRules(), p) ?
+				(acc.moderation_contributor && (!p.isRCON() || redNameEnabled(getRules(), p)) ? //ensure accolade is visible for past admins
 					1 : 0),             7,     0,         0,
 
 				//tourney badges
