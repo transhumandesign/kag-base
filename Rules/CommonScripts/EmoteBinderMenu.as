@@ -95,12 +95,7 @@ void ShowEmotesMenu(CPlayer@ player)
 		separator.SetEnabled(false);
 
 		//get current emote keybinds
-		ConfigFile cfg = ConfigFile();
-		if (!cfg.loadFile("../Cache/EmoteBindings.cfg") &&
-			!cfg.loadFile("EmoteBindings.cfg"))
-		{
-			return;
-		}
+		ConfigFile@ cfg = openEmoteBindingsConfig();
 
 		array<u8> emoteBinds = {
 			read_emote(cfg, "emote_1", Emotes::attn),
@@ -170,12 +165,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 		string key = "emote_" + (selected + 1);
 
 		//get emote bindings cfg file
-		ConfigFile cfg = ConfigFile();
-		if (!cfg.loadFile("../Cache/EmoteBindings.cfg") &&
-			!cfg.loadFile("EmoteBindings.cfg"))
-		{
-			return;
-		}
+		ConfigFile@ cfg = openEmoteBindingsConfig();
 
 		//bind emote
 		cfg.add_string(key, "" + emote);

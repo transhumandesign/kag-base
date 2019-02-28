@@ -20,12 +20,7 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().removeIfTag = "dead";
 
 	//attempt to load from cache first
-	ConfigFile cfg = ConfigFile();
-	if (!cfg.loadFile("../Cache/EmoteBindings.cfg") &&
-		!cfg.loadFile("EmoteBindings.cfg"))
-	{
-		return;
-	}
+	ConfigFile@ cfg = openEmoteBindingsConfig();
 
 	emote_1 = read_emote(cfg, "emote_1", Emotes::attn);
 	emote_2 = read_emote(cfg, "emote_2", Emotes::smile);
