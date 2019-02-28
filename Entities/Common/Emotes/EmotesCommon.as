@@ -155,6 +155,37 @@ bool is_emote(CBlob@ this, u8 emote = 255, bool checkBlank = false)
 	return time > getGameTime() && index != Emotes::off && (!checkBlank || (index != Emotes::dots));
 }
 
+ConfigFile@ openEmoteBindingsConfig()
+{
+	ConfigFile cfg = ConfigFile();
+	if(!cfg.loadFile("../Cache/EmoteBindings.cfg"))
+	{
+		// grab the one with defaults from base
+		if(!cfg.loadFile("EmoteBindings.cfg"))
+		{
+			warn("missing default emote binding");
+			cfg.add_string("emote_1", "attn");
+			cfg.add_string("emote_2", "smile");
+			cfg.add_string("emote_3", "frown");
+			cfg.add_string("emote_4", "mad");
+			cfg.add_string("emote_5", "laugh");
+			cfg.add_string("emote_6", "wat");
+			cfg.add_string("emote_7", "troll");
+			cfg.add_string("emote_8", "disappoint");
+			cfg.add_string("emote_9", "ladder");
+			cfg.saveFile("EmoteBindings.cfg");
+
+		}
+
+		// write EmoteBinding.cfg to Cache
+		cfg.saveFile("EmoteBindings.cfg");
+
+	}
+
+	return cfg;
+
+}
+
 //helper - allow integer entries as well as name entries
 u8 read_emote(ConfigFile@ cfg, string name, u8 default_value)
 {
