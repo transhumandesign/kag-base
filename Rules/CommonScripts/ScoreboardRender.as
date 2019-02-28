@@ -10,6 +10,10 @@ int hovered_tier = -1;
 bool draw_age = false;
 bool draw_tier = false;
 
+float scoreboardMargin = 52.0f;
+float scrollOffset = 0.0f;
+float scrollSpeed = 4.0f;
+
 string[] age_description = {
 	"New Player - Welcome them to the game!",
 	//first month
@@ -508,16 +512,10 @@ void onRenderScoreboard(CRules@ this)
 	@hoveredPlayer = null;
 
 	Vec2f topleft(100, 150);
-	if (blueplayers.size() + redplayers.size() > 18)
-	{
-		topleft.y = drawServerInfo(10);
+	drawServerInfo(40);
 
-	}
-	else
-	{
-		drawServerInfo(40);
-
-	}
+	// start the scoreboard lower or higher.
+	topleft.y -= scrollOffset;
 
 	//(reset)
 	hovered_accolade = -1;
@@ -576,6 +574,25 @@ void onRenderScoreboard(CRules@ this)
 		}
 
 		topleft.y += 52;
+	}
+
+	float scoreboardHeight = topleft.y + scrollOffset;
+	float screenHeight = getScreenHeight();
+
+	if(scoreboardHeight > screenHeight) {
+		CControls@ controls = getControls();
+		Vec2f mousePos = controls.getMouseScreenPos();
+
+		float fullOffset = (scoreboardHeight + scoreboardMargin) - screenHeight;
+
+		if(scrollOffset < fullOffset && mousePos.y > screenHeight*0.83f) {
+			scrollOffset += scrollSpeed;
+		}
+		else if(scrollOffset > 0.0f && mousePos.y < screenHeight*0.16f) {
+			scrollOffset -= scrollSpeed;
+		}
+
+		scrollOffset = Maths::Clamp(scrollOffset, 0.0f, fullOffset);
 	}
 
 	drawPlayerCard(hoveredPlayer, hoveredPos);
