@@ -133,7 +133,7 @@
 	"Your mother was a hamster!": "Deine Mutter war ein Hamster!",
 	"Your father smelt of elderberries!": "Dein Vater riecht nach Holunderbeeren!",
 	"Go away or I shall taunt you a second time.": "Hau ab, oder ich verfluche dich noch mal.",
-	"Go and boil your bottom!": "Der Übersetzer ist überfordert!",
+	"Go and boil your bottom!": "Geh und koche deinen Hintern!",
 	
 	"heeelp!": "Hilfeeeee!",
 	"ouch!": "ouch!",
@@ -171,7 +171,7 @@
 	"In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.":"Geh in die Basis und werde BOGENSCHÜTZE $ARCHER$.\n\nHalte $KEY_E$.Halte die Maus über $CLASSCHANGE$und lass die Taste los..",
 	"As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!":"Bogenschütze $Tutorial_Archer$\n\n\nZiele mit der Maus.\n\nHalte$LMB$ um den Bogen zu spannen.\n\nLass los um zu feuern!",
 	"Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$":"Benutz deinen Greifhaken$Tutorial_Grapple$\n\n\nZiele mit der Maus nach oben,\n\ndann drücke $RMB$\n\nSchwing dich rüber $KEY_D$",
-	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"Kombinier hier den Greifhaken mit dem Wandlauf.\n\nAn dieser Stelle, Grüße vom Übersetzer: Le Butch.",
+	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"Kombinier hier den Greifhaken mit dem Wandlauf.",
 	"HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!":"Halte $LMB$ bis es blitzt$Tutorial_Archer2$\n\n\nLass jetzt los,\n\num drei Pfeile auf ein Mal abzufeuern.\n\nGut für kleine Reichweiten.",
 	"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!":"$Tutorial_Archer2$\n\n\nStell dich vor die Tür und lade deinen dreifach-Schuss auf. Dann geh durch und schieß dem Ritter 3 Pfeile ins Gesicht!",
 	"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.":"Benutz den Greifhaken$Tutorial_Grapple$ und schwing dich rüber.\n\nZiele dafür auf die Laterne$lantern$ und halte $RMB$ gedrückt.\n\nDanach kannst du dich rüber schwingen.",
@@ -193,7 +193,7 @@
 	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\nLade das Katapult mit Steinen.\n\nHalte dazu $KEY_E$ gedrückt, und klicke auf $mat_stone$",
 	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$\n\n\nStell dich in die Schützenposition (da wo $down_arrow$ angezeigt wird)\n\n $KEY_S$ um rein zu kommen.\n\nHalte $LMB$ um aufzuladen.\n\n(Der Fahrer sitzt in der Mitte,\ndie Abschussschüssel ist ganz oben)",
 	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"Eine Sache noch:\n\nSei nicht schüchtern, die Leute um hilfe zu beten, wenn du im mehrspieler-Modus spielst.\n\n$KEY_ENTER$ um den Chat zu öffnen.\n\n\nBenutz auch Emoji!$KEY_Q$",
-	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"Das war das grundlegende Tutorial.\n\nDu lernst deutlich mehr durch Spielen als durch ein Tutorial.\n\nProbier als nächstes die Einzelspielermodi, oder geh direkt in den Mehrspieler.\n\nDie Einzelspielermodi sind jedoch alle schlecht, also geh direkt in den Mehrspieler ;D.\n\n~ Der Übersetzer",
+	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"Das war das grundlegende Tutorial.\n\nDu lernst deutlich mehr durch Spielen als durch ein Tutorial.",
 
 //TutorialCTF01.as
 	"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":
@@ -211,7 +211,7 @@
 	"Workshops allow you to buy items in them for coins which you get for doing useful things for your team.\n\nClass workshops allow you to switch class in them.\n\nThe tunnel allows you to quickly move from place to place (at least 2 required).\n\nTry them out!\n\n\n$tunnel$\n":
 	"An Werkstätten kannst du mit Münzen sachen kaufen.\n\nKlassen-Werkstätten erlauben es dir, deine Klasse zu wechseln.\n\nDer Tunnel bringt dich schnell von A nach B.\n\nTeste es mal\n\n\n$tunnel$\n",
 	"To conclude this tutorial go get the red flag and bring it back to your blue flag. \n\nPress $KEY_ESC$ to go to menu\n\nand exit after you're done.":
-	"Um dieses Tutorial abzuschließen, geh zur roten Flagge und bring sie zu deiner blauen Flagge.\n\nDrücke $KEY_ESC$ und verlasse das Spiel wenn du fertig bist.\n\nGrüße vom Übersetzer.",
+	"Um dieses Tutorial abzuschließen, geh zur roten Flagge und bring sie zu deiner blauen Flagge.\n\nDrücke $KEY_ESC$ und verlasse das Spiel wenn du fertig bist.",
 
 //TutorialTTH01.as
 	"The goal of Take the Halls is for your team to capture all the halls on the map.\n\nYou can easily see them in the minimap on top of the screen.\n\n$KEY_M$ to toggle the\n\nminimap.":
@@ -239,7 +239,7 @@
 	"If you have more than one hall you can quickly move between them.\n\nHold $KEY_E$ and\n\nselect the blue travel button.":
 	"Besitzt du mehrere Basen, kannst du in der Basis schnell zu den anderen reisen.\n\nHalte dafür $KEY_E$ gedrückt\n\nund wähle den blauen reise-Knopf aus.",
 	"Those are the basics you need to know about Take the Halls. The rest can be learned when playing online by observation. This game mode is simple but complexity comes from great strategy. See you on the battlefield!\n\nPress $KEY_ESC$ to get out.":
-	"Das waren die Grundlagen von TTH (Take the halls). Der Rest kommt mit der Erfahrung wenn du online spielst, oder zuschaust. Der Modus ist zwar einfach, aber er wird durch Strategien komplexer. Ich seh dich dann auf dem Schlachtfeld!\n\nGrüße vom Übersetzer: Le Butch!\n\nDrücke $KEY_ESC$ um das Spiel zu verlassen.",
+	"Das waren die Grundlagen von TTH (Take the halls). Der Rest kommt mit der Erfahrung wenn du online spielst, oder zuschaust. Der Modus ist zwar einfach, aber er wird durch Strategien komplexer. Ich seh dich dann auf dem Schlachtfeld!\n\nDrücke $KEY_ESC$ um das Spiel zu verlassen.",
 //Challenge_PrincessStart
 	"   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.":
 	"   Hoch oben auf den Klippen, bewacht durch eine Armee von starken Kämpfern, steht das Schloss des bösen Kriegers Sedgewick. Tief im dunkelsten Gefängnis des Schlosses (Wortwörtlich ganz oben mit Beleuchtung...), hält Sedgwick unsere geliebte Prinzessin Geti gefangen. \n\n    Du bist ein Königsritter. Alleine mit deinem Schwert und deinem Schild musst du Sedgwick besiegen und die wunderschöne Geti retten.\n\n   Hab keine Angst und Zweifel. Konzentrier dich auf dein Ziel, akzeptiere den Tod, wenn er kommt und bleib stark. So machen echte Ritter das.",
@@ -366,7 +366,7 @@
 	"Naval workshop for building boats":"Boot-Werkstatt, um Boote zu bauen (Wer hätte es erwartet).",
 	"Place of merriment and healing":"Platz zum Leben-Regenerieren.",
 	"A Cache for storing your materials, items and armaments.":"Ein Speicher um Ressourcen und Items zu lagern.",
-	"A refreshing mug of beer.":"Ein erfrüschendes Glas feinstes Bier direkt aus Bayern importiert. Grüße vom Übersetzer.",
+	"A refreshing mug of beer.":"Ein erfrüschendes Glas feinstes Bier direkt aus Bayern importiert.",
 	"A hearty meal to get you back on your feet.":"Eine herzhafte Mahlzeit um dich wieder auf die Beine zu bringen.",
 	"A suspiciously undercooked egg, maybe it will hatch.":"Ein verdächtig rohes Ei. Möglicher Weise kommt da ein Küken raus.",
 	"A burger to go.":"Ein Burger für Unterwegs.",
@@ -482,14 +482,14 @@
 	"You can put out fires using water bombs or water arrows (as well as a bucket of water)!": "Du kannst Feuer mit Wasserpfeilen, Wasserbomben, oder Wassereimern löschen.",
 	"As a knight, jabbing isn't always effective, try charging for a slash!": "Als Ritter ist stechen nicht immer effektiv. Verwende statt dessen Hiebe.",
 	"A builder can be more useful on the front lines than in his base. But keep your eyes open over there!": "Ein Bauarbeiter ist an der Front oft nützlicher als in der Basis. Bleib dort aber wachsam.",
-	"Wood blocks and backwalls can be set on fire, try using stone alongside the wood!":"Holz brennt. Stein nicht. Der Übersetzer fragt sich, wieso hier solche Tipps stehen.",
+	"Wood blocks and backwalls can be set on fire, try using stone alongside the wood!":"Holz brennt. Stein nicht.",
 	"Don't run wildly into the battlefield with a keg, you might have it stolen!": "Renn nicht einfach wie ein Irrer mit einem Pulverfass aufs Schlachtfeld, es wird dir vielleicht gestohlen.",
 	"Pay attention to the ground, there may be a trap waiting!": "Achte auf die Erde, da sind möglicher Weise Fallen!",
 	"Bomb arrows can be used to collapse towers quickly.": "Mit Bombenpfeilen kann man Türme schnell zerstören.",
 	"If you see materials on the ground, take them to a builder or put them in your storage!": "Siehst du Rohstoffe auf dem Boden liegen, bring sie zu einem Bauarbeiter oder in den Speicher!",
 	"Water bombs and water arrows stun your enemies for an easy kill.": "Wasserbomben und -pfeile paralysieren Feinde kurz. Benutzt du sie jedoch, hast du keine Ehre!",
 	"Pay attention to your minimap for enemy tunnelers.": "Schau ab und zu mal auf die Minimap um Tunneler zu finden.",
-	"Don't let siege weapons fall into the wrong hands!": "Lass Belagerungsmaschienen nicht von Feinden erobern! Der Übersetzer kommt sich bei solchen Tipps nutzlos vor.",
+	"Don't let siege weapons fall into the wrong hands!": "Lass Belagerungsmaschienen nicht von Feinden erobern!",
 	"Immobilise siege weapons to prevent them from accidentally falling off a cliff!": "Mach deine Belagerungsmaschienen unbeweglich, damit sie nicht von der Klippe fallen!",
 	"Press [SPACE] to light and throw a bomb, [C] to pickup.": "Drücke [SPACE] um eine Bombe zu zünden und zu werfen. [C] zum Aufheben.",
 	"Keep your ballistae safe - if an enemy takes it, they can use it against you!": "Schütze deine Ballista. Erobert ein Feind sie, kann er sie gegen dich verwenden!",
@@ -537,10 +537,10 @@
 	"You can climb arrows that are stuck in blocks to climb upwards.": "Du kannst an Pfeilen hochklettern.",
 	"Archers can make arrow ladders by shooting arrows at tower walls.": "Bogenschützen können Pfeil-Leitern (Arrow ladder) machen, indem sie Pfeile in die feindliche Wand schießen.",
 	"Hold chickens to glide further.": "Halte ein Huhn, um weiter zu gleiten.",
-	"There is a red barrier during build phase which will disappear on match start": "Da ist eine rote Barriere in der Bau-Zeit, welche nachher verschwindet. Der Übersetzer kommt sich dumm vor sowas zu übersetzen.",
+	"There is a red barrier during build phase which will disappear on match start": "Da ist eine rote Barriere in der Bau-Zeit, welche nachher verschwindet.",
 	"Don't be afraid to let people know you're new - they may lend a helping hand.": "Lass deine Mitspieler wissen, dass du neu bist. Sie helfen dir dann. ABER: Befolge ihre Anweisungen, sonst bist du nur eine Last.",
 	"Try to get video evidence of people griefing or hacking first before yelling for an admin.": "Versuche Beweise für Griefer oder Hacker zu bekommen, bevor du einen Admin anschreist.",
-	"Press E around dead bodies to check for useful things in enemy (or ally) corpses!": "Der Übersetzer Le Butch grüßt dich. Ich hoffe, dir gefällt meine Arbeit." // OUTDATED!
+	"Press E around dead bodies to check for useful things in enemy (or ally) corpses!": "Drücke E bei Leichen um zu schaun, ob noch etwas nützliches zu finden ist." // OUTDATED!
 	"Charged arrows from close range will stun enemies, even if they shield!": "Nah geschossene Pfeile werden Gegner paralysieren, selbst wenn sie ihr Schild hoch halten.",
 	"Falling blocks can damage you - be careful!": "Fallende Blöcke tun weh. Pass also auf!",
 	"Dropped from a high place, kegs can explode on impact.": "Angezündete pulverfässer explodieren, wenn sie hart genug aufschlagen.",
@@ -715,7 +715,7 @@
 	"Loading blobs...": "Lade Objekte...",
 	"Loading configs...": "Lade Konfigurationen...",
 	"Receiving scripts...": "Empfange Skripte...",
-	"Determining changed scripts...": "Mache was, was der Übersetzer nicht übersetzen kann...",
+	"Determining changed scripts...": "Behandle veränderte Skripte...",
 	"Building downloaded scripts...": "Baue heruntergeladene Skripte...",
 	"Be nice to each other, read books and do your homework.": "Seit nett zueinander, lest bücher und macht eure Hausaufgaben!",
 	"Authenticating to server...": "Authentifiziere mit Server...",
