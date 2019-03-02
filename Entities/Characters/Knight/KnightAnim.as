@@ -6,6 +6,7 @@
 #include "Knocked.as";
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
+#include "Accolades.as"
 
 const string shiny_layer = "shiny bit";
 
@@ -54,6 +55,14 @@ void LoadSprites(CSprite@ this)
 	if(p !is null)
 	{
 		armour = p.getArmourSet();
+		if (armour == PLAYER_ARMOUR_STANDARD)
+		{
+			Accolades@ acc = getPlayerAccolades(p.getUsername());
+			if (acc.hasCape())
+			{
+				armour = PLAYER_ARMOUR_CAPE;
+			}
+		}
 	}
 
 	switch(armour)

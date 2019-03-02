@@ -19,6 +19,10 @@ shared class Accolades
 	int bronze = 0;
 	int participation = 0;
 
+	//cape info
+	int capeAwarded = 0;
+	int capeMonths = 0;
+
 	//custom head info
 	int customHeadAwarded = 0;              //(remains zero for non-custom-heads)
 	string customHeadTexture = "";          //the head texture to use
@@ -82,6 +86,13 @@ shared class Accolades
 				string s3 = chunks[0];
 				chunks.removeAt(0);
 
+				//(cape prize)
+				if (s1 == "cape")
+				{
+					capeAwarded = parseInt(s2);
+					capeMonths = parseInt(s3);
+				}
+
 				//4-part accolades
 				if (chunks.length == 0) continue;
 
@@ -131,6 +142,10 @@ shared class Accolades
 		return hashead;
 	}
 
+	bool hasCape()
+	{
+		return (capeAwarded > 0 && Time_DaysSince(capeAwarded) <= 31 * capeMonths);
+	}
 };
 
 //we keep a limit on the accolades kept in memory
