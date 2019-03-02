@@ -15,7 +15,7 @@
 {
 //// SCOREBOARD ////
 //ScoreboardCommon.as
-	"Match time: {TIME}": "Speelduur: {TIME}",
+	"Match time: {TIME}": "Huidige speelduur: {TIME}",
 	"h ": "u ",
 	"m ": "m ",
 	"s ": "s ",
@@ -88,7 +88,7 @@
 	"Spiker"        :"Aandrijfbare punt",
 
 //Production.as
-	"\n\nrequires\n{MISSING}\nAdd materials in storage.":"\n\nvereist:\n{MISSING}\nPlaats materiaal in de opslag.",
+	"\n\nrequires\n{MISSING}\nAdd materials in storage.":"\n\nvereist\n{MISSING}\nPlaats materialen in de opslag.",
 	"Producing {ITEM}..."                               :"{ITEM} aan het produceren...",
 	"{ITEM} available on respawn"                       :"{ITEM} beschikbaar bij het respawnen",
 	"{ITEM} limit reached."                             :"{ITEM} limiet behaald.",
@@ -99,50 +99,50 @@
 //Hall.as
 	"Units"                                   :"Eenheden",
 	"Another worker has been hired!"          :"Een nieuwe Werker is aangenomen!",
-	"Supplies will drop at your halls."       :"Een levering arriveert bij het Arsenaal.", // TODO accent support
+	"Supplies will drop at your halls."       :"Een levering arriveert bij het Arsenaal.",
 	"Buy a worker for {MIGRANT_COST} Gold"    :"Neem een Werker aan voor {MIGRANT_COST} goud",
 	"Buy worker: Requires {MIGRANT_COST} Gold":"Neem een Werker aan: vereist {MIGRANT_COST} goud",
 
 //TunnelTravel.as
-	"Travel":"Переместиться",
-	"Travel (requires Transport Tunnels)":"Переместиться (требуется ещё один транспортный тоннель)",
-	"Pick tunnel to travel":"Выберите тоннель для перемещения",
-	"Return to base":"Вернуться на базу", //OLD
-	"Travel right":"Переместиться вправо",
-	"Travel left":"Переместиться влево",
-	"You are here":"Вы находитесь здесь",
+	"Travel":"Reis",
+	"Travel (requires Transport Tunnels)":"Reis (vereist Transportatie Tunnels)",
+	"Pick tunnel to travel":"Kies een Transportatie Tunnel om naartoe te reizen",
+	"Return to base":"Ga terug naar de thuisbasis", //OLD
+	"Travel right":"Naar rechts reizen",
+	"Travel left":"Naar links reizen",
+	"You are here":"Je bent hier",
 
 //ResearchGUI.as
-	"Click the items you vote to research!"                           :"Нажимайте на предметы, за исследование которых вы хотите отдать голос!",
-	"Yellow paths show what will be researched when the match starts.":"Жёлтые линии указывают на то, что будет изучено в начале матча.",
-	"Red path items can only be bought for gold at trader."           :"Исследования на красных линиях могут быть куплены только у торговца.",
-	"(available)"                                                     :"(изучено)",
-	"(researching - {TIME}s)"                                         :"(Изучается - {TIME} сек.)",
-	"(click to vote)"                                                 :"(нажмите, чтобы отдать голос)",
+	"Click the items you vote to research!"                           :"Klik om te stemmen op de items de je wilt onderzoeken!",
+	"Yellow paths show what will be researched when the match starts.":"De gele lijnen laten zien wat onderzocht gaat worden wanneer het spel begint.",
+	"Red path items can only be bought for gold at trader."           :"De items bij de rode lijnen kunnen alleen gekocht worden bij een handelaar.",
+	"(available)"                                                     :"(verkrijgtbaar)",
+	"(researching - {TIME}s)"                                         :"(aan het onderzoeken - {TIME}s)",
+	"(click to vote)"                                                 :"(klik om te stemmen)",
 
 //Sign.as
-	"The big brown fox jumped over the shaggy chocolate.": "Южно-эфиопский грач увёл мышь за хобот на съезд ящериц.",
+	"The big brown fox jumped over the shaggy chocolate.": "Pa's wijze lynx bezag vroom het fikse chocolaatje.",
 
 //PlayerCamera.as
-	"Following {CHARACTERNAME} ({USERNAME})": "Следование за {CHARACTERNAME} ({USERNAME})",
+	"Following {CHARACTERNAME} ({USERNAME})": "{CHARACTERNAME} ({USERNAME}) aan het volgen",
 
 //ShowTipOnDeath.as
-	"Tip: {TIP}": "Совет: {TIP}",
+	"Tip: {TIP}": "Tip: {TIP}",
 
 //// SOLO GAME MODES ////
 //Tutorial01.as
-	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"Ходьба и прыжок\n\n$KEY_A$$KEY_W$$KEY_D$",
-	"$sign$Go to the right and\n\nbe sure to read these signs.":"$sign$Идите вправо\n\nи не пропускайте табличек.",
-	"$Jab$Practice the sword JAB\n\non the dummy.\n\nAim with mouse and tap $LMB$":"$Jab$Потренируйте\n        КОЛЮЩИЙ УДАР на\n                            манекене.\n\nНажмите $LMB$, наведясь\n\nна него мышкой.",
-	"Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!":"Теперь потренируйте РАССЕКАЮЩИЙ УДАР.\n\nЗАЖМИТЕ $LMB$, дождитесь,\n\nпока рыцарь не замахнётся\nмечом$Tutorial_Slash$\n\n\nи ОТПУСТИТЕ $LMB$!",
-	"Practice the DOUBLE SLASH.\n\nHOLD $LMB$ until spark$Tutorial_Slash2$\n\n\nQuickly TAP $LMB$ 2 times!":"Потренируйте ДВОЙНОЙ РАССЕКАЮЩИЙ УДАР.\n\nДЕРЖИТЕ $LMB$, пока не\n\nпоявится искра$Tutorial_Slash2$\n\n\nА затем быстро два раза\n\nНАЖМИТЕ $LMB$!",
-	"Before entering this room charge your sword $Tutorial_Slash2$\n\nand then quickly\nwalk inside and slash!":"До того, как зайдёте в комнату, замахнитесь мечом $Tutorial_Slash2$\n\n\nи затем быстро зайдите внутрь и проведите рассекающий удар!",
-	"HOLD $RMB$ to shield.\n\nUse mouse to aim shield.":"ЗАЖМИТЕ $RMB$, чтобы\n\nподнять свой щит\nИспользуйте мышку для наведения.",
-	"Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$":"Держите $KEY_D$$KEY_W$, чтобы\n\nПРОБЕЖАТЬ ПО СТЕНЕ.",
-	"Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$":"Рыцари могут ломать деревянные блоки и двери и копать землю. Наведя мышку на стену, сломайте её с помощью $LMB$.",
-	"Automatically pickup things used by your class.":"Классовые предметы подбираются автоматически.",
-	"Press $KEY_SPACE$ to light bomb\n\nAim with mouse.\n\nAgain $KEY_SPACE$ throw it.":"Нажмите на $KEY_SPACE$,\n\nчтобы поджечь бомбу.\n\nНаведя мышку на цель, ещё раз нажмите на $KEY_SPACE$, чтобы бросить её.",
-	"Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.":"Парите с помощью щита.$Tutorial_Glide$\n\nПерепрыгните через каньон, держа курсор выше себя и ЗАЖИМАЯ$RMB$.",
+	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"Lopen en springen\n\n$KEY_A$$KEY_W$$KEY_D$",
+	"$sign$Go to the right and\n\nbe sure to read these signs.":"$sign$Ga naar rechts\n\nzorg ervoor dat je leest wat op de borden staat.",
+	"$Jab$Practice the sword JAB\n\non the dummy.\n\nAim with mouse and tap $LMB$":"$Jab$Probeer PORREN met het zwaard uit\n\nop de pop\n\nricht met de muis en klik $LMB$.",
+	"Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!":"Oefen de ZWAARDSLAG.\n\nhoud $LMB$ ingedrukt om je zwaard te trekken,\n\ntotdat je deze houding ziet$Tutorial_Slash$\n\nen laat $LMB$ gaan!",
+	"Practice the DOUBLE SLASH.\n\nHOLD $LMB$ until spark$Tutorial_Slash2$\n\n\nQuickly TAP $LMB$ 2 times!":"Oefen de DUBBELE ZWAARDSLAG\n\nhoud $LMB$ ingedrukt om je zwaard te trekken\n\ntotdat er vonken$Tutorial_Slash2$ van je zwaard komen\n\nen klik dan tweemaal op $LMB$!",
+	"Before entering this room charge your sword $Tutorial_Slash2$\n\nand then quickly\nwalk inside and slash!":"Trek je zwaard voordat je naar binnen gaat\n$Tutorial_Slash2$\n\nloop dan snel naar binnen\nen gebruik je DUBBELE ZWAARDSLAG!",
+	"HOLD $RMB$ to shield.\n\nUse mouse to aim shield.":"Houd $RMB% ingedrukt om je schild de trekken\n\nRicht je schild met de muis.",
+	"Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$":"Loop en spring tegen een muur aan om omhoog te klimmen\n\n Houdt $KEY_D$ en $KEY_A$ ingedrukt.",
+	"Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$":"Zwaardvechters kunnen zand en houten blokken kapotmaken. Richt op de muur en sla je weg erdoorheen $LMB$.",
+	"Automatically pickup things used by your class.":"Je pakt automatisch dingen die jouw karakter kan gebruiken op.",
+	"Press $KEY_SPACE$ to light bomb\n\nAim with mouse.\n\nAgain $KEY_SPACE$ throw it.":"Druk op $KEY_SPACE$ om een bom aan te steken,\nricht met de muis\n\ndruk opnieuw op $KEY_SPACE$ om de bom te gooien\n\nGebruik de momentum van je karakter!",
+	"Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.":"Schild-gliden$Tutorial_Glide$\n\nSpring over de dal en houdt $RMB$ in terwijl je naar boven richt.",
 
 //Tutorial02.as
 	"Stand on the enemy hall$hall$ to capture it.":"Захватите вражескую базу$hall$, зайдя внутрь.",
