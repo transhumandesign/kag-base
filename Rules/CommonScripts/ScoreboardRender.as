@@ -342,7 +342,7 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 			int tier = p.getSupportTier();
 			if(tier > 0)
 			{
-				int tier_icon_start = 16;
+				int tier_icon_start = 15;
 				float x = bottomright.x - tier_start + 8;
 				float extra = 8;
 				GUI::DrawIcon("AccoladeBadges", tier_icon_start + tier, Vec2f(16, 16), Vec2f(x, topleft.y), 0.5f, p.getTeamNum());
