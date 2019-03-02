@@ -170,7 +170,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	//print("custom data: "+customData+" builder: "+Hitters::builder);
 	if (customData == Hitters::builder)
 		damage *= 2;
-	if (customData == Hitters::saw)                //Hitters::saw is the drill hitter.... why
+	if (customData == Hitters::drill)                //Hitters::saw is the drill hitter.... why //fixed
 		damage *= 2;
 	if (customData == Hitters::bomb)
 		damage *= 1.3f;
