@@ -1,11 +1,11 @@
-#include "AdminRedToggleCommon.as"
+#include "ColoredNameToggleCommon.as"
 
 bool ignoreInitial = false;
 
 void onInit(CRules@ this)
 {
-    this.addCommandID("toggle red name command");
-    this.addCommandID("request admin prefs");
+    this.addCommandID(toggle_command);
+    this.addCommandID(prefs_command);
 
     if(getNet().isClient())
     {
@@ -20,7 +20,7 @@ void sendNameColorCommand(CRules@ rules, CPlayer@ player, bool nameColorOn)
 	CBitStream params;
 	params.write_string(toggleID);
 	params.write_bool(nameColorOn);
-	rules.SendCommand(rules.getCommandID("toggle red name command"), params);
+	rules.SendCommand(rules.getCommandID(toggle_command), params);
 
 }
 
@@ -47,21 +47,21 @@ void loadAdminPreferences(CRules@ rules)
 
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
-    InitRedName(this, player);
+    InitColoredName(this, player);
 
     sendNameColorCommand(this, player, this.get_bool(getToggleID(player)));
 
-    if(isAdmin(player))
+    if(isSpecial(player))
     {
         CBitStream params;
         params.write_string(player.getUsername());
-        this.SendCommand(this.getCommandID("request admin prefs"), params);
+        this.SendCommand(this.getCommandID(prefs_command), params);
     }
 }
 
 bool onServerProcessChat(CRules@ this, const string &in textIn, string &out textOut, CPlayer@ player)
 {
-    if (textIn == toggle_string && isAdmin(player))
+    if (toggle_strings.find(textIn) > -1 && isSpecial(player))
     {
         string toggleID = getToggleID(player);
         if (this.exists(toggleID))
@@ -76,7 +76,7 @@ bool onServerProcessChat(CRules@ this, const string &in textIn, string &out text
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
-    if (cmd == this.getCommandID("toggle red name command"))
+    if (cmd == this.getCommandID(toggle_command))
     {
         string toggleID = params.read_string();
         bool visible = params.read_bool();
@@ -95,7 +95,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
             admin_prefs.saveFile("admin_prefs.cfg");
         }
     }
-    else if(cmd == this.getCommandID("request admin prefs"))
+    else if(cmd == this.getCommandID(prefs_command))
     {
         string username = params.read_string();
         if(getLocalPlayer() !is null && username == getLocalPlayer().getUsername())

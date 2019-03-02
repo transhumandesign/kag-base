@@ -1,4 +1,4 @@
-#include "AdminRedToggleCommon.as"
+#include "ColoredNameToggleCommon.as"
 
 f32 getKDR(CPlayer@ p)
 {
@@ -8,12 +8,13 @@ f32 getKDR(CPlayer@ p)
 SColor getNameColour(CPlayer@ p)
 {
     SColor c;
+    bool showColor = coloredNameEnabled(getRules(), p);
 
-    if (p.isDev()) {
+    if (p.isDev() && showColor) {
         c = SColor(0xffb400ff); //dev
-    } else if (p.isGuard()) {
+    } else if (p.isGuard() && showColor) {
         c = SColor(0xffa0ffa0); //guard
-    } else if (isAdmin(p) && redNameEnabled(getRules(), p)) {
+    } else if (isAdmin(p) && showColor) {
         c = SColor(0xfffa5a00); //admin
     } else if (p.isMyPlayer()) {
         c = SColor(0xffffEE44); //my player
