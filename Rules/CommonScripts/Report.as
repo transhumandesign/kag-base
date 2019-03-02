@@ -145,7 +145,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params){
 			this.Sync(b_name + "_report_count", true);
 			this.Sync(p_name + "_reported_" + b_name, true);
 
-			tcpr("*REPORT " + p_name + " " + b_name + " " + this.get_u8(b_name + "_report_count"));
+			tcpr("*REPORT " + p_name + " " + b_name + " " + this.get_u8(b_name + "_report_count") + " " + getNet().joined_servername);
 		}
 	}
 }
