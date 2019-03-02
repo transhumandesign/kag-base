@@ -55,7 +55,7 @@ shared class Accolades
 					community_contributor = true;
 				} else if (s1 == "map") {
 					map_contributor = true;
-				} else if (s1 == "moderator") {
+				} else if (s1 == "moderation") {
 					moderation_contributor = true;
 				}
 
