@@ -723,7 +723,7 @@ shared class WarCore : RulesCore
 	void CheckTeamWon()
 	{
 		// can't lose/modify state if the match is not running
-		if (!rules.isMatchRunning()) { return; }
+		if (!rules.isMatchRunning() || rules.get_bool("tutorial")) { return; }
 
 		int team_won = GetTeamWon();
 		if(team_won >= 0 && team_won < teams.length)
