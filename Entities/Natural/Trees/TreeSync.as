@@ -29,8 +29,6 @@ void InitTree(CBlob@ this, TreeVars@ vars)
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = false;
 
-	this.SetFacingLeft(XORRandom(300) > 150);
-
 	Vec2f pos = this.getPosition();
 
 	//prevent building overlap
@@ -59,22 +57,10 @@ void InitTree(CBlob@ this, TreeVars@ vars)
 
 		while (vars.height < height)
 		{
-			vars.last_grew_time = getGameTime() - vars.growth_time;
-			DoGrow(this, vars);
-			height++;
-		}
-
-		if (height > 1)
-		{
-			DoGrow(this, vars);
-			DoGrow(this, vars);
-			DoGrow(this, vars);
-			DoGrow(this, vars);
-			DoGrow(this, vars);
 			DoGrow(this, vars);
 		}
+		vars.last_grew_time = -1; // we'll check this in onTick when we have the correct game time
 
-		this.getCurrentScript().tickFrequency = 0;
 	}
 }
 
@@ -84,6 +70,12 @@ void onTick(CBlob@ this)
 	{
 		TreeVars@ vars;
 		this.get("TreeVars", @vars);
+
+		if(getNet().isClient() && vars.last_grew_time == -1)
+		{
+			vars.last_grew_time = getGameTime();
+
+		}
 
 		if (vars !is null && (getGameTime() - vars.last_grew_time >= vars.growth_time))
 		{
@@ -150,7 +142,7 @@ void DoGrow(CBlob@ this, TreeVars@ vars)
 			}
 
 			vars.height++;
-			addSegment(this, vars.height);
+			addSegment(this, vars);
 
 		}
 	}
@@ -177,7 +169,6 @@ void DoGrow(CBlob@ this, TreeVars@ vars)
 		if (sector_nobuild !is null && sector_tree !is null)
 		{
 			sector_nobuild.upperleft.y = sector_tree.upperleft.y = sector_nobuild.lowerright.y - (vars.height * segment_length);
-			//printf("gtowe " + vars.height * segment_length );
 		}
 	}
 
@@ -191,14 +182,15 @@ void DoGrow(CBlob@ this, TreeVars@ vars)
 	this.set_u8("height", vars.height);
 }
 
-void addSegment(CBlob@ this, s32 height)
+void addSegment(CBlob@ this, TreeVars@ vars)
 {
 	TreeSegment segment;
 	segment.grown_times = 0;
 	segment.gotsprites = false;
-	segment.height = height;
-	segment.flip = (height + this.getNetworkID()) % 2 == 0;
+	segment.height = vars.height;
+	segment.flip = (vars.height + this.getNetworkID()) % 2 == 0;
 	segment.length = segment_length;
+	segment.r.Reset(vars.r.Next());
 	TreeSegment@ tip = getLastSegment(this);
 
 	if (tip !is null)
