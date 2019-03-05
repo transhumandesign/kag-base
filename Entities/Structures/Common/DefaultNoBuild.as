@@ -38,8 +38,8 @@ void onTick(CBlob@ this)
 		}
 
 		this.getShape().getBoundingRect(ul, lr);
-		ul.x += 1.0f;
-		ul.y += 1.0f;
+		//ul.x += 1.0f;
+		//ul.y += 1.0f;
 
 		lr += extend;
 		this.getMap().server_AddSector(ul, lr, "no build", "", this.getNetworkID());
@@ -61,8 +61,8 @@ void onTick(CBlob@ this)
 		{
 			Vec2f ul, lr;
 			this.getShape().getBoundingRect(ul, lr);
-			ul.x += 1.0f;
-			ul.y += 1.0f;
+			//ul.x += 1.0f;
+			//ul.y += 1.0f;
 			CMap@ map = getMap();
 			const f32 tilesize = map.tilesize;
 
