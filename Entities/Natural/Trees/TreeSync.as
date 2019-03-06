@@ -29,14 +29,19 @@ void InitTree(CBlob@ this, TreeVars@ vars)
 	ShapeConsts@ consts = shape.getConsts();
 	consts.mapCollisions = false;
 
-	this.SetFacingLeft(XORRandom(300) > 150);
-
 	Vec2f pos = this.getPosition();
 
 	//prevent building overlap
 	CMap@ map = this.getMap();
 	const f32 radius = map.tilesize / 2.0f;
 	map.server_AddSector(Vec2f(pos.x - radius, pos.y - radius), Vec2f(pos.x + radius, pos.y + radius), "no build", "", this.getNetworkID());
+
+	if(getNet().isServer())
+	{
+		this.set_s32("last_grew_time", vars.last_grew_time);
+		this.Sync("last_grew_time", true);
+
+	}
 
 	if (this.hasTag("startbig"))
 	{
@@ -52,29 +57,21 @@ void InitTree(CBlob@ this, TreeVars@ vars)
 
 		this.getCurrentScript().tickFrequency = 0;
 	}
-	else if (this.exists("height"))
+	else if (this.exists("grown_times"))
 	{
 		// recreate growth
-		u8 height = this.get_u8("height");
+		u8 grown_times = this.get_u8("grown_times");
 
-		while (vars.height < height)
+		while (vars.grown_times < grown_times)
 		{
-			vars.last_grew_time = getGameTime() - vars.growth_time;
-			DoGrow(this, vars);
-			height++;
-		}
-
-		if (height > 1)
-		{
-			DoGrow(this, vars);
-			DoGrow(this, vars);
-			DoGrow(this, vars);
-			DoGrow(this, vars);
-			DoGrow(this, vars);
 			DoGrow(this, vars);
 		}
 
-		this.getCurrentScript().tickFrequency = 0;
+		if(this.exists("last_grew_time"))
+		{
+			vars.last_grew_time = this.get_s32("last_grew_time");
+		}
+
 	}
 }
 
@@ -89,6 +86,8 @@ void onTick(CBlob@ this)
 		{
 			vars.last_grew_time = getGameTime();
 			DoGrow(this, vars);
+			this.set_s32("last_grew_time", vars.last_grew_time);
+			this.Sync("last_grew_time", true);
 		}
 	}
 }
@@ -150,7 +149,7 @@ void DoGrow(CBlob@ this, TreeVars@ vars)
 			}
 
 			vars.height++;
-			addSegment(this, vars.height);
+			addSegment(this, vars);
 
 		}
 	}
@@ -177,28 +176,27 @@ void DoGrow(CBlob@ this, TreeVars@ vars)
 		if (sector_nobuild !is null && sector_tree !is null)
 		{
 			sector_nobuild.upperleft.y = sector_tree.upperleft.y = sector_nobuild.lowerright.y - (vars.height * segment_length);
-			//printf("gtowe " + vars.height * segment_length );
 		}
 	}
 
 	GrowSegments(this, vars);
 	GrowSprite(this.getSprite(), vars);
 	vars.grown_times++;
+	this.set_u8("grown_times", vars.grown_times);
 
 	if (vars.grown_times >= 15)
 		this.getCurrentScript().tickFrequency = 0;
-
-	this.set_u8("height", vars.height);
 }
 
-void addSegment(CBlob@ this, s32 height)
+void addSegment(CBlob@ this, TreeVars@ vars)
 {
 	TreeSegment segment;
 	segment.grown_times = 0;
 	segment.gotsprites = false;
-	segment.height = height;
-	segment.flip = (height + this.getNetworkID()) % 2 == 0;
+	segment.height = vars.height;
+	segment.flip = (vars.height + this.getNetworkID()) % 2 == 0;
 	segment.length = segment_length;
+	segment.r.Reset(vars.r.Next());
 	TreeSegment@ tip = getLastSegment(this);
 
 	if (tip !is null)

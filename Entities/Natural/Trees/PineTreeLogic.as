@@ -5,15 +5,35 @@
 void onInit(CBlob@ this)
 {
 	InitVars(this);
+
+	u32 seed = 0;
+
+	if(this.exists("tree_rand"))
+	{
+		seed = this.get_u32("tree_rand");
+	}
+	else
+	{
+		seed = this.getNetworkID() * 139 + getGameTime() * 7;
+		if(getNet().isServer())
+		{
+			this.set_u32("tree_rand", seed);
+			this.Sync("tree_rand", true);
+
+		}
+
+	}
+
 	this.server_setTeamNum(-1);
 	TreeVars vars;
-	vars.seed = XORRandom(30000);
-	vars.growth_time = 350 + XORRandom(30);
+	vars.r.Reset(seed);
+	vars.growth_time = 350 + vars.r.NextRanged(30);
 	vars.height = 0;
-	vars.max_height = 5 + XORRandom(3);
+	vars.max_height = 5 + vars.r.NextRanged(3);
 	vars.grown_times = 0;
 	vars.max_grow_times = 30;
 	vars.last_grew_time = getGameTime() - 1; //pretend we started a frame ago ;)
+	this.SetFacingLeft(vars.r.NextRanged(300) > 150);
 	InitTree(this, vars);
 	this.set("TreeVars", vars);
 }
@@ -95,7 +115,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 					animGrow.AddFrame(27);
 					animGrow.AddFrame(28);
 
-					if (XORRandom(2) == 0)
+					if (segment.r.NextRanged(2) == 0)
 					{
 						animGrow.AddFrame(19);
 					}
@@ -123,7 +143,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 					if (newsegment !is null)
 					{
 						Animation@ animGrow = newsegment.addAnimation("grow", 0, false);
-						animGrow.AddFrame(4 + (XORRandom(2) == 0 ? 8 : 0));
+						animGrow.AddFrame(4 + (segment.r.NextRanged(2) == 0 ? 8 : 0));
 
 						newsegment.ResetTransform();
 						newsegment.SetRelativeZ(-80.0f);
@@ -146,13 +166,13 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 						newsegment.ResetTransform();
 						newsegment.SetRelativeZ(-550.0f - (vars.height * 10.0f));
 
-						bool flip = (XORRandom(2) == 0);
+						bool flip = (segment.r.NextRanged(2) == 0);
 						newsegment.SetFacingLeft(flip);
 
-						newsegment.SetOffset(segment.start_pos + Vec2f(((vars.max_height - i * 2) + XORRandom(8)) * 0.5 + 8.0f , 4.0f));
+						newsegment.SetOffset(segment.start_pos + Vec2f(((vars.max_height - i * 2) + segment.r.NextRanged(8)) * 0.5 + 8.0f , 4.0f));
 					}
 
-					if (XORRandom(2) == 0)
+					if (segment.r.NextRanged(2) == 0)
 					{
 						CSpriteLayer@ secondnewsegment = this.addSpriteLayer("leaves doubleside " + i, "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
 
@@ -168,7 +188,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 							secondnewsegment.SetFacingLeft(flip);
 
-							secondnewsegment.SetOffset(segment.start_pos + Vec2f(((vars.max_height - i * 2) + XORRandom(8)) * 0.5 + 8.0f , 4.0f));
+							secondnewsegment.SetOffset(segment.start_pos + Vec2f(((vars.max_height - i * 2) + segment.r.NextRanged(8)) * 0.5 + 8.0f , 4.0f));
 						}
 					}
 				}
