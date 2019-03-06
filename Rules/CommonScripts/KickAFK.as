@@ -21,7 +21,7 @@ void onTick(CRules@ this)
 	CPlayer@ p = getLocalPlayer();
 	CControls@ controls = getControls();
 	if (p is null ||											//no player
-		controls is null ||										//no controls
+		controls is null ||										//no controls										
 		p.getTeamNum() == getRules().getSpectatorTeamNum() ||	//or spectator
 		getNet().isServer())								//or we're running the server
 	{
@@ -75,7 +75,18 @@ void onTick(CRules@ this)
 		}
 		else
 		{
-			p.client_ChangeTeam(this.getSpectatorTeamNum());
+			if(getRules().gamemode_name=="CTF"||getRules().gamemode_name=="TTH")
+			{
+				p.client_ChangeTeam(this.getSpectatorTeamNum());
+			}
+			else
+			{
+				client_AddToChat("You have been AFK way too long, this server may not have a spectator team to swap you to!",SColor(255,0,0,0));
+				client_AddToChat("[!] Please either:",SColor(255,0,0,0));
+				client_AddToChat("-Type !m in chat while being AFK, re-type it when you're back.",SColor(255,0,0,0));
+				client_AddToChat("-Leave the server and come back as soon as you're able to play.",SColor(255,0,0,0));
+			}
+			
 		}
 	}
 }
