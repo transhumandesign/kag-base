@@ -3,6 +3,7 @@
 
 //time (in seconds) between repeated reports
 const u32 reportRepeatTime = 1 * 60;
+u8 nonModTeam=0;	//Sandbox' default team.
 
 const SColor reportMessageColor(255, 255, 0, 0);
 
@@ -10,14 +11,31 @@ void onInit(CRules@ this)
 {
 	this.addCommandID("notify");
 	this.addCommandID("report");
+	this.addCommandID("mod_team");
 }
 
 bool onClientProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
 {
 	if((text_in == "!moderate" || text_in == "!m") && player.isMod())
 	{
-		moderate(this, player);
+		if(this.gamemode_name=="CTF"||this.gamemode_name=="TTH")
+		{
+			moderate(this, player);
+		}
+		else
+		{
+			if(player.getTeamNum()==200)
+			{
+				this.set_bool(player.getUsername() + "_moderator", false);
+				makeModTeam(this,player,nonModTeam,true);
+			}
+			else
+			{
+				joinNewModTeam(this,player);
+			}
 
+		}
+		
 		//false so it doesn't show as normal public chat
 		return false;
 	}
@@ -91,6 +109,31 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 }
 
 void onCommand(CRules@ this, u8 cmd, CBitStream @params){
+	if(getNet().isServer()&&this.getCommandID("mod_team")==cmd)
+	{
+		string p_name=params.read_string();
+		bool on_spec=params.read_bool();
+		u8 previousTeam=params.read_u8();
+		CPlayer@ player=getPlayerByUsername(p_name);
+		if(on_spec)
+		{
+			player.server_setTeamNum(previousTeam);
+			this.server_PlayerDie(player);
+			this.set_bool(p_name + "_moderator", false);
+		}
+		else
+		{
+			CBlob@ corpse=player.getBlob();
+			player.server_setTeamNum(200);
+			if(corpse !is null)
+			{
+			corpse.server_SetPlayer(null);
+			corpse.server_Die();
+			}
+			this.set_bool(p_name + "_moderator", true);
+		}
+
+	}
     if (isClient() && this.getCommandID("report") == cmd)
     {
         if (getLocalPlayer().isMod())
@@ -145,7 +188,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params){
 			this.Sync(b_name + "_report_count", true);
 			this.Sync(p_name + "_reported_" + b_name, true);
 
-			tcpr("*REPORT " + p_name + " " + b_name + " " + this.get_u8(b_name + "_report_count") + " " + getNet().joined_servername);
+			tcpr("*REPORT " + p_name + " " + b_name + " " + this.get_u8(b_name + "_report_count"));
 		}
 	}
 }
@@ -279,4 +322,26 @@ CPlayer@ getPlayerByCharactername(string name)
 	}
 
 	return null;
+}
+
+void makeModTeam(CRules@ this, CPlayer@ player,u8 team, bool isPlayerOnSpec)
+{
+	string playerUsername=player.getUsername();
+
+	CBitStream report_params;
+	report_params.write_string(playerUsername);
+	report_params.write_bool(isPlayerOnSpec);
+	report_params.write_u8(team);
+	this.SendCommand(this.getCommandID("mod_team"), report_params);
+}
+
+void joinNewModTeam(CRules@ this,CPlayer@ player)
+{
+	this.set_bool(player.getUsername() + "_moderator", true);
+	nonModTeam=player.getTeamNum();
+	makeModTeam(this,player,nonModTeam,false);
+	CCamera@ camera = getCamera();
+	CMap@ map = getMap();
+	getHUD().ClearMenus();
+	camera.setPosition(Vec2f(map.getMapDimensions().x / 2, map.getMapDimensions().y / 2));
 }
