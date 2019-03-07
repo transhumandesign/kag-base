@@ -34,8 +34,9 @@
 	"Determining changed scripts...": "Detectando scripts trocados...",
 	"Building downloaded scripts...": "Compilando scripts baixados...",
 	"Be nice to each other, read books and do your homework.": "Respeite os outros, leia livros e faça suas tarefas.",
-	"Authenticating to server...": "Identificando com o servidor...",
-	//Waiting for scripts..?
+	"Authenticating on server...": "Identificando com o servidor...",
+	"Authenticating with Steam\nPlease Wait": "Identificando com a Steam\nPorfavor Espere",
+	"Waiting for scripts...": "Esperando por scripts...",
 ///////////
 
 //// IRRLICHT GUI ////
@@ -53,7 +54,7 @@
 	"PLAY": "Jogar",
 
 //Titlescreen
-	"Solo": "Solo",
+	"Solo": "Um jogador",
 	"Multiplayer": "Multijogador",
 	"Quit": "Sair",
 	"Forum": "Fórum",
@@ -70,6 +71,14 @@
 	"E-mail:": "E-mail:",
 	"Submit": "Enviar",
 	"Open external web browser?": "Abrir navegador externo?",
+
+//Patreon Screen - Maybe changes needed
+	"Support KAG On Patreon!": "Suporte o KAG no Patreon!",
+	"Support the game with a monthly pledge, and choose from a\nvariety of rewards at different tiers.": "Ajude o jogo com um valor mensal, e escolha uma das\nvárias recompensas em diferentes níveis.",
+	"Rewards include access to head packs, priority server access,\ndiscord rewards, fancy capes, and even custom heads!": "Recompensas incluem acesso a pacotes de cabeça, entrada\nreservada em servidores, recompensas no discord, capas, e até cabeças customizadas!",
+	"Proceeds go to continued hosting and development of King Arthur's Gold.": "Fundos vão para manter servidores e o desenvolvimento de King Arthur's Gold.",
+	"Find Out More!": "Saiba Mais!",
+	"Close": "Fechar",
 
 //Solo
 	"TUTORIALS": "TUTORIAS",
@@ -104,7 +113,51 @@
 	"Password:": "Senha:",
 
 //Server Browser
-//TODO//
+	"Play": "Jogar",
+	"Beginner": "Iniciante",
+	"Player Count": "Contagem de Jogadores",
+	"Game Mode": "Modo de Jogo",
+	"Map size": "Tamanho do mapa",
+	"Map Size": "Tamanho do Mapa",
+	"Server Name": "Nome do Servidor",
+	"Favorites Only": "Somente Favoritos",
+	"YELLOW = official server": "AMARELO = servidores oficiais",
+	"WHITE = vanilla server": "BRANCO = servidores padrão",
+	"BLUE = modded server": "AZUL = servidores modificados",
+	"Instant Search: searches for servers containing the query in the server name, description, game mode, IP address, or any player on the server (exact match only for players).": "Pesquisa Rápida: pesquise por servidores contendo a palavra no nome, descrição, modo de jogo, enderço IP, ou qualquer jogador no servidor (combinações exatas somente para jogadores).",
+	"e.g. entering 'Shadlington' will find any servers that Shadlington is playing on, or that have 'Shadlington' in the name/description.": "ex. colocando 'Shadlington' vai procurar qualquer servidor que Shadlington está jogando, ou que tem 'Shadlington' no nome/descrição do servidor.",
+	"Players (%) slider: Use this to set the min and max percent full you want servers to be.": "Jogadores (%): Use para escolher a porcentagem miníma e máxima dos servidores que você quer.",
+	"e.g. set it to 1% min and 99% max to find servers that are not empty and not full, or set it to 50% to 100% to find servers that are 'at least half full'.": "ex. colocando em 1% min e 99% máx para encontrar servidores que não estão vazios e não cheios, ou coloque em 50% e 100% para encontrar servidores que 'estão pelo menos na metade'.",
+	"Map Preview can be dragged with the mouse.": "A prévia do mapa pode ser movida com o mouse",
+	"Players (%):": "Jogadores (%):",
+	"Enter server password": "Senha do Servidor",
+	"Game Mode:": "Modo de Jogo:",
+	" Instant Search...": " Pesquisa Rápida...",
+	"All Gamemodes": "Todos modos de jogo",
+	"CTF": "CTF",
+	"TTH": "TTH",
+	"Modded": "Modificado",
+	"Password": "Senha",
+	"Waiting...": "Esperando...",
+	"{SERVERS} servers with {PLAYERS} players": "{SERVERS} servidores com {PLAYERS} jogadores",
+	"WAR": "WAR",
+	"Players: {CURRENT} / {MAXIMUM}": "Jogadores: {CURRENT} / {MAXIMUM}",
+	"Reserved Slots: {CURRENT} / {MAXIMUM}" :"Espaços Reservados: {CURRENT} / {MAXIMUM}",
+	"Reserved Slots: (NONE)": "Espaços Reservados: (NENHUM)",
+	"Spectators: {COUNT}": "Espectadores: {COUNT}",
+	"Map size: {DIMENSIONS}({SIZE)}": "Tamanho do mapa: {DIMENSIONS}({SIZE})",
+	"SMALL": "Pequeno",
+	"MEDIUM": "Médio",
+	"LARGE": "Grande",
+	"Ping: {TIME}ms ({DESCRIPTION})": "Ping: {TIME}ms ({DESCRIPTION})",
+	"GREAT": "BOM",
+	"OKAY": "OKAY",
+	"LAGGY": "RUIM",
+	"BAD": "PÉSSIMO",
+	"Not Responding": "Não respondendo",
+	//Laggy, good, bad?
+	"BUILDING TIME": "TEMPO DE CONSTRUÇÃO",
+	"GAME IN PROGRESS": "JOGO EM PROGRESSO",
 
 //Settings->Player
 	"Player": "Você",
@@ -209,14 +262,22 @@
 
 //ScoreboardRender.as
 	"Players: {PLAYERCOUNT}": "Jogadores: {PLAYERCOUNT}",
-	"Player"				:"Jogador",
-	"Username"				:"Usuário",
-	"Ping"					:"Ping",
-	"Kills"					:"Abates",
-	"Deaths"				:"Mortes",
-	"KDR"					:"A/M",
-	"Spectators:"			:"Espectadores:",
-	"and more ..."			:"e mais...",
+	"Player"				: "Jogador",
+	"Username"				: "Usuário",
+	"Tier"					: "Nível",
+	"Age"					: "Idade",
+	"Ping"					: "Ping",
+	"Kills"					: "Abates",
+	"Deaths"				: "Mortes",
+	"KDR"					: "A/M",
+	"Spectators:"			: "Espectadores:",
+	"and more ..."			: "e mais...",
+
+//Patreon
+	"This player is a Squire Supporter": "Esse jogador é um Ajudande Escudeiro",
+	"This player is a Knight Supporter": "Esse jogador é um Ajudande Cavaleiro",
+	"This player is a Royal Guard Supporter": "Esse jogador é um Ajudante da Guarda Real",
+	"This player is a Round Table Supporter": "Esse jogador é um Ajudante da Távola Redonda",
 
 //Accolades
 	"Accolades": "Insígnias",
@@ -263,7 +324,7 @@
 	"Red Team": "Time Vermelho",
 
 //TimeToEnd.as
-	"Time is up!\n{TEAM} wins the game!": "Acabou o tempo!\n{TEAM} ganhou a partida!",
+	"Time is up!\n{WINNING_TEAM} wins the game!": "Acabou o tempo!\n{WINNING_TEAM} ganhou a partida!",
 	"Time is up!\nIt's a tie!": "Acabou o tempo!\nEmpate!",
 	"Time left: {MIN}:{SEC}": "Tempo restante: {MIN}:{SEC}",
 
@@ -384,7 +445,15 @@
 	"Start a Vote": "Votação",
 	"Can't Start Vote":	"Não é possível votar",
 	"(Vote already in progress)": "(Votação em progresso)",
-	//Kick
+	//Kick for afk
+	"Seems like you are currently away from your keyboard.": "Parece que você está longe do seu teclado.",
+	"Move around or you will be ": "Se mexa ou você vai ser ",
+	"moved to spectator": "movido para espectador",
+	"kicked": "expulso",
+	" in ": " em ",
+	" seconds!": " segundos!",
+	"AFK penalty avoided.": "Penalidade de Ausência"
+	//kick menu
 	"Kick {USER}?": "Expulsar {USER}?",
 	"Kick": "Expulsar",
 	"Vote Kick": "Votar para Expulsar",
@@ -442,6 +511,8 @@
 
 //ESC menu
 	"Change Team": "Mudar de time",
+	"Change team": "Mudar de time",
+	"Auto-pick teams": "Selecionar automático",
 	"Start a Vote": "Começar votação",
 	"Servers": "Lista de servidores",
 	"Settings": "Configuração",
@@ -545,6 +616,7 @@
 //Buttons
 	"Buy": "Comprar", //CTF Shops
 	"Shop": "Loja", //Shop.as (menu desc) & TradingMenu.as (btn)
+	"Rest": "Descansar",
 	"Swap Class": "Trocar de classe", //OneClassAvailable.as & TentLogic.as (btns)
 	"Swap class": "Trocar de classe", //StandardRespawnCommand.as (menu desc)
 	"Change class": "Trocar de classe", //Hall.as, TDM_Ruins.as, WAR_base.as, Ballista.as, WarBoat.as
@@ -726,6 +798,9 @@
 	"Large Door": "Porta grande", //OLD
 	"Catapult": "Catapulta",
 	"Catapult Rock": "Pedra de catapulta",
+	"Knight": "Cavaleiro",
+	"Archer": "Arqueiro",
+	"Builder": "Construtor",
 
 // Lowercase
 	"migrant": "trabalhador",
@@ -834,11 +909,16 @@
 	"large door": "porta grande", //old
 	"catapult": "catapulta",
 	"catapult rock": "pedra de catapulta",
+	"knight": "cavaleiro",
+	"archer": "arqueiro",
+	"builder": "construtor",
 ///////////
 
 //// ETC ////
 	"Challenge": "Desafio",
 	"Challenges": "Desafios",
+	"Select option": "Selecione opção",
+	"Select phrase": "Selecione frase",
 
 //PlayerCamera.as
 	"Following {CHARACTERNAME} ({USERNAME})": "Seguindo {CHARACTERNAME} ({USERNAME})",
@@ -874,20 +954,20 @@
 	"A fast rowing boat used for quickly getting across water.": "Um bote rápido a remo para atravessar a água.",
 	"A slow armoured boat which acts also as a water base for respawn and class change.": "Um barco reforçado que pode ser usado para resnascer.",
 
-	//"A siege engine designed to break open walls and fortifications.": "Um veículo de cerco usado para quebrar paredes.",
+	"A siege engine designed to break open walls and fortifications.": "Um veículo de cerco usado para quebrar paredes.",
 	"Raw stone material.": "Material de pedra.",
 	"Raw wood material.": "Tábuas de madeira.",
 	"Lanterns help with mining in the dark, and lighten the mood.": "Lanternas ajudam a minerar no escuro, e alivia o humor.",
 	"A circular saw that turns tree logs into wood material.": "Uma serra que transforma troncos em tábuas de madeira.",
-	//"A trading post. Requires a trader to reside inside.": "Casa de trocas. Prescisa de um mercador.",
-	//"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies.": "Excalibur, a espada lendária do rei Arthur, possui poderes mágicos para eliminar seus inimigos.",
+	"A trading post. Requires a trader to reside inside.": "Casa de trocas. Prescisa de um mercador.",
+	"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies.": "Excalibur, a espada lendária do rei Arthur, possui poderes mágicos para eliminar seus inimigos.",
 	"A simple wooden ladder for climbing over defenses.": "Uma escada de madeira para escalar obstáculos.",
 	"A stone boulder useful for crushing enemies.": "Uma rocha, útil para esmagar seus inimigos.",
 	"An empty wooden crate for storing and transporting inventory.": "Uma caixa vazia para guardar e transportar itens.",
 	"An explosive mine. Triggered by contact with an enemy.": "Uma mina explosiva. Detona no contato com inimigos.",
-	//"Fire satchel for Knight only.": "Boma de fogo, somente para cavaleiros",
+	"Fire satchel for Knight only.": "Boma de fogo, somente para cavaleiros",
 	"A health regenerating heart.": "Um coração que recupera vida.",
-	//"A sack for storing more inventory on your back.": "Um saco para guardar mais itens nas suas costas",
+	"A sack for storing more inventory on your back.": "Um saco para guardar mais itens nas suas costas",
 	"A seedling of an oak tree ready for planting.": "Uma semente de carvalho pronta para ser plantada.",
 	"A seedling of a pine tree ready for planting.": "Uma semente de pinho pronta para ser plantada.",
 	"For healing. Don't think about this too much.": "Para curar. Não pense nisso por muito tempo.",
@@ -900,20 +980,21 @@
 	"A stationary arrow-firing death machine.": "Uma máquina mortífera que atira flechas.",
 	"Fire arrows used to set wooden structures on fire.": "Flechas de fogo para queimar estruturas de madeira.",
 
+	"A Quarry intended to mine stone, fueled by wood.": "Uma Pedreira feita para pegar pedra, alimentada por madeira.",
 	"A tunnel for quick transportation.": "Um túnel para transporte rápido.",
 	"Bucket for storing water. Useful for fighting fires.": "Um balde que guarda água. Útil contra incêndios.",
 	"A wooden bucket pre-filled with water for fighting fires.": "Um balde cheio com água para incêndios.",
 	"A generic factory. Requires Research Room, technology upgrade and big enough population to produce items.": "Uma fábrica genérica. Prescisa da sala de pesquisa, atualização de tecnologia e população suficiente para produzir items.",
-	//"Kitchen produces food which heal wounds.": "Cozinha produz comida que cura ferimentos.",
-	//"A plant nursery with grain, oak and pine tree seeds.": "Produz sementes de árvores e grãos",
-	//"Barracks allow changing class to Archer or Knight.": "Barraca que permite troca de classe.",
-	//"A storage than can hold materials and items and share them with other storages.": "Depósitos para guardar itens e compartilha-los com outros depósitos.",
+	"Kitchen produces food which heal wounds.": "Cozinha produz comida que cura ferimentos.",
+	"A plant nursery with grain, oak and pine tree seeds.": "Produz sementes de árvores e grãos",
+	"Barracks allow changing class to Archer or Knight.": "Barraca que permite troca de classe.",
+	"A storage than can hold materials and items and share them with other storages.": "Depósitos para guardar itens e compartilha-los com outros depósitos.",
 	"A mining drill. Increases speed of digging and gathering resources, but gains only half the possible resources.": "Uma broca. Aumenta a velocidade de mineração mas diminui o ganho de recursos pela metade.",
 	"Bombs for Knights & arrows for Archers.\nAutomatically distributed on respawn.": "Bombas para os cavaleiros e arqueiros.\nDistribuidos ao renascer.",
 	"Items used for blowing stuff up.": "Objetos para explodir coisas.",
 	"Items used for lighting things on fire.": "Objetos para incendiar coisas.",
-	//"When team is in possession of stone construction technology it allows builders to make stone walls, doors, traps and spikes.": "Quando um time possui acesso a tecnologias de pedra, ela possibilita construtores a colocarem portas, paredes, armadilhas e espinhos de pedra.",
-	//"Dorm increases population count and allows spawning and healing inside. Requires a migrant.": "Dormitório aumenta a população e permite renascimento e recuperação. Prescisa de um trabalhador",
+	"When team is in possession of stone construction technology it allows builders to make stone walls, doors, traps and spikes.": "Quando um time possui acesso a tecnologias de pedra, ela possibilita construtores a colocarem portas, paredes, armadilhas e espinhos de pedra.",
+	"Dorm increases population count and allows spawning and healing inside. Requires a migrant.": "Dormitório aumenta a população e permite renascimento e recuperação. Prescisa de um trabalhador",
 	"Research room.": "Laboratório de pesquisa.",
 	"Water arrows for Archer. Can extinguish fires and stun enemies.": "Flechas de água para os arqueiros. Pode apagar incêndios e atordoar inimigos.",
 	"Bomb arrows for Archer.": "Flechas explosivas para arqueiro.",
@@ -987,8 +1068,8 @@
 	"Laughing": "Risada",
 	"Smiling": "Sorriso",
 	"Skull": "Caveira",
-	"Laughing crying": "Chorando de rir",
-	"Awkward laughing": "Risada sem graça",
+	"Laughing Crying": "Chorando de rir",
+	"Awkward Laughing": "Risada sem graça",
 	"Smug": "Arrogante",
 	"Troll": "Troll",
 	"What": "Que?",
@@ -1005,8 +1086,8 @@
 	"Heart": "Coração",
 	"Love": "Amor",
 	"Kiss": "Beijo",
-	"Flex": "Muscúlo",
-	"Rude gesture": "Gesto rude",
+	"Flex": "Forte",
+	"Rude Gesture": "Dedo do Meio",
 	"Thumbs down": "Desaprovar",
 	"Thumbs up": "Aprovado",
 	"OK": "Ok",
@@ -1019,6 +1100,19 @@
 	"Fire": "Fogo",
 	"Wall": "Muro",
 	"Musical note": "Nota Musical",
+
+//Emote binder
+	"Select a keybind below, then select the emote you want": "Selecione a tecla embaixo, então escolha o emote que você quer",
+	"Emote Hotkey Binder": "Atalho de Emotes",
+	"Select key 1": "Selecione tecla 1",
+	"Select key 2": "Selecione tecla 2",
+	"Select key 3": "Selecione tecla 3",
+	"Select key 4": "Selecione tecla 4",
+	"Select key 5": "Selecione tecla 5",
+	"Select key 6": "Selecione tecla 6",
+	"Select key 7": "Selecione tecla 7",
+	"Select key 8": "Selecione tecla 8",
+	"Select key 9": "Selecione tecla 9",
 
 //TauntAI.as
 	"haha!": "haha!",
@@ -1354,11 +1448,13 @@
 ///////////
 
 ////LANGUAGE NAMES////
-	"French": "Francês",
-	"Polish": "Polândes",
-	"English": "Inglês",
-	"Russian": "Russo"
-//	"Spanish": "Espanhol",
-//	"Italian": "Italiano"
-///////////
+	"Chinese (zh)": "Chinês (zh)",
+	"English (en)": "Inglês (en)",
+	"French (fr)": "Francês (fr)",
+	"Italian (it)": "Italiano (it)",
+	"Polish (pl)": "Polândes (pl)",
+	"Portuguese (br)": "Português (br)",
+	"Russian (ru)": "Russo (ru)",
+	"Spanish (es)": "Espanhol (es)"
+	///////////
 }
