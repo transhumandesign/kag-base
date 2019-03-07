@@ -28,42 +28,42 @@ your locale does not already exist.
 
 [img]{STEAM_APP_IMAGE}/extras/gif_overview01.png[/img]  .  [img]{STEAM_APP_IMAGE}/extras/gif_overview02.png[/img]
 
-[h2]Físicas 2D + Classe/Multijogador baseado em equipes  + Guerra medieval/Jogo de construção[/h2]
+[h2]FÃ­sicas 2D + Classe/Multijogador baseado em equipes  + Guerra medieval/Jogo de construÃ§Ã£o[/h2]
 
-Algumas coisas que você pode fazer em King Arthur's Gold:
+Algumas coisas que vocÃª pode fazer em King Arthur's Gold:
 
 [list]
-[*] [b]DESTRUIR [/b]o castelo inimigo com explosivos e física
-[*] [b]CONSTRUIR [/b]Defesas com construção livre
-[*] Usar o cenário para [b]QUEIMAR [/b]ou afogar seus inimigos
-[*] [b]DIRIGR [/b]veículos de cerco com seus companheiros
-[*] Liberdade para corre, subir em navios, [b]CAVAR [/b]túneis ou voar pelo céu
+[*] [b]DESTRUIR [/b]o castelo inimigo com explosivos e fÃ­sica
+[*] [b]CONSTRUIR [/b]Defesas com construÃ§Ã£o livre
+[*] Usar o cenÃ¡rio para [b]QUEIMAR [/b]ou afogar seus inimigos
+[*] [b]DIRIGR [/b]veÃ­culos de cerco com seus companheiros
+[*] Liberdade para corre, subir em navios, [b]CAVAR [/b]tÃºneis ou voar pelo cÃ©u
 [*] Interaja com um mundo [b]VIVO [/b] com animais e plantas
-[*] [b]LUTE [/b]com 32 humanos imprevisíveis no multijogador
+[*] [b]LUTE [/b]com 32 humanos imprevisÃ­veis no multijogador
 [*] [b]MODOS[/b] de jogo um jogador, multijogador cooperativo e competitivo
-[*] [b]CUSTOMIZE [/b]com 60+ cabeças
-[*] [b]CRIE [/b]sua própria aventura com modificações e scripts feitos pela comunidade
+[*] [b]CUSTOMIZE [/b]com 60+ cabeÃ§as
+[*] [b]CRIE [/b]sua prÃ³pria aventura com modificaÃ§Ãµes e scripts feitos pela comunidade
 [/list]
 
 [img]{STEAM_APP_IMAGE}/extras/gif_overview03.png[/img]
 
-King Arthur's Gold mistura o aspecto cooperativo de [i]Lost Vikings[/i], junta com toda a destruição de[i]Worms[/i] e estilo visual com ação de [i]Metal Slug[/i], feito pelos criadores de [i]Soldat[/i].
+King Arthur's Gold mistura o aspecto cooperativo de [i]Lost Vikings[/i], junta com toda a destruiÃ§Ã£o de[i]Worms[/i] e estilo visual com aÃ§Ã£o de [i]Metal Slug[/i], feito pelos criadores de [i]Soldat[/i].
 
 # Short Description:
 
-Você gostaria de [b]demolir [/b]as defesas do seu oponente e [b]derrubar [/b]ela com FÍSICAS 2D? Você iria gostar de [b]construir [/b]castelos, armadilhas e veículso de cerco no MULTIJOGADOR?
+VocÃª gostaria de [b]demolir [/b]as defesas do seu oponente e [b]derrubar [/b]ela com FÃSICAS 2D? VocÃª iria gostar de [b]construir [/b]castelos, armadilhas e veÃ­culso de cerco no MULTIJOGADOR?
 
 ###############################################################################
 # King Arthur's Gold: Flags of the World Heads Pack
 
 # Description:
 
-Essa DLC Cosmética adiciona mais de 120 cabeças únicas (mais de 60 por gênero) para King Arthur's Gold.
+Essa DLC CosmÃ©tica adiciona mais de 120 cabeÃ§as Ãºnicas (mais de 60 por gÃªnero) para King Arthur's Gold.
 
-Cada uma delas representa uma bandeira do mundo. Também existe uma bandeira de Pirata e uma bandeira Arco iris/Orgulho.
-Use elas para celebrar sua herança e traga algumas cores ao campo de batalha!
+Cada uma delas representa uma bandeira do mundo. TambÃ©m existe uma bandeira de Pirata e uma bandeira Arco iris/Orgulho.
+Use elas para celebrar sua heranÃ§a e traga algumas cores ao campo de batalha!
 
-Prévia:
+PrÃ©via:
 
 [list]
 [img]{STEAM_APP_IMAGE}/extras/flag_heads_preview.png[/img]
@@ -72,90 +72,90 @@ Prévia:
 Lista de bandeiras suportadas:
 
 [list]
-[*]Polônia
+[*]PolÃ´nia
 [*]Australia
 [*]Inglaterra
 [*]Irlanda
-[*]Escócia
-[*]País de Gales
-[*]Nova Zelândia
-[*]Aborígene Australiano
+[*]EscÃ³cia
+[*]PaÃ­s de Gales
+[*]Nova ZelÃ¢ndia
+[*]AborÃ­gene Australiano
 [*]Tino Rangatiratanga (Maori)
-[*]Canadá
+[*]CanadÃ¡
 [*]EUA
-[*]Itália
+[*]ItÃ¡lia
 [*]Alemanha
-[*]Rússia
-[*]França
-[*]Países Baixos
-[*]Suécia
+[*]RÃºssia
+[*]FranÃ§a
+[*]PaÃ­ses Baixos
+[*]SuÃ©cia
 [*]Nouruega
 [*]Espanha
-[*]Bélgica
-[*]Finlândia
+[*]BÃ©lgica
+[*]FinlÃ¢ndia
 [*]Dinamarca
 [*]Portugal
 [*]Turquia
-[*]Islândia
-[*]Suíça
+[*]IslÃ¢ndia
+[*]SuÃ­Ã§a
 [*]Hungria
-[*]Bielorrússia
-[*]Eslováquia
-[*]Letônia
+[*]BielorrÃºssia
+[*]EslovÃ¡quia
+[*]LetÃ´nia
 [*]Israel
 [*]Palestina
-[*]República Czech
-[*]Ucrânia
-[*]México
+[*]RepÃºblica Czech
+[*]UcrÃ¢nia
+[*]MÃ©xico
 [*]Chile
 [*]Brasil
 [*]Argentina
 [*]Jamaica
-[*]Papua Nova Guiné
+[*]Papua Nova GuinÃ©
 [*]Tonga
 [*]Samoa
-[*]Coréia
+[*]CorÃ©ia
 [*]China
 [*]Singapura
-[*]Tailândia
-[*]Japão
+[*]TailÃ¢ndia
+[*]JapÃ£o
 [*]Hong Kong
-[*]Malásia
+[*]MalÃ¡sia
 [*]Taiwan
-[*]Indonésia
+[*]IndonÃ©sia
 [*]Filipinas
-[*]Índia
-[*]Vietnã
-[*]África do Sul
+[*]Ãndia
+[*]VietnÃ£
+[*]Ãfrica do Sul
 [*]Egito
-[*]Quênia
-[*]Somália
-[*]Sudão
-[*]Geórgia
-[*]Grécia
-[*]Síria
-[*]Bandeira da Independência Síria
+[*]QuÃªnia
+[*]SomÃ¡lia
+[*]SudÃ£o
+[*]GeÃ³rgia
+[*]GrÃ©cia
+[*]SÃ­ria
+[*]Bandeira da IndependÃªncia SÃ­ria
 [*]Mali
-[*]Áustria
-[*]Estônia
-[*]Tunísia
-[*]Líbia
-[*]Lituânia
+[*]Ãustria
+[*]EstÃ´nia
+[*]TunÃ­sia
+[*]LÃ­bia
+[*]LituÃ¢nia
 [*]Ilhas Faroe
 [*]Porto Rico
 [*]Cuba
-[*]Groenlândia
-[*]República Dominicada
+[*]GroenlÃ¢ndia
+[*]RepÃºblica Dominicada
 [*]Iraque
 [*]Pirata
 [*]Arco iris
 [/list]
 
-Pedidos para paises/nações etc irão ser considerados por email.
+Pedidos para paises/naÃ§Ãµes etc irÃ£o ser considerados por email.
 # Short Description:
 
 
-Essa DLC Cosmética adiciona mais de 120 cabeças únicas (mais de 60 por gênero) representando bandeiras mundiais para King Arthur's Gold.
+Essa DLC CosmÃ©tica adiciona mais de 120 cabeÃ§as Ãºnicas (mais de 60 por gÃªnero) representando bandeiras mundiais para King Arthur's Gold.
 
 
 ###############################################################################
@@ -163,22 +163,22 @@ Essa DLC Cosmética adiciona mais de 120 cabeças únicas (mais de 60 por gênero) r
 
 # Description:
 
-Traga o sabor de histórias de fantasia para King Arthur's Gold! Aproveite jogar com suas raças de fantasia favoritas e ajude com o desenvolvimento!
+Traga o sabor de histÃ³rias de fantasia para King Arthur's Gold! Aproveite jogar com suas raÃ§as de fantasia favoritas e ajude com o desenvolvimento!
 
-Esse tema foi votado como o favorito de quatro pela comunidade, e nós estamos animados para trazer essa segunda DLC para o KAG na Steam. Essas cabeças únicas, de alta qualidade vão te ajudar a aparecer na multidão.
+Esse tema foi votado como o favorito de quatro pela comunidade, e nÃ³s estamos animados para trazer essa segunda DLC para o KAG na Steam. Essas cabeÃ§as Ãºnicas, de alta qualidade vÃ£o te ajudar a aparecer na multidÃ£o.
 
 
 [img]{STEAM_APP_IMAGE}/extras/PromoPreview.png[/img]
 
-[b]Lista completa de cabeças:[/b]
+[b]Lista completa de cabeÃ§as:[/b]
 [list]
 [*]Hobbit
 [*]Gnomo
-[*]Anão Soldado
-[*]Anão Mineiro
+[*]AnÃ£o Soldado
+[*]AnÃ£o Mineiro
 [*]Elfo da Floresta
-[*]Espectro da Escuridão
-[*]Mago/Bruxa (Versão Clara e Escura) 
+[*]Espectro da EscuridÃ£o
+[*]Mago/Bruxa (VersÃ£o Clara e Escura) 
 [*]High Elf
 [*]Batedor
 [*]Paladino
@@ -189,12 +189,12 @@ Esse tema foi votado como o favorito de quatro pela comunidade, e nós estamos an
 [*]Troll Ciclope
 [*]Diabo
 [/list]
-Todas cabeças são incluídas para masculino e feminino.
+Todas cabeÃ§as sÃ£o incluÃ­das para masculino e feminino.
 
 
 # Short Description:
 
-Traga o sabor de histórias de fantasia para King Arthur's Gold! Como votado pela comunidade, essas cabeças exclusivas vão te ajudar a se tornar um anão, elfo, goblin, batedor, mago, bruxo, hobbit, espectro da escuridão e mais!
+Traga o sabor de histÃ³rias de fantasia para King Arthur's Gold! Como votado pela comunidade, essas cabeÃ§as exclusivas vÃ£o te ajudar a se tornar um anÃ£o, elfo, goblin, batedor, mago, bruxo, hobbit, espectro da escuridÃ£o e mais!
 
 ###############################################################################
 # Misc/Shared Content
@@ -203,7 +203,7 @@ Traga o sabor de histórias de fantasia para King Arthur's Gold! Como votado pela
 
 # Legal Line:
 
-King Arthur's Gold is Copyright © 2011-2017 Transhuman Design, All Rights Reserved.
+King Arthur's Gold is Copyright Â© 2011-2017 Transhuman Design, All Rights Reserved.
 
 ###############################################################################
 # Thanks!
