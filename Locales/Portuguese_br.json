@@ -445,14 +445,6 @@
 	"Start a Vote": "Votação",
 	"Can't Start Vote":	"Não é possível votar",
 	"(Vote already in progress)": "(Votação em progresso)",
-	//Kick for afk
-	"Seems like you are currently away from your keyboard.": "Parece que você está longe do seu teclado.",
-	"Move around or you will be ": "Se mexa ou você vai ser ",
-	"moved to spectator": "movido para espectador",
-	"kicked": "expulso",
-	" in ": " em ",
-	" seconds!": " segundos!",
-	"AFK penalty avoided.": "Penalidade de Ausência"
 	//kick menu
 	"Kick {USER}?": "Expulsar {USER}?",
 	"Kick": "Expulsar",
