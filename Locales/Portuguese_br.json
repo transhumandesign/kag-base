@@ -37,6 +37,8 @@
 	"Authenticating on server...": "Identificando com o servidor...",
 	"Authenticating with Steam\nPlease Wait": "Identificando com a Steam\nPorfavor Espere",
 	"Waiting for scripts...": "Esperando por scripts...",
+	"Waiting for files...": "Esperando por arquivos...",
+	"Downloading mods - Press ESC to cancel": "Baixando mods - Pressione ESC para cancelar",
 ///////////
 
 //// IRRLICHT GUI ////
