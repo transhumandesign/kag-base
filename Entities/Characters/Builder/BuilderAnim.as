@@ -81,7 +81,7 @@ void onTick(CSprite@ this)
 	}
 	// animations
 
-	const u8 knocked = getKnocked(blob);
+	const bool knocked = isKnocked(blob);
 	const bool action2 = blob.isKeyPressed(key_action2);
 	const bool action1 = blob.isKeyPressed(key_action1);
 
@@ -100,7 +100,7 @@ void onTick(CSprite@ this)
 			return;
 		}
 
-		if (knocked > 0)
+		if (knocked)
 		{
 			if (inair)
 			{
@@ -188,7 +188,7 @@ void onTick(CSprite@ this)
 
 	//set the attack head
 
-	if (knocked > 0)
+	if (knocked)
 	{
 		blob.Tag("dead head");
 	}

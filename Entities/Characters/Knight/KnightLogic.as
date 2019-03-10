@@ -97,7 +97,7 @@ void onSetPlayer(CBlob@ this, CPlayer@ player)
 
 void onTick(CBlob@ this)
 {
-	u8 knocked = getKnocked(this);
+	bool knocked = isKnocked(this);
 
 	if (this.isInInventory())
 		return;
@@ -142,7 +142,7 @@ void onTick(CBlob@ this)
 
 	//with the code about menus and myplayer you can slash-cancel;
 	//we'll see if knights dmging stuff while in menus is a real issue and go from there
-	if (knocked > 0)// || myplayer && getHUD().hasMenus())
+	if (knocked)// || myplayer && getHUD().hasMenus())
 	{
 		knight.state = KnightStates::normal; //cancel any attacks or shielding
 		knight.swordTimer = 0;
@@ -300,7 +300,7 @@ void onTick(CBlob@ this)
 		if (knight.swordTimer >= KnightVars::slash_charge_limit)
 		{
 			Sound::Play("/Stun", pos, 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
-			SetKnocked(this, 15);
+			SetKnocked(this, 15, true);
 		}
 
 		bool strong = (knight.swordTimer > KnightVars::slash_charge_level2);
@@ -966,7 +966,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		if (knight.state == KnightStates::shielddropping &&
 		        (!onground || isSliding(knight)) &&
 		        (blob.getShape() !is null && !blob.getShape().isStatic()) &&
-		        getKnocked(blob) == 0)
+		        !isKnocked(blob))
 		{
 			Vec2f pos = this.getPosition();
 			Vec2f vel = this.getOldVelocity();
@@ -1082,12 +1082,12 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	        && blockAttack(hitBlob, velocity, 0.0f))
 	{
 		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
-		SetKnocked(this, 30);
+		SetKnocked(this, 30, true);
 	}
 
 	if (customData == Hitters::shield)
 	{
-		SetKnocked(hitBlob, 20);
+		SetKnocked(hitBlob, 20, true);
 		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 	}
 }
