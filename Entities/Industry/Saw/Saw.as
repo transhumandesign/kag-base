@@ -160,13 +160,13 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 	    name == "mat_wood" ||
 	    name == "tree_bushy" ||
 	    name == "tree_pine"||
-	    name == "mine")
+	    (name == "mine"&&blob.getTeamNum()==this.getTeamNum()))
 	{
 		return false;
 	}
 
 	//flesh blobs have to be fed into the saw part
-	if (blob.hasTag("flesh"))
+	if (blob.hasTag("flesh")||(name=="mine"))
 	{
 		Vec2f pos = this.getPosition();
 		Vec2f bpos = blob.getPosition();
