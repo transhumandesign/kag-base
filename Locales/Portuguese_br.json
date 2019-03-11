@@ -157,9 +157,10 @@
 	"LAGGY": "RUIM",
 	"BAD": "PÉSSIMO",
 	"Not Responding": "Não respondendo",
-	//Laggy, good, bad?
 	"BUILDING TIME": "TEMPO DE CONSTRUÇÃO",
 	"GAME IN PROGRESS": "JOGO EM PROGRESSO",
+	"Disconnected by server": "Desconectado pelo servidor",
+	"WRONG SERVER PASSWORD": "SENHA DO SERVIDOR ERRADA",
 
 //Settings->Player
 	"Player": "Você",
@@ -1145,7 +1146,7 @@
 	//Global
 	"Taunt": "Provocação",
 	"Select category": "Selecione categoria",
-	"(no selection": "(sem seleção",
+	"(no selection)": "(sem seleção)",
 
 	//Answer
 	"Yes": "Sim",
