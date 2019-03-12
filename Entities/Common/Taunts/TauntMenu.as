@@ -13,9 +13,22 @@ int cooldown_time = 0;
 
 void onInit(CRules@ rules)
 {
+	string filename = "TauntEntries.cfg";
+	string cachefilename = "../Cache/" + filename;
 	ConfigFile cfg;
-	if (!cfg.loadFile("../Cache/TauntEntries.cfg")
-	 && !cfg.loadFile("TauntEntries.cfg"))
+
+	//attempt to load from cache first
+	bool loaded = false;
+	if(CFileMatcher(cachefilename).getFirst() == cachefilename && cfg.loadFile(cachefilename))
+	{
+		loaded = true;
+	}
+	else if (cfg.loadFile(filename))
+	{
+		loaded = true;
+	}
+
+	if(!loaded)
 	{
 		return;
 	}

@@ -153,7 +153,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			if (magBlob !is null)
 			{
 				magBlob.server_DetachFromAll();
-				this.server_PutInInventory(magBlob);
 			}
 			blob.server_DetachFromAll();
 			this.server_AttachTo(blob, "MAG");

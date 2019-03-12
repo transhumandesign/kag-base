@@ -16,7 +16,7 @@ int getHeadsPackIndex(int headIndex)
 {
 	if (headIndex > 255) {
 		if ((headIndex % 256) > NUM_UNIQUEHEADS) {
-			return Maths::Min(getHeadsPackCount() - 1, Maths::Floor(headIndex / 255.0f));
+			return Maths::Min(getHeadsPackCount() - 1, Maths::Floor(headIndex / 256.0f));
 		}
 	}
 	return 0;
@@ -138,7 +138,13 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 			Accolades@ acc = getPlayerAccolades(player.getUsername());
 			if (acc.hasCustomHead())
 			{
-				texture_file = "Sprites/" + acc.customHeadTexture + ".png";
+				string texture_spec = acc.customHeadTexture;
+				//correct the spec for special-case patreon heads
+				if(texture_spec == "PATREON") {
+					texture_spec = "PatreonHeads";
+				}
+
+				texture_file = "Sprites/" + texture_spec + ".png";
 				headIndex = acc.customHeadIndex;
 				headsPackIndex = 0;
 				override_frame = true;

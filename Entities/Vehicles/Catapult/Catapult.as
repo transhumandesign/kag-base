@@ -134,8 +134,14 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!Vehicle_AddFlipButton(this, caller) && this.getTeamNum() == caller.getTeamNum() && isOverlapping(this, caller) && !caller.isAttached())
-	{
+	CBlob@ occupiedBlob = this.getAttachments().getAttachmentPointByName("MAG").getOccupied();
+	if (
+		!Vehicle_AddFlipButton(this, caller) &&
+		this.getTeamNum() == caller.getTeamNum() &&
+		isOverlapping(this, caller) &&
+		!caller.isAttached() &&
+		(occupiedBlob is null || !occupiedBlob.hasTag("player"))
+	) {
 		Vehicle_AddLoadAmmoButton(this, caller);
 	}
 }
@@ -224,6 +230,12 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 		if (isKnockable(bullet))
 		{
 			SetKnocked(bullet, 30);
+		}
+
+		if (bullet.getName() == "boulder") // rock n' roll baby
+		{
+			bullet.getShape().getConsts().mapCollisions = false;
+			bullet.getShape().getConsts().collidable = false;
 		}
 	}
 

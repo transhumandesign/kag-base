@@ -24,19 +24,23 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	//quick switch class
-	CBlob@ blob = getLocalPlayerBlob();
-	if (blob !is null && blob.isMyPlayer())
+	if(enable_quickswap)
 	{
-		if (
-			canChangeClass(this, blob) && blob.getTeamNum() == this.getTeamNum() && //can change class
-			blob.isKeyJustReleased(key_use) && //just released e
-			isTap(blob, 4) && //tapped e
-			blob.getTickSinceCreated() > 1 //prevents infinite loop of swapping class
-		) {
-			CycleClass(this, blob);
+		//quick switch class
+		CBlob@ blob = getLocalPlayerBlob();
+		if (blob !is null && blob.isMyPlayer())
+		{
+			if (
+				canChangeClass(this, blob) && blob.getTeamNum() == this.getTeamNum() && //can change class
+				blob.isKeyJustReleased(key_use) && //just released e
+				isTap(blob, 4) && //tapped e
+				blob.getTickSinceCreated() > 1 //prevents infinite loop of swapping class
+			) {
+				CycleClass(this, blob);
+			}
 		}
 	}
+
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)

@@ -47,7 +47,7 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 						}
 						else if(this.get_u32(p_name + "_reported_at") > 0)
 						{
-							client_AddToChat("You have already reported a player recently.", reportMessageColor);
+							client_AddToChat("You have already reported a player recently", reportMessageColor);
 						}
 					}
 					else
@@ -145,21 +145,36 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params){
 			this.Sync(b_name + "_report_count", true);
 			this.Sync(p_name + "_reported_" + b_name, true);
 
-			tcpr("*REPORT " + p_name + " " + b_name + " " + this.get_u8(b_name + "_report_count"));
+			tcpr("*REPORT " + p_name + " " + b_name + " " + this.get_u8(b_name + "_report_count") + " " + getNet().joined_servername);
 		}
 	}
 }
 
 bool reportAllowed(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 {
-	if (player is null or baddie is null) return false;
+	if (player is null || baddie is null) return false;
 
 	string p_name = player.getUsername();
 	string b_name = baddie.getUsername();
 
-	//unique player can not report another unique player more than once
+	//cannot report yourself
+	if (baddie is player)
+	{
+		client_AddToChat("You cannot report yourself", reportMessageColor);
+		return false;
+	}
+
+	//cannot report bots
+	if (baddie.isBot())
+	{
+		client_AddToChat("You cannot report a bot", reportMessageColor);
+		return false;
+	}
+
+	//unique player cannot report another unique player more than once
 	if (this.get_bool(p_name + "_reported_" + b_name))
 	{
+		client_AddToChat("You cannot report the same player twice", reportMessageColor);
 		return false;
 	}
 	

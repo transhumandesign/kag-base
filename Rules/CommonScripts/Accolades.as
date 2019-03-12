@@ -19,6 +19,10 @@ shared class Accolades
 	int bronze = 0;
 	int participation = 0;
 
+	//cape info
+	int capeAwarded = 0;
+	int capeMonths = 0;
+
 	//custom head info
 	int customHeadAwarded = 0;              //(remains zero for non-custom-heads)
 	string customHeadTexture = "";          //the head texture to use
@@ -55,7 +59,7 @@ shared class Accolades
 					community_contributor = true;
 				} else if (s1 == "map") {
 					map_contributor = true;
-				} else if (s1 == "moderator") {
+				} else if (s1 == "moderation") {
 					moderation_contributor = true;
 				}
 
@@ -81,6 +85,13 @@ shared class Accolades
 
 				string s3 = chunks[0];
 				chunks.removeAt(0);
+
+				//(cape prize)
+				if (s1 == "cape")
+				{
+					capeAwarded = parseInt(s2);
+					capeMonths = parseInt(s3);
+				}
 
 				//4-part accolades
 				if (chunks.length == 0) continue;
@@ -110,19 +121,38 @@ shared class Accolades
 
 	bool hasCustomHead()
 	{
-		return
-			//sanity check
-			customHeadAwarded > 0 &&
-			//actual days measurement
-			Time_DaysSince(customHeadAwarded) <= 31 * customHeadMonths;
+		bool hashead = false;
+		if (customHeadTexture == "PATREON")
+		{
+			CPlayer@ p = getPlayerByUsername(username);
+			if(p !is null)
+			{
+				hashead = (p.getSupportTier() >= SUPPORT_TIER_ROUNDTABLE);
+			}
+		}
+
+		if (customHeadAwarded > 0)
+		{
+			//not current patron?
+			if(!hashead)
+			{
+				hashead = Time_DaysSince(customHeadAwarded) <= 31 * customHeadMonths;
+			}
+		}
+		return hashead;
 	}
 
+	bool hasCape()
+	{
+		return (capeAwarded > 0 && Time_DaysSince(capeAwarded) <= 31 * capeMonths);
+	}
 };
 
 //we keep a limit on the accolades kept in memory
 //there's not much harm storage-wise but this getting too big can degrade perf
 //on servers in the long run, as there's a lot of slow linear searches on the array
-const int accolades_limit = 100;
+//(dynamically modified in getPlayerAccolades)
+int accolades_limit = 10;
 
 //used to lazy-load the accolades config and array as needed
 //(this means we dont need to be added to any gamemode specifically)
@@ -192,9 +222,12 @@ Accolades@ getPlayerAccolades(string username)
 	a.push_back(ac);
 
 	//shift out "last added" if it's not used
-	//todo: use a LRU elimination scheme
 	//note: as handles are returned and these are AS objects
 	//      there's no harm in this; live handles will not be erased
+	//todo: use a LRU elimination scheme
+
+	//(dynamic limit)
+	accolades_limit = getPlayersCount() + 2;
 	if(a.length > accolades_limit)
 	{
 		a.removeAt(0);
