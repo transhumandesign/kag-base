@@ -6,20 +6,32 @@
 #include "FireParticle.as";
 #include "Hitters.as";
 
+const float BURN_RATE = 0.4f;
+const int FUEL_POTENCY = 10;
+const int MAX_BURN_TIME = 100;
+
 void onInit(CBlob@ this)
 {
-	this.getCurrentScript().tickFrequency = 9;
+	this.getCurrentScript().tickFrequency = 10;
 	this.getSprite().SetEmitSound("CampfireSound.ogg");
-	this.getSprite().SetAnimation("fire");
+	this.getSprite().SetAnimation("nofire");
 	this.getSprite().SetFacingLeft(XORRandom(2) == 0);
 
-	this.SetLight(true);
+	this.SetLight(false);
 	this.SetLightRadius(164.0f);
 	this.SetLightColor(SColor(255, 255, 240, 171));
 
 	this.Tag("fire source");
-	//this.server_SetTimeToDie(60*3);
 	this.getSprite().SetZ(-20.0f);
+
+	if (this.getTeamNum() != 255)
+	{
+		this.set_f32("fire time", 0);
+	}
+	else
+	{
+		this.set_f32("fire time", MAX_BURN_TIME);
+	}
 
 	this.addCommandID("extinguish");
 }
@@ -31,6 +43,21 @@ void onTick(CBlob@ this)
 		makeFireParticle(this.getPosition() + getRandomVelocity(90.0f, 3.0f, 90.0f));
 	}
 
+	if (this.get_f32("fire time") > 0)
+	{
+		Ignite(this);
+
+		if (this.getTeamNum() != 255)
+		{
+			f32 fireTime = Maths::Max(this.get_f32("fire time") - BURN_RATE, 0);
+			this.set_f32("fire time", fireTime);
+		}
+	}
+	else
+	{
+		Extinguish(this);
+	}
+
 	if (this.isInWater())
 	{
 		Extinguish(this);
@@ -39,18 +66,31 @@ void onTick(CBlob@ this)
 	if (this.isInFlames())
 	{
 		Ignite(this);
+		f32 fireTime = Maths::Max(this.get_f32("fire time"), MAX_BURN_TIME / 2);
+		this.set_f32("fire time", fireTime);
 	}
 }
 
-
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
-{	
-	if (blob !is null && this.getSprite().isAnimation("fire"))
+{
+	//prevent being able to throw fireplaces into other blobs
+	if (blob !is null && this.getVelocity().LengthSquared() < 1.0f)
 	{
-		CBlob@ food = cookFood(blob);
-		if (food !is null)
+		if (this.getSprite().isAnimation("fire"))
 		{
-			food.setVelocity(blob.getVelocity().opMul(0.5f));
+			CBlob@ food = cookFood(blob);
+			if (food !is null)
+			{
+				food.setVelocity(blob.getVelocity().opMul(0.5f));
+			}
+		}
+
+		if (blob.getName() == "log")
+		{
+			f32 fireTime = Maths::Min(this.get_f32("fire time") + FUEL_POTENCY, MAX_BURN_TIME);
+			this.set_f32("fire time", fireTime);
+			blob.server_Die();
+			blob.getSprite().PlaySound("SparkleShort.ogg");
 		}
 	}
 }
@@ -72,7 +112,7 @@ void onInit(CSprite@ this)
 			anim.AddFrame(2);
 			anim.AddFrame(3);
 		}
-		fire.SetVisible(true);
+		fire.SetVisible(false);
 	}
 }
 
@@ -86,6 +126,8 @@ void Extinguish(CBlob@ this)
 	this.getSprite().SetAnimation("nofire");
 	this.getSprite().SetEmitSoundPaused(true);
 	this.getSprite().PlaySound("/ExtinguishFire.ogg");
+
+	this.set_f32("fire time", 0);
 	
 	CSpriteLayer@ fire = this.getSprite().getSpriteLayer("fire_animation_large");
 	if (fire !is null)
@@ -121,4 +163,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		Extinguish(this);
 	}
 	return damage;
+}
+
+bool canBePickedUp(CBlob@ this, CBlob@ blob)
+{
+	return this.getSprite().isAnimation("nofire");
 }

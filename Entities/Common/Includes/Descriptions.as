@@ -38,6 +38,7 @@ namespace Descriptions
 	saw                        = getTranslatedString("A circular saw that turns tree logs into wood material."),
 	drill                      = getTranslatedString("A mining drill. Increases speed of digging and gathering resources, but gains only half the possible resources."),
 	crate                      = getTranslatedString("An empty wooden crate for storing and transporting inventory."),
+	fireplace                  = getTranslatedString("A log-powered fireplace which ignites arrows that pass through its flames."),
 	food                       = getTranslatedString("For healing. Don't think about this too much."),
 
 	tradingpost                = getTranslatedString("A trading post. Requires a trader to reside inside."),
