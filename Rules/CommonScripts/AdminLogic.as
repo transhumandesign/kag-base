@@ -21,7 +21,6 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 	    {
 		    player.server_setTeamNum(previousTeam);
 		    this.server_PlayerDie(player); //force the player to join his old team.
-		    this.set_bool(p_name + "_moderator", false);
 	    }
 	    else
 	    {
@@ -32,7 +31,6 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 			    corpse.server_SetPlayer(null); //a body with no spirit is a useless corpse.
 			    corpse.server_Die(); //destroy the corpse.
 		    }
-		    this.set_bool(p_name + "_moderator", true);
 	    }
     }
     //Reporting.
