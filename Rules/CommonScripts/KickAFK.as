@@ -3,6 +3,7 @@
 // move people with kick immunity to spec instead of doing nothing -mazey
 
 #define CLIENT_ONLY
+#include "AdminLogic.as"
 
 bool warned = false;
 int warnTime = 0;
@@ -75,17 +76,8 @@ void onTick(CRules@ this)
 		}
 		else
 		{
-			if(getRules().gamemode_name=="CTF"||getRules().gamemode_name=="TTH")
-			{
-				p.client_ChangeTeam(this.getSpectatorTeamNum());
-			}
-			else
-			{
-				client_AddToChat("You have been AFK way too long, this server may not have a spectator team to swap you to!",SColor(255,0,0,0));
-				client_AddToChat("[!] Please either:",SColor(255,0,0,0));
-				client_AddToChat("-Type !m in chat while being AFK, re-type it when you're back.",SColor(255,0,0,0));
-				client_AddToChat("-Leave the server and come back as soon as you're able to play.",SColor(255,0,0,0));
-			}
+				joinNewSpecTeam(this, getLocalPlayer()); //Force-swap to spec team.
+				client_AddToChat("You have just been swapped to spectator team, type !m to get back.", SColor(255,0,0,0));
 		}
 	}
 }
