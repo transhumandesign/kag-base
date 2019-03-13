@@ -34,24 +34,24 @@ Algumas coisas que você pode fazer em King Arthur's Gold:
 
 [list]
 [*] [b]DESTRUIR [/b]o castelo inimigo com explosivos e física
-[*] [b]CONSTRUIR [/b]Defesas com construção livre
+[*] [b]CONSTRUIR [/b]defesas com construção livre
 [*] Usar o cenário para [b]QUEIMAR [/b]ou afogar seus inimigos
-[*] [b]DIRIGR [/b]veículos de cerco com seus companheiros
-[*] Liberdade para corre, subir em navios, [b]CAVAR [/b]túneis ou voar pelo céu
-[*] Interaja com um mundo [b]VIVO [/b] com animais e plantas
-[*] [b]LUTE [/b]com 32 humanos imprevisíveis no multijogador
+[*] [b]DIRIGIR [/b]veículos de cerco com seus companheiros
+[*] Liberdade para correr, usar navios, [b]CAVAR [/b]túneis ou voar pelo céu
+[*] Interagir com um mundo [b]VIVO [/b] com animais e plantas
+[*] [b]LUTAR [/b]com 32 humanos imprevisíveis no multijogador
 [*] [b]MODOS[/b] de jogo um jogador, multijogador cooperativo e competitivo
-[*] [b]CUSTOMIZE [/b]com 60+ cabeças
-[*] [b]CRIE [/b]sua própria aventura com modificações e scripts feitos pela comunidade
+[*] [b]CUSTOMIZAR [/b]com 60+ cabeças
+[*] [b]CRIAR [/b]sua própria aventura com modificações e scripts feitos pela comunidade
 [/list]
 
 [img]{STEAM_APP_IMAGE}/extras/gif_overview03.png[/img]
 
-King Arthur's Gold mistura o aspecto cooperativo de [i]Lost Vikings[/i], junta com toda a destruição de[i]Worms[/i] e estilo visual com ação de [i]Metal Slug[/i], feito pelos criadores de [i]Soldat[/i].
+King Arthur's Gold mistura o aspecto cooperativo de [i]Lost Vikings[/i], com toda a destruição de[i]Worms[/i] e estilo visual com ação de [i]Metal Slug[/i], feito pelos criadores de [i]Soldat[/i].
 
 # Short Description:
 
-Você gostaria de [b]demolir [/b]as defesas do seu oponente e [b]derrubar [/b]ela com FÍSICAS 2D? Você iria gostar de [b]construir [/b]castelos, armadilhas e veículso de cerco no MULTIJOGADOR?
+Você gostaria de [b]demolir [/b]as defesas do seu oponente e [b]derrubar [/b]ela com FÍSICAS 2D? Você iria gostar de [b]construir [/b]castelos, armadilhas e veículos de cerco no MULTIJOGADOR?
 
 ###############################################################################
 # King Arthur's Gold: Flags of the World Heads Pack
@@ -155,7 +155,7 @@ Pedidos para paises/nações etc irão ser considerados por email.
 # Short Description:
 
 
-Essa DLC Cosmética adiciona mais de 120 cabeças únicas (mais de 60 por gênero) representando bandeiras mundiais para King Arthur's Gold.
+Essa DLC Cosmética adiciona mais de 120 cabeças únicas (mais de 60 por gênero) representando bandeiras do mundo para King Arthur's Gold.
 
 
 ###############################################################################
@@ -187,7 +187,7 @@ Esse tema foi votado como o favorito de quatro pela comunidade, e nós estamos a
 [*]Goblin
 [*]Ogro
 [*]Troll Ciclope
-[*]Diabo
+[*]Demônio
 [/list]
 Todas cabeças são incluídas para masculino e feminino.
 
