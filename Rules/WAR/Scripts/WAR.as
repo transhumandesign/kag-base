@@ -80,6 +80,7 @@ shared class WarSpawns : RespawnSystem
 		@war_core = cast < WarCore@ > (core);
 
 		nextSpawn = getGameTime();
+	
 	}
 
 	void Update()
@@ -408,6 +409,7 @@ shared class WarCore : RulesCore
 	f32 alivePercent;
 	s32 startingMigrants;
 	bool missingHalls;
+	int lastHall;
 
 	f32 raid_distance;
 
@@ -433,6 +435,22 @@ shared class WarCore : RulesCore
 		rules.SetCurrentState(WARMUP);
 		server_CreateBlob("Entities/Meta/WARMusic.cfg");
 		missingHalls = true;
+
+		if(_rules.get_bool("tutorial"))
+        {
+			lastHall = 0;
+            CBlob@[] halls;
+            getBlobsByName("hall", @halls);
+            for(int i=0;i<halls.length;i++)
+            {
+                if(halls[i].getPosition().x>=halls[lastHall].getPosition().x)
+				{
+					lastHall=i;
+				}
+            }
+			halls[lastHall].server_setTeamNum(1);
+
+        }
 	}
 
 	int gametime;
@@ -728,9 +746,8 @@ shared class WarCore : RulesCore
 		{
 			CBlob@[] halls;
 			getBlobsByName("hall", @halls);
-			if(halls[1].getTeamNum()!=0&&halls[1].getTeamNum()!=1) 
+			if(halls[lastHall] !is null && halls[lastHall].getTeamNum()==1) 
 			{
-				halls[1].server_setTeamNum(1);
 				return;
 			}
 		}
