@@ -3,6 +3,7 @@
 
 //time (in seconds) between repeated reports
 const u32 reportRepeatTime = 1 * 60;
+u8 nonModTeam=0; //Sandbox' default team.
 
 const SColor reportMessageColor(255, 255, 0, 0);
 
@@ -10,13 +11,27 @@ void onInit(CRules@ this)
 {
 	this.addCommandID("notify");
 	this.addCommandID("report");
+	this.addCommandID("mod_team");
 }
 
 bool onClientProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
 {
 	if((text_in == "!moderate" || text_in == "!m") && player.isMod())
 	{
-		moderate(this, player);
+		if(this.gamemode_name=="CTF"||this.gamemode_name=="TTH")
+		{moderate(this, player);} //The old !m behaviour.
+		else
+		{
+			if(player.getTeamNum()==200) //is in spec team?
+			{
+				this.set_bool(player.getUsername()+"_moderator",false);
+				makeModTeam(this,player,nonModTeam,true); //swap him back to his nonModTeam.
+			}
+			else
+			{
+				joinNewModTeam(this,player); //create a spec/mod team even if it doesn't exist in the gamemode.
+			}
+		}
 
 		//false so it doesn't show as normal public chat
 		return false;
@@ -91,6 +106,30 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 }
 
 void onCommand(CRules@ this, u8 cmd, CBitStream @params){
+    if(getNet().isServer()&&this.getCommandID("mod_team")==cmd)
+    {
+	    string p_name=params.read_string();
+	    bool on_spec=params.read_bool();
+	    u8 previousTeam=params.read_u8();
+	    CPlayer@ player=getPlayerByUsername(p_name);
+	    if(on_spec) //player is alread in spec team.
+	    {
+		    player.server_setTeamNum(previousTeam);
+		    this.server_PlayerDie(player); //force the player to join his old team.
+		    this.set_bool(p_name + "_moderator", false);
+	    }
+	    else
+	    {
+		    CBlob@ corpse=player.getBlob();
+		    player.server_setTeamNum(200); //get to new spec team.
+		    if(corpse !is null) //in case someone 'kills' the corpse.
+		    {
+			    corpse.server_SetPlayer(null); //a body with no spirit is a useless corpse.
+			    corpse.server_Die(); //destroy the corpse.
+		    }
+		    this.set_bool(p_name + "_moderator", true);
+	    }
+    }
     if (isClient() && this.getCommandID("report") == cmd)
     {
         if (getLocalPlayer().isMod())
@@ -295,3 +334,23 @@ CPlayer@ getPlayerByCharactername(string name)
 
 	return null;
 }
+void makeModTeam(CRules@ this, CPlayer@ player,u8 team, bool isPlayerOnSpec)
+{
+	string playerUsername=player.getUsername();
+	CBitStream report_params;
+	report_params.write_string(playerUsername);
+	report_params.write_bool(isPlayerOnSpec);
+	report_params.write_u8(team);
+	this.SendCommand(this.getCommandID("mod_team"), report_params);
+}
+void joinNewModTeam(CRules@ this,CPlayer@ player)
+{
+	this.set_bool(player.getUsername() + "_moderator", true);
+	nonModTeam=player.getTeamNum(); //note the admin previous team.
+	makeModTeam(this,player,nonModTeam,false); //make him force-join spec team.
+	CCamera@ camera = getCamera(); //camera and visuals.
+	CMap@ map = getMap();
+	getHUD().ClearMenus();
+	camera.setPosition(Vec2f(map.getMapDimensions().x / 2, map.getMapDimensions().y / 2));
+}
+
