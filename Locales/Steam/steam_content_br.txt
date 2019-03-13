@@ -152,8 +152,8 @@ Lista de bandeiras suportadas:
 [/list]
 
 Pedidos para paises/nações etc irão ser considerados por email.
-# Short Description:
 
+# Short Description:
 
 Essa DLC Cosmética adiciona mais de 120 cabeças únicas (mais de 60 por gênero) representando bandeiras do mundo para King Arthur's Gold.
 
@@ -178,7 +178,7 @@ Esse tema foi votado como o favorito de quatro pela comunidade, e nós estamos a
 [*]Anão Mineiro
 [*]Elfo da Floresta
 [*]Espectro da Escuridão
-[*]Mago/Bruxa (Versão Clara e Escura) 
+[*]Mago/Bruxa (Versão Clara e Escura)
 [*]High Elf
 [*]Batedor
 [*]Paladino
