@@ -211,7 +211,6 @@ void moderate(CRules@ this, CPlayer@ player)
 			//change to spectator cam
 			player.client_ChangeTeam(this.getSpectatorTeamNum());
 			getHUD().ClearMenus();
-			camera.setPosition(Vec2f(map.getMapDimensions().x / 2, map.getMapDimensions().y / 2));
 
 			//so the interface is drawn
 			this.set_bool(p_name + "_moderator", true);

@@ -11,6 +11,8 @@ Vec2f deathLock;
 int helptime = 0;
 bool spectatorTeam;
 
+Vec2f pos;
+
 void Reset(CRules@ this)
 {
 	SetTargetPlayer(null);
@@ -21,6 +23,9 @@ void Reset(CRules@ this)
 	}
 
 	helptime = 0;
+	timeToCinematic = 0.0f;
+	@currentTarget = null;
+	switchTarget = 0;
 }
 
 void onRestart(CRules@ this)
@@ -38,9 +43,10 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 	CCamera@ camera = getCamera();
 	if (camera !is null && player !is null && player is getLocalPlayer())
 	{
-		camera.setPosition(blob.getPosition());
+		pos = blob.getPosition();
+		camera.setPosition(pos);
 		camera.setTarget(blob);
-		camera.mousecamstyle = 1; // follow
+		camera.mousecamstyle = 1; //follow
 	}
 }
 
@@ -54,20 +60,21 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 	{
 		spectatorTeam = true;
 		camera.setTarget(null);
+		timeToCinematic = 0.0f;
 		if (playerBlob !is null)
 		{
 			playerBlob.ClearButtons();
 			playerBlob.ClearMenus();
 
-			camera.setPosition(playerBlob.getPosition());
+			pos = playerBlob.getPosition();
+			camera.setPosition(pos);
 			deathTime = getGameTime();
-
 		}
-
 	}
 	else if (getLocalPlayer() is player)
+	{
 		spectatorTeam = false;
-
+	}
 }
 
 //Change to spectator cam on death
@@ -88,14 +95,10 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 			{
 				victimBlob.ClearButtons();
 				victimBlob.ClearMenus();
-
-				camera.setPosition(victimBlob.getPosition());
 				deathLock = victimBlob.getPosition();
-				SetTargetPlayer(null);
-
 			}
 			deathTime = getGameTime() + 2 * getTicksASecond();
-
+			timeToCinematic = 0.0f;
 		}
 		else
 		{
@@ -103,7 +106,6 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 			{
 				victimBlob.ClearButtons();
 				victimBlob.ClearMenus();
-
 			}
 
 			if (attackerBlob !is null)
@@ -114,14 +116,12 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 			else
 			{
 				camera.setTarget(null);
+				timeToCinematic = 0.0f;
 
 			}
 			deathTime = getGameTime() + 2 * getTicksASecond();
-
 		}
-
 	}
-
 }
 
 void onRender(CRules@ this)
@@ -135,6 +135,7 @@ void onRender(CRules@ this)
 		if (!spectatorTeam && diffTime > 0)
 		{
 			//lock camera
+			pos = deathLock;
 			camera.setPosition(deathLock);
 			//zoom in for a bit
 			const float zoom_target = 2.0f;
@@ -173,6 +174,7 @@ void onRender(CRules@ this)
 
 	const int endTime1 = helptime + (getTicksASecond() * 12);
 	const int endTime2 = helptime + (getTicksASecond() * 24);
+	const int endTime3 = helptime + (getTicksASecond() * 36);
 
 	string text = "";
 
@@ -183,6 +185,10 @@ void onRender(CRules@ this)
 	else if (time < endTime2)
 	{
 		text = "If you click on a player the camera will follow them.\nSimply press the movement keys or click again to stop following a player.";
+	}
+	else if (time < endTime3)
+	{
+		text = "Pressing right click enables cinematic camera.\nThe camera will automatically follow the action.";
 	}
 
 	if (text != "")
@@ -203,5 +209,34 @@ void onRender(CRules@ this)
 		//draw
 		GUI::DrawButtonPressed(ul - Vec2f(10, 10), lr + Vec2f(10, 10));
 		GUI::DrawText(text, ul, SColor(0xffffffff));
+	}
+}
+
+void onTick(CRules@ this)
+{
+	//initially position camera to view entire map
+	if (getGameTime() == 1)
+	{
+		CMap@ map = getMap();
+		CCamera@ camera = getCamera();
+		if (map !is null && camera !is null)
+		{
+			Vec2f mapDim = map.getMapDimensions();
+			pos = mapDim / 2;
+			camera.setPosition(pos);
+			camera.targetDistance = Maths::Min(calculateZoomLevelW(mapDim.x), calculateZoomLevelH(mapDim.y));
+		}
+	}
+
+	CControls@ controls = getControls();
+	if (controls !is null)
+	{
+		//enable cinematic camera
+		const int diffTime = deathTime - getGameTime();
+		if (controls.isKeyJustPressed(KEY_RBUTTON) && (spectatorTeam || diffTime <= 0))
+		{
+			SetTargetPlayer(null);
+			timeToCinematic = 0.0f;
+		}
 	}
 }
