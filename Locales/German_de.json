@@ -41,7 +41,7 @@
 
 //CommonBuilderBlocks.as
 	"Stone Block\nBasic building block"                     :"Steinblock\nGrundbaustein",
-	"Back Stone Wall\nExtra support"                        :"Steinwand\nZusätzlicher Halt",
+	"Back Stone Wall\nExtra support"                        :"Steinwand\nBietet zusätzlichen Halt",
 	"Stone Door\nPlace next to walls"                       :"Steintür\nNeben einer Wand platzieren",
 	"Wood Block\nCheap block\nwatch out for fire!"          :"Holzblock\nGünstiger Block\nPass auf Feuer auf!",
 	"Back Wood Wall\nCheap extra support"                   :"Holzwand\nStützt Blöcke günstig ab",
@@ -50,7 +50,7 @@
 	"Ladder\nAnyone can climb it"                           :"Leiter\nJeder kann sie erklimmen",
 	"Wooden Platform\nOne way platform"                     :"Holzplattform\nNur in eine Richtung passierbar",
 	"Spikes\nPlace on Stone Block\nfor Retracting Trap"     :"Stacheln\nAuf Steinblock platzieren,\num eine automatische Falle zu bauen",
-	"Workshop\nStand in an open space\nand tap this button.":"Werkstatt\nbraucht ausreichend Platz \ndürcke diesen Knopf",
+	"Workshop\nStand in an open space\nand tap this button.":"Werkstatt\nbraucht ausreichend Platz \ndrück diesen Knopf",
 	"Workshop"                                              :"Werkstatt",
 	"Workbench"                                             :"Werkbank",
 	"Wire"          :"Kabel",
@@ -105,8 +105,8 @@
 
 //ResearchGUI.as
 	"Click the items you vote to research!"                           :"Stimme für die Erforschung eines Items ab!",
-	"Yellow paths show what will be researched when the match starts.":"Die gelben Verbindungen zeigen an, was erforscht wird, wenn die Runde startet.",
-	"Red path items can only be bought for gold at trader."           :"Items mit roten Verbindungen können nur beim Händler gekauft mit Gold werden.",
+	"Yellow paths show what will be researched when the match starts.":"Die gelben Kennzeichnungen zeigen an was erforscht wird, sobald die Runde beginnt.",
+	"Red path items can only be bought for gold at trader."           :"Items mit roten Kennzeichnungen können nur für Gold bei Trader gekauft werden.",
 	"(available)"                                                     :"(Verfügbar)",
 	"(researching - {TIME}s)"                                         :"(Wird erforscht - {TIME}s)",
 	"(click to vote)"                                                 :"(Klicke, um abzustimmen)",
