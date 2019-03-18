@@ -153,7 +153,7 @@
 //// SOLO GAME MODES ////
 //Tutorial01.as
 	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"Laufen & Springen\n\n$KEY_A$$KEY_W$$KEY_D$",
-	"$sign$Go to the right and\n\nbe sure to read these signs.":"$sign$Geh nach rechts und\n\lies dir die Schilder durch.",
+	"$sign$Go to the right and\n\nbe sure to read these signs.":"$sign$Geh nach rechts und\n\nlies dir die Schilder durch.",
 	"$Jab$Practice the sword JAB\n\non the dummy.\n\nAim with mouse and tap $LMB$":"$Jab$Übe das Stechen\n\nan dem Dummy.\n\nziele mit der Maus und drücke $LMB$",
 	"Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!":"Übe den Schwerthieb.\n\nHalte $LMB$ bis du diese Pose siehst$Tutorial_Slash$\n\nund LASS LOS!\n",
 	"Practice the DOUBLE SLASH.\n\nHOLD $LMB$ until spark$Tutorial_Slash2$\n\n\nQuickly TAP $LMB$ 2 times!":"Der Doppelhieb!\n\n$Tutorial_Slash2$ Halte $LMB$\n bis du den Funken siehst.\n\n\nJetzt zwei Mal schnell $LMB$ drücken!",
