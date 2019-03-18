@@ -235,7 +235,7 @@ shared bool attachWorker(CBlob@ this, CBlob@ worker, f32 height = 0.0f, bool isO
 	FreezeWorker(worker);
 	if (!isOwner)
 	{
-		worker.getSprite().PlaySound("/MigrantSayHello");
+		worker.getSprite().PlaySound("/" + getTranslatedString("MigrantSayHello"));
 	}
 
 	return true;
