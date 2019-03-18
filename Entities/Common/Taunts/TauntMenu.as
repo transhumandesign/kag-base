@@ -158,7 +158,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("display taunt"))
 	{
-		CBlob@ blob = getLocalPlayerBlob();
+		CPlayer@ player = getLocalPlayer();
 		CBlob@ caller = getBlobByNetworkID(params.read_u16());
 		string taunt = params.read_string();
 		bool globalTaunt = params.read_bool();
@@ -169,7 +169,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 		}
 
 		//only show team taunts to teammates
-		if (globalTaunt || (blob !is null && blob.getTeamNum() == caller.getTeamNum()))
+		if (globalTaunt || (player !is null && player.getTeamNum() == caller.getTeamNum()))
 		{
 			caller.Chat(taunt);
 		}
