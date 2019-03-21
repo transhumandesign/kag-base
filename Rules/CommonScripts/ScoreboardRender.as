@@ -176,6 +176,22 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 		string playername = p.getCharacterName();
 		string clantag = p.getClantag();
 
+		if(getSecurity().isPlayerNameHidden(p) && getLocalPlayer() !is p)
+		{
+			if(isAdmin(getLocalPlayer()))
+			{
+				playername = username + "(hidden: " + clantag + " " + playername + ")";
+				clantag = "";
+
+			}
+			else
+			{
+				playername = username;
+				clantag = "";
+			}
+
+		}
+
 		//head icon
 
 		//TODO: consider maybe the skull emoji for dead players?
