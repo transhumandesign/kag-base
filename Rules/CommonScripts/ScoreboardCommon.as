@@ -8,7 +8,8 @@ f32 getKDR(CPlayer@ p)
 SColor getNameColour(CPlayer@ p)
 {
     SColor c;
-    bool showColor = coloredNameEnabled(getRules(), p);
+	CPlayer@ localplayer = getLocalPlayer();
+    bool showColor = (p !is localplayer && isSpecial(localplayer)) || coloredNameEnabled(getRules(), p);
 
     if (p.isDev() && showColor) {
         c = SColor(0xffb400ff); //dev
