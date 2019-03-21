@@ -748,9 +748,9 @@
 
 	"Save the Princess": "Rette die Prinzessin",
 
-	"Challenges!": "Challenge!",
+	"Challenges!": "Herausforderungen!",
 
-	"Sandbox": "Sandbox",
+	"Sandbox": "Sandkasten",
 
 //Multiplayer
 	"Simple Join": "Schnellbeitritt",
@@ -763,7 +763,7 @@
 	"Capture The Flag": "Capture The Flag",
 	"Take The Halls": "Take The Halls",
 	"Team Deathmatch": "Team Deathmatch",
-	//"Sandbox": "Sandbox", //already translated
+	//"Sandbox": "Sandkasten", //already translated
 	"Co-op Challenge": "Co-Op Challenge",
 	"Custom Content": "Benutzerdefinierte Inhalte.",
 	"Play!": "Spielen!",
@@ -772,7 +772,7 @@
 
 	"Connect to...": "Verbinde mit...",
 	"IP:Port": "IP:Port",
-	//"Password:": "Wasswort:", //already translated
+	//"Password:": "Passwort:", //already translated
 
 //ESC menu
 	"Change Team": "Team wechseln",
@@ -796,61 +796,61 @@
 
 //Settings->Controls
 	"Controls": "Steuerung",
-	"Change keys:": "Tasten ändern:",
+	"Change keys:": "Tastenbelegung ändern:",
 	"(Unused keys, for mods)": "(Unbenutzte Taste, für Mods)",
 	"Press key/mouse to change to...": "Drücke eine Taste/Maustaste...",
 	"Keys Double-Bound": "Taste doppelt belegt",
 	"This key is being used by another action or is reserved; results may not be as you expected!\n\nYou have been warned!": "Diese Taste ist bereits einer anderen Aktion zugewiesen oder reserviert; die Resultate werden möglicherweise anders sein als erwartet.\n\nDu wurdest gewarnt!",
 	"Left": "Links", //TODO in engine
 	"Right": "Rechts",
-	"Up": "Oben",
-	"Down": "Unten",
+	"Up": "Hoch",
+	"Down": "Runter",
 	"Action 1": "Aktion 1",
 	"Action 2": "Aktion 2",
 	"Action 3": "Aktion 3",
 	"Inventory": "Inventar",
 	"Use": "Benutzen",
 	"Pickup": "Aufheben",
-	"Zoom in": "Zoom rein",
-	"Zoom out": "Zoom raus",
+	"Zoom in": "Heranzoomen",
+	"Zoom out": "Herauszoomen",
 	"Emoticons": "Emoticons",
 	"Map key": "Karte",
 	"Mark Player": "Spieler markieren",
 	"Taunts": "Verspottungen",
-	"Misc Menu": "Verschiedenes Menü",
+	"Misc Menu": "Menü für Sonstiges",
 
 //Settings->Video
 	"Video": "Video",
-	"Smooth shader": "Sanfter Shader",
+	"Smooth shader": "Weichzeichner",
 	"\nSmooths the game screen using hq2x filter (will lower performance)\n": "\nGlättet das Spiel durch hq2x Filter (reduziert die Leistung)\n",
 	"Faster graphics": "Schnelle Grafik",
-	"\nCheck this if the game is choppy or slow\n": "\nVerwende dies, wenn das Spiel ruckelig oder langsam ist\n",
+	"\nCheck this if the game is choppy or slow\n": "\nAnkreuzen wenn das Spiel ruckelt, oder langsam läuft\n",
 	"Uncap framerate": "Unbegrenzte Framerate",
-	"\nCheck this to have unlimited FPS (uncheck if you have slow performance!)\n": "\nVerwende dies, um unbegrenzte FPS zu haben (verwende dies nicht, wenn die Performance schlecht ist!)\n",
-	"VSync - Requires Restart": "VSync - Benötigt Neustart",
+	"\nCheck this to have unlimited FPS (uncheck if you have slow performance!)\n": "\nAnkreuzen um um unbegrenzte FPS zu haben (Verwende dies nicht, wenn die Performance schlecht ist!)\n",
+	"VSync - Requires Restart": "VSync - Erfordert Neustart",
 	"\nSync rendering with monitor refresh rate (prevents tearing)\n": "\nSynchronisiere das Rendern mit der Framerate des Monitors\n",
 
 //Settings->Sound
 	"Sound": "Audio",
-	"Sound Volume:": "Geräuschlautstärke:",
+	"Sound Volume:": "Sound Lautstärke:",
 	"Music Volume:": "Musiklautstärke:",
-	"Game music": "Musik im Spiel",
-	"\nTurn on\\off the game music.\n": "\nSchalte die Musik im Spiel an oder aus\n",
+	"Game music": "Musik",
+	"\nTurn on\\off the game music.\n": "\nIngame Musik an\\aus schalten.\n",
 	"Menu music": "Menümusik",
-	"\nTurn on\\off the menu music.\n": "\nSchalte die Menümusik an oder aus\n",
-	"Swap audio channels": "Audioäanäle vertauschen",
+	"\nTurn on\\off the menu music.\n": "\nMenümusik an\\aus schalten.\n",
+	"Swap audio channels": "Audiokanäle wechseln",
 	"\nTick this if your sound is backwards.\n": "\nVerwende dies, wenn dein Audio rückwärts ist.\n",
 
 //Settings->Misc
 	"Misc": "Anderes",
 	"Fixed camera": "Feste Kamera",
 	"\nFixed camera = platform style; Not fixed camera = Soldat/mouse look style\n": "\nFeste Kamera = Platform Style. Lose Kamera = \"Mouse-look\" Style\n",
-	"Kids safe": "Kindersicher",
+	"Kids safe": "Kinderfreundlich",
 	"Chat Filter": "Chatfilter",
 	"Show Team-Mates Names": "Zeige Namen der Teammitglieder",
 	"Show Minimap": "Zeige Minimap",
 	"Show Chat Bubbles": "Zeige Sprechblasen",
-	"Snap Camera To Pixel": "Orientiere Kamera an Pixeln",
+	"Snap Camera To Pixel": "An Pixeln Orientiere Kamera",
 	"Language (EXPERIMENTAL):": "Sprache (EXPERIMENTELL):",
 	"Language:": "Sprache:",
 	"Experimental feature warning": "Experimentelle Features Warnung",
