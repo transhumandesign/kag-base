@@ -3,10 +3,11 @@
 #define CLIENT_ONLY
 
 const u8 CINEMATIC_ZOOM_EASE = 14.0f;					//amount of ease when zooming while cinematic
-const u8 CINEMATIC_PAN_X_EASE = 12.0f;					//amount of ease along the y-axis while cinematic
-const u8 CINEMATIC_PAN_Y_EASE = 12.0f;					//amount of ease along the x-axis while cinematic
-const u32 CINEMATIC_TIME = 10.0f * getTicksASecond();	//time until camera automatically becomes cinematic in seconds
+const u8 CINEMATIC_PAN_X_EASE = 12.0f;					//amount of ease along the x-axis while cinematic
+const u8 CINEMATIC_PAN_Y_EASE = 12.0f;					//amount of ease along the y-axis while cinematic
+
 const bool AUTO_CINEMATIC = false;						//whether camera automatically becomes cinematic after no input
+const u32 CINEMATIC_TIME = 10.0f * getTicksASecond();	//time until camera automatically becomes cinematic in seconds
 
 Vec2f posTarget;										//position which cinematic camera moves towards
 f32 zoomTarget = 1.0f;									//zoom level which camera zooms towards
