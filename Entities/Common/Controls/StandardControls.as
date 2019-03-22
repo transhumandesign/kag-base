@@ -332,10 +332,6 @@ void AdjustCamera(CBlob@ this, bool is_in_render)
 	f32 minZoom = 0.5f; // TODO: make vars
 	f32 maxZoom = 2.0f;
 
-	if (zoomLevel == 1 && (this.wasKeyPressed(key_use) || this.wasKeyPressed(key_pickup)))
-	{
-		zoom = 1.0f;
-	}
 	f32 zoom_target = 1.0f;
 	switch (zoomLevel) {
 		case 0: zoom_target = 0.5f; break;
