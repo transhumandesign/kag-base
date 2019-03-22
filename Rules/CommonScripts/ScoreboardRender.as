@@ -53,7 +53,7 @@ string[] tier_description = {
 };
 
 //returns the bottom
-float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emblem)
+float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emblem)
 {
 	if (players.size() <= 0 || team is null)
 		return topleft.y;
@@ -371,7 +371,11 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 					1 : 0),             5,     0,         0,
 				(acc.map_contributor ?
 					1 : 0),             6,     0,         0,
-				(acc.moderation_contributor && (!isSpecial(p) || coloredNameEnabled(getRules(), p)) ? //ensure accolade is visible for past admins
+				(acc.moderation_contributor && (
+					(p !is localplayer && isSpecial(localplayer)) || //always show accolade of others if local player is special
+					!isSpecial(p) || //always show accolade for ex-admins
+					coloredNameEnabled(getRules(), p) //show accolade only if colored name is visible
+				) ?
 					1 : 0),             7,     0,         0,
 
 				//tourney badges
@@ -526,16 +530,16 @@ void onRenderScoreboard(CRules@ this)
 	//draw the scoreboards
 
 	if (localTeam == 0)
-		topleft.y = drawScoreboard(blueplayers, topleft, this.getTeam(0), Vec2f(0, 0));
+		topleft.y = drawScoreboard(localPlayer, blueplayers, topleft, this.getTeam(0), Vec2f(0, 0));
 	else
-		topleft.y = drawScoreboard(redplayers, topleft, this.getTeam(1), Vec2f(32, 0));
+		topleft.y = drawScoreboard(localPlayer, redplayers, topleft, this.getTeam(1), Vec2f(32, 0));
 
 	topleft.y += 52;
 
 	if (localTeam == 1)
-		topleft.y = drawScoreboard(blueplayers, topleft, this.getTeam(0), Vec2f(0, 0));
+		topleft.y = drawScoreboard(localPlayer, blueplayers, topleft, this.getTeam(0), Vec2f(0, 0));
 	else
-		topleft.y = drawScoreboard(redplayers, topleft, this.getTeam(1), Vec2f(32, 0));
+		topleft.y = drawScoreboard(localPlayer, redplayers, topleft, this.getTeam(1), Vec2f(32, 0));
 
 	topleft.y += 52;
 
