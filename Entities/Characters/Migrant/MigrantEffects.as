@@ -54,12 +54,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			{
 				if (XORRandom(5) == 0 && !blob.hasTag("migrant"))
 				{
-					this.getSprite().PlaySound("/MigrantSayFriend");
+					this.getSprite().PlaySound("/" + getTranslatedString("MigrantSayFriend"));
 				}
 			}
 			else if (this.getTeamNum() < 10)
 			{
-				this.getSprite().PlaySound("/MigrantSayNo");
+				this.getSprite().PlaySound("/" + getTranslatedString("MigrantSayNo"));
 			}
 		}
 	}
