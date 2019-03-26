@@ -24,6 +24,7 @@ shared class Accolades
 	int capeMonths = 0;
 
 	//custom head info
+	bool customHeadExists = false;
 	int customHeadAwarded = 0;              //(remains zero for non-custom-heads)
 	string customHeadTexture = "";          //the head texture to use
 	int customHeadIndex = 0;                //the index into the relevant texture
@@ -37,6 +38,7 @@ shared class Accolades
 	Accolades(ConfigFile@ cfg, string _username)
 	{
 		username = _username;
+		customHeadTexture = "Entities/Characters/Sprites/CustomHeads/" + username;
 
 		array<string> slices;
 		if(cfg.readIntoArray_string(slices, username))
@@ -92,54 +94,46 @@ shared class Accolades
 					capeAwarded = parseInt(s2);
 					capeMonths = parseInt(s3);
 				}
+				else if(s1 == "customhead")
+				{
+					customHeadIndex = 0;
+					customHeadAwarded = parseInt(s2);
+					customHeadMonths = parseInt(s3);
 
-				//4-part accolades
-				if (chunks.length == 0) continue;
+					if(customHeadAwarded > 0 && Time_DaysSince(customHeadAwarded) <= 31 * customHeadMonths)
+					{
+						customHeadExists = doesCustomHeadExists();
 
-				string s4 = chunks[0];
-				chunks.removeAt(0);
-
-				//5-part accolades
-				if (chunks.length == 0) continue;
-
-				string s5 = chunks[0];
-				chunks.removeAt(0);
-
-				if (s1 == "customhead") {
-					customHeadTexture = s2;
-					customHeadIndex = parseInt(s3);
-					customHeadAwarded = parseInt(s4);
-					customHeadMonths = parseInt(s5);
+					}
 				}
+
 			}
 		}
 		else
 		{
 			//(defaults)
 		}
+
+		// if we're a round table supporter just check in case we have head not specified in accolade data
+		CPlayer@ p = getPlayerByUsername(username);
+		if(p !is null)
+		{
+			if(p.getSupportTier() >= SUPPORT_TIER_ROUNDTABLE)
+			{
+				customHeadExists = doesCustomHeadExists();
+			}
+		}
+	}
+
+	bool doesCustomHeadExists()
+	{
+		return CFileMatcher(customHeadTexture).hasMatch();
+
 	}
 
 	bool hasCustomHead()
 	{
-		bool hashead = false;
-		if (customHeadTexture == "PATREON")
-		{
-			CPlayer@ p = getPlayerByUsername(username);
-			if(p !is null)
-			{
-				hashead = (p.getSupportTier() >= SUPPORT_TIER_ROUNDTABLE);
-			}
-		}
-
-		if (customHeadAwarded > 0)
-		{
-			//not current patron?
-			if(!hashead)
-			{
-				hashead = Time_DaysSince(customHeadAwarded) <= 31 * customHeadMonths;
-			}
-		}
-		return hashead;
+		return customHeadExists;
 	}
 
 	bool hasCape()

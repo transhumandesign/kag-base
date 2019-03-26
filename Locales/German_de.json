@@ -32,26 +32,26 @@
 	"Kills"       			:"Kills",
 	"Deaths"      			:"Tode",
 	"KDR"         			:"KDR",
-	"Spectators:" 			:"Beobachter:",
+	"Spectators:" 			:"Zuschauer:",
 	"and more ..."			:"und mehr...",
 
 //BuilderInventory.as
-	"Stop building\n": "Höre auf zu bauen\n",
+	"Stop building\n": "Hör auf zu bauen\n",
 	"Requires\n": "Erfordert\n",
 
 //CommonBuilderBlocks.as
-	"Stone Block\nBasic building block"                     :"Steinblock\nEinfacher Block zum bauen",
-	"Back Stone Wall\nExtra support"                        :"Steinwand\nStützt Blöcke ab",
+	"Stone Block\nBasic building block"                     :"Steinblock\nGrundbaustein",
+	"Back Stone Wall\nExtra support"                        :"Steinwand\nBietet zusätzlichen Halt",
 	"Stone Door\nPlace next to walls"                       :"Steintür\nNeben einer Wand platzieren",
 	"Wood Block\nCheap block\nwatch out for fire!"          :"Holzblock\nGünstiger Block\nPass auf Feuer auf!",
-	"Back Wood Wall\nCheap extra support"                   :"Holzwand\nStützt Blöcke ab",
+	"Back Wood Wall\nCheap extra support"                   :"Holzwand\nStützt Blöcke günstig ab",
 	"Wooden Door\nPlace next to walls"                      :"Holztür\nNeben einer Wand platzieren",
-	"Trap Block\nOnly enemies can pass"                     :"Falltür\nNur Feinde fallen hindurch",
+	"Trap Block\nOnly enemies can pass"                     :"Falltür\nNur Feinde können passieren",
 	"Ladder\nAnyone can climb it"                           :"Leiter\nJeder kann sie erklimmen",
 	"Wooden Platform\nOne way platform"                     :"Holzplattform\nNur in eine Richtung passierbar",
-	"Spikes\nPlace on Stone Block\nfor Retracting Trap"     :"Stacheln\nSetze sie auf Stein,\num eine automatische Falle zu bauen",
-	"Workshop\nStand in an open space\nand tap this button.":"Werkstatt\nbraucht ausreichend Platz \ndürcke diesen Knopf",
-	"Workshop"                                              :"Werkstatt\nbraucht",
+	"Spikes\nPlace on Stone Block\nfor Retracting Trap"     :"Stacheln\nAuf Steinblock platzieren,\num eine automatische Falle zu bauen",
+	"Workshop\nStand in an open space\nand tap this button.":"Werkstatt\nbraucht ausreichend Platz \ndrück diesen Knopf",
+	"Workshop"                                              :"Werkstatt",
 	"Workbench"                                             :"Werkbank",
 	"Wire"          :"Kabel",
 	"Elbow"         :"Eckkabel",
@@ -59,14 +59,14 @@
 	"Junction"      :"Kreuzung",
 	"Diode"         :"Diode",
 	"Resistor"      :"Widerstand",
-	"Inverter"      :"Negator",
+	"Inverter"      :"Inverter",
 	"Oscillator"    :"Oscillator",
 	"Transistor"    :"Transistor",
 	"Toggle"        :"Schalter",
 	"Randomizer"    :"Zufallsgenerator",
 	"Lever"         :"Hebel",
 	"Button"        :"Knopf",
-	"Coin Slot"     :"Münzeingabe",
+	"Coin Slot"     :"Münzschlitz",
 	"Pressure Plate":"Druckplatte",
 	"Motion Sensor" :"Bewegungssensor",
 	"Lamp"          :"Lampe",
@@ -74,15 +74,15 @@
 	"Receiver"      :"Receiver",
 	"Magazine"      :"Magazin",
 	"Bolter"        :"Bolzen",
-	"Dispenser"     :"Spender",
+	"Dispenser"     :"Dispenser",
 	"Obstructor"    :"Automatische Falle",
 	"Spiker"        :"Piekser",
 
 //Production.as
-	"\n\nrequires\n{MISSING}\nAdd materials in storage.":"\n\nBenötigt:\n{MISSING}\nLeg die Materialien in den Speicher.",
+	"\n\nrequires\n{MISSING}\nAdd materials in storage.":"\n\nBenötigt:\n{MISSING}\nDem Lager Material hinzufügen.",
 	"Producing {ITEM}..."                               :"Produziere {ITEM}...",
 	"{ITEM} available on respawn"                       :"{ITEM} beim Respawn verfügbar",
-	"{ITEM} limit reached."                             :"Maximale Anzahl an {ITEM} erreicht.",
+	"{ITEM} limit reached."                             :"{ITEM} Limit wurde erreicht.",
 
 //FactoryAnim.as
 	"Requires a Worker from the Hall to work here.":"Benötigt einen Arbeiter aus der Basis.",
@@ -90,7 +90,7 @@
 //Hall.as
 	"Units"                                   :"Einheiten",
 	"Another worker has been hired!"          :"Ein neuer Arbeiter wurde eingestellt!",
-	"Supplies will drop at your halls."       :"Vorräte werden an der Basis abgeworfen.",
+	"Supplies will drop at your halls."       :"Nachschub wird über der Basis abgeworfen.",
 	"Buy a worker for {MIGRANT_COST} Gold"    :"Heuere einen Arbeiter für {MIGRANT_COST} Gold an",
 	"Buy worker: Requires {MIGRANT_COST} Gold":"Arbeiter anheuern kostet {MIGRANT_COST} Gold",
 
@@ -104,9 +104,9 @@
 	"You are here":"Du bist hier",
 
 //ResearchGUI.as
-	"Click the items you vote to research!"                           :"Stimme für die Erforschung von Items ab!",
-	"Yellow paths show what will be researched when the match starts.":"Die gelben Verbindungen zeigen an, was erforscht wird, wenn die Runde startet.",
-	"Red path items can only be bought for gold at trader."           :"Items mit roten Verbindungen können nur beim Händler gekauft mit Gold werden.",
+	"Click the items you vote to research!"                           :"Stimme für die Erforschung eines Items ab!",
+	"Yellow paths show what will be researched when the match starts.":"Die gelben Kennzeichnungen zeigen an was erforscht wird, sobald die Runde beginnt.",
+	"Red path items can only be bought for gold at trader."           :"Items mit roten Kennzeichnungen können nur für Gold bei Trader gekauft werden.",
 	"(available)"                                                     :"(Verfügbar)",
 	"(researching - {TIME}s)"                                         :"(Wird erforscht - {TIME}s)",
 	"(click to vote)"                                                 :"(Klicke, um abzustimmen)",
@@ -121,19 +121,19 @@
 	"Tip: {TIP}": "Tipp: {TIP}",
 
 //TimeToEnd.as
-	"Time is up!\n{TEAM} wins the game!":"Die Zeit ist um!\n{TEAM} hat gewonnen!",
-	"Time is up!\nIt's a tie!"          :"Die Zeit ist um!\nUnentschieden!",
-	"Time left: {MIN}:{SEC}"            :"Zeit: {MIN}:{SEC}",
+	"Time is up!\n{TEAM} wins the game!":"Die Zeit ist um!\n{TEAM} gewinnt das Spiel!",
+	"Time is up!\nIt's a tie!"          :"Die Zeit ist um!\nEs ist ein Unentschieden!",
+	"Time left: {MIN}:{SEC}"            :"Verbleibende Zeit: {MIN}:{SEC}",
 
 //TauntAI.as
 	"haha!": "Haha!",
 	"heheheh": "Hehehe!",
-	"noob!": "Amateur!",
+	"noob!": "Noob!",
 
 	"Your mother was a hamster!": "Deine Mutter war ein Hamster!",
-	"Your father smelt of elderberries!": "Dein Vater riecht nach Holunderbeeren!",
-	"Go away or I shall taunt you a second time.": "Hau' ab, oder ich verfluche dich noch einmal.",
-	"Go and boil your bottom!": "Geh' und koche deine Unterwäsche!",
+	"Your father smelt of elderberries!": "Dein Vater roch nach Holunderbeeren!",
+	"Go away or I shall taunt you a second time.": "Hau' ab, oder ich verspotte dich ein zweites Mal.",
+	"Go and boil your bottom!": "Geh und koche deine Unterwäsche!",
 
 	"heeelp!": "Hilfeee!",
 	"ouch!": "Autsch!",
@@ -144,7 +144,7 @@
 	"You'll be sorry!": "Das wird dir noch Leid tun!",
 	"I'll get you!": "Dich krieg ich noch!",
 
-	"I'll be back": "Ich werde zurückkommen!",
+	"I'll be back": "Ich komme wieder!",
 	"Save me barry!": "Rette mich Barry!",
 
 	"It's just a flesh wound.": "Das ist nur eine Fleischwunde.",
@@ -152,8 +152,8 @@
 
 //// SOLO GAME MODES ////
 //Tutorial01.as
-	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"Laufen und springen\n\n$KEY_A$$KEY_W$$KEY_D$",
-	"$sign$Go to the right and\n\nbe sure to read these signs.":"$sign$Geh nach rechts und\n\nlese dir die Schilder durch.",
+	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"Laufen & Springen\n\n$KEY_A$$KEY_W$$KEY_D$",
+	"$sign$Go to the right and\n\nbe sure to read these signs.":"$sign$Geh nach rechts und\n\nlies dir die Schilder durch.",
 	"$Jab$Practice the sword JAB\n\non the dummy.\n\nAim with mouse and tap $LMB$":"$Jab$Übe das Stechen\n\nan dem Dummy.\n\nziele mit der Maus und drücke $LMB$",
 	"Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!":"Übe den Schwerthieb.\n\nHalte $LMB$ bis du diese Pose siehst$Tutorial_Slash$\n\nund LASS LOS!\n",
 	"Practice the DOUBLE SLASH.\n\nHOLD $LMB$ until spark$Tutorial_Slash2$\n\n\nQuickly TAP $LMB$ 2 times!":"Der Doppelhieb!\n\n$Tutorial_Slash2$ Halte $LMB$\n bis du den Funken siehst.\n\n\nJetzt zwei Mal schnell $LMB$ drücken!",
@@ -268,12 +268,12 @@
 	"KILLS: {CURRENT}/{LIMIT}"                 :"Kills: {CURRENT}/{LIMIT}",
 	"SUDDEN DEATH"                             :"Sudden Death",
 	"In Queue to Respawn..."                   :"In Warteschlange zum Wiederbeleben...",
-	"No Respawning - Wait for the Game to End.":"Keine Wiederbelebung - Warte bis die Runde um ist.",
+	"No Respawning - Wait for the Game to End.":"Wiederbeleben nicht möglich - Warte bis die Runde um ist.",
 
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
 	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"Nächster Nachschub in {SEC}{TIMESUFFIX}, {ACTION}!",
-	"Go Fight"                                     :"Kämpfe",
+	"Go Fight"                                     :"Kämpft",
 	"Go Build"                                     :"Baue",
 	"Prepare for Battle"                           :"Bereite dich auf den Kampf vor",
 	" seconds"                                     :" Sekunden",
