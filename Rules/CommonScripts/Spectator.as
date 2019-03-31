@@ -2,9 +2,12 @@
 
 #define CLIENT_ONLY
 
-const u8 CINEMATIC_ZOOM_EASE = 14.0f;					//amount of ease when zooming while cinematic
-const u8 CINEMATIC_PAN_X_EASE = 12.0f;					//amount of ease along the x-axis while cinematic
-const u8 CINEMATIC_PAN_Y_EASE = 12.0f;					//amount of ease along the y-axis while cinematic
+const f32 CINEMATIC_PAN_X_EASE = 12.0f;					//amount of ease along the x-axis while cinematic
+const f32 CINEMATIC_PAN_Y_EASE = 12.0f;					//amount of ease along the y-axis while cinematic
+
+const f32 CINEMATIC_ZOOM_EASE = 14.0f;					//amount of ease when zooming while cinematic
+const f32 CINEMATIC_CLOSEST_ZOOM = 1.5f;				//how close the camera can zoom in while cinematic (default is 2.0f)
+const f32 CINEMATIC_FURTHEST_ZOOM = 0.75f;				//how far the camera can zoom out while cinematic (default is 0.5f)
 
 const bool AUTO_CINEMATIC = false;						//whether camera automatically becomes cinematic after no input
 const u32 CINEMATIC_TIME = 10.0f * getTicksASecond();	//time until camera automatically becomes cinematic in seconds
@@ -149,7 +152,7 @@ void Spectator(CRules@ this)
 		f32 zoomW = calculateZoomLevelW(mapDim.x);
 		f32 zoomH = calculateZoomLevelH(mapDim.y);
 		zoomTarget = Maths::Min(zoomW, zoomH);
-		zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f);
+		zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f); //its fine to clamp between default min/max zoom here
 
 		CBlob@[] blobs;
 		getBlobs(@blobs);
@@ -176,7 +179,7 @@ void Spectator(CRules@ this)
 				posTarget += blob.getInterpolatedPosition();
 
 				//look for largest distance between two players
-				for (uint j = 0; j < players.length; j++)
+				for (uint j = i + 1; j < players.length; j++)
 				{
 					CBlob@ blob2 = players[j];
 					u32 distX = Maths::Abs(blob.getPosition().x - blob2.getPosition().x);
@@ -200,7 +203,7 @@ void Spectator(CRules@ this)
 				zoomTarget = Maths::Min(zoomW, zoomH);
 			}
 
-			zoomTarget = Maths::Clamp(zoomTarget, 0.75f, 1.5f);
+			zoomTarget = Maths::Clamp(zoomTarget, CINEMATIC_FURTHEST_ZOOM, CINEMATIC_CLOSEST_ZOOM);
 		}
 
 		//adjust camera pos and zoom

@@ -205,8 +205,6 @@ void moderate(CRules@ this, CPlayer@ player)
 		if(isClient())
 		{
 			string p_name = player.getUsername();
-			CCamera@ camera = getCamera();
-			CMap@ map = getMap();
 
 			//change to spectator cam
 			player.client_ChangeTeam(this.getSpectatorTeamNum());
