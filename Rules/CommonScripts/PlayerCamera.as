@@ -23,7 +23,7 @@ void Reset(CRules@ this)
 	}
 
 	helptime = 0;
-	timeToCinematic = 0.0f;
+	setCinematicEnabled(isCinematicEnabled());
 	@currentTarget = null;
 	switchTarget = 0;
 }
@@ -60,7 +60,7 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 	{
 		spectatorTeam = true;
 		camera.setTarget(null);
-		timeToCinematic = 0.0f;
+		setCinematicEnabled(isCinematicEnabled());
 		if (playerBlob !is null)
 		{
 			playerBlob.ClearButtons();
@@ -98,7 +98,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 				deathLock = victimBlob.getPosition();
 			}
 			deathTime = getGameTime() + 2 * getTicksASecond();
-			timeToCinematic = 0.0f;
+			setCinematicEnabled(isCinematicEnabled());
 		}
 		else
 		{
@@ -116,7 +116,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 			else
 			{
 				camera.setTarget(null);
-				timeToCinematic = 0.0f;
+				setCinematicEnabled(isCinematicEnabled());
 
 			}
 			deathTime = getGameTime() + 2 * getTicksASecond();
@@ -228,15 +228,14 @@ void onTick(CRules@ this)
 		}
 	}
 
+	//right click to enable cinematic camera
 	CControls@ controls = getControls();
-	if (controls !is null)
+	if (
+		controls !is null &&								//controls exist
+		controls.isKeyJustPressed(KEY_RBUTTON) &&			//right clicked
+		(spectatorTeam || getLocalPlayerBlob() is null))	//is in spectator or dead
 	{
-		//enable cinematic camera
-		const int diffTime = deathTime - getGameTime();
-		if (controls.isKeyJustPressed(KEY_RBUTTON) && (spectatorTeam || diffTime <= 0))
-		{
-			SetTargetPlayer(null);
-			timeToCinematic = 0.0f;
-		}
+		SetTargetPlayer(null);
+		setCinematicEnabled(true);
 	}
 }

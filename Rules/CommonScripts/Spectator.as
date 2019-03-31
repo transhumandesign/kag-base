@@ -67,7 +67,7 @@ void Spectator(CRules@ this)
 		if (controls.mouseScrollUp)
 		{
 			timeToScroll = 7;
-			timeToCinematic = CINEMATIC_TIME;
+			setCinematicEnabled(false);
 
 			if (zoomTarget < 1.0f)
 			{
@@ -81,7 +81,7 @@ void Spectator(CRules@ this)
 		else if (controls.mouseScrollDown)
 		{
 			timeToScroll = 7;
-			timeToCinematic = CINEMATIC_TIME;
+			setCinematicEnabled(false);
 
 			if (zoomTarget > 1.0f)
 			{
@@ -103,25 +103,25 @@ void Spectator(CRules@ this)
 	{
 		pos.x -= camSpeed;
 		SetTargetPlayer(null);
-		timeToCinematic = CINEMATIC_TIME;
+		setCinematicEnabled(false);
 	}
 	if (controls.ActionKeyPressed(AK_MOVE_RIGHT))
 	{
 		pos.x += camSpeed;
 		SetTargetPlayer(null);
-		timeToCinematic = CINEMATIC_TIME;
+		setCinematicEnabled(false);
 	}
 	if (controls.ActionKeyPressed(AK_MOVE_UP))
 	{
 		pos.y -= camSpeed;
 		SetTargetPlayer(null);
-		timeToCinematic = CINEMATIC_TIME;
+		setCinematicEnabled(false);
 	}
 	if (controls.ActionKeyPressed(AK_MOVE_DOWN))
 	{
 		pos.y += camSpeed;
 		SetTargetPlayer(null);
-		timeToCinematic = CINEMATIC_TIME;
+		setCinematicEnabled(false);
 	}
 
     if (controls.isKeyJustReleased(KEY_LBUTTON))
@@ -129,7 +129,7 @@ void Spectator(CRules@ this)
         waitForRelease = false;
     }
 
-	if (timeToCinematic > 0) //player-controlled zoom
+	if (!isCinematicEnabled()) //player-controlled zoom
 	{
 		if (Maths::Abs(camera.targetDistance - zoomTarget) > 0.001f)
 		{
@@ -143,6 +143,10 @@ void Spectator(CRules@ this)
 		if (AUTO_CINEMATIC)
 		{
 			timeToCinematic -= getRenderApproximateCorrectionFactor();
+			if (timeToCinematic <= 0)
+			{
+				setCinematicEnabled(true);
+			}
 		}
 	}
 	else //cinematic camera
@@ -233,14 +237,14 @@ void Spectator(CRules@ this)
 				SetTargetPlayer(blob.getPlayer());
 				camera.setTarget(blob);
 				waitForRelease = true;
-				timeToCinematic = CINEMATIC_TIME;
+				setCinematicEnabled(false);
 			}
 		}
 	}
 	else if (!waitForRelease && controls.isKeyPressed(KEY_LBUTTON) && camera.getTarget() is null) //classic-like held mouse moving
 	{
 		pos += (mousePos - pos) / 8.0f * getRenderApproximateCorrectionFactor();
-		timeToCinematic = CINEMATIC_TIME;
+		setCinematicEnabled(false);
 	}
 
 	if (targetPlayer() !is null)
@@ -250,7 +254,7 @@ void Spectator(CRules@ this)
 			camera.setTarget(targetPlayer().getBlob());
 		}
 		pos = camera.getPosition();
-		timeToCinematic = CINEMATIC_TIME;
+		setCinematicEnabled(false);
 	}
 	else
 	{

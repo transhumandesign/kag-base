@@ -159,3 +159,30 @@ bool focusOnBlob(CBlob@[] blobs)
 
 	return true;
 }
+
+ConfigFile@ openCinematicConfig()
+{
+	ConfigFile cfg = ConfigFile();
+	if (!cfg.loadFile("../Cache/cinematic_prefs.cfg") || !cfg.exists("cinematic_enabled"))
+	{
+		cfg.add_bool("cinematic_enabled", true);
+		cfg.saveFile("cinematic_prefs.cfg");
+	}
+
+	return cfg;
+}
+
+void setCinematicEnabled(bool enabled)
+{
+	ConfigFile cfg = openCinematicConfig();
+	cfg.add_bool("cinematic_enabled", enabled);
+	cfg.saveFile("cinematic_prefs.cfg");
+
+	timeToCinematic = enabled ? 0.0f : CINEMATIC_TIME;
+}
+
+bool isCinematicEnabled()
+{
+	ConfigFile cfg = openCinematicConfig();
+	return cfg.read_bool("cinematic_enabled");
+}
