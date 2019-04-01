@@ -15,6 +15,8 @@ shared class TreeSegment
 
 	bool gotsprites;
 
+	Random r;
+
 };
 
 shared class TreeVars
@@ -26,6 +28,8 @@ shared class TreeVars
 	u8 grown_times;
 	u8 max_grow_times;
 	s32 last_grew_time;
+
+	Random r;
 };
 
 TreeSegment@ getLastSegment(CBlob@ this)

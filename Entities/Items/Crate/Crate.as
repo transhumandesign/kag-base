@@ -559,7 +559,7 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 			blob.setPosition(pos);
 			blob.setVelocity(velocity);
 
-			blob.getSprite().PlaySound("MigrantSayHello.ogg", 1.0f, blob.getSexNum() == 0 ? 1.0f : 1.25f);
+			blob.getSprite().PlaySound(getTranslatedString("MigrantSayHello") + ".ogg", 1.0f, blob.getSexNum() == 0 ? 1.0f : 1.25f);
 		}
 		else
 		{

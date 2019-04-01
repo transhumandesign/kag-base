@@ -16,7 +16,7 @@ int getHeadsPackIndex(int headIndex)
 {
 	if (headIndex > 255) {
 		if ((headIndex % 256) > NUM_UNIQUEHEADS) {
-			return Maths::Min(getHeadsPackCount() - 1, Maths::Floor(headIndex / 255.0f));
+			return Maths::Min(getHeadsPackCount() - 1, Maths::Floor(headIndex / 256.0f));
 		}
 	}
 	return 0;
@@ -115,6 +115,7 @@ void onPlayerInfoChanged(CSprite@ this)
 CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 {
 	CBlob@ blob = this.getBlob();
+	CPlayer@ player = blob.getPlayer();
 
 	// strip old head
 	this.RemoveSpriteLayer("head");
@@ -132,13 +133,13 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	{
 		//accolade custom head handling
 		//todo: consider pulling other custom head stuff out to here
-		CPlayer@ p = blob.getPlayer();
-		if (p !is null && !p.isBot())
+		if (player !is null && !player.isBot())
 		{
-			Accolades@ acc = getPlayerAccolades(p.getUsername());
+			Accolades@ acc = getPlayerAccolades(player.getUsername());
 			if (acc.hasCustomHead())
 			{
-				texture_file = "Sprites/" + acc.customHeadTexture + ".png";
+				string texture_spec = acc.customHeadTexture;
+				texture_file = "Sprites/" + texture_spec + ".png";
 				headIndex = acc.customHeadIndex;
 				headsPackIndex = 0;
 				override_frame = true;
@@ -150,12 +151,11 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 		//not default head; do not use accolades data
 	}
 
+	int team = doTeamColour(headsPackIndex) ? blob.getTeamNum() : 0;
+	int skin = doSkinColour(headsPackIndex) ? blob.getSkinNum() : 0;
+
 	//add new head
-	CSpriteLayer@ head = this.addSpriteLayer(
-		"head", texture_file, 16, 16,
-		(doTeamColour(headsPackIndex) ? this.getBlob().getTeamNum() : 0),
-		(doSkinColour(headsPackIndex) ? this.getBlob().getSkinNum() : 0)
-	);
+	CSpriteLayer@ head = this.addSpriteLayer("head", texture_file, 16, 16, team, skin);
 
 	//
 	headIndex = headIndex % 256; // wrap DLC heads into "pack space"
@@ -179,6 +179,8 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	//setup gib properties
 	blob.set_s32("head index", headFrame);
 	blob.set_string("head texture", texture_file);
+	blob.set_s32("head team", team);
+	blob.set_s32("head skin", skin);
 
 	return head;
 }

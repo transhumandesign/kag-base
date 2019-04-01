@@ -261,11 +261,20 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		CBlob@ blob = getBlobByNetworkID(params.read_netid());
 		const u8 charge = params.read_u8();
+		
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v))
 		{
 			return;
 		}
+		
+		// check for valid ammo
+		if (blob.getName() != v.bullet_name){
+			// output warning
+			warn("Attempted to launch invalid object!");
+			return;
+		}
+		
 		Vehicle_onFire(this, v, blob, charge);
 	}
 }

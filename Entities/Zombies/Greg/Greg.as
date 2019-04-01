@@ -467,7 +467,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
         {
             this.Tag("paris");
             this.Chat("we're going to paris.");
-            Sound::Play("MigrantSayHello.ogg", this.getPosition());
+            Sound::Play(getTranslatedString("MigrantSayHello") + ".ogg", this.getPosition());
 
         }
         else

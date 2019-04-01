@@ -1,6 +1,6 @@
 // Bush logic
 
-#include "../Scripts/canGrow.as";
+#include "canGrow.as";
 
 void onInit(CBlob@ this)
 {

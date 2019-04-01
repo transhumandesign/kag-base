@@ -1,0 +1,208 @@
+###############################################################################
+# Steam Strings - For Translation Purposes
+
+These strings are provided to allow localisation of the steam content.
+
+They are not read directly by the game.
+
+# Guidelines:
+
+You do not need to translate the headings "# Description:" etc - these are just
+to separate the strings into logical sections for you.
+
+BBCode images should be left "as is".
+
+BBCode tags should probably  be "semantically" preserved between descriptions.
+They don't appear to be used on the store pages in most contexts though.
+
+Please issue a pull request for this file with the correct locale suffix if you
+contribute to localisation. Copy this file as a starting point if a copy for
+your locale does not already exist.
+
+	(eg Locale/Steam/steam_content_ru.txt for Russian)
+
+###############################################################################
+# King Arthur's Gold
+
+# Description:
+
+[img]{STEAM_APP_IMAGE}/extras/gif_overview01.png[/img]  .  [img]{STEAM_APP_IMAGE}/extras/gif_overview02.png[/img]
+
+[h2]2D物理 + 职业/队伍多人游戏 + 中世纪战争/建造游戏[/h2]
+
+你能在King Arthur's Gold能做下列的事情：
+
+[list]
+[*] 利用物理和爆炸来[b]摧毁[/b]敌人的城堡
+[*] 通过自由建筑来进行[b]防御[/b]
+[*] 使用环境来[b]焚烧[/b]或淹没你的敌人
+[*] 和你的队友共同[b]驾乘[/b]围城机器
+[*] 自由的奔跑、上船、[b]挖掘[/b]隧道或者在空中飞翔
+[*] 在游戏世界内和[b]活生生的[/b]动物和植物进行互动
+[*] 与32位无法预测的人类玩家在多人游戏中[b]对战[/b]
+[*] 单人游戏，合作游戏以及竞技游戏[b]模式[/b]
+[*] 使用60多个头像来[b]自定义[/b]你的形象
+[*] 使用社区制作的Mod和脚本来[b]打造[/b]你自己的冒险
+[/list]
+
+[img]{STEAM_APP_IMAGE}/extras/gif_overview03.png[/img]
+
+King Arthur's Gold混合了[i]失落的维京人[/i]的合作元素，加上了[i]百战天虫[/i]中可完全摧毁地形的能力以及[i]合金弹头[/i]系列里的视觉效果和动作元素，由来自曾经制作[i]士兵突击/英勇战士/Soldat[/i]的团队为您呈现。
+
+# Short Description:
+
+你想不想来[b]爆破[/b]你对手的堡垒并用2D物理来将其[b]崩塌[/b]？你会不会享受在多人游戏里[b]建造[/b]城堡、陷阱和围城机器？
+
+###############################################################################
+# King Arthur's Gold: Flags of the World Heads Pack
+
+# Description:
+
+这个装饰性的DLC将会加入超过120个独特的头像（每个性别超过60个）至King Arthur's Gold。
+
+每个头像都分别代表世界范围内的一个国旗。这里也有海盗旗和彩虹/自豪旗。
+使用它们来彰显你的传承并未战场带来一丝色彩！
+
+预览：
+
+[list]
+[img]{STEAM_APP_IMAGE}/extras/flag_heads_preview.png[/img]
+[/list]
+
+目前支持的国旗包括：
+
+[list]
+[*]波兰
+[*]澳大利亚
+[*]英国
+[*]爱尔兰
+[*]苏格兰
+[*]威尔士
+[*]新西兰
+[*]澳大利亚原住民区
+[*]Tino Rangatiratanga（毛利）
+[*]加拿大
+[*]美国
+[*]意大利
+[*]德国
+[*]俄国
+[*]法国
+[*]荷兰
+[*]瑞典
+[*]挪威
+[*]西班牙
+[*]比利时
+[*]芬兰
+[*]丹麦
+[*]葡萄牙
+[*]火鸡
+[*]冰岛
+[*]瑞士
+[*]匈牙利
+[*]白俄罗斯
+[*]斯洛伐克
+[*]拉脱维亚
+[*]以色列
+[*]巴勒斯坦
+[*]捷克共和国
+[*]乌克兰
+[*]墨西哥
+[*]智利
+[*]巴西
+[*]阿根廷
+[*]牙买加
+[*]巴布亚新几内亚
+[*]汤加
+[*]萨摩亚
+[*]韩国
+[*]中国
+[*]新加坡
+[*]泰国
+[*]日本
+[*]香港
+[*]马来西亚
+[*]台湾
+[*]印度尼西亚
+[*]菲律宾
+[*]印度
+[*]越南
+[*]南非
+[*]埃及
+[*]肯尼亚
+[*]索马里
+[*]苏丹
+[*]格鲁吉亚
+[*]希腊
+[*]叙利亚
+[*]叙利亚独立国旗
+[*]马里
+[*]奥地利
+[*]爱沙尼亚
+[*]突尼斯
+[*]利比亚
+[*]立陶宛
+[*]法罗群岛
+[*]波多黎各
+[*]古巴
+[*]格陵兰
+[*]多明尼加共和国
+[*]伊拉克
+[*]海盗旗
+[*]彩虹旗
+[/list]
+
+可以通过支持邮件来请求添加缺失的国家来考虑加入至游戏中。
+
+# Short Description:
+
+这个装饰性的DLC会添加超过120多个独特的国旗头像（每个性别超过60个）至King Arthur's Gold的游戏世界。
+
+###############################################################################
+# King Arthur's Gold: Fantasy Heads Pack
+
+# Description:
+
+为King Arthur's Gold带来一缕魔幻气息！以你最爱的魔幻题材的种族进行游戏并帮助游戏的持续开发！
+
+这个主题是由社区在四个题材内投票而出的最喜爱的主题，我们也非常激动地为你带来第二个DLC至Steam。这些高质量且独特的头像将会让你在群众中更加出众。
+
+[img]{STEAM_APP_IMAGE}/extras/PromoPreview.png[/img]
+
+[b]完整的包含的头像列表：[/b]
+[list]
+[*]霍比特人
+[*]地精
+[*]矮人战士
+[*]矮人矿工
+[*]森林精灵
+[*]黑暗幽魂
+[*]法师/女巫（光明和黑暗版本）
+[*]高精灵
+[*]游侠
+[*]骑士
+[*]重装骑士
+[*]乡绅
+[*]哥布林
+[*]兽人
+[*]独眼巨魔
+[*]小恶魔
+[/list]
+所有头像均包含男性和女性对应的版本。
+
+# Short Description:
+
+为King Arthur's Gold带来一缕魔幻气息！由社区投票虚线处，这些独家头像将让你成为矮人、精灵、哥布林、游侠、法师、女巫、霍比特人、黑暗幽魂以及更多！
+
+###############################################################################
+# Misc/Shared Content
+
+(these lines are used for all packages)
+
+# Legal Line:
+
+King Arthur's Gold由Transhuman Design版权所有 © 2011-2017。
+
+###############################################################################
+# Thanks!
+
+Thank you for your help localising the game!

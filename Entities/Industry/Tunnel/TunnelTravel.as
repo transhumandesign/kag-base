@@ -216,6 +216,7 @@ void onTunnelCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				params.write_u16(caller.getNetworkID());
 				params.write_u16(tunnel.getNetworkID());
 				this.SendCommand(this.getCommandID("server travel to"), params);
+				Travel(this, caller, tunnel);
 			}
 		}
 		else if (caller !is null && caller.isMyPlayer())
@@ -223,9 +224,12 @@ void onTunnelCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("server travel to"))
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		CBlob@ tunnel = getBlobByNetworkID(params.read_u16());
-		Travel(this, caller, tunnel);
+		if (getNet().isClient())
+		{
+			CBlob@ caller = getBlobByNetworkID(params.read_u16());
+			CBlob@ tunnel = getBlobByNetworkID(params.read_u16());
+			Travel(this, caller, tunnel);
+		}
 	}
 	else if (cmd == this.getCommandID("travel none"))
 	{

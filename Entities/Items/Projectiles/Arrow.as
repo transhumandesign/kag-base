@@ -312,6 +312,12 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 		return false;
 	}
 
+	//collide so normal arrows can be ignited
+	if (blob.getName() == "fireplace")
+	{
+		return true;
+	}
+
 	//anything to always hit
 	if (specialArrowHit(blob))
 	{

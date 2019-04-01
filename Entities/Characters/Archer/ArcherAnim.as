@@ -7,14 +7,14 @@
 #include "Knocked.as";
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
+#include "Accolades.as"
+
 
 const f32 config_offset = -4.0f;
 const string shiny_layer = "shiny bit";
 
 void onInit(CSprite@ this)
 {
-	RunnerTextures@ runner_tex = addRunnerTextures(this, "archer", "Archer");
-
 	LoadSprites(this);
 }
 
@@ -25,7 +25,32 @@ void onPlayerInfoChanged(CSprite@ this)
 
 void LoadSprites(CSprite@ this)
 {
-	ensureCorrectRunnerTexture(this, "archer", "Archer");
+	int armour = PLAYER_ARMOUR_STANDARD;
+
+	CPlayer@ p = this.getBlob().getPlayer();
+	if(p !is null)
+	{
+		armour = p.getArmourSet();
+		if (armour == PLAYER_ARMOUR_STANDARD)
+		{
+			Accolades@ acc = getPlayerAccolades(p.getUsername());
+			if (acc.hasCape())
+			{
+				armour = PLAYER_ARMOUR_CAPE;
+			}
+		}
+	}
+
+	switch(armour)
+	{
+	case PLAYER_ARMOUR_STANDARD:
+		ensureCorrectRunnerTexture(this, "archer", "Archer");
+		break;
+	case PLAYER_ARMOUR_CAPE:
+		ensureCorrectRunnerTexture(this, "archer_cape", "ArcherCape");
+		break;
+	}
+
 
 	string texname = getRunnerTextureName(this);
 
