@@ -13,6 +13,8 @@
 // REMEMBER: You do **ONLY** need to change the right-side text. If translations suddenly stop working, check your `cl_locale` variable and make sure the JSON file structure was not damaged.
 
 {
+	"GUI/Fonts/DejaVu/DejaVuSans.ttf": "GUI/Fonts/GenShinGothic/GenShinGothic-P-Medium.ttf",
+	"GUI/Fonts/DejaVu/DejaVuSans-Bold.ttf": "GUI/Fonts/GenShinGothic/GenShinGothic-P-Medium.ttf",
 //// SCOREBOARD ////
 //ScoreboardCommon.as
 	"Match time: {TIME}": "対戦経過時間: {TIME}",
@@ -868,7 +870,7 @@
 	"{WINNING_TEAM} wins the game!":"{WINNING_TEAM} が勝利だ！",
 	"Stalemate: both teams have no uncaptured flags.\nFlags returning in: {TIME}":"両チームが旗を保持している膠着状態のため、\n {TIME}秒後に強制的に両チームの旗をリセットします。",
 	"Stalemate resolved: Flags returned.":"旗が返還された",
-	
+
 //TimeToEnd.as
 	"Time is up!\n{WINNING_TEAM} wins the game!":"時間切れ\n{WINNING_TEAM} が勝利した",
 	"Time is up!\nIt's a tie!"          :"時間切れ！\n引き分けだ",
