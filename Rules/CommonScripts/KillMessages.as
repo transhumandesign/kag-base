@@ -3,6 +3,7 @@
 #include "Hitters.as";
 #include "TeamColour.as";
 #include "HoverMessage.as";
+#include "AssistCommon.as";
 
 int fade_time = 300;
 
@@ -13,8 +14,11 @@ class KillMessage
 	string victim_tag;
 	string attacker;
 	string attacker_tag;
+	string helper;
+	string helper_tag;
 	int attackerteam;
 	int victimteam;
+	int helperteam;
 	u8 hitter;
 	s16 time;
 
@@ -38,6 +42,20 @@ class KillMessage
 			attacker = "";
 			attacker_tag = "";
 			attackerteam = -1;
+		}
+
+		CPlayer@ _helper = getAssistPlayer(_victim, _attacker);
+		if (_helper !is null)
+		{
+			helper = _helper.getCharacterName();
+			helper_tag = _helper.getClantag();
+			helperteam = _helper.getTeamNum();
+		}
+		else
+		{
+			helper = "";
+			helper_tag = "";
+			helperteam = -1;
 		}
 
 		hitter = _hitter;
@@ -70,16 +88,18 @@ class KillFeed
 	{
 		const uint count = Maths::Min(10, killMessages.length);
 		GUI::SetFont("menu");
+		uint assists = 0;
 		for (uint message_step = 0; message_step < count; ++message_step)
 		{
 			KillMessage@ message = killMessages[message_step];
 			Vec2f dim, ul, lr;
 			SColor col;
+			f32 yOffset = 1.0f;
 
 			Vec2f max_username_size;
 			GUI::GetTextDimensions("####################", max_username_size);//20 chars
 			Vec2f max_clantag_size;
-			GUI::GetTextDimensions("#####", max_clantag_size);//5 chars
+			GUI::GetTextDimensions("##########", max_clantag_size);//10 chars
 			Vec2f single_space_size;
 			GUI::GetTextDimensions("#", single_space_size);//1 char
 
@@ -93,13 +113,34 @@ class KillFeed
 				Vec2f attacker_tag_size;
 				GUI::GetTextDimensions(message.attacker_tag + " ", attacker_tag_size);
 				Vec2f dim(getScreenWidth() - attacker_name_size.x - max_username_size.x - max_clantag_size.x - single_space_size.x - 32, 0);
-				ul.Set(dim.x, (message_step + 1) * 16);
+				ul.Set(dim.x, (message_step + yOffset + assists) * 16);
 				col = getTeamColor(message.attackerteam);
 				GUI::DrawText(message.attacker, ul, col);
 
 				ul.x -= attacker_tag_size.x;
 				col = getTeamColor(-1);
 				GUI::DrawText(message.attacker_tag, ul, col);
+			}
+
+			if (message.helperteam != -1)
+			{
+				//draw helper name
+
+				Vec2f helper_name_size;
+				GUI::GetTextDimensions(message.helper, helper_name_size);
+				Vec2f helper_tag_size;
+				GUI::GetTextDimensions(message.helper_tag + " ", helper_tag_size);
+				Vec2f dim(getScreenWidth() - helper_name_size.x - max_username_size.x - max_clantag_size.x - single_space_size.x - 32, 0);
+				ul.Set(dim.x, (message_step + yOffset + assists + 1) * 16);
+				col = getTeamColor(message.attackerteam);
+				GUI::DrawText(message.helper, ul, col);
+
+				ul.x -= helper_tag_size.x;
+				col = getTeamColor(-1);
+				GUI::DrawText(message.helper_tag, ul, col);
+
+				//slight offset for kills with an assist
+				yOffset += 0.5f;
 			}
 
 			//decide icon based on hitter
@@ -147,7 +188,7 @@ class KillFeed
 			if (hitterIcon != "")
 			{
 				Vec2f dim(getScreenWidth() - max_username_size.x - max_clantag_size.x - (single_space_size.x*2) - 32, 0);
-				ul.Set(dim.x, ((message_step + 1) * 16) - 8);
+				ul.Set(dim.x, ((message_step + yOffset + assists) * 16) - 8);
 				GUI::DrawIconByName(hitterIcon, ul);
 			}
 
@@ -161,13 +202,19 @@ class KillFeed
 
 				Vec2f dim(getScreenWidth() - max_username_size.x - max_clantag_size.x, 0);
 
-				ul.Set(dim.x, (message_step + 1) * 16);
+				ul.Set(dim.x, (message_step + yOffset + assists) * 16);
 				col = getTeamColor(-1);
 				GUI::DrawText(message.victim_tag, ul, col);
 
-				ul.Set(dim.x + victim_tag_size.x, (message_step + 1) * 16);
+				ul.Set(dim.x + victim_tag_size.x, (message_step + yOffset + assists) * 16);
 				col = getTeamColor(message.victimteam);
 				GUI::DrawText(message.victim, ul, col);
+			}
+
+			//account for the extra height from assists
+			if (message.helperteam != -1)
+			{
+				assists++;
 			}
 		}
 	}
@@ -226,9 +273,17 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 		{
 			CBlob@ killerblob = killer.getBlob();
 			CBlob@ victimblob = victim.getBlob();
-			if (killerblob !is null && victimblob !is null && killerblob.isMyPlayer() && killerblob !is victimblob)
+			CPlayer@ helper = getAssistPlayer(victim, killer);
+
+			bool kill = killerblob !is null && victimblob !is null && killerblob.isMyPlayer() && killerblob !is victimblob;
+			bool assist = helper !is null;
+			if (kill)
 			{
 				add_message(KillSpreeMessage(victim));
+			}
+			else if (assist)
+			{
+				add_message(AssistMessage(victim));
 			}
 		}
 	}
