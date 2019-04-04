@@ -12,6 +12,16 @@ u8 emote_7 = Emotes::troll;
 u8 emote_8 = Emotes::disappoint;
 u8 emote_9 = Emotes::ladder;
 
+u8 emote_10 = Emotes::flex;
+u8 emote_11 = Emotes::down;
+u8 emote_12 = Emotes::smug;
+u8 emote_13 = Emotes::left;
+u8 emote_14 = Emotes::okhand;
+u8 emote_15 = Emotes::right;
+u8 emote_16 = Emotes::thumbsup;
+u8 emote_17 = Emotes::up;
+u8 emote_18 = Emotes::thumbsdown;
+
 const string emote_config_file = "EmoteBindings.cfg";
 
 void onInit(CBlob@ this)
@@ -33,6 +43,16 @@ void onInit(CBlob@ this)
 	emote_7 = read_emote(cfg, "emote_7", Emotes::troll);
 	emote_8 = read_emote(cfg, "emote_8", Emotes::disappoint);
 	emote_9 = read_emote(cfg, "emote_9", Emotes::ladder);
+
+    emote_10 = read_emote(cfg, "emote_10", Emotes::flex);
+	emote_11 = read_emote(cfg, "emote_11", Emotes::down);
+	emote_12 = read_emote(cfg, "emote_12", Emotes::smug);
+	emote_13 = read_emote(cfg, "emote_13", Emotes::left);
+	emote_14 = read_emote(cfg, "emote_14", Emotes::okhand);
+	emote_15 = read_emote(cfg, "emote_15", Emotes::right);
+	emote_16 = read_emote(cfg, "emote_16", Emotes::thumbsup);
+	emote_17 = read_emote(cfg, "emote_17", Emotes::up);
+	emote_18 = read_emote(cfg, "emote_18", Emotes::thumbsdown);
 
 }
 
@@ -88,5 +108,41 @@ void onTick(CBlob@ this)
 	else if (controls.isKeyJustPressed(KEY_KEY_9))
 	{
 		set_emote(this, emote_9);
+	}
+    if (controls.isKeyJustPressed(KEY_NUMPAD_1))
+	{
+		set_emote(this, emote_10);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD_2))
+	{
+		set_emote(this, emote_11);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD_3))
+	{
+		set_emote(this, emote_12);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD_4))
+	{
+		set_emote(this, emote_13);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD_5))
+	{
+		set_emote(this, emote_14);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD_6))
+	{
+		set_emote(this, emote_15);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD_7))
+	{
+		set_emote(this, emote_16);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD_8))
+	{
+		set_emote(this, emote_17);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD_9))
+	{
+		set_emote(this, emote_18);
 	}
 }
