@@ -40,6 +40,8 @@ const f32 archer_grapple_force = 2.0f;
 const f32 archer_grapple_accel_limit = 1.5f;
 const f32 archer_grapple_stiffness = 0.1f;
 
+const f32 archer_grapple_min_ratio = 0.2f;
+
 namespace ArrowType
 {
 	enum type
@@ -67,6 +69,7 @@ shared class ArcherInfo
 	bool grappling;
 	u16 grapple_id;
 	f32 grapple_ratio;
+	f32 grapple_ratio_target;
 	f32 cache_angle;
 	Vec2f grapple_pos;
 	Vec2f grapple_vel;
