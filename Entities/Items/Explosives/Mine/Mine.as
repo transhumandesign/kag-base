@@ -29,7 +29,7 @@ void onInit(CBlob@ this)
 	this.set_u8("custom_hitter", Hitters::mine);
 
 	this.Tag("ignore fall");
-
+	this.Tag("ignore_saw");
 	this.Tag(MINE_PRIMING);
 
 	if (this.exists(MINE_STATE))
