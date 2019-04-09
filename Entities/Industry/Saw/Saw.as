@@ -120,8 +120,11 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 
 	tobeblended.Tag("sawed");
 
-	// on saw player - disable the saw
-	if (tobeblended.getPlayer() !is null && tobeblended.getTeamNum() == this.getTeamNum())
+	// on saw player or dead body - disable the saw
+	if (
+		(tobeblended.getPlayer() !is null || //player
+		(tobeblended.hasTag("flesh") && tobeblended.hasTag("flesh"))) && //dead body
+		tobeblended.getTeamNum() == this.getTeamNum()) //same team as saw
 	{
 		CBitStream params;
 		params.write_netid(tobeblended.getNetworkID());
@@ -144,8 +147,6 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 
 bool canSaw(CBlob@ this, CBlob@ blob)
 {
-	if (blob.hasTag("saw")) return true; //destroy saws in close proximity
-
 	if (blob.getRadius() >= this.getRadius() * 0.99f || blob.getShape().isStatic() ||
 	        blob.hasTag("sawed") || blob.hasTag("invincible"))
 	{
