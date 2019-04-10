@@ -84,7 +84,6 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 			archer.grappling = true;
 			archer.grapple_id = 0xffff;
 			archer.grapple_pos = pos;
-			archer.grapple_ratio_target = archer_grapple_min_ratio;
 
 			archer.grapple_ratio = 1.0f; //allow fully extended
 
@@ -127,32 +126,10 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 
 			CMap@ map = this.getMap();
 
-			//adjust grapple
-			f32 retractRate = 0.8f / getTicksASecond();
-			if (this.isKeyPressed(key_up))
-			{
-				archer.grapple_ratio_target -= retractRate;
-				archer.grapple_ratio_target = Maths::Max(archer.grapple_ratio_target, archer_grapple_min_ratio);
-			}
-			if (this.isKeyPressed(key_down))
-			{
-				archer.grapple_ratio_target += retractRate;
-				archer.grapple_ratio_target = Maths::Min(archer.grapple_ratio_target, 1.0f);
-			}
-
 			//reel in
 			//TODO: sound
-			f32 reelRate = 1.0f / getTicksASecond();
-			if (archer.grapple_ratio > archer.grapple_ratio_target)
-			{
-				archer.grapple_ratio -= reelRate;
-				archer.grapple_ratio = Maths::Max(archer.grapple_ratio, archer.grapple_ratio_target);
-			}
-			if (archer.grapple_ratio < archer.grapple_ratio_target)
-			{
-				archer.grapple_ratio += reelRate;
-				archer.grapple_ratio = Maths::Min(archer.grapple_ratio, archer.grapple_ratio_target);
-			}
+			if (archer.grapple_ratio > 0.2f)
+				archer.grapple_ratio -= 1.0f / getTicksASecond();
 
 			//get the force and offset vectors
 			Vec2f force;
@@ -173,9 +150,10 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 				}
 			}
 
-			//left map? close grapple
+			//left map? too long? close grapple
 			if (archer.grapple_pos.x < 0 ||
-				archer.grapple_pos.x > (map.tilemapwidth)*map.tilesize)
+			        archer.grapple_pos.x > (map.tilemapwidth)*map.tilesize ||
+			        dist > archer_grapple_length * 3.0f)
 			{
 				if (canSend(this))
 				{
