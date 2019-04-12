@@ -98,24 +98,24 @@ void ShowEmotesMenu(CPlayer@ player)
 		ConfigFile@ cfg = openEmoteBindingsConfig();
 
 		array<u8> emoteBinds = {
-            		read_emote(cfg, "emote_1", Emotes::attn),
-                	read_emote(cfg, "emote_2", Emotes::smile),
-                	read_emote(cfg, "emote_3", Emotes::frown),
-                	read_emote(cfg, "emote_4", Emotes::mad),
-                	read_emote(cfg, "emote_5", Emotes::laugh),
-                	read_emote(cfg, "emote_6", Emotes::wat),
-                	read_emote(cfg, "emote_7", Emotes::troll),
-                	read_emote(cfg, "emote_8", Emotes::disappoint),
-                	read_emote(cfg, "emote_9", Emotes::ladder),
-                	read_emote(cfg, "emote_10", Emotes::flex),
-                	read_emote(cfg, "emote_11", Emotes::down),
-                	read_emote(cfg, "emote_12", Emotes::smug),
-                	read_emote(cfg, "emote_13", Emotes::left),
-                	read_emote(cfg, "emote_14", Emotes::okhand),
-                	read_emote(cfg, "emote_15", Emotes::right),
-                	read_emote(cfg, "emote_16", Emotes::thumbsup),
-                	read_emote(cfg, "emote_17", Emotes::up),
-                	read_emote(cfg, "emote_18", Emotes::thumbsdown)
+				read_emote(cfg, "emote_1", Emotes::attn),
+				read_emote(cfg, "emote_2", Emotes::smile),
+				read_emote(cfg, "emote_3", Emotes::frown),
+				read_emote(cfg, "emote_4", Emotes::mad),
+				read_emote(cfg, "emote_5", Emotes::laugh),
+				read_emote(cfg, "emote_6", Emotes::wat),
+				read_emote(cfg, "emote_7", Emotes::troll),
+				read_emote(cfg, "emote_8", Emotes::disappoint),
+				read_emote(cfg, "emote_9", Emotes::ladder),
+				read_emote(cfg, "emote_10", Emotes::flex),
+				read_emote(cfg, "emote_11", Emotes::down),
+				read_emote(cfg, "emote_12", Emotes::smug),
+				read_emote(cfg, "emote_13", Emotes::left),
+				read_emote(cfg, "emote_14", Emotes::okhand),
+				read_emote(cfg, "emote_15", Emotes::right),
+				read_emote(cfg, "emote_16", Emotes::thumbsup),
+				read_emote(cfg, "emote_17", Emotes::up),
+				read_emote(cfg, "emote_18", Emotes::thumbsdown)
 		};
 
 		string propname = SELECTED_PROP + player.getUsername();
