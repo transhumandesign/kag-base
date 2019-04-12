@@ -44,7 +44,7 @@ void onInit(CBlob@ this)
 	emote_8 = read_emote(cfg, "emote_8", Emotes::disappoint);
 	emote_9 = read_emote(cfg, "emote_9", Emotes::ladder);
 
-    emote_10 = read_emote(cfg, "emote_10", Emotes::flex);
+	emote_10 = read_emote(cfg, "emote_10", Emotes::flex);
 	emote_11 = read_emote(cfg, "emote_11", Emotes::down);
 	emote_12 = read_emote(cfg, "emote_12", Emotes::smug);
 	emote_13 = read_emote(cfg, "emote_13", Emotes::left);
