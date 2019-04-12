@@ -109,7 +109,7 @@ void onTick(CBlob@ this)
 	{
 		set_emote(this, emote_9);
 	}
-    if (controls.isKeyJustPressed(KEY_NUMPAD1))
+	if (controls.isKeyJustPressed(KEY_NUMPAD1))
 	{
 		set_emote(this, emote_10);
 	}
