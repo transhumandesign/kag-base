@@ -19,12 +19,15 @@ void onRender(CRules@ this)
 	VoteObject@ vote = Rules_getVote(this);
 	CPlayer@ me = getLocalPlayer();
 
+	const bool can_vote = CanPlayerVote(vote, me);
+	const bool is_by_user = me.getUsername() == vote.byuser;
 	const bool can_force_pass = vote.forcePassFeature != "" &&
 	                            (getSecurity().checkAccess_Feature(me, vote.forcePassFeature) ||
 	                             getSecurity().checkAccess_Command(me, vote.forcePassFeature));
 	const bool can_cancel = getSecurity().checkAccess_Feature(me, "vote_cancel");
 
-	if ((!CanPlayerVote(vote, me) && !can_force_pass && !can_cancel) || g_have_voted) return;
+	if ((!can_vote && !can_force_pass && !can_cancel && !is_by_user) || g_have_voted)
+		return;
 
 	Vec2f tl = getTopLeft();
 	Vec2f br = tl + dim;
@@ -38,6 +41,11 @@ void onRender(CRules@ this)
 
 	GUI::GetTextDimensions(vote_title, text_dim);
 
+	if (can_vote)
+	{
+		br += Vec2f(0, text_dim.y);
+	}
+
 	if (can_cancel || can_force_pass)
 	{
 		br += Vec2f(0, text_dim.y);
@@ -50,20 +58,27 @@ void onRender(CRules@ this)
 
 	GUI::DrawText(getTranslatedString("Reason: {REASON}").replace("{REASON}", getTranslatedString(vote.reason)), tl + Vec2f(3, 3 + text_dim.y * 2), color_white);
 	GUI::DrawText(getTranslatedString("Cast by: {USER}").replace("{USER}", vote.byuser), tl + Vec2f(3, 3 + text_dim.y * 3), color_white);
-	GUI::DrawText(getTranslatedString("[O] - Yes"), tl + Vec2f(20, 3 + text_dim.y * 4), SColor(0xff30bf30));
-	GUI::DrawText(getTranslatedString("[P] - No"), tl + Vec2f(120, 3 + text_dim.y * 4), SColor(0xffbf3030));
+
+	u8 row = 4;
+
+	if (can_vote)
+	{
+		GUI::DrawText(getTranslatedString("[O] - Yes"), tl + Vec2f(20, 3 + text_dim.y * row), SColor(0xff30bf30));
+		GUI::DrawText(getTranslatedString("[P] - No"), tl + Vec2f(120, 3 + text_dim.y * row), SColor(0xffbf3030));
+		row++;
+	}
 
 	if (can_force_pass)
 	{
-		GUI::DrawText(getTranslatedString("Ctrl+O Pass"), tl + Vec2f(3, 3 + text_dim.y * 5), SColor(0xff30bf30));
+		GUI::DrawText(getTranslatedString("Ctrl+O Pass"), tl + Vec2f(3, 3 + text_dim.y * row), SColor(0xff30bf30));
 	}
 
 	if (can_cancel)
 	{
-		GUI::DrawText(getTranslatedString("Ctrl+P Cancel"), tl + Vec2f(95, 3 + text_dim.y * 5), SColor(0xffbf3030));
+		GUI::DrawText(getTranslatedString("Ctrl+P Cancel"), tl + Vec2f(95, 3 + text_dim.y * row), SColor(0xffbf3030));
 	}
 
-	GUI::DrawText(getTranslatedString("Click to close ({TIMELEFT}s)").replace("{TIMELEFT}", "" + Maths::Ceil(vote.timeremaining / 30.0f)), br - Vec2f(175, 7 + text_dim.y), color_white);
+	GUI::DrawText(getTranslatedString("Click to close ({TIMELEFT}s)").replace("{TIMELEFT}", "" + Maths::Ceil(vote.timeremaining / 30.0f)), br - Vec2f(165, 7 + text_dim.y), color_white);
 }
 
 bool g_have_voted = false;
@@ -89,7 +104,13 @@ void onTick(CRules@ this)
 
 	//--------------------------------- CLIENT ---------------------------------
 	CPlayer@ me = getLocalPlayer();
-	if (!getNet().isClient() || !CanPlayerVote(vote, me) || g_have_voted) return;
+
+	if (!getNet().isClient() || g_have_voted) return;
+
+	const bool can_force_pass = vote.forcePassFeature != "" &&
+	                            (getSecurity().checkAccess_Feature(me, vote.forcePassFeature) ||
+	                             getSecurity().checkAccess_Command(me, vote.forcePassFeature));
+	const bool can_cancel = getSecurity().checkAccess_Feature(me, "vote_cancel");
 
 	CControls@ controls = getControls();
 	if (controls is null) return;
@@ -114,8 +135,7 @@ void onTick(CRules@ this)
 	if (controls.isKeyPressed(KEY_KEY_O))
 	{
 		if ((controls.isKeyPressed(KEY_LCONTROL) || controls.isKeyPressed(KEY_RCONTROL))
-		        && vote.forcePassFeature != "" && (getSecurity().checkAccess_Feature(me, vote.forcePassFeature)
-		                || getSecurity().checkAccess_Command(me, vote.forcePassFeature)))
+		        && can_force_pass)
 		{
 			CBitStream params;
 			params.write_u16(id);
@@ -124,13 +144,16 @@ void onTick(CRules@ this)
 			return;
 		}
 
-		voted = true;
-		favour = true;
+		if (CanPlayerVote(vote, me))
+		{
+			voted = true;
+			favour = true;
+		}
 	}
 	else if (controls.isKeyPressed(KEY_KEY_P))
 	{
 		if ((controls.isKeyPressed(KEY_LCONTROL) || controls.isKeyPressed(KEY_RCONTROL))
-		        && getSecurity().checkAccess_Feature(me, "vote_cancel"))
+		        && can_cancel)
 		{
 			CBitStream params;
 			params.write_u16(id);
@@ -139,8 +162,11 @@ void onTick(CRules@ this)
 			return;
 		}
 
-		voted = true;
-		favour = false;
+		if (CanPlayerVote(vote, me))
+		{
+			voted = true;
+			favour = false;
+		}
 	}
 
 	if (voted)

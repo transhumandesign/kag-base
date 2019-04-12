@@ -143,7 +143,7 @@ void PassVote(VoteObject@ vote)
 	vote.timeremaining = -1; // so the gui hides and another vote can start
 
 	if (vote.onvotepassed is null) return;
-	bool outcome = vote.current_yes > vote.current_no + 1;//vote.required_percent * vote.maximum_votes;
+	bool outcome = vote.current_yes > vote.required_percent * vote.maximum_votes;
 	client_AddToChat(getTranslatedString("--- Vote {OUTCOME}: {YESCOUNT} vs {NOCOUNT} (out of {MAXVOTES}) ---").replace("{OUTCOME}", getTranslatedString(outcome ? "passed" : "failed")).replace("{YESCOUNT}", vote.current_yes + "").replace("{NOCOUNT}", vote.current_no + "").replace("{MAXVOTES}", vote.maximum_votes + ""), vote_message_colour());
 	vote.onvotepassed.Pass(outcome);
 }
@@ -183,6 +183,14 @@ bool CanPlayerVote(VoteObject@ vote, CPlayer@ player)
 
 	if (vote.canvote is null)
 		return true;
+
+	//can't vote on a vote against yourself
+	if (player.getUsername() == vote.user_to_kick)
+		return false;
+
+	//can't vote on a vote you started
+	if (player.getUsername() == vote.byuser)
+		return false;
 
 	return vote.canvote.PlayerCanVote(player);
 }
