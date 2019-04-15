@@ -38,7 +38,7 @@ shared class Accolades
 	Accolades(ConfigFile@ cfg, string _username)
 	{
 		username = _username;
-		customHeadTexture = "Entities/Characters/Sprites/CustomHeads/" + username;
+		customHeadTexture = "Entities/Characters/Sprites/CustomHeads/" + username + ".png";
 
 		array<string> slices;
 		if(cfg.readIntoArray_string(slices, username))
@@ -127,7 +127,7 @@ shared class Accolades
 
 	bool doesCustomHeadExists()
 	{
-		return CFileMatcher(customHeadTexture).hasMatch();
+		return CFileMatcher(customHeadTexture).getFirst() == customHeadTexture;
 
 	}
 

@@ -50,7 +50,7 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 	}
 
 	//special heads logic for default heads pack
-	if(default_pack && (headIndex == 255 || headIndex == NUM_UNIQUEHEADS))
+	if(default_pack && (headIndex == 255 || headIndex < NUM_UNIQUEHEADS))
 	{
 		CRules@ rules = getRules();
 		bool holidayhead = false;
@@ -127,8 +127,12 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 
 	bool override_frame = false;
 
+	//get the head index relative to the pack index (without unique heads counting)
+	int headIndexInPack = (headIndex - NUM_UNIQUEHEADS) - (headsPackIndex * 256);
+
 	//(has default head set)
-	bool defaultHead = (headIndex == 255 || headIndex == NUM_UNIQUEHEADS);
+	bool defaultHead = (headIndex == 255 || headIndexInPack < 0 || headIndexInPack >= pack.count);
+	print(""+headIndex+" "+headIndexInPack+" "+defaultHead);
 	if(defaultHead)
 	{
 		//accolade custom head handling
@@ -138,8 +142,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 			Accolades@ acc = getPlayerAccolades(player.getUsername());
 			if (acc.hasCustomHead())
 			{
-				string texture_spec = acc.customHeadTexture;
-				texture_file = "Sprites/" + texture_spec + ".png";
+				string texture_file = acc.customHeadTexture;
 				headIndex = acc.customHeadIndex;
 				headsPackIndex = 0;
 				override_frame = true;
@@ -164,6 +167,8 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	s32 headFrame = override_frame ?
 		(headIndex * NUM_HEADFRAMES) :
 		getHeadFrame(blob, headIndex, headsPackIndex == 0);
+
+	print("frame "+headFrame+" "+texture_file);
 
 	if (head !is null)
 	{
