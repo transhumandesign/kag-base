@@ -18,9 +18,11 @@ SColor getNameColour(CPlayer@ p)
     } else if (isAdmin(p) && showColor) {
         c = SColor(0xfffa5a00); //admin
     } else if (p.isMyPlayer()) {
+        c = SColor(0xffffffff); //my player
+    } else if (p.getOldGold() && !p.isBot()) {
         c = SColor(0xffffEE44); //my player
     } else {
-        c = SColor(0xffffffff); //normal
+        c = SColor(0xffcccccc); //normal
     }
 
     if(p.getBlob() is null && p.getTeamNum() != getRules().getSpectatorTeamNum())
