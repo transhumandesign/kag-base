@@ -142,7 +142,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 			Accolades@ acc = getPlayerAccolades(player.getUsername());
 			if (acc.hasCustomHead())
 			{
-				string texture_file = acc.customHeadTexture;
+				texture_file = acc.customHeadTexture;
 				headIndex = acc.customHeadIndex;
 				headsPackIndex = 0;
 				override_frame = true;
