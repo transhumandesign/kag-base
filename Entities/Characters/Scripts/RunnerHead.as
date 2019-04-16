@@ -15,7 +15,7 @@ const int FRAMES_WIDTH = 8 * NUM_HEADFRAMES;
 int getHeadsPackIndex(int headIndex)
 {
 	if (headIndex > 255) {
-		if ((headIndex % 256) > NUM_UNIQUEHEADS) {
+		if ((headIndex % 256) >= NUM_UNIQUEHEADS) {
 			return Maths::Min(getHeadsPackCount() - 1, Maths::Floor(headIndex / 256.0f));
 		}
 	}
