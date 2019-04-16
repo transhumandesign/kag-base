@@ -132,7 +132,6 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 
 	//(has default head set)
 	bool defaultHead = (headIndex == 255 || headIndexInPack < 0 || headIndexInPack >= pack.count);
-	print(""+headIndex+" "+headIndexInPack+" "+defaultHead);
 	if(defaultHead)
 	{
 		//accolade custom head handling
@@ -167,8 +166,6 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	s32 headFrame = override_frame ?
 		(headIndex * NUM_HEADFRAMES) :
 		getHeadFrame(blob, headIndex, headsPackIndex == 0);
-
-	print("frame "+headFrame+" "+texture_file);
 
 	if (head !is null)
 	{
