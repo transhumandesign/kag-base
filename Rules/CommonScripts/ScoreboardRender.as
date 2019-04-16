@@ -388,10 +388,13 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 				(acc.map_contributor ?
 					1 : 0),             6,     0,         0,
 				(acc.moderation_contributor && (
-					(p !is localplayer && isSpecial(localplayer)) || //always show accolade of others if local player is special
-					!isSpecial(p) || //always show accolade for ex-admins
-					coloredNameEnabled(getRules(), p) //show accolade only if colored name is visible
-				) ?
+						//always show accolade of others if local player is special
+						(p !is localplayer && isSpecial(localplayer)) ||
+						//always show accolade for ex-admins
+						!isSpecial(p) ||
+						//show accolade only if colored name is visible
+						coloredNameEnabled(getRules(), p)
+					) ?
 					1 : 0),             7,     0,         0,
 				(p.getOldGold() ?
 					1 : 0),             8,     0,         0,
@@ -408,7 +411,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 			//encoding per-group
 			int[] group_encode = {
 				//singles
-				accolades_start,                24,
+				accolades_start,                 24,
 				//medals
 				accolades_start - (24 * 4 + 12), 38,
 			};
