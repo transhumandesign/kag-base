@@ -393,6 +393,8 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 					coloredNameEnabled(getRules(), p) //show accolade only if colored name is visible
 				) ?
 					1 : 0),             7,     0,         0,
+				(p.getOldGold() ?
+					1 : 0),             8,     0,         0,
 
 				//tourney badges
 				acc.gold,               0,     1,         1,

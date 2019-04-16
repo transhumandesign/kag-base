@@ -244,5 +244,6 @@ string[] accolade_description = {
 	"Community Contributor - for significantly contributing to the KAG community in some way",
 	"Github Contributor - for significantly contributing to an issue or pull request on the KAG GitHub",
 	"Map Contributor - for contributing to the official map cycle",
-	"Moderation Contributor - for contributing to moderating the game, forums, or discord"
+	"Moderation Contributor - for contributing to moderating the game, forums, or discord",
+	"Gold Member - for enjoying the game with us since before the f2p launch"
 };
