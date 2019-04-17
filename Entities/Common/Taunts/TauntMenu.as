@@ -15,7 +15,8 @@ int cooldown_time = 0;
 
 void onInit(CRules@ rules)
 {
-	rules.addCommandID("display taunt");
+	//You should never do this in a client only script, moved to EmoteBinderMenu.as
+	//rules.addCommandID("display taunt");
 
 	string filename = "TauntEntries.cfg";
 	string cachefilename = "../Cache/" + filename;

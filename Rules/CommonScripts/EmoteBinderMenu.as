@@ -22,6 +22,7 @@ enum EMOTE_SUBCMD {
 void onInit(CRules@ this)
 {
 	this.addCommandID(EMOTE_CMD);
+	this.addCommandID("display taunt");
 
 	//load emote icons
 	for (u16 i = 0; i < Emotes::emotes_total; i++)
