@@ -79,7 +79,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 	topleft.y += stepheight * 2;
 
-	const int accolades_start = 660;
+	const int accolades_start = 680;
 	const int age_start = accolades_start + 80;
 
 	draw_age = false;
@@ -420,7 +420,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 				//singles
 				accolades_start,                 24,
 				//medals
-				accolades_start - (24 * 4 + 12), 38,
+				accolades_start - (24 * 5 + 12), 38,
 			};
 
 			for(int bi = 0; bi < badges_encode.length; bi += 4)
