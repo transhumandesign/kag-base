@@ -50,6 +50,7 @@ string[] tier_description = {
 	"This player is a Knight Supporter",
 	"This player is a Royal Guard Supporter",
 	"This player is a Round Table Supporter",
+	"This player is an Old Gold Supporter"
 };
 
 //returns the bottom
@@ -91,7 +92,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 	draw_tier = false;
 	for(int i = 0; i < players.length; i++) {
-		if (players[i].getSupportTier() > 0) {
+		if (players[i].getSupportTier() > 0 || players[i].getOldGold()) {
 			draw_tier = true;
 			break;
 		}
@@ -357,6 +358,12 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 		if(draw_tier)
 		{
 			int tier = p.getSupportTier();
+			//show old gold tier for old gold supporters <= squire tier
+			if (tier <= 1 && p.getOldGold())
+			{
+				tier = tier_description.length - 1;
+			}
+
 			if(tier > 0)
 			{
 				int tier_icon_start = 15;
