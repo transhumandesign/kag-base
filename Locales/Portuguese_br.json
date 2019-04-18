@@ -14,8 +14,8 @@
 
 // FOR ANY NEW TRANSLATION, PLEASE KEEP THIS HEADER, THE FILE STRUCTURE, INDENT STYLE AND THE COMMENTS AS-IS.
 // REMEMBER: You do **ONLY** need to change the right-side text. If translations suddenly stop working, check your `cl_locale` variable and make sure the JSON file structure was not damaged.
-
 {
+
 //// UI ////
 	"OK": "OK",
 	"Cancel": "Cancelar",
@@ -166,6 +166,8 @@
 	"Player": "Você",
 	"Gender:": "Gênero:",
 	"Head packs:": "DLC de cabeças:",
+	"Set Default Head": "Usar Cabeça Padrão",
+	"Classic Heads": "Cabeças Clássicas",
 	"Standard": "Padrão",
 	"Flags of The World": "Bandeiras do mundo",
 	"High Fantasy": "Fantasia Medieval",
@@ -179,6 +181,7 @@
 	"UNLOCK {ARMOUR_PACK}": "DESBLOQUEAR {ARMOUR_PACK}",
 	"Armour Set:": "Armadura:",
 	"Royal Guard Cape": "Capa da Guarda Real",
+	"Golden Tools": "Ferramentas de Ouro",
 
 //guiHeadsPack.xml
 	"Heads Pack Available On Steam!": "Pacotes de cabeça disponíveis na Steam!",
@@ -249,7 +252,7 @@
 	"Show Team-Mates Names": "Mostrar nomes de amigos",
 	"Show Minimap": "Mostrar o mini-mapa",
 	"Show Chat Bubbles": "Mostrar bolhas de chat",
-	"Snap Camera To Pixel": "Alinhar a camera a pixeis",
+	"Snap Camera To Pixel": "Alinhar a camera a pixels",
 	"Language (EXPERIMENTAL):": "Idioma (EXPERIMENTAL):",
 	"Language:": "Idioma:",
 	"Experimental feature warning": "Advertência de mecânica experimental",
@@ -291,6 +294,7 @@
 	"Bronze Medal - for Placing 3rd in a Suitable Community Tournament": "Medalha de Bronze - por ficar em 3° lugar em um Tourneio Válido da Comunidade",
 	"Participation Ribbon - for Participating in a Suitable Community Tournament": "Insígnia de Participação - por Participar em um Torneio Válido da Comunidade",
 	//Misc
+	"Gold Member - for enjoying the game with us since before the  F2P launch": "Membro de Ouro - por aproveitar o jogo com a gente antes do lançamento F2P",
 	"Community Contributor - for significantly contributing to the KAG community in some way": "Contribuidor da Comunidade - por contribuir significantemente para a comunidade do KAG de algum modo",
 	"Github Contributor - for significantly contributing to an issue or pull request on the KAG GitHub": "Contribuidor do GitHub - por contribuir significantemente em um issue ou pull request no GitHub do KAG",
 	"Map Contributor - for contributing to the official map cycle": "Contribuidor de Mapas - por contribuir com o ciclo de mapas oficiais",
@@ -1097,7 +1101,7 @@
 	"Musical note": "Nota Musical",
 
 //Emote binder
-	"Select a keybind below, then select the emote you want": "Selecione a tecla embaixo, então escolha o emote que você quer",
+	"Select a keybind below, then select the emote you want": "Selecione a tecla embaixo, então escolha o emote",
 	"Emote Hotkey Binder": "Atalho de Emotes",
 	"Select key 1": "Selecione tecla 1",
 	"Select key 2": "Selecione tecla 2",
@@ -1452,5 +1456,5 @@
 	"Portuguese (br)": "Português (br)",
 	"Russian (ru)": "Russo (ru)",
 	"Spanish (es)": "Espanhol (es)"
-	///////////
 }
+///////////
