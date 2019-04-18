@@ -88,9 +88,9 @@
   "Requires a Worker from the Hall to work here.": "Απαιτείται ένας εργάτη απ την αίθουσα να δουλέψει εδώ.",
 
   //Hall.as
-  "Units": "Unités",
-  "Another worker has been hired!": "Un nouveau travailleur a été embauché!",
-  "Supplies will drop at your halls.": "Du ravitaillement est largé sur vos halls.",
+  "Units": "Στρατεύματα",
+  "Another worker has been hired!": "Άλλος ένας εργάτης προσλήφθηκε!",
+  "Supplies will drop at your halls.": "Προμήθειες θα παραδοθούν στη βάση σου.",
   "Buy a worker for {MIGRANT_COST} Gold": "Αγόρασε έναν εργάτη για {MIGRANT_COST} Χρυσό",
   "Buy worker: Requires {MIGRANT_COST} Gold": "Αγόρασε εργάτη: Απαιτεί {MIGRANT_COST} Χρυσό",
 
