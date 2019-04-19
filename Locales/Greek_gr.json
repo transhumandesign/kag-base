@@ -728,13 +728,13 @@
   "Sandbox": "Bac à sable",
 
   //Multiplayer
-  "Simple Join": "Recherche rapide",
-  "Don't Care": "Peu importe",
+  "Simple Join": "Απλή σύνδεση",
+  "Don't Care": "Αδιάφορο",
   "Pick Game Size:": "Διάλεξε μέγεθος παιχνιδιού:",
   "<8 Players": "<8 παίκτες",
   "8-20 Players": "8 έως 20 παίκτες",
   ">20 Players": ">20 παίκτες",
-  "Choose Game Mode:": "Mode de jeu:",
+  "Choose Game Mode:": "Διάλεξε :",
   "Capture The Flag": "Capture de drapeau",
   "Take The Halls": "Capture de halls",
   "Team Deathmatch": "par équipe\nMatch à mort", //i have no fucking clue why it shows reversed in the button. specifically here.
@@ -745,14 +745,14 @@
 
   "Browse servers": "Αναζήτησε σέρβερ",
 
-  "Connect to...": "Σύνδεση σε...\nmanuelle",
+  "Connect to...": "Σύνδεση σε...",
   "IP:Port": "IP:Θύρα",
   //"Password:": "Κωδικός:", //already translated
 
   //ESC menu
   "Change Team": "Άλλαξε ομάδα",
   "Suicide": "Αυτοκτονία",
-  "Start a Vote": "Démarrer un vote",
+  "Start a Vote": "Ξεκίνα μία ψήφο",
   "Admin": "Διαχεριστής",
   "Ignore Player": "Αγνόησε τον παίκτη",
   "Servers": "Λίστα server",
@@ -762,7 +762,7 @@
   //Settings->Player
   "Player": "Παίκτης",
   "Gender:": "Φύλλο:",
-  "Head packs:": "DLC de têtes:",
+  "Head packs:": "DLC κεφάλια:",
   "Standard": "Κανονικό",
   "Flags of The World": "Σημαίες του κόσμου",
   "BUY": "ΑΓΟΡΑΣΕ",
@@ -773,9 +773,9 @@
   "Controls": "Κουμπιά",
   "Change keys:": "Άλλαξε τα κουμπιά:",
   "(Unused keys, for mods)": "(Αχρησιμοποίητα κουμπιά, για τους διαχειρηστές)",
-  "Press key/mouse to change to...": "Choisir la touche du clavier/le bouton de la souris à associer...",
+  "Press key/mouse to change to...": "Πάτα το κουμπί/ποντίκι για να αλλάξεις σε...",
   "Keys Double-Bound": "Τα κουμπιά χρησιμοποιούνται ήδη",
-  "This key is being used by another action or is reserved; results may not be as you expected!\n\nYou have been warned!": "Cette touche est déjà utilisée pour une autre action ou est réservée; cela peut ne pas marcher correctement!\n\nVous avez été prévenus!",
+  "This key is being used by another action or is reserved; results may not be as you expected!\n\nYou have been warned!": "Αυτό το κουμπί χρησιμοποιείται απο άλλη ενέργεια ή είναι δεσμευμένο; τα αποτελέσματα μπορεί να είναι απρόβλεπτα!\n\n!",
   "Left": "Αριστερά", //TODO in engine
   "Right": "Δεξιά",
   "Up": "Πάνω",
@@ -783,15 +783,15 @@
   "Action 1": "Action 1",
   "Action 2": "Action 2",
   "Action 3": "Action 3",
-  "Inventory": "Inventaire",
+  "Inventory": "Απόθεμα",
   "Use": "Χρησιμοποίησε",
   "Pickup": "Μάζεψε",
   "Zoom in": "Μεγένθυση",
   "Zoom out": "Σμίκρυνση",
-  "Emoticons": "Émoticônes",
-  "Map key": "Mini-carte",
-  "Mark Player": "Suivre un joueur",
-  "Taunts": "Railleries",
+  "Emoticons": "Φάτσες",
+  "Map key": "Υπόμνημα",
+  "Mark Player": "Μάρκαρε τον παίκτη",
+  "Taunts": "Αποδοκιμασίες",
   "Misc Menu": "Εδικό Μενού",
 
   //Settings->Video
