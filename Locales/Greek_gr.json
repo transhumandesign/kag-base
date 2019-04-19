@@ -796,14 +796,14 @@
 
   //Settings->Video
   "Video": "Εικόνα",
-  "Smooth shader": "Filtre de lissage",
+  "Smooth shader": "Ομαλή σκίαση",
   "\nSmooths the game screen using hq2x filter (will lower performance)\n": "\nΟμαλύνει την οθόνη χρησιμοποιώντας το φιλτρο hq2x (θα χαμηλώσει την επίδοση)\n",
-  "Faster graphics": "Γρήγορα γραφικά",
+  "Faster graphics": "Γρηγορότερα γραφικά",
   "\nCheck this if the game is choppy or slow\n": "\nΕπέλεξε αυτό αν το παιχνίδι είναι ασταθές ή αργό\n",
-  "Uncap framerate": "FPS illimités",
-  "\nCheck this to have unlimited FPS (uncheck if you have slow performance!)\n": "\nCochez pour retirer la restriction de FPS (décochez si vous avez des soucis de performance!)\n",
-  "VSync - Requires Restart": "Synchronisation verticale",
-  "\nSync rendering with monitor refresh rate (prevents tearing)\n": "\nAttendre que le moniteur soit prêt pour afficher une nouvelle image (évite les déchirures)\n",
+  "Uncap framerate": "Ξεκλείδωσε τα FPS",
+  "\nCheck this to have unlimited FPS (uncheck if you have slow performance!)\n": "\nΔιάλεξε αυτό αν θές να έχεις απεριόριστα FPS (σβήσε την επιλογή αν έχεις αργή επίδοση!)\n",
+  "VSync - Requires Restart": "VSync - Απαιτεί Επανεκκίνηση",
+  "\nSync rendering with monitor refresh rate (prevents tearing)\n": "\nΣυγχρόνισε την εικόνα με τον ρυθμό ανανέωσης της οθόνης\n",
 
   //Settings->Sound
   "Sound": "Ήχος",
