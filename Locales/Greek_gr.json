@@ -95,27 +95,27 @@
   "Buy worker: Requires {MIGRANT_COST} Gold": "Αγόρασε εργάτη: Απαιτεί {MIGRANT_COST} Χρυσό",
 
   //TunnelTravel.as
-  "Travel": "Passer le tunnel",
-  "Travel (requires Transport Tunnels)": "Passer le tunnel (nécessite des tunnels)",
-  "Pick tunnel to travel": "Choisissez le tunnel de destination",
+  "Travel": "Ταξίδεψε",
+  "Travel (requires Transport Tunnels)": "Ταξίδεψε (απαιτεί τούνελ)",
+  "Pick tunnel to travel": "Διάλεξε τούνελ προορισμού",
   "Return to base": "Επέστρεψε στη βάση", //OLD
   "Travel right": "Ταξίδεψε δεξιά",
   "Travel left": "Ταξίδεψε αριστερά",
   "You are here": "Είσαι εδώ",
 
   //ResearchGUI.as
-  "Click the items you vote to research!": "Cliquer pour voter une recherche!",
-  "Yellow paths show what will be researched when the match starts.": "Les chemins en jaune présentent les recherches qui seront effectuées au début du combat.",
-  "Red path items can only be bought for gold at trader.": "Les chemins en rouge ne peuvent qu'être achetés contre de l'or chez le marchand.",
-  "(available)": "(disponible)",
-  "(researching - {TIME}s)": "(en recherche - {TIME}s restantes)",
-  "(click to vote)": "(cliquer pour voter)",
+  "Click the items you vote to research!": "Επέλεξε τα αντικείμενα που θές να ερευνήσεις!",
+  "Yellow paths show what will be researched when the match starts.": "Τα κίτρινα μονοπάτια δείχνουν τι θα ερευνηθεί στη αρχή του παιχνιδιού.",
+  "Red path items can only be bought for gold at trader.": "Τα αντικείμενα στο κόκκινο μονοπάτι μπορούν μόνο να αγοραστουν για χρυσό.",
+  "(available)": "(διαθέσιμο)",
+  "(researching - {TIME}s)": "(γίνεται έρευνα - {TIME}s)",
+  "(click to vote)": "(πάτα για να ψηφίσεις)",
 
   //Sign.as
-  "The big brown fox jumped over the shaggy chocolate.": "Portez ce vieux whisky au juge blond qui fume.",
+  "The big brown fox jumped over the shaggy chocolate.": "Η μεγάλη καφέ αλεπού πήδηξε πάνω απ τη σοκολάτα.",
 
   //PlayerCamera.as
-  "Following {CHARACTERNAME} ({USERNAME})": "Suit {CHARACTERNAME} ({USERNAME})",
+  "Following {CHARACTERNAME} ({USERNAME})": "Ακολούθα {CHARACTERNAME} ({USERNAME})",
 
   //ShowTipOnDeath.as
   "Tip: {TIP}": "Υπόδειξη: {TIP}",
@@ -131,18 +131,18 @@
   "noob!": "άσχετε!",
 
   "Your mother was a hamster!": "Η μάνα σου ήταν ένα χάμστερ!",
-  "Your father smelt of elderberries!": "Ton père puait le sureau!",
-  "Go away or I shall taunt you a second time.": "Va-t'en ou je me moquerai de toi une seconde fois.",
-  "Go and boil your bottom!": "Va te faire botter les fesses!",
+  "Your father smelt of elderberries!": "Ο πατέρας σου μύριζε σα βατόμουρα",
+  "Go away or I shall taunt you a second time.": "Φύγε η θα σε ξαναχλευάσω.",
+  "Go and boil your bottom!": "!",
 
   "heeelp!": "βοήθειααα!",
   "ouch!": "άουτς!",
-  "damnit!": "mince!",
-  "dangit!": "zut!",
+  "damnit!": "να πάρει!",
+  "dangit!": "φτού!",
   "oof!": "ουφ!",
   "...": "...",
   "You'll be sorry!": "θα το μετανιώσεις!",
-  "I'll get you!": "Je t'aurai!",
+  "I'll get you!": "Θα σε πίασω!",
 
   "I'll be back": "Θα επιστρέψω",
   "Save me barry!": "Σώσε με barry!",
