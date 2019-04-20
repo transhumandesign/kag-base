@@ -51,8 +51,11 @@ void joinNewSpecTeam(CRules@ this, CPlayer@ player)
 	this.set_bool(player.getUsername() + "_moderator", true);
 	nonSpecTeam = player.getTeamNum();	//note the admin previous team.
 	swapSpecTeam(this, player, nonSpecTeam, false);	//make him force-join spec team.
-	CCamera@ camera = getCamera();	//camera and visuals.
-	CMap@ map = getMap();
-	getHUD().ClearMenus();
-	camera.setPosition(Vec2f(map.getMapDimensions().x / 2, map.getMapDimensions().y / 2));
+	if(player is getLocalPlayer())
+	{
+		CCamera@ camera = getCamera();	//camera and visuals.
+		CMap@ map = getMap();
+		getHUD().ClearMenus();
+		camera.setPosition(Vec2f(map.getMapDimensions().x / 2, map.getMapDimensions().y / 2));
+	}
 }
