@@ -233,11 +233,11 @@ shared class WarSpawns : RespawnSystem
 		{
 			y -= map.tilesize;
 			if (!map.isTileSolid(map.getTile(Vec2f(x, y)))
-			        && !map.isTileSolid(map.getTile(Vec2f(x - map.tilesize, y)))
-			        && !map.isTileSolid(map.getTile(Vec2f(x + map.tilesize, y)))
-			        && !map.isTileSolid(map.getTile(Vec2f(x, y - map.tilesize)))
-			        && !map.isTileSolid(map.getTile(Vec2f(x, y - 2 * map.tilesize)))
-			        && !map.isTileSolid(map.getTile(Vec2f(x, y - 3 * map.tilesize)))
+					&& !map.isTileSolid(map.getTile(Vec2f(x - map.tilesize, y)))
+					&& !map.isTileSolid(map.getTile(Vec2f(x + map.tilesize, y)))
+					&& !map.isTileSolid(map.getTile(Vec2f(x, y - map.tilesize)))
+					&& !map.isTileSolid(map.getTile(Vec2f(x, y - 2 * map.tilesize)))
+					&& !map.isTileSolid(map.getTile(Vec2f(x, y - 3 * map.tilesize)))
 			   )
 				break;
 		}
@@ -348,8 +348,8 @@ shared class WarSpawns : RespawnSystem
 		{
 			CBlob@ pickSpawn = getBlobByNetworkID(spawnpoint);
 			if (pickSpawn !is null
-			        && (takeUnderRaid || !pickSpawn.hasTag("under raid"))
-			        && pickSpawn.getTeamNum() == w_info.team
+					&& (takeUnderRaid || !pickSpawn.hasTag("under raid"))
+					&& pickSpawn.getTeamNum() == w_info.team
 			   )
 			{
 				return pickSpawn;
@@ -437,20 +437,20 @@ shared class WarCore : RulesCore
 		missingHalls = true;
 
 		if(_rules.get_bool("tutorial"))
-        {
+		{
 			lastHall = 0;
-            CBlob@[] halls;
-            getBlobsByName("hall", @halls);
-            for(int i=0;i<halls.length;i++)
-            {
-                if(halls[i].getPosition().x>=halls[lastHall].getPosition().x)
+			CBlob@[] halls;
+			getBlobsByName("hall", @halls);
+			for(int i=0;i<halls.length;i++)
+			{
+				if(halls[i].getPosition().x>=halls[lastHall].getPosition().x)
 				{
 					lastHall=i;
 				}
-            }
+			}
 			halls[lastHall].server_setTeamNum(1);
 
-        }
+		}
 	}
 
 	int gametime;
@@ -780,7 +780,7 @@ shared class WarCore : RulesCore
 			{
 				// ship?
 				if ((nextShipmentTime[i] == 0 && time >= startTime + shipmentFirstTime) ||
-				    (nextShipmentTime[i] > 0  && time >= nextShipmentTime[i]))
+					(nextShipmentTime[i] > 0  && time >= nextShipmentTime[i]))
 				{
 					available.clear();
 
@@ -1055,11 +1055,11 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 }
 
 TradeItem@ addGoldForItem(CBlob@ this, const string &in name,
-                          int cost, const string &in cost_mat, const string &in cost_mat_description,
-                          const bool instantShipping,
-                          const string &in iconName,
-                          const string &in configFilename,
-                          const string &in description)
+						  int cost, const string &in cost_mat, const string &in cost_mat_description,
+						  const bool instantShipping,
+						  const string &in iconName,
+						  const string &in configFilename,
+						  const string &in description)
 {
 	TradeItem@ item = addTradeItem(this, name, 0, instantShipping, iconName, configFilename, description);
 	if (item !is null && cost > 0)
