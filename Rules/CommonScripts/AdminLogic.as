@@ -8,6 +8,7 @@ u8 nonSpecTeam = 0; //Sandbox' default team.
 void commandRecieve(CRules@ this, u8 cmd, CBitStream @params)
 {
 	//Forcing spectator team for admins.
+<<<<<<< HEAD
 	if(getNet().isServer() && this.getCommandID("mod_team") == cmd)
 	{
 		string p_name = params.read_string();
@@ -31,6 +32,31 @@ void commandRecieve(CRules@ this, u8 cmd, CBitStream @params)
 			}
 		}
 	}
+=======
+    if(getNet().isServer() && this.getCommandID("mod_team") == cmd)
+    {
+	    string p_name = params.read_string();
+	    bool on_spec = params.read_bool();
+	    u8 previousTeam = params.read_u8();
+
+	    CPlayer@ player = getPlayerByUsername(p_name);
+	    if(on_spec) //player is alread in spec team.
+	    {
+		    player.server_setTeamNum(previousTeam);
+		    this.server_PlayerDie(player); //force the player to join his old team.
+	    }
+	    else
+	    {
+		    CBlob@ corpse = player.getBlob();
+		    player.server_setTeamNum(this.getSpectatorTeamNum()); //get to new spec team.
+		    if(corpse !is null) //in case someone 'kills' the corpse.
+		    {
+			    corpse.server_SetPlayer(null); //a body with no spirit is a useless corpse.
+			    corpse.server_Die(); //destroy the corpse.
+		    }
+	    }
+    }
+>>>>>>> 5bec76e2576e678db30164c053cb8987e0d9ce2f
 }
 
 void swapSpecTeam(CRules@ this, CPlayer@ player,u8 team, bool isPlayerOnSpec)

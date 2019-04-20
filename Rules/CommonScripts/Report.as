@@ -17,6 +17,7 @@ void onInit(CRules@ this)
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
 	commandRecieve(this, cmd, params);
+<<<<<<< HEAD
 	if (isClient() && this.getCommandID("report") == cmd)
 	{
 		if (getLocalPlayer().isMod())
@@ -40,6 +41,31 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 
 		CPlayer@ player = getPlayerByUsername(p_name);
 		CPlayer@ baddie = getPlayerByUsername(b_name);
+=======
+    if (isClient() && this.getCommandID("report") == cmd)
+    {
+        if (getLocalPlayer().isMod())
+        {
+            string p_name = params.read_string();
+            string b_name = params.read_string();
+
+            CPlayer@ baddie = getPlayerByUsername(b_name);
+
+            if(baddie !is null)
+            {
+                client_AddToChat("Report has been made of: " + baddie.getCharacterName() + " (" + b_name + ")", reportMessageColor);
+                Sound::Play("ReportSound.ogg");
+            }
+        }
+    }
+	else if (isServer() && this.getCommandID("report") == cmd)
+	{
+		string p_name = params.read_string();
+        string b_name = params.read_string();
+
+        CPlayer@ player = getPlayerByUsername(p_name);
+        CPlayer@ baddie = getPlayerByUsername(b_name);
+>>>>>>> 5bec76e2576e678db30164c053cb8987e0d9ce2f
 
 		//server gets info from client and decides if it will report baddie
 		if(player !is baddie)
