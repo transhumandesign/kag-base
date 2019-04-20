@@ -15,7 +15,7 @@ const int FRAMES_WIDTH = 8 * NUM_HEADFRAMES;
 int getHeadsPackIndex(int headIndex)
 {
 	if (headIndex > 255) {
-		if ((headIndex % 256) > NUM_UNIQUEHEADS) {
+		if ((headIndex % 256) >= NUM_UNIQUEHEADS) {
 			return Maths::Min(getHeadsPackCount() - 1, Maths::Floor(headIndex / 256.0f));
 		}
 	}
@@ -50,7 +50,7 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 	}
 
 	//special heads logic for default heads pack
-	if(default_pack && (headIndex == 255 || headIndex == NUM_UNIQUEHEADS))
+	if(default_pack && (headIndex == 255 || headIndex < NUM_UNIQUEHEADS))
 	{
 		CRules@ rules = getRules();
 		bool holidayhead = false;
@@ -127,8 +127,11 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 
 	bool override_frame = false;
 
+	//get the head index relative to the pack index (without unique heads counting)
+	int headIndexInPack = (headIndex - NUM_UNIQUEHEADS) - (headsPackIndex * 256);
+
 	//(has default head set)
-	bool defaultHead = (headIndex == 255 || headIndex == NUM_UNIQUEHEADS);
+	bool defaultHead = (headIndex == 255 || headIndexInPack < 0 || headIndexInPack >= pack.count);
 	if(defaultHead)
 	{
 		//accolade custom head handling
@@ -138,8 +141,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 			Accolades@ acc = getPlayerAccolades(player.getUsername());
 			if (acc.hasCustomHead())
 			{
-				string texture_spec = acc.customHeadTexture;
-				texture_file = "Sprites/" + texture_spec + ".png";
+				texture_file = acc.customHeadTexture;
 				headIndex = acc.customHeadIndex;
 				headsPackIndex = 0;
 				override_frame = true;

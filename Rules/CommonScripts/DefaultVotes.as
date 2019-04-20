@@ -423,7 +423,8 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			{
 				CPlayer@ player = getPlayer(i);
 
-				if (player is me) continue; //don't display ourself for kicking
+				//if(player is me) continue; //don't display ourself for kicking
+				//commented out for max lols
 
 				int player_team = player.getTeamNum();
 				if ((player_team == me.getTeamNum() || player_team == this.getSpectatorTeamNum()
