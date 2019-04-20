@@ -13,33 +13,6 @@ const string shiny_layer = "shiny bit";
 void onInit(CSprite@ this)
 {
 	LoadSprites(this);
-
-	// add blade
-	this.RemoveSpriteLayer("chop");
-	CSpriteLayer@ chop = this.addSpriteLayer("chop");
-
-	if (chop !is null)
-	{
-		Animation@ anim = chop.addAnimation("default", 0, true);
-		anim.AddFrame(35);
-		anim.AddFrame(43);
-		anim.AddFrame(63);
-		chop.SetVisible(false);
-		chop.SetRelativeZ(1000.0f);
-	}
-
-	// add shiny
-	this.RemoveSpriteLayer(shiny_layer);
-	CSpriteLayer@ shiny = this.addSpriteLayer(shiny_layer, "AnimeShiny.png", 16, 16);
-
-	if (shiny !is null)
-	{
-		Animation@ anim = shiny.addAnimation("default", 2, true);
-		int[] frames = {0, 1, 2, 3};
-		anim.AddFrames(frames);
-		shiny.SetVisible(false);
-		shiny.SetRelativeZ(1.0f);
-	}
 }
 
 void onPlayerInfoChanged(CSprite@ this)
@@ -73,6 +46,38 @@ void LoadSprites(CSprite@ this)
 	case PLAYER_ARMOUR_CAPE:
 		ensureCorrectRunnerTexture(this, "knight_cape", "KnightCape");
 		break;
+	case PLAYER_ARMOUR_GOLD:
+		ensureCorrectRunnerTexture(this, "knight_gold", "KnightGold");
+		break;
+	}
+
+	string texname = getRunnerTextureName(this);
+
+	// add blade
+	this.RemoveSpriteLayer("chop");
+	CSpriteLayer@ chop = this.addTexturedSpriteLayer("chop", this.getTextureName(), 32, 32);
+
+	if (chop !is null)
+	{
+		Animation@ anim = chop.addAnimation("default", 0, true);
+		anim.AddFrame(35);
+		anim.AddFrame(43);
+		anim.AddFrame(63);
+		chop.SetVisible(false);
+		chop.SetRelativeZ(1000.0f);
+	}
+
+	// add shiny
+	this.RemoveSpriteLayer(shiny_layer);
+	CSpriteLayer@ shiny = this.addSpriteLayer(shiny_layer, "AnimeShiny.png", 16, 16);
+
+	if (shiny !is null)
+	{
+		Animation@ anim = shiny.addAnimation("default", 2, true);
+		int[] frames = {0, 1, 2, 3};
+		anim.AddFrames(frames);
+		shiny.SetVisible(false);
+		shiny.SetRelativeZ(1.0f);
 	}
 }
 

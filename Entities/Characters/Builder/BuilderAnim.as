@@ -51,6 +51,9 @@ void LoadSprites(CSprite@ this)
 	case PLAYER_ARMOUR_CAPE:
 		ensureCorrectRunnerTexture(this, "builder_cape", "BuilderCape");
 		break;
+	case PLAYER_ARMOUR_GOLD:
+		ensureCorrectRunnerTexture(this, "builder_gold", "BuilderGold");
+		break;
 	}
 
 }
