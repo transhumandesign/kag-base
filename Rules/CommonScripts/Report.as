@@ -21,16 +21,16 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 	{
 		if (getLocalPlayer().isMod())
 		{
-				string p_name = params.read_string();
-				string b_name = params.read_string();
+			string p_name = params.read_string();
+			string b_name = params.read_string();
 
-				CPlayer@ baddie = getPlayerByUsername(b_name);
+			CPlayer@ baddie = getPlayerByUsername(b_name);
 
-				if(baddie !is null)
-				{
-					 client_AddToChat("Report has been made of: " + baddie.getCharacterName() + " (" + b_name + ")", reportMessageColor);
-					 Sound::Play("ReportSound.ogg");
-				}
+			if(baddie !is null)
+			{
+				client_AddToChat("Report has been made of: " + baddie.getCharacterName() + " (" + b_name + ")", reportMessageColor);
+				Sound::Play("ReportSound.ogg");
+			}
 		}
 	}
 	else if (isServer() && this.getCommandID("report") == cmd)
@@ -197,15 +197,15 @@ bool reportAllowed(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 
 void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 {
-		string playerUsername = player.getUsername();
-		string baddieUsername = baddie.getUsername();
-		string baddieCharacterName = baddie.getCharacterName();
+	string playerUsername = player.getUsername();
+	string baddieUsername = baddie.getUsername();
+	string baddieCharacterName = baddie.getCharacterName();
 
-		//send report information to server
-		CBitStream report_params;
-		report_params.write_string(player.getUsername());
-		report_params.write_string(baddie.getUsername());
-		this.SendCommand(this.getCommandID("report"), report_params);
+	//send report information to server
+	CBitStream report_params;
+	report_params.write_string(player.getUsername());
+	report_params.write_string(baddie.getUsername());
+	this.SendCommand(this.getCommandID("report"), report_params);
 }
 
 void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)

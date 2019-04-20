@@ -76,8 +76,8 @@ void onTick(CRules@ this)
 		}
 		else
 		{
-				joinNewSpecTeam(this, getLocalPlayer()); //Force-swap to spec team.
-				client_AddToChat("You have just been swapped to spectator team, type !m to get back.", SColor(255,0,0,0));
+			joinNewSpecTeam(this, getLocalPlayer()); //Force-swap to spec team.
+			client_AddToChat("You have just been swapped to spectator team, type !m to get back.", SColor(255,0,0,0));
 		}
 	}
 }
