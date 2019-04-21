@@ -5,11 +5,13 @@
 
 void onBlobDie(CRules@ this, CBlob@ blob)
 {
-	if (blob !is null)
+	if (!this.isGameOver() && !this.isWarmup())	//Only count kills, deaths and assists when the game is on
 	{
-		CPlayer@ killer = blob.getPlayerOfRecentDamage();
-		CPlayer@ victim = blob.getPlayer();
-		CPlayer@ helper = getAssistPlayer(victim, killer);
+		if (blob !is null)
+		{
+			CPlayer@ killer = blob.getPlayerOfRecentDamage();
+			CPlayer@ victim = blob.getPlayer();
+			CPlayer@ helper = getAssistPlayer(victim, killer);
 
 		if (helper !is null)
 		{
@@ -34,4 +36,7 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 
 		}
 	}
+
+	}
+	
 }
