@@ -49,6 +49,9 @@ void LoadSprites(CSprite@ this)
 	case PLAYER_ARMOUR_CAPE:
 		ensureCorrectRunnerTexture(this, "archer_cape", "ArcherCape");
 		break;
+	case PLAYER_ARMOUR_GOLD:
+		ensureCorrectRunnerTexture(this, "archer_gold",  "ArcherGold");
+		break;
 	}
 
 

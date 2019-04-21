@@ -16,6 +16,7 @@ void onInit(CBlob@ this)
 	}
 
 	this.set_s16(burn_duration , 130);
+	this.set_f32("heal amount", 0.0f);
 
 	//fix for tiny chat font
 	this.SetChatBubbleFont("hud");

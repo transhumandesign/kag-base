@@ -120,8 +120,11 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 
 	tobeblended.Tag("sawed");
 
-	// on saw player - disable the saw
-	if (tobeblended.getPlayer() !is null && tobeblended.getTeamNum() == this.getTeamNum())
+	// on saw player or dead body - disable the saw
+	if (
+		(tobeblended.getPlayer() !is null || //player
+		(tobeblended.hasTag("flesh") && tobeblended.hasTag("flesh"))) && //dead body
+		tobeblended.getTeamNum() == this.getTeamNum()) //same team as saw
 	{
 		CBitStream params;
 		params.write_netid(tobeblended.getNetworkID());
@@ -144,8 +147,6 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 
 bool canSaw(CBlob@ this, CBlob@ blob)
 {
-	if (blob.hasTag("saw")) return true; //destroy saws in close proximity
-
 	if (blob.getRadius() >= this.getRadius() * 0.99f || blob.getShape().isStatic() ||
 	        blob.hasTag("sawed") || blob.hasTag("invincible"))
 	{
@@ -159,13 +160,14 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 	    name == "wooden_door" ||
 	    name == "mat_wood" ||
 	    name == "tree_bushy" ||
-	    name == "tree_pine")
+	    name == "tree_pine" ||
+	    (name == "mine" && blob.getTeamNum() == this.getTeamNum()))
 	{
 		return false;
 	}
 
 	//flesh blobs have to be fed into the saw part
-	if (blob.hasTag("flesh"))
+	if (blob.hasTag("flesh") || (name=="mine"))
 	{
 		Vec2f pos = this.getPosition();
 		Vec2f bpos = blob.getPosition();
