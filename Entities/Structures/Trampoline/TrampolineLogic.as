@@ -56,6 +56,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 	CBlob@ holder = point.getOccupied();
 
+	//fall through while pressing down
+	if (blob.isKeyPressed(key_down)) return;
+
 	//cant bounce holder
 	if(holder is blob) return;
 
