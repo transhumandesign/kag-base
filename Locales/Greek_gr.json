@@ -166,15 +166,15 @@
   "Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.": "Αιώρηση με την ασπίδα$Tutorial_Glide$\n\n\nΠήδα πάνω απ το φαράγγι και όσο είσαι στον αέρα:\nΣτόχευσε προς τα πάνω\nΚΡΑΤΑ $RMB$ για την ασπίδα",
 
   //Tutorial02.as
-  "Stand on the enemy hall$hall$ to capture it.": "Restez sur le hall$hall$\nennemi et\ncapturez-le.",
-  "Halls are respawn points and can be used to switch class.": "Les halls sont des points de réapparition. Vous pouvez y changer votre classe.",
-  "In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.": "Dans le hall, devenez un archer $ARCHER$.\n\nENFONCEZ $KEY_E$ (touche 'utiliser'),\n\nChoisissez la classe $CLASSCHANGE$ et relâchez le bouton.",
-  "As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!": "Jouer archer $Tutorial_Archer$\n\n\nVisez avec la souris.\n\nENFONCEZ $LMB$ pour viser\n\nRELÂCHEZ pour tirer une flèche!",
-  "Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$": "Utiliser le grappin$Tutorial_Grapple$\n\n\nVisez vers le haut pour vous accrocher au plafond\n\nENFONCEZ $RMB$\n\nBalancez vous vers la droite $KEY_D$",
-  "Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$": "À l'aide du grappin, escaladez le mur ici\n\nENFONCEZ $RMB$\n\nENFONCEZ $KEY_D$$KEY_W$",
-  "HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!": "Enfoncez $LMB$ jusqu'à $Tutorial_Archer2$\n\n\nPuis appuyez $LMB$ à nouveau.\n\nLe triple tir est très puissant, mais utile qu'à courte portée.",
-  "$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!": "$Tutorial_Archer2$\n\n\nEntraînez vous, puis chargez votre tir avant d'ouvrir cette porte et de faire un TRIPLE TIR sur le chevalier!",
-  "Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.": "Utilisez le grappin$Tutorial_Grapple$ pour vous balancer.\n\nENFONCEZ $RMB$\n\nAccrochez vous au plafond au niveau de la lanterne$lantern$\n\nENFONCEZ $KEY_D$\n\nRELÂCHEZ le grappin lorsque vous avez une bonne propulsion.",
+  "Stand on the enemy hall$hall$ to capture it.": "Στάσου στην αίθουδα του εχθρού$hall$ για να την κατακτήσεις.",
+  "Halls are respawn points and can be used to switch class.": "Οι αίθουσες είναι σημεία αναγέννησης και μπορούν να χρησιμοποιηθούν για να αλλάξεις κλάση.",
+  "In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.": "Στην αίθουσα, άλλαξε τη κλάση σου σε Τοξότη $ARCHER$.\n\nΚΡΑΤΑ TO $KEY_E$ (κουμπι 'Χρησιμοποίησε'),\n\nΕπέλεξε το $CLASSCHANGE$κουμπί και άφησε το κουμπί 'χρησιμοποίησε'.",
+  "As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!": "Σαν τοξότης $Tutorial_Archer$\n\n\nΣτόχευσε με το ποντίκι.\n\nΚΡΑΤΑ$LMB$ για να φορτίσεις\n\nΑΦΗΣΕ για να πετάξεις το βέλος!",
+  "Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$": "Χρησιμοποίησε τον γάτζο$Tutorial_Grapple$\n\n\nΣτόχευσε για να πιάσεις το ταβάνι\n\nΚΡΑΤΑ$RMB$\n\nΤαλαντεύσου στα δεξιά $KEY_D$",
+  "Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$": "Χρησιμοποίησε έναν συνδιασμό του γάτζου και τρεξίματος στο τοίχο για να φτάσεις εδώ\n\nΚΡΑΤΑ$RMB$\n\nΚΡΑΤΑ πήδα & τρέξε $KEY_D$$KEY_W$",
+  "HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!": "ΚΡΑΤΑ $LMB$ μέχρι να εμφανιστεί$Tutorial_Archer2$\n\n\nΤότε $LMB$ ξανά για\n\nΤΡΙΠΛΗ ΒΟΛΗ! Καλή σε κοντινή αποστάσεις.",
+  "$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!": "$Tutorial_Archer2$\n\n\nΠροπόνησου και φόρτισε τη βολή σου πρίν ανοίξεις τη πόρτα και ρίξε ΤΡΙΠΛΗ ΒΟΛΗ στον ιππότη!",
+  "Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.": "Χρησιμοποίησε το γάτζο$Tutorial_Grapple$ για να ταλαντευτείς απέναντι.\n\nΚΡΑΤΑ$RMB$\n\nΠιάσε το ταβάνι στο σημείο που είναι to φανάρι$lantern$\n\nΚΡΑΤΑ $KEY_D$\n\nΑΦΗΣΕ τον γάτζο πρίν σταματήσεις.",
 
   //Tutorial03.as
   "$lantern$\nPickup the lantern $KEY_C$": "Ramassez la lanterne $lantern$ $KEY_C$",
