@@ -276,7 +276,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 			CPlayer@ helper = getAssistPlayer(victim, killer);
 
 			bool kill = killerblob !is null && victimblob !is null && killerblob.isMyPlayer() && killerblob !is victimblob;
-			bool assist = helper !is null;
+			bool assist = helper !is null && helper.isMyPlayer();
 			if (kill)
 			{
 				add_message(KillSpreeMessage(victim));
