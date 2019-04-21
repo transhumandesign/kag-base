@@ -139,7 +139,9 @@ void onTick(CBlob@ this)
 					}
 					if (isServer)
 					{
+						f32 oldHealth = patient.getHealth();
 						patient.server_Heal(heal_amount);
+						patient.add_f32("heal amount", patient.getHealth() - oldHealth);
 					}
 				}
 				else

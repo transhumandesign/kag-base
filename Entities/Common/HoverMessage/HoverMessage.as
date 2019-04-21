@@ -41,6 +41,7 @@ enum MessageTypes
 {
 	MESSAGE_NONE,
 	MESSAGE_KILLSPREE,
+	MESSAGE_ASSIST,
 	MESSAGE_MATERIAL,
 	MESSAGE_TOTAL
 };
@@ -89,7 +90,7 @@ class HoverMessage
 	// This is the function that, when called, generates tokens for this message from the internal data.
 	void generate_tokens() {}
 
-	// Unless you need to be able to merge messages (e.g. KillSpreeMessage or MaterialMessage),
+	// Unless you need to be able to merge messages (e.g. KillSpreeMessage,  MaterialMessage or AssistMessage),
 	// you do not need to override this. When adding a new message, HoverMessages will first try to merge
 	// the new message to every message of the *same category* in the list. This implies you can assume
 	// that any parameter passed to try_merge() will be of the type of your inherited class, so you can do
@@ -208,6 +209,85 @@ class KillSpreeMessage : HoverMessage
 	HoverMessage@ try_merge(HoverMessage@ other) override
 	{
 		KillSpreeMessage@ message = cast<KillSpreeMessage>(other);
+
+		for (uint i = 0; i < message.victims.length; ++i)
+		{
+			victims.push_back(message.victims[i]);
+		}
+
+		return this;
+	}
+};
+
+/*
+	Assist messages. Looks like:
+
+	  clantag character name
+		vvvvv vvvvvvvvvvv
+	+3  [RUS] randomguy40
+	    dog copper40
+	    Sedgewick
+*/
+class AssistMessage : HoverMessage
+{
+	PlayerMessageInfo[] victims;
+
+	AssistMessage(CPlayer@ player)
+	{
+		category = MESSAGE_ASSIST;
+
+		PlayerMessageInfo info;
+		info.team = player.getTeamNum();
+		info.clantag = player.getClantag();
+		info.username = player.getCharacterName();
+
+		victims.push_back(info);
+	}
+
+	void generate_tokens() override
+	{
+		string assist_counter = "+" + victims.length;
+		Vec2f offset;
+		GUI::GetTextDimensions(assist_counter, offset);
+		offset = Vec2f(offset.x + 12.0f, 0.0f);
+
+		tokens.push_back(MessageToken(assist_counter, SColor(255, 255, 255, 100)));
+
+		for (uint i = 0; i < victims.length; ++i)
+		{
+			string clantag = victims[i].clantag;
+
+			if (!clantag.isEmpty())
+			{
+				tokens.push_back(MessageToken(clantag, SColor(255, 127, 127, 127), offset));
+			}
+
+			Vec2f clantag_dimensions;
+			GUI::GetTextDimensions(clantag, clantag_dimensions);
+
+			string username = victims[i].username;
+
+			Vec2f username_dimensions;
+			GUI::GetTextDimensions(username, username_dimensions);
+
+			if (!username.isEmpty())
+			{
+				tokens.push_back(
+					MessageToken(
+						username,
+						getTeamColor(victims[i].team),
+						offset + Vec2f(clantag_dimensions.x + 6.0f, 0.0f)
+					)
+				);
+			}
+
+			offset.y += Maths::Max(clantag_dimensions.y, username_dimensions.y);
+		}
+	}
+
+	HoverMessage@ try_merge(HoverMessage@ other) override
+	{
+		AssistMessage@ message = cast<AssistMessage>(other);
 
 		for (uint i = 0; i < message.victims.length; ++i)
 		{
