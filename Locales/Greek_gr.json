@@ -345,53 +345,53 @@
   "A refreshing mug of beer.": "Une bonne pinte de bière.",
   "A hearty meal to get you back on your feet.": "Un bon repas pour vous remettre sur pied.",
   "A suspiciously undercooked egg, maybe it will hatch.": "Un œuf mal cuit un peu douteux. Peut-être qu'il va éclore.",
-  "A burger to go.": "Un burger, à emporter.",
+  "A burger to go.": "Ένα μπέργκερ, για τον δρόμο.",
 
   "This magic scroll when cast will turn all nearby enemies into a pile of bloody gibs.": "Ce parchemin magique va transformer tous les ennemis proches en des tas de membres ensanglantés.",
   "This magic scroll will evaporate all water in a large surrounding orb.": "Ce parchemin magique va faire s'évaporer toute l'eau aux alentours.",
 
   //// HELPS ////
   //DrawHelp.as
-  "$!!!$$GREEN$WATCH THESE FOR          .          GAMEPLAY HELP$GREEN$\n\n\n$KEY_ESC$ CHECK CONTROLS\n\n$KEY_F1$ HELP ON/OFF\n\n(click to remove this)\n\n      $DEFEND_THIS$": "$!!!$$GREEN$LISEZ CES AIDES\n           DE GAMEPLAY$GREEN$\n\n\n$KEY_ESC$ CONTRÔLES\n\n$KEY_F1$ AIDE ON/OFF\n\n(cliquer pour cacher)\n      $DEFEND_THIS$",
+  "$!!!$$GREEN$WATCH THESE FOR          .          GAMEPLAY HELP$GREEN$\n\n\n$KEY_ESC$ CHECK CONTROLS\n\n$KEY_F1$ HELP ON/OFF\n\n(click to remove this)\n\n      $DEFEND_THIS$": "$!!!$$GREEN$ΔΕΣ ΑΥΤΑ ΓΙΑ           ΒΟΗΘΕΙΑ ΣΤΟ ΠΑΙΧΝΙΔΙ$GREEN$\n\n\n$KEY_ESC$ ΚΟΥΜΠΙΑ\n\n$KEY_F1$ ΒΟΗΘΕΙΑ ON/OFF\n\n(πάτα για να αφαιρέσεις αυτό)\n      $DEFEND_THIS$",
 
   //BasicHelps.as
-  " $down_arrow$ Hop inside  $KEY_S$": " $down_arrow$ Entrer $KEY_S$",
-  " Get out  $KEY_W$": " Sortir $KEY_W$",
-  "$trader$ Buy    $KEY_E$": "$trader$ Acheter $KEY_E$",
-  "$CLASSCHANGE$ Change class    $KEY_E$": "$CLASSCHANGE$ Changer de classe $KEY_E$",
-  "${ITEM}$ $Rotate$ Rotate    $KEY_SPACE$": "${ITEM}$ $Rotate$ Orienter $KEY_SPACE$",
-  "$trap_block$ Opens on enemy": "$trap_block$ S'ouvre au passage de l'ennemi",
-  "$spikes$ Retracts on enemy if on stone $STONE$": "$spikes$ S'active sur l'ennemi quand posé sur $STONE$",
-  "$wooden_platform$  $Rotate$ Rotate    $KEY_SPACE$": "$wooden_platform$  $Rotate$ Orienter    $KEY_SPACE$",
-  "$ladder$  $Rotate$ Rotate    $KEY_SPACE$": "$ladder$  $Rotate$ Orienter $KEY_SPACE$",
-  "Change class    $KEY_E$": "Changer de classe $KEY_E$",
-  "$lantern$ On/Off     $KEY_SPACE$": "$lantern$ Allumer/Éteindre $KEY_SPACE$",
-  "$lantern$ Pick up    $KEY_C$": "$lantern$ Ramasser $KEY_C$",
-  //"$satchel$ Light     $KEY_SPACE$"                :"$satchel$ Allumer $KEY_SPACE$",               //NOT USED
-  //"$satchel$ Only KNIGHT can light satchel"        :"$satchel$ Seuls les CHEVALIERS peuvent alummer les bombes!", //NOT USED
-  //"$satchel$ THROW!    $KEY_SPACE$"                :"$satchel$ LANCER! $KEY_SPACE$",              //NOT USED
-  "$log$ Chop $mat_wood$   $RMB$": "$log$ Couper $mat_wood$   $RMB$",
-  "$keg$Pick up    $KEY_C$": "$keg$Ramasser $KEY_C$",
-  "$keg$Light    $KEY_SPACE$": "$keg$Allumer $KEY_SPACE$",
-  "$keg$Only KNIGHT can light keg": "$keg$Seuls les CHEVALIERS peuvent allumer les tonneaux!",
-  "$keg$THROW!    $KEY_SPACE$": "$keg$JETER!    $KEY_SPACE$",
-  "$mat_bombs$THROW!    $KEY_SPACE$": "$mat_bombs$LANCER! $KEY_SPACE$",
-  "$crate$Pick up    $KEY_C$": "$crate$Ramasser $KEY_C$",
-  "${VEHICLE}$Drive     $KEY_A$ $KEY_S$ $KEY_D$": "${VEHICLE}$Conduire $KEY_A$ $KEY_S$ $KEY_D$",
-  "${VEHICLE}$FIRE     $KEY_HOLD$$LMB$": "${VEHICLE}$FEU! $KEY_HOLD$$LMB$",
-  "${VEHICLE}$FIRE     $LMB$": "${VEHICLE}$FEU! $LMB$",
-  "$food$Take out food  $KEY_HOLD$$KEY_F$": "$food$Prendre la nourriture $KEY_HOLD$$KEY_F$",
-  "$boulder$ Pick up    $KEY_C$": "$boulder$ Ramasser $KEY_C$",
-  "$building$Construct    $KEY_E$": "$building$Construire $KEY_E$",
-  "$building$Use    $KEY_E$": "$building$Utiliser $KEY_E$",
+  " $down_arrow$ Hop inside  $KEY_S$": " $down_arrow$ Μπές $KEY_S$",
+  " Get out  $KEY_W$": " Βγές $KEY_W$",
+  "$trader$ Buy    $KEY_E$": "$trader$ Αγόρασε $KEY_E$",
+  "$CLASSCHANGE$ Change class    $KEY_E$": "$CLASSCHANGE$ Άλλαξε κλάση $KEY_E$",
+  "${ITEM}$ $Rotate$ Rotate    $KEY_SPACE$": "${ITEM}$ $Rotate$ Περίστρεψε $KEY_SPACE$",
+  "$trap_block$ Opens on enemy": "$trap_block$ Ανοίγει όταν περνάνε εχθροί",
+  "$spikes$ Retracts on enemy if on stone $STONE$": "$spikes$ Ανασύρεται στον εχθρό αν τοποθετηθεί σε πέτρα $STONE$",
+  "$wooden_platform$  $Rotate$ Rotate    $KEY_SPACE$": "$wooden_platform$  $Rotate$ Περίστρεψε    $KEY_SPACE$",
+  "$ladder$  $Rotate$ Rotate    $KEY_SPACE$": "$ladder$  $Rotate$ Περίστρεψε $KEY_SPACE$",
+  "Change class    $KEY_E$": "Άλλαξε κλάση $KEY_E$",
+  "$lantern$ On/Off     $KEY_SPACE$": "$lantern$ Ανοιχτό/Κλειστό $KEY_SPACE$",
+  "$lantern$ Pick up    $KEY_C$": "$lantern$ Σήκωσε $KEY_C$",
+  //"$satchel$ Light     $KEY_SPACE$"                :"$satchel$ Άναψε $KEY_SPACE$",               //NOT USED
+  //"$satchel$ Only KNIGHT can light satchel"        :"$satchel$ Μόνο οι ΙΠΠΟΤΕΣ μπορούν να ανάψουν το βαρέλι!", //NOT USED
+  //"$satchel$ THROW!    $KEY_SPACE$"                :"$satchel$ ΠΕΤΑ! $KEY_SPACE$",              //NOT USED
+  "$log$ Chop $mat_wood$   $RMB$": "$log$ Κόψε $mat_wood$   $RMB$",
+  "$keg$Pick up    $KEY_C$": "$keg$Σήκωσε $KEY_C$",
+  "$keg$Light    $KEY_SPACE$": "$keg$Άναψε $KEY_SPACE$",
+  "$keg$Only KNIGHT can light keg": "$keg$Μόνο οι ΙΠΠΟΤΕΣ μπορούν να ανάψουν το βαρέλι!",
+  "$keg$THROW!    $KEY_SPACE$": "$keg$ΠΕΤΑ!    $KEY_SPACE$",
+  "$mat_bombs$THROW!    $KEY_SPACE$": "$mat_bombs$ΠΕΤΑ! $KEY_SPACE$",
+  "$crate$Pick up    $KEY_C$": "$crate$Σήκωσε $KEY_C$",
+  "${VEHICLE}$Drive     $KEY_A$ $KEY_S$ $KEY_D$": "${VEHICLE}$Οδήγα $KEY_A$ $KEY_S$ $KEY_D$",
+  "${VEHICLE}$FIRE     $KEY_HOLD$$LMB$": "${VEHICLE}$ΦΩΤΙΑ! $KEY_HOLD$$LMB$",
+  "${VEHICLE}$FIRE     $LMB$": "${VEHICLE}$ΦΩΤΙΑ! $LMB$",
+  "$food$Take out food  $KEY_HOLD$$KEY_F$": "$food$Βγάλε φαγητό $KEY_HOLD$$KEY_F$",
+  "$boulder$ Pick up    $KEY_C$": "$boulder$ Σήκωσε $KEY_C$",
+  "$building$Construct    $KEY_E$": "$building$Κατασκέυασε $KEY_E$",
+  "$building$Use    $KEY_E$": "$building$Χρησιμοποίησε $KEY_E$",
 
   //Factory.as
-  "$workshop$Convert workshop    $KEY_E$": "$workshop$Changer l'atelier $KEY_E$",
-  "Check production    $KEY_E$": "Voir la production $KEY_E$",
-  "Requires a free worker from Hall": "Nécessite un travailleur du hall",
-  "Convert Workshop": "Changer l'atelier",
-  "Convert Workshop\n\n$RED$Requires {TECH_NAME}\n from Hall\n$RED$            $RESEARCH$\n\n": "Changer l'atelier\n\n$RED$Nécessite \"{TECH_NAME}\"\ndu hall\n$RED$                 $RESEARCH$\n\n",
-  "Upgrade to...": "Améliorer en...",
+  "$workshop$Convert workshop    $KEY_E$": "$workshop$Μετέτρεψε τον εργαστήριο $KEY_E$",
+  "Check production    $KEY_E$": "Δές την παραγωγή  $KEY_E$",
+  "Requires a free worker from Hall": "Απαιτεί έναν διαθέσιμο εργάτη απ την Αίθουσα",
+  "Convert Workshop": "Μετέτρεψε το εργαστήριο",
+  "Convert Workshop\n\n$RED$Requires {TECH_NAME}\n from Hall\n$RED$            $RESEARCH$\n\n": "Μετέτρεψε το εργαστήριο\n\n$RED$Απαιτεί \"{TECH_NAME}\"\n από την Αίθουσα\n$RED$                 $RESEARCH$\n\n",
+  "Upgrade to...": "Αναβάθμισε σε...",
 
   //"Saw":"Πριόνι", //in blobs
   //"Ballista":"Βαλίστρα", //in blobs
@@ -410,42 +410,42 @@
   "Turn Saw Off": "Απενεργοποίησε το πριόνι",
 
   //Crate.as
-  "Unpack all": "Tout dépaqueter",
+  "Unpack all": "Ξεπακέταρε τα πάντα",
   "Stop {ITEM}": "Σταμάτα {ITEM}",
-  "Unpack {ITEM}": "Dépaqueter {ITEM}",
-  "Unpack {ITEM}   $KEY_E$": "Dépaqueter {ITEM}   $KEY_E$",
-  "Can't unpack {ITEM} here": "Impossible de dépaqueter {ITEM} ici",
+  "Unpack {ITEM}": "Ξεπακετάρισμα {ITEM}",
+  "Unpack {ITEM}   $KEY_E$": "Ξεπακετάρισμα {ITEM}   $KEY_E$",
+  "Can't unpack {ITEM} here": "Δε γίνεται το ξεπακετάρισμα {ITEM} εδώ",
 
   //Scroll.as
-  "$scroll$Pick up    $KEY_C$": "$scroll$Ramasser $KEY_C$",
-  "$scroll$Use in *first* Hall     $KEY_E$": "$scroll$À utiliser au PREMIER hall $KEY_E$",
-  "$scroll$Use magic scroll    $KEY_E$": "$scroll$Utiliser le parchemin magique $KEY_E$",
+  "$scroll$Pick up    $KEY_C$": "$scroll$Σήκωσε $KEY_C$",
+  "$scroll$Use in *first* Hall     $KEY_E$": "$scroll$Χρησιμοποίησε στην αίθουσα    $KEY_E$",
+  "$scroll$Use magic scroll    $KEY_E$": "$scroll$Χρησιμοποίησε τον μαγικό πάπυρο  $KEY_E$",
 
   //KnightLogic.as
-  "$Jab$Jab        $LMB$": "$Jab$Coup $LMB$",
-  "$Shield$Shield    $KEY_HOLD$$RMB$": "$Shield$Bouclier $KEY_HOLD$$RMB$",
+  "$Jab$Jab        $LMB$": "$Jab$Χτύπημα $LMB$",
+  "$Shield$Shield    $KEY_HOLD$$RMB$": "$Shield$Ασπίδα $KEY_HOLD$$RMB$",
   "$Slash$ Slash!    $KEY_HOLD$$LMB$": "$Slash$ Slash! $KEY_HOLD$$LMB$",
 
   //BuilderLogic.as
-  "$Pick$Dig/Chop  $KEY_HOLD$$RMB$": "$Pick$Creuser/Couper $KEY_HOLD$$RMB$",
+  "$Pick$Dig/Chop  $KEY_HOLD$$RMB$": "$Pick$Σκάψε/Κόψε $KEY_HOLD$$RMB$",
 
   //BuilderInventory.as
-  "$Build$Build/Place  $LMB$": "$Build$Construire $LMB$",
+  "$Build$Build/Place  $LMB$": "$Build$Κτίσε/Τοποθέτησε $LMB$",
 
   //ArcherLogic.as
-  "Hide    $KEY_S$": "Se cacher $KEY_S$",
-  "$Grapple$ Grappling hook    $RMB$": "$Grapple$ Grappin $RMB$",
-  "$arrow$Fire arrow   $KEY_HOLD$$LMB$": "$arrow$Tirer une flèche $KEY_HOLD$$LMB$",
+  "Hide    $KEY_S$": "Κρύψου $KEY_S$",
+  "$Grapple$ Grappling hook    $RMB$": "$Grapple$ Γάτζος $RMB$",
+  "$arrow$Fire arrow   $KEY_HOLD$$LMB$": "$arrow$Πυρωμένο βέλος $KEY_HOLD$$LMB$",
 
   //RunnerDefault.as
-  "${ATTACHED}$Throw    $KEY_C$": "${ATTACHED}$Jeter $KEY_C$",
+  "${ATTACHED}$Throw    $KEY_C$": "${ATTACHED}$Πέτα $KEY_C$",
 
   //TreeSync.as
-  "$Axe$$Tree$Chop tree    $RMB$": "$Axe$$Tree$Couper l'arbre $RMB$",
-  "$Tree$Climb tree    $KEY_W$": "$Tree$Monter à l'arbre $KEY_W$",
+  "$Axe$$Tree$Chop tree    $RMB$": "$Axe$$Tree$Κόψε το δέντρο      $RMB$",
+  "$Tree$Climb tree    $KEY_W$": "$Tree$Σκαρφάλωσε το δέντρο    $KEY_W$",
 
   //TradingMenu.as
-  "Out of stock. Come back later.": "Stock épuisé. Revenez plus tard.",
+  "Out of stock. Come back later.": "Δεν υπάρχει άλλο απόθεμα. Έλα αργότερα",
 
   //HelpfulDeathTips.cfg
   "To hide these tips, and other in-game help, hit F1.": "Για να κρύψεις αυτά τα tips, καί άλλες βοήθειες μέσα στο παιχνίδι, πάτα το F1.",
@@ -547,33 +547,33 @@
   "Wood": "Ξύλο",
   "Stone": "Πέτρα",
   "Gold": "Χρυσό",
-  "{COINS_QUANTITY} $COIN$ required\n": "Besoin de {COINS_QUANTITY} $COIN$\n",
+  "{COINS_QUANTITY} $COIN$ required\n": "Απαιτείται {COINS_QUANTITY} $COIN$\n",
 
   //// BLOB NAMES ////
   "Migrant": "Πρόσφυγας",
   "Magic Orb": "Μαγική σφαίρα",
   "Sedgwick": "Sedgwick",
   "Princess Geti": "Πριγκήπισσα Geti",
-  "Building in Construction": "Bâtiment en construction",
+  "Building in Construction": "Κτήριο σε κατασκευή",
   "Archer Shop": "Μαγαζί για τοξότες",
   "Boat Shop": "Μαγαζί για βάρκες",
-  "Builder Shop": "Atelier du constructeur",
-  "Knight Shop": "Atelier du chevalier",
+  "Builder Shop": "Μαγαζί για εργάτες",
+  "Knight Shop": "Μαγαζί για ιππότες",
   "Quarters": "Quartiers",
-  "Storage": "Entrepôt",
-  "Storage Cache": "Entrepôt",
+  "Storage": "Αποθηκευτικός χώρος",
+  "Storage Cache": "Κρυψώνα",
   "Vehicle Shop": "Μαγαζί οχημάτων",
   "Drill": "Τρυπάνι",
   "Workshop": "Εργαστήριο",
-  "Fireplace": "Feu de camp",
-  "Hall": "Hall",
+  "Fireplace": "Τζάκι",
+  "Hall": "Αίθουσα",
   "Barracks": "Στρατώνες", //OLD
   "Bed": "Κρεβάτι",
-  //"Dormitory":"", //OLD
+  //"Dormitory":"Εστία", //OLD
   "Kitchen": "Κουζίνα", //OLD
   "Seeds": "Σπόροι",
   "Nursery": "Ιατρίο", //OLD
-  "Research": "Recherche", //OLD
+  "Research": "Έρευνα", //OLD
   "Mill Saw": "Πριόνι μύλλου",
   "Saw": "Πριόνι",
   "Trader": "Έμπορος",
@@ -595,11 +595,11 @@
   //"Powerup":"", //OLD
   "Arrow": "Βέλος",
   "Arrows": "Βέλη",
-  "Ballista Bolt": "Missile de baliste",
-  "Ballista Bolts": "Missiles de baliste",
-  "Scroll": "Parchemin",
-  "Scroll of Drought": "Parchemin d'évaporation",
-  "Scroll of Carnage": "Parchemin de carnage",
+  "Ballista Bolt": "Βέλος Καταπέλτη",
+  "Ballista Bolts": "Βέλη Καταπέλτη",
+  "Scroll": "Πάπυρος",
+  "Scroll of Drought": "Πάπυρος ξηρασίας",
+  "Scroll of Carnage": "Πάπυρος μακελειού",
   "Sponge": "Σφουγγαρι",
   "Bomb Arrow": "Βέλος-Βόμβα",
   "Fire Arrows": "Φλαιγόμενα βέλη",
@@ -612,43 +612,43 @@
   "Wisent": "Βίσωνας",
   "Chicken": "Κοτόπουλο",
   "Egg": "Αυγό",
-  "Fishy": "Poisson",
+  "Fishy": "Ψάρι",
   "Shark": "Καρχαρίας",
   "Steak": "Μπριζόλα",
   "Bush": "Θάμνος",
-  "Grain": "Grain",
-  "Grain Plant": "Grain de plante",
+  "Grain": "Σιτηρά",
+  "Grain Plant": "Στάχι",
   "Flowers": "Λουλούδια",
   "Seed": "Σπόρος",
-  "Pine Seed": "Graine de pin",
-  "Oak Seed": "Graine de chêne",
-  "Bushy Tree": "Arbre touffu",
-  "Pine Tree": "Pin",
+  "Pine Seed": "Σπόρος πέυκου",
+  "Oak Seed": "Σπόρος βελανιδιάς",
+  "Bushy Tree": "Θαμνωτό δέντρο",
+  "Pine Tree": "Πέυκο",
   "Very Important Flag": "Πολύ σημαντική σημαία",
-  "Flag Base": "Base du drapeau",
-  "Dummy": "Épouvantail",
+  "Flag Base": "Σημαία ομάδας",
+  "Dummy": "Κούκλα",
   "Tent": "Τέντα",
   "Sign": "Πινακίδα",
-  "Team base": "Base de l'équipe",
-  "Bolter": "Canon",
-  "Dispenser": "Distributeur",
+  "Team base": "Βάση ομάδας",
+  "Bolter": "Κόσκινο",
+  "Dispenser": "Διανομέας",
   "Lamp": "Λάμπα",
-  "Obstructor": "Piège automatisable",
+  "Obstructor": "Αυτοματοποιημένη παγίδα",
   "Magazine": "Γεμιστήρας",
-  "Coin Slot": "Fente à pièces",
+  "Coin Slot": "Υποδοχή νομισμάτων",
   "Lever": "Μοχλός",
   "Button": "Κουμπί",
   "Stone Door": "Πέτρινη πόρτα",
   "Wooden Door": "Ξύλινη πόρτα",
   "Ladder": "Σκάλα",
-  "Mounted Bow": "Arc monté",
+  "Mounted Bow": "Εγκαθιστόμενο τόξο",
   "Wooden Platform": "Ξύλινη πλατφόρμα",
   "Spikes": "Καρφιά",
   "Trampoline": "Τραμπολίνο",
-  "Trap Block": "Piège",
+  "Trap Block": "Παγίδα",
   "Airship": "Αεροσκάφος", // OLD
   "Bomber": "Βομβαρδιστικό", //OLD
-  "Ballista": "Balliste",
+  "Ballista": "Βαλίστρα",
   "Dinghy": "Λέμβος",
   "Long Boat": "Μακριά Λέμβος",
   "Raft": "Κανό",
@@ -660,10 +660,10 @@
   //// INVENTORY NAMES ////
   "Backpack": "Σακίδιο",
   "Load": "Φόρτωσε",
-  "Bomber Compartment": "Compartiment du bombardier", //OLD
-  "Boat Compartment": "Compartiment du bateau",
+  "Bomber Compartment": "Χώρος βομβαρδιστικού", //OLD
+  "Boat Compartment": "Χώρος σκαφών",
   "Team Storage": "Αποθηκευτικός χώρος ομάδας",
-  "Tech Scrolls": "Parchemins de technologie", // OLD
+  "Tech Scrolls": "Πάπυρος τεχνολογίας", // OLD
   "Storage": "Αποθηκευτικός χώρος",
 
   //// BUTTONS AND OTHER ////
@@ -676,9 +676,9 @@
 
   //// SCROLLS ////
   //ScrollDrought.as
-  "Use this to dry up an orb of water.": "Faites s'évaporer une grande quantité d'eau.",
-  "Use this to turn all stone in the area into gold": "Transformez la pierre environnante en or.",
-  "Use this to make all visible enemies instantly turn into a pile of gibs.": "Faites imploser tous les ennemis aux alentours.",
+  "Use this to dry up an orb of water.": "Χρησιμοποίησε αυτό για να στεγνώσεις μία σφαίρα νερού.",
+  "Use this to turn all stone in the area into gold": "Χρησιμοποίησε αυτό για να μετατρέψεις όλη τη πέτρα στη περιοχή σε χρυσό.",
+  "Use this to make all visible enemies instantly turn into a pile of gibs.": "Χρησιμοποίησε αυτό για να κάνεις όλους τους ορατούς εχθρούς σκόνη.",
 
   //// UI ////
   "OK": "OK",
@@ -686,13 +686,13 @@
 
   //Loading
   //TODO implement in engine
-  "Precaching files...": "Préchargement des fichiers...",
-  "Loading blobs...": "Chargement des entités...",
-  "Loading configs...": "Chargement de la configuration...",
-  "Receiving scripts...": "Réception de scripts...",
-  "Determining changed scripts...": "Détection des scripts changés...",
-  "Building downloaded scripts...": "Compilation des scripts téléchargés...",
-  "Be nice to each other, read books and do your homework.": "Να είστε καλοί ο ένας με τον άλλο, να διαβάζετε βιβλία και να κάνετε τα μαθηματά.",
+  "Precaching files...": "Κατέβασμα αρχείων...",
+  "Loading blobs...": "Φόρτωση οντότητων...",
+  "Loading configs...": "Φόρτωση ρυθμίσεων...",
+  "Receiving scripts...": "Λήψη scripts...",
+  "Determining changed scripts...": "Καθορισμός αλλαγμένων scripts...",
+  "Building downloaded scripts...": "Μεταγγλωτισμός των scripts που έχουν κατέβει...",
+  "Be nice to each other, read books and do your homework.": "Να είστε καλοί ο ένας με τον άλλο, να διαβάζετε βιβλία και να κάνετε τα μαθηματά σας.",
   "Authenticating to server...": "Επαλήθευση στον σέρβερ...",
 
   //Login
@@ -716,16 +716,16 @@
   "Wiki": "Wiki",
 
   //Solo
-  "TUTORIALS": "TUTORIELS",
-  "Basics": "Bases",
-  "Capture the Flag": "",
-  "Take the Halls": "Capture de halls",
+  "TUTORIALS": "ΜΑΘΗΜΑΤΑ",
+  "Basics": "Βασικά",
+  "Capture the Flag": "Πιάσε τη σημαία",
+  "Take the Halls": "Κατέκτησε τη βάση",
 
   "Save the Princess": "Σώσε τη πριγκίπησα",
 
   "Challenges!": "Δοκιμασίες!",
 
-  "Sandbox": "Bac à sable",
+  "Sandbox": "Ελεύθερο παιχνίδι",
 
   //Multiplayer
   "Simple Join": "Απλή σύνδεση",
@@ -735,13 +735,13 @@
   "8-20 Players": "8 έως 20 παίκτες",
   ">20 Players": ">20 παίκτες",
   "Choose Game Mode:": "Διάλεξε :",
-  "Capture The Flag": "Capture de drapeau",
-  "Take The Halls": "Capture de halls",
-  "Team Deathmatch": "par équipe\nMatch à mort", //i have no fucking clue why it shows reversed in the button. specifically here.
-  //"Sandbox": "Bac à sable", //already translated
+  "Capture The Flag": "Πιάσε τη σημαία",
+  "Take The Halls": "Κατέκτησε τη βάση",
+  "Team Deathmatch": "Ομαδικό παιχνίδι", //i have no fucking clue why it shows reversed in the button. specifically here.
+  //"Sandbox": "Ελεύθερο παιχνίδι", //already translated
   "Co-op Challenge": "Δοκιμασία co-op",
-  "Custom Content": "Contenu perso.",
-  "Play!": "Go!",
+  "Custom Content": "Προσαρμοσμένο περιεχόμενο",
+  "Play!": "Παίξε!",
 
   "Browse servers": "Αναζήτησε σέρβερ",
 
