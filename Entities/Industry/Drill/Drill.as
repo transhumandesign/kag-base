@@ -123,6 +123,7 @@ void onInit(CBlob@ this)
 	this.set_s8("place45 distance", 1);
 	this.Tag("place45 perp");
 	this.set_u8(heat_prop, 0);
+	this.set_s32("showHeatTo", -1);
 
 	this.set_u32(last_drill_prop, 0);
 }
@@ -388,9 +389,47 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	this.getCurrentScript().runFlags &= ~Script::tick_not_sleeping;
+	this.set_s32("showHeatTo", getPlayerIndex(attached.getPlayer()));
+}
+
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
+{
+	this.set_s32("showHeatTo", -1);
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ blob)
 {
 	this.getSprite().SetEmitSoundPaused(true);
+}
+
+void onRender(CSprite@ this)
+{
+	CBlob@ blob = this.getBlob();
+	CPlayer@ holder = getPlayer(blob.get_s32("showHeatTo"));
+	
+	Vec2f mousePos = getControls().getMouseWorldPos();
+	Vec2f blobPos = blob.getPosition();
+
+	bool hover = (mousePos - blobPos).getLength() < blob.getRadius() * 1.50f;
+	
+	if (hover || (holder !is null && holder.isLocal()))
+	{
+		u8 heat = blob.get_u8(heat_prop);
+
+    	Vec2f pos = blob.getScreenPos() + Vec2f(-21, -7.5);
+    	Vec2f dimension = Vec2f(24, 8);
+
+		f32 perc = f32(heat) / heat_max;
+
+    	GUI::DrawRectangle(Vec2f(pos.x, pos.y), 
+							Vec2f(pos.x + dimension.x, pos.y + dimension.y));
+
+		GUI::DrawRectangle(Vec2f(pos.x + 2, pos.y + 2),
+							Vec2f(pos.x + dimension.x - 2, pos.y + dimension.y - 2),
+							SColor(0xff0ddb1e));
+
+    	GUI::DrawRectangle(Vec2f(pos.x + 2 + (dimension.x-4)*(1-perc), pos.y + 2),
+                    		Vec2f(pos.x + dimension.x - 2, pos.y + dimension.y - 2),
+                    		SColor(0xffdb0d17));
+	}
 }
