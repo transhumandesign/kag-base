@@ -412,6 +412,9 @@ void onRender(CSprite@ this)
 	Vec2f mousePos = getControls().getMouseWorldPos();
 	Vec2f blobPos = blob.getPosition();
 
+	if (getLocalPlayer() is null || getLocalPlayer().getBlob() is null)
+		return;
+
 	bool inRange = (blobPos - getLocalPlayer().getBlob().getPosition()).getLength() < max_heatbar_view_range;
 	bool hover = (mousePos - blobPos).getLength() < blob.getRadius() * 1.50f;
 	
@@ -420,7 +423,7 @@ void onRender(CSprite@ this)
 		u8 heat = blob.get_u8(heat_prop);
 
     	Vec2f pos = blob.getScreenPos() + Vec2f(-21, 10);
-    	Vec2f dimension = Vec2f(24, 8);
+    	Vec2f dimension = Vec2f(36, 8);
 
 		f32 percentage = f32(heat) / heat_max;
 
