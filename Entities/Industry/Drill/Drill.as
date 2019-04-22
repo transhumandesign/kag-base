@@ -23,6 +23,8 @@ const u8 heat_cool_amount = 2;
 const u8 heat_cooldown_time = 5;
 const u8 heat_cooldown_time_water = u8(heat_cooldown_time / 3);
 
+const f32 max_heatbar_view_range = 65;
+
 const string required_class = "builder";
 
 void onInit(CSprite@ this)
@@ -410,16 +412,17 @@ void onRender(CSprite@ this)
 	Vec2f mousePos = getControls().getMouseWorldPos();
 	Vec2f blobPos = blob.getPosition();
 
+	bool inRange = (blobPos - getLocalPlayer().getBlob().getPosition()).getLength() < max_heatbar_view_range;
 	bool hover = (mousePos - blobPos).getLength() < blob.getRadius() * 1.50f;
 	
-	if (hover || (holder !is null && holder.isLocal()))
+	if ((hover && inRange) || (holder !is null && holder.isLocal()))
 	{
 		u8 heat = blob.get_u8(heat_prop);
 
     	Vec2f pos = blob.getScreenPos() + Vec2f(-21, 10);
     	Vec2f dimension = Vec2f(24, 8);
 
-		f32 perc = f32(heat) / heat_max;
+		f32 percentage = f32(heat) / heat_max;
 
     	GUI::DrawRectangle(Vec2f(pos.x, pos.y), 
 							Vec2f(pos.x + dimension.x, pos.y + dimension.y));
@@ -428,7 +431,7 @@ void onRender(CSprite@ this)
 							Vec2f(pos.x + dimension.x - 2, pos.y + dimension.y - 2),
 							SColor(0xff0ddb1e));
 
-    	GUI::DrawRectangle(Vec2f(pos.x + 2 + (dimension.x-4)*(1-perc), pos.y + 2),
+    	GUI::DrawRectangle(Vec2f(pos.x + 2 + (dimension.x-4) * (1 - percentage), pos.y + 2),
                     		Vec2f(pos.x + dimension.x - 2, pos.y + dimension.y - 2),
                     		SColor(0xffdb0d17));
 	}
