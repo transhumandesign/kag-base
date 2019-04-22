@@ -427,8 +427,8 @@ void onRender(CSprite@ this)
 
 		f32 percentage = f32(heat) / heat_max;
 
-    	GUI::DrawRectangle(Vec2f(pos.x, pos.y), Vec2f(pos.x + dimension.x, pos.y + dimension.y));
+		GUI::DrawRectangle(Vec2f(pos.x, pos.y), Vec2f(pos.x + dimension.x, pos.y + dimension.y));
 		GUI::DrawRectangle(Vec2f(pos.x + 2, pos.y + 2), Vec2f(pos.x + dimension.x - 2, pos.y + dimension.y - 2), SColor(0xff0ddb1e));
-    	GUI::DrawRectangle(Vec2f(pos.x + 2 + (dimension.x-4) * (1 - percentage), pos.y + 2), Vec2f(pos.x + dimension.x - 2, pos.y + dimension.y - 2), SColor(0xffdb0d17));
+		GUI::DrawRectangle(Vec2f(pos.x + 2 + (dimension.x-4) * (1 - percentage), pos.y + 2), Vec2f(pos.x + dimension.x - 2, pos.y + dimension.y - 2), SColor(0xffdb0d17));
 	}
 }
