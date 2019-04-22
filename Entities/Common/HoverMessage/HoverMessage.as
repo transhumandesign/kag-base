@@ -1,6 +1,7 @@
 // Hover messages
 
 #include "TeamColour.as"
+#include "AssistCommon.as"
 
 // Linear interpolation
 // TODO: expose in engine
@@ -251,7 +252,7 @@ class AssistMessage : HoverMessage
 		GUI::GetTextDimensions(assist_counter, offset);
 		offset = Vec2f(offset.x + 12.0f, 0.0f);
 
-		tokens.push_back(MessageToken(assist_counter, SColor(255, 255, 255, 100)));
+		tokens.push_back(MessageToken(assist_counter, ASSIST_COLOR));
 
 		for (uint i = 0; i < victims.length; ++i)
 		{

@@ -132,7 +132,7 @@ class KillFeed
 				GUI::GetTextDimensions(message.helper_tag + " ", helper_tag_size);
 				Vec2f dim(getScreenWidth() - helper_name_size.x - max_username_size.x - max_clantag_size.x - single_space_size.x - 32, 0);
 				ul.Set(dim.x, (message_step + yOffset + assists + 1) * 16);
-				col = getTeamColor(message.attackerteam);
+				col = ASSIST_COLOR;
 				GUI::DrawText(message.helper, ul, col);
 
 				ul.x -= helper_tag_size.x;
