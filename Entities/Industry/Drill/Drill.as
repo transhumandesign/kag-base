@@ -416,7 +416,7 @@ void onRender(CSprite@ this)
 	{
 		u8 heat = blob.get_u8(heat_prop);
 
-    	Vec2f pos = blob.getScreenPos() + Vec2f(-21, -7.5);
+    	Vec2f pos = blob.getScreenPos() + Vec2f(-21, 10);
     	Vec2f dimension = Vec2f(24, 8);
 
 		f32 perc = f32(heat) / heat_max;
