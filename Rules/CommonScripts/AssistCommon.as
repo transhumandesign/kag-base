@@ -1,4 +1,8 @@
-//TODO: powerful items that insta-kill shouldnt have an assist (keg, mine)
+//TODO: powerful items that insta-kill shouldnt have an assist, or the assist should be given to the player who buys the item (keg, mine, saw)
+//		somehow include water stuns and shield knocks in assists
+
+const f32 ASSIST_DAMAGE = 0.0f; //victimBlob.getInitialHealth() / 2.0f;
+const SColor ASSIST_COLOR(255, 255, 255, 100);
 
 CPlayer@ getAssistPlayer(CPlayer@ victim, CPlayer@ killer)
 {
@@ -14,9 +18,6 @@ CPlayer@ getAssistPlayer(CPlayer@ victim, CPlayer@ killer)
 	{
 		return null;
 	}
-
-	//damage criteria for assist
-	f32 assistDamage = victimBlob.getInitialHealth() / 2.0f;
 
 	//get info used to determine assist
 	CPlayer@[] hitters;
@@ -61,10 +62,11 @@ CPlayer@ getAssistPlayer(CPlayer@ victim, CPlayer@ killer)
 	for (uint i = 0; i < hitters.length; i++)
 	{
 		CPlayer@ origHitter = hitters[i];
-		if(origHitter is null)
+		if (origHitter is null)
 		{
 			continue;
 		}
+
 		f32 totalDamage = 0;
 
 		for (uint j = 0; j < hitters.length; j++)
@@ -86,13 +88,13 @@ CPlayer@ getAssistPlayer(CPlayer@ victim, CPlayer@ killer)
 		}
 
 		//check if damage is enough for assist
-		if (totalDamage >= assistDamage)
+		if (totalDamage >= ASSIST_DAMAGE)
 		{
 			//killer cannot assist their own kill
 			//helper needs to be from a different team
 			if (origHitter is killer || victim.getTeamNum() == origHitter.getTeamNum())
 			{
-				return null;
+				continue;
 			}
 
 			//so close, yet so far. give this player some recognition!
