@@ -273,6 +273,7 @@
 	"Tier"					: "Nível",
 	"Age"					: "Idade",
 	"Ping"					: "Ping",
+	"Assists"				: "Ajudas",
 	"Kills"					: "Abates",
 	"Deaths"				: "Mortes",
 	"KDR"					: "A/M",
@@ -294,7 +295,7 @@
 	"Bronze Medal - for Placing 3rd in a Suitable Community Tournament": "Medalha de Bronze - por ficar em 3° lugar em um Tourneio Válido da Comunidade",
 	"Participation Ribbon - for Participating in a Suitable Community Tournament": "Insígnia de Participação - por Participar em um Torneio Válido da Comunidade",
 	//Misc
-	"Gold Member - for enjoying the game with us since before the  F2P launch": "Membro de Ouro - por aproveitar o jogo com a gente antes do lançamento F2P",
+	"Gold Member - for enjoying the game with us since before the F2P launch": "Membro de Ouro - por aproveitar o jogo com a gente antes do lançamento F2P",
 	"Community Contributor - for significantly contributing to the KAG community in some way": "Contribuidor da Comunidade - por contribuir significantemente para a comunidade do KAG de algum modo",
 	"Github Contributor - for significantly contributing to an issue or pull request on the KAG GitHub": "Contribuidor do GitHub - por contribuir significantemente em um issue ou pull request no GitHub do KAG",
 	"Map Contributor - for contributing to the official map cycle": "Contribuidor de Mapas - por contribuir com o ciclo de mapas oficiais",
@@ -1112,8 +1113,16 @@
 	"Select key 7": "Selecione tecla 7",
 	"Select key 8": "Selecione tecla 8",
 	"Select key 9": "Selecione tecla 9",
-	"Select key 0": "Selecione tecla 0",
-
+	"Select key 10": "Selecione tecla 10",
+	"Select key 11": "Selecione tecla 11",
+	"Select key 12": "Selecione tecla 12",
+	"Select key 13": "Selecione tecla 13",
+	"Select key 14": "Selecione tecla 14",
+	"Select key 15": "Selecione tecla 15",
+	"Select key 16": "Selecione tecla 16",
+	"Select key 17": "Selecione tecla 17",
+	"Select key 18": "Selecione tecla 18",
+	
 //TauntAI.as
 	"haha!": "haha!",
 	"heheheh": "hehe!",
