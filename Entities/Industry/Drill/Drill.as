@@ -20,7 +20,7 @@ const u8 heat_add_constructed = 2;
 const u8 heat_add_blob = heat_add * 2;
 const u8 heat_cool_amount = 2;
 
-const u8 heat_cooldown_time = 10;
+const u8 heat_cooldown_time = 5;
 const u8 heat_cooldown_time_water = u8(heat_cooldown_time / 3);
 
 const string required_class = "builder";
