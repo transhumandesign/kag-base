@@ -15,7 +15,7 @@ const u8 heat_max = 150;
 
 const string last_drill_prop = "drill last active";
 
-const u8 heat_add = 6;
+const u8 heat_add = 4;
 const u8 heat_add_constructed = 2;
 const u8 heat_add_blob = heat_add * 2;
 const u8 heat_cool_amount = 2;
