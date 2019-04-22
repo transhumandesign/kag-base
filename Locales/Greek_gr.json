@@ -177,7 +177,7 @@
   "Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.": "Χρησιμοποίησε το γάτζο$Tutorial_Grapple$ για να ταλαντευτείς απέναντι.\n\nΚΡΑΤΑ$RMB$\n\nΠιάσε το ταβάνι στο σημείο που είναι to φανάρι$lantern$\n\nΚΡΑΤΑ $KEY_D$\n\nΑΦΗΣΕ τον γάτζο πρίν σταματήσεις.",
 
   //Tutorial03.as
-  "$lantern$\nPickup the lantern $KEY_C$": "Ramassez la lanterne $lantern$ $KEY_C$",
+  "$lantern$\nPickup the lantern $KEY_C$": "$lantern$\nΣήκωσε το φανάρι $KEY_C$",
   "Drop is the same as pickup $KEY_C$": "Vous pouvez jeter un objet avec la même touche que pour ramasser $KEY_C$",
   "Activate/Deactivate things\n   $KEY_SPACE$\n\n\n$lantern$ On/Off": "Activer/désactiver des choses\n   $KEY_SPACE$\n\n\n$lantern$ On/Off",
   "By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$": "Au passage: Vous avez une mini-carte en haut de l'écran. Cachez-la ou agrandissez-la en appuyant sur $KEY_M$",
