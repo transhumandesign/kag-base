@@ -1,10 +1,12 @@
 #include "TradingCommon.as"
 #include "Descriptions.as"
+#include "AssistCommon.as"
 
 #define SERVER_ONLY
 
 int coinsOnDamageAdd = 2;
 int coinsOnKillAdd = 10;
+int coinsOnAssistAdd = 5;
 int coinsOnDeathLose = 10;
 int min_coins = 50;
 int max_coins = 100;
@@ -117,6 +119,7 @@ void Reset(CRules@ this)
 
 	coinsOnDamageAdd = cfg.read_s32("coinsOnDamageAdd", coinsOnDamageAdd);
 	coinsOnKillAdd = cfg.read_s32("coinsOnKillAdd", coinsOnKillAdd);
+	coinsOnAssistAdd = cfg.read_s32("coinsOnAssistAdd", coinsOnAssistAdd);
 	coinsOnDeathLose = cfg.read_s32("coinsOnDeathLose", coinsOnDeathLose);
 	min_coins = cfg.read_s32("minCoinsOnRestart", min_coins);
 	max_coins = cfg.read_s32("maxCoinsOnRestart", max_coins);
@@ -178,6 +181,13 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 			if (killer !is victim && killer.getTeamNum() != victim.getTeamNum())
 			{
 				killer.server_setCoins(killer.getCoins() + coinsOnKillAdd);
+			}
+
+			CPlayer@ assistPlayer = getAssistPlayer(victim, killer);
+			if (assistPlayer !is null)
+			{
+				assistPlayer.server_setCoins(assistPlayer.getCoins() + coinsOnAssistAdd);
+				print("assist coins " + assistPlayer.getUsername());
 			}
 		}
 

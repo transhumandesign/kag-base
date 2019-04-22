@@ -1,9 +1,11 @@
 //not server only so the client also gets the game event setup stuff
 
 #include "GameplayEvents.as"
+#include "AssistCommon.as"
 
 const int coinsOnDamageAdd = 5;
 const int coinsOnKillAdd = 10;
+const int coinsOnAssistAdd = 5;
 
 const int coinsOnDeathLosePercent = 20;
 const int coinsOnTKLose = 50;
@@ -105,6 +107,13 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 			else if (killer.getTeamNum() == victim.getTeamNum())
 			{
 				killer.server_setCoins(killer.getCoins() - coinsOnTKLose);
+			}
+
+			CPlayer@ assistPlayer = getAssistPlayer(victim, killer);
+			if (assistPlayer !is null)
+			{
+				assistPlayer.server_setCoins(assistPlayer.getCoins() + coinsOnAssistAdd);
+				print("assist coins " + assistPlayer.getUsername());
 			}
 		}
 
