@@ -11,7 +11,7 @@ const int coinsOnTKLose = 50;
 const int coinsOnRestartAdd = 0;
 const bool keepCoinsOnRestart = false;
 
-const int coinsOnHitSiege = 5;
+const int coinsOnHitSiege = 2; //per heart of damage
 const int coinsOnKillSiege = 20;
 
 const int coinsOnCapFlag = 100;
@@ -202,8 +202,14 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 				break;
 
 				case GE_hit_vehicle:
-					coins = coinsOnHitSiege;
-					break;
+
+				{
+					g.params.ResetBitIndex();
+					f32 damage = g.params.read_f32();
+					coins = coinsOnHitSiege * damage;
+				}
+
+				break;
 
 				case GE_kill_vehicle:
 					coins = coinsOnKillSiege;
