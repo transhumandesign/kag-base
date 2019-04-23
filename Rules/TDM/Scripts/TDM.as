@@ -729,6 +729,8 @@ shared class TDMCore : RulesCore
 		if (cfg.exists(costName))
 		{
 			s32 cost = cfg.read_s32(costName);
+			if (cost <= 0) return;
+
 			player.server_setCoins(player.getCoins() + Maths::Round(cost / 2));
 		}
 	}
