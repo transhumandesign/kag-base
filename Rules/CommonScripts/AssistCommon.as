@@ -61,15 +61,19 @@ CPlayer@ getAssistPlayer(CPlayer@ victim, CPlayer@ killer)
 	for (uint i = 0; i < hitters.length; i++)
 	{
 		CPlayer@ origHitter = hitters[i];
+		if(origHitter is null)
+		{
+			continue;
+		}
 		f32 totalDamage = 0;
 
-		for (uint j = i; j < hitters.length; j++)
+		for (uint j = 0; j < hitters.length; j++)
 		{
 			CPlayer@ hitter = hitters[j];
 			f32 damage = damages[j];
 
 			//healed away the damage from here onwards
-			if (damage == 0.0f)
+			if (damage <= 0.0f)
 			{
 				break;
 			}
