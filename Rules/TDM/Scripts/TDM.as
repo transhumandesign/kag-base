@@ -681,9 +681,34 @@ shared class TDMCore : RulesCore
 				for (uint i = 0; i < players.length; i++)
 				{
 					CPlayer@ player = players[i].getPlayer();
-					if (player !is null && player.getTeamNum() == winteamIndex)
+					if (player !is null)
 					{
-						player.server_setCoins(player.getCoins() + 10);
+						if (player.getTeamNum() == winteamIndex)
+						{
+							player.server_setCoins(player.getCoins() + 10);
+						}
+
+						CBlob@ blob = player.getBlob();
+						if (blob !is null)
+						{
+							ConfigFile cfg = ConfigFile();
+							cfg.loadFile("tdm_vars.cfg");
+
+							//give coins for items in your inventory
+							CInventory@ inventory = blob.getInventory();
+							for (uint j = 0; j < inventory.getItemsCount(); j++)
+							{
+								CBlob@ blob = inventory.getItem(j);
+								giveCoinsBack(player, blob, cfg);
+							}
+
+							//give coins for held item
+							CBlob@ heldBlob = blob.getCarriedBlob();
+							if (heldBlob !is null)
+							{
+								giveCoinsBack(player, heldBlob, cfg);
+							}
+						}
 					}
 				}
 			}
@@ -692,6 +717,19 @@ shared class TDMCore : RulesCore
 			rules.SetCurrentState(GAME_OVER);
 			rules.SetGlobalMessage("{WINNING_TEAM} wins the game!");
 			rules.AddGlobalMessageReplacement("WINNING_TEAM", winteam.name);
+		}
+	}
+
+	void giveCoinsBack(CPlayer@ player, CBlob@ blob, ConfigFile cfg)
+	{
+		string name = blob.getName();
+		if (name == "mat_arrows") return;
+
+		string costName = "cost_" + name;
+		if (cfg.exists(costName))
+		{
+			s32 cost = cfg.read_s32(costName);
+			player.server_setCoins(player.getCoins() + Maths::Round(cost / 2));
 		}
 	}
 
