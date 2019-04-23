@@ -125,7 +125,7 @@ void onInit(CBlob@ this)
 	this.set_s8("place45 distance", 1);
 	this.Tag("place45 perp");
 	this.set_u8(heat_prop, 0);
-	this.set_s32("showHeatTo", -1);
+	this.set_u16("showHeatTo", 0);
 
 	this.set_u32(last_drill_prop, 0);
 }
@@ -391,12 +391,12 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	this.getCurrentScript().runFlags &= ~Script::tick_not_sleeping;
-	this.set_s32("showHeatTo", getPlayerIndex(attached.getPlayer()));
+	this.set_u16("showHeatTo", attached.getPlayer().getNetworkID());
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 {
-	this.set_s32("showHeatTo", -1);
+	this.set_u16("showHeatTo", 0);
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ blob)
@@ -406,14 +406,19 @@ void onThisAddToInventory(CBlob@ this, CBlob@ blob)
 
 void onRender(CSprite@ this)
 {
+	CPlayer@ local = getLocalPlayer();
+	CBlob@ localBlob = local.getBlob();
+
+	if (local is null || localBlob is null)
+		return;
+
 	CBlob@ blob = this.getBlob();
-	CPlayer@ holder = getPlayer(blob.get_s32("showHeatTo"));
+	u16 holderID = blob.get_u16("showHeatTo");
+
+	CPlayer@ holder = holderID == 0 ? null : getPlayerByNetworkId(holderID);
 	
 	Vec2f mousePos = getControls().getMouseWorldPos();
 	Vec2f blobPos = blob.getPosition();
-
-	if (getLocalPlayer() is null || getLocalPlayer().getBlob() is null)
-		return;
 
 	bool inRange = (blobPos - getLocalPlayer().getBlob().getPosition()).getLength() < max_heatbar_view_range;
 	bool hover = (mousePos - blobPos).getLength() < blob.getRadius() * 1.50f;
