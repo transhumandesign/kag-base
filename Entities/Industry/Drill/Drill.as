@@ -419,8 +419,9 @@ void onRender(CSprite@ this)
 	
 	Vec2f mousePos = getControls().getMouseWorldPos();
 	Vec2f blobPos = blob.getPosition();
+	Vec2f localPos = localBlob.getPosition();
 
-	bool inRange = (blobPos - getLocalPlayer().getBlob().getPosition()).getLength() < max_heatbar_view_range;
+	bool inRange = (blobPos - localPos).getLength() < max_heatbar_view_range;
 	bool hover = (mousePos - blobPos).getLength() < blob.getRadius() * 1.50f;
 	
 	if ((hover && inRange) || (holder !is null && holder.isLocal()))
