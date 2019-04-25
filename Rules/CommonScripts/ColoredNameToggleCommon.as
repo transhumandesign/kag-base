@@ -22,7 +22,7 @@ void InitColoredName(CRules@ rules, CPlayer@ player)
 {
     if (isSpecial(player))
     {
-        rules.set_bool(getToggleID(player), false);
+        rules.set_bool(getToggleID(player), true);
     }
 }
 

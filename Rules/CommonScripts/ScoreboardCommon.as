@@ -8,7 +8,8 @@ f32 getKDR(CPlayer@ p)
 SColor getNameColour(CPlayer@ p)
 {
     SColor c;
-    bool showColor = coloredNameEnabled(getRules(), p);
+    CPlayer@ localplayer = getLocalPlayer();
+    bool showColor = (p !is localplayer && isSpecial(localplayer)) || coloredNameEnabled(getRules(), p);
 
     if (p.isDev() && showColor) {
         c = SColor(0xffb400ff); //dev
@@ -16,7 +17,7 @@ SColor getNameColour(CPlayer@ p)
         c = SColor(0xffa0ffa0); //guard
     } else if (isAdmin(p) && showColor) {
         c = SColor(0xfffa5a00); //admin
-    } else if (p.isMyPlayer()) {
+    } else if (p.getOldGold() && !p.isBot()) {
         c = SColor(0xffffEE44); //my player
     } else {
         c = SColor(0xffffffff); //normal

@@ -8,7 +8,7 @@ const array<u8> EXCLUDED_EMOTES = {
 	Emotes::pickup
 };
 const u8 MENU_WIDTH = 9;
-const u8 MENU_HEIGHT = Maths::Ceil((Emotes::emotes_total - EXCLUDED_EMOTES.length - 1) / MENU_WIDTH) + 2;
+const u8 MENU_HEIGHT = Maths::Ceil((Emotes::emotes_total - EXCLUDED_EMOTES.length - 1) / MENU_WIDTH) + 3;
 const string SELECTED_PROP = "selected emote: ";
 
 const string EMOTE_CMD = "emote command";
@@ -22,6 +22,7 @@ enum EMOTE_SUBCMD {
 void onInit(CRules@ this)
 {
 	this.addCommandID(EMOTE_CMD);
+	this.addCommandID("display taunt");
 
 	//load emote icons
 	for (u16 i = 0; i < Emotes::emotes_total; i++)
@@ -106,14 +107,23 @@ void ShowEmotesMenu(CPlayer@ player)
 			read_emote(cfg, "emote_6", Emotes::wat),
 			read_emote(cfg, "emote_7", Emotes::troll),
 			read_emote(cfg, "emote_8", Emotes::disappoint),
-			read_emote(cfg, "emote_9", Emotes::ladder)
+			read_emote(cfg, "emote_9", Emotes::ladder),
+			read_emote(cfg, "emote_10", Emotes::flex),
+			read_emote(cfg, "emote_11", Emotes::down),
+			read_emote(cfg, "emote_12", Emotes::smug),
+			read_emote(cfg, "emote_13", Emotes::left),
+			read_emote(cfg, "emote_14", Emotes::okhand),
+			read_emote(cfg, "emote_15", Emotes::right),
+			read_emote(cfg, "emote_16", Emotes::thumbsup),
+			read_emote(cfg, "emote_17", Emotes::up),
+			read_emote(cfg, "emote_18", Emotes::thumbsdown)
 		};
 
 		string propname = SELECTED_PROP + player.getUsername();
 		u8 selected = rules.get_u8(propname);
 
 		//display row of current emote keybinds
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < 18; i++)
 		{
 			CBitStream params;
 			params.write_u8(SELECT_KEYBIND);
