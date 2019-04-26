@@ -113,10 +113,10 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 	if (
 		(!canPlaceOnBackground || !map.isTileBackgroundNonEmpty(backtile)) &&      // can put against background
 		!(                                              // can put sticking next to something
-			canPlaceNextTo(map, left) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(left))  ||
-			canPlaceNextTo(map, right) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(right)) ||
-			canPlaceNextTo(map, up)   || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(up))    ||
-			canPlaceNextTo(map, down) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(down))
+			canPlaceNextTo(map, left) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(left) && !map.isTileGrass(left.type))  ||
+			canPlaceNextTo(map, right) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(right) && !map.isTileGrass(right.type)) ||
+			canPlaceNextTo(map, up)   || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(up) && !map.isTileGrass(up.type))    ||
+			canPlaceNextTo(map, down) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(down) && !map.isTileGrass(down.type))
 		)
 	)
 	{
