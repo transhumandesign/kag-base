@@ -9,6 +9,8 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	const bool fallThrough = !this.wasOnLadder() && this.isKeyPressed(key_down);
+
 	ShapeVars@ vars = this.getShape().getVars();
 	vars.onladder = false;
 
@@ -22,7 +24,7 @@ void onTick(CBlob@ this)
 			CBlob@ overlap = overlapping[i];
 			//printf("overlap "  + overlap.getName() );
 
-			if (overlap.isLadder() && !overlap.isAttachedTo(this))
+			if (overlap.isLadder() && !overlap.isAttachedTo(this) && !fallThrough)
 			{
 				vars.onladder = true;
 				return;
