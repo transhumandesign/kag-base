@@ -1,5 +1,7 @@
 
-// set kills and deaths
+// set kills, deaths and assists
+
+#include "AssistCommon.as";
 
 void onBlobDie(CRules@ this, CBlob@ blob)
 {
@@ -7,6 +9,12 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 	{
 		CPlayer@ killer = blob.getPlayerOfRecentDamage();
 		CPlayer@ victim = blob.getPlayer();
+		CPlayer@ helper = getAssistPlayer(victim, killer);
+
+		if (helper !is null)
+		{
+			helper.setAssists(helper.getAssists() + 1);
+		}
 
 		if (victim !is null)
 		{

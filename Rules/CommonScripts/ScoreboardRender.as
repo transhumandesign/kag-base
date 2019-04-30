@@ -49,11 +49,11 @@ string[] tier_description = {
 	"This player is a Squire Supporter",
 	"This player is a Knight Supporter",
 	"This player is a Royal Guard Supporter",
-	"This player is a Round Table Supporter",
+	"This player is a Round Table Supporter"
 };
 
 //returns the bottom
-float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emblem)
+float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emblem)
 {
 	if (players.size() <= 0 || team is null)
 		return topleft.y;
@@ -78,7 +78,7 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 
 	topleft.y += stepheight * 2;
 
-	const int accolades_start = 660;
+	const int accolades_start = 740;
 	const int age_start = accolades_start + 80;
 
 	draw_age = false;
@@ -96,14 +96,15 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 			break;
 		}
 	}
-	const int tier_start = (draw_age ? age_start : accolades_start) + 80;
+	const int tier_start = (draw_age ? age_start : accolades_start) + 70;
 
 	//draw player table header
 	GUI::DrawText(getTranslatedString("Player"), Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
-	GUI::DrawText(getTranslatedString("Username"), Vec2f(bottomright.x - 400, topleft.y), SColor(0xffffffff));
-	GUI::DrawText(getTranslatedString("Ping"), Vec2f(bottomright.x - 260, topleft.y), SColor(0xffffffff));
-	GUI::DrawText(getTranslatedString("Kills"), Vec2f(bottomright.x - 190, topleft.y), SColor(0xffffffff));
-	GUI::DrawText(getTranslatedString("Deaths"), Vec2f(bottomright.x - 120, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(getTranslatedString("Username"), Vec2f(bottomright.x - 470, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(getTranslatedString("Ping"), Vec2f(bottomright.x - 330, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(getTranslatedString("Kills"), Vec2f(bottomright.x - 260, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(getTranslatedString("Deaths"), Vec2f(bottomright.x - 190, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(getTranslatedString("Assists"), Vec2f(bottomright.x - 120, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("KDR"), Vec2f(bottomright.x - 50, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Accolades"), Vec2f(bottomright.x - accolades_start, topleft.y), SColor(0xffffffff));
 	if(draw_age)
@@ -175,6 +176,22 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 
 		string playername = p.getCharacterName();
 		string clantag = p.getClantag();
+
+		if(getSecurity().isPlayerNameHidden(p) && getLocalPlayer() !is p)
+		{
+			if(isAdmin(getLocalPlayer()))
+			{
+				playername = username + "(hidden: " + clantag + " " + playername + ")";
+				clantag = "";
+
+			}
+			else
+			{
+				playername = username;
+				clantag = "";
+			}
+
+		}
 
 		//head icon
 
@@ -341,6 +358,7 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 		if(draw_tier)
 		{
 			int tier = p.getSupportTier();
+
 			if(tier > 0)
 			{
 				int tier_icon_start = 15;
@@ -371,8 +389,17 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 					1 : 0),             5,     0,         0,
 				(acc.map_contributor ?
 					1 : 0),             6,     0,         0,
-				(acc.moderation_contributor && (!isSpecial(p) || coloredNameEnabled(getRules(), p)) ? //ensure accolade is visible for past admins
+				(acc.moderation_contributor && (
+						//always show accolade of others if local player is special
+						(p !is localplayer && isSpecial(localplayer)) ||
+						//always show accolade for ex-admins
+						!isSpecial(p) ||
+						//show accolade only if colored name is visible
+						coloredNameEnabled(getRules(), p)
+					) ?
 					1 : 0),             7,     0,         0,
+				(p.getOldGold() ?
+					1 : 0),             8,     0,         0,
 
 				//tourney badges
 				acc.gold,               0,     1,         1,
@@ -386,9 +413,9 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 			//encoding per-group
 			int[] group_encode = {
 				//singles
-				accolades_start,                24,
+				accolades_start,                 24,
 				//medals
-				accolades_start - (24 * 4 + 12), 38,
+				accolades_start - (24 * 5 + 12), 38,
 			};
 
 			for(int bi = 0; bi < badges_encode.length; bi += 4)
@@ -437,10 +464,11 @@ float drawScoreboard(CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emble
 		}
 
 
-		GUI::DrawText("" + username, Vec2f(bottomright.x - 400, topleft.y), namecolour);
-		GUI::DrawText("" + ping_in_ms, Vec2f(bottomright.x - 260, topleft.y), SColor(0xffffffff));
-		GUI::DrawText("" + p.getKills(), Vec2f(bottomright.x - 190, topleft.y), SColor(0xffffffff));
-		GUI::DrawText("" + p.getDeaths(), Vec2f(bottomright.x - 120, topleft.y), SColor(0xffffffff));
+		GUI::DrawText("" + username, Vec2f(bottomright.x - 470, topleft.y), namecolour);
+		GUI::DrawText("" + ping_in_ms, Vec2f(bottomright.x - 330, topleft.y), SColor(0xffffffff));
+		GUI::DrawText("" + p.getKills(), Vec2f(bottomright.x - 260, topleft.y), SColor(0xffffffff));
+		GUI::DrawText("" + p.getDeaths(), Vec2f(bottomright.x - 190, topleft.y), SColor(0xffffffff));
+		GUI::DrawText("" + p.getAssists(), Vec2f(bottomright.x - 120, topleft.y), SColor(0xffffffff));
 		GUI::DrawText("" + formatFloat(getKDR(p), "", 0, 2), Vec2f(bottomright.x - 50, topleft.y), SColor(0xffffffff));
 	}
 
@@ -526,16 +554,16 @@ void onRenderScoreboard(CRules@ this)
 	//draw the scoreboards
 
 	if (localTeam == 0)
-		topleft.y = drawScoreboard(blueplayers, topleft, this.getTeam(0), Vec2f(0, 0));
+		topleft.y = drawScoreboard(localPlayer, blueplayers, topleft, this.getTeam(0), Vec2f(0, 0));
 	else
-		topleft.y = drawScoreboard(redplayers, topleft, this.getTeam(1), Vec2f(32, 0));
+		topleft.y = drawScoreboard(localPlayer, redplayers, topleft, this.getTeam(1), Vec2f(32, 0));
 
 	topleft.y += 52;
 
 	if (localTeam == 1)
-		topleft.y = drawScoreboard(blueplayers, topleft, this.getTeam(0), Vec2f(0, 0));
+		topleft.y = drawScoreboard(localPlayer, blueplayers, topleft, this.getTeam(0), Vec2f(0, 0));
 	else
-		topleft.y = drawScoreboard(redplayers, topleft, this.getTeam(1), Vec2f(32, 0));
+		topleft.y = drawScoreboard(localPlayer, redplayers, topleft, this.getTeam(1), Vec2f(32, 0));
 
 	topleft.y += 52;
 

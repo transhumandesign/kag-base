@@ -39,7 +39,7 @@ void onTick(CBlob@ this)
 		const int t2 = this.getTickSinceCreated();
 		if (t2 > t && t2 <= t * 2 && this.isOverlapping("hall"))
 		{
-			this.getSprite().PlaySound("/MigrantSayHello");
+			this.getSprite().PlaySound("/" + getTranslatedString("MigrantSayHello"));
 		}
 	}
 }

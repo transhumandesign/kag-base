@@ -3,6 +3,7 @@
 // move people with kick immunity to spec instead of doing nothing -mazey
 
 #define CLIENT_ONLY
+#include "AdminLogic.as"
 
 bool warned = false;
 int warnTime = 0;
@@ -75,7 +76,8 @@ void onTick(CRules@ this)
 		}
 		else
 		{
-			p.client_ChangeTeam(this.getSpectatorTeamNum());
+			joinNewSpecTeam(this, getLocalPlayer()); //Force-swap to spec team.
+			client_AddToChat("You have just been swapped to spectator team, type !m to get back.", SColor(255,0,0,0));
 		}
 	}
 }

@@ -1285,5 +1285,8 @@
 	"Map Contributor - for contributing to the official map cycle":
 	"Разработчик карт - за вклад в официальный цикл карт",
 	"Moderation Contributor - for contributing to moderating the game, forums, or discord":
-	"Вклад в модерацию - за вклад в модерирование игры, форумов или сервера Discord"
+	"Вклад в модерацию - за вклад в модерирование игры, форумов или сервера Discord",
+
+	//sound
+	"MigrantSayHello": "MigrantSayPrivet"
 }
