@@ -15,8 +15,17 @@ f32 calculateZoomLevelH(u32 height)
 
 f32 calculateZoomLevelW(u32 width)
 {
-	f32 ratio = f32(getDriver().getScreenHeight()) / f32(getDriver().getScreenWidth());
+	Driver@ driver = getDriver();
+	f32 ratio = f32(driver.getScreenHeight()) / f32(driver.getScreenWidth());
 	return calculateZoomLevelH(width * ratio);
+}
+
+void calculateZoomTarget(f32 distX, f32 distH)
+{
+	f32 zoomW = calculateZoomLevelW(distX * 1.8f);
+	f32 zoomH = calculateZoomLevelH(distH * 1.8f);
+	zoomTarget = Maths::Min(zoomW, zoomH);
+	zoomTarget = Maths::Clamp(zoomTarget, CINEMATIC_FURTHEST_ZOOM, CINEMATIC_CLOSEST_ZOOM);
 }
 
 void calculateImportance(CBlob@[] blobs)
@@ -65,12 +74,13 @@ void calculateImportance(CBlob@[] blobs)
 			}
 		}
 
-		bool blobInLight = map.getTile(blob.getInterpolatedPosition()).light >= 0x20; //same as in MarkPlayers.as
+		Vec2f blobPos = blob.getInterpolatedPosition();
+		bool blobInLight = map.getTile(blobPos).light >= 0x20; //same as in MarkPlayers.as
 		if (blob.hasTag("player") && blobInLight)
 		{
 			//player near enemy tent
 			CBlob@[] blobsInRadius;
-			map.getBlobsInRadius(blob.getInterpolatedPosition(), 28.0f * map.tilesize, blobsInRadius);
+			map.getBlobsInRadius(blobPos, 28.0f * map.tilesize, blobsInRadius);
 			for (uint j = 0; j < blobsInRadius.length; j++)
 			{
 				CBlob@ b = blobsInRadius[j];
@@ -87,7 +97,7 @@ void calculateImportance(CBlob@[] blobs)
 			if (blob.getName() == "builder")
 			{
 				CBlob@[] blobsInRadius;
-				map.getBlobsInRadius(blob.getInterpolatedPosition(), 8.0f * map.tilesize, blobsInRadius);
+				map.getBlobsInRadius(blobPos, 8.0f * map.tilesize, blobsInRadius);
 				for (uint j = 0; j < blobsInRadius.length; j++)
 				{
 					CBlob@ b = blobsInRadius[j];

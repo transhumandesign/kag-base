@@ -10,7 +10,9 @@ const f32 CINEMATIC_CLOSEST_ZOOM = 1.5f;				//how close the camera can zoom in w
 const f32 CINEMATIC_FURTHEST_ZOOM = 0.75f;				//how far the camera can zoom out while cinematic (default is 0.5f)
 
 const bool AUTO_CINEMATIC = false;						//whether camera automatically becomes cinematic after no input
-const u32 CINEMATIC_TIME = 10.0f * getTicksASecond();	//time until camera automatically becomes cinematic in seconds
+const f32 CINEMATIC_TIME = 10.0f * getTicksASecond();	//time until camera automatically becomes cinematic in seconds
+
+const u32 CINEMATIC_UPDATE_INTERVAL = 6; 				//how often the cinematic camera updates its target position/zoom
 
 Vec2f posTarget;										//position which cinematic camera moves towards
 f32 zoomTarget = 1.0f;									//zoom level which camera zooms towards
@@ -151,63 +153,75 @@ void Spectator(CRules@ this)
 	}
 	else //cinematic camera
 	{
-		//by default, view entire map from center
-		posTarget = Vec2f(mapDim.x, mapDim.y) / 2.0f;
-		f32 zoomW = calculateZoomLevelW(mapDim.x);
-		f32 zoomH = calculateZoomLevelH(mapDim.y);
-		zoomTarget = Maths::Min(zoomW, zoomH);
-		zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f); //its fine to clamp between default min/max zoom here
+		if (this.isMatchRunning() && !this.isWarmup() && !this.isGameOver()) //game running
+		{
+			CBlob@[] blobs;
+			getBlobs(@blobs);
+			calculateImportance(blobs);
+			blobs = sortBlobsByImportance(blobs);
 
-		CBlob@[] blobs;
-		getBlobs(@blobs);
-		calculateImportance(blobs);
-		blobs = sortBlobsByImportance(blobs);
+			CBlob@[] players;
 
-		CBlob@[] players;
-		getBlobsByTag("player", @players);
+			if (
+				!focusOnBlob(blobs) && //not focusing on a blob
+				getGameTime() % CINEMATIC_UPDATE_INTERVAL == 0 && //dont update every tick
+				getBlobsByTag("player", @players) //players exist
+			) {
+				f32 maxDistX = 0.0f;
+				f32 maxDistY = 0.0f;
+				bool furthestZoom = false;
 
-		if (
-			this.isMatchRunning() && !this.isWarmup() && !this.isGameOver() && //game running
-			!focusOnBlob(blobs) && //not focusing on a blob
-			players.length > 0 //players exist
-		) {
-			u32 maxDistX = 0.0f;
-			u32 maxDistY = 0.0f;
-
-			//calculate mean position of all players
-			posTarget = Vec2f(0, 0);
-			for (uint i = 0; i < players.length; i++)
-			{
-				CBlob@ blob = players[i];
-
-				posTarget += blob.getInterpolatedPosition();
-
-				//look for largest distance between two players
-				for (uint j = i + 1; j < players.length; j++)
+				//calculate mean position of all players
+				posTarget = Vec2f_zero;
+				for (uint i = 0; i < players.length; i++)
 				{
-					CBlob@ blob2 = players[j];
-					u32 distX = Maths::Abs(blob.getPosition().x - blob2.getPosition().x);
-					u32 distY = Maths::Abs(blob.getPosition().y - blob2.getPosition().y);
-					maxDistX = Maths::Max(distX, maxDistX);
-					maxDistY = Maths::Max(distY, maxDistY);
+					CBlob@ blob = players[i];
+					Vec2f blobPos = blob.getInterpolatedPosition();
+
+					posTarget += blobPos;
+
+					if (!furthestZoom)
+					{
+						//look for largest distance between two players
+						for (uint j = i + 1; j < players.length; j++)
+						{
+							CBlob@ blob2 = players[j];
+							Vec2f blob2Pos = blob2.getInterpolatedPosition();
+
+							f32 distX = Maths::Abs(blobPos.x - blob2Pos.x);
+							f32 distY = Maths::Abs(blobPos.y - blob2Pos.y);
+							maxDistX = Maths::Max(distX, maxDistX);
+							maxDistY = Maths::Max(distY, maxDistY);
+
+							//dynamic zoom to fit all players
+							calculateZoomTarget(maxDistX, maxDistY);
+
+							//stop calculating max dist if furthest zoom is reached
+							if (zoomTarget <= CINEMATIC_FURTHEST_ZOOM)
+							{
+								furthestZoom = true;
+								break;
+							}
+						}
+					}
+				}
+				posTarget /= players.length;
+
+				if (players.length == 1)
+				{
+					//follow blob with normal zoom
+					zoomTarget = 1.0f;
 				}
 			}
-			posTarget /= players.length;
-
-			if (players.length == 1)
-			{
-				//follow blob with normal zoom
-				zoomTarget = 1.0f;
-			}
-			else
-			{
-				//dynamic zoom to fit all players
-				f32 zoomW = calculateZoomLevelW(maxDistX * 1.8f);
-				f32 zoomH = calculateZoomLevelH(maxDistY * 1.8f);
-				zoomTarget = Maths::Min(zoomW, zoomH);
-			}
-
-			zoomTarget = Maths::Clamp(zoomTarget, CINEMATIC_FURTHEST_ZOOM, CINEMATIC_CLOSEST_ZOOM);
+		}
+		else
+		{
+			//view entire map from center
+			posTarget = Vec2f(mapDim.x, mapDim.y) / 2.0f;
+			f32 zoomW = calculateZoomLevelW(mapDim.x);
+			f32 zoomH = calculateZoomLevelH(mapDim.y);
+			zoomTarget = Maths::Min(zoomW, zoomH);
+			zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f); //its fine to clamp between default min/max zoom here
 		}
 
 		//adjust camera pos and zoom
