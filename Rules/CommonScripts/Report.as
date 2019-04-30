@@ -197,25 +197,6 @@ void report(CRules@ this, CPlayer@ player, CPlayer@ baddie)
         this.SendCommand(this.getCommandID("report"), report_params);
 }
 
-//moderation logic
-void moderate(CRules@ this, CPlayer@ player)
-{
-	if(player !is null && player is getLocalPlayer())
-	{
-		if(isClient())
-		{
-			string p_name = player.getUsername();
-
-			//change to spectator cam
-			player.client_ChangeTeam(this.getSpectatorTeamNum());
-			getHUD().ClearMenus();
-
-			//so the interface is drawn
-			this.set_bool(p_name + "_moderator", true);
-		}
-	}
-}
-
 void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 {
 	string p_name = player.getUsername();
