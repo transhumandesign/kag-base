@@ -116,7 +116,12 @@ void onTick(CBlob@ this)
 	if (this.isInInventory())
 	{
 		//prevent players from insta-slashing when exiting crates
+		knight.state = 0;
 		knight.swordTimer = 0;
+		knight.shieldTimer = 0;
+		knight.slideTime = 0;
+		knight.doubleslash = false;
+		getHUD().SetCursorFrame(0);
 		return;
 	}
 
