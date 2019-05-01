@@ -1289,4 +1289,6 @@
 
 	//sound
 	"MigrantSayHello": "MigrantSayPrivet"
+	"MigrantSayNo": "MigrantSayNyet"
+	"MigrantSayFriend": "MigrantSayDryg"
 }
