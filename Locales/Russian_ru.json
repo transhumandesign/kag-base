@@ -1288,7 +1288,7 @@
 	"Вклад в модерацию - за вклад в модерирование игры, форумов или сервера Discord",
 
 	//sound
-	"MigrantSayHello": "MigrantSayPrivet"
-	"MigrantSayNo": "MigrantSayNyet"
+	"MigrantSayHello": "MigrantSayPrivet",
+	"MigrantSayNo": "MigrantSayNyet",
 	"MigrantSayFriend": "MigrantSayDryg"
 }
