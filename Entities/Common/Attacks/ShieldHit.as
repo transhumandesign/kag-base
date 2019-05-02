@@ -31,10 +31,11 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 
 	//no shield when stunned
-	if (isKnocked(this))
+	if (isKnocked(this) && !knockedJustSynced(this))
 	{
 		return damage;
 	}
+
 
 	if (blockAttack(this, velocity, 0.0f))
 	{

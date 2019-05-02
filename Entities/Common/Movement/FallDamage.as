@@ -67,7 +67,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				Sound::Play("/FallDeath.ogg", this.getPosition());
 			}
 
-			SetKnocked(this, knockdown_time, true);
+			SetKnocked(this, knockdown_time);
 		}
 	}
 }

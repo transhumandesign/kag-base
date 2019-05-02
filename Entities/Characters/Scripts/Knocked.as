@@ -6,8 +6,10 @@ const string knocked_tag = "knockable";
 void setKnockable(CBlob@ this)
 {
 	this.set_u32("knocked", 0);
+	this.set_u32("last_server_knocked", 0);
 	this.Tag(knocked_tag);
 	this.Sync("knocked", true);
+	this.Sync("last_server_knocked", true);
 	this.Sync(knocked_tag, true);
 }
 
@@ -83,6 +85,12 @@ bool isKnockable(CBlob@ blob)
 	return blob.hasTag(knocked_tag);
 }
 
+// This will return true if this is the frame that the knock got synced from the server
+bool knockedJustSynced(CBlob@ blob)
+{
+	return getGameTime() == blob.get_u32("last_server_knocked");
+}
+
 void SetKnocked(CBlob@ blob, int ticks, bool sync = false)
 {
 	if((getNet().isServer() && sync) || !sync)
@@ -92,9 +100,12 @@ void SetKnocked(CBlob@ blob, int ticks, bool sync = false)
 
 		u32 current = getKnocked(blob);
 		ticks = Maths::Min(255, Maths::Max(current, ticks));
-		blob.set_u32("knocked", getGameTime() + ticks);
+		u32 knocked_time = getGameTime() + ticks;
+		blob.set_u32("knocked", knocked_time);
 		if (sync)
 		{
+			blob.set_u32("last_server_knocked", getGameTime());
+			blob.Sync("last_server_knocked", true);
 			blob.Sync("knocked", true);
 		}
 	}
