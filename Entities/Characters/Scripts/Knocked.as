@@ -5,17 +5,27 @@ const string knocked_tag = "knockable";
 
 void setKnockable(CBlob@ this)
 {
-	this.set_u8("knocked", 0);
+	this.set_u32("knocked", 0);
 	this.Tag(knocked_tag);
 	this.Sync("knocked", true);
 	this.Sync(knocked_tag, true);
 }
 
-u8 getKnocked(CBlob@ this)
+u32 getKnocked(CBlob@ this)
 {
 	if (!this.exists("knocked"))
 		return 0;
-	return this.get_u8("knocked");
+
+	u32 knocked_end = this.get_u32("knocked");
+	u32 gameTime = getGameTime();
+
+	if(gameTime > knocked_end)
+	{
+		return 0;
+
+	}
+
+	return knocked_end - gameTime;
 }
 
 bool isKnocked(CBlob@ this)
@@ -32,12 +42,10 @@ void DoKnockedUpdate(CBlob@ this)
 		return;
 	}
 
-	u8 knocked = this.get_u8("knocked");
+	u32 knocked = getKnocked(this);
 
 	if (knocked > 0)
 	{
-		knocked--;
-		this.set_u8("knocked", knocked);
 		u16 takekeys;
 		if (knocked < 2 || (this.hasTag("dazzled") && knocked < 30))
 		{
@@ -77,12 +85,18 @@ bool isKnockable(CBlob@ blob)
 
 void SetKnocked(CBlob@ blob, int ticks, bool sync = false)
 {
-	if (blob.hasTag("invincible") && ticks != 0)
-		return; //do nothing
-
-	blob.set_u8("knocked", Maths::Min(255, Maths::Max(blob.get_u8("knocked"), ticks)));
-	if (sync)
+	if((getNet().isServer() && sync) || !sync)
 	{
-		blob.Sync("knocked", true);
+		if ((blob.hasTag("invincible") && ticks != 0) || !isKnockable(blob))
+			return; //do nothing
+
+		u32 current = getKnocked(blob);
+		ticks = Maths::Min(255, Maths::Max(current, ticks));
+		blob.set_u32("knocked", getGameTime() + ticks);
+		if (sync)
+		{
+			blob.Sync("knocked", true);
+		}
 	}
+
 }

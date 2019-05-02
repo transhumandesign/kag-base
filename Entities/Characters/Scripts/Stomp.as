@@ -51,7 +51,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	if (customData == Hitters::stomp && damage > 0.0f && velocity.y > 0.0f && worldPoint.y < this.getPosition().y)
 	{
 		this.getSprite().PlaySound("Entities/Characters/Sounds/Stomp.ogg");
-		SetKnocked(this, 15);
+		SetKnocked(this, 15, true);
 	}
 
 	return damage;
