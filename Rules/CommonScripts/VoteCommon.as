@@ -79,8 +79,10 @@ void Rules_SetVote(CRules@ this, VoteObject@ vote)
 		if (CanPlayerVote(vote, getLocalPlayer()))
 		{
 			client_AddToChat(
-				getTranslatedString("--- A vote was started by {USER} ---")
-					.replace("{USER}", vote.byuser),
+				getTranslatedString("--- A vote was started by {USER} against {KICKUSER} ---")
+					.replace("{KICKUSER}", getTranslatedString(vote.user_to_kick))
+					.replace("{USER}", vote.byuser)
+					.replace("{REASON}", getTranslatedString(vote.reason)),
 				vote_message_colour()
 			);
 		}
