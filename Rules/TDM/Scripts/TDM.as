@@ -722,16 +722,24 @@ shared class TDMCore : RulesCore
 
 	void giveCoinsBack(CPlayer@ player, CBlob@ blob, ConfigFile cfg)
 	{
-		string name = blob.getName();
-		if (name == "mat_arrows") return;
-
-		string costName = "cost_" + name;
-		if (cfg.exists(costName))
+		if (blob.exists("buyer"))
 		{
-			s32 cost = cfg.read_s32(costName);
-			if (cost <= 0) return;
+			u16 buyerID = blob.get_u16("buyer");
 
-			player.server_setCoins(player.getCoins() + Maths::Round(cost / 2));
+			CPlayer@ buyer = getPlayerByNetworkId(buyerID);
+			if (buyer !is null && player is buyer)
+			{
+				string blobName = blob.getName();
+				string costName = "cost_" + blobName;
+				if (cfg.exists(costName) && blobName != "mat_arrows")
+				{
+					s32 cost = cfg.read_s32(costName);
+					if (cost > 0)
+					{
+						player.server_setCoins(player.getCoins() + Maths::Round(cost / 2));
+					}
+				}
+			}
 		}
 	}
 
