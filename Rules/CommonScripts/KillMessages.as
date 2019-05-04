@@ -301,6 +301,9 @@ void onTick(CRules@ this)
 
 void onRender(CRules@ this)
 {
+	if (g_videorecording)
+		return;
+
 	KillFeed@ feed;
 
 	if (this.get("KillFeed", @feed) && feed !is null)
