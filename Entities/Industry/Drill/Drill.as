@@ -428,13 +428,17 @@ void onRender(CSprite@ this)
 	{
 		u8 heat = blob.get_u8(heat_prop);
 
-		Vec2f pos = blob.getScreenPos() + Vec2f(-21, 10);
-		Vec2f dimension = Vec2f(36, 8);
+		Vec2f pos = blob.getScreenPos() + Vec2f(-22, 16);
+		Vec2f dimension = Vec2f(42, 8);
 
-		f32 percentage = f32(heat) / heat_max;
+		f32 percentage = Maths::Min(1.0, f32(heat) / f32(heat_max));
+		Vec2f bar = Vec2f(pos.x + (dimension.x * percentage), pos.y + dimension.y);
 
-		GUI::DrawRectangle(Vec2f(pos.x, pos.y), Vec2f(pos.x + dimension.x, pos.y + dimension.y));
-		GUI::DrawRectangle(Vec2f(pos.x + 2, pos.y + 2), Vec2f(pos.x + dimension.x - 2, pos.y + dimension.y - 2), SColor(0xff0ddb1e));
-		GUI::DrawRectangle(Vec2f(pos.x + 2 + (dimension.x-4) * (1 - percentage), pos.y + 2), Vec2f(pos.x + dimension.x - 2, pos.y + dimension.y - 2), SColor(0xffdb0d17));
+		AddIconToken("$empty_charge_bar$", "../Mods/VehicleGUI/Entities/Vehicles/Common/ChargeBar.png", Vec2f(24, 8), 0);
+		GUI::DrawIconByName("$empty_charge_bar$", pos);
+
+		GUI::DrawRectangle(pos + Vec2f(4, 4), bar + Vec2f(4, 4), SColor(0xff3B1406));
+		GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 4), SColor(0xff941B1B));
+		GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 2), SColor(0xffB73333));
 	}
 }
