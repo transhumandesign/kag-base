@@ -129,8 +129,8 @@ void onInit(CBlob@ this)
 	this.set_u8(heat_prop, 0);
 	this.set_u16("showHeatTo", 0);
 
-	AddIconToken("$opaque_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 8), 0);
-	AddIconToken("$transparent_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 8), 1);
+	AddIconToken("$opaque_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 0);
+	AddIconToken("$transparent_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 1);
 
 	this.set_u32(last_drill_prop, 0);
 }
@@ -439,7 +439,7 @@ void onRender(CSprite@ this)
 		f32 percentage = Maths::Min(1.0, f32(heat) / f32(heat_max));
 
 		Vec2f pos = blob.getScreenPos() + Vec2f(-22, 16);
-		Vec2f dimension = Vec2f(42, 8);
+		Vec2f dimension = Vec2f(42, 4);
 		Vec2f bar = Vec2f(pos.x + (dimension.x * percentage), pos.y + dimension.y);
 
 		if ((heat > 0 && show_heatbar_when_idle) || (blob.get_bool(buzz_prop)))
@@ -448,7 +448,7 @@ void onRender(CSprite@ this)
 		}
 		else
 		{
-			transparency = 128;
+			transparency = 168;
 			GUI::DrawIconByName("$transparent_heatbar$", pos);
 		}
 
