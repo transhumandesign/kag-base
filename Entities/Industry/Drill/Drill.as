@@ -421,6 +421,9 @@ void onRender(CSprite@ this)
 	u16 holderID = blob.get_u16("showHeatTo");
 
 	CPlayer@ holder = holderID == 0 ? null : getPlayerByNetworkId(holderID);
+
+	if (holder !is null && holder.getBlob().getName() != required_class && sv_gamemode != "TDM")
+		return;
 	
 	Vec2f mousePos = getControls().getMouseWorldPos();
 	Vec2f blobPos = blob.getPosition();
@@ -439,7 +442,7 @@ void onRender(CSprite@ this)
 		Vec2f dimension = Vec2f(42, 8);
 		Vec2f bar = Vec2f(pos.x + (dimension.x * percentage), pos.y + dimension.y);
 
-		if (heat > 0 && (blob.get_bool(buzz_prop) || show_heatbar_when_idle))
+		if ((heat > 0 && show_heatbar_when_idle) || (blob.get_bool(buzz_prop)))
 		{
 			GUI::DrawIconByName("$opaque_heatbar$", pos);
 		}
