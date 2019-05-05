@@ -25,6 +25,8 @@ const u8 heat_cooldown_time_water = u8(heat_cooldown_time / 3);
 
 const f32 max_heatbar_view_range = 65;
 
+const bool show_heatbar_when_idle = false;
+
 const string required_class = "builder";
 
 void onInit(CSprite@ this)
@@ -126,6 +128,9 @@ void onInit(CBlob@ this)
 	this.Tag("place45 perp");
 	this.set_u8(heat_prop, 0);
 	this.set_u16("showHeatTo", 0);
+
+	AddIconToken("$opaque_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 8), 0);
+	AddIconToken("$transparent_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 8), 1);
 
 	this.set_u32(last_drill_prop, 0);
 }
@@ -426,19 +431,26 @@ void onRender(CSprite@ this)
 	
 	if ((hover && inRange) || (holder !is null && holder.isLocal()))
 	{
+		int transparency = 255;
 		u8 heat = blob.get_u8(heat_prop);
+		f32 percentage = Maths::Min(1.0, f32(heat) / f32(heat_max));
 
 		Vec2f pos = blob.getScreenPos() + Vec2f(-22, 16);
 		Vec2f dimension = Vec2f(42, 8);
-
-		f32 percentage = Maths::Min(1.0, f32(heat) / f32(heat_max));
 		Vec2f bar = Vec2f(pos.x + (dimension.x * percentage), pos.y + dimension.y);
 
-		AddIconToken("$empty_charge_bar$", "../Mods/VehicleGUI/Entities/Vehicles/Common/ChargeBar.png", Vec2f(24, 8), 0);
-		GUI::DrawIconByName("$empty_charge_bar$", pos);
+		if (heat > 0 && (blob.get_bool(buzz_prop) || show_heatbar_when_idle))
+		{
+			GUI::DrawIconByName("$opaque_heatbar$", pos);
+		}
+		else
+		{
+			transparency = 128;
+			GUI::DrawIconByName("$transparent_heatbar$", pos);
+		}
 
-		GUI::DrawRectangle(pos + Vec2f(4, 4), bar + Vec2f(4, 4), SColor(0xff3B1406));
-		GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 4), SColor(0xff941B1B));
-		GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 2), SColor(0xffB73333));
+		GUI::DrawRectangle(pos + Vec2f(4, 4), bar + Vec2f(4, 4), SColor(transparency, 59, 20, 6));
+		GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 4), SColor(transparency, 148, 27, 27));
+		GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 2), SColor(transparency, 183, 51, 51));
 	}
 }
