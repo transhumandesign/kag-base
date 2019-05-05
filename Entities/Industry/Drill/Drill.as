@@ -396,7 +396,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	this.getCurrentScript().runFlags &= ~Script::tick_not_sleeping;
-	this.set_u16("showHeatTo", attached.getPlayer().getNetworkID());
+	CPlayer@ player = attached.getPlayer();
+	if (player !is null)
+		this.set_u16("showHeatTo", player.getNetworkID());
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
