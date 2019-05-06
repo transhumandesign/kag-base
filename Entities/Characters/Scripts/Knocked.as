@@ -88,10 +88,7 @@ bool isKnockable(CBlob@ blob)
 // This will return true if this is the frame that the knock got synced from the server
 bool knockedJustSynced(CBlob@ blob)
 {
-	u32 game_time = getGameTime();
-	u32 last_knocked = blob.get_u32("last_server_knocked");
-	return game_time == last_knocked ||
-		game_time == last_knocked+1;
+	return getGameTime() == blob.get_u32("last_server_knocked");
 }
 
 void SetKnocked(CBlob@ blob, int ticks, bool sync = false)

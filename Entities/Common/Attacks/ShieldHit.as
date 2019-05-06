@@ -6,7 +6,6 @@
 
 #include "Hitters.as";
 #include "Knocked.as"
-#include "ArcherCommon.as"
 
 bool canBlockThisType(u8 type) // this function needs to use a tag on the hitterBlob, like ("bypass shield")
 {
@@ -36,6 +35,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		return damage;
 	}
+
 
 	if (blockAttack(this, velocity, 0.0f))
 	{
@@ -77,12 +77,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 		}
 		else if (exceedsShieldBreakForce(this, damage) && customData != Hitters::arrow)
-		{
-			knockShieldDown(this);
-			this.Tag("force_knock");
-		}
-		else if(customData == Hitters::arrow && hitterBlob.getTickSinceCreated() <= 4 &&
-				velocity.Normalize() > ArcherParams::shoot_max_vel * 0.845f)
 		{
 			knockShieldDown(this);
 			this.Tag("force_knock");
