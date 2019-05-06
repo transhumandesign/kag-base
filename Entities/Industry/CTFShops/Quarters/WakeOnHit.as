@@ -14,7 +14,7 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 			{
 				this.server_DetachFrom(bed);
 			}
-			SetKnocked(this, 30);
+			SetKnocked(this, 30, true);
 		}
 	}
 }
