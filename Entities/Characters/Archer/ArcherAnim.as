@@ -234,14 +234,14 @@ void onTick(CSprite@ this)
 	needs_shiny = false;
 	bool crouch = false;
 
-	const bool knocked = isKnocked(blob);
+	const u8 knocked = getKnocked(blob);
 	Vec2f pos = blob.getPosition();
 	Vec2f aimpos = blob.getAimPos();
 	// get the angle of aiming with mouse
 	Vec2f vec = aimpos - pos;
 	f32 angle = vec.Angle();
 
-	if (knocked)
+	if (knocked > 0)
 	{
 		if (inair)
 		{
@@ -383,7 +383,7 @@ void onTick(CSprite@ this)
 	DrawBowEffects(this, blob, archer, arrowType);
 
 	//set the head anim
-	if (knocked || crouch)
+	if (knocked > 0 || crouch)
 	{
 		blob.Tag("dead head");
 	}

@@ -3,7 +3,6 @@
 
 #include "StandardControlsCommon.as"
 #include "ThrowCommon.as"
-#include "Knocked.as"
 
 const u32 PICKUP_ERASE_TICKS = 80;
 
@@ -22,7 +21,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.isInInventory() || isKnocked(this))
+	if (this.isInInventory() || this.get_u8("knocked") > 0)
 	{
 		this.clear("pickup blobs");
 		this.clear("closest blobs");
@@ -247,7 +246,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 			return factor_military_lit;
 		}
 	}
-
+	
 	//// MATERIALS ////
 	if (material)
 	{
@@ -295,7 +294,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 		float factor_full_life = (thisname == "archer" ? factor_resource_useful : factor_resource_boring);
 		return this.getHealth() < this.getInitialHealth() ? factor_resource_critical : factor_full_life;
 	}
-
+	
 	//low priority
 	if (name == "log" || b.hasTag("tree"))
 	{
@@ -370,7 +369,7 @@ CBlob@ getClosestBlob(CBlob@ this)
 		}
 
 		float closestFactor = 999999.9f;
-
+		
 		for (uint i = 0; i < available.length; ++i)
 		{
 			CBlob @b = available[i];

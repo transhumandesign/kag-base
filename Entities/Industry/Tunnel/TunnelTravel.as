@@ -28,7 +28,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	        (!this.hasTag("teamlocked tunnel") || this.getTeamNum() == caller.getTeamNum()) &&
 	        !this.hasTag("under raid") &&
 	        //CANNOT travel when stunned
-			!(isKnocked(caller))
+			!(isKnockable(caller) && caller.get_u8("knocked") > 0)
 		)
 	{
 		MakeTravelButton(this, caller, this.get_Vec2f("travel button pos"), "Travel", "Travel (requires Transport Tunnels)");

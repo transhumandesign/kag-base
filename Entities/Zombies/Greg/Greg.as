@@ -223,7 +223,8 @@ void onTick(CBlob@ this)
 
         }
 
-        if(isKnocked(this))
+        u8 knocked = this.get_u8("knocked");
+        if(knocked > 0)
         {
             if(targetAttached)
             {
@@ -431,7 +432,8 @@ void onTick(CBlob@ this)
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 {
-    if(isKnocked(this) || blob is null)
+    u8 knocked = this.get_u8("knocked");
+    if(knocked > 0 || blob is null)
     {
         return;
 
@@ -474,7 +476,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 
         }
 
-        SetKnocked(blob, 60, true); //knock the player when we first pick them up so they can't fight back
+        SetKnocked(blob, 60); //knock the player when we first pick them up so they can't fight back
         blob.Tag("dazzled");
 
         //make player play the stunned sound

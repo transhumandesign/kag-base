@@ -133,7 +133,7 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 						//copy stun
 						if (caller.exists("knocked"))
 						{
-							newBlob.set_u32("knocked", caller.get_u32("knocked"));
+							newBlob.set_u8("knocked", caller.get_u8("knocked"));
 							newBlob.Sync("knocked", true);
 						}
 

@@ -94,7 +94,7 @@ void onTick(CSprite@ this)
 		return;
 	}
 
-	const bool knocked = isKnocked(blob);
+	const u8 knocked = getKnocked(blob);
 
 	bool shieldState = isShieldState(knight.state);
 	bool specialShieldState = isSpecialShieldState(knight.state);
@@ -162,7 +162,7 @@ void onTick(CSprite@ this)
 
 	bool shinydot = false;
 
-	if (knocked)
+	if (knocked > 0)
 	{
 		if (inair)
 		{
@@ -365,7 +365,7 @@ void onTick(CSprite@ this)
 	}
 
 	//set the head anim
-	if (knocked)
+	if (knocked > 0)
 	{
 		blob.Tag("dead head");
 	}
