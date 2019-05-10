@@ -6,6 +6,7 @@
 #include "MiniIconsInc.as"
 #include "Help.as"
 #include "Hitters.as"
+#include "Knocked.as"
 
 //property name
 const string required_space = "required space";
@@ -368,10 +369,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller !is null && sneaky_player !is null) {
 			if (caller.getTeamNum() != sneaky_player.getTeamNum())
 			{
-				if (caller.exists("knocked"))
-				{
-					caller.set_u8("knocked", 30);
-				}
+				SetKnocked(caller, 30);
 			}
 			this.Tag("crate escaped");
 			this.server_PutOutInventory(sneaky_player);
@@ -542,10 +540,7 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 				velocity = Vec2f(0, -1);
 			}
 			blob.setVelocity(velocity * 8);
-			if (blob.exists("knocked"))
-			{
-				blob.set_u8("knocked", 30);
-			}
+			SetKnocked(blob, 30);
 		}
 		else if (this.hasTag("crate escaped"))
 		{
@@ -564,10 +559,7 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 		else
 		{
 			blob.setVelocity(this.getOldVelocity());
-			if (blob.exists("knocked"))
-			{
-				blob.set_u8("knocked", 2);
-			}
+			SetKnocked(blob, 2);
 		}
 	}
 

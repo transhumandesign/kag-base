@@ -4,6 +4,7 @@
 #include "BuilderHittable.as";
 #include "ParticleSparks.as";
 #include "MaterialCommon.as";
+#include "Knocked.as";
 
 const f32 speed_thresh = 2.4f;
 const f32 speed_hard_thresh = 2.6f;
@@ -184,7 +185,7 @@ void onTick(CBlob@ this)
 
 		if (holder.getName() == required_class || sv_gamemode == "TDM")
 		{
-			if (!holder.isKeyPressed(key_action1) || holder.get_u8("knocked") > 0)
+			if (!holder.isKeyPressed(key_action1) || getKnocked(holder) > 0)
 			{
 				this.set_bool(buzz_prop, false);
 				return;

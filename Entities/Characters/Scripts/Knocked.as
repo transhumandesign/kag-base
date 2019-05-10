@@ -5,17 +5,29 @@ const string knocked_tag = "knockable";
 
 void setKnockable(CBlob@ this)
 {
-	this.set_u8("knocked", 0);
+	this.set_u32("knocked", 0);
+	this.set_u32("last_server_knocked", 0);
 	this.Tag(knocked_tag);
 	this.Sync("knocked", true);
+	this.Sync("last_server_knocked", true);
 	this.Sync(knocked_tag, true);
 }
 
-u8 getKnocked(CBlob@ this)
+u32 getKnocked(CBlob@ this)
 {
 	if (!this.exists("knocked"))
 		return 0;
-	return this.get_u8("knocked");
+
+	u32 knocked_end = this.get_u32("knocked");
+	u32 gameTime = getGameTime();
+
+	if(gameTime > knocked_end)
+	{
+		return 0;
+
+	}
+
+	return knocked_end - gameTime;
 }
 
 bool isKnocked(CBlob@ this)
@@ -32,12 +44,10 @@ void DoKnockedUpdate(CBlob@ this)
 		return;
 	}
 
-	u8 knocked = this.get_u8("knocked");
+	u32 knocked = getKnocked(this);
 
 	if (knocked > 0)
 	{
-		knocked--;
-		this.set_u8("knocked", knocked);
 		u16 takekeys;
 		if (knocked < 2 || (this.hasTag("dazzled") && knocked < 30))
 		{
@@ -75,14 +85,32 @@ bool isKnockable(CBlob@ blob)
 	return blob.hasTag(knocked_tag);
 }
 
+// This will return true if this is the frame that the knock got synced from the server
+bool knockedJustSynced(CBlob@ blob)
+{
+	u32 game_time = getGameTime();
+	u32 last_knocked = blob.get_u32("last_server_knocked");
+	return game_time == last_knocked ||
+		game_time == last_knocked+1;
+}
+
 void SetKnocked(CBlob@ blob, int ticks, bool sync = false)
 {
-	if (blob.hasTag("invincible") && ticks != 0)
-		return; //do nothing
-
-	blob.set_u8("knocked", Maths::Min(255, Maths::Max(blob.get_u8("knocked"), ticks)));
-	if (sync)
+	if((getNet().isServer() && sync) || !sync)
 	{
-		blob.Sync("knocked", true);
+		if ((blob.hasTag("invincible") && ticks != 0) || !isKnockable(blob))
+			return; //do nothing
+
+		u32 current = getKnocked(blob);
+		ticks = Maths::Min(255, Maths::Max(current, ticks));
+		u32 knocked_time = getGameTime() + ticks;
+		blob.set_u32("knocked", knocked_time);
+		if (sync)
+		{
+			blob.set_u32("last_server_knocked", getGameTime());
+			blob.Sync("last_server_knocked", true);
+			blob.Sync("knocked", true);
+		}
 	}
+
 }

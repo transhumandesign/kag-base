@@ -227,10 +227,7 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 
 		bullet.setVelocity(vel);
 
-		if (isKnockable(bullet))
-		{
-			SetKnocked(bullet, 30);
-		}
+		SetKnocked(bullet, 30);
 
 		if (bullet.getName() == "boulder") // rock n' roll baby
 		{
