@@ -15,13 +15,6 @@ bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity)
 {
 	CInventory@ inv = blob.getInventory();
 
-	//already got them?
-	if (inv.isInInventory(name, quantity))
-		return false;
-
-	//otherwise...
-	inv.server_RemoveItems(name, quantity); //shred any old ones
-
 	CBlob@ mat = server_CreateBlobNoInit(name);
 
 	if (mat !is null)
