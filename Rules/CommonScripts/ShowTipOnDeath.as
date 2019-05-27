@@ -122,7 +122,7 @@ void onTick(CRules@ this)
 
 void onRender(CRules@ this)
 {
-	if (!u_showtutorial)
+	if (g_videorecording || !u_showtutorial)
 		return;
 
 	if (can_show)
