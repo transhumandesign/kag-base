@@ -10,7 +10,7 @@ bool tutorial = false;
 
 void onInit(CRules@ this)
 {
-	tutorial = this.exists("singleplayer");
+	tutorial = this.hasTag("singleplayer");
 }
 
 
@@ -18,6 +18,7 @@ void onRender(CRules@ this)
 {
 	if (g_videorecording)
 		return;
+
 	CPlayer@ p = getLocalPlayer();
 	if (p is null || !p.isMyPlayer()) { return; }
 

@@ -80,7 +80,7 @@ shared class WarSpawns : RespawnSystem
 		@war_core = cast < WarCore@ > (core);
 
 		nextSpawn = getGameTime();
-	
+
 	}
 
 	void Update()
@@ -155,7 +155,7 @@ shared class WarSpawns : RespawnSystem
 			RemovePlayerFromSpawn(player);
 
 			// force blue on tutorials
-			if (getRules().exists("singleplayer"))
+			if (getRules().hasTag("singleplayer"))
 			{
 				p_info.team = 0;
 			}
@@ -746,7 +746,7 @@ shared class WarCore : RulesCore
 		{
 			CBlob@[] halls;
 			getBlobsByName("hall", @halls);
-			if(halls[lastHall] !is null && halls[lastHall].getTeamNum()==1) 
+			if(halls[lastHall] !is null && halls[lastHall].getTeamNum()==1)
 			{
 				return;
 			}
