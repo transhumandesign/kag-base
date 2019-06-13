@@ -263,8 +263,12 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 		KillFeed@ feed;
 		if (this.get("KillFeed", @feed) && feed !is null)
 		{
-			KillMessage message(victim, killer, customdata);
-			feed.killMessages.push_back(message);
+			//Hide suicides from killfeed, during warm-up.
+			if (!(killer is null && this.isWarmup()))
+			{
+				KillMessage message(victim, killer, customdata);
+				feed.killMessages.push_back(message);
+			}
 		}
 
 		// hover message

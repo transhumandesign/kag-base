@@ -301,6 +301,7 @@ TradeItem@ AddItemToShip(CBlob@ this, CBlob@ caller, const uint itemIndex, const
 		CBlob@ blob = MakeBlobFromItem(item);
 		if (blob !is null)
 		{
+			blob.set_u16("buyer", caller.getPlayer().getNetworkID());
 			blob.server_setTeamNum(caller.getTeamNum());
 			if (!item.buyIntoInventory || !caller.server_PutInInventory(blob))
 			{
