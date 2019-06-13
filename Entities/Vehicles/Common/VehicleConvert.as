@@ -195,24 +195,24 @@ void onRender(CSprite@ this)
 	f32 hwidth = 45 + Maths::Max(0, Maths::Max(friendlyCount, enemyCount) - 3) * 8;
 	f32 hheight = 30;
 
-	if (camera.targetDistance > 0.9)
+	if (camera.targetDistance > 0.9) //draw bigger capture bar if zoomed in
 	{
 	 //draw capture bar
 	 pos2d.y -= 40;
 	 f32 padding = 4.0f;
 	 f32 shift = 29.0f;
 	 s32 captureTime = blob.get_s16(counter_prop);
-	 f32 progress = (1.1f - float(captureTime) / float(GetCaptureTime(blob)))*(hwidth*2-13);
+	 f32 progress = (1.1f - float(captureTime) / float(GetCaptureTime(blob)))*(hwidth*2-13); //13 is a magic number used to perfectly align progress
 	 GUI::DrawPane(Vec2f(pos2d.x - hwidth + padding, pos2d.y + hheight - shift - padding),
 	 			   Vec2f(pos2d.x + hwidth - padding, pos2d.y + hheight - padding),
-				   SColor(175,200,207,197));
-	if (progress >= float(8)) //dont draw progress if capture cant start
+				   SColor(175,200,207,197)); //draw capture bar background
+	if (progress >= float(8)) //draw progress if capture can start
 	{
 	 GUI::DrawPane(Vec2f(pos2d.x - hwidth + padding, pos2d.y + hheight - shift - padding),
 				   Vec2f((pos2d.x - hwidth + padding) + progress, pos2d.y + hheight - padding),
 				   SColor(175,200,207,197));
 	}
-	print(""+progress);
+	//print(""+progress);
 	//draw balance of power
 	 for (int i = 1; i <= friendlyCount; i++)
 	 	GUI::DrawIcon("VehicleConvertIcon.png", 0, Vec2f(8, 16), pos2d + Vec2f(i * 8 - 8, -4), 0.9f, blob.getTeamNum());
@@ -221,7 +221,7 @@ void onRender(CSprite@ this)
 	}
 	else
 	{
-	 //draw smaller capture bar
+	 //draw smaller capture bar if zoom is farthest
 	 pos2d.y -= 37;
 	 f32 padding = 2.0f;
  	 s32 captureTime = blob.get_s16(counter_prop);
