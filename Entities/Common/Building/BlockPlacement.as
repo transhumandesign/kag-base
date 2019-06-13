@@ -173,7 +173,7 @@ void onRender(CSprite@ this)
 			if (bc.cursorClose && bc.hasReqs && bc.buildable)
 			{
 				SColor color;
-				Vec2f aimpos = bc.tileAimPos + getCamera().getInterpolationOffset();
+				Vec2f aimpos = bc.tileAimPos;
 
 				if (bc.buildable && bc.supported)
 				{
