@@ -527,7 +527,7 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 	{
 		if (this.hasTag("crate exploded"))
 		{
-			this.getSprite().PlaySound("MigrantSayNo.ogg", 1.0f, blob.getSexNum() == 0 ? 1.0f : 1.5f);
+			this.getSprite().PlaySound(getTranslatedString("MigrantSayNo") + ".ogg", 1.0f, blob.getSexNum() == 0 ? 1.0f : 1.5f);
 			Vec2f velocity = this.getVelocity();
 			if (velocity.x > 0) // Blow them right
 			{

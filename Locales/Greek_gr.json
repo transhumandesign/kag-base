@@ -1,0 +1,839 @@
+// KING ARTHUR'S GOLD TRANSLATION FILE
+// This file contains translation for various text in the game.
+
+// INSTRUCTIONS:
+// The file format is JSON, but also supports comments, which being by //. Text from the beginning of a comment to the end of the line is ignored.
+// This file is named after the locale that enables it, and should be in format of Language_languagecode.json, e.g. French_fr.json. Spaces in filenames are not supported, please do not insert spaces in the language name.
+
+// Each line looks like this: "English original text": "Translated text",
+// Not respecting the format will cause the translation not to load.
+
+// $something$ may sometimes appear. This often matches icons or text styles. You *can* move them around in the translation, but you *cannot* change its content.
+// {something} may sometimes appear. This is a variable that may change and that will be translated by the game, if required. You *can* move them around in the translation, but you *cannot* change its content by itself; though the substitued variable may get translated independently.
+// Unindented (without spacing before) comments often indicates files or scripts that depends on translations that follows, for convenience.
+
+// FOR ANY NEW TRANSLATION, PLEASE KEEP THIS HEADER, THE FILE STRUCTURE, INDENT STYLE AND THE COMMENTS AS-IS.
+// REMEMBER: You do **ONLY** need to change the right-side text. If translations suddenly stop working, check your `cl_locale` variable and make sure the JSON file structure was not damaged.
+
+{
+
+  //// SCOREBOARD ////
+  //ScoreboardCommon.as
+  "Match time: {TIME}": "Χρόνος παιχνιδιού: {TIME}",
+  "h ": "h ",
+  "m ": "m ",
+  "s ": "s ",
+
+  //ScoreboardRender.as
+  "Players: {PLAYERCOUNT}": "Παίκτες: {Αριθμός Παικτών}",
+  "Player": "Παίκτης",
+  "Username": "Ψευδόνυμο",
+  "Ping": "Ping",
+  "Kills": "Εξοντώσεις",
+  "Deaths": "Θάνατοι",
+  "KDR": "Ε/Θ",
+  "Spectators:": "Θεατές:",
+  "and more ...": "καί άλλα...",
+
+  //BuilderInventory.as
+  "Stop building\n": "Σταμάτα να χτίζεις\n",
+  "Requires\n": "Απαιτεί\n",
+
+  //CommonBuilderBlocks.as
+  "Stone Block\nBasic building block": "Πέτρινος κύβος\nΒασικό οικοδομικό υλικό",
+  "Back Stone Wall\nExtra support": "Πέτρινη υποστήριξη\nΕπιπλέον υποστήριξη",
+  "Stone Door\nPlace next to walls": "Πέτρινη πόρτα\nΤοποθέτησε δίπλα σε τοίχο",
+  "Wood Block\nCheap block\nwatch out for fire!": "Ξύλινος κύβος\nΦθηνό υλικό\nΠροσοχή, εύφλεκτο!",
+  "Back Wood Wall\nCheap extra support": "Ξύλινη υποστήριξη\nΦθινή υποστήριξη",
+  "Wooden Door\nPlace next to walls": "Ξύλινη πόρτα\nΤοποθέτησε δίπλα σε τοίχο",
+  "Trap Block\nOnly enemies can pass": "Παγίδα\nΜόνο εχθροί μπορούν να περάσουν",
+  "Ladder\nAnyone can climb it": "Σκάλα\nΌλοι μπορούν να τη χρησιμοποιήσουν",
+  "Wooden Platform\nOne way platform": "Ξύλινη πλατφόρμα\nΠλατφόρμα μίας πλευράς ",
+  "Spikes\nPlace on Stone Block\nfor Retracting Trap": "Καρφία\nΤοποθέτησε σε πέτρινο κύβο,\nγια παγίδα ανατροπής",
+  "Workshop\nStand in an open space\nand tap this button.": "Εργαστήριο\nΣτάσου σε ανοιχτό χώρο\nκαι πάτα αυτό το κουμπί",
+  "Workshop": "Εργαστήριο",
+  "Workbench": "Πάγκος εργασίας",
+  "Wire": "Καλώδιο",
+  "Elbow": "Γωνιακό καλώδιο",
+  "Tee": "Καλώδιο-διαστάυρωση",
+  "Junction": "Διαστάυρωση",
+  "Diode": "Δίοδος",
+  "Resistor": "Αντίσταση",
+  "Inverter": "Αντιστροφέας",
+  "Oscillator": "Ταλαντωτής",
+  "Transistor": "Τρανζίστορ",
+  "Toggle": "Διακόπτης",
+  "Randomizer": "Τυχαίος διακόπτης",
+  "Lever": "Μοχλός",
+  "Button": "Κουμπί",
+  "Coin Slot": "Υποδοχή νομισμάτων",
+  "Pressure Plate": "Πλάκα πίεσης",
+  "Motion Sensor": "Ανιχνευτής κίνησης",
+  "Lamp": "Λάμπα",
+  "Emitter": "Πομπός",
+  "Receiver": "Δέκτης",
+  "Magazine": "Γεμιστήρας",
+  "Bolter": "Κόσκινο",
+  "Dispenser": "Διανομέας",
+  "Obstructor": "Αυτοματοποιημένη παγίδα",
+  "Spiker": "Παγίδα καρφιών",
+
+  //Production.as
+  "\n\nrequires\n{MISSING}\nAdd materials in storage.": "\n\nαπαιτεί:\n{ΛΕΙΠΕΙ}\nΠρόσθεσε υλικά στον αποθηκευτικό χώρο.",
+  "Producing {ITEM}...": "Παράγεται {ΑΝΤΙΚΕΙΜΕΝΟ}...",
+  "{ITEM} available on respawn": "{ΑΝΤΙΚΕΙΜΕΝΟ} διαθέσιμο στην επόμενη αναγέννηση",
+  "{ITEM} limit reached.": "{ΑΝΤΙΚΕΙΜΕΝΟ} .",
+
+  //FactoryAnim.as
+  "Requires a Worker from the Hall to work here.": "Απαιτείται ένας εργάτη απ την αίθουσα να δουλέψει εδώ.",
+
+  //Hall.as
+  "Units": "Στρατεύματα",
+  "Another worker has been hired!": "Άλλος ένας εργάτης προσλήφθηκε!",
+  "Supplies will drop at your halls.": "Προμήθειες θα παραδοθούν στη βάση σου.",
+  "Buy a worker for {MIGRANT_COST} Gold": "Αγόρασε έναν εργάτη για {MIGRANT_COST} Χρυσό",
+  "Buy worker: Requires {MIGRANT_COST} Gold": "Αγόρασε εργάτη: Απαιτεί {MIGRANT_COST} Χρυσό",
+
+  //TunnelTravel.as
+  "Travel": "Ταξίδεψε",
+  "Travel (requires Transport Tunnels)": "Ταξίδεψε (απαιτεί τούνελ)",
+  "Pick tunnel to travel": "Διάλεξε τούνελ προορισμού",
+  "Return to base": "Επέστρεψε στη βάση", //OLD
+  "Travel right": "Ταξίδεψε δεξιά",
+  "Travel left": "Ταξίδεψε αριστερά",
+  "You are here": "Είσαι εδώ",
+
+  //ResearchGUI.as
+  "Click the items you vote to research!": "Επέλεξε τα αντικείμενα που θές να ερευνήσεις!",
+  "Yellow paths show what will be researched when the match starts.": "Τα κίτρινα μονοπάτια δείχνουν τι θα ερευνηθεί στη αρχή του παιχνιδιού.",
+  "Red path items can only be bought for gold at trader.": "Τα αντικείμενα στο κόκκινο μονοπάτι μπορούν μόνο να αγοραστουν για χρυσό.",
+  "(available)": "(διαθέσιμο)",
+  "(researching - {TIME}s)": "(γίνεται έρευνα - {TIME}s)",
+  "(click to vote)": "(πάτα για να ψηφίσεις)",
+
+  //Sign.as
+  "The big brown fox jumped over the shaggy chocolate.": "Η μεγάλη καφέ αλεπού πήδηξε πάνω απ τη σοκολάτα.",
+
+  //PlayerCamera.as
+  "Following {CHARACTERNAME} ({USERNAME})": "Ακολούθα {CHARACTERNAME} ({USERNAME})",
+
+  //ShowTipOnDeath.as
+  "Tip: {TIP}": "Υπόδειξη: {TIP}",
+
+  //TimeToEnd.as
+  "Time is up!\n{TEAM} wins the game!": "Τέλος χρόνου!\n{TEAM} κερδίζει το παιχνίδι!",
+  "Time is up!\nIt's a tie!": "Τέλος χρόνου!\nΙσοπαλία!",
+  "Time left: {MIN}:{SEC}": "Υπολειπόμενος χρόνος: {MIN}:{SEC}",
+
+  //TauntAI.as
+  "haha!": "χαχα!",
+  "heheheh": "χεχεχε!",
+  "noob!": "άσχετε!",
+
+  "Your mother was a hamster!": "Η μάνα σου ήταν ένα χάμστερ!",
+  "Your father smelt of elderberries!": "Ο πατέρας σου μύριζε σα βατόμουρα",
+  "Go away or I shall taunt you a second time.": "Φύγε η θα σε ξαναχλευάσω.",
+  "Go and boil your bottom!": "!",
+
+  "heeelp!": "βοήθειααα!",
+  "ouch!": "άουτς!",
+  "damnit!": "να πάρει!",
+  "dangit!": "φτού!",
+  "oof!": "ουφ!",
+  "...": "...",
+  "You'll be sorry!": "θα το μετανιώσεις!",
+  "I'll get you!": "Θα σε πίασω!",
+
+  "I'll be back": "Θα επιστρέψω",
+  "Save me barry!": "Σώσε με barry!",
+
+  "It's just a flesh wound.": "Είναι μόνο μία γρατσουνιά.",
+  "yeargh!": "ααργκ!",
+
+  //// SOLO GAME MODES ////
+  //Tutorial01.as
+  "Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$": "Περπάτα & Πήδα\n\n$KEY_A$$KEY_W$$KEY_D$",
+  "$sign$Go to the right and\n\nbe sure to read these signs.": "$sign$Πήγαινε δεξιά και\n\nδιάβασε αυτες τις ταμπέλες!",
+  "$Jab$Practice the sword JAB\n\non the dummy.\n\nAim with mouse and tap $LMB$": "$Jab$Προπόνησε το μπροστινό κάρφωμα\n\nστη κούκλα\n\nΣτόχευσε με το ποντίκι και πάτα $LMB$",
+  "Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!": "Προπόνησε το SLASH.\n\nΚΡΑΤΑ το $LMB$ για να φορτίσεις την επίθεση\n\nμέχρι να δείς αυτή τη πόζα $Tutorial_Slash$\nκαι άφησε το $LMB$!",
+  "Practice the DOUBLE SLASH.\n\nHOLD $LMB$ until spark$Tutorial_Slash2$\n\n\nQuickly TAP $LMB$ 2 times!": "Προπόνησε το DOUBLE SLASH!\n\nΚΡΑΤΑ το $LMB$ μέχρι να δείς$Tutorial_Slash2$\n\n\nΓρήγορα πάτα το $LMB$ δύο φορές!",
+  "Before entering this room charge your sword $Tutorial_Slash2$\n\nand then quickly\nwalk inside and slash!": "Πρίν μπείς στο δωμάτιο, φόρτισε την επίθεση$Tutorial_Slash2$\n\nκαι γρήγορα\nμπές μέσα και χτύπα",
+  "HOLD $RMB$ to shield.\n\nUse mouse to aim shield.": "ΚΡΑΤΑ το $RMB$ για να προστατευτείς.\n\nΧρησιμοποίησε το ποντίκι σου για να στοχεύσεις την ασπίδα.",
+  "Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$": "Τρέξε προς τον τοίχο και πήδα για να τρέξεις στον τοίχο.\n\nΚΡΑΤΑ το $KEY_D$$KEY_W$",
+  "Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$": "Οι ιππότες μπορούν να καταστρέψουν τους ξύλινους κύβους, ξύλινες πόρτες και να σκάψουνε στο χώμα. Στόχευσε σε τοίχο και χτύπα για να περάσεις $LMB$",
+  "Automatically pickup things used by your class.": "Αυτόματα σηκώνεις πράγματα που ανήκουν στη κλάση σου.",
+  "Press $KEY_SPACE$ to light bomb\n\nAim with mouse.\n\nAgain $KEY_SPACE$ throw it.": "Πάτα το $KEY_SPACE$ για να ανάψεις την βόμβα.\n\nΣτόχευσε με το ποντίκι σου.\n\nΞανα $KEY_SPACE$ για να τη πετάξεις.",
+  "Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.": "Αιώρηση με την ασπίδα$Tutorial_Glide$\n\n\nΠήδα πάνω απ το φαράγγι και όσο είσαι στον αέρα:\nΣτόχευσε προς τα πάνω\nΚΡΑΤΑ $RMB$ για την ασπίδα",
+
+  //Tutorial02.as
+  "Stand on the enemy hall$hall$ to capture it.": "Στάσου στην αίθουδα του εχθρού$hall$ για να την κατακτήσεις.",
+  "Halls are respawn points and can be used to switch class.": "Οι αίθουσες είναι σημεία αναγέννησης και μπορούν να χρησιμοποιηθούν για να αλλάξεις κλάση.",
+  "In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.": "Στην αίθουσα, άλλαξε τη κλάση σου σε Τοξότη $ARCHER$.\n\nΚΡΑΤΑ TO $KEY_E$ (κουμπι 'Χρησιμοποίησε'),\n\nΕπέλεξε το $CLASSCHANGE$κουμπί και άφησε το κουμπί 'χρησιμοποίησε'.",
+  "As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!": "Σαν τοξότης $Tutorial_Archer$\n\n\nΣτόχευσε με το ποντίκι.\n\nΚΡΑΤΑ$LMB$ για να φορτίσεις\n\nΑΦΗΣΕ για να πετάξεις το βέλος!",
+  "Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$": "Χρησιμοποίησε τον γάτζο$Tutorial_Grapple$\n\n\nΣτόχευσε για να πιάσεις το ταβάνι\n\nΚΡΑΤΑ$RMB$\n\nΤαλαντεύσου στα δεξιά $KEY_D$",
+  "Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$": "Χρησιμοποίησε έναν συνδιασμό του γάτζου και τρεξίματος στο τοίχο για να φτάσεις εδώ\n\nΚΡΑΤΑ$RMB$\n\nΚΡΑΤΑ πήδα & τρέξε $KEY_D$$KEY_W$",
+  "HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!": "ΚΡΑΤΑ $LMB$ μέχρι να εμφανιστεί$Tutorial_Archer2$\n\n\nΤότε $LMB$ ξανά για\n\nΤΡΙΠΛΗ ΒΟΛΗ! Καλή σε κοντινή αποστάσεις.",
+  "$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!": "$Tutorial_Archer2$\n\n\nΠροπόνησου και φόρτισε τη βολή σου πρίν ανοίξεις τη πόρτα και ρίξε ΤΡΙΠΛΗ ΒΟΛΗ στον ιππότη!",
+  "Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.": "Χρησιμοποίησε το γάτζο$Tutorial_Grapple$ για να ταλαντευτείς απέναντι.\n\nΚΡΑΤΑ$RMB$\n\nΠιάσε το ταβάνι στο σημείο που είναι to φανάρι$lantern$\n\nΚΡΑΤΑ $KEY_D$\n\nΑΦΗΣΕ τον γάτζο πρίν σταματήσεις.",
+
+  //Tutorial03.as
+  "$lantern$\nPickup the lantern $KEY_C$": "$lantern$\nΣήκωσε το φανάρι $KEY_C$",
+  "Drop is the same as pickup $KEY_C$": "To κουμπί για να πετάξεις κάτι είναι το ίδιο για να σηκώσεις $KEY_C$",
+  "Activate/Deactivate things\n   $KEY_SPACE$\n\n\n$lantern$ On/Off": "Ενεργοποίησε/Απενεργοποίησε πράγματα\n   $KEY_SPACE$\n\n\n$lantern$ On/Off",
+  "By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$": "Παρεμπιπτόντως: μπορείς να δείς έναν χάρτη στο πάνω μέρος. Μπορείς να το κρύψεις η να το επεκτείνεις πατώντας $KEY_M$",
+  "Switch class to BUILDER  $BUILDER$\n\nGo to Hall. HOLD $KEY_E$ and mouse over$CLASSCHANGE$": "Άλλαξε σε ΕΡΓΑΤΗ $BUILDER$\n\nΠήγαινε στην αίθουσα. ΚΡΑΤΑ το $KEY_E$ και επέλεξε$CLASSCHANGE$",
+  "The passage is blocked here. As builder, dig your way through.\n\nPoint mouse at block\n\nHOLD $RMB$": "Η δίοδος είναι μπλοκαρισμένη. Σαν εργάτης, σκάψε για να περάσεις\n\nΣτόχευσε ένα κουτί με το ποντίκι\n\nΚΡΑΤΑ το $RMB$",
+  "$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.": "$Tree$\n\nΚόψε ένα δέντρο\n\nΚΡΑΤΑ $RMB$ και στόχευσε το δέντρο.",
+  "$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.": "$log$\n\nKόψε κορμούς\nσε ΞΥΛΟ $mat_wood$\n\nΚΡΑΤΑ $RMB$ και στόχευσε τον κορμό.",
+  "$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)": "$ladder$\n\nΔιάλεξε σκάλα να κτίσεις\n\nΚΡΑΤΑ το $KEY_F$ (κουμπί αποθέματος)\n\nΒάλε το ποντίκι πάνω απ τη σκάλα και άσε το κουμπί.\n\n(χρειάζεσαι$mat_wood$ γι αυτό)",
+  "Place by pointing with mouse and pressing $LMB$": "Τοποθέτησε στοχεύοντας με το ποντίκι και πατώντας $LMB$",
+  "$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.": "$Pick$\n\nΦτιάξε μια γέφυρα\n\n$KEY_F$ $Swap$ $Help_Block1$\n\n\nΕπίσης δοκίμασε διαφορετικά κομμάτια και δές τι κάνουν.",
+  "Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.": "Σημείωσε οτι όταν χτίζεις οριζόντια θα φτάσεις ένα όριο. Π΄ρεπει να φτιάξεις υποστήριξη απο κάτω για να συνεχίσεις.",
+  "$Pick$  $BlockStone$\n\nMine some stone $RMB$": "$Pick$  $BlockStone$\n\nΣκάψε λίγη πέτρα $RMB$",
+  "$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$": "$catapult$\n\n\nΦόρτωσε τον καταπέλτη με πέτρα.\n\nΚΡΑΤΑ το $KEY_E$, ΠΑΤΑ το $mat_stone$",
+  "$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)": "$Tutorial_Catapult$\n\n\nΣτάσου στη θέση του πυροβολητή\n(όπου $down_arrow$ στην εικόνα)\n\nΠάτα το $KEY_S$ για να μπέις\n\nΚΡΑΤΑ $LMB$ για να φορτίσεις\n\n\n(Ο οδηγός είναι στο κέντρο,\nΗ κορυφή είναι η λεκάνη)",
+  "One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$": "Κάτι τελευταίο!\n\nΟτάν παίζεις multiplayer, μη φοβιθείς να ζητήσεις βοήθεια.\n\n$KEY_ENTER$ για τη συζήτηση.\n\n\nΕπίσης χρησιμοποίησε φάτσες!\n\nΚΡΑΤΑ το $KEY_Q$",
+  "This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!": "Αυτά αποτελούν τη βασική εκπαίδευση. Θα μάθεις παραπάνω καθώς παίζεις το παιχνίδι.\n\nΤώρα δοκίμασε τις άλλες λειτουργείες μόνος ή παίξε multiplayer",
+
+  //TutorialCTF01.as
+  "Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.": "H κατάληψη σημαίας είναι η πιό απλή λειτουργεία παιχνδιού για αρχάριους. Ο στόχος είναι απλά να πάρεις τη σημαία του εχθρού και να τη φέρεις στη δικιά σου σημαία",
+  "Killing enemies, building structures and generally being useful for your team will give you coins.\n\nCoins allow you to purchase ammo, weapons & tools in workshops. First thing, as an example on how it will look when you kill an enemy:\n\nKill those chicken and get their coins!\n\n$chicken$": "Η εξόντωση εχθρών, η κατασκευή κτηρίων και γενικά η βοήθεια θα σου δώσει νομίσματα.\n\nΤα νομίσματα σου επιτρέπουν να αγοράσεις πολεμοφόδια, όπλα και εργαλεία στα εργαστήρια. Πρώτα, ένα παράδειγμα του πώς θα είναι όταν σκοτώσεις έναν εχθρό:\n\nΣκότωσε αυτά τα κοτόπουλα και πάρε τα νομίσματά τους!\n\n$chicken$",
+  "Go to the Tent and switch class to BUILDER.\n\nPress $KEY_E$ while standing\n\non the Tent.\n\n\n\n$tent$\n\n\n": "Πήγαινε στη τέντα και άλλαξε σε ΕΡΓΑΤΗΣ.\n\nΠάτα το $KEY_E$ ενώ στέκεσαι\n\nστη τέντα\n\n$tent$\n\n\n",
+  "If you've switched to builder in the Tent now you can build workshops for your team.\n\n\nHold $KEY_F$ and select $building$": "Αν άλλαξες σε εργάτης στη τέντα, τώρα μπορείς να κτίζεις εργαστήρια για την ομάδα σου\n\n\nΚράτα $KEY_F$, και διάλεξε $building$",
+  "If you don't have wood:\n$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.\n\n\n$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.": "Άν δεν έχεις ξύλο:\n$Tree$\n\nΚόψε ένα δέντρο!\n\n\nΚΡΑΤΑ $RMB$ και στόχευσε το δέντρο.\n\n\n$log$\n\nΚόψε κορμούς\nσε ΞΥΛΟ $mat_wood$\n\nΚΡΑΤΑ $RMB$ και στόχευσε τον κορμό.",
+  "Press $KEY_E$ on the frame\n\nto convert it to a proper workshop. Some will require additional resources, go gather them!": "Πάτα $KEY_E$ στο πλαίσιο\n\nγια να το μετατρέψεις σε κανονικό εργαστήριο. Κάποια απαιτούν επιπλέον υλικά, πήγαινε μαζεψέ τα!",
+  "Workshops allow you to buy items in them for coins which you get for doing useful things for your team.\n\nClass workshops allow you to switch class in them.\n\nThe tunnel allows you to quickly move from place to place (at least 2 required).\n\nTry them out!\n\n\n$tunnel$\n": "Τα εργαστήρια σου επιτρέπουν να αγοράσεις αντικέιμενα με νομίσματα που παίρνεις κάνοντας χρήσιμα πράγματα γα την ομάδα σου.\n\nΤα εργαστήρια των κλάσεων σου επιτρέπουν να αλλάξεις κλάσεις\n\nΤο τούνελ σου επιτρέπει να μεταφερθείς γρήγορα απο μέρος σε μέρος (απαιτούνται τουλάχιστον 2).\n\nΔοκίμασε τα!\n\n\n$tunnel$\n",
+  "To conclude this tutorial go get the red flag and bring it back to your blue flag. \n\nPress $KEY_ESC$ to go to menu\n\nand exit after you're done.": "Για να τελειώσεις το μάθημα, πιάσε τη κόκκινη σημαία και φέρτη πίσω στη μπλέ.\n\nΠάτα το $KEY_ESC$ για να πας στο μενου\n\nκαι βγές όταν τελειώσεις.",
+
+  //TutorialTTH01.as
+  "The goal of Take the Halls is for your team to capture all the halls on the map.\n\nYou can easily see them in the minimap on top of the screen.\n\n$KEY_M$ to toggle the\n\nminimap.": "Ο στόχος της κατάληψης αίθουσας έιναι η κατάληψη όλων των αιθουσών απο την ομάδα σου.\n\nVΜπορείς να τις δείς όλες στο χάρτη στη κορυφή της οθόνης σου.\n\n$KEY_M$ για να (απ)Απενεργοποίησεις\n\n το χάρτη.",
+  "A white colored Hall is neutral. It belongs to the people of this land. Capture it by standing inside of it.": "Μια άσπρη αίθουσα είναι ουδέτερη. Ανήκει στους ανθρώπους της γής αυτής. Κατεκτησε τη μπαίνοντας σε αυτή.",
+  "Hold $KEY_E$ and press $CLASSCHANGE$\n\nto change class to BUILDER\n\n\n$RESEARCH$\n\n\nPress this button to view your teams research tree.\n\nThe whole team can vote here on what technology they want. Not all techs can be achieved, decide wisely!": "Κράτα $KEY_E$ και πάτα $CLASSCHANGE$\n\nγια να αλλάξεις σε ΕΡΓΑΤΗΣ\n\n\n$RESEARCH$\n\n\nΠάτα αυτό το κουμπί για να δείς το δέντρο έρευνας της ομάδας σου.\n\nΌλη η ομάδα μπορεί να ψηφίσει τι τεχνολογίες θέλουν. Όχι όλες οι τεχνολογίες μπορεούν να επιτευχθούν, διάλεξε σοφά!",
+  "$crate$\n\nPress $KEY_E$ on the crate'\n\n(if it has dropped from the sky) to get supply materials!": "$crate$\n\nΠάτα το $KEY_E$ στο κουτί\n\n(άν έχει πέσει απ τον ουρανό) για να πάρεις προμήθειες!",
+  "If you've switched to builder in the Hall now you can build workshops for your team.\n\nWorkshops are basically factories which make ammo & weapons automatically for you.\n\nGo to an empty spot.\n\nHold $KEY_F$ and select $building$.": "Αν άλλαξες σε εργάτης στη αίθουσα, τώρα μπορείς να κτίζεις εργαστήρια για την ομάδα σου.\n\nΤα εργαστήρια είναι ουσιαστικά εργοστάσια που φτιάχνουν πυρομαχικά & όπλα αυτόματα για σένα.\n\nΠήγαινε σε ένα άδειο σημείο.\n\nΚράτα το $KEY_F$ και διάλεξε $building$.",
+  "After converting to a workshop you can see a worker appeared inside of it.\n$migrant$\n\n\nHe came from the hall.\n\nYou can only build as many functional workshops as there are workers in your hall.": "Αφού φτιάξεις ένα εργαστήριο μπορείς να δείς έναν εργάτη μέσα.\n$migrant$\n\n\nΉρθε απο την αίθουσα.\n\nΜπορείς να φτιάξεις όσα εργαστήρια όσοι και εργάτες στην αίθουσά σου.",
+  "Press $KEY_E$ on the frame\n\n$building$\n\nto convert it to a proper workshop. Select one (the unavailable ones are waiting for research in the hall to complete).": "Πάτα το $KEY_E$ στο πλαίσιο.\n\n$building$\n\nγια να μετατρέψεις σε κανονικό εργαστήριο. Διάλεξε ένα (τα μη διαθέσιμα περιμένουν να ερέυνηθουν στην αίθουσα).",
+  "Hold $KEY_E$ on a workshop to see\n\nwhat it is producing. Green indicates it's done.\n\n\nTry out the different shops!": "Κράτα $KEY_E$ σε ένα εργαστήριο για να δείς\n\n\nτι παράγει. Πράσινο σημαίνει οτι τέλειωσε.\n\n\nΔοκίμασε διαφορετικά μαγαζιά!",
+  "$trader$\n\n\nYou see a trader in his shop below.\n\nPress $KEY_E$ on the trader to buy.\n\nYou can buy the following:\n\nTechnology scrolls - give you quick access to a tech without the need for long research\n\nMagic scrolls - check the descriptions!\n\nExchange materials for gold and vice versa. This is useful when one of the resources is lacking on the map.": "$trader$\n\n\nΒλέπεις έναν έμπορο στο μαγαζί του απο κάτω\n\nΠάτα το $KEY_E$ στον έμπορο για να αγοράσεις.\n\nΜπορείς να αγοράσεις τα παρακάτω:\n\nΠάπυρους τεχνολογίας - σου δίνουν πρόσβαση σε μία τεχνολογία χωρίς την ανάγκη για έρευνα.\n\nΜαγικοί πάπυροι - δές την περιγραφή!\n\nΑντάλλαξε υλικά για χρυσό και ανάποδα Χρήσιμο όταν ένα υλικό εκλέιπει απ τον χάρτη.",
+  "Dig the gold $RMB$.\n\nGet enough to buy the Scroll of Drought from the trader.\n\n$scroll$": "Σκάψε τον χρυσό $RMB$.\n\nΠάρε αρκετό χρυσό για να αγοράσεις τον Πάπυρο ξηρασίας απ τον έμπορο\n\n$scroll$",
+  "$scroll$\n\nOnce you have the scroll press $KEY_E$ to use it!": "$scroll$\n\nΜόλις πάρεις τον πάπυρο πάτα το $KEY_E$ για να τον χρησιμοποιήσεις",
+  "If you have more than one hall you can quickly move between them.\n\nHold $KEY_E$ and\n\nselect the blue travel button.": "Άν έχεις πάνω απο μία αίθουσα μπορείς να ταξιδέψεις γρήγορα μεταξύ τους.\n\nΚΡΑΤΑ $KEY_E$ et\n\nδιάλεξε το μπλέ κουμπί ταξιδιού.",
+  "Those are the basics you need to know about Take the Halls. The rest can be learned when playing online by observation. This game mode is simple but complexity comes from great strategy. See you on the battlefield!\n\nPress $KEY_ESC$ to get out.": "Αυτά είναι τα βασικά που χρειάζεται να ξέρεις για την Κατάκτηση της Αίθουσας. Τα υπόλοιπα μπορούν να μαθευτούν παίζοντας online και παρατηρώντας. Αυτο το παιχνίδι είναι απλό αλλά η πολυπλοκότητα έρχεται με την τέλεια στρατηγική. Τα λέμε στο πεδίο μάχης!\n\nΠάτα το $KEY_ESC$ για να βγείς.",
+  //Challenge_PrincessStart
+  "   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.": "   Ψηλά σε έναν βραχώδη γκρεμό, προστατευόμενο απο άγριους πολεμιστές, υπάρχει το οχυρό του σατανικού πολέμαρχου Sedgwick. Βαθιά στο σκοτεινότερο μπουντρούμι του κάστρου, ο Sedgwick καμαρώνει την αγαπητή αιχμάλωτή του, τη πριγκίπησα Geti.\n\n    Είσαι ένας ιππότης του Βασιλιά. Μόνος, μόνο με το σπαθί και την ασπίδα σου, πρέπει να νικήσεις τον Sedgwick και να σώσεις την όμορφη Geti.\n\n    Βάλε τον φόβο και την ανησυχία πίσω σου. Συγκέντρωσε την επιθυμία σου στο στόχο σου, αποδέξου τον θάνατο ως πιθανότητα, και μείνε δυνατός. Αυτός είναι ο δρόμος ενός Ιππότη.",
+  "   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .": "   Και έτσι αυτή η περιπέτεια τελειώνει. Ο διαβολικός Sedgwick εξαφανίστηκε, η όμορφη Get ασφαλής στα χέρια σου. Για πρώτη φορά στη μνήμη, η χώρα λάμπει στη φώς της ειρήνης. Αλλά πρόσεξε: για τον πολεμιστή του Βασιλιά υπάρχει πάντα επόμενη φορά. . . .",
+  "   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .": "   Και έτσι αυτή η περιπέτεια τελειώνει. Ο διαβολικός Sedgwick εξαφανίστηκε, η όμορφη Get νεκρή στα πόδια σου. Για πρώτη φορά στη μνήμη, η χώρα λάμπει στη φώς της ειρήνης, αλλά θρηνεί τον θάνατο της πριγκίπησας του. . .",
+  //Sandbox.as
+  "Welcome to King Arthur's Gold": "Καλώς Ήρθες στο King Arthur's Gold",
+  "This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!": "Αυτό είναι ελεύθερο παιχνίδι\nείσαι ελεύθερος να χαλαρώσεις.\n\nΠάτα ESC για να δείς τα κουμπιά.\nΚαλή Διασκέδαση!",
+  //Sandbox gamemode.cfg
+  "Build whatever your heart desires. Respect other folk's creations!": "Φτιάξε ότι επιθυμείς. Σεβάσου τις δημιουργίες των άλλων!",
+
+  //// VOTES ////
+  //VoteCore.as
+  "Reason: {REASON}": "Λόγος: {ΛΟΓΟΣ}",
+  "Cast by: {USER}": "Voté par: {ΧΡΗΣΤΗΣ}",
+  "[O] - Yes": "[O] - Ναί",
+  "[P] - No": "[P] - Όχι",
+  "Ctrl+O Pass": "Ctrl+O Πάσο",
+  "CTRL+P Cancel": "Ctrl+P Άκυρο",
+  "Click to close ({TIMELEFT}s)": "Πάτα για να κλείσει ({TIMELEFT}s)",
+
+  //TDM_Interface.as
+  "WARMUP": "ΖΕΣΤΑΜΑ",
+  "KILLS: {CURRENT}/{LIMIT}": "ΕΞΟΝΤΩΣΕΙΣ: {CURRENT}/{LIMIT}",
+  "SUDDEN DEATH": "ΞΑΦΝΙΚΟΣ ΘΑΝΑΤΟΣ",
+  "In Queue to Respawn...": "Στην ουρά για αναγέννηση...",
+  "No Respawning - Wait for the Game to End.": "Δεν μπορείς να αναγεννηθεις - Περίμενε να τελειώσει το Παιχνίδι.",
+
+  //// RESUPPLIES ////
+  //CTF_GiveSpawnItems.as
+  "Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!": "Επόμενος ανεφοδιασμός σε {ΔΕΥΤ}{TIMESUFFIX}, {ΕΝΕΡΓΕΙΑ}!",
+  "Go Fight": "Πήγαινε πολέμα",
+  "Go Build": "Πήγαινε χτίσε",
+  "Prepare for Battle": "Ετοιμάσου για τη μάχη",
+  " seconds": " δευτερολεπτα",
+  " second": " δευτερόλεπτο",
+
+  //// RESPAWNING ////
+  //CTF_Interface.as
+  //WAR_Interface.as
+  //TDM_Interface.as
+  //Sandbox_Interface.as
+  //CTF_PickSpawn.as
+  "Respawning in: {SEC}": "Αναγέννηση σε: {SEC}",
+  "approximatively never": "περίπου ποτέ",
+  "Pick spawn point": "Διάλεξε σημείο αναγέννησης",
+  "Spawn at {ITEM}": "Αναγγένηση σε {ITEM}",
+  "respawn is contested": "το σημείο διεκδικείται",
+  "No spawns available!": "Κανένα σημείο για αναγέννηση διαθέσιμο",
+
+  //WAR_Interface.as
+  "DEFEND THE HALL!": "ΠΡΟΣΤΑΤΕΨΕ ΤΗΝ ΑΙΘΟΥΣΑ!",
+  "DEFEND THE HALL!\n           $DEFEND_THIS$": "ΠΡΟΣΤΑΤΕΨΕ ΤΗΝ ΑΙΘΟΥΣΑ!\n           $DEFEND_THIS$",
+  "BUILD WORKSHOPS\n           $BUILD$": "ΦΤΙΑΞΕ ΕΡΓΑΣΤΗΡΙΑ\n           $BUILD$",
+  "BUILD DEFENSES\n           $BUILD$": "ΦΤΙΑΞΕ ΑΜΥΝΕΣ\n           $BUILD$",
+  "CAPTURE THE HALL!\n           $DEFEND_THIS$": "KATΕΛΑΒΕ ΤΗΝ ΑΙΘΟΥΣΑ!\n           $DEFEND_THIS$",
+  "$ATTACK_LEFT$ATTACK!": "$ATTACK_LEFT$ΕΠΙΘΕΣΗ!",
+  "ATTACK!$ATTACK_RIGHT$": "ΕΠΙΘΕΣΗ!$ATTACK_RIGHT$",
+  "ATTACK!\n           $ATTACK_THIS$": "ΕΠΙΘΕΣΗ!\n           $ATTACK_THIS$",
+
+  //Descriptions.as
+  "Bombs for Knight only.": "Βόμβα μόνο για Ιππότες.",
+  "Arrows for Archer and mounted bow.": "Βέλη για τοξότες και επανδρωμένα τόξα.",
+  "Highly explosive powder keg for Knight only.": "Εξαιρετικά εκρηκτικό βαρέλι μπαρουτιού, μόνο για Ιππότες.",
+
+  "A stone throwing, ridable siege engine, requiring a crew of two.": "Μια μηχανή πολιορκίας η οποία πετάει πέτρες, απετεί πλήρωμα δυο ατόμων.",
+  "A bolt-firing pinpoint accurate siege engine, requiring a crew of two. Allows respawn and class change.": "Μία ακριβής μηχανή πολιορκίας η οποία πετάει βέλη, απαιτεί πλήρωμα 2 ατόμων. Επιτρέψει την αναγέννηση και την αλλαγή κλάσης.",
+  "Piercing bolts for ballista.": "Διαπεραστικά βέλη για καταπέλτη.",
+  "For Ballista\nTurns its piercing bolts into a shaped explosive charge.": "Για τον καταπέλτη.\nΜετατρέπει τα διαπεραστικά βέλη σε εκρηκτικά.",
+
+  "A small boat with two rowing positions and a large space for cargo.": "Μία μικρή βάρκα με δύο θέσεις για κουπί και μεγάλο αποθηκευτικό χώρο.",
+  "A fast rowing boat used for quickly getting across water.": "Μία γρήγορη βάρκα.",
+  "A slow armoured boat which acts also as a water base for respawn and class change.": "Μία αργή τεθωρακισμένη βάρκα που λειτουργεί ώς βάση για αναγέννηση και αλλαγή κλάσης..",
+
+  //"A siege engine designed to break open walls and fortifications.":"Μία πολιορκητική μηχανή σχεδιασμένη για να ανοίγει όλα τα τείχη και οχυρώσεις.",
+  "Raw stone material.": "Πέτρινη πρώτη ύλη.",
+  "Raw wood material.": "Ξύλινη πρώτη ύλη.",
+  "Lanterns help with mining in the dark, and lighten the mood.": "φανάρι για βοήθεια με την εξόρυξη στο σκοτάδι, και να φωτίσει τη διάθεση.",
+  "A circular saw that turns tree logs into wood material.": "Κυκλικό πριόνι που μετατρέπει τους κορμούς σε υλικό.",
+  //"A trading post. Requires a trader to reside inside.":"Εμπορικό φυλάκιο. απαιτεί έναν έμπορο να ζεί μέσα..",
+  //"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies.": "Excalibur, το θρυλικό σπαθί του Βασιλιά Αρθούρου, με ιδιότητα να κυριέυει όλους τους εχθρούς.",
+  "A simple wooden ladder for climbing over defenses.": "Απλή ξύλινη σκάλα για να σκαρφαλώνεις πάνω απο άμυνες.",
+  "A stone boulder useful for crushing enemies.": "Ένας βράχος, χρήσιμος για να συνθλίβεις εχθρούς.",
+  "An empty wooden crate for storing and transporting inventory.": "Άδειο ξύλινο κιβώτιο για να αποθηκεύεις και να μεταφέρεις απόθεμα.",
+  "An explosive mine. Triggered by contact with an enemy.": "Νάρκη. Πυροδοτείται με επαφή εχθρού.",
+  //"Fire satchel for Knight only.":"Πυρωμένος σάκος μόνο για Ιππότες.",
+  "A health regenerating heart.": "Καρδία αναζοωγόννησης.",
+  //"A sack for storing more inventory on your back.":"Σάκος για αποθήκευση αποθέματος στη πλάτη.",
+  "A seedling of an oak tree ready for planting.": "Σπόρος βελανιδιάς, έτοιμος για φύτεμα.",
+  "A seedling of a pine tree ready for planting.": "Σπόρος πέυκου, έτοιμος για φύτεμα.",
+  "A decorative flower seedling.": "Διακοσμητικά λουλούδια.",
+  "Grain used as food.": "Το στάρι χρησιμοποιείται ώς φαγητό.",
+  "Wooden swing door.": "Ξύλινη στρυφογυριστή πόρτα.",
+  "Stone spikes used as a defense around fortifications.": "Πέτρινα καρφία για άμυνα γύρω απο τις οχυρώσεις..",
+  "A trampoline used for bouncing and jumping over enemy walls.": "Τραμοπλίνο για αναπήδιση πάνω απο τα τείχη του εχθρού.",
+  "A stationary arrow-firing death machine.": "Στατική μηχανή θανάτου που πετάει βέλη.",
+  "Fire arrows used to set wooden structures on fire.": "Πυρωμένα βέλη, χρήσιμα για να βάζουν φωτιά σε ξύλινα κατασκευάσματα.",
+
+  "A tunnel for quick transportation.": "Τούνελ για γρήγορη μετακίνηση.",
+  "Bucket for storing water. Useful for fighting fires.": "Κουβάς για αποθήκευση νερού. Χρήσιμο για καταπολέμιση πυρκαγιών",
+  "A wooden bucket pre-filled with water for fighting fires.": "Ξύλινος κουβάς προγεμισμένος για καταπολέμιση πυρκαγιών.",
+  "A generic factory. Requires Research Room, technology upgrade and big enough population to produce items.": "Γενικό εργοστάσιο. Απαιτεί δωμάτιο Έρευνας, τεχνολογική αναβάθμιση και αρκετό πληθυσμό για να παράξει αντικείμενα.",
+  //"Kitchen produces food which heal wounds.":"Кухня производит продукты питания, которые лечат раны.",
+  //"A plant nursery with grain, oak and pine tree seeds.":"",
+  //"Barracks allow changing class to Archer or Knight.":"Барраки позволяют изменить класс на лучника или рыцаря.",
+  //"A storage than can hold materials and items and share them with other storages.":"",
+  "A mining drill. Increases speed of digging and gathering resources, but gains only half the possible resources.": "Τρυπάνι. Αυξάνει την ταχύτητα του σκαψίματος και το μάζεμα πόρων, αλλά αποκτά μόνο τους μισούς απο τους πιθανούς πόρους.",
+  "Bombs for Knights & arrows for Archers.\nAutomatically distributed on respawn.": "Βόμβες για Ιππότες & βέλη για Τοξότες.\nΑυτόματα διανέμονται στην επόμενη αναγέννηση",
+  "Items used for blowing stuff up.": "Αντικείμενο για να εκρήγνεις πράγματα.",
+  "Items used for lighting things on fire.": "Αντικείμενο για να ανάβεις φωτιές.",
+  //"When team is in possession of stone construction technology it allows builders to make stone walls, doors, traps and spikes.":""
+  //"Dorm increases population count and allows spawning and healing inside. Requires a migrant.":""
+  "Research room.": "Комната для исследований.",
+  "Water arrows for Archer. Can extinguish fires and stun enemies.": "Βέλη νερού για Τοξότες. Μπορούν να σβήσουν φωτιές και να ζαλίσουν εχθρούς.",
+  "Bomb arrows for Archer.": "Πυρωμένα βέλη για Τοξότες.",
+  "Water bomb for Knight. Can extinguish fires and stun enemies.": "Νερόμπομα για Ιππότες. Μπορούν να σβήσουν φωτιές και να ζαλίσουν εχθρούς.",
+  "Water absorbing sponge. Useful for unflooding tunnels and reducing water stuns.": "Σφουγγάρι. Χρήσιμο για να καθαρίζεις τούνελ απο νερό και να μειώνεις το ζάλισμα απο νερό",
+  "Builder workshop for building utilities and changing class to Builder": "Εργαστήριο κτιστών για κατασκευή υπηρεσιών και αλλαγή κλάσης σε Κτίστη.",
+  "Knight workshop for building explosives and changing class to Knight": "Εργαστήριο ιπποτών για κατασκευή εκρηκτικών και αλλαγή κλάσης σε Ιππότη.",
+  "Archer workshop for building arrows and changing class to Archer": "Εργαστήριο τοξοτών για κατασκευή βελών και αλλαγή κλάσης σε Τοξότη.",
+  "Siege workshop for building wheeled siege engines": "Πολιορκιτικό εργαστήριο για κατασκευή πολιορκιτικών μηχανών με ρόδες.",
+  "Naval workshop for building boats": "Ναυπηγείο για κατασκευή σκαφών.",
+  "Place of merriment and healing": "Ένα μέρος ευθυμίας και θεραπείας.",
+  "A Cache for storing your materials, items and armaments.": "Μια κρυψώνα για να αποθηκεύεις τα υλικά σου, αντικείμενα και οπλισμό.",
+  "A refreshing mug of beer.": "Μια αναζοωγοννητική κούπα μπύρας.",
+  "A hearty meal to get you back on your feet.": "Ένα γενναιόδωρο γέυμα για να σε αναζοωγοννήσει.",
+  "A suspiciously undercooked egg, maybe it will hatch.": "Ένα ύποπτα άψητο αυγό, μπορεί να εκκολαφθεί.",
+  "A burger to go.": "Ένα μπέργκερ, για τον δρόμο.",
+
+  "This magic scroll when cast will turn all nearby enemies into a pile of bloody gibs.": "Αυτός ο μαγικός πάπυρος θα μετατρέψει όλους τους εχθρούς σε μια στοίβα αιματερών κομματιών.",
+  "This magic scroll will evaporate all water in a large surrounding orb.": "Αυτός ο μαγικός πάπυρος θα εξατμίσει όλο το νερό σε μία μεγάλη σφαίρα.",
+
+  //// HELPS ////
+  //DrawHelp.as
+  "$!!!$$GREEN$WATCH THESE FOR          .          GAMEPLAY HELP$GREEN$\n\n\n$KEY_ESC$ CHECK CONTROLS\n\n$KEY_F1$ HELP ON/OFF\n\n(click to remove this)\n\n      $DEFEND_THIS$": "$!!!$$GREEN$ΔΕΣ ΑΥΤΑ ΓΙΑ           ΒΟΗΘΕΙΑ ΣΤΟ ΠΑΙΧΝΙΔΙ$GREEN$\n\n\n$KEY_ESC$ ΚΟΥΜΠΙΑ\n\n$KEY_F1$ ΒΟΗΘΕΙΑ ON/OFF\n\n(πάτα για να αφαιρέσεις αυτό)\n      $DEFEND_THIS$",
+
+  //BasicHelps.as
+  " $down_arrow$ Hop inside  $KEY_S$": " $down_arrow$ Μπές $KEY_S$",
+  " Get out  $KEY_W$": " Βγές $KEY_W$",
+  "$trader$ Buy    $KEY_E$": "$trader$ Αγόρασε $KEY_E$",
+  "$CLASSCHANGE$ Change class    $KEY_E$": "$CLASSCHANGE$ Άλλαξε κλάση $KEY_E$",
+  "${ITEM}$ $Rotate$ Rotate    $KEY_SPACE$": "${ITEM}$ $Rotate$ Περίστρεψε $KEY_SPACE$",
+  "$trap_block$ Opens on enemy": "$trap_block$ Ανοίγει όταν περνάνε εχθροί",
+  "$spikes$ Retracts on enemy if on stone $STONE$": "$spikes$ Ανασύρεται στον εχθρό αν τοποθετηθεί σε πέτρα $STONE$",
+  "$wooden_platform$  $Rotate$ Rotate    $KEY_SPACE$": "$wooden_platform$  $Rotate$ Περίστρεψε    $KEY_SPACE$",
+  "$ladder$  $Rotate$ Rotate    $KEY_SPACE$": "$ladder$  $Rotate$ Περίστρεψε $KEY_SPACE$",
+  "Change class    $KEY_E$": "Άλλαξε κλάση $KEY_E$",
+  "$lantern$ On/Off     $KEY_SPACE$": "$lantern$ Ανοιχτό/Κλειστό $KEY_SPACE$",
+  "$lantern$ Pick up    $KEY_C$": "$lantern$ Σήκωσε $KEY_C$",
+  //"$satchel$ Light     $KEY_SPACE$"                :"$satchel$ Άναψε $KEY_SPACE$",               //NOT USED
+  //"$satchel$ Only KNIGHT can light satchel"        :"$satchel$ Μόνο οι ΙΠΠΟΤΕΣ μπορούν να ανάψουν το βαρέλι!", //NOT USED
+  //"$satchel$ THROW!    $KEY_SPACE$"                :"$satchel$ ΠΕΤΑ! $KEY_SPACE$",              //NOT USED
+  "$log$ Chop $mat_wood$   $RMB$": "$log$ Κόψε $mat_wood$   $RMB$",
+  "$keg$Pick up    $KEY_C$": "$keg$Σήκωσε $KEY_C$",
+  "$keg$Light    $KEY_SPACE$": "$keg$Άναψε $KEY_SPACE$",
+  "$keg$Only KNIGHT can light keg": "$keg$Μόνο οι ΙΠΠΟΤΕΣ μπορούν να ανάψουν το βαρέλι!",
+  "$keg$THROW!    $KEY_SPACE$": "$keg$ΠΕΤΑ!    $KEY_SPACE$",
+  "$mat_bombs$THROW!    $KEY_SPACE$": "$mat_bombs$ΠΕΤΑ! $KEY_SPACE$",
+  "$crate$Pick up    $KEY_C$": "$crate$Σήκωσε $KEY_C$",
+  "${VEHICLE}$Drive     $KEY_A$ $KEY_S$ $KEY_D$": "${VEHICLE}$Οδήγα $KEY_A$ $KEY_S$ $KEY_D$",
+  "${VEHICLE}$FIRE     $KEY_HOLD$$LMB$": "${VEHICLE}$ΦΩΤΙΑ! $KEY_HOLD$$LMB$",
+  "${VEHICLE}$FIRE     $LMB$": "${VEHICLE}$ΦΩΤΙΑ! $LMB$",
+  "$food$Take out food  $KEY_HOLD$$KEY_F$": "$food$Βγάλε φαγητό $KEY_HOLD$$KEY_F$",
+  "$boulder$ Pick up    $KEY_C$": "$boulder$ Σήκωσε $KEY_C$",
+  "$building$Construct    $KEY_E$": "$building$Κατασκέυασε $KEY_E$",
+  "$building$Use    $KEY_E$": "$building$Χρησιμοποίησε $KEY_E$",
+
+  //Factory.as
+  "$workshop$Convert workshop    $KEY_E$": "$workshop$Μετέτρεψε τον εργαστήριο $KEY_E$",
+  "Check production    $KEY_E$": "Δές την παραγωγή  $KEY_E$",
+  "Requires a free worker from Hall": "Απαιτεί έναν διαθέσιμο εργάτη απ την Αίθουσα",
+  "Convert Workshop": "Μετέτρεψε το εργαστήριο",
+  "Convert Workshop\n\n$RED$Requires {TECH_NAME}\n from Hall\n$RED$            $RESEARCH$\n\n": "Μετέτρεψε το εργαστήριο\n\n$RED$Απαιτεί \"{TECH_NAME}\"\n από την Αίθουσα\n$RED$                 $RESEARCH$\n\n",
+  "Upgrade to...": "Αναβάθμισε σε...",
+
+  //"Saw":"Πριόνι", //in blobs
+  //"Ballista":"Βαλίστρα", //in blobs
+  "Bomb Ammo": "Εκρηκτικά πυρομαχικά",
+  //"Catapult":"Καταπέλτης", //in blobs
+  "Demolition": "Κατεδάφιση",
+  "Bakery": "Φούρνος",
+  "Longboat": "Μεγάλη Λέμβος",
+  "Military Supplies": "Πολεμοφόδια",
+  "Pyrotechnics": "Πυροτεχνικά",
+  //"War Boat":"Πολεμικό σκάφος", //in blobs
+  "Water Ammo": "Εφόδια νερού",
+
+  //Saw.as
+  "Turn Saw On": "Ενεργοποίησε το πριόνι",
+  "Turn Saw Off": "Απενεργοποίησε το πριόνι",
+
+  //Crate.as
+  "Unpack all": "Ξεπακέταρε τα πάντα",
+  "Stop {ITEM}": "Σταμάτα {ITEM}",
+  "Unpack {ITEM}": "Ξεπακετάρισμα {ITEM}",
+  "Unpack {ITEM}   $KEY_E$": "Ξεπακετάρισμα {ITEM}   $KEY_E$",
+  "Can't unpack {ITEM} here": "Δε γίνεται το ξεπακετάρισμα {ITEM} εδώ",
+
+  //Scroll.as
+  "$scroll$Pick up    $KEY_C$": "$scroll$Σήκωσε $KEY_C$",
+  "$scroll$Use in *first* Hall     $KEY_E$": "$scroll$Χρησιμοποίησε στην αίθουσα    $KEY_E$",
+  "$scroll$Use magic scroll    $KEY_E$": "$scroll$Χρησιμοποίησε τον μαγικό πάπυρο  $KEY_E$",
+
+  //KnightLogic.as
+  "$Jab$Jab        $LMB$": "$Jab$Χτύπημα $LMB$",
+  "$Shield$Shield    $KEY_HOLD$$RMB$": "$Shield$Ασπίδα $KEY_HOLD$$RMB$",
+  "$Slash$ Slash!    $KEY_HOLD$$LMB$": "$Slash$ Slash! $KEY_HOLD$$LMB$",
+
+  //BuilderLogic.as
+  "$Pick$Dig/Chop  $KEY_HOLD$$RMB$": "$Pick$Σκάψε/Κόψε $KEY_HOLD$$RMB$",
+
+  //BuilderInventory.as
+  "$Build$Build/Place  $LMB$": "$Build$Κτίσε/Τοποθέτησε $LMB$",
+
+  //ArcherLogic.as
+  "Hide    $KEY_S$": "Κρύψου $KEY_S$",
+  "$Grapple$ Grappling hook    $RMB$": "$Grapple$ Γάτζος $RMB$",
+  "$arrow$Fire arrow   $KEY_HOLD$$LMB$": "$arrow$Πυρωμένο βέλος $KEY_HOLD$$LMB$",
+
+  //RunnerDefault.as
+  "${ATTACHED}$Throw    $KEY_C$": "${ATTACHED}$Πέτα $KEY_C$",
+
+  //TreeSync.as
+  "$Axe$$Tree$Chop tree    $RMB$": "$Axe$$Tree$Κόψε το δέντρο      $RMB$",
+  "$Tree$Climb tree    $KEY_W$": "$Tree$Σκαρφάλωσε το δέντρο    $KEY_W$",
+
+  //TradingMenu.as
+  "Out of stock. Come back later.": "Δεν υπάρχει άλλο απόθεμα. Έλα αργότερα",
+
+  //HelpfulDeathTips.cfg
+  "To hide these tips, and other in-game help, hit F1.": "Για να κρύψεις αυτά τα tips, καί άλλες βοήθειες μέσα στο παιχνίδι, πάτα το F1.",
+  "Enemies can use your tunnels so protect them well!": "Οι εχθροί μπορούν να χρησιμοποίησουν τα τούνελ σου οπότε προστάτεψε τα καλά.",
+  "Spikes will stun you for a short time.": "Τα καρφιά σε ζαλίζουν για λίγο.",
+  "Saws will kill you instantly": "Τα πριόνια σε σκοτώνουν αμμέσως.",
+  "Spikes placed on stone blocks behave differently, than if placed on other blocks. Experiment!": "Τα καρφία τοποθετημένα σε πέτρα συμπεριφέρονται διαφορετικά απο άλλα υλικά. Πειραματίσου!",
+  "As an archer you can move faster using the grappling hook.": "Σαν τοξότης , κινείσαι γρηγορότερα με τον γάτζο.",
+  "You can put out fires using water bombs or water arrows (as well as a bucket of water)!": "Μπορείς να σβήσεις φωτιές χρησιμοποιώντας νερόμπομπες ή βέλη νερού (όπως και έναν κουβά νερό)!",
+  "As a knight, jabbing isn't always effective, try charging for a slash!": "Σαν ιππότης, το χτύπημα δεν είναι πάντα αποτελεσματικό, δοκίμασε να φορτίσεις το slash!",
+  "A builder can be more useful on the front lines than in his base. But keep your eyes open over there!": "Ένας κτίστης μπορεί να είναι πιο χρήσιμος στη πρώτη γραμμή απ' οτι στη βάση. Αλλά έχε τα μάτια σου ανοιχτά εκεί.",
+  "Wood blocks and backwalls can be set on fire, try using stone alongside the wood!": "Το ξύλο καθ η ξύλινη υποστήριξη μπορούν να πάρουν φωτιά, προσπάθησε να χρησιμοποιείς πέτρα μαζί με το ξύλο!",
+  "Don't run wildly into the battlefield with a keg, you might have it stolen!": "Μη τρέχεις άσκοπα στο πεδίο μάχης με ένα εκρηκτικό βαρέλι, μπορεί να στο κλέψουν!",
+  "Pay attention to the ground, there may be a trap waiting!": "Πρόσεχε το έδαφος, μπορεί να κρύβονται παγίδες!",
+  "Bomb arrows can be used to collapse towers quickly.": "Τα βέλη-βόμβες μπορούν να χρησιμοποιηθούν για να καταρρίψουν πύργους γρήγορα.",
+  "If you see materials on the ground, take them to a builder or put them in your storage!": "Αν δείς υλικά στο έδαφος, πηγαινέ τα σε έναν εργάτη ή βάλτα στην αποθήκη!",
+  "Water bombs and water arrows stun your enemies for an easy kill.": "Τα βέλη νερού και οι νερόμπομπες, ζαλίζουν τους εχθρούς για μια εύκολη εξόντωση.",
+  "Pay attention to your minimap for enemy tunnelers.": "Πρόσεχε τον χάρτη σου για αντίπαλους που σκάβουν τούνελ.",
+  "Don't let siege weapons fall into the wrong hands!": "Μην αφήσεις πολιορκητικές μηχανές να πέσουν σε λάθος χέρια!",
+  "Immobilise siege weapons to prevent them from accidentally falling off a cliff!": "Ακινητοποίησε τις πολιορκητικές μηχανές για να μη πέσουν απο κάποιο γκρεμό!",
+  "Press [SPACE] to light and throw a bomb, [C] to pickup.": "Πάτα το [SPACE] για να ανάψεις και να πετάξεις μία βόμβα, [C] για να την σηκώσεις.",
+  "Keep your ballistae safe - if an enemy takes it, they can use it against you!": "Κράτα τους καταπέλτες ασφαλής - Αν κάποιος εχθρός τους πάρει, μπορούν να τους χρησιμοποίησουν εναντίων σου!",
+  "Drills can be cooled down by jumping into water or running around.": "Τα τρυπάνια μπορούν να κρυώσουν πηδώντας στο νερό η τρέχοντας πέρα-δώθε.",
+  "Enemies can use your workshops. Don't let them buy explosives in your base!": "Οι εχθροί μπορούν να χρησιμοποίησουν τα εργαστήρια σου. Μη τους αφήσεις να αγοράσουν εκρηκτικά στη βάση σου!",
+  "Teamwork is the key to success!": "Η ομαδική δουλειά είναι το κλειδί της επιτυχίας!",
+  "Try to help your team mates if the situation gets tight.": "Προσπάθησε να βοηθήσεις τους συμπαίκτες σου αν η κατάσταση δυσκολέψει.",
+  "As a knight, you can put your shield up in the air to glide.": "Σαν Ιππότης, μπορείς να σηκώσεις την ασπίδα σου στον αέρα για να αιωρηθείς.",
+  "Wood blocks are cheaper than stone blocks, but are also weaker and can catch fire.": "Το ξύλο είναι πιο φθινό απ την πέτρα, αλλλα και πιο αδύναμο και πινάνει φωτιά.",
+  "1 bomb can deal up to 3 hearts of damage.": "1 βόμβα μπορεί να κάνει ζημιά 3 καρδιών.",
+  "Drills are a fast way to dig, but only yield 50%. Don't use them on precious gold or during build time!": "Τα τρυπάνια είναι ένας γρήγορος τρόπος να σκάψεις, αλλά αποδίδουν μόνο 50%. Μη τα χρησιμοποιείς σε πολύτιμο χρυσό ή κατά τη φάση κτισήματος!",
+  "Good players can play any class when needed.": "Οι καλοί παίκτες μπορούν να παίξουν όλες τις κλάσεις όταν χρειαστεί.",
+  "Make sure you're helping your team advance; don't just hide out in the back!": "Βεβαιώσου οτι βοξθάς την ομάδα σου , μη κρύβεσαι πίσω!",
+  "Ride a shark on land and press up to pick him up.": "Καβάλα έναν καρχαρία στο έδαφος και πάτα το 'πάνω' για να τον σηκώσεις.",
+  "A red name indicates a server admin - ask them for help if you need it.": "Οι διαχειρηστές των σέρβερ έχουν κόκκινο όνομα - ζήτα τους βοήθεια αν τη χρειαστείς.",
+  "A bush plus a mine equals happy fun time.": "Θάμνος + νάρκη = Χαρούμενες και αστείες στιγμές.",
+  "Enemies can walk through your doors if open them. Don't let them in!": "Οι εχθροί μπορούν να περάσουν απ τις πόρτες σου αν τις ανοίξουν - Μη τους αφήσεις να μπούν!",
+  "If you see an object/body holding a door open - move it away!": "Αν δείς ένα αντικείμενο/σώμα να κρατάει μια πόρτ ανοιχτή - μετακίνησε το!",
+  "Visit the KAG forums for more friendly help and advice!": "Επισκέψου το φόρουμ του KAG για περισσότερες φιλικές και χρήσιμες συμβουλές!",
+  "A bomb's timer lasts four seconds before exploding": "Οι βόμβες θέλουν 4 δεύτερα πρίν σκάσουν.",
+  "When you light a bomb, let the fuse burn down before throwing it so your enemy can't react!": "Όταν πυροδοτήσεις μια βόμβα, περίμενει να καεί το φιτίλι πρίν τη πετάξεις ώστε να μη προλάβουν να αντιδράσουν οι εχθροί.",
+  "If you're throwing a bomb, jump in the direction that you're aiming to throw further!": "Αν πάς να πετάξεις μια βόμβα, πήδα πρός τη κατεύθηνση που στοχεύεις για να τη πετάξεις πιο μακριά!",
+  "Try bomb jumping: drop a bomb on the ground, then jump and shield downwards as it explodes!": "Δοκίμασε το πήδημα με βόμβα: πέτα μια βόμβα στο έδαφος, και πήδα και βάλε την ασπίδα προς τα κάτω όπως εκρύγνειται!",
+  "If your enemy throws a bomb too early, you can pick it up with [C] and throw it back!": "Αν κάποιος πετάξει μια βόμβα πολύ νωρίς, μπορείς να τη σηκώσεις με το [C] και να τη πετάξεις πίσω.",
+  "You risk walking into mines or traps in dark tunnels - be careful or take a lantern!": "Υπάρχει κίνδυνος να πέσεις σε παγίδα η κάποια νάρκη σε σκοτεινό τούνελ - πρόσεχε ή πάρε ένα φανάρι!",
+  "Retracting spikes deal less damage and have a delay, but are less likely to hurt your own team.": "Τα ανασυρόμενα καρφιά, κάνουν λιγότερη ζημειά και έχουν μια καθυστέρηση αλλά είναι λιγότερο πιθανό να χτυπήσουν κάποιον απ την ομάδα σου.",
+  "Supporting solid walls with backwalling is important but often overlooked.": "Η υποστήριξη των τοίχων με πίσω τοίχους είναι σημαντικό αλλά συχνά παραβλέπεται.",
+  "Collect hearts, dead fish and grain in your inventory so you can heal later on.": "Σύλλεξε καρδιές, νεκρά ψάρια και στάρι στο απόθεμά σου για να θεραπευτείς αργότερα.",
+  "Team mates will not be happy if you light a lantern in their secret tunnel.": "Οι συμπαίκτες σου δέ θα είναι χαρούμενοι αν ανάψεις ένα φανάρι στο μυστικό τους τούνελ.",
+  "As a builder, block up the enemy doors to trap them in their own base.": "Σαν εργάτης, μπλόκαρε τις αντίπαλες πόρτες για να τους παγιδέψεις μέσα στη βάση τους.",
+  "Kill/death ratios are not the ultimate aim of the game, winning the match is.": "Η αναλογία Θανάτων/Εξοντώσεων δεν είναι ο απότερος σκοπός του παιχνιδιού, η νίκη είναι.",
+  "Make sure you're spending your coins after you've gained a decent amount!": "Βεβαιώσου οτι ξοδεύεις τα νομίσματά σου αφού έχεις μαζέψει αρκετά!",
+  "No class is bad when the player is good.": "Καμία κλάση δεν είναι κακή άν ο παίκτης είναι καλός.",
+  "Prioritize building flag protection and forward towers over traps during build time.": "Προτεραιότητα στη φάση κτισήματος είναι η προστασία της σημαίας και μπροστινοί πύργοι, οι παγίδες μπορούν να περιμένουν.",
+  "Going knight and heading forwards is often more helpful to your team than endlessly fortifying your base.": "Η αλλαγή σε ιππότη και η έφοδος είναι πιο χρήσιμη πολλές φορές απο οχείρωση επ άπειρο.",
+  "The best defense is a good offense!": "Η καλύτερη άμυνα είναι η επίθεση!",
+  "No matter how majestic your tower is, with no offensive units you will lose.": "Το πόσο μεγαλοπρεπής είναι ο πύργος σου δεν έχει καμλια σχέση αν δεν έχεις επιθετικές μονάδες.",
+  "Mines are most effective near the enemy base - not your own!": "Οι νάρκες είναι πιο αποτελεσματικές κοντά στην αντίπαλη βάση - όχι στη δική σου!",
+  "As archer, you can put a mine in your inventory, grapple to the opponent's base, and place it there.": "Σαν τοξότης μπορείς να βάλεις μια νάρκη στο απόθεμα σου, να φτάσεις στη βάση του αντιπάλου με τον γάτζο, και να τη τοποθετήσεις εκεί.",
+  "If you put a mine in your inventory, it can pop out when you die, potentially killing enemies and destroying structures.": "Αν βάλεις μια νάρκη στο απόθεμά σου, μπορεί να πεταχτεί όταν πεθάνεις, πιθανώς σκοτώνοντας εχθρούς και καταστρέφοντας κτήρια.",
+  "Hearts, dead fish, grain, burgers and steaks all heal you.": "Οι καρδιές, τα νεκρά ψάρια, το στάρι, τα μπέργκερ και οι μπριζόλες μπορούν να σε θεραπεύσουν.",
+  "Always try and have a few water buckets ready in case anything catches on fire.": "Προσπάθησε να έχεις μερικούς κουβάδες νερό έτοιμους σε περίπτωση που κάτι πιάσει φωτιά.",
+  "Archers shouldn't be afraid to get up close and personal when the situation requires it.": "Οι τοξότες δε θα πρέπει να φοβούνται να εμπλακούν απο κοντά αν το απαιτεί η κατάσταση.",
+  "Kegs can hurt both your team and the enemy - use them wisely.": "Τα εκρηκτικά βαρέλια μπορούν να βλάψουν και την ομάδα σου και τους εχθρούς - χρησιμοποίησε τα σοφά.",
+  "You can climb arrows that are stuck in blocks to climb upwards.": "Μπορείς να σκαρφαλώσεις τα βέλη που έχουν κολλήσει σε τοίχους.",
+  "Archers can make arrow ladders by shooting arrows at tower walls.": "Οι τοξότες μπορούν να φτιάξουν σκάλες απο βέλη εκτοξέυοντάς τα στα τείχη.",
+  "Hold chickens to glide further.": "Κράτα κότες για να αιωρηθείς μακρύτερα.",
+  "There is a red barrier during build phase which will disappear on match start": "Υπάρχει ένα κόκκινο εμπόδιο κατα τη φάση κτισήματος το οποίο εξαφανίζεται όταν αρχίζει το παιχίδι.",
+  "Don't be afraid to let people know you're new - they may lend a helping hand.": "Μη φοβηθείς να πείς σε άλλους οτι είσαι νέος - μπορεί να σε βοηθήσουν.",
+  "Try to get video evidence of people griefing or hacking first before yelling for an admin.": "Προσπάθησε να τραβήξεις βίνετο άτομα που σπάνε τους κανόνες h χακάρουν πρίν φωνάξεις κάποιον διαχειρηστή.",
+  "Press E around dead bodies to check for useful things in enemy (or ally) corpses!": "Bonjour. Ce message n'est pas censé apparaître, mais ce n'est pas trop grave. Pour m'excuser de ne pas fournir de conseil cette fois-ci, voici un cookie. :)", // OUTDATED!
+  "Charged arrows from close range will stun enemies, even if they shield!": "Η φορτισμένη επίθεση με βέλη απο κοντά θα ζαλίσει τους εχθρούς, ακόμα και αν έχουν ασπίδα!",
+  "Falling blocks can damage you - be careful!": "Κομμάτια που πέφτουν μπορούν να σε βλάψουν - πρόσεχε!",
+  "Dropped from a high place, kegs can explode on impact.": "Αν πετάξεις ένα εκρηκτικό βαρέλι απο ψηλά μπορεί να εκρηχτεί με τη κρούση.",
+  "Stationary archers are an easy target - make sure to keep moving.": "Οι ακίνητοι τοξότες είναι εύκολος στόχος - βεβαιώσου οτι κουνιέσαι.",
+  "See all those resources dropped by dead players? Your builders could sure use those.": "Βλέπεις όλα τα υλικά που πέσανε απο νεκρούς παίκτες ? Θα ήταν χρήσιμα για τους εργάτες σου!",
+  "Gold servers are official while blue servers are modded.": "Οι 'χρυσοί' σέρβερ είναι επίσημοι ενώ οι μπλέ είναι σέρβερ με mods.",
+  "If your doors are shaking, they will fall without adjacent block!": "Αν οι πόρτες σου τρέμουν, θα πέσουν χώρις γειτονικό κουτί!",
+  "It's dangerous to go alone.": "Είναι επικίνδυνο να πηγαίνεις μόνος σου.",
+  "Make sure to return to your tent during build phase (and afterwards) for a hefty resupply!": "Γύρνα στη τέντα σου κατά τη φάση κτισήματος (και αργότερα) για έναν γενναιόδωρο ανεφοδιασμό!",
+  "You can rebind your keys in the settings to suit your play style and preferences.": "Μπορείς να αλλάξεις τις συσχετίσεις των κουμπιών στις ρυθμίσεις για να ταιριάζουν με το στύλ παιχνδιού σου.",
+  "Knights can surf on water and slide on ground by shielding downward.": "Οι ιππότες μπορουν να σερφάρουν στο νερό και το έδαφος βάζοντας την ασπίδα προς τα κάτω.",
+  "Your main base should be finished by the end of the build period, builders should focus on forward defenses.": "Η βάση σου θα πρέπει να έχει τελειώσει στο τέλος της φάσης κτισήματος, οι εργάτες θα πρέπει να αφοσιωθούν στις εμπρόσθιες οχυρώσεις.",
+  "When knights shield upward, other players can stand on them to get past obstacles.": "Όταν οι ιππότες βάζουν την ασπίδα προς τα πάνω, άλλοι παίκτες μπορούν να σταθούμ πάνω τους για να περάσουν εμπόδια.",
+  "Not all arrows need to be triple shots! Single shots are more consistent.": "Δε χρειάζεται η τριπλή βολή πάντα! Οι μονές βολές είναι πιο σταθερές.",
+  "You can replace wood with stone without breaking the block. This is a good way to stop fires before they spread.": "Μπορείς να αντικαθαστήσεις ξύλο με πέτρα χωρίς να σπάσεις το κουτί. Αυτός είναι ένας καλός τρόπος να σταματήσεις πυρκαγιές",
+  "More than one game has been lost because a flag-runner couldn't get back into their base - make ways in and out!": "Πάνω απο ένα παιχνίδια έχουν χαθεί επειδή ο παίκτης με τη σημαία δε μπόρεσε να να επιστρέψει στη βάση του - φτιάξε δρόμους για είσοδο και έξοδο!",
+  "Fish, chickens, and even bushes all have uses. Don't randomly attack them.": "Les poules, les poissons et même les buissons peuvent être utiles. Ne les détruisez pas sans raison.",
+  "Quarters (food shop) in a forward base helps keep pressure on the enemy.": "Κοιτώνες (μαγαζία φαγητού) σε μια μπροστινή βάση βοηθάνε να κρατήσεις τη πίεση στον εχθρό.",
+  "If you want a shop built, build it yourself! If a builder hasn't built it already, they probably won't.": "Αν θές να κτίσεις ένα μαγαζί, φτιάχτο μόνος σου! Αν κάποιος εργάτης δεν το έχει κτίσει ήδη, πιθανόν δε θα το κτίσει.",
+  "Downward platforms at the top of a tower will help prevent enemies from climbing over.": "Οι πλατφόρμες προς τα κάτω στη κορυφή ενός πύργου αποτρέπουν εχθρούς απο το να σκαρφαλώσουν.",
+  "Stomping enemies is great tactic, but be careful - jump from too high and you'll die if you miss.": "Μια καλή τακτική είναι να ποδοπατήσεις εχθρούς, αλλά πρόσεχε - πήδα απο ψηλά και θα πεθάνεις αν αστοχήσεις.",
+  "Buy eggs to replenish your stock of chickens.": "Αγόρασε αυγά για να ανεφοδιάσεις το απόθεμα απο κότες.",
+  "Knights can use their swords to destroy wooden blocks and doors, but not stone": "Οι ιππότες μπορούν να χρησιμοποιήσουν τα σπαθιά τους για να καταστρέψουν ξύλινα κουτιά και πόρτες, αλλά όχι τα πέτρινα.",
+  "Doors and siege weapons are vulnerable to explosives.": "Οι πόρτες και οι μηχανές πολιορκίας είναι ευάλλωτες στα εκρηκτικά.",
+  "Bison can be tamed with burgers.": "Οι βίσωνες μπορούν να ημερέψουν με μπέργκερ.",
+  "Resources can be resupplied by changing classes in workshops, not just at the tent!": "Μπορείς να ανεφοδιαστείς με προμήθειες αλλάζοντας κλάσεις σε εργαστήρια, όχι μόνο στη τέντα!",
+
+  //Requirements.as
+  "Wood": "Ξύλο",
+  "Stone": "Πέτρα",
+  "Gold": "Χρυσό",
+  "{COINS_QUANTITY} $COIN$ required\n": "Απαιτείται {COINS_QUANTITY} $COIN$\n",
+
+  //// BLOB NAMES ////
+  "Migrant": "Πρόσφυγας",
+  "Magic Orb": "Μαγική σφαίρα",
+  "Sedgwick": "Sedgwick",
+  "Princess Geti": "Πριγκήπισσα Geti",
+  "Building in Construction": "Κτήριο σε κατασκευή",
+  "Archer Shop": "Μαγαζί για τοξότες",
+  "Boat Shop": "Μαγαζί για βάρκες",
+  "Builder Shop": "Μαγαζί για εργάτες",
+  "Knight Shop": "Μαγαζί για ιππότες",
+  "Quarters": "Κοιτώνας",
+  "Storage": "Αποθηκευτικός χώρος",
+  "Storage Cache": "Κρυψώνα",
+  "Vehicle Shop": "Μαγαζί οχημάτων",
+  "Drill": "Τρυπάνι",
+  "Workshop": "Εργαστήριο",
+  "Fireplace": "Τζάκι",
+  "Hall": "Αίθουσα",
+  "Barracks": "Στρατώνες", //OLD
+  "Bed": "Κρεβάτι",
+  //"Dormitory":"Εστία", //OLD
+  "Kitchen": "Κουζίνα", //OLD
+  "Seeds": "Σπόροι",
+  "Nursery": "Ιατρίο", //OLD
+  "Research": "Έρευνα", //OLD
+  "Mill Saw": "Πριόνι μύλλου",
+  "Saw": "Πριόνι",
+  "Trader": "Έμπορος",
+  "Trading Post": "Eμπορικός σταθμός",
+  "Travel Tunnel": "Τούνελ μεταφοράς",
+  "Workbench": "Πάγκος εργασίας",
+  "Boulder": "Βράχος",
+  "Bucket": "Κουβάς",
+  "Crate": "Καφάσι",
+  "Bomb": "Βόμβα",
+  "Keg": "Εκρηκτικό βαρέλι",
+  "Mine": "Ορυχείο",
+  "Satchel": "Σακίδιο εκρηκτικών", //OLD
+  "Water Bomb": "Νερόμπομπα",
+  "Burger": "Μπέργκερ",
+  "Heart": "Καρδία",
+  "Lantern": "Λατέρνα",
+  "Wood Log": "Κορμός",
+  //"Powerup":"", //OLD
+  "Arrow": "Βέλος",
+  "Arrows": "Βέλη",
+  "Ballista Bolt": "Βέλος Καταπέλτη",
+  "Ballista Bolts": "Βέλη Καταπέλτη",
+  "Scroll": "Πάπυρος",
+  "Scroll of Drought": "Πάπυρος ξηρασίας",
+  "Scroll of Carnage": "Πάπυρος μακελειού",
+  "Sponge": "Σφουγγαρι",
+  "Bomb Arrow": "Βέλος-Βόμβα",
+  "Fire Arrows": "Φλαιγόμενα βέλη",
+  "Water Arrows": "Βέλη νερού",
+  "Gold": "Χρυσός",
+  "Stone": "Πέτρα",
+  "Wood": "Ξύλο",
+  "Bomb": "Βόμβα",
+  "Water Bombs": "Νερόμπομπες",
+  "Wisent": "Βίσωνας",
+  "Chicken": "Κοτόπουλο",
+  "Egg": "Αυγό",
+  "Fishy": "Ψάρι",
+  "Shark": "Καρχαρίας",
+  "Steak": "Μπριζόλα",
+  "Bush": "Θάμνος",
+  "Grain": "Σιτηρά",
+  "Grain Plant": "Στάχι",
+  "Flowers": "Λουλούδια",
+  "Seed": "Σπόρος",
+  "Pine Seed": "Σπόρος πέυκου",
+  "Oak Seed": "Σπόρος βελανιδιάς",
+  "Bushy Tree": "Θαμνωτό δέντρο",
+  "Pine Tree": "Πέυκο",
+  "Very Important Flag": "Πολύ σημαντική σημαία",
+  "Flag Base": "Σημαία ομάδας",
+  "Dummy": "Κούκλα",
+  "Tent": "Τέντα",
+  "Sign": "Πινακίδα",
+  "Team base": "Βάση ομάδας",
+  "Bolter": "Κόσκινο",
+  "Dispenser": "Διανομέας",
+  "Lamp": "Λάμπα",
+  "Obstructor": "Αυτοματοποιημένη παγίδα",
+  "Magazine": "Γεμιστήρας",
+  "Coin Slot": "Υποδοχή νομισμάτων",
+  "Lever": "Μοχλός",
+  "Button": "Κουμπί",
+  "Stone Door": "Πέτρινη πόρτα",
+  "Wooden Door": "Ξύλινη πόρτα",
+  "Ladder": "Σκάλα",
+  "Mounted Bow": "Εγκαθιστόμενο τόξο",
+  "Wooden Platform": "Ξύλινη πλατφόρμα",
+  "Spikes": "Καρφιά",
+  "Trampoline": "Τραμπολίνο",
+  "Trap Block": "Παγίδα",
+  "Airship": "Αεροσκάφος", // OLD
+  "Bomber": "Βομβαρδιστικό", //OLD
+  "Ballista": "Βαλίστρα",
+  "Dinghy": "Λέμβος",
+  "Long Boat": "Μακριά Λέμβος",
+  "Raft": "Κανό",
+  "War Boat": "Πολεμικό σκάφος",
+  "Large Door": "Μεγάλη πόρτα", //OLD
+  "Catapult": "Καταπέλτης",
+  "Catapult Rock": "Βράχος για τον καταπέλτη",
+
+  //// INVENTORY NAMES ////
+  "Backpack": "Σακίδιο",
+  "Load": "Φόρτωσε",
+  "Bomber Compartment": "Χώρος βομβαρδιστικού", //OLD
+  "Boat Compartment": "Χώρος σκαφών",
+  "Team Storage": "Αποθηκευτικός χώρος ομάδας",
+  "Tech Scrolls": "Πάπυρος τεχνολογίας", // OLD
+  "Storage": "Αποθηκευτικός χώρος",
+
+  //// BUTTONS AND OTHER ////
+  "Buy": "Αγόρασε", //CTF Shops
+  "Shop": "Κατάστημα", //Shop.as (menu desc) & TradingMenu.as (btn)
+  "Swap Class": "Άλλαξε Κλάση", //OneClassAvailable.as & TentLogic.as (btns)
+  "Swap class": "Άλλαξε Κλάση", //StandardRespawnCommand.as (menu desc)
+  "Change class": "Άλλαξε Κλάση", //Hall.as, TDM_Ruins.as, WAR_base.as, Ballista.as, WarBoat.as
+  "Trade": "Συνναλαγή",
+
+  //// SCROLLS ////
+  //ScrollDrought.as
+  "Use this to dry up an orb of water.": "Χρησιμοποίησε αυτό για να στεγνώσεις μία σφαίρα νερού.",
+  "Use this to turn all stone in the area into gold": "Χρησιμοποίησε αυτό για να μετατρέψεις όλη τη πέτρα στη περιοχή σε χρυσό.",
+  "Use this to make all visible enemies instantly turn into a pile of gibs.": "Χρησιμοποίησε αυτό για να κάνεις όλους τους ορατούς εχθρούς σκόνη.",
+
+  //// UI ////
+  "OK": "OK",
+  "Cancel": "Άκυρο",
+
+  //Loading
+  //TODO implement in engine
+  "Precaching files...": "Κατέβασμα αρχείων...",
+  "Loading blobs...": "Φόρτωση οντότητων...",
+  "Loading configs...": "Φόρτωση ρυθμίσεων...",
+  "Receiving scripts...": "Λήψη scripts...",
+  "Determining changed scripts...": "Καθορισμός αλλαγμένων scripts...",
+  "Building downloaded scripts...": "Μεταγγλωτισμός των scripts που έχουν κατέβει...",
+  "Be nice to each other, read books and do your homework.": "Να είστε καλοί ο ένας με τον άλλο, να διαβάζετε βιβλία και να κάνετε τα μαθηματά σας.",
+  "Authenticating to server...": "Επαλήθευση στον σέρβερ...",
+
+  //Login
+  //TODO incomplete
+  "Username:": "Όνομα χρήστη:",
+  "Password:": "Κωδικός:",
+  "Remember me": "Θυμίσου το προφίλ",
+  "Create Account": "Δημιούργησε προφιλ",
+  "Forgot?": "Ξέχασες?",
+  "Offline": "Λειτουργία εκτός σύνδεσης",
+  "PLAY": "ΠΑΙΞΕ",
+
+  //Titlescreen
+  "Solo": "Παιχνίδι για έναν παίκτη",
+  "Multiplayer": "Παιχνίδι για πολλούς παίκτες",
+  "Quit": "Έξοδος",
+  "Forum": "Forums",
+  "News": "Actus",
+  "Discord": "Discord",
+  "IRC": "IRC",
+  "Wiki": "Wiki",
+
+  //Solo
+  "TUTORIALS": "ΜΑΘΗΜΑΤΑ",
+  "Basics": "Βασικά",
+  "Capture the Flag": "Πιάσε τη σημαία",
+  "Take the Halls": "Κατέκτησε τη βάση",
+
+  "Save the Princess": "Σώσε τη πριγκίπησα",
+
+  "Challenges!": "Δοκιμασίες!",
+
+  "Sandbox": "Ελεύθερο παιχνίδι",
+
+  //Multiplayer
+  "Simple Join": "Απλή σύνδεση",
+  "Don't Care": "Αδιάφορο",
+  "Pick Game Size:": "Διάλεξε μέγεθος παιχνιδιού:",
+  "<8 Players": "<8 παίκτες",
+  "8-20 Players": "8 έως 20 παίκτες",
+  ">20 Players": ">20 παίκτες",
+  "Choose Game Mode:": "Διάλεξε :",
+  "Capture The Flag": "Πιάσε τη σημαία",
+  "Take The Halls": "Κατέκτησε τη βάση",
+  "Team Deathmatch": "Ομαδικό παιχνίδι", //i have no fucking clue why it shows reversed in the button. specifically here.
+  //"Sandbox": "Ελεύθερο παιχνίδι", //already translated
+  "Co-op Challenge": "Δοκιμασία co-op",
+  "Custom Content": "Προσαρμοσμένο περιεχόμενο",
+  "Play!": "Παίξε!",
+
+  "Browse servers": "Αναζήτησε σέρβερ",
+
+  "Connect to...": "Σύνδεση σε...",
+  "IP:Port": "IP:Θύρα",
+  //"Password:": "Κωδικός:", //already translated
+
+  //ESC menu
+  "Change Team": "Άλλαξε ομάδα",
+  "Suicide": "Αυτοκτονία",
+  "Start a Vote": "Ξεκίνα μία ψήφο",
+  "Admin": "Διαχεριστής",
+  "Ignore Player": "Αγνόησε τον παίκτη",
+  "Servers": "Λίστα server",
+  "Settings": "Ρυθμίσεις",
+  "Quit to menu": "Επιστροφή στο μενού",
+
+  //Settings->Player
+  "Player": "Παίκτης",
+  "Gender:": "Φύλλο:",
+  "Head packs:": "DLC κεφάλια:",
+  "Standard": "Κανονικό",
+  "Flags of The World": "Σημαίες του κόσμου",
+  "BUY": "ΑΓΟΡΑΣΕ",
+  "Head:": "Κεφάλι:",
+  "Clantag:": "Ομάδα:",
+
+  //Settings->Controls
+  "Controls": "Κουμπιά",
+  "Change keys:": "Άλλαξε τα κουμπιά:",
+  "(Unused keys, for mods)": "(Αχρησιμοποίητα κουμπιά, για τους διαχειρηστές)",
+  "Press key/mouse to change to...": "Πάτα το κουμπί/ποντίκι για να αλλάξεις σε...",
+  "Keys Double-Bound": "Τα κουμπιά χρησιμοποιούνται ήδη",
+  "This key is being used by another action or is reserved; results may not be as you expected!\n\nYou have been warned!": "Αυτό το κουμπί χρησιμοποιείται απο άλλη ενέργεια ή είναι δεσμευμένο; τα αποτελέσματα μπορεί να είναι απρόβλεπτα!\n\n!",
+  "Left": "Αριστερά", //TODO in engine
+  "Right": "Δεξιά",
+  "Up": "Πάνω",
+  "Down": "Κάτω",
+  "Action 1": "Action 1",
+  "Action 2": "Action 2",
+  "Action 3": "Action 3",
+  "Inventory": "Απόθεμα",
+  "Use": "Χρησιμοποίησε",
+  "Pickup": "Μάζεψε",
+  "Zoom in": "Μεγένθυση",
+  "Zoom out": "Σμίκρυνση",
+  "Emoticons": "Φάτσες",
+  "Map key": "Υπόμνημα",
+  "Mark Player": "Μάρκαρε τον παίκτη",
+  "Taunts": "Αποδοκιμασίες",
+  "Misc Menu": "Εδικό Μενού",
+
+  //Settings->Video
+  "Video": "Εικόνα",
+  "Smooth shader": "Ομαλή σκίαση",
+  "\nSmooths the game screen using hq2x filter (will lower performance)\n": "\nΟμαλύνει την οθόνη χρησιμοποιώντας το φιλτρο hq2x (θα χαμηλώσει την επίδοση)\n",
+  "Faster graphics": "Γρηγορότερα γραφικά",
+  "\nCheck this if the game is choppy or slow\n": "\nΕπέλεξε αυτό αν το παιχνίδι είναι ασταθές ή αργό\n",
+  "Uncap framerate": "Ξεκλείδωσε τα FPS",
+  "\nCheck this to have unlimited FPS (uncheck if you have slow performance!)\n": "\nΔιάλεξε αυτό αν θές να έχεις απεριόριστα FPS (σβήσε την επιλογή αν έχεις αργή επίδοση!)\n",
+  "VSync - Requires Restart": "VSync - Απαιτεί Επανεκκίνηση",
+  "\nSync rendering with monitor refresh rate (prevents tearing)\n": "\nΣυγχρόνισε την εικόνα με τον ρυθμό ανανέωσης της οθόνης\n",
+
+  //Settings->Sound
+  "Sound": "Ήχος",
+  "Sound Volume:": "Ένταση ήχου:",
+  "Music Volume:": "Ένταση μουσικής:",
+  "Game music": "Μουσική παιχνιδιού",
+  "\nTurn on\\off the game music.\n": "\n(Απ)ενεργοποίηση μουσικής παιχνιδιού\n",
+  "Menu music": "Μουσική μενού",
+  "\nTurn on\\off the menu music.\n": "\n(Απ)ενεργοποίηση μουσικής μενού\n",
+  "Swap audio channels": "Αλλαγή καναλιών ήχου",
+  "\nTick this if your sound is backwards.\n": "\nΕπέλεξε αυτό αν ο ήχος σου είναι ανάποδα\n",
+
+  //Settings->Misc
+  "Misc": "Άλλα",
+  "Fixed camera": "Σταθερή κάμερα",
+  "\nFixed camera = platform style; Not fixed camera = Soldat/mouse look style\n": "\nΣταθερή κάμερα = στύλ πλατφόρμας; Μη σταθερή κάμερα = στύλ soldat/ποντικιού\n",
+  "Kids safe": "Παιδική Λειτουργία",
+  "Chat Filter": "Φίλτρο συνομιλίας",
+  "Show Team-Mates Names": "Εμφάνιση ονομάτων συμπαικτών",
+  "Show Minimap": "Εμφάνιση χάρτη",
+  "Show Chat Bubbles": "Εμφάνιση φουσκών συνομιλίας",
+  "Snap Camera To Pixel": "Ευθυγράμμισε τη κάμερα με τα πίξελ",
+  "Language (EXPERIMENTAL):": "Γλώσσα (Πειραματική Λειτουργία):",
+  "Language:": "Γλώσσα:",
+  "Experimental feature warning": "Προειδοποίηση πειραματικού χαρακτηριστικού",
+  "Language support is still EXPERIMENTAL!\nThe translations might be incomplete or inaccurate.\nSome translations will need a restart to apply.": "Η υποστήριξη άλλων γλωσσών είναι ΠΕΙΡΑΜΑΤΙΚΗ!\nΟι μεταφράσεις μπορεί να είναι ημιτελής ή λάθος.\nΚάποιες μεταφράσεις απαιτούν επανεκκίνηση για να εφαρμοστούν",
+
+  //LANGUAGE NAMES
+  "French": "Γαλλικά",
+  "Polish": "Πολωνικά",
+  "English": "Αγγλικά",
+  "Russian": "Ρώσικα"
+}
