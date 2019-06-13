@@ -356,7 +356,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 			if (archer.legolas_arrows == 0)
 			{
-				charge_state = ArcherParams::readying;
+				charge_state = ArcherParams::not_aiming;
 				charge_time = 5;
 
 				sprite.RewindEmitSound();
@@ -527,24 +527,31 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			//	print("archer.charge_time " + archer.charge_time + " / " + ArcherParams::shoot_period );
 			if (archer.charge_state == ArcherParams::readying)
 			{
-				frame = 1 + float(archer.charge_time) / float(ArcherParams::shoot_period + ArcherParams::ready_time) * 7;
+				//readying shot
+				frame = 2 + int((float(archer.charge_time) / float(ArcherParams::shoot_period + ArcherParams::ready_time)) * 8) * 2.0f;
 			}
 			else if (archer.charge_state == ArcherParams::charging)
 			{
-				if (archer.charge_time <= ArcherParams::shoot_period)
+				if (archer.charge_time < ArcherParams::shoot_period)
 				{
-					frame = float(ArcherParams::ready_time + archer.charge_time) / float(ArcherParams::shoot_period) * 7;
+					//charging shot
+					frame = 2 + int((float(ArcherParams::ready_time + archer.charge_time) / float(ArcherParams::shoot_period + ArcherParams::ready_time)) * 8) * 2;
 				}
 				else
-					frame = 9;
+				{
+					//charging legolas
+					frame = 1 + int((float(archer.charge_time - ArcherParams::shoot_period) / (ArcherParams::legolas_period - ArcherParams::shoot_period)) * 9) * 2;
+				}
 			}
 			else if (archer.charge_state == ArcherParams::legolas_ready)
 			{
-				frame = 10;
+				//legolas ready
+				frame = 19;
 			}
 			else if (archer.charge_state == ArcherParams::legolas_charging)
 			{
-				frame = 9;
+				//in between shooting multiple legolas shots
+				frame = 1;
 			}
 			getHUD().SetCursorFrame(frame);
 		}
