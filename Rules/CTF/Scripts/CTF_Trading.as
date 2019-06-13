@@ -107,15 +107,17 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 				killer.server_setCoins(killer.getCoins() - coinsOnTKLose);
 			}
 		}
+		if (!this.isWarmup())	//only reduce coins if the round is on.
+		{
+			s32 lost = victim.getCoins() * (coinsOnDeathLosePercent * 0.01f);
 
-		s32 lost = victim.getCoins() * (coinsOnDeathLosePercent * 0.01f);
+			victim.server_setCoins(victim.getCoins() - lost);
 
-		victim.server_setCoins(victim.getCoins() - lost);
-
-		//drop coins
-		CBlob@ blob = victim.getBlob();
-		if (blob !is null)
-			server_DropCoins(blob.getPosition(), XORRandom(lost));
+			//drop coins
+			CBlob@ blob = victim.getBlob();
+			if (blob !is null)
+				server_DropCoins(blob.getPosition(), XORRandom(lost));
+		}
 	}
 }
 
