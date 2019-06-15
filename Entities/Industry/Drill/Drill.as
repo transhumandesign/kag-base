@@ -290,6 +290,10 @@ void onTick(CBlob@ this)
 								{
 									for (uint i = 0; i < 2; i++)
 									{
+										//tile destroyed last hit
+										if (map.getTile(hi.hitpos).type != tile)
+											break;
+
 										map.server_DestroyTile(hi.hitpos, 1.0f, this);
 										Material::fromTile(holder, tile, 1.0f);
 									}
