@@ -273,8 +273,7 @@ void onTick(CBlob@ this)
 
 									this.server_Hit(hi.blob, hi.hitpos, attackVel, attack_dam, Hitters::drill);
 
-									// Yield half
-									Material::fromBlob(holder, hi.blob, attack_dam * 0.5f);
+									Material::fromBlob(holder, hi.blob, attack_dam);
 								}
 
 								hitsomething = true;
@@ -289,10 +288,11 @@ void onTick(CBlob@ this)
 
 								if (getNet().isServer())
 								{
-									map.server_DestroyTile(hi.hitpos, 1.0f, this);
-									map.server_DestroyTile(hi.hitpos, 1.0f, this);
-
-									Material::fromTile(holder, tile, 1.0f);
+									for (uint i = 0; i < 2; i++)
+									{
+										map.server_DestroyTile(hi.hitpos, 1.0f, this);
+										Material::fromTile(holder, tile, 1.0f);
+									}
 								}
 
 								if (getNet().isClient())
