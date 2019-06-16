@@ -238,7 +238,7 @@ void onTick(CBlob@ this)
 				if (map !is null)
 				{
 					HitInfo@[] hitInfos;
-					if (map.getHitInfosFromArc((this.getPosition() - attackVel), -attackVel.Angle(), 30, distance, this, false, @hitInfos))
+					if (map.getHitInfosFromArc((this.getPosition() - attackVel), -attackVel.Angle(), 30, distance, this, true, @hitInfos))
 					{
 						bool hit_ground = false;
 						for (uint i = 0; i < hitInfos.length; i++)
@@ -291,7 +291,7 @@ void onTick(CBlob@ this)
 									for (uint i = 0; i < 2; i++)
 									{
 										//tile destroyed last hit
-										if (map.getTile(hi.hitpos).type != tile)
+										if (!map.isTileSolid(map.getTile(hi.hitpos)))
 											break;
 
 										map.server_DestroyTile(hi.hitpos, 1.0f, this);
