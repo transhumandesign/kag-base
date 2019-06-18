@@ -13,7 +13,7 @@ void onRender(CSprite@ this)
 	// draw only for local player
 	CBlob@ localBlob = getLocalPlayerBlob();
 
-	if (localBlob is null || localBlob.isAttached())
+	if (localBlob is null || localBlob.isAttached() || localBlob.isInInventory())
 	{
 		return;
 	}
