@@ -1,6 +1,7 @@
 // OneClassAvailable.as
 
 #include "StandardRespawnCommand.as";
+#include "GenericButtonCommon.as";
 
 const string req_class = "required class";
 
@@ -26,10 +27,8 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if(!this.exists(req_class))
-	{
+	if (!canSeeButtons(this, caller) || !this.exists(req_class))
 		return;
-	}
 
 	string cfg = this.get_string(req_class);
 	if(canChangeClass(this, caller) && caller.getName() != cfg)

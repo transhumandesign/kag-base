@@ -7,6 +7,7 @@
 #include "Requirements_Tech.as"
 #include "MakeCrate.as"
 #include "CheckSpam.as"
+#include "GenericButtonCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -43,6 +44,8 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	ShopItem[]@ shop_items;
 	if(!this.get(SHOP_ARRAY, @shop_items))
 	{

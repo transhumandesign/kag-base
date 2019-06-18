@@ -2,6 +2,7 @@
 #include "ClassSelectMenu.as";
 #include "StandardRespawnCommand.as";
 #include "Requirements_Tech.as";
+#include "GenericButtonCommon.as";
 
 //todo: move to include
 bool hasTech(CBlob@ this, const string &in name)
@@ -235,6 +236,8 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (isOverlapping(this, caller) && !caller.isAttached())
 	{
 		if (!isAnotherRespawnClose(this) && !isFlipped(this))

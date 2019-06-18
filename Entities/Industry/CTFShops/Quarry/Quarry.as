@@ -1,6 +1,8 @@
 //Auto-mining quarry
 //converts wood into ores
 
+#include "GenericButtonCommon.as"
+
 const string fuel = "mat_wood";
 const string ore = "mat_stone";
 const string rare_ore = "mat_gold";
@@ -124,6 +126,8 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	CBitStream params;
 	params.write_u16(caller.getNetworkID());
 

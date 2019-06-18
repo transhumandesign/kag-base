@@ -4,6 +4,7 @@
 #include "ShopCommon.as"
 #include "Descriptions.as"
 #include "MigrantCommon.as"
+#include "GenericButtonCommon.as"
 
 namespace MigrantState
 {
@@ -111,6 +112,8 @@ void onTick( CBlob@ this )
 
 void GetButtonsFor( CBlob@ this, CBlob@ caller )
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	// get no migrant button
 	if (!this.get_bool("shop available"))
 	{

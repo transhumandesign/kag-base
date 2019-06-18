@@ -2,6 +2,7 @@
 
 #include "StandardRespawnCommand.as"
 #include "StandardControlsCommon.as"
+#include "GenericButtonCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -45,6 +46,8 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	// button for runner
 	// create menu for class change
 	if (canChangeClass(this, caller) && caller.getTeamNum() == this.getTeamNum())
