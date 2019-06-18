@@ -44,7 +44,7 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (!canSeeButtons(this, caller) || caller.isAttachedTo(this)) return;
 
 	ShopItem[]@ shop_items;
 	if(!this.get(SHOP_ARRAY, @shop_items))
