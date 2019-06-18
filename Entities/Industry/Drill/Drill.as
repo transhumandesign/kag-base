@@ -246,7 +246,7 @@ void onTick(CBlob@ this)
 				if (map !is null)
 				{
 					HitInfo@[] hitInfos;
-					if (map.getHitInfosFromArc((this.getPosition() - attackVel), -attackVel.Angle(), 30, distance, this, false, @hitInfos))
+					if (map.getHitInfosFromArc((this.getPosition() - attackVel), -attackVel.Angle(), 30, distance, this, true, @hitInfos))
 					{
 						bool hit_ground = false;
 						for (uint i = 0; i < hitInfos.length; i++)
@@ -281,8 +281,7 @@ void onTick(CBlob@ this)
 
 									this.server_Hit(hi.blob, hi.hitpos, attackVel, attack_dam, Hitters::drill);
 
-									// Yield half
-									Material::fromBlob(holder, hi.blob, attack_dam * 0.5f);
+									Material::fromBlob(holder, hi.blob, attack_dam);
 								}
 
 								hitsomething = true;
@@ -297,10 +296,15 @@ void onTick(CBlob@ this)
 
 								if (getNet().isServer())
 								{
-									map.server_DestroyTile(hi.hitpos, 1.0f, this);
-									map.server_DestroyTile(hi.hitpos, 1.0f, this);
+									for (uint i = 0; i < 2; i++)
+									{
+										//tile destroyed last hit
+										if (!map.isTileSolid(map.getTile(hi.hitpos)))
+											break;
 
-									Material::fromTile(holder, tile, 1.0f);
+										map.server_DestroyTile(hi.hitpos, 1.0f, this);
+										Material::fromTile(holder, tile, 1.0f);
+									}
 								}
 
 								if (getNet().isClient())
