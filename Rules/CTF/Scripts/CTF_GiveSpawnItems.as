@@ -15,6 +15,12 @@ bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity)
 {
 	CInventory@ inv = blob.getInventory();
 
+	//shred old arrows if player is archer
+	if (blob.getName() == "archer")
+	{
+		inv.server_RemoveItems(name, quantity);
+	}
+
 	CBlob@ mat = server_CreateBlobNoInit(name);
 
 	if (mat !is null)
