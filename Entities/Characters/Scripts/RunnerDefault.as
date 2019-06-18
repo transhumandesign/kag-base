@@ -43,6 +43,8 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	this.getSprite().PlaySound("/Pickup.ogg");
 
+	this.ClearButtons();
+
 	if (getNet().isClient())
 	{
 		RemoveHelps(this, "help throw");
