@@ -11,7 +11,7 @@ const int coinsOnTKLose = 50;
 const int coinsOnRestartAdd = 0;
 const bool keepCoinsOnRestart = false;
 
-const int coinsOnHitSiege = 5;
+const int coinsOnHitSiege = 5; //per heart of damage
 const int coinsOnKillSiege = 20;
 
 const int coinsOnCapFlag = 100;
@@ -107,15 +107,17 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 				killer.server_setCoins(killer.getCoins() - coinsOnTKLose);
 			}
 		}
+		if (!this.isWarmup())	//only reduce coins if the round is on.
+		{
+			s32 lost = victim.getCoins() * (coinsOnDeathLosePercent * 0.01f);
 
-		s32 lost = victim.getCoins() * (coinsOnDeathLosePercent * 0.01f);
+			victim.server_setCoins(victim.getCoins() - lost);
 
-		victim.server_setCoins(victim.getCoins() - lost);
-
-		//drop coins
-		CBlob@ blob = victim.getBlob();
-		if (blob !is null)
-			server_DropCoins(blob.getPosition(), XORRandom(lost));
+			//drop coins
+			CBlob@ blob = victim.getBlob();
+			if (blob !is null)
+				server_DropCoins(blob.getPosition(), XORRandom(lost));
+		}
 	}
 }
 
@@ -202,8 +204,14 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 				break;
 
 				case GE_hit_vehicle:
-					coins = coinsOnHitSiege;
-					break;
+
+				{
+					g.params.ResetBitIndex();
+					f32 damage = g.params.read_f32();
+					coins = coinsOnHitSiege * damage;
+				}
+
+				break;
 
 				case GE_kill_vehicle:
 					coins = coinsOnKillSiege;

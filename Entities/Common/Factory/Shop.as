@@ -286,6 +286,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 					if (newlyMade !is null)
 					{
+						newlyMade.set_u16("buyer", caller.getPlayer().getNetworkID());
+
 						CBitStream params;
 						params.write_netid(caller.getNetworkID());
 						params.write_netid(newlyMade.getNetworkID());

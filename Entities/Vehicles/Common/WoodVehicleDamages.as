@@ -50,7 +50,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		{
 			if (damageowner.getTeamNum() != this.getTeamNum())
 			{
-				SendGameplayEvent(createVehicleDamageEvent(damageowner, false));
+				SendGameplayEvent(createVehicleDamageEvent(damageowner, dmg));
 			}
 		}
 	}
@@ -66,7 +66,7 @@ void onDie(CBlob@ this)
 		CBlob@ b = p.getBlob();
 		if (b !is null && b.getTeamNum() != this.getTeamNum())
 		{
-			SendGameplayEvent(createVehicleDamageEvent(this.getPlayerOfRecentDamage(), true));
+			SendGameplayEvent(createVehicleDestroyEvent(this.getPlayerOfRecentDamage()));
 		}
 	}
 }

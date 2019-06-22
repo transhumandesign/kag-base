@@ -8,6 +8,9 @@ void onInit(CSprite@ this)
 
 void onRender(CSprite@ this)
 {
+	if (g_videorecording)
+		return;
+
 	CBlob@ blob = this.getBlob();
 	if (getHUD().hasButtons())
 	{
