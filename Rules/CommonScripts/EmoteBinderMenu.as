@@ -8,7 +8,7 @@ const array<u8> EXCLUDED_EMOTES = {
 	Emotes::pickup
 };
 const u8 MENU_WIDTH = 9;
-const u8 MENU_HEIGHT = Maths::Ceil((Emotes::emotes_total - EXCLUDED_EMOTES.length - 1) / MENU_WIDTH) + 3;
+const u8 MENU_HEIGHT = Maths::Ceil((Emotes::emotes_total - EXCLUDED_EMOTES.length - 1) / MENU_WIDTH) + 4;
 const string SELECTED_PROP = "selected emote: ";
 
 const string EMOTE_CMD = "emote command";
