@@ -66,7 +66,7 @@ void Slam(CBlob @this, f32 angle, Vec2f vel, f32 vellen)
 	HitInfo@[] hitInfos;
 	u8 team = this.get_u8("launch team");
 
-	if (map.getHitInfosFromArc(pos, -angle, 30, vellen, this, false, @hitInfos))
+	if (map.getHitInfosFromArc(pos, -angle, 30, vellen, this, true, @hitInfos))
 	{
 		for (uint i = 0; i < hitInfos.length; i++)
 		{

@@ -45,13 +45,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 					CPlayer@ player = theBlob.getPlayer();
 					u16 healerID = this.get_u16("healer");
 					CPlayer@ healer = getPlayerByNetworkId(healerID);
-
-					bool healerHealed = healer is player;
-					bool sameTeam = healer.getTeamNum() == player.getTeamNum();
-					if (healer !is null && !healerHealed && sameTeam)
+					if (player !is null && healer !is null)
 					{
-						int coins = this.getName() == "heart" ? 5 : 10;
-						healer.server_setCoins(healer.getCoins() + coins);
+						bool healerHealed = healer is player;
+						bool sameTeam = healer.getTeamNum() == player.getTeamNum();
+						if (!healerHealed && sameTeam)
+						{
+							int coins = this.getName() == "heart" ? 5 : 10;
+							healer.server_setCoins(healer.getCoins() + coins);
+						}
 					}
 				}
 
