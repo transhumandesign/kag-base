@@ -75,7 +75,7 @@ float drawServerInfo(float y)
 
 	string info = getTranslatedString(rules.gamemode_name) + ": " + getTranslatedString(rules.gamemode_info);
 	SColor white(0xffffffff);
-	string mapName = "Map name : "+rules.get_string("map_name");
+	string mapName = getTranslatedString("Map name : ")+rules.get_string("map_name");
 	Vec2f dim;
 	GUI::GetTextDimensions(info, dim);
 	if(dim.x + 15 > width)
