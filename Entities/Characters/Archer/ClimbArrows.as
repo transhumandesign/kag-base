@@ -1,4 +1,5 @@
 #include "RunnerCommon.as"
+#include "Knocked.as"
 
 void onInit(CBlob@ this)
 {
@@ -11,7 +12,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (!this.isKeyPressed(key_up)) { return; }
+	if (!this.isKeyPressed(key_up) || isKnocked(this)) { return; }
 
 	CBlob@[] overlapping;
 	if (this.getOverlapping(@overlapping))

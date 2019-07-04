@@ -39,6 +39,24 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 					theBlob.add_f32("heal amount", theBlob.getHealth() - oldHealth);
 				}
 
+				//give coins for healing teammate
+				if (this.exists("healer"))
+				{
+					CPlayer@ player = theBlob.getPlayer();
+					u16 healerID = this.get_u16("healer");
+					CPlayer@ healer = getPlayerByNetworkId(healerID);
+					if (player !is null && healer !is null)
+					{
+						bool healerHealed = healer is player;
+						bool sameTeam = healer.getTeamNum() == player.getTeamNum();
+						if (!healerHealed && sameTeam)
+						{
+							int coins = this.getName() == "heart" ? 5 : 10;
+							healer.server_setCoins(healer.getCoins() + coins);
+						}
+					}
+				}
+
 				theBlob.Sync("heal amount", true);
 			}
 
@@ -66,6 +84,8 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	{
 		Heal(attached, this);
 	}
+
+	this.set_u16("healer", attached.getPlayer().getNetworkID());
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
@@ -74,5 +94,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 	{
 		Heal(detached, this);
 	}
+
+	this.set_u16("healer", detached.getPlayer().getNetworkID());
 }
 

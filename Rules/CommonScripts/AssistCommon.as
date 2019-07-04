@@ -2,7 +2,8 @@
 
 CPlayer@ getAssistPlayer(CPlayer@ victim, CPlayer@ killer)
 {
-	if (victim is null || killer is null)
+	//no assist if teamkill
+	if (victim is null || killer is null || victim.getTeamNum() == killer.getTeamNum())
 	{
 		return null;
 	}
@@ -60,15 +61,19 @@ CPlayer@ getAssistPlayer(CPlayer@ victim, CPlayer@ killer)
 	for (uint i = 0; i < hitters.length; i++)
 	{
 		CPlayer@ origHitter = hitters[i];
+		if(origHitter is null)
+		{
+			continue;
+		}
 		f32 totalDamage = 0;
 
-		for (uint j = i; j < hitters.length; j++)
+		for (uint j = 0; j < hitters.length; j++)
 		{
 			CPlayer@ hitter = hitters[j];
 			f32 damage = damages[j];
 
 			//healed away the damage from here onwards
-			if (damage == 0.0f)
+			if (damage <= 0.0f)
 			{
 				break;
 			}
@@ -84,7 +89,8 @@ CPlayer@ getAssistPlayer(CPlayer@ victim, CPlayer@ killer)
 		if (totalDamage >= assistDamage)
 		{
 			//killer cannot assist their own kill
-			if (origHitter is killer)
+			//helper needs to be from a different team
+			if (origHitter is killer || victim.getTeamNum() == origHitter.getTeamNum())
 			{
 				return null;
 			}

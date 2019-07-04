@@ -125,7 +125,7 @@ shared class CTFSpawns : RespawnSystem
 			}
 
 			// tutorials hack
-			if (getRules().exists("singleplayer"))
+			if (getRules().hasTag("singleplayer"))
 			{
 				p_info.team = 0;
 			}
@@ -382,7 +382,7 @@ shared class CTFCore : RulesCore
 
 	void AddPlayer(CPlayer@ player, u8 team = 0, string default_config = "")
 	{
-		if (getRules().exists("singleplayer"))
+		if (getRules().hasTag("singleplayer"))
 		{
 			team = 0;
 		}
@@ -702,7 +702,7 @@ void onInit(CRules@ this)
 // had to add it here for tutorial cause something didnt work in the tutorial script
 void onBlobDie(CRules@ this, CBlob@ blob)
 {
-	if (this.exists("tutorial"))
+	if (this.hasTag("tutorial"))
 	{
 		const string name = blob.getName();
 		if ((name == "archer" || name == "knight" || name == "chicken") && !blob.hasTag("dropped coins"))
