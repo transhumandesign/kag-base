@@ -47,6 +47,9 @@ void Config(CTFCore@ this)
 	//spawn after death time
 	this.spawnTime = (getTicksASecond() * cfg.read_s32("spawn_time", 15));
 
+	// modifies if the fall damage velocity is higher or lower - same velocity as on TDM
+	getRules().set_f32("fall vel modifier", cfg.read_f32("fall_dmg_nerf", 1.3f));
+
 }
 
 shared string base_name() { return "tent"; }
