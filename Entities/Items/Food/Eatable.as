@@ -91,7 +91,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	CPlayer@ p = attached.getPlayer();
 	if(p is null){return;}
 
-	this.set_u16("healer", attached.getPlayer().getNetworkID());
+	this.set_u16("healer", p.getNetworkID());
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
