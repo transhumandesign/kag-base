@@ -78,23 +78,33 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 }
 
+
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if (getNet().isServer())
+	if(this is null || attached is null) {return;}
+
+	if (isServer())
 	{
 		Heal(attached, this);
 	}
+
+	CPlayer@ p = attached.getPlayer();
+	if(p is null){return;}
 
 	this.set_u16("healer", attached.getPlayer().getNetworkID());
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 {
-	if (getNet().isServer())
+	if(this is null || detached is null) {return;}
+
+	if (isServer())
 	{
 		Heal(detached, this);
 	}
+	
+	CPlayer@ p = detached.getPlayer();
+	if(p is null){return;}
 
-	this.set_u16("healer", detached.getPlayer().getNetworkID());
+	this.set_u16("healer", p.getNetworkID());
 }
-
