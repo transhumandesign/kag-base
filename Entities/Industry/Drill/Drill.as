@@ -427,8 +427,11 @@ void onRender(CSprite@ this)
 	u16 holderID = blob.get_u16("showHeatTo");
 
 	CPlayer@ holder = holderID == 0 ? null : getPlayerByNetworkId(holderID);
+	CBlob@ holderBlob = holder.getBlob();
+	if(holder is null || holderBlob is null)
+		return;
 
-	if (holder !is null && holder.getBlob().getName() != required_class && sv_gamemode != "TDM")
+	if (holderBlob.getName() != required_class && sv_gamemode != "TDM")
 		return;
 	
 	Vec2f mousePos = getControls().getMouseWorldPos();
