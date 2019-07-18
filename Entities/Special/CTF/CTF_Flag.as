@@ -254,17 +254,17 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onAttach( CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint )
 {
-    if(!getNet().isServer())
+    if (!getNet().isServer())
         return;
 
     CRules@ rules = getRules();
 
-    if(this.getName() == "ctf_flag")
+    if (this.getName() == "ctf_flag")
     {
         UIData@ ui;
         rules.get("uidata", @ui);
 
-        if(ui is null)
+        if (ui is null)
         {
             UIData data;
             rules.set("uidata", data);
@@ -276,14 +276,14 @@ void onAttach( CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint )
 
         for(int i = 0; i < ui.flagIds.size(); i++)
         {
-            if(ui.flagIds[i] == id)
+            if (ui.flagIds[i] == id)
             {
-                if(attached.getName() == "flag_base")
+                if (attached.getName() == "flag_base")
                 {
                     ui.flagStates[i] = "f";
 
                 }
-                else if(attached.getTeamNum() != this.getTeamNum())
+                else if (attached.getTeamNum() != this.getTeamNum())
                 {
                     ui.flagStates[i] = "m";
 
