@@ -35,7 +35,7 @@ void pickRandPlayer(CBlob@ this)
 
     CBlob@[] players;
     getBlobsByTag("player", players);
-    if(players.size() == 0)
+    if (players.size() == 0)
     {
         this.set_bool("no target", true);
         pickRandTargetPos(this);
@@ -52,7 +52,7 @@ void pickRandPlayer(CBlob@ this)
 
 CBlob@ getTarget(CBlob@ this)
 {
-    if(this.get_bool("no target") || this.get_bool("use pos"))
+    if (this.get_bool("no target") || this.get_bool("use pos"))
     {
         return null;
 
@@ -82,7 +82,7 @@ void onInit(CBlob@ this)
     this.getCurrentScript().tickFrequency = 5;
 
     CSprite@ sprite = this.getSprite();
-    if(sprite !is null)
+    if (sprite !is null)
     {
         sprite.SetRelativeZ(2.0f);
 
@@ -102,11 +102,11 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
     CSprite@ sprite = this.getSprite();
-    if(sprite !is null)
+    if (sprite !is null)
     {
-        if(this.hasTag("statue"))
+        if (this.hasTag("statue"))
         {
-            if(sprite.animation.name == "default")
+            if (sprite.animation.name == "default")
             {
                 sprite.SetAnimation("statue");
 
@@ -115,7 +115,7 @@ void onTick(CBlob@ this)
         }
         else
         {
-            if(sprite.animation.name == "statue")
+            if (sprite.animation.name == "statue")
             {
                 sprite.SetAnimation("default");
 
@@ -125,12 +125,12 @@ void onTick(CBlob@ this)
 
     }
 
-    if(this.hasTag("statue"))
+    if (this.hasTag("statue"))
     {
-        if(this.isOnGround())
+        if (this.isOnGround())
         {
             s32 statuetime = this.get_s32("statue time");
-            if(statuetime == 0)
+            if (statuetime == 0)
             {
                 this.set_s32("statue time", getGameTime() + 45);
                 Vec2f pos = this.getPosition();
@@ -154,7 +154,7 @@ void onTick(CBlob@ this)
             }
             else
             {
-                if(statuetime < getGameTime())
+                if (statuetime < getGameTime())
                 {
                     this.set_s32("statue time", 0);
                     ParticleZombieLightning(this.getPosition());
@@ -176,7 +176,7 @@ void onTick(CBlob@ this)
     else
     {
         u16 id = this.getNetworkID();
-        if((getGameTime()+id)%70 == 0)
+        if ((getGameTime()+id)%70 == 0)
             Sound::Play("Wings.ogg", this.getPosition(), 0.5);
 
         Vec2f vel = this.getVelocity();
@@ -189,7 +189,7 @@ void onTick(CBlob@ this)
     //do knocking logic
     DoKnockedUpdate(this);
 
-    if(getNet().isServer())
+    if (getNet().isServer())
     {
 
         CBlob@ target = getTarget(this);
@@ -199,7 +199,7 @@ void onTick(CBlob@ this)
         bool targetAttached = this.isAttachedTo(target);
 
         //check if we need a new target.
-        if((target is null || target.hasTag("dead")) && !usepos)
+        if ((target is null || target.hasTag("dead")) && !usepos)
         {
             pickRandTargetPos(this);
             return;
@@ -207,15 +207,15 @@ void onTick(CBlob@ this)
         }
 
         //in case greg gets stuck start doing something else
-        if(!targetAttached)
+        if (!targetAttached)
         {
             u32 elapsed = getElapsedTime(this);
-            if(usepos && elapsed > 30*10)
+            if (usepos && elapsed > 30*10)
             {
                 pickRandPlayer(this);
 
             }
-            else if(target !is null && elapsed > 30*30) //go after player for a long time
+            else if (target !is null && elapsed > 30*30) //go after player for a long time
             {
                 pickRandTargetPos(this);
 
@@ -224,9 +224,9 @@ void onTick(CBlob@ this)
         }
 
         u8 knocked = this.get_u8("knocked");
-        if(knocked > 0)
+        if (knocked > 0)
         {
-            if(targetAttached)
+            if (targetAttached)
             {
                 this.server_DetachAll();
                 pickRandTargetPos(this);
@@ -240,9 +240,9 @@ void onTick(CBlob@ this)
 
         //if on fire drop target
         s16 burn_time = this.get_s16("burn timer");
-        if(this.isInFlames() || burn_time > 0)
+        if (this.isInFlames() || burn_time > 0)
         {
-            if(targetAttached)
+            if (targetAttached)
             {
                 this.server_DetachAll();
 
@@ -255,14 +255,14 @@ void onTick(CBlob@ this)
         Vec2f vel = this.getVelocity();
 
         //set the facing of the greg towards the target
-        if(!targetAttached)
+        if (!targetAttached)
         {
             bool faceLeft = (vel.x > 0);
             this.SetFacingLeft(faceLeft);
 
         }
 
-        /*if(targetAttached)
+        /*if (targetAttached)
         {
 	        CPlayer@ local = getLocalPlayer();
 	        if (local !is null)
@@ -284,7 +284,7 @@ void onTick(CBlob@ this)
                 this.set_u16("struggle count", count);
                 //print("oggly booogly count: " + count);
 
-                if(count > 65)
+                if (count > 65)
                 {
                     this.SendCommand(this.getCommandID("legomyego"));
                     this.set_u16("struggle count", 0);
@@ -297,7 +297,7 @@ void onTick(CBlob@ this)
 
         Vec2f targetPos = usepos ? targetP : target.getPosition();
 
-        if(!usepos) //hack so gregs don't have to fly low
+        if (!usepos) //hack so gregs don't have to fly low
         {
             targetPos.y = 45;
 
@@ -306,7 +306,7 @@ void onTick(CBlob@ this)
         bool targetAbove = targetPos.y < this.getPosition().y;
         float flapVel = targetAbove || targetAttached ? 4 : 5;
 
-        if(vel.y > flapVel) //flap to slow decent
+        if (vel.y > flapVel) //flap to slow decent
         {
             float rat = flapVel/4.0f;
             //120 is enough for a strong flap which actually caries the greg up
@@ -314,7 +314,7 @@ void onTick(CBlob@ this)
 
             //if we have our target flap into the air.
             f32 force = 70.0f*rat;
-            if(targetAttached || targetAbove)
+            if (targetAttached || targetAbove)
             {
                 force += 35.0f;
 
@@ -323,7 +323,7 @@ void onTick(CBlob@ this)
             this.AddForce(Vec2f(0, -force));
 
         }
-        else if(this.isOnGround()) //get off the ground
+        else if (this.isOnGround()) //get off the ground
         {
             this.setVelocity(Vec2f(vel.x, 0.0f));
             this.AddForce(Vec2f(0, -70.0f));
@@ -334,20 +334,20 @@ void onTick(CBlob@ this)
 
         //if we are close to our node
         Vec2f dif = targetPos - gregPos;
-        if(usepos && dif.Length() < 25.0f)
+        if (usepos && dif.Length() < 25.0f)
         {
             pickRandPlayer(this);
 
         }
 
-        if(getNet().isServer() && target !is null)
+        if (getNet().isServer() && target !is null)
         {
             CMap@ map = getMap();
             Vec2f fpos;
             Vec2f dpos(this.getPosition().x, target.getPosition().y);
             map.rayCastSolidNoBlobs(this.getPosition(), dpos, fpos);
             Vec2f len = target.getPosition() - fpos;
-            if(len.getLength() <= 4.0)
+            if (len.getLength() <= 4.0)
             {
                 this.Tag("statue");
                 this.SendCommand(this.getCommandID("dropstatue"));
@@ -358,14 +358,14 @@ void onTick(CBlob@ this)
 
         }
 
-        /*if(targetAttached)
+        /*if (targetAttached)
         {
             //drop the player
             CMap@ map = this.getMap();
             f32 distToGround = map.getLandYAtX(gregPos.x/8.0f)*8.0f - gregPos.y;
-            if(distToGround > 240.0f && !is_emote(this, Emotes::troll) && !this.hasTag("doneparis"))
+            if (distToGround > 240.0f && !is_emote(this, Emotes::troll) && !this.hasTag("doneparis"))
             {
-                if(this.hasTag("paris"))
+                if (this.hasTag("paris"))
                 {
                     this.Tag("doneparis");
                     this.Chat("i lied.");
@@ -375,7 +375,7 @@ void onTick(CBlob@ this)
 
             }
 
-            if(distToGround > 260.0f)
+            if (distToGround > 260.0f)
             {
                 //detach and add some velocity so they hopefully die.
                 this.server_DetachAll();
@@ -388,7 +388,7 @@ void onTick(CBlob@ this)
 
         f32 absVelx = Maths::Abs(vel.x);
         //don't accelarte to quickly
-        if(absVelx < 5)
+        if (absVelx < 5)
         {
             //calculate a rough distance factor to mult by
             f32 xdist = (gregPos.x - targetPos.x)/50.0f;
@@ -399,23 +399,23 @@ void onTick(CBlob@ this)
             f32 stopping = absVelx/8.0f;
 
             //move towards target
-            if(gregPos.x > targetPos.x)
+            if (gregPos.x > targetPos.x)
             {
                 this.AddForce(Vec2f(-force, 0));
 
                 //apply a stopping force so we start going the other dir quicker
-                if(vel.x > 0)
+                if (vel.x > 0)
                 {
                     this.AddForce(Vec2f(-40.0f*stopping, 0));
 
                 }
 
             }
-            else if(gregPos.x < targetPos.x)
+            else if (gregPos.x < targetPos.x)
             {
                 this.AddForce(Vec2f(force, 0));
 
-                if(vel.x < 0)
+                if (vel.x < 0)
                 {
                     this.AddForce(Vec2f(40.0f*stopping, 0));
 
@@ -433,20 +433,20 @@ void onTick(CBlob@ this)
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 {
     u8 knocked = this.get_u8("knocked");
-    if(knocked > 0 || blob is null)
+    if (knocked > 0 || blob is null)
     {
         return;
 
     }
 
-    if(this.hasTag("statue"))
+    if (this.hasTag("statue"))
     {
-        if(blob !is null && blob.hasTag("flesh") && !this.isOnGround())
+        if (blob !is null && blob.hasTag("flesh") && !this.isOnGround())
         {
-            if(getNet().isServer())
+            if (getNet().isServer())
             {
                 this.server_Hit(blob, blob.getPosition(), Vec2f(1, 1), 500.0f, 0);
-                if(gregRand.Next()%3 == 0)
+                if (gregRand.Next()%3 == 0)
                     set_emote(this, Emotes::troll);
 
             }
@@ -456,14 +456,14 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
     }
 
     /*CBlob@ target = getTarget(this);
-    if(target is blob)
+    if (target is blob)
     {
         this.set_u16("struggle count", 0);
         this.server_AttachTo(blob, this.getAttachmentPoint(0));
         this.setVelocity(Vec2f_zero);
         this.AddForce(Vec2f(0, -30.0f)); //get a little hop up into the air going.
 
-        if(gregRand.Next()%5 == 0)
+        if (gregRand.Next()%5 == 0)
         {
             this.Tag("paris");
             this.Chat("we're going to paris.");
@@ -488,7 +488,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 
 void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 {
-    /*if(cmd == this.getCommandID("legomyego"))
+    /*if (cmd == this.getCommandID("legomyego"))
     {
         this.server_DetachAll();
         this.set_bool("no target", true);
@@ -496,13 +496,13 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 
     }*/
 
-    if(cmd == this.getCommandID("dropstatue") && getNet().isClient())
+    if (cmd == this.getCommandID("dropstatue") && getNet().isClient())
     {
         this.Tag("statue");
         //this.setVelocity(Vec2f_zero);
 
     }
-    else if(cmd == this.getCommandID("unstatue") && getNet().isClient())
+    else if (cmd == this.getCommandID("unstatue") && getNet().isClient())
     {
         this.Untag("statue");
 
@@ -512,7 +512,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )
 {
-    if(this.hasTag("statue"))
+    if (this.hasTag("statue"))
         return 0.0f;
     return damage;
 
