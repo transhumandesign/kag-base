@@ -8,7 +8,7 @@ bool isGlobalTauntCategory(string category)
 
 	//attempt to load from cache first
 	bool loaded = false;
-	if(CFileMatcher(cachefilename).getFirst() == cachefilename && cfg.loadFile(cachefilename))
+	if (CFileMatcher(cachefilename).getFirst() == cachefilename && cfg.loadFile(cachefilename))
 	{
 		loaded = true;
 	}
@@ -17,7 +17,7 @@ bool isGlobalTauntCategory(string category)
 		loaded = true;
 	}
 
-	if(!loaded)
+	if (!loaded)
 	{
 		return false;
 	}
