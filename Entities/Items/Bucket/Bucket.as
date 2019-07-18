@@ -29,7 +29,7 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	//(prevent splash when bought filled)
-	if(this.getTickSinceCreated() < 10) {
+	if (this.getTickSinceCreated() < 10) {
 		return;
 	}
 
@@ -68,10 +68,10 @@ void onDie(CBlob@ this)
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if(damage > 0.0f && hitterBlob !is null)
+	if (damage > 0.0f && hitterBlob !is null)
 	{
 		//spam hit
-		if(hitterBlob is this)
+		if (hitterBlob is this)
 		{
 			int id = this.getNetworkID();
 			this.setVelocity(this.getVelocity() + Vec2f(1,0).RotateBy((id * 933) % 360));

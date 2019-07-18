@@ -43,7 +43,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if(attached.getPlayer() !is null)
+	if (attached.getPlayer() !is null)
 	{
 		this.SetDamageOwnerPlayer(attached.getPlayer());
 	}
@@ -216,7 +216,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		f32 dmg = vellen > 8.0f ? 5.0f : (vellen > 4.0f ? 1.5f : 0.5f);
 
 		//bounce off if not gibbed
-		if(dmg < 4.0f)
+		if (dmg < 4.0f)
 		{
 			this.setVelocity(blob.getOldVelocity() + hitvec * -Maths::Min(dmg * 0.33f, 1.0f));
 		}
