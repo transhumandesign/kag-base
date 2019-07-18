@@ -96,7 +96,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 		blocks[0].push_back(b);
 	}
 
-	if(CTF)
+	if (CTF)
 	{
 		BuildBlock b(0, "building", "$building$", "Workshop\nStand in an open space\nand tap this button.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", CTFCosts::workshop_wood);
@@ -104,7 +104,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 		b.size.Set(40, 24);
 		blocks[0].insertAt(9, b);
 	}
-	else if(TTH)
+	else if (TTH)
 	{
 		{
 			BuildBlock b(0, "factory", "$building$", "Factory\nAn item-producing factory\nRequires migrant");
@@ -121,7 +121,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 			blocks[0].push_back(b);
 		}
 	}
-	else if(SBX)
+	else if (SBX)
 	{
 		{
 			BuildBlock b(0, "building", "$building$", "Workshop\nStand in an open space\nand tap this button.");

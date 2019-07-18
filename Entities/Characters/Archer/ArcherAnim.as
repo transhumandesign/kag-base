@@ -28,7 +28,7 @@ void LoadSprites(CSprite@ this)
 	int armour = PLAYER_ARMOUR_STANDARD;
 
 	CPlayer@ p = this.getBlob().getPlayer();
-	if(p !is null)
+	if (p !is null)
 	{
 		armour = p.getArmourSet();
 		if (armour == PLAYER_ARMOUR_STANDARD)
@@ -41,7 +41,7 @@ void LoadSprites(CSprite@ this)
 		}
 	}
 
-	switch(armour)
+	switch (armour)
 	{
 	case PLAYER_ARMOUR_STANDARD:
 		ensureCorrectRunnerTexture(this, "archer", "Archer");
