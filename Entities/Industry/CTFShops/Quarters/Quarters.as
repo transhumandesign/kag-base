@@ -164,7 +164,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	caller.getShape().getBoundingRect(c_tl, c_br);
 	bool isOverlapping = br.x - c_tl.x > 0.0f && br.y - c_tl.y > 0.0f && tl.x - c_br.x < 0.0f && tl.y - c_br.y < 0.0f;
 
-	if(!isOverlapping || !bedAvailable(this) || !requiresTreatment(this, caller))
+	if (!isOverlapping || !bedAvailable(this) || !requiresTreatment(this, caller))
 	{
 		this.set_Vec2f("shop offset", Vec2f_zero);
 	}
