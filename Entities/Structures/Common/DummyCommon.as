@@ -20,7 +20,7 @@ namespace Dummy
 void server_setDummyGridNetworkID(const u32 &in OFFSET, const u16 &in NETWORK_ID)
 {
 	array<u16>@ grid;
-	if(getRules().get(Dummy::GRID, @grid))
+	if (getRules().get(Dummy::GRID, @grid))
 	{
 		grid[OFFSET] = NETWORK_ID;
 	}
@@ -29,7 +29,7 @@ void server_setDummyGridNetworkID(const u32 &in OFFSET, const u16 &in NETWORK_ID
 u16 server_getDummyGridNetworkID(const u32 &in OFFSET)
 {
 	array<u16>@ grid;
-	if(getRules().get(Dummy::GRID, @grid))
+	if (getRules().get(Dummy::GRID, @grid))
 	{
 		return grid[OFFSET];
 	}
