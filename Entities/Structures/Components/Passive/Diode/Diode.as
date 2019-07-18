@@ -28,7 +28,7 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic || this.exists("component")) return;
+	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f POSITION = this.getPosition() / 8;
 	const u16 ANGLE = this.getAngleDegrees();
@@ -36,10 +36,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Diode component(POSITION);
 	this.set("component", component);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		grid.setAll(
 		component.x,                        // x
@@ -52,7 +52,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite is null) return;
+	if (sprite is null) return;
 
 	const bool facing = ANGLE < 180? false : true;
 
@@ -68,7 +68,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void onDie(CBlob@ this)
 {
-	if(!getNet().isClient() || !this.exists("component")) return;
+	if (!getNet().isClient() || !this.exists("component")) return;
 
 	const string image = this.getSprite().getFilename();
 	const Vec2f position = this.getPosition();
