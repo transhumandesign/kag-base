@@ -38,7 +38,7 @@ void onRender(CSprite@ this)
 		}
 
 		// no one feels the angle count is necessary, so im taking it out to reduce GUI clutter
-		//if(blob.getName() == "ballista")
+		//if (blob.getName() == "ballista")
 		//drawAngleCount(blob, v);
 	}
 }
