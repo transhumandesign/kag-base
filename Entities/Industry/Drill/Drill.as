@@ -128,6 +128,8 @@ void onInit(CBlob@ this)
 	this.Tag("place45 perp");
 	this.set_u8(heat_prop, 0);
 	this.set_u16("showHeatTo", 0);
+	this.set_u16("harvestWoodDoorCap",7);
+	this.set_u16("harvestStoneDoorCap",8);
 
 	AddIconToken("$opaque_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 0);
 	AddIconToken("$transparent_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 1);
@@ -281,7 +283,7 @@ void onTick(CBlob@ this)
 
 									this.server_Hit(hi.blob, hi.hitpos, attackVel, attack_dam, Hitters::drill);
 
-									Material::fromBlob(holder, hi.blob, attack_dam);
+									Material::fromBlob(holder, hi.blob, attack_dam, this);
 								}
 
 								hitsomething = true;
