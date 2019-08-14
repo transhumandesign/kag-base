@@ -28,7 +28,7 @@ void RecvAdminBan(CPlayer@ admin, string username, string offence)
 //security check
 bool canAccessAdminMenu(CPlayer@ p)
 {
-	return getSecurity().checkAccess_Feature(player, "admin_color");
+	return getSecurity().checkAccess_Feature(p, "admin_color");
 }
 
 //commands from interface
@@ -54,7 +54,7 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params )
 		if(!params.saferead_string(cmd)) return;
 		if(!params.saferead_CBitStream(cmd_params)) return;
 
-		CPlayer@ admin = getPlayerByNetworkID(netid);
+		CPlayer@ admin = getPlayerByNetworkId(netid);
 
 		if(admin is null) return;
 		if(!canAccessAdminMenu(admin)) return;
