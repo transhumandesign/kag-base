@@ -1,0 +1,208 @@
+###############################################################################
+# Steam Strings - For Translation Purposes
+
+These strings are provided to allow localisation of the steam content.
+
+They are not read directly by the game.
+
+# Guidelines:
+
+You do not need to translate the headings "# Description:" etc - these are just
+to separate the strings into logical sections for you.
+
+BBCode images should be left "as is".
+
+BBCode tags should probably  be "semantically" preserved between descriptions.
+They don't appear to be used on the store pages in most contexts though.
+
+Please issue a pull request for this file with the correct locale suffix if you
+contribute to localisation. Copy this file as a starting point if a copy for
+your locale does not already exist.
+
+	(eg Locale/Steam/steam_content_ru.txt for Russian)
+
+###############################################################################
+# King Arthur's Gold
+
+# Description:
+
+[img]{STEAM_APP_IMAGE}/extras/gif_overview01.png[/img]  .  [img]{STEAM_APP_IMAGE}/extras/gif_overview02.png[/img]
+
+[h2]2 Boyutlu Fizik + Sınıf/Takım Tabanlı Çok Oyunculu + Orta Çağ Savaş/İnşaat Oyunu[/h2]
+
+King Arthur's Gold dünyasında yapabileceklerinizin küçük bir bölümü:
+
+[list]
+[*] Düşman kalelerini patlayıcılarla [b]HAVAYA UÇUR[/b]
+[*] İstediğin gibi savunma [b]İNŞA ET[/b]
+[*] Çevredeki malzemelerle düşmanlarını [b]YAK [/b]veya [b]BOĞ[/b]
+[*] Takımınla birlikte [b]KUŞATMA [/b]makineleri kullan
+[*] Koşarak veya gemilerle, [b]TÜNEL [/b]kazarak veya havada uçarak istediğin gibi saldır
+[*] [b]HAYVAN[/b] ve bitkilerin oyunu nasıl etkilediğini gör
+[*] 32 kişilik sunucularda öngörülemez [b]MÜCADELE[/b]
+[*] Tek oyuncu, çok oyuncu ve rekabetçi oyun [b]MODLARI[/b]
+[*] 60'tan fazla [b]ÖZEL [/b]kafadan birini seç
+[*] Topluluk tarafından oluşturulan modlarla kendi maceranı [b]YARAT[/b]
+[/list]
+
+[img]{STEAM_APP_IMAGE}/extras/gif_overview03.png[/img]
+
+King Arthur's Gold'da [i]Lost Vikings[/i]'teki takım ruhu ile [i]Worms[/i]'teki yıkılabilirlik bir araya geldi, [i]Metal Slug[/i] aksiyon ve grafikleriyle [i]Soldat[/i]'ı yapanlar tarafından geliştirildi.
+
+# Short Description:
+
+Düşman kalelerini [b]havaya uçurmak [/b]ve 2 BOYUTLU FİZİKLE [b]yıkmak [/b]istemez misin? ÇOK OYUNCULU OYUNDA bubi tuzaklı kaleler [b]inşa [/b]etmek veya kuşatmak makineleri kullanmak hoşunuza gider mi?
+
+###############################################################################
+# King Arthur's Gold: Flags of the World Heads Pack
+
+# Description:
+
+Bu görsel ek paket oyuna 120'den fazla kafa ekler. (Kadın ve erkek karakterlere 60'dan fazla kafa.)
+
+Her kafa bir bayrağı temsil eder. Ek olarak Korsan ve Gökkuşağı bayrakları vardır.
+Ülkenizi temsil etmek için bu kafaları kullanın ve savaş alanına renk getirin.
+
+Preview:
+
+[list]
+[img]{STEAM_APP_IMAGE}/extras/flag_heads_preview.png[/img]
+[/list]
+
+Desteklenen ülke bayrakları:
+
+[list]
+[*]Polonya
+[*]Avustralya
+[*]İngiltere
+[*]İrlanda
+[*]İskoçya
+[*]Galler
+[*]Yeni Zelanda
+[*]Avustralya Aborjinleri
+[*]Maori
+[*]Kanada
+[*]Amerika Birleşik Devletleri
+[*]İtalya
+[*]Almanya
+[*]Rusya
+[*]Fransa
+[*]Hollanda
+[*]İsveç
+[*]Norveç
+[*]İspanya
+[*]Belçika
+[*]Finlandiya
+[*]Danimarka
+[*]Portekiz
+[*]Türkiye
+[*]İzlanda
+[*]İsviçre
+[*]Macaristan
+[*]Belarus
+[*]Slovakya
+[*]Letonya
+[*]İsrail
+[*]Filistin
+[*]Çekya
+[*]Ukrayna
+[*]Meksika
+[*]Şili
+[*]Brezilya
+[*]Arjantin
+[*]Jamaika
+[*]Papua Yeni Gine
+[*]Tonga Krallığı
+[*]Bağımsız Samoa Devleti
+[*]Kore
+[*]Çin Halk Cumhuriyeti
+[*]Singapur
+[*]Tayland
+[*]Japonya
+[*]Hong Kong
+[*]Malezya
+[*]Çin Cumhuriyeti
+[*]Endonezya
+[*]Filipinler
+[*]Hindistan
+[*]Vietnam
+[*]Güney Afrika
+[*]Mısır
+[*]Kenya
+[*]Somali
+[*]Sudan
+[*]Gürcistan
+[*]Yunanistan
+[*]Suriye
+[*]Suriye Bağımsızlık Bayrağı
+[*]Mali
+[*]Avusturya
+[*]Estonya
+[*]Tunus
+[*]Libya
+[*]Litvanya
+[*]Faroe Adaları
+[*]Porto Riko
+[*]Küba
+[*]Grönland
+[*]Dominik Cumhuriyeti
+[*]Irak
+[*]Korsan Bayrağı
+[*]Gökkuşağı Bayrağı
+[/list]
+
+Eksik olduğunu düşündüğünüz bayraklar için destek adresine e-posta gönderebilirsiniz.
+
+# Short Description:
+
+Bu görsel ek paket oyuna dünya bayraklarını temsil eden 120'den fazla kafa ekler. (Kadın ve erkek karakterlere 60'dan fazla kafa.)
+
+###############################################################################
+# King Arthur's Gold: Fantasy Heads Pack
+
+# Description:
+
+King Arthur's Gold fantezi evrenlerle buluşuyor! En sevdiğiniz ırkları seçip oynayın ve oyunun geliştirilmesine katkıda bulunun!
+
+Bu paket topluluk tarafından oylanmış ve seçilmiştir. İkinci ek paketimizi çıkardığımız için heyecanlıyız. Bu yüksek kaliteli özel kafalar savaş alanında öne çıkmanızı sağlayacak.
+
+[img]{STEAM_APP_IMAGE}/extras/PromoPreview.png[/img]
+
+[b]Kafaların tam listesi:[/b]
+[list]
+[*]Hobbit
+[*]Yer Cücesi
+[*]Cüce Asker
+[*]Cüce Madenci
+[*]Orman Elfi
+[*]Kara Şövalye
+[*]Büyücü/Cadı (Ak Büyücü ve Kara Büyücü)
+[*]Soylu Elf
+[*]Asker
+[*]Kahraman
+[*]Şövalye
+[*]Soylu
+[*]Goblin
+[*]Ork
+[*]Tepegöz
+[*]Şeytan
+[/list]
+Tüm kafalar hem erkek hem de kadın karakterler için mevcut.
+
+# Short Description:
+
+King Arthur's Gold'a fantezi kurguyu getirin. Topluluk tarafından oylama ile seçilmiş bu paket ile cüce, elf, goblin, asker, büyücü, cadı, hobbit, kara şövalye ve daha fazlası olabilirsiniz!
+
+###############################################################################
+# Misc/Shared Content
+
+(these lines are used for all packages)
+
+# Legal Line:
+
+King Arthur's Gold is Copyright © 2011-2017 Transhuman Design, All Rights Reserved.
+
+###############################################################################
+# Thanks!
+
+Thank you for your help localising the game!

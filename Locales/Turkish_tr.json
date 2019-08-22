@@ -12,6 +12,13 @@
 // FOR ANY NEW TRANSLATION, PLEASE KEEP THIS HEADER, THE FILE STRUCTURE, INDENT STYLE AND THE COMMENTS AS-IS.
 // REMEMBER: You do **ONLY** need to change the right-side text. If translations suddenly stop working, check your `cl_locale` variable and make sure the JSON file structure was not damaged.
 
+// The ultimate help for future Turkish translator:
+// 1. This translation is a clone of Russian translation.
+// 2. Best thing to do is to copy all Russian text into this in a compare tool.
+// 3. Revert all non-changed texts.
+// 4. Add new ones and translate.
+// 5. Delete removed ones.
+
 {
 //// SCOREBOARD ////
 //ScoreboardCommon.as
@@ -23,11 +30,13 @@
 //ScoreboardRender.as
 	"Players: {PLAYERCOUNT}":"Oyuncu Sayısı: {PLAYERCOUNT}",
 	"Player"                :"Oyuncu",
+	"Tier"                  :"Seviye",
 	"Accolades"             :"Rozetler",
 	"Username"              :"Kullanıcı Adı",
 	"Ping"                  :"Gecikme",
 	"Kills"                 :"Leş",
 	"Deaths"                :"Ölüm",
+	"Assists"               :"Asistler",
 	"KDR"                   :"L/Ö",
 	"Spectators:"           :"İzleyiciler:",
 	"and more ..."          :"daha fazla...",
@@ -40,8 +49,6 @@
 //ShowGameMode.as //You can translate here any game mode names
 	"  Gamemode: {GAMEMODE}":"  Oyun Modu: {GAMEMODE}",
 	"\n  Server: {SERVERNAME}\n":"\n  Sunucu: {SERVERNAME}\n",
-	//"CTF":"CTF", //already exists in GAMEMODE INFO
-	//"TTH":"TTH", //Already exists in GAMEMODE INFO
 	"TDM":"TDM",
 
 //BuilderInventory.as
@@ -145,87 +152,87 @@
 	"Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.":"Kalkan süzülüşü$Tutorial_Glide$\n\n\nÇukurun üzerinden atla. Havadayken:\nFareyi yukarı doğru hedefle\n\nve $RMB$ BASILI TUT.",
 
 //Tutorial02.as
-	"Stand on the enemy hall$hall$ to capture it.":"Stand on the enemy hall$hall$ to capture it.",
-	"Halls are respawn points and can be used to switch class.":"Halls are respawn points and can be used to switch class.",
-	"In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.":"In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.",
-	"As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!":"As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!",
-	"Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$":"Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$",
-	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$",
-	"HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!":"HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!",
-	"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!":"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!",
-	"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.":"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.",
+	"Stand on the enemy hall$hall$ to capture it.":"Hisarı$hall$ ele geçirmek için içinde bekleyin.",
+	"Halls are respawn points and can be used to switch class.":"Hisarlar intikal noktasıdır ve sınıf değiştirmek için kullanılabilir.",
+	"In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.":"Hisarda OKÇU sınıfını seçin  $ARCHER$\n\n$KEY_E$ tuşuna basılı tutun.\n\nİmleci okçu$CLASSCHANGE$sınıfının üzerine götürün\nve bırakın.",
+	"As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!":"Bir okçu olarak $Tutorial_Archer$\n\n\nimleç ile nişan alın.\n\n$LMB$ tuşuna basılı tutun\n\nve oku FIRLATIN!",
+	"Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$":"Kancayı kullan$Tutorial_Grapple$\n\n\nİmleç ile nişan al ve\n\n$RMB$ BASILI TUT\n\n$KEY_D$ tuşuyla sallan",
+	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"Kancayı kullanarak duvarda koşmayı dene ve buraya gel\n\n$RMB$ BASILI TUT\n\nBASILI TUT zıpla ve koş $KEY_D$$KEY_W$",
+	"HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!":"Kıvılcım çıkana kadar $LMB$ BASILI TUT$Tutorial_Archer2$\n\n\nve $LMB$ tekrar bas:\n\nÜÇLÜ OK! Yakın mesafede çok iyi!",
+	"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!":"$Tutorial_Archer2$\n\n\nBiraz pratik yap. Sonra kapı açılmadan önce yayı çek ve açılır açılmaz düşmana ÜÇLÜ OK at!",
+	"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.":"Sallanmak için kancanı$Tutorial_Grapple$ kullan.\n\n$RMB$ BASILI TUT\n\nTavana tutunmak için gaz lambasının olduğu yere doğru$lantern$\n\n$KEY_D$ BASILI TUT\n\nve zamanı gelince BIRAK.",
 
 //Tutorial03.as
-	"$lantern$\nPickup the lantern $KEY_C$":"$lantern$\nPickup the lantern $KEY_C$",
-	"Drop is the same as pickup $KEY_C$":"Drop is the same as pickup $KEY_C$",
-	"Activate/Deactivate things\n   $KEY_SPACE$\n\n\n$lantern$ On/Off":"Activate/Deactivate things\n   $KEY_SPACE$\n\n\n$lantern$ On/Off",
-	"By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$":"By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$",
-	"Switch class to BUILDER  $BUILDER$\n\nGo to Hall. HOLD $KEY_E$ and mouse over$CLASSCHANGE$":"Switch class to BUILDER  $BUILDER$\n\nGo to Hall. HOLD $KEY_E$ and mouse over$CLASSCHANGE$",
-	"The passage is blocked here. As builder, dig your way through.\n\nPoint mouse at block\n\nHOLD $RMB$":"The passage is blocked here. As builder, dig your way through.\n\nPoint mouse at block\n\nHOLD $RMB$",
-	"$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.":"$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.",
-	"$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":"$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.",
-	"$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)":"$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)",
-	"Place by pointing with mouse and pressing $LMB$":"Place by pointing with mouse and pressing $LMB$",
-	"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.":"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.",
-	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.",
-	"$Pick$  $BlockStone$\n\nMine some stone $RMB$":"$Pick$  $BlockStone$\n\nMine some stone $RMB$",
+	"$lantern$\nPickup the lantern $KEY_C$":"$lantern$\nGaz lambasını $KEY_C$ ile al",
+	"Drop is the same as pickup $KEY_C$":"$KEY_C$ ile bırak",
+	"Activate/Deactivate things\n   $KEY_SPACE$\n\n\n$lantern$ On/Off":"Eşyaları açıp kapatmak için\n   $KEY_SPACE$\n\n\n$lantern$ Aç/Kapa",
+	"By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$":"Bu arada: ekranın üstünde haritayı görebilirsin. $KEY_M$ ile haritayı açıp kapatabilirsin.",
+	"Switch class to BUILDER  $BUILDER$\n\nGo to Hall. HOLD $KEY_E$ and mouse over$CLASSCHANGE$":"İNŞAATÇI olun  $BUILDER$\n\nHisara git. $KEY_E$ tuşuna BASILI TUT and imleçle seç$CLASSCHANGE$",
+	"The passage is blocked here. As builder, dig your way through.\n\nPoint mouse at block\n\nHOLD $RMB$":"Yol kapalı. İnşaatçı olarak yolu kaz.\n\nİmleci bloğun üzerine getir\n\n$RMB$ tuşuna BASILI TUT",
+	"$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.":"$Tree$\n\nBir ağaç kes\n\n$RMB$ tuşuna basılı tut ve ağaç kes.",
+	"$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":"$log$\n\nKütükleri parçala\nve ODUN $mat_wood$ al\n\n$RMB$ tuşuna basılı tut ve parçala.",
+	"$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)":"$ladder$\n\nİnşa etmek için bir merdiven seç.\n\n$KEY_F$ tuşuna basılı tut\n\nİmleci merdivene götür ve tuşu bırak.\n\n(Bunun için$mat_wood$gerekir)",
+	"Place by pointing with mouse and pressing $LMB$":"Yerleştirmek için imleci götür ve $LMB$ tıkla",
+	"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.":"$Pick$\n\nBir köprü inşa et.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nHem de yeni blokları dene ve ne işe yaradıklarını gör.",
+	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"İnşaat yaparken bir yükseklik limiti olduğunu unutma. Bu limite ulaşmadan önce destek inşa etmen gerekecek.",
+	"$Pick$  $BlockStone$\n\nMine some stone $RMB$":"$Pick$  $BlockStone$\n\nBiraz taş kaz $RMB$",
 	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\nMancınığı taşla doldur.\n\n $KEY_E$ BASILI TUT $mat_stone$",
-	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)",
-	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$",
-	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!",
+	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$\n\n\nSilahın başına geç\n($down_arrow$gösterilen yer)\n\nBinmek için $KEY_S$ tuşuna bas.\n\n\n$LMB$ tuşuna basılı tutarak ateş et.\n\n\n(Sürücü ortadadır\nÜstteki yerde)",
+	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"Son bir şey.\n\nÇok oyunculu oyunda başkalarına sormaktan çekinme.\n\nYazmak için$KEY_ENTER$'a bas.\n\n\nEmojileri de dene!\n\n$KEY_Q$'a BASILI TUT",
+	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"Temel eğitim bitti. Zaman içinde çok daha fazlasını öğreneceksin.\n\nŞimdi tek kişilik ve çok kişilik modları dene!",
 
 //TutorialCTF01.as
 	"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":
-	"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.",
+	"Sancak Savaşı yeni başlayanlar için idealdir. Amaç gayet basit, düşman bayrağını kendi bayrağının yanına getir.",
 	"Killing enemies, building structures and generally being useful for your team will give you coins.\n\nCoins allow you to purchase ammo, weapons & tools in workshops. First thing, as an example on how it will look when you kill an enemy:\n\nKill those chicken and get their coins!\n\n$chicken$":
-	"Killing enemies, building structures and generally being useful for your team will give you coins.\n\nCoins allow you to purchase ammo, weapons & tools in workshops. First thing, as an example on how it will look when you kill an enemy:\n\nKill those chicken and get their coins!\n\n$chicken$",
+	"Düşmanları öldürmek, savunma inşa etmek ve genel olarak takıma faydalı olmak sikke kazandırır.\n\nSikkelerle cephane, silah ve makineler alabilirsin. İlk öğrenmen gereken nasıl öldürmen gerektiğidir:\n\nŞu tavukları öldür ve sikkelerini al!\n\n$chicken$",
 	"Go to the Tent and switch class to BUILDER.\n\nPress $KEY_E$ while standing\n\non the Tent.\n\n\n\n$tent$\n\n\n":
-	"Go to the Tent and switch class to BUILDER.\n\nPress $KEY_E$ while standing\n\non the Tent.\n\n\n\n$tent$\n\n\n",
+	"Çadıra git ve İNŞAATÇI ol.\n\nÇadırda\n\n$KEY_E$ tuşuna bas\n\n\n\n$tent$\n\n\n",
 	"If you've switched to builder in the Tent now you can build workshops for your team.\n\n\nHold $KEY_F$ and select $building$":
-	"If you've switched to builder in the Tent now you can build workshops for your team.\n\n\nHold $KEY_F$ and select $building$",
+	"İnşaatçı olursan takımın için dükkanlar ve loncalar inşa edebilirsin.\n\n\n$KEY_F$ tuşuna basılı tut ve seç $building$",
 	"If you don't have wood:\n$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.\n\n\n$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":
-	"If you don't have wood:\n$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.\n\n\n$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.",
+	"Odunun yoksa:\n$Tree$\n\nBir ağaç kes\n\nAğacın yanında $RMB$ tuşuna basılı tut.\n\n\n$log$\n\nKütükleri parçala\nve ODUN al $mat_wood$\n\n$RMB$ tuşuna basılı tut.",
 	"Press $KEY_E$ on the frame\n\nto convert it to a proper workshop. Some will require additional resources, go gather them!":
-	"Press $KEY_E$ on the frame\n\nto convert it to a proper workshop. Some will require additional resources, go gather them!",
+	"Boş dükkanın içinde $KEY_E$ tuşuna basılı tut\n\nBöylece dükkan ve loncalar inşa edebilirsin. Bazıları ekstra malzeme gerektirir!",
 	"Workshops allow you to buy items in them for coins which you get for doing useful things for your team.\n\nClass workshops allow you to switch class in them.\n\nThe tunnel allows you to quickly move from place to place (at least 2 required).\n\nTry them out!\n\n\n$tunnel$\n":
-	"Workshops allow you to buy items in them for coins which you get for doing useful things for your team.\n\nClass workshops allow you to switch class in them.\n\nThe tunnel allows you to quickly move from place to place (at least 2 required).\n\nTry them out!\n\n\n$tunnel$\n",
+	"Dükkan ve loncalardan sikkelerle kullanışlı eşyalar satın alabilirsin.\n\nLoncalardan sınıf değiştirebilirsin.\n\nTünellerden bir noktadan diğerine anında gidebilirsin. (En az 2 tünel gerekir).\n\nHadi dene!\n\n\n$tunnel$\n",
 	"To conclude this tutorial go get the red flag and bring it back to your blue flag. \n\nPress $KEY_ESC$ to go to menu\n\nand exit after you're done.":
-	"To conclude this tutorial go get the red flag and bring it back to your blue flag. \n\nPress $KEY_ESC$ to go to menu\n\nand exit after you're done.",
+	"Bu bölümü tamamlamak için kırmızı bayrağı ele geçir ve senin mavi bayrağının yanına getir. \n\nMenüye dönmek için $KEY_ESC$ tuşuna bas\n\nve bitir.",
 
 //TutorialTTH01.as
 	"The goal of Take the Halls is for your team to capture all the halls on the map.\n\nYou can easily see them in the minimap on top of the screen.\n\n$KEY_M$ to toggle the\n\nminimap.":
-	"The goal of Take the Halls is for your team to capture all the halls on the map.\n\nYou can easily see them in the minimap on top of the screen.\n\n$KEY_M$ to toggle the\n\nminimap.",
+	"Hisar İşgalinin amacı haritadaki tüm hisarları ele geçirmektir.\n\nEkranın üstündeki haritada yerleri görülebilir.\n\nHaritayı $KEY_M$ tuşuyla\n\naçıp kapatabilirsiniz.",
 	"A white colored Hall is neutral. It belongs to the people of this land. Capture it by standing inside of it.":
-	"A white colored Hall is neutral. It belongs to the people of this land. Capture it by standing inside of it.",
+	"Beyaz hisarlar henüz ele geçirilmemiştir. Bu toprakların insanlarına aittir. Ele geçirmek için içine girin.",
 	"Hold $KEY_E$ and press $CLASSCHANGE$\n\nto change class to BUILDER\n\n\n$RESEARCH$\n\n\nPress this button to view your teams research tree.\n\nThe whole team can vote here on what technology they want. Not all techs can be achieved, decide wisely!":
-	"Hold $KEY_E$ and press $CLASSCHANGE$\n\nto change class to BUILDER\n\n\n$RESEARCH$\n\n\nPress this button to view your teams research tree.\n\nThe whole team can vote here on what technology they want. Not all techs can be achieved, decide wisely!",
+	"$KEY_E$ tuşuna basılı tutun ve $CLASSCHANGE$ basın\n\nve İNŞAATÇI olun\n\n\n$RESEARCH$\n\n\nAraştırma ağacını görüntülemek için buraya basın.\n\nKilidi açılacak teknolojiler takım oylaması ile seçilir. Tüm teknolojilerin kilidi açılamaz, akıllıca oy verin!",
 	"$crate$\n\nPress $KEY_E$ on the crate'\n\n(if it has dropped from the sky) to get supply materials!":
-	"$crate$\n\nPress $KEY_E$ on the crate'\n\n(if it has dropped from the sky) to get supply materials!",
+	"$crate$\n\n$KEY_E$ tuşuna bas\n\n(eğer düşerse) kaynakları topla!",
 	"If you've switched to builder in the Hall now you can build workshops for your team.\n\nWorkshops are basically factories which make ammo & weapons automatically for you.\n\nGo to an empty spot.\n\nHold $KEY_F$ and select $building$.":
-	"If you've switched to builder in the Hall now you can build workshops for your team.\n\nWorkshops are basically factories which make ammo & weapons automatically for you.\n\nGo to an empty spot.\n\nHold $KEY_F$ and select $building$.",
+	"İnşaatçı olursanız takımınız için dükkan ve loncalar inşa edebilirsiniz.\n\nBunlar otomatik silah ve cephane üreten fabrikalardır.\n\nBoş bir tane yapın.\n\n$KEY_F$ tuşuna basılı tutun ve seçin $building$.",
 	"After converting to a workshop you can see a worker appeared inside of it.\n$migrant$\n\n\nHe came from the hall.\n\nYou can only build as many functional workshops as there are workers in your hall.":
-	"After converting to a workshop you can see a worker appeared inside of it.\n$migrant$\n\n\nHe came from the hall.\n\nYou can only build as many functional workshops as there are workers in your hall.",
+	"Bir dükkanı yaptıktan sonra içinde çalışan işçiyi görebilirsiniz.\n$migrant$\n\n\nO hisardan geldi.\n\nİşçi sayısı kadar aktif dükkan inşa edebilirsiniz.",
 	"Press $KEY_E$ on the frame\n\n$building$\n\nto convert it to a proper workshop. Select one (the unavailable ones are waiting for research in the hall to complete).":
-	"Press $KEY_E$ on the frame\n\n$building$\n\nto convert it to a proper workshop. Select one (the unavailable ones are waiting for research in the hall to complete).",
+	"Boş dükkanda $KEY_E$ tuşuna bas\n\n$building$\n\nve dükkan veya loncaya dönüştür. (kilitli olanlar hisarda teknolojisinin araştırılmasını bekleyenler).",
 	"Hold $KEY_E$ on a workshop to see\n\nwhat it is producing. Green indicates it's done.\n\n\nTry out the different shops!":
-	"Hold $KEY_E$ on a workshop to see\n\nwhat it is producing. Green indicates it's done.\n\n\nTry out the different shops!",
+	"$KEY_E$ tuşuna basılı tutun\n\nve dükkanın ne ürettiğini görün. Yeşil renk işin bittiğini gösterir.\n\n\nFarklı dükkanları deneyin!",
 	"$trader$\n\n\nYou see a trader in his shop below.\n\nPress $KEY_E$ on the trader to buy.\n\nYou can buy the following:\n\nTechnology scrolls - give you quick access to a tech without the need for long research\n\nMagic scrolls - check the descriptions!\n\nExchange materials for gold and vice versa. This is useful when one of the resources is lacking on the map.":
-	"$trader$\n\n\nYou see a trader in his shop below.\n\nPress $KEY_E$ on the trader to buy.\n\nYou can buy the following:\n\nTechnology scrolls - give you quick access to a tech without the need for long research\n\nMagic scrolls - check the descriptions!\n\nExchange materials for gold and vice versa. This is useful when one of the resources is lacking on the map.",
+	"$trader$\n\n\nAşağıda tüccarın dükkanını görüyorsun.\n\nSatın almak için $KEY_E$ tuşuna bas.\n\nBunları satın alabilirsin:\n\nTechnology scrolls - give you quick access to a tech without the need for long research\n\nMagic scrolls - check the descriptions!\n\nExchange materials for gold and vice versa. This is useful when one of the resources is lacking on the map.",
 	"Dig the gold $RMB$.\n\nGet enough to buy the Scroll of Drought from the trader.\n\n$scroll$":
-	"Dig the gold $RMB$.\n\nGet enough to buy the Scroll of Drought from the trader.\n\n$scroll$",
+	"Altın kaz $RMB$.\n\nTüccardan Kıtlık Büyüsü elde edebilecek kadar altın topla.\n\n$scroll$",
 	"$scroll$\n\nOnce you have the scroll press $KEY_E$ to use it!":
-	"$scroll$\n\nOnce you have the scroll press $KEY_E$ to use it!",
+	"$scroll$\n\nEline büyü geçtiyse $KEY_E$ tuşuna bas ve büyü yap!",
 	"If you have more than one hall you can quickly move between them.\n\nHold $KEY_E$ and\n\nselect the blue travel button.":
-	"If you have more than one hall you can quickly move between them.\n\nHold $KEY_E$ and\n\nselect the blue travel button.",
+	"Eğer birden fazla hisarın varsa onlar arasında anında yolculuk edebilirsin. \n\n$KEY_E$ tuşuna basılı ve\n\nyolculuk seçeneğini seç.",
 	"Those are the basics you need to know about Take the Halls. The rest can be learned when playing online by observation. This game mode is simple but complexity comes from great strategy. See you on the battlefield!\n\nPress $KEY_ESC$ to get out.":
-	"Those are the basics you need to know about Take the Halls. The rest can be learned when playing online by observation. This game mode is simple but complexity comes from great strategy. See you on the battlefield!\n\nPress $KEY_ESC$ to get out.",
+	"Bunlar Hisar İşgali ile bilmen gerekenlerdi. Gerisini zamanla öğrenebilirsin. Oyun basit ama gerçekten doğru taktikleri uygulamak gerekli. Savaş alanında seni de görmek dileğiyle!\n\nÇıkmak için $KEY_ESC$ tuşuna bas.",
 //Challenge_PrincessStart
 	"   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.":
-	"   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.",
+	"   Bir uçurumun en tepesinde tehlikeli savaşçıların koruduğu bir kalede Kötü Sedgewick yaşardı. Bu kalenin en dibindeki zindanda güzeller güzeli prenses Geti, Kötü Sedgwick tarafından esir alınmıştı.\n\n   Sen Kralın Şövalyesisin. Kalkan ve kılıcında Kötü Sedgwick'i alt etmeli ve güzeller güzeli prenses Geti'yi kurtarmalısın.\n\n   Korkunu ve nefsini geride bırak. Görevine odaklan, güçlü ol. Bu gerçek bir Şövalyenin yapması gerekendir.",
 	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .":
-	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .",
+	"   Ve böylece macera biter. Kötü Sedgwick ölür, güzeller güzeli Geti kollarındadır. Uzun zaman sonra ülkenin üzerinde tekrar güneş doğuyor. Lakin bir asker için her zaman yeni bir savaş vardır. . . .",
 	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .":
-	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .",
+	"   Ve böylece macera biter. Kötü Sedgwick ölür, güzeller güzeli Geti kanlar içinde, ölmüştür. Uzun zaman sonra ülkenin üzerinde tekrar güneş doğuyor, ama güzel prensesin yası tutuluyor. . . .",
 
 //Sandbox.as
 	"Welcome to King Arthur's Gold":"King Arthur's Gold'a hoşgeldiniz",
@@ -280,28 +287,25 @@
 	"A stone throwing, ridable siege engine, requiring a crew of two.":
 	"Kaya fırlatan ve sürülebilen kuşatma araçlarını iki mürettebat kullanır.",
 	"A bolt-firing pinpoint accurate siege engine, requiring a crew of two. Allows respawn and class change.":
-	"A bolt-firing pinpoint accurate siege engine, requiring a crew of two. Allows respawn and class change.",
+	"Balista, nokta atışı yapan kuşatma makinesidir. Kullanmak için 2 kişi gerekir. İntikal noktasıdır.",
 	"Piercing bolts for ballista.":
 	"Mızraklar sadece balista içindir.",
 	"For Ballista\nTurns its piercing bolts into a shaped explosive charge.":
-	"For Ballista\nTurns its piercing bolts into a shaped explosive charge.",
+	"Balista için\nMızrakların ucuna patlayıcı bağlar.",
 	"A small boat with two rowing positions and a large space for cargo.":
-	"A small boat with two rowing positions and a large space for cargo.",
+	"İki kürekli ve kargolu küçük bir tekne.",
 	"A fast rowing boat used for quickly getting across water.":
-	"A fast rowing boat used for quickly getting across water.",
+	"Hızlı kürek çekilen bir hız teknesi.",
 	"A slow armoured boat which acts also as a water base for respawn and class change.":
-	"A slow armoured boat which acts also as a water base for respawn and class change.",
-	//"A siege engine designed to break open walls and fortifications.":"A siege engine designed to break open walls and fortifications.",
+	"Su üstünde intikal ve sınıf değiştirme noktası olarak kullanılabilecek zırhlı büyük tekne.",
 	"Raw stone material.":
-	"Raw stone material.",
+	"Ham taş.",
 	"Raw wood material.":
-	"Raw wood material.",
+	"Ham odun.",
 	"Lanterns help with mining in the dark, and lighten the mood.":
 	"Gaz lambaları karanlık madenlerde çalışmayı kolaylaştırır.",
 	"A circular saw that turns tree logs into wood material.":
 	"Testereler odun kütüklerini tahtalara dönüştürür.",
-	//"A trading post. Requires a trader to reside inside.":"A trading post. Requires a trader to reside inside.",
-	//"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies.":"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies.",
 	"A simple wooden ladder for climbing over defenses.":
 	"Merdivenler inşa edilen hisarlara tırmanabilmek içindir.",
 	"A stone boulder useful for crushing enemies.":
@@ -310,68 +314,60 @@
 	"Boş kutular malzeme depolamak ve taşımak içindir.",
 	"An explosive mine. Triggered by contact with an enemy.":
 	"Mayınlar, düşmanlar yakınına gelince otomatik olarak patlar.",
-	//"Fire satchel for Knight only.":"Ateş çuvalı sadece Şövalyeler içindir.",
 	"A health regenerating heart.":
-	"Canlar, sağlığı arttırır..",
-	//"A sack for storing more inventory on your back.":"Çuvallar daha fazla eşya taşıyabilmeyi sağlar.",
+	"Canlar, sağlığı arttırır.",
 	"A seedling of an oak tree ready for planting.":
-	"A seedling of an oak tree ready for planting.",
+	"Dikime hazır meşe fidanı.",
 	"A seedling of a pine tree ready for planting.":
-	"A seedling of a pine tree ready for planting.",
+	"Dikime hazır çam fidanı.",
 	"A decorative flower seedling.":
-	"A decorative flower seedling.",
+	"Çiçek fidanı.",
 	"Grain used as food.":
-	"Grain used as food.",
+	"Tahıl.",
 	"Wooden swing door.":
-	"Wooden swing door.",
+	"Tahta kapı.",
 	"Stone spikes used as a defense around fortifications.":
-	"Stone spikes used as a defense around fortifications.",
+	"Kazıklar savunma amaçlı kullanılır.",
 	"A trampoline used for bouncing and jumping over enemy walls.":
-	"A trampoline used for bouncing and jumping over enemy walls.",
+	"Trambolin düşman savunmalarının üzerinden atlamak için kullanılır.",
 	"A stationary arrow-firing death machine.":
-	"A stationary arrow-firing death machine.",
+	"Sabit bir ok - bir ölüm makinesi.",
 	"Fire arrows used to set wooden structures on fire.":
-	"Fire arrows used to set wooden structures on fire.",
+	"Ateşli oklar odundan yapılar üzerinde yangın çıkartır.",
 	"A tunnel for quick transportation.":
 	"Tüneller hızlı ulaşım içindir.",
 	"Bucket for storing water. Useful for fighting fires.":
 	"Kovaya su doldurulabilir. Yangın söndürebilirmek için idealdir.",
 	"A wooden bucket pre-filled with water for fighting fires.":
-	"A wooden bucket pre-filled with water for fighting fires.",
+	"Yangın çıkma ihtimaline karşı önceden su doldurulmuş kova.",
 	"A generic factory. Requires Research Room, technology upgrade and big enough population to produce items.":
-	"A generic factory. Requires Research Room, technology upgrade and big enough population to produce items.",
-	//"Kitchen produces food which heal wounds.":"Kitchen produces food which heal wounds.",
-	//"A plant nursery with grain, oak and pine tree seeds.":"",
-	//"Barracks allow changing class to Archer or Knight.":"",
-	//"A storage than can hold materials and items and share them with other storages.":"",
+	"Fabrika. Araştırma odasında teknoloji kilidinin açılmasını ve çalışacak yeterli nüfus gerektirir.",
 	"A mining drill. Increases speed of digging and gathering resources, but gains only half the possible resources.":
-	"A mining drill. Increases speed of digging and gathering resources, but gains only half the possible resources.",
+	"Matkap. Hızlıca kazı yapmak ve kaynak toplamak için kullanılır. Matkap kullanılırken toplanan kaynak yarı yarıya düşer.",
 	"Bombs for Knights & arrows for Archers.\nAutomatically distributed on respawn.":
-	"Bombs for Knights & arrows for Archers.\nAutomatically distributed on respawn.",
+	"Bombalar Şövalyeler için, oklar Okçular içindir.\nİntikal noktalarında otomatik dağıtılır.",
 	"Items used for blowing stuff up.":
-	"Items used for blowing stuff up.",
+	"Patlayıcı malzemeler.",
 	"Items used for lighting things on fire.":
-	"Items used for lighting things on fire.",
-	//"When team is in possession of stone construction technology it allows builders to make stone walls, doors, traps and spikes.":"",
-	//"Dorm increases population count and allows spawning and healing inside. Requires a migrant.":"",
+	"Yanıcı malzemeler.",
 	"Research room.":
-	"Комната для исследований.",
+	"Araştırma odası.",
 	"Water arrows for Archer. Can extinguish fires and stun enemies.":
-	"Water arrows for Archer. Can extinguish fires and stun enemies.",
+	"Su balonlu oklar okçular içindir. Yangınları söndürür ve düşmanları duraklatır.",
 	"Bomb arrows for Archer.":
-	"Bomb arrows for Archer.",
+	"Barutlu oklar okçular içindir.",
 	"Water bomb for Knight. Can extinguish fires and stun enemies.":
-	"Water bomb for Knight. Can extinguish fires and stun enemies.",
+	"Su balonları Şövalyeler içindir. Yangınları söndürür ve düşmanları duraklatır.",
 	"Water absorbing sponge. Useful for unflooding tunnels and reducing water stuns.":
-	"Water absorbing sponge. Useful for unflooding tunnels and reducing water stuns.",
+	"Süngerler suyu çekerler. Tünelleri selden kurtarır ve su balonların etkisini azaltır.",
 	"Builder workshop for building utilities and changing class to Builder":
-	"Builder workshop for building utilities and changing class to Builder",
+	"Hırdavat dükkanında inşaatçı olunabilir ve inşaat araçları satın alınabilir.",
 	"Knight workshop for building explosives and changing class to Knight":
-	"Knight workshop for building explosives and changing class to Knight",
+	"Şövalye loncasında şövalye olunabilir ve patlayıcı satın alınabilir.",
 	"Archer workshop for building arrows and changing class to Archer":
-	"Archer workshop for building arrows and changing class to Archer",
+	"Okçu loncasında okçu olunabilir ve ok satın alınabilir.",
 	"Siege workshop for building wheeled siege engines":
-	"Siege workshop for building wheeled siege engines",
+	"Kuşatma loncası kuşatma makineleri inşa etmek içindir",
 	"Naval workshop for building boats":
 	"Tersane gemi yapımı içindir",
 	"Place of merriment and healing":
@@ -392,8 +388,6 @@
 	"Bu büyü, tüm düşmanları anında parçalar.",
 	"This magic scroll will evaporate all water in a large surrounding orb.":
 	"Bu büyü, kürenin çevresindeki tüm suyu kurutur.",
-	//"Fire satchel for Knight only.":"Fire satchel for Knight only.",
-
 
 //// HELPS ////
 //DrawHelp.as
@@ -413,9 +407,6 @@
 	"Change class    $KEY_E$"                          :"Sınıf değiştir    $KEY_E$",
 	"$lantern$ On/Off     $KEY_SPACE$"                 :"$lantern$ Yak/Söndür     $KEY_SPACE$",
 	"$lantern$ Pick up    $KEY_C$"                     :"$lantern$ Tut    $KEY_C$",
-	//"$satchel$ Light     $KEY_SPACE$"                :"$satchel$ Yak     $KEY_SPACE$",               //NOT USED
-	//"$satchel$ Only KNIGHT can light satchel"        :"$satchel$ Sadece ŞÖVALYE çuvalı yakabilir", //NOT USED
-	//"$satchel$ THROW!    $KEY_SPACE$"                :"$satchel$ FIRLAT!    $KEY_SPACE$",              //NOT USED
 	"$log$ Chop $mat_wood$   $RMB$"                    :"$log$ Kes $mat_wood$   $RMB$",
 	"$keg$Pick up    $KEY_C$"                          :"$keg$Tut    $KEY_C$",
 	"$keg$Light    $KEY_SPACE$"                        :"$keg$Ateşle    $KEY_SPACE$",
@@ -439,16 +430,12 @@
 	"Convert Workshop\n\n$RED$Requires {TECH_NAME}\n from Hall\n$RED$            $RESEARCH$\n\n":"Dükkanı Değiştir\n\nHisardan\n$RED${TECH_NAME} gerekir\n$RED$            $RESEARCH$\n\n",
 	"Upgrade to...":"Yükselt...",
 
-	//"Saw":"Testere", //in blobs
-	//"Ballista":"Balista", //in blobs
 	"Bomb Ammo":"Barutlu Ok",
-	//"Catapult":"Mancınık", //in blobs
 	"Demolition":"Patlayıcı",
 	"Bakery":"Fırın",
 	"Longboat":"Şalopa",
 	"Military Supplies":"Askeri Malzemeler",
 	"Pyrotechnics":"Ateşli Ok",
-	//"War Boat":"Savaş Gemisi", //in blobs
 	"Water Ammo":"Su Balonlu Ok",
 
 //Saw.as
@@ -684,9 +671,6 @@
 	"Sadece intikal noktasında değil, dükkanlarda da sınıf değiştirilebilir ve yeni malzemeler alınabilir!",
 
 //Requirements.as
-	//"Wood":"Odun",
-	//"Stone":"Taş",
-	//"Gold":"Altın",
 	"{COINS_QUANTITY} $COIN$ required\n":"{COINS_QUANTITY} $COIN$ gerekli\n",
 
 //// BLOB NAMES ////
@@ -707,11 +691,9 @@
 	"Hall":"Hisar",
 	"Barracks":"Kışla", //OLD
 	"Bed":"Yatak",
-	//"Dormitory":"Yurt", //OLD
 	"Kitchen":"Mutfak", //OLD
 	"Seeds":"Tohum",
 	"Nursery":"Kreş", //OLD
-	//"Research":"Araştırma", //OLD
 	"Mill Saw":"Değirmen Testeresi",
 	"Saw":"Testere",
 	"Trader":"Тüccar",
@@ -732,7 +714,6 @@
 	"Heart":"Can",
 	"Lantern":"Gaz Lambası",
 	"Wood Log":"Kütük",
-	//"Powerup":"Güç", //OLD
 	"Arrow":"Ok",
 	"Arrows":"Oklar",
 	"Ballista Bolt":"Balista Mızrakı",
@@ -917,6 +898,9 @@
 	"Heads Pack Available On Steam!":"Yeni Kafa Setleri Steam'den satın alınabilir!",
 	"Get exclusive cosmetic heads to increase your customisation options, and stand out on the battlefield!\n\nCurrently only available through steam as a DLC. If there's enough interest we can investigate non-steam options.\n\nProceeds go to continued development of King Arthur's Gold.":
 	"Özel Kafa Setleri ile daha fazla seçeneğe sahip ol ve savaş alanında kendini göster!\n\nSteam'de ek paket olarak satın alınabilir. Yeterli talep olursa Steam dışı seçenekleri de araştıracağız.\n\nKatkılarınız King Arthur's Gold'un geliştirilmesinde kullanılıyor.",
+	"Support KAG On Patreon!":"Patreon destekçisi ol!",
+	"Support the game with a monthly pledge, and choose from a variety of rewards at different tiers.\n\nRewards include access to heads packs, priority server access, discord rewards, fancy capes, and even custom heads!\n\nProceeds go to continued hosting and development of King Arthur's Gold.":
+	"Patreon'da bizi destekle. Farklı seviyelerdeki ödülleri kazan.\n\nKafa setleri, özel sunucular, Discord ödülleri, havalı şapkalar ve sana özel kafalar kazan!\n\nKatkılar oyunun geliştirilmesine ve sunucu masraflarına harcanıyor.",
 	"Find Out More!":"İlgileniyorum!",
 	"Close":"Kapat",
 //guiLogin.xml
@@ -947,7 +931,7 @@
 	"Browse servers":"Sunuculara Gözat",
 	"Connect to...":"Bağlan...",
 //guiPopup.xml
-	"New Game From THD:":"Transhuman Design Oyunları",
+	"New Game From THD:":"THD Oyunları",
 //guiQuickjoin.xml
 	"Pick Game Size:":"Oyuncu Sayısı:",
 	"<8 Players":"8'den az",
@@ -955,9 +939,6 @@
 	">20 Players":"20'den çok",
 	"Don't Care":"Hepsi",
 	"Choose Game Mode:":"Oyun Modu:",
-	//"Capture The Flag":"Sancak Savaşı", //Already exists in GAMEMODE INFO
-	//"Take The Halls":"Hisar İşgali",  //Already exists in GAMEMODE INFO
-	//"Team Deathmatch":"Takım Ölüm Maçı", //Already exists in GAMEMODE INFO
 	"Sandbox":"Serbest İnşaat",
 	"Co-op Challenge":"Çok Oyunculu Meydan Okuma",
 	"Custom Content":"Modlar",
@@ -971,15 +952,20 @@
 	"Gender:"                   :"Cinsiyet:",
 	"Male"                      :"Erkek",
 	"Female"                    :"Kadın",
-	"BUY {HEADS_PACK}"          :"{HEADS_PACK} SATIN AL",
+	"Armour Set:"               :"Zırh Seti:",
+	"Golden Tools"              :"Altın Araçlar",
 	"Standard"                  :"Varsayılan",
-	"Flags of The World"        :"Bayraklar",
-	"Head packs:"               :"Kafa Setleri:",
 	"Head:"                     :"Kafa:",
+	"Set Default Head"          :"Varsayılan Kafa",
+	"Head packs:"               :"Kafa paketleri:",
+	"Classic Heads"             :"Klasik Kafalar",
+	"BUY {HEADS_PACK}"          :"{HEADS_PACK} SATIN AL",
+	"Flags of The World"        :"Bayraklar",
+	"High Fantasy"              :"Fantezi Kurgu",
 	"Change keys:"              :"Tuşları değiştir:",
 	"Smooth shader"             :"Yumuşak gölgelendirme",
 	"Faster graphics"           :"Basit grafikler",
-	"Uncap framerate"           :"Limitsiz FPS",
+	"Cap framerate"             :"Limitli FPS",
 	"VSync - Requires Restart"  :"VSync - Yeniden başlatmak gerekir",
 	"Game music"                :"Oyun Müziği",
 	"Sound Volume:"             :"Ses Seviyesi:",
@@ -1000,12 +986,9 @@
 //guiSolo.xml
 	"(start here)":"(buradan başla)",
 	"TUTORIALS":"EĞİTİMLER",
-	//"Save the Princess":"Prensesi Kurtar", //Already exists in GAMEMODE INFO
 	"Challenges!":"Meydan Okumalar!",
 	"Tutorials":"Eğitimler",
 	"Basics":"Temel Eğitim",
-	//"Capture the Flag":"Sancak Savaşı",  //Already exists in GAMEMODE INFO
-	//"Take the Halls":"Hisar İşgali", //Already exists in GAMEMODE INFO
 //guiStarter.xml
 	"King Arthur's Gold":"King Arthur's Gold",
 	"KAG Community":"KAG Topluluğu",
@@ -1039,7 +1022,6 @@
 	"Spectate":                                      "İzle",
 	"OK":                                            "Tamam",
 	"Beginner":                                      "Çaylak",
-	//"Ping":                                          "Gecikme", //Already exists in ScoreboardRender.as
 	"Player Count":                                  "Oyuncu Sayısı",
 	"Map Size":                                      "Harita Boyutu",
 	"Game Mode":                                     "Oyun Modu",
@@ -1164,7 +1146,6 @@
 	"Back":					"Geri",
 	"Change Team":				"Takım Değiştir",
 	"Switch to Team {NUMBER}":		"Takıma Geç {NUMBER}", //(not used in vanilla)
-	// "Spectator":				"İzleyici", //Already exists in TeamMenu.as
 	"Spectators":				"İzleyiciler",
 	"Suicide":				"İntihar",
 	"Admin":				"Yönetici",
@@ -1217,22 +1198,16 @@
 	"Disappointed":"Hayal Kırıklığı",
 	"Frown":"Asık Surat",
 	"Crying":"Ağlamak",
-	//"Archer":"",
-	//"Knight":"",
-	//"Builder":"",
 	"Point left":"Sola",
-	//"Heart":"",
 	"Love":"Aşk",
 	"Kiss":"Öpmek",
 	"Flex":"Rahat",
 	"Rude Gesture":"Kabalık",
 	"Thumbs down":"Evet",
 	"Thumbs up":"Hayır",
-	//"OK":"",
 	"Point up":"Yukarı",
 	"Thinking":"Düşünce",
 	"Sweat drop":"Yorgunluk",
-	//"Ladder":"",
 	"Attention":"Dikkat",
 	"Question":"Soru",
 	"Fire":"Ateş",
@@ -1268,6 +1243,11 @@
 	"This player has 8 years of experience":"8 yıl tecrübeli oyuncu",
 	"This player has 9 years of experience":"9 yıl tecrübeli oyuncu",
 	"This player has over a decade of experience":"10 yıldan fazla tecrübeli oyuncu",
+	//Patreon
+	"This player is a Squire Supporter":"Patreon destekçisi: Squire",
+	"This player is a Knight Supporter":"Patreon destekçisi: Knight",
+	"This player is a Royal Guard Supporter":"Patreon destekçisi: Royal Guard",
+	"This player is a Round Table Supporter":"Patreon destekçisi: Round Table",
 	//tourney
 	"Gold Medal - for Placing 1st in a Suitable Community Tournament":
 	"Altın Madalya - Topluluk Turnuvalarında 1. olanlara verilir",
@@ -1288,5 +1268,7 @@
 	"Yönetim Partneri - oyun içi, oyunun forumlarında veya Discord kanalındaki yöneticilere verilir",
 
 	//sound
-	"MigrantSayHello": "GöçebeMerhabaDiyor"
+	"MigrantSayHello": "GöçebeMerhabaDiyor",
+	"MigrantSayNo": "GöçebeHayırDiyor",
+	"MigrantSayFriend": "GöçebeArkadaşlıkİstiyor"
 }
