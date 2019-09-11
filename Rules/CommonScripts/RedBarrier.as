@@ -33,7 +33,8 @@ void onTick(CRules@ this)
 			cbs.write_f32(x2);
 			cbs.write_f32(y1);
 			cbs.write_f32(y2);
-			this.SendCommand(this.getCommandID("set_barrier_pos"), cbs);
+
+			this.SendCommand(this.getCommandID("set_barrier_pos"), cbs, true);
 		}
 		return;
 	}
@@ -266,5 +267,25 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 		this.set_f32("barrier_y1", y1);
 		this.set_f32("barrier_y2", y2);
 		done_sync = true;
+	}
+}
+
+void onNewPlayerJoin( CRules@ this, CPlayer@ player )
+{
+	if(isServer())
+	{
+		if(!this.isWarmup()) return;
+		
+		f32 x1, x2, y1, y2;
+		CBitStream cbs;
+		getBarrierPositions(x1, x2, y1, y2);
+
+		cbs.write_f32(x1);
+		cbs.write_f32(x2);
+		cbs.write_f32(y1);
+		cbs.write_f32(y2);
+
+		this.SendCommand(this.getCommandID("set_barrier_pos"), cbs, player);
+
 	}
 }
