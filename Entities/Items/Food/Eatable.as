@@ -45,13 +45,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 					CPlayer@ player = theBlob.getPlayer();
 					u16 healerID = this.get_u16("healer");
 					CPlayer@ healer = getPlayerByNetworkId(healerID);
-
-					bool healerHealed = healer is player;
-					bool sameTeam = healer.getTeamNum() == player.getTeamNum();
-					if (healer !is null && !healerHealed && sameTeam)
+					if (player !is null && healer !is null)
 					{
-						int coins = this.getName() == "heart" ? 5 : 10;
-						healer.server_setCoins(healer.getCoins() + coins);
+						bool healerHealed = healer is player;
+						bool sameTeam = healer.getTeamNum() == player.getTeamNum();
+						if (!healerHealed && sameTeam)
+						{
+							int coins = this.getName() == "heart" ? 5 : 10;
+							healer.server_setCoins(healer.getCoins() + coins);
+						}
 					}
 				}
 
@@ -76,23 +78,33 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 }
 
+
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if (getNet().isServer())
+	if(this is null || attached is null) {return;}
+
+	if (isServer())
 	{
 		Heal(attached, this);
 	}
 
-	this.set_u16("healer", attached.getPlayer().getNetworkID());
+	CPlayer@ p = attached.getPlayer();
+	if(p is null){return;}
+
+	this.set_u16("healer", p.getNetworkID());
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 {
-	if (getNet().isServer())
+	if(this is null || detached is null) {return;}
+
+	if (isServer())
 	{
 		Heal(detached, this);
 	}
+	
+	CPlayer@ p = detached.getPlayer();
+	if(p is null){return;}
 
-	this.set_u16("healer", detached.getPlayer().getNetworkID());
+	this.set_u16("healer", p.getNetworkID());
 }
-
