@@ -133,7 +133,7 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 	{
 		//(this should prevent travel when stunned, but actually
 		// causes issues on net)
-		//if(isKnockable(caller) && caller.get_u8("knocked") > 0)
+		//if (isKnockable(caller) && caller.get_u8("knocked") > 0)
 		//	return;
 
 		if (caller.isAttached())   // attached - like sitting in cata? move whole cata
@@ -168,7 +168,7 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 
 		//stunned on going through tunnel
 		//(prevents tunnel spam and ensures traps get you)
-		if(isKnockable(caller))
+		if (isKnockable(caller))
 		{
 			//if you travel, you lose invincible
 			caller.Untag("invincible");

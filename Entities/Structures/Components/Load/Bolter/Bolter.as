@@ -23,7 +23,7 @@ class Bolter : Component
 	{
 		Vec2f position = this.getPosition();
 
-		if(getNet().isServer())
+		if (getNet().isServer())
 		{
 			CBlob@[] blobs;
 			getMap().getBlobsAtPosition((offset * -1) * 8 + position, @blobs);
@@ -31,21 +31,21 @@ class Bolter : Component
 			for(uint i = 0; i < blobs.length; i++)
 			{
 				CBlob@ blob = blobs[i];
-				if(blob.getName() != "magazine" || !blob.getShape().isStatic()) continue;
+				if (blob.getName() != "magazine" || !blob.getShape().isStatic()) continue;
 
 				CInventory@ inventory = blob.getInventory();
-				if(!inventory.isFull()) break;
+				if (!inventory.isFull()) break;
 
 				// get the only blob in inventory
 				CBlob@ ammo = inventory.getItem(0);
 
 				// set the type, if none are found then it's set to -1
 				s8 arrow_type = arrowTypeNames.find(ammo.getName());
-				if(arrow_type < 0) break;
+				if (arrow_type < 0) break;
 
 				// decrement
 				u8 quantity = ammo.getQuantity() - 1;
-				if(quantity > 0)
+				if (quantity > 0)
 				{
 					ammo.server_SetQuantity(quantity);
 				}
@@ -78,7 +78,7 @@ class Bolter : Component
 		}
 
 		CSprite@ sprite = this.getSprite();
-		if(sprite is null) return;
+		if (sprite is null) return;
 
 		sprite.PlaySound("BolterFire.ogg");
 
@@ -108,7 +108,7 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic || this.exists("component")) return;
+	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f position = this.getPosition() / 8;
 	const u16 angle = this.getAngleDegrees();
@@ -117,10 +117,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Bolter component(position, this.getNetworkID(), angle, offset);
 	this.set("component", component);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		grid.setAll(
 		component.x,                        // x

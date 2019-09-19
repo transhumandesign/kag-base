@@ -147,7 +147,7 @@ void onTick(CBlob@ this)
 	CBlob @carryBlob = this.getCarriedBlob();
 	if (carryBlob !is null)
 	{
-		if(carryBlob.hasTag("place ignore facing"))
+		if (carryBlob.hasTag("place ignore facing"))
 		{
 			carryBlob.getSprite().SetFacingLeft(false);
 		}

@@ -86,7 +86,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 				for (int i = 0; i < inv.getItemsCount(); i++)
 				{
 					CBlob@ invitem = inv.getItem(i);
-					if(invitem.getName() == "sponge")
+					if (invitem.getName() == "sponge")
 					{
 						sponges.push_back(invitem);
 					}
@@ -98,7 +98,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			{
 				CBlob@ current_sponge = sponges[i];
 				int absorbed = current_sponge.get_u8("absorbed");
-				if(absorbed > highest_absorbed)
+				if (absorbed > highest_absorbed)
 				{
 					highest_absorbed = absorbed;
 					@sponge = current_sponge;
@@ -152,7 +152,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			u8 sp_max = 100;
 			u8 sp_amount = Maths::Min(sp_max, sponge.get_u8(apn) + 50);
 			//full?
-			if(sp_amount == sp_max)
+			if (sp_amount == sp_max)
 			{
 				sponge.server_Die();
 			}

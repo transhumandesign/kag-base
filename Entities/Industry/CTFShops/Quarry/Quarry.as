@@ -80,7 +80,7 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	//only do "real" update logic on server
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		int blobCount = this.get_s16(fuel_prop);
 		if ((blobCount >= min_input))
@@ -143,7 +143,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	if (cmd == this.getCommandID("add fuel"))
 	{
 		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		if(caller is null) return;
+		if (caller is null) return;
 
 		//amount we'd _like_ to insert
 		int requestedAmount = Maths::Min(250, max_fuel - this.get_s16(fuel_prop));
@@ -157,7 +157,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		//amount we _can_ insert
 		int ammountToStore = Maths::Min(requestedAmount, callerQuantity);
 		//can we even insert anything?
-		if(ammountToStore > 0)
+		if (ammountToStore > 0)
 		{
 			caller.TakeBlob(fuel, ammountToStore);
 			this.set_s16(fuel_prop, this.get_s16(fuel_prop) + ammountToStore);
@@ -234,7 +234,7 @@ void animateBelt(CBlob@ this, bool isActive)
 	else
 	{
 		//(not tossing stone)
-		if(anim.frame < 2 || anim.frame > 8)
+		if (anim.frame < 2 || anim.frame > 8)
 		{
 			// slowly stop animation
 			if (anim.time == 6) anim.time = 0;

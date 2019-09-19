@@ -39,15 +39,15 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().waterPasses = true;
 
 	const string NAME = this.getName();
-	if(NAME == "coupling")
+	if (NAME == "coupling")
 	{
 		this.set_u8("type", COUPLING);
 	}
-	else if(NAME == "elbow")
+	else if (NAME == "elbow")
 	{
 		this.set_u8("type", ELBOW);
 	}
-	else if(NAME == "tee")
+	else if (NAME == "tee")
 	{
 		this.set_u8("type", TEE);
 	}
@@ -55,7 +55,7 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic || this.exists("component")) return;
+	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f POSITION = this.getPosition() / 8;
 	const u16 ANGLE = this.getAngleDegrees();
@@ -63,13 +63,13 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Wire component(POSITION);
 	this.set("component", component);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		u8 io;
-		switch(this.get_u8("type"))
+		switch (this.get_u8("type"))
 		{
 			case COUPLING:
 				io = rotateTopology(ANGLE, TOPO_VERT);
@@ -93,7 +93,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite !is null)
+	if (sprite !is null)
 	{
 		const u8 TYPE = this.get_u8("type");
 
@@ -102,7 +102,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		// set default background frame
 		u8 background_frame = 2;
 
-		if(TYPE == COUPLING)
+		if (TYPE == COUPLING)
 		{
 			// change default background frame
 			background_frame = 5;
@@ -111,7 +111,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		}
 
 		SpriteConsts@ consts = sprite.getConsts();
-		if(consts is null) return;
+		if (consts is null) return;
 
 		CSpriteLayer@ layer = sprite.addSpriteLayer("background", consts.filename, consts.frameWidth, 16);
 		layer.addAnimation("default", 0, false);
@@ -119,7 +119,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		layer.SetRelativeZ(-1);
 
 		Vec2f offset = Vec2f_zero;
-		switch(ANGLE)
+		switch (ANGLE)
 		{
 			case 90:
 				offset = Vec2f(0, 1);

@@ -427,10 +427,10 @@ void onRender(CSprite@ this)
 	u16 holderID = blob.get_u16("showHeatTo");
 
 	CPlayer@ holder = holderID == 0 ? null : getPlayerByNetworkId(holderID);
-	if(holder is null){return;}
+	if (holder is null){return;}
 
 	CBlob@ holderBlob = holder.getBlob();
-	if(holderBlob is null){return;}
+	if (holderBlob is null){return;}
 
 	if (holderBlob.getName() != required_class && sv_gamemode != "TDM"){return;}
 	

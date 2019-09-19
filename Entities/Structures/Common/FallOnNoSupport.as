@@ -62,7 +62,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			this.Tag("fallen");
 			this.server_SetTimeToDie(3.0f);
             ShapeVars@ vars = this.getShape().getVars();
-            if(vars.isladder)
+            if (vars.isladder)
             {
                 vars.isladder = false;
 

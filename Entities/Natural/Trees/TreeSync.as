@@ -36,7 +36,7 @@ void InitTree(CBlob@ this, TreeVars@ vars)
 	const f32 radius = map.tilesize / 2.0f;
 	map.server_AddSector(Vec2f(pos.x - radius, pos.y - radius), Vec2f(pos.x + radius, pos.y + radius), "no build", "", this.getNetworkID());
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		this.set_s32("last_grew_time", vars.last_grew_time);
 		this.Sync("last_grew_time", true);
@@ -67,7 +67,7 @@ void InitTree(CBlob@ this, TreeVars@ vars)
 			DoGrow(this, vars);
 		}
 
-		if(this.exists("last_grew_time"))
+		if (this.exists("last_grew_time"))
 		{
 			vars.last_grew_time = this.get_s32("last_grew_time");
 		}

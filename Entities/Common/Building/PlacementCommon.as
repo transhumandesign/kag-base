@@ -76,7 +76,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		return false;
 	}
 
-	if(map.isTileCollapsing(offset))
+	if (map.isTileCollapsing(offset))
 	{
 		return false;
 	}

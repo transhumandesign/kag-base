@@ -192,7 +192,7 @@ void onInit(CSprite@ this)
 	this.SetFrame(0);
 
 	CSpriteLayer@ bed = this.addSpriteLayer( "bed", 24,16 );
-	if(bed !is null)
+	if (bed !is null)
 	{
 		bed.addAnimation("default",0,false);
 		int[] frames = {6,7,17};
@@ -211,7 +211,7 @@ void onInit(CSprite@ this)
 	}
 
 	CSpriteLayer@ fire = this.addSpriteLayer( "fire", 8,8 );
-	if(fire !is null)
+	if (fire !is null)
 	{
 		fire.addAnimation("default",3,true);
 		int[] frames = {10,11,42,43};

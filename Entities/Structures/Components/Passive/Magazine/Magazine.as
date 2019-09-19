@@ -28,7 +28,7 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic || this.exists("component")) return;
+	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f position = this.getPosition() / 8;
 	const u16 angle = this.getAngleDegrees();
@@ -36,10 +36,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Magazine component(position);
 	this.set("component", component);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		grid.setAll(
 		component.x,                        // x
@@ -52,7 +52,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite is null) return;
+	if (sprite is null) return;
 
 	sprite.SetZ(500);
 	sprite.SetFacingLeft(false);
@@ -60,15 +60,15 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if(this.getDistanceTo(caller) > 16.0f || !this.getShape().isStatic()) return;
+	if (this.getDistanceTo(caller) > 16.0f || !this.getShape().isStatic()) return;
 
 	CBlob@ carried = caller.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();
-	if(carried !is null)
+	if (carried !is null)
 	{
-		if(carried.getRadius() > 3.5f || !carried.canBePutInInventory(this)) return;
+		if (carried.getRadius() > 3.5f || !carried.canBePutInInventory(this)) return;
 
 		CBlob@ item = this.getInventory().getItem(0);
-		if(item !is null && (item.getName() != carried.getName() || item.getQuantity() == item.maxQuantity)) return;
+		if (item !is null && (item.getName() != carried.getName() || item.getQuantity() == item.maxQuantity)) return;
 
 		CBitStream params;
 		params.write_u16(carried.getNetworkID());
@@ -87,7 +87,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	else
 	{
 		CBlob@ item = this.getInventory().getItem(0);
-		if(item is null) return;
+		if (item is null) return;
 
 		CBitStream params;
 		params.write_u16(caller.getNetworkID());
@@ -107,31 +107,31 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if(!getNet().isServer()) return;
+	if (!getNet().isServer()) return;
 
-	if(cmd == this.getCommandID("load"))
+	if (cmd == this.getCommandID("load"))
 	{
 		u16 id;
-		if(!params.saferead_u16(id)) return;
+		if (!params.saferead_u16(id)) return;
 
 		CBlob@ carried = getBlobByNetworkID(id);
-		if(carried is null) return;
+		if (carried is null) return;
 
 		CBlob@ item = this.getInventory().getItem(0);
-		if(item is null)
+		if (item is null)
 		{
 			this.server_PutInInventory(carried);
 		}
 		else
 		{
 			// double check
-			if(item.getName() != carried.getName() || item.getQuantity() == item.maxQuantity) return;
+			if (item.getName() != carried.getName() || item.getQuantity() == item.maxQuantity) return;
 
 			const u16 quantity_stored = item.getQuantity();
 			const u16 quantity_carried = carried.getQuantity();
 			const u16 request = item.maxQuantity - quantity_stored;
 
-			if(request >= quantity_carried)
+			if (request >= quantity_carried)
 			{
 				this.server_PutInInventory(carried);
 			}
@@ -142,16 +142,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 	}
-	else if(cmd == this.getCommandID("unload"))
+	else if (cmd == this.getCommandID("unload"))
 	{
 		u16 id;
-		if(!params.saferead_u16(id)) return;
+		if (!params.saferead_u16(id)) return;
 
 		CBlob@ caller = getBlobByNetworkID(id);
-		if(caller is null) return;
+		if (caller is null) return;
 
 		CBlob@ item = this.getInventory().getItem(0);
-		if(item is null) return;
+		if (item is null) return;
 
 		caller.server_Pickup(item);
 	}

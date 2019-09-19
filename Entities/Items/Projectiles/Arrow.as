@@ -51,7 +51,7 @@ void onInit(CBlob@ this)
 		this.set_u8("custom_hitter", Hitters::bomb_arrow);
 	}
 
-	if(arrowType == ArrowType::water)
+	if (arrowType == ArrowType::water)
 	{
 		this.Tag("splash ray cast");
 	}
@@ -264,7 +264,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			//  we use between old and new position because old has not been interfered with
 			//  but might be too far behind (and we move back by velocity anyway)
 			CShape@ shape = blob.getShape();
-			if(shape !is null && !shape.isStatic())
+			if (shape !is null && !shape.isStatic())
 			{
 				Vec2f velnorm = this.getVelocity();
 				float vellen = Maths::Min(this.getRadius(), velnorm.Normalize() * (1.0f / 30.0f));
@@ -307,7 +307,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	//don't collide with other projectiles
-	if(blob.hasTag("projectile"))
+	if (blob.hasTag("projectile"))
 	{
 		return false;
 	}
@@ -432,7 +432,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 		if (this.hasTag("collided")) return 0.0f;
 
 		// check if invincible + special -> add force here
-		if(specialArrowHit(hitBlob))
+		if (specialArrowHit(hitBlob))
 		{
 			const f32 scale = SPECIAL_HIT_SCALE;
 			f32 force = (ARROW_PUSH_FORCE * 0.125f) * Maths::Sqrt(hitBlob.getMass() + 1) * scale;
@@ -595,7 +595,7 @@ void FireUp(CBlob@ this)
 	head.RotateBy(angle);
 	Vec2f burnpos = pos + head;
 
-	if(this.exists("override fire pos"))
+	if (this.exists("override fire pos"))
 	{
 		MakeFireCross(this, this.get_Vec2f("override fire pos"));
 	}
@@ -647,7 +647,7 @@ void MakeFireCross(CBlob@ this, Vec2f burnpos)
 		//set blob on fire
 		CBlob@ b = map.getBlobAtPosition(pos);
 		//skip self or nothing there
-		if(b is null || b is this) continue;
+		if (b is null || b is this) continue;
 
 		//only hit static blobs
 		CShape@ s = b.getShape();

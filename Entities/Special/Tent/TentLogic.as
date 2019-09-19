@@ -24,7 +24,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if(enable_quickswap)
+	if (enable_quickswap)
 	{
 		//quick switch class
 		CBlob@ blob = getLocalPlayerBlob();
