@@ -46,6 +46,17 @@ void onRestart(CRules@ this)
 		//do it first tick so the map is definitely there
 		//(it is on server, but not on client unfortunately)
 		need_sky_check = true;
+
+		//map name
+		if (isClient())
+		{
+			string[] mapPath = map.getMapName().split('/');				//split file path
+			string mapFile = mapPath[mapPath.length() - 1];				//get file name
+			string mapName = mapFile.substr(0, mapFile.length() - 4);	//remove .png
+
+			string text = getTranslatedString("Map: {MAP}").replace("{MAP}", mapName);
+			client_AddToChat(text);
+		}
 	}
 }
 
@@ -67,6 +78,89 @@ void onTick(CRules@ this)
 			}
 		}
 		map.SetBorderColourTop(SColor(has_solid_tiles ? 0xff000000 : 0x80000000));
+	}
+
+	if (isClient())
+	{
+		for (uint i = 0; i < getPlayerCount(); i++)
+		{
+			CPlayer@ p = getPlayer(i);
+			string username = p.getUsername();
+			string nickname = p.getCharacterName();
+			int team = p.getTeamNum();
+			bool sameName = (nickname == username);
+
+			//name changed
+			const string NAME_PROP = username + " old nickname";
+			if (this.exists(NAME_PROP) && this.get_string(NAME_PROP) != nickname)
+			{
+				string text = getTranslatedString("{USERNAME} is now known as {PLAYER}")
+					.replace("{USERNAME}", username)
+					.replace("{PLAYER}", nickname);
+				client_AddToChat(text);
+			}
+
+			//update old nickname
+			this.set_string(NAME_PROP, nickname);
+
+			//suppress team scramble chat spam
+			if (getGameTime() > 5)
+			{
+				//get team name
+				string teamName = "";
+				if (team < this.getTeamsCount())
+				{
+					teamName = getTranslatedString(this.getTeam(team).getName());
+				}
+
+				//team changed
+				const string TEAM_PROP = username + " old team";
+				if (this.exists(TEAM_PROP) && this.get_s32(TEAM_PROP) != team)
+				{
+					string text;
+					if (team == this.getSpectatorTeamNum())
+					{
+						text = getTranslatedString(sameName ? "{PLAYER} is now spectating" : "{PLAYER} ({USERNAME}) is now spectating");
+					}
+					else if (teamName != "")
+					{
+						text = getTranslatedString(sameName ? "{PLAYER} has joined {TEAM}" : "{PLAYER} ({USERNAME}) has joined {TEAM}")
+							.replace("{TEAM}", teamName);
+					}
+					else
+					{
+						text = getTranslatedString(sameName ? "{PLAYER} has switched teams" : "{PLAYER} ({USERNAME}) has switched teams");
+					}
+					text = text.replace("{PLAYER}", nickname).replace("{USERNAME}", username);
+
+					client_AddToChat(text, ConsoleColour::GAME);
+				}
+
+				//update old team
+				this.set_s32(TEAM_PROP, team);
+			}
+		}
+	}
+}
+
+void onNewPlayerJoin(CRules@ this, CPlayer@ player)
+{
+	if (isClient())
+	{
+		//join message
+		string username = player.getUsername();
+		string nickname = player.getCharacterName();
+
+		string text = "{USERNAME} connected";
+		if (username != nickname)
+		{
+			text += " as {PLAYER}";
+		}
+		text = getTranslatedString(text)
+			.replace("{USERNAME}", username)
+			.replace("{PLAYER}", nickname);
+
+		client_AddToChat(text);
 	}
 }
 
