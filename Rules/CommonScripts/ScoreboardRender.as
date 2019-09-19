@@ -697,7 +697,7 @@ void getMapName(CRules@ this)
 	{
 		string[] name = map.getMapName().split('/');	 //Official server maps seem to show up as
 		string mapName = name[name.length() - 1];		 //``Maps/CTF/MapNameHere.png`` while using this instead of just the .png
-		mapName = mapName.substr(0,mapName.length() - 4);//
+		mapName = mapName.substr(0,mapName.length() - 4);//Sub by 4 so .cfg OR .png are removed when loading the map 
 
 		this.set_string("map_name",mapName);
 		this.Sync("map_name",true);
