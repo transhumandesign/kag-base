@@ -99,9 +99,6 @@ void onTick(CBlob@ this)
 {
 	u8 knocked = getKnocked(this);
 
-	if (this.isInInventory())
-		return;
-
 	//knight logic stuff
 	//get the vars to turn various other scripts on/off
 	RunnerMoveVars@ moveVars;
@@ -113,6 +110,18 @@ void onTick(CBlob@ this)
 	KnightInfo@ knight;
 	if (!this.get("knightInfo", @knight))
 	{
+		return;
+	}
+
+	if (this.isInInventory())
+	{
+		//prevent players from insta-slashing when exiting crates
+		knight.state = 0;
+		knight.swordTimer = 0;
+		knight.shieldTimer = 0;
+		knight.slideTime = 0;
+		knight.doubleslash = false;
+		getHUD().SetCursorFrame(0);
 		return;
 	}
 
