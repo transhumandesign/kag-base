@@ -15,7 +15,7 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	//(wont be done for long)
-	if(this.hasTag("dead"))
+	if (this.hasTag("dead"))
 	{
 		return;
 	}

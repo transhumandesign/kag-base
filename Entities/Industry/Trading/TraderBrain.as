@@ -152,7 +152,7 @@ bool FindWantedPlayerTarget(CBrain@ this)
 
 void FindNewTarget(CBrain@ this, CBlob @blob)   //TODO: clean up all of the getblob()s in here
 {
-	//if(FindWantedPlayerTarget(this)) return;
+	//if (FindWantedPlayerTarget(this)) return;
 
 	f32 closestDistance;
 	CBlob@ closest;

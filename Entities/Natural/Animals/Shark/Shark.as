@@ -143,14 +143,14 @@ void onTick(CBlob@ this)
 	vel.y *= -0.5f;
 
 	f32 angle = 0.0f;
-	if(significantvel)
+	if (significantvel)
 	{
 		angle = -vel.Angle();
 	}
 
-	if(Maths::Abs(oldangle - angle) > 180.0f)
+	if (Maths::Abs(oldangle - angle) > 180.0f)
 	{
-		if(angle > oldangle)
+		if (angle > oldangle)
 			angle -= 360.0f;
 		else
 			oldangle -= 360.0f;
@@ -158,7 +158,7 @@ void onTick(CBlob@ this)
 	f32 change = oldangle - angle;
 
 	f32 dif = (left?1:-1)*(Maths::Min(Maths::Abs(change) * 0.1f,10.0f));
-	if(change > 0)
+	if (change > 0)
 		oldangle += dif;
 	else
 		oldangle -= dif;

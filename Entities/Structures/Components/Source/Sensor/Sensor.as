@@ -20,17 +20,17 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic || this.exists("component")) return;
+	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f POSITION = this.getPosition() / 8;
 
 	Component component(POSITION);
 	this.set("component", component);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		grid.setAll(
 		component.x,                        // x
@@ -43,7 +43,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite !is null)
+	if (sprite !is null)
 	{
 		sprite.SetFacingLeft(false);
 		sprite.SetZ(-50);
@@ -52,15 +52,15 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if(blob is null || blob.getShape().isStatic()) return;
+	if (blob is null || blob.getShape().isStatic()) return;
 
 	Component@ component = null;
-	if(!this.get("component", @component)) return;
+	if (!this.get("component", @component)) return;
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		grid.setPower(
 		component.x,                        // x
@@ -69,11 +69,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite !is null)
+	if (sprite !is null)
 	{
 		sprite.PlaySound("mechanical_click.ogg");
 
-		if(sprite.isAnimation("impulse"))
+		if (sprite.isAnimation("impulse"))
 		{
 			sprite.SetAnimation("default");
 		}
@@ -88,7 +88,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		3,                                  // ticks per frame
 		0.0f,                               // gravity
 		true);                              // self lit
-		if(particle !is null)
+		if (particle !is null)
 		{
 			particle.Z = -25;
 		}

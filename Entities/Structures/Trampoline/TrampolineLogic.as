@@ -37,7 +37,7 @@ void onTick(CBlob@ this)
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 
 	CBlob@ holder = this.getAttachments().getAttachedBlob("PICKUP", 0);
-	if(holder is null) return;
+	if (holder is null) return;
 
 	Vec2f ray = holder.getAimPos() - this.getPosition();
 	ray.Normalize();
@@ -57,7 +57,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	CBlob@ holder = point.getOccupied();
 
 	//cant bounce holder
-	if(holder is blob) return;
+	if (holder is blob) return;
 
 	//cant bounce while held by something attached to something else
 	if (holder !is null && holder.isAttached()) return;
@@ -78,21 +78,21 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	}
 
 	TrampolineCooldown@[]@ cooldowns;
-	if(!this.get(Trampoline::TIMER, @cooldowns)) return;
+	if (!this.get(Trampoline::TIMER, @cooldowns)) return;
 
 	//shred old cooldown if we have too many
-	if(Trampoline::SAFETY && cooldowns.length > Trampoline::COOLDOWN_LIMIT) cooldowns.removeAt(0);
+	if (Trampoline::SAFETY && cooldowns.length > Trampoline::COOLDOWN_LIMIT) cooldowns.removeAt(0);
 
 	u16 netid = blob.getNetworkID();
 	bool block = false;
 	for(int i = 0; i < cooldowns.length; i++)
 	{
-		if(cooldowns[i].timer < getGameTime())
+		if (cooldowns[i].timer < getGameTime())
 		{
 			cooldowns.removeAt(i);
 			i--;
 		}
-		else if(netid == cooldowns[i].netid)
+		else if (netid == cooldowns[i].netid)
 		{
 			block = true;
 			break;

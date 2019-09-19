@@ -19,27 +19,27 @@ class Receiver : Component
 		CBlob@ this = getBlobByNetworkID(m_id);
 
 		u16[]@ id;
-		if(this.get(EMITTER, @id))
+		if (this.get(EMITTER, @id))
 		{
 			for(u8 i = 0; i < id.length; i++)
 			{
 				CBlob@ blob = getBlobByNetworkID(id[i]);
-				if(blob is null)
+				if (blob is null)
 				{
 					this.removeAt(EMITTER, i);
 					continue;
 				}
 
 				Component@ emitter = null;
-				if(!blob.get("component", @emitter))
+				if (!blob.get("component", @emitter))
 				{
 					this.removeAt(EMITTER, i);
 					continue;
 				}
 
-				if(grid.getPower(emitter.x, emitter.y) > 0)
+				if (grid.getPower(emitter.x, emitter.y) > 0)
 				{
-					if(i > 0)
+					if (i > 0)
 					{
 						this.removeAt(EMITTER, i);
 						this.push(EMITTER, grid.getID(emitter.x, emitter.y));
@@ -65,7 +65,7 @@ void onInit(CBlob@ this)
 	// used by TileBackground.as
 	this.set_TileType("background tile", CMap::tile_wood_back);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		u16[] emitter;
 		this.set(EMITTER, emitter);
@@ -74,7 +74,7 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic || this.exists("component")) return;
+	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f POSITION = this.getPosition() / 8;
 	const u16 ANGLE = this.getAngleDegrees();
@@ -82,12 +82,12 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Receiver component(POSITION, this.getNetworkID());
 	this.set("component", component);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		CMap@ map = getMap();
 
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		grid.setAll(
 		component.x,                        // x
@@ -111,20 +111,20 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 			}
 
 			CBlob@ blob = getBlobByNetworkID(grid.getID(TARGET.x, TARGET.y));
-			if(blob is null || blob.getName() != EMITTER) continue;
+			if (blob is null || blob.getName() != EMITTER) continue;
 
 			u16 difference = Maths::Abs(ANGLE - blob.getAngleDegrees());
-			if(difference != 180) continue;
+			if (difference != 180) continue;
 
 			Component@ emitter = null;
-			if(!blob.get("component", @emitter)) continue;
+			if (!blob.get("component", @emitter)) continue;
 
 			this.push(EMITTER, grid.getID(emitter.x, emitter.y));
 		}
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite is null) return;
+	if (sprite is null) return;
 
 	const bool facing = ANGLE < 180? false : true;
 
@@ -137,7 +137,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	layer.SetRelativeZ(-1);
 	layer.SetFacingLeft(facing);
 
-	if(ANGLE == 90 || ANGLE == 180)
+	if (ANGLE == 90 || ANGLE == 180)
 	{
 		sprite.SetOffset(Vec2f(0, 1));
 		layer.SetOffset(Vec2f(0, 1));
@@ -147,7 +147,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 /*
 void onDie(CBlob@ this)
 {
-	if(!getNet().isClient() || !this.exists("component")) return;
+	if (!getNet().isClient() || !this.exists("component")) return;
 
 	const string image = this.getSprite().getFilename();
 	const Vec2f position = this.getPosition();

@@ -81,7 +81,7 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if(caller.getConfig() == this.get_string("required class"))
+	if (caller.getConfig() == this.get_string("required class"))
 	{
 		this.set_Vec2f("shop offset", Vec2f_zero);
 	}
@@ -98,7 +98,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
 
-		if(!getNet().isServer()) return; /////////////////////// server only past here
+		if (!getNet().isServer()) return; /////////////////////// server only past here
 
 		u16 caller, item;
 		if (!params.saferead_netid(caller) || !params.saferead_netid(item))

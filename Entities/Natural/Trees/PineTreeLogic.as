@@ -8,14 +8,14 @@ void onInit(CBlob@ this)
 
 	u32 seed = 0;
 
-	if(this.exists("tree_rand"))
+	if (this.exists("tree_rand"))
 	{
 		seed = this.get_u32("tree_rand");
 	}
 	else
 	{
 		seed = this.getNetworkID() * 139 + getGameTime() * 7;
-		if(getNet().isServer())
+		if (getNet().isServer())
 		{
 			this.set_u32("tree_rand", seed);
 			this.Sync("tree_rand", true);

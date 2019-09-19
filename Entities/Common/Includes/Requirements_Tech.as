@@ -17,7 +17,7 @@ void RemoveFakeTechs(CRules@ this)
 {
 	string[]@ technames;
 	this.get("_faketech", @technames);
-	if(technames !is null)
+	if (technames !is null)
 	{
 		for(uint i = 0; i < technames.length; ++i)
 		{
@@ -36,14 +36,14 @@ void RemoveFakeTechs(CRules@ this)
  */
 void GiveFakeTech( CRules@ this, const string tech, const int teamnum)
 {
-	if(!HasFakeTech( this, tech, teamnum))
+	if (!HasFakeTech( this, tech, teamnum))
 	{
 		const string name = tech+teamnum;
 		this.set_bool(name, true);
 		this.Sync(name, true);
 		string[]@ technames;
 		this.get("_faketech", @technames);
-		if(technames !is null)
+		if (technames !is null)
 		{
 			technames.push_back(name);
 		}
@@ -63,7 +63,7 @@ void GiveFakeTech( CRules@ this, const string tech, const int teamnum)
 bool HasFakeTech( CRules@ this, const string tech, const int teamnum)
 {
 	const string name = tech+teamnum;
-	if(this.exists(name))
+	if (this.exists(name))
 		return this.get_bool(name);
 
 	return false;
@@ -88,7 +88,7 @@ bool hasRequirements_Tech( CInventory@ inv1, CInventory@ inv2, CBitStream &inout
 			bool hasTech = false;
 			int teamNum = inv1.getBlob().getTeamNum();
 
-			if(HasFakeTech(getRules(), blobName, teamNum))
+			if (HasFakeTech(getRules(), blobName, teamNum))
 			{
 				hasTech = true;
 			}

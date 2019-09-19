@@ -15,7 +15,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 
 	//dead bodies dont stomp
-	if(this.hasTag("dead"))
+	if (this.hasTag("dead"))
 	{
 		return;
 	}

@@ -111,12 +111,12 @@ void PickupOverlap(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if(caller.getTeamNum() == this.getTeamNum() && caller.isOverlapping(this))
+	if (caller.getTeamNum() == this.getTeamNum() && caller.isOverlapping(this))
 	{
 		CInventory @inv = caller.getInventory();
-		if(inv is null) return;
+		if (inv is null) return;
 
-		if(inv.getItemsCount() > 0)
+		if (inv.getItemsCount() > 0)
 		{
 			CBitStream params;
 			params.write_u16(caller.getNetworkID());
