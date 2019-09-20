@@ -15,8 +15,8 @@ bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity)
 {
 	CInventory@ inv = blob.getInventory();
 
-	//shred old arrows if player is archer
-	if (blob.getName() == "archer")
+	//avoid over-stacking arrows
+	if (name == "mat_arrows")
 	{
 		inv.server_RemoveItems(name, quantity);
 	}
@@ -266,6 +266,9 @@ void onTick(CRules@ this)
 // render gui for the player
 void onRender(CRules@ this)
 {
+	if (g_videorecording)
+		return;
+
 	CPlayer@ p = getLocalPlayer();
 	if (p is null || !p.isMyPlayer()) { return; }
 

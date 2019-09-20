@@ -76,7 +76,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		return false;
 	}
 
-	if(map.isTileCollapsing(offset))
+	if (map.isTileCollapsing(offset))
 	{
 		return false;
 	}
@@ -107,16 +107,13 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		}
 	}
 
-//printf("c");
-	bool canPlaceOnBackground = ((blob is null) || (blob.getShape().getConsts().support > 0));   // if this is a blob it has to do support - so spikes cant be placed on back
-
 	if (
-		(!canPlaceOnBackground || !map.isTileBackgroundNonEmpty(backtile)) &&      // can put against background
+		!map.isTileBackgroundNonEmpty(backtile) &&      // can put against background
 		!(                                              // can put sticking next to something
-			canPlaceNextTo(map, left) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(left))  ||
-			canPlaceNextTo(map, right) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(right)) ||
-			canPlaceNextTo(map, up)   || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(up))    ||
-			canPlaceNextTo(map, down) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(down))
+			canPlaceNextTo(map, left) ||
+			canPlaceNextTo(map, right) ||
+			canPlaceNextTo(map, up) ||
+			canPlaceNextTo(map, down)
 		)
 	)
 	{

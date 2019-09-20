@@ -2,13 +2,15 @@
 
 void onInit(CBlob@ this)
 {
-	this.getCurrentScript().tickFrequency = 5; // opt
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().runFlags |= Script::tick_not_onground;
 }
 
 void onTick(CBlob@ this)
 {
+	// const bool pressingKey = this.isKeyPressed(key_up) || this.isKeyPressed(key_down);
+	// const bool climbLadder = this.isOnLadder() || (!this.wasOnLadder() && pressingKey);
+
 	ShapeVars@ vars = this.getShape().getVars();
 	vars.onladder = false;
 

@@ -29,7 +29,7 @@ void onTick(CSprite@ this)
 
 		ResearchStatus@ stat;
 		blob.get( "techs", @stat );
-		if(stat is null) return;
+		if (stat is null) return;
 
 		ScrollSet@ scrolls = stat.scrolls;
 		for (uint i = 0; i < scrolls.names.length; i++)
@@ -46,7 +46,7 @@ void onTick(CSprite@ this)
 			const bool hasTech = def.hasTech();
 			const bool mouseHover = (mouse.x > buttonUL.x && mouse.x < buttonLR.x && mouse.y > buttonUL.y && mouse.y < buttonLR.y);
 
-			if(mouseHover && localBlob.isKeyJustPressed(key_action1) && !def.hasTech() && !def.researching) //avoid sending pointless cmds
+			if (mouseHover && localBlob.isKeyJustPressed(key_action1) && !def.hasTech() && !def.researching) //avoid sending pointless cmds
 			{
 				CBitStream params;
 				params.write_string(localBlob.getPlayer().getUsername());
@@ -109,7 +109,7 @@ void onRender( CSprite@ this )
 
 		ResearchStatus@ stat;
 		blob.get( "techs", @stat );
-		if(stat is null) return;
+		if (stat is null) return;
 
 		ScrollSet@ scrolls = stat.scrolls;
 		for (uint i = 0; i < scrolls.names.length; i++)
@@ -144,12 +144,12 @@ void onRender( CSprite@ this )
 
 				bool researching = stat.isResearching(nextName, defname);
 
-				if(hasNextTech)
+				if (hasNextTech)
 				{
 					GUI::DrawArrow2D( a, b, SColor(255, 51, 102, 13) );
 
 				}
-				else if(researching)
+				else if (researching)
 				{
 					GUI::DrawArrow2D( a, b, SColor(0xff9dca22) );
 				}
@@ -190,7 +190,7 @@ void onRender( CSprite@ this )
 		for (uint i = 0; i < stat.researchers.length; i++)
 		{
 			ResearchPoint@ p = stat.researchers[i];
-			if(p is null || p.targets.length <= 0)
+			if (p is null || p.targets.length <= 0)
 				continue;
 
 			string current = p.target;
@@ -256,7 +256,7 @@ void DrawButton( CBlob@ blob, ScrollDef@ def, const string &in defname, Vec2f bu
 		(mouseHover && !def.researching) ? GUI::DrawButtonHover( buttonUL, buttonLR) : color ? GUI::DrawRectangle( buttonUL, buttonLR ) : GUI::DrawButton( buttonUL, buttonLR );
 	}
 
-	if(def.votes > 0 && !def.hasTech() )
+	if (def.votes > 0 && !def.hasTech() )
 	{
 		GUI::DrawText( ""+def.votes, buttonUL, buttonLR, SColor(0xffffffff), true, true );
 	}

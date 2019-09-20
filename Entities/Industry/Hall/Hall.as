@@ -291,7 +291,7 @@ void onTick(CBlob@ this)
 		// update our worker objects and calculate capture
 
 		// note: not much performed when under raid
-		if (!getRules().exists("singleplayer") || getRules().exists("tutorial"))
+		if (!getRules().hasTag("singleplayer") || getRules().hasTag("tutorial"))
 		{
 			updateWorkers(this, raiding);
 		}
@@ -383,7 +383,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 		CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(12, 7), this, SpawnCmd::buildMenu, getTranslatedString("Change class"), params);
 
-		if(caller.getName() == "builder")
+		if (caller.getName() == "builder")
 		{
 			Vec2f buttonpos = this.hasTag("script added") ? Vec2f(0, -7) : Vec2f(-12, -7);
 
@@ -484,7 +484,7 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 	return (this.getTeamNum() != 255 && //not neutral
 	        forBlob.getTeamNum() == this.getTeamNum() && //teammate
 	        forBlob.isOverlapping(this) && //inside
-	        !getRules().exists("singleplayer"));
+	        !getRules().hasTag("singleplayer"));
 }
 
 void Capture(CBlob@ this, const int attackerTeam)

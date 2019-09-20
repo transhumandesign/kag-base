@@ -48,7 +48,7 @@ shared class RunnerTextures
 
 	void Load(Vec2f framesize)
 	{
-		if(loaded) return;
+		if (loaded) return;
 
 		array<SColor> col = {
 			SColor(FG_HEAD_COLOUR()),
@@ -63,7 +63,7 @@ shared class RunnerTextures
 
 	void Load(CSprite@ sprite)
 	{
-		if(loaded) return;
+		if (loaded) return;
 
 		Load(_sprite_to_framesize(sprite));
 	}
@@ -105,7 +105,7 @@ shared class RunnerTextures
 
 string getRunnerTeamTexture(RunnerTextures@ textures, int gender, int team_num, int skin_num)
 {
-	if(textures is null) return "";
+	if (textures is null) return "";
 	return ApplyTeamTexture(textures.texname(u8(gender)), team_num, skin_num);
 }
 
@@ -120,7 +120,7 @@ void setRunnerTexture(CSprite@ sprite)
 	string t = getRunnerTextureName(sprite);
 
 	//only change if we need it and if it exists
-	if(sprite.getTextureName() != t && t != "")
+	if (sprite.getTextureName() != t && t != "")
 	{
 		sprite.SetTexture(t);
 	}
@@ -133,7 +133,7 @@ RunnerTextures@ fetchRunnerTexture(string shortname, string texture_prefix)
 {
 	RunnerTextures@ tex = null;
 	string rules_key = "runner_tex_"+shortname+"_"+texture_prefix;
-	if(!getRules().get(rules_key, @tex) || tex is null)
+	if (!getRules().get(rules_key, @tex) || tex is null)
 	{
 		getRules().set(rules_key, RunnerTextures(shortname, texture_prefix));
 		//re-fetch
@@ -176,7 +176,7 @@ RunnerTextures@ getRunnerTextures(CSprite@ sprite)
 void ensureCorrectRunnerTexture(CSprite@ sprite, string shortname, string texture_prefix)
 {
 	RunnerTextures@ tex = getRunnerTextures(sprite);
-	if(tex is null || tex.shortname != shortname)
+	if (tex is null || tex.shortname != shortname)
 	{
 		//first time set up
 		addRunnerTextures(sprite, shortname, texture_prefix);
@@ -201,9 +201,9 @@ Vec2f getHeadOffset(CBlob@ blob, int frame, int &out layer)
 	CSprite@ sprite = blob.getSprite();
 	PixelOffsetsCache@ offsets = null;
 	blob.get("head_offsets", @offsets);
-	if(offsets !is null)
+	if (offsets !is null)
 	{
-		if(frame < 0)
+		if (frame < 0)
 		{
 			frame = sprite.getFrame();
 		}
@@ -212,7 +212,7 @@ Vec2f getHeadOffset(CBlob@ blob, int frame, int &out layer)
 
 		//fg takes priority
 		px = offsets.getOffsets(sprite, SColor(FG_HEAD_COLOUR()), frame);
-		if(px.length > 0)
+		if (px.length > 0)
 		{
 			layer = 1;
 			return px[0];
@@ -220,7 +220,7 @@ Vec2f getHeadOffset(CBlob@ blob, int frame, int &out layer)
 
 		//check bg next
 		px = offsets.getOffsets(sprite, SColor(BG_HEAD_COLOUR()), frame);
-		if(px.length > 0)
+		if (px.length > 0)
 		{
 			layer = -1;
 			return px[0];

@@ -15,13 +15,17 @@ const u8 heat_max = 150;
 
 const string last_drill_prop = "drill last active";
 
-const u8 heat_add = 6;
+const u8 heat_add = 4;
 const u8 heat_add_constructed = 2;
 const u8 heat_add_blob = heat_add * 2;
 const u8 heat_cool_amount = 2;
 
-const u8 heat_cooldown_time = 10;
+const u8 heat_cooldown_time = 5;
 const u8 heat_cooldown_time_water = u8(heat_cooldown_time / 3);
+
+const f32 max_heatbar_view_range = 65;
+
+const bool show_heatbar_when_idle = false;
 
 const string required_class = "builder";
 
@@ -123,6 +127,10 @@ void onInit(CBlob@ this)
 	this.set_s8("place45 distance", 1);
 	this.Tag("place45 perp");
 	this.set_u8(heat_prop, 0);
+	this.set_u16("showHeatTo", 0);
+
+	AddIconToken("$opaque_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 0);
+	AddIconToken("$transparent_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 1);
 
 	this.set_u32(last_drill_prop, 0);
 }
@@ -238,7 +246,7 @@ void onTick(CBlob@ this)
 				if (map !is null)
 				{
 					HitInfo@[] hitInfos;
-					if (map.getHitInfosFromArc((this.getPosition() - attackVel), -attackVel.Angle(), 30, distance, this, false, @hitInfos))
+					if (map.getHitInfosFromArc((this.getPosition() - attackVel), -attackVel.Angle(), 30, distance, this, true, @hitInfos))
 					{
 						bool hit_ground = false;
 						for (uint i = 0; i < hitInfos.length; i++)
@@ -273,8 +281,7 @@ void onTick(CBlob@ this)
 
 									this.server_Hit(hi.blob, hi.hitpos, attackVel, attack_dam, Hitters::drill);
 
-									// Yield half
-									Material::fromBlob(holder, hi.blob, attack_dam * 0.5f);
+									Material::fromBlob(holder, hi.blob, attack_dam);
 								}
 
 								hitsomething = true;
@@ -289,10 +296,15 @@ void onTick(CBlob@ this)
 
 								if (getNet().isServer())
 								{
-									map.server_DestroyTile(hi.hitpos, 1.0f, this);
-									map.server_DestroyTile(hi.hitpos, 1.0f, this);
+									for (uint i = 0; i < 2; i++)
+									{
+										//tile destroyed last hit
+										if (!map.isTileSolid(map.getTile(hi.hitpos)))
+											break;
 
-									Material::fromTile(holder, tile, 1.0f);
+										map.server_DestroyTile(hi.hitpos, 1.0f, this);
+										Material::fromTile(holder, tile, 1.0f);
+									}
 								}
 
 								if (getNet().isClient())
@@ -388,9 +400,69 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	this.getCurrentScript().runFlags &= ~Script::tick_not_sleeping;
+	CPlayer@ player = attached.getPlayer();
+	if (player !is null)
+		this.set_u16("showHeatTo", player.getNetworkID());
+}
+
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
+{
+	this.set_u16("showHeatTo", 0);
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ blob)
 {
 	this.getSprite().SetEmitSoundPaused(true);
+}
+
+void onRender(CSprite@ this)
+{
+	CPlayer@ local = getLocalPlayer();
+	CBlob@ localBlob = local.getBlob();
+
+	if (local is null || localBlob is null)
+		return;
+
+	CBlob@ blob = this.getBlob();
+	u16 holderID = blob.get_u16("showHeatTo");
+
+	CPlayer@ holder = holderID == 0 ? null : getPlayerByNetworkId(holderID);
+	if (holder is null){return;}
+
+	CBlob@ holderBlob = holder.getBlob();
+	if (holderBlob is null){return;}
+
+	if (holderBlob.getName() != required_class && sv_gamemode != "TDM"){return;}
+	
+	Vec2f mousePos = getControls().getMouseWorldPos();
+	Vec2f blobPos = blob.getPosition();
+	Vec2f localPos = localBlob.getPosition();
+
+	bool inRange = (blobPos - localPos).getLength() < max_heatbar_view_range;
+	bool hover = (mousePos - blobPos).getLength() < blob.getRadius() * 1.50f;
+	
+	if ((hover && inRange) || (holder !is null && holder.isLocal()))
+	{
+		int transparency = 255;
+		u8 heat = blob.get_u8(heat_prop);
+		f32 percentage = Maths::Min(1.0, f32(heat) / f32(heat_max));
+
+		Vec2f pos = blob.getInterpolatedScreenPos() + Vec2f(-22, 16);
+		Vec2f dimension = Vec2f(42, 4);
+		Vec2f bar = Vec2f(pos.x + (dimension.x * percentage), pos.y + dimension.y);
+
+		if ((heat > 0 && show_heatbar_when_idle) || (blob.get_bool(buzz_prop)))
+		{
+			GUI::DrawIconByName("$opaque_heatbar$", pos);
+		}
+		else
+		{
+			transparency = 168;
+			GUI::DrawIconByName("$transparent_heatbar$", pos);
+		}
+
+		GUI::DrawRectangle(pos + Vec2f(4, 4), bar + Vec2f(4, 4), SColor(transparency, 59, 20, 6));
+		GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 4), SColor(transparency, 148, 27, 27));
+		GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 2), SColor(transparency, 183, 51, 51));
+	}
 }

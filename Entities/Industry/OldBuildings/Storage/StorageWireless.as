@@ -32,7 +32,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 				caller.ClearMenus();
 		}
 	}
-    else if( cmd == this.getCommandID("shipment") )
+    else if (cmd == this.getCommandID("shipment") )
 	{
 		CBlob@ localBlob = getLocalPlayerBlob();
 		if (localBlob !is null && localBlob.getTeamNum() == this.getTeamNum()) {

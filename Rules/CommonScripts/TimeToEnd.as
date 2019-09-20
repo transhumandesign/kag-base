@@ -63,6 +63,9 @@ void onTick(CRules@ this)
 
 void onRender(CRules@ this)
 {
+	if (g_videorecording)
+		return;
+
 	if (!this.isMatchRunning() || this.get_bool("no timer") || !this.exists("end_in")) return;
 
 	s32 end_in = this.get_s32("end_in");

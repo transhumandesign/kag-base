@@ -107,7 +107,7 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 
 				blob.setPosition(this.getPosition() + Vec2f(0, 12));
 				blob.setVelocity(Vec2f(0, -4.0f));
-				blob.server_SetQuantity(blobname == "crate"? 100 : 50);
+				blob.server_SetQuantity(50);
 			}
 		}
 

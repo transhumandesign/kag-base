@@ -20,7 +20,7 @@ void onTick(CMovement@ this)
 		return;
 	}
 
-	if( //(ultimately in charge of this blob's movement)
+	if (//(ultimately in charge of this blob's movement)
 		(blob.isMyPlayer()) ||
 		(blob.isBot() && isServer())
 	) {
@@ -66,9 +66,9 @@ void onTick(CMovement@ this)
 		/* unfortunately, this doesn't work with archer bow draw stuff;
 			might need to bind separate sounds cause this solution is much better.
 
-			if(vel.y > BaseFallSpeed() * 1.1f)
+			if (vel.y > BaseFallSpeed() * 1.1f)
 			{
-				if(!blob.hasTag(fallscreamtag))
+				if (!blob.hasTag(fallscreamtag))
 				{
 					blob.Tag(fallscreamtag);
 
@@ -797,7 +797,7 @@ void HandleStuckAtTop(CBlob@ this)
 				for (int dir = -1; dir <= 1 && !found; dir += 2)
 				{
 					tx = pos.x + (dir * i) * map.tilesize;
-					if(!map.isTileSolid(Vec2f(tx, y)))
+					if (!map.isTileSolid(Vec2f(tx, y)))
 					{
 						found = true;
 					}

@@ -54,7 +54,7 @@ shared string highestVotedChild(const ScrollDef@ this, const ScrollSet@ scrolls)
 	{
 		string name = this.connections[i];
 		s32 votes = getVotes(name, scrolls);
-		if(votes > highest)
+		if (votes > highest)
 		{
 			highest = votes;
 			result = name;
@@ -128,23 +128,23 @@ shared class ResearchPoint {
 		ScrollDef@ def;
 		scrolls.scrolls.get( current, @def );
 		
-		if(def is null) return;
+		if (def is null) return;
 		
 		bool research_current = false;
-		if(!def.hasTech()) //semi-hack?
+		if (!def.hasTech()) //semi-hack?
 		{
 			research_current = true;
 		}
-		else if(current == target && targets.length > 0)
+		else if (current == target && targets.length > 0)
 		{
 			target = targets[0];
 			targets.erase(0);
 		}
 		
-		if(target == "")
+		if (target == "")
 			return;
 		
-		if(!research_current)
+		if (!research_current)
 		{
 			scrolls.scrolls.get( target, @def );
 		}
@@ -165,9 +165,9 @@ shared class ResearchPoint {
 				def.percent = 1.0f;		  				
 			}
 			
-			if(def.hasTech())
+			if (def.hasTech())
 			{
-				if(def.connections.length > 0) //dead end?
+				if (def.connections.length > 0) //dead end?
 					def.researching = false;
 				
 				current = target; //advance on next update
@@ -186,9 +186,9 @@ shared class ResearchPoint {
 	
 	bool Unserialise(CBitStream@ stream)
 	{
-		if(!stream.saferead_string(current)) return false;
-		if(!stream.saferead_string(target)) return false;
-		//if(!stream.saferead_u8(team)) return false;  // opt
+		if (!stream.saferead_string(current)) return false;
+		if (!stream.saferead_string(target)) return false;
+		//if (!stream.saferead_u8(team)) return false;  // opt
 		
 		return true;
 	}
@@ -205,7 +205,7 @@ shared class ResearchStatus
 		for (uint i = 0; i < researchers.length; i++)
 		{
 			ResearchPoint@ p = researchers[i];
-			if(p.current == from && p.target == tech)
+			if (p.current == from && p.target == tech)
 				return true;
 		}
 		return false;
@@ -222,7 +222,7 @@ shared class ResearchStatus
 			scrolls.scrolls.get( defname, @def );
 			if (def !is null)
 			{
-				if(def.level <= 0.0f)
+				if (def.level <= 0.0f)
 				{
 					ResearchPoint p;
 					p.current = defname;
@@ -257,7 +257,7 @@ shared class ResearchStatus
 				bool found = false;
 				for(uint k = 0; k < seen.length; k++)
 				{
-					if(seen[k] == defname)
+					if (seen[k] == defname)
 					{
 						found = true;
 						
@@ -299,7 +299,7 @@ shared class ResearchStatus
 			scrolls.scrolls.get( current, @def );
 			if (def !is null)
 			{
-				if(def.connections.length == 0)
+				if (def.connections.length == 0)
 				{
 					//dead end
 					res.push_back(s);
@@ -316,14 +316,14 @@ shared class ResearchStatus
 						bool found = false;
 						for(uint j = 0; j < seen.length; j++)
 						{
-							if(seen[j] == child)
+							if (seen[j] == child)
 							{
 								found = true;
 								break;
 							}
 						}
 						
-						if(found) continue;
+						if (found) continue;
 						
 						//otherwise...
 						s.push_back(child);
@@ -331,7 +331,7 @@ shared class ResearchStatus
 						break;
 					}
 					
-					if(skip) continue;
+					if (skip) continue;
 					
 					//else, remove connections from seen
 					//so that they can be rexplored from other angles
@@ -343,7 +343,7 @@ shared class ResearchStatus
 						//would be nice if find() worked in string arrays :(
 						for(uint j = 0; j < seen.length; j++)
 						{
-							if(seen[j] == child)
+							if (seen[j] == child)
 							{
 								seen.erase(j--);
 							}
@@ -416,7 +416,7 @@ shared class ResearchStatus
 			}
 			
 			int current_vote = GetVotesCovered(current_researchers);
-			if(current_vote > best_vote)
+			if (current_vote > best_vote)
 			{
 				best_vote = current_vote;
 				best_researchers = current_researchers;
@@ -426,14 +426,14 @@ shared class ResearchStatus
 			uint i = comb.length;
 			while(i --> 0)
 			{
-				if(comb[i] < all_researchers[i].length-1)
+				if (comb[i] < all_researchers[i].length-1)
 				{
 					comb[i]++;
 					break;
 				}
 				else
 				{
-					if(i == 0) //we've done all combinations!
+					if (i == 0) //we've done all combinations!
 					{
 						done = true;
 						break;
@@ -448,7 +448,7 @@ shared class ResearchStatus
 		//copy the found array back into the researchers and let them do their thing
 		for(uint i = 0; i < res_len; ++i)
 		{
-			if(best_researchers[i].length > 0)
+			if (best_researchers[i].length > 0)
 			{
 				best_researchers[i].erase(0); //chop off the first element (the target they already have
 				researchers[i].targets = best_researchers[i]; //copy the new list of targets
@@ -498,7 +498,7 @@ shared class ResearchStatus
 			
 			//unserialise the definition
 			ScrollDef def;
-			if(!def.Unserialise(stream)) return false;
+			if (!def.Unserialise(stream)) return false;
 			
 			scrolls.names.push_back(defname); //add the name
 			scrolls.scrolls.set( defname, def );

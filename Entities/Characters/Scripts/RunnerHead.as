@@ -24,7 +24,7 @@ int getHeadsPackIndex(int headIndex)
 
 bool doTeamColour(int packIndex)
 {
-	switch(packIndex) {
+	switch (packIndex) {
 		case 1: //FOTW
 			return false;
 	}
@@ -34,7 +34,7 @@ bool doTeamColour(int packIndex)
 
 bool doSkinColour(int packIndex)
 {
-	switch(packIndex) {
+	switch (packIndex) {
 		case 1: //FOTW
 			return false;
 	}
@@ -44,25 +44,25 @@ bool doSkinColour(int packIndex)
 
 int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 {
-	if(headIndex < NUM_UNIQUEHEADS)
+	if (headIndex < NUM_UNIQUEHEADS)
 	{
 		return headIndex * NUM_HEADFRAMES;
 	}
 
 	//special heads logic for default heads pack
-	if(default_pack && (headIndex == 255 || headIndex < NUM_UNIQUEHEADS))
+	if (default_pack && (headIndex == 255 || headIndex < NUM_UNIQUEHEADS))
 	{
 		CRules@ rules = getRules();
 		bool holidayhead = false;
-		if(rules !is null && rules.exists("holiday"))
+		if (rules !is null && rules.exists("holiday"))
 		{
 			const string HOLIDAY = rules.get_string("holiday");
-			if(HOLIDAY == "Halloween")
+			if (HOLIDAY == "Halloween")
 			{
 				headIndex = NUM_UNIQUEHEADS + 43;
 				holidayhead = true;
 			}
-			else if(HOLIDAY == "Christmas")
+			else if (HOLIDAY == "Christmas")
 			{
 				headIndex = NUM_UNIQUEHEADS + 61;
 				holidayhead = true;
@@ -70,22 +70,22 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 		}
 
 		//if nothing special set
-		if(!holidayhead)
+		if (!holidayhead)
 		{
 			string config = blob.getConfig();
-			if(config == "builder")
+			if (config == "builder")
 			{
 				headIndex = NUM_UNIQUEHEADS;
 			}
-			else if(config == "knight")
+			else if (config == "knight")
 			{
 				headIndex = NUM_UNIQUEHEADS + 1;
 			}
-			else if(config == "archer")
+			else if (config == "archer")
 			{
 				headIndex = NUM_UNIQUEHEADS + 2;
 			}
-			else if(config == "migrant")
+			else if (config == "migrant")
 			{
 				Random _r(blob.getNetworkID());
 				headIndex = 69 + _r.NextRanged(2); //head scarf or old
@@ -132,7 +132,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 
 	//(has default head set)
 	bool defaultHead = (headIndex == 255 || headIndexInPack < 0 || headIndexInPack >= pack.count);
-	if(defaultHead)
+	if (defaultHead)
 	{
 		//accolade custom head handling
 		//todo: consider pulling other custom head stuff out to here

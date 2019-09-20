@@ -12,10 +12,10 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if(this.exists(DROP)) return;
+	if (this.exists(DROP)) return;
 
 	const f32 DISTANCE_MAX = this.getRadius() + caller.getRadius() + 8.0f;
-	if(this.getDistanceTo(caller) > DISTANCE_MAX || this.isAttached()) return;
+	if (this.getDistanceTo(caller) > DISTANCE_MAX || this.isAttached()) return;
 
 	CBitStream params;
 	params.write_u16(caller.getNetworkID());
@@ -35,28 +35,28 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if(cmd == this.getCommandID("activate"))
+	if (cmd == this.getCommandID("activate"))
 	{
 		this.AddForce(Vec2f(0, -800));
 
-		if(getNet().isServer())
+		if (getNet().isServer())
 		{
 			u16 id;
-			if(!params.saferead_u16(id)) return;
+			if (!params.saferead_u16(id)) return;
 
 			CBlob@ caller = getBlobByNetworkID(id);
-			if(caller is null) return;
+			if (caller is null) return;
 
 			const string name = caller.getName();
-			if(name == "archer")
+			if (name == "archer")
 			{
 				addLoot(this, INDEX_ARCHER, 2, 0);
 			}
-			else if(name == "builder")
+			else if (name == "builder")
 			{
 				addLoot(this, INDEX_BUILDER, 2, 0);
 			}
-			else if(name == "knight")
+			else if (name == "knight")
 			{
 				addLoot(this, INDEX_KNIGHT, 2, 0);
 			}

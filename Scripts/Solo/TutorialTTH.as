@@ -6,4 +6,10 @@ void LoadMap()
 	sv_mapcycle_shuffle = false;
 	LoadMapCycle("Rules/Tutorials/tutorial_tth_maps.cfg");
 	LoadNextMap();
+	
+	CRules@ r = getRules();
+	if(r !is null)
+	{
+		r.set_bool("tutorial",true);
+	}
 }

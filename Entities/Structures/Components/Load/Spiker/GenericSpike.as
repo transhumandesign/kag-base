@@ -24,7 +24,7 @@ namespace Spike
 // Todo: collision normal
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if(!getNet().isServer() || this.get_u8("state") == Spike::hidden || blob is null || !blob.hasTag("flesh") || blob.hasTag("invincible")) return;
+	if (!getNet().isServer() || this.get_u8("state") == Spike::hidden || blob is null || !blob.hasTag("flesh") || blob.hasTag("invincible")) return;
 
 	Vec2f velocity = blob.getOldVelocity();
 	velocity.Normalize();
@@ -34,7 +34,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 	bool pierced = false;
 
-	switch(angle_point)
+	switch (angle_point)
 	{
 		case Spike::pointing_up:
 			pierced = angle_collision <= 315 && angle_collision >= 225;
@@ -53,19 +53,19 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			break;
 	}
 
-	if(!pierced) return;
+	if (!pierced) return;
 
 	this.server_Hit(blob, blob.getPosition(), blob.getVelocity() * -1, 1, Hitters::spikes, true);
 }
 
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
 {
-	if(this.exists("bloody")) return;
+	if (this.exists("bloody")) return;
 
 	this.Tag("bloody");
 
 	CSpriteLayer@ layer = this.getSprite().getSpriteLayer("blood");
-	if(layer is null) return;
+	if (layer is null) return;
 
 	layer.SetVisible(true);
 }

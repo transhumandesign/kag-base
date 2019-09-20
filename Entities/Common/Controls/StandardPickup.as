@@ -90,6 +90,7 @@ void onTick(CBlob@ this)
 				if (this.isKeyJustPressed(key_action1))	// pickup
 				{
 					server_Pickup(this, this, closest);
+					this.set_bool("release click", false);
 				}
 			}
 

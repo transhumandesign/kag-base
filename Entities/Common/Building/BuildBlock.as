@@ -25,14 +25,14 @@ shared class BuildBlock
 u8 getBlockIndexByTile(CBlob@ this, TileType tile)
 {
 	BuildBlock[][]@ blocks;
-	if(this.get("blocks", @blocks))
+	if (this.get("blocks", @blocks))
 	{
 		const u8 PAGE = this.get_u8("build page");
 
 		for(uint i = 0; i < blocks[PAGE].length; i++)
 		{
 			BuildBlock@ b = blocks[PAGE][i];
-			if(b.tile == tile)
+			if (b.tile == tile)
 			{
 				return i;
 			}
@@ -45,7 +45,7 @@ u8 getBlockIndexByTile(CBlob@ this, TileType tile)
 BuildBlock@ getBlockByIndex(CBlob@ this, u8 index)
 {
 	BuildBlock[][]@ blocks;
-	if(this.get("blocks", @blocks))
+	if (this.get("blocks", @blocks))
 	{
 		u8 page = this.get_u8("build page");
 		if (index >= blocks[page].length) {
@@ -63,7 +63,7 @@ BuildBlock@ getBlockByIndex(CBlob@ this, u8 index)
 TileType getTileByBlockIndex(CBlob@ this, u8 index)
 {
 	BuildBlock[][]@ blocks;
-	if(this.get("blocks", @blocks))
+	if (this.get("blocks", @blocks))
 	{
 		if (index >= 0 && index < blocks.length)
 		{

@@ -11,7 +11,7 @@ void onInit(CRules@ rules)
 
 	//attempt to load from cache first
 	bool loaded = false;
-	if(CFileMatcher(cachefilename).getFirst() == cachefilename && cfg.loadFile(cachefilename))
+	if (CFileMatcher(cachefilename).getFirst() == cachefilename && cfg.loadFile(cachefilename))
 	{
 		loaded = true;
 	}
@@ -20,7 +20,7 @@ void onInit(CRules@ rules)
 		loaded = true;
 	}
 
-	if(!loaded)
+	if (!loaded)
 	{
 		return;
 	}
