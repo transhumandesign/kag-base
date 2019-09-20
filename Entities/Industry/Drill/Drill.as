@@ -447,7 +447,7 @@ void onRender(CSprite@ this)
 		u8 heat = blob.get_u8(heat_prop);
 		f32 percentage = Maths::Min(1.0, f32(heat) / f32(heat_max));
 
-		Vec2f pos = blob.getInterpolatedScreenPos() + Vec2f(-22, 16);
+		Vec2f pos = blob.getScreenPos() + Vec2f(-22, 16);
 		Vec2f dimension = Vec2f(42, 4);
 		Vec2f bar = Vec2f(pos.x + (dimension.x * percentage), pos.y + dimension.y);
 
