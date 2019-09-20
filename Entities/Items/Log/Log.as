@@ -18,7 +18,7 @@ void onInit(CBlob@ this)
 		this.server_setTeamNum(-1);
 
 		dictionary harvest;
-		harvest.set('mat_wood', 10);
+		harvest.set('mat_wood', 20);
 		this.set('harvest', harvest);
 	}
 }
