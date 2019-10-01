@@ -174,16 +174,16 @@ namespace Material
   // Server-side: Create material from a blob
   void fromBlob(CBlob@ this, CBlob@ blob, float &in damage, CBlob@ damageBlob = null)
   {
-    if (damage <= 0.f) return;
+	if (damage <= 0.f) return;
 
     // Return unless it's a harvest blob
     if (not blob.exists('harvest')) return;
     dictionary harvest;
     blob.get('harvest', harvest);
-    u16 maxHarvest = -1;//keep -1 unless we want a cap
+	u16 maxHarvest = -1;//keep -1 unless we want a cap
 
-    if(damageBlob !is null)
-    {
+	if(damageBlob !is null)
+	{
       //if we are going to have more blobs, move to switch
       if(blob.getName() ==  "wooden_door" && damageBlob.exists("harvestWoodDoorCap"))
       {
@@ -215,7 +215,7 @@ namespace Material
         harvestAmount = maxHarvest;
       }
 
-      createFor(this, name, harvestAmount);
+	createFor(this, name, harvestAmount);
     }
   }
 
