@@ -233,7 +233,7 @@ AttachmentPoint@ getMagAttachmentPoint(CBlob@ this)
 
 CBlob@ getMagBlob(CBlob@ this)
 {
-	return this.getAttachments().getAttachedBlob("MAG");
+	return this.getAttachments().getAttachmentPointByName("MAG").getOccupied();
 }
 
 bool isMagEmpty(CBlob@ this)

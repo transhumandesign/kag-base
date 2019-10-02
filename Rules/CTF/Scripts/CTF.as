@@ -603,7 +603,7 @@ shared class CTFCore : RulesCore
 		for (uint i = 0; i < flags.length; i++)
 		{
 			CBlob@ flag = flags[i];
-			CBlob@ holder = flag.getAttachments().getAttachedBlob("FLAG");
+			CBlob@ holder = flag.getAttachments().getAttachmentPointByName("FLAG").getOccupied();
 			//If any flag is held by an ally (ie the flag base), no stalemate
 			if (holder !is null && holder.getTeamNum() == flag.getTeamNum())
 			{

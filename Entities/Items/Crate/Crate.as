@@ -400,7 +400,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("activate"))
 	{
-		CBlob@ carrier = this.getAttachments().getAttachedBlob("PICKUP", 0);
+		CBlob@ carrier = this.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();
 		if (carrier !is null)
 		{
 			DumpOutItems(this, 5.0f, carrier.getVelocity(), false);
@@ -687,7 +687,7 @@ bool canUnpackHere(CBlob@ this)
 	bool water = packed == "longboat" || packed == "warboat";
 	if (this.isAttached())
 	{
-		CBlob@ parent = this.getAttachments().getAttachedBlob("PICKUP", 0);
+		CBlob@ parent = this.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();
 		if (parent !is null)
 		{
 			return ((!water && parent.isOnGround()) || (water && map.isInWater(parent.getPosition() + Vec2f(0.0f, 8.0f))));

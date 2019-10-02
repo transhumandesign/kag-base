@@ -36,7 +36,7 @@ void onTick(CBlob@ this)
 {
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 
-	CBlob@ holder = this.getAttachments().getAttachedBlob("PICKUP", 0);
+	CBlob@ holder = point.getOccupied();
 	if (holder is null) return;
 
 	Vec2f ray = holder.getAimPos() - this.getPosition();
