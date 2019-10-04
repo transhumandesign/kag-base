@@ -11,7 +11,7 @@ const f32 speed_hard_thresh = 2.6f;
 const string buzz_prop = "drill timer";
 
 const string heat_prop = "drill heat";
-const u8 heat_max = 150;
+const u8 heat_max = 120;
 
 const string last_drill_prop = "drill last active";
 
@@ -230,7 +230,7 @@ void onTick(CBlob@ this)
 						bool hit_ground = false;
 						for (uint i = 0; i < hitInfos.length; i++)
 						{
-							f32 attack_dam = 0.75f;
+							f32 attack_dam = 1.0f;
 							HitInfo@ hi = hitInfos[i];
 							bool hit_constructed = false;
 							CBlob@ b = hi.blob;
@@ -247,16 +247,6 @@ void onTick(CBlob@ this)
 									{
 										continue;     // we dont want to damage them
 									}
-
-									case 1296319959:  //stone_door
-									{
-										attack_dam += 0.5f;
-									}
-
-									case 213968596:  //wooden_door
-									{
-										attack_dam += 0.25f;
-									}
 								}
 
 
@@ -266,26 +256,25 @@ void onTick(CBlob@ this)
 								{
 									hit_ground = true;
 								}
-
+								
 								if (b.getTeamNum() == holder.getTeamNum() ||
 								        hit_ground && !is_ground)
 								{
 									continue;
 								}
+								
+								//if hot enough, increase damage
+								if(int(heat) > heat_max * 0.7f)
+								{
+									attack_dam += 0.5f;
+								}
 
-								//
 
 								if (isServer())
 								{
-
-									if(int(heat) > heat_max * 0.5f && (b.hasTag("player") || b.hasTag("wooden")))
-									{
-										map.server_setFireWorldspace(b.getPosition(), true);
-									}
-
 									this.server_Hit(b, hi.hitpos, attackVel, attack_dam, Hitters::drill);
 
-									Material::fromBlob(holder, b, attack_dam);
+									Material::fromBlob(holder, b, attack_dam * 0.75f);
 								}
 
 								hitsomething = true;
@@ -300,36 +289,14 @@ void onTick(CBlob@ this)
 
 								if (isServer())
 								{
-									if(int(heat) > heat_max * 0.6f && map.isTileWood(tile))
+									for (uint i = 0; i < 2; i++)
 									{
-										map.server_setFireWorldspace(hi.hitpos, true);
-									}
+										//tile destroyed last hit
+										if (!map.isTileSolid(map.getTile(hi.hitpos)))
+											break;
 
-									if(map.isTileCastle(tile))
-									{
-										int chance = 1;
-										if(int(heat) > heat_max * 0.5f)
-										{
-											chance += XORRandom(10) < 3 ? 1 : 0;
-										}
-
-										for (uint i = 0; i < chance; i++)
-										{
-											map.server_DestroyTile(hi.hitpos, 1.0f, this);
-											Material::fromTile(holder, tile, 1.0f);
-										}
-									}
-									else
-									{
-										for (uint i = 0; i < 2; i++)
-										{
-											//tile destroyed last hit
-											if (!map.isTileSolid(map.getTile(hi.hitpos)))
-												break;
-
-											map.server_DestroyTile(hi.hitpos, 1.0f, this);
-											Material::fromTile(holder, tile, 1.0f);
-										}
+										map.server_DestroyTile(hi.hitpos, 1.0f, this);
+										Material::fromTile(holder, tile, 0.75f);
 									}
 
 								}
