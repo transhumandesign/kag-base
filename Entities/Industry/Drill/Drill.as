@@ -48,6 +48,29 @@ void onInit(CSprite@ this)
 	this.SetEmitSound("/Drill.ogg");
 }
 
+void onInit(CBlob@ this)
+{
+	//todo: some tag-based keys to take interference (doesn't work on net atm)
+	/*AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("PICKUP");
+	if (ap !is null)
+	{
+		ap.SetKeysToTake(key_action1 | key_action2 | key_action3);
+	}*/
+
+	this.set_u32("hittime", 0);
+	this.Tag("place45");
+	this.set_s8("place45 distance", 1);
+	this.Tag("place45 perp");
+	this.set_u8(heat_prop, 0);
+	this.set_u16("showHeatTo", 0);
+
+	AddIconToken("$opaque_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 0);
+	AddIconToken("$transparent_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 1);
+
+	this.set_u32(last_drill_prop, 0);
+}
+
+
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
@@ -61,6 +84,7 @@ void onTick(CSprite@ this)
 	{
 		this.SetAnimation("default");
 	}
+	
 	CSpriteLayer@ heatlayer = this.getSpriteLayer("heat");
 	if (heatlayer !is null)
 	{
@@ -88,52 +112,6 @@ void onTick(CSprite@ this)
 	}
 }
 
-void makeSteamParticle(CBlob@ this, const Vec2f vel, const string filename = "SmallSteam")
-{
-	if (!getNet().isClient()) return;
-
-	const f32 rad = this.getRadius();
-	Vec2f random = Vec2f(XORRandom(128) - 64, XORRandom(128) - 64) * 0.015625f * rad;
-	ParticleAnimated(CFileMatcher(filename).getFirst(), this.getPosition() + random, vel, float(XORRandom(360)), 1.0f, 2 + XORRandom(3), -0.1f, false);
-}
-
-void makeSteamPuff(CBlob@ this, const f32 velocity = 1.0f, const int smallparticles = 10, const bool sound = true)
-{
-	if (sound)
-	{
-		this.getSprite().PlaySound("Steam.ogg");
-	}
-
-	makeSteamParticle(this, Vec2f(), "MediumSteam");
-	for (int i = 0; i < smallparticles; i++)
-	{
-		f32 randomness = (XORRandom(32) + 32) * 0.015625f * 0.5f + 0.75f;
-		Vec2f vel = getRandomVelocity(-90, velocity * randomness, 360.0f);
-		makeSteamParticle(this, vel);
-	}
-}
-
-void onInit(CBlob@ this)
-{
-	//todo: some tag-based keys to take interference (doesn't work on net atm)
-	/*AttachmentPoint@ ap = this.getAttachments().getAttachmentPointByName("PICKUP");
-	if (ap !is null)
-	{
-		ap.SetKeysToTake(key_action1 | key_action2 | key_action3);
-	}*/
-
-	this.set_u32("hittime", 0);
-	this.Tag("place45");
-	this.set_s8("place45 distance", 1);
-	this.Tag("place45 perp");
-	this.set_u8(heat_prop, 0);
-	this.set_u16("showHeatTo", 0);
-
-	AddIconToken("$opaque_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 0);
-	AddIconToken("$transparent_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 1);
-
-	this.set_u32(last_drill_prop, 0);
-}
 
 void onTick(CBlob@ this)
 {
@@ -175,7 +153,7 @@ void onTick(CBlob@ this)
 		if (holder is null) return;
 
 		// cool faster if holder is moving
-		if (heat > 0 && holder.getShape().vellen > 0.01f && getGameTime() % heat_cooldown_time == 0)
+		if (heat > 0 && holder.getShape().vellen > 0.01f && getGameTime() % 3 == 0)
 		{
 			heat--;
 		}
@@ -186,6 +164,7 @@ void onTick(CBlob@ this)
 		{
 			makeSteamPuff(this, 1.5f, 3, false);
 			this.server_Hit(holder, holder.getPosition(), Vec2f(), 0.25f, Hitters::burn, true);
+			this.server_Hit(this, this.getPosition(), Vec2f(), 0.25f, Hitters::burn, true);
 			this.server_DetachFrom(holder);
 			sprite.PlaySound("DrillOverheat.ogg");
 		}
@@ -251,19 +230,45 @@ void onTick(CBlob@ this)
 						bool hit_ground = false;
 						for (uint i = 0; i < hitInfos.length; i++)
 						{
-							f32 attack_dam = 1.0f;
+							f32 attack_dam = 0.75f;
 							HitInfo@ hi = hitInfos[i];
 							bool hit_constructed = false;
-							if (hi.blob !is null) // blob
+							CBlob@ b = hi.blob;
+							if (b !is null) // blob
 							{
+								print(b.getName());
+								// blob ignore list, this stops the drill from overheating f a s t
+								// or blobs to increase damage to
+								int nhash = b.getName().getHash();
+								switch(nhash)
+								{
+									case 575725963:   // mat_stone
+									case -282477713:  // mat_wood
+									case -1370030172: // mat_gold
+									{
+										continue;
+									}
+
+									case 1296319959: //stone_door
+									{
+										attack_dam += 0.5f;
+									}
+
+									case 213968596: //wooden_door
+									{
+										attack_dam += 0.25f;
+									}
+								}
+
+
 								//detect
-								const bool is_ground = hi.blob.hasTag("blocks sword") && !hi.blob.isAttached() && hi.blob.isCollidable();
+								const bool is_ground = b.hasTag("blocks sword") && !b.isAttached() && b.isCollidable();
 								if (is_ground)
 								{
 									hit_ground = true;
 								}
 
-								if (hi.blob.getTeamNum() == holder.getTeamNum() ||
+								if (b.getTeamNum() == holder.getTeamNum() ||
 								        hit_ground && !is_ground)
 								{
 									continue;
@@ -271,17 +276,17 @@ void onTick(CBlob@ this)
 
 								//
 
-								if (getNet().isServer())
+								if (isServer())
 								{
-									// Deal extra damage if hot
-									if (int(heat) > heat_max * 0.5f)
+
+									if(int(heat) > heat_max * 0.5f && (b.hasTag("player") || b.hasTag("wooden")))
 									{
-										attack_dam += 1.0f;
+										map.server_setFireWorldspace(b.getPosition(), true);
 									}
 
-									this.server_Hit(hi.blob, hi.hitpos, attackVel, attack_dam, Hitters::drill);
+									this.server_Hit(b, hi.hitpos, attackVel, attack_dam, Hitters::drill);
 
-									Material::fromBlob(holder, hi.blob, attack_dam);
+									Material::fromBlob(holder, b, attack_dam);
 								}
 
 								hitsomething = true;
@@ -294,8 +299,14 @@ void onTick(CBlob@ this)
 
 								TileType tile = hi.tile;
 
-								if (getNet().isServer())
+								if (isServer())
 								{
+									if(int(heat) > heat_max * 0.6f && map.isTileWood(tile))
+									{
+										map.server_setFireWorldspace(hi.hitpos, true);
+									}
+
+
 									for (uint i = 0; i < 2; i++)
 									{
 										//tile destroyed last hit
@@ -307,7 +318,7 @@ void onTick(CBlob@ this)
 									}
 								}
 
-								if (getNet().isClient())
+								if (isClient())
 								{
 									if (map.isTileBedrock(tile))
 									{
@@ -358,12 +369,12 @@ void onTick(CBlob@ this)
 		}
 		else
 		{
-			if (getNet().isClient() &&
+			if (isClient() &&
 			        holder.isMyPlayer())
 			{
 				if (holder.isKeyJustPressed(key_action1))
 				{
-					Sound::Play("Entities/Characters/Sounds/NoAmmo.ogg");
+					Sound::Play("NoAmmo.ogg");
 				}
 			}
 		}
@@ -464,5 +475,31 @@ void onRender(CSprite@ this)
 		GUI::DrawRectangle(pos + Vec2f(4, 4), bar + Vec2f(4, 4), SColor(transparency, 59, 20, 6));
 		GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 4), SColor(transparency, 148, 27, 27));
 		GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 2), SColor(transparency, 183, 51, 51));
+	}
+}
+
+
+void makeSteamParticle(CBlob@ this, const Vec2f vel, const string filename = "SmallSteam")
+{
+	if (!isClient()) return;
+
+	const f32 rad = this.getRadius();
+	Vec2f random = Vec2f(XORRandom(128) - 64, XORRandom(128) - 64) * 0.015625f * rad;
+	ParticleAnimated(filename, this.getPosition() + random, vel, float(XORRandom(360)), 1.0f, 2 + XORRandom(3), -0.1f, false);
+}
+
+void makeSteamPuff(CBlob@ this, const f32 velocity = 1.0f, const int smallparticles = 10, const bool sound = true)
+{
+	if (sound)
+	{
+		this.getSprite().PlaySound("Steam.ogg");
+	}
+
+	makeSteamParticle(this, Vec2f(), "MediumSteam");
+	for (int i = 0; i < smallparticles; i++)
+	{
+		f32 randomness = (XORRandom(32) + 32) * 0.015625f * 0.5f + 0.75f;
+		Vec2f vel = getRandomVelocity(-90, velocity * randomness, 360.0f);
+		makeSteamParticle(this, vel);
 	}
 }
