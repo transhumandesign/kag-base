@@ -236,7 +236,6 @@ void onTick(CBlob@ this)
 							CBlob@ b = hi.blob;
 							if (b !is null) // blob
 							{
-								print(b.getName());
 								// blob ignore list, this stops the drill from overheating f a s t
 								// or blobs to increase damage to
 								int nhash = b.getName().getHash();
@@ -246,15 +245,15 @@ void onTick(CBlob@ this)
 									case -282477713:  // mat_wood
 									case -1370030172: // mat_gold
 									{
-										continue;
+										continue;     // we dont want to damage them
 									}
 
-									case 1296319959: //stone_door
+									case 1296319959:  //stone_door
 									{
 										attack_dam += 0.5f;
 									}
 
-									case 213968596: //wooden_door
+									case 213968596:  //wooden_door
 									{
 										attack_dam += 0.25f;
 									}
@@ -306,23 +305,40 @@ void onTick(CBlob@ this)
 										map.server_setFireWorldspace(hi.hitpos, true);
 									}
 
-
-									for (uint i = 0; i < 2; i++)
+									if(map.isTileCastle(tile))
 									{
-										//tile destroyed last hit
-										if (!map.isTileSolid(map.getTile(hi.hitpos)))
-											break;
+										int chance = 1;
+										if(int(heat) > heat_max * 0.5f)
+										{
+											chance += XORRandom(10) < 3 ? 1 : 0;
+										}
 
-										map.server_DestroyTile(hi.hitpos, 1.0f, this);
-										Material::fromTile(holder, tile, 1.0f);
+										for (uint i = 0; i < chance; i++)
+										{
+											map.server_DestroyTile(hi.hitpos, 1.0f, this);
+											Material::fromTile(holder, tile, 1.0f);
+										}
 									}
+									else
+									{
+										for (uint i = 0; i < 2; i++)
+										{
+											//tile destroyed last hit
+											if (!map.isTileSolid(map.getTile(hi.hitpos)))
+												break;
+
+											map.server_DestroyTile(hi.hitpos, 1.0f, this);
+											Material::fromTile(holder, tile, 1.0f);
+										}
+									}
+
 								}
 
 								if (isClient())
 								{
 									if (map.isTileBedrock(tile))
 									{
-										sprite.PlaySound("/metal_stone.ogg");
+										sprite.PlaySound("metal_stone.ogg");
 										sparks(hi.hitpos, attackVel.Angle(), 1.0f);
 									}
 								}
