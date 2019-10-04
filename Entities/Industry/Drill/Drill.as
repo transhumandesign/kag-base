@@ -164,7 +164,6 @@ void onTick(CBlob@ this)
 		{
 			makeSteamPuff(this, 1.5f, 3, false);
 			this.server_Hit(holder, holder.getPosition(), Vec2f(), 0.25f, Hitters::burn, true);
-			this.server_Hit(this, this.getPosition(), Vec2f(), 0.25f, Hitters::burn, true);
 			this.server_DetachFrom(holder);
 			sprite.PlaySound("DrillOverheat.ogg");
 		}
