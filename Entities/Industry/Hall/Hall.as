@@ -384,7 +384,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 		CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(12, 7), this, SpawnCmd::buildMenu, getTranslatedString("Change class"), params);
 
-		if(caller.getName() == "builder")
+		if (caller.getName() == "builder")
 		{
 			Vec2f buttonpos = this.hasTag("script added") ? Vec2f(0, -7) : Vec2f(-12, -7);
 

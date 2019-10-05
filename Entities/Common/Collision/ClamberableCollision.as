@@ -6,7 +6,7 @@ void onInit(CBlob@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if(blob.getShape().isStatic())
+	if (blob.getShape().isStatic())
 	{
 		return true;
 	}

@@ -407,6 +407,8 @@ void RecursiveCrate(CBlob@ this, uint[]@ shipment, uint index, CBlob@ itemThatDi
 
 CBlob@ MakeBlobFromItem(TradeItem@ item)
 {
+	if (!isServer()) return null;
+
 	if (item.configFilename == "scroll")
 	{
 		return server_MakePredefinedScroll(Vec2f_zero, item.scrollName);

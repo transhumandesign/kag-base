@@ -156,9 +156,17 @@ GameplayEvent@ createBuiltBlobEvent(CPlayer@ by, string name)
 }
 
 //create a vehicle damage event
-GameplayEvent@ createVehicleDamageEvent(CPlayer@ by, bool kill)
+GameplayEvent@ createVehicleDamageEvent(CPlayer@ by, f32 damage)
 {
-	return GameplayEvent(kill ? GE_kill_vehicle : GE_hit_vehicle , by);
+	GameplayEvent g(GE_hit_vehicle, by);
+	g.params.write_f32(damage);
+	return g;
+}
+
+//create a vehicle destroy event
+GameplayEvent@ createVehicleDestroyEvent(CPlayer@ by)
+{
+	return GameplayEvent(GE_kill_vehicle, by);
 }
 
 //create a flag capture event

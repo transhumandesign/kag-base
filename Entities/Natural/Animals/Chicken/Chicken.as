@@ -154,7 +154,7 @@ void onTick(CBlob@ this)
 
 				//if (g_lastSoundPlayedTime+20+XORRandom(10) < getGameTime())
 				//{
-				//	if(XORRandom(2) == 1)
+				//	if (XORRandom(2) == 1)
 				//		this.getSprite().PlaySound("/ScaredChicken");
 				//	else
 				//		this.getSprite().PlaySound("/Pluck");

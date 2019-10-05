@@ -49,7 +49,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	if(caller.getConfig() == this.get_string("required class"))
+	if (caller.getConfig() == this.get_string("required class"))
 	{
 		this.set_Vec2f("shop offset", Vec2f_zero);
 	}
@@ -62,7 +62,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if(cmd == this.getCommandID("shop made item"))
+	if (cmd == this.getCommandID("shop made item"))
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
 	}

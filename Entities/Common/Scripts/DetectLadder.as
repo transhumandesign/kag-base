@@ -8,8 +8,8 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	const bool pressingKey = this.isKeyPressed(key_up) || this.isKeyPressed(key_down);
-	const bool climbLadder = this.isOnLadder() || (!this.wasOnLadder() && pressingKey);
+	// const bool pressingKey = this.isKeyPressed(key_up) || this.isKeyPressed(key_down);
+	// const bool climbLadder = this.isOnLadder() || (!this.wasOnLadder() && pressingKey);
 
 	ShapeVars@ vars = this.getShape().getVars();
 	vars.onladder = false;
@@ -24,7 +24,7 @@ void onTick(CBlob@ this)
 			CBlob@ overlap = overlapping[i];
 			//printf("overlap "  + overlap.getName() );
 
-			if (overlap.isLadder() && !overlap.isAttachedTo(this) && climbLadder)
+			if (overlap.isLadder() && !overlap.isAttachedTo(this))
 			{
 				vars.onladder = true;
 				return;

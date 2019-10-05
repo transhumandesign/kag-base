@@ -61,7 +61,7 @@ void onTick( CBlob@ this )
 	if (stat is null)
 		return;
 
-	if(this.hasTag("update_paths"))
+	if (this.hasTag("update_paths"))
 	{
 		stat.FindPathsFromVotes();
 		this.Untag("update_paths");
@@ -137,9 +137,9 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 	else if (cmd == this.getCommandID(tech_vote_cmd))
 	{
 		string name, tech;
-		if(!params.saferead_string(name))
+		if (!params.saferead_string(name))
 			return;
-		if(!params.saferead_string(tech))
+		if (!params.saferead_string(tech))
 			return;
 
 		ResearchStatus@ stat;

@@ -42,6 +42,7 @@ string[] nextmap_reason_string = { "Map Ruined", "Stalemate", "Game Bugged" };
 const string votekick_id = "vote: kick";
 const string votenextmap_id = "vote: nextmap";
 const string votesurrender_id = "vote: surrender";
+const string votescramble_id = "vote: scramble";
 
 //set up the ids
 void onInit(CRules@ this)
@@ -49,6 +50,7 @@ void onInit(CRules@ this)
 	this.addCommandID(votekick_id);
 	this.addCommandID(votenextmap_id);
 	this.addCommandID(votesurrender_id);
+	this.addCommandID(votescramble_id);
 }
 
 
@@ -346,6 +348,80 @@ VoteObject@ Create_VoteSurrender(CPlayer@ byplayer)
 	return vote;
 }
 
+//VOTE SCRAMBLE ----------------------------------------------------------------
+//scramble functors
+
+class VoteScrambleFunctor : VoteFunctor
+{
+	VoteScrambleFunctor() {} //dont use this
+	VoteScrambleFunctor(CPlayer@ player)
+	{
+		string charname = player.getCharacterName();
+		string username = player.getUsername();
+		//name differs?
+		if (
+			charname != username &&
+			charname != player.getClantag() + username &&
+			charname != player.getClantag() + " " + username
+		) {
+			playername = charname + " (" + player.getUsername() + ")";
+		}
+		else
+		{
+			playername = charname;
+		}
+	}
+
+	string playername;
+	void Pass(bool outcome)
+	{
+		if (outcome)
+		{
+			if (getNet().isServer())
+			{
+				LoadMap(getMap().getMapName());
+			}
+		}
+		else
+		{
+			client_AddToChat(
+				getTranslatedString("{USER} needs to take a spoonful of cement! Play on!")
+					.replace("{USER}", playername),
+				vote_message_colour()
+			);
+		}
+	}
+};
+
+class VoteScrambleCheckFunctor : VoteCheckFunctor
+{
+	VoteScrambleCheckFunctor() {}
+
+	bool PlayerCanVote(CPlayer@ player)
+	{
+		return player.getTeamNum() != getRules().getSpectatorTeamNum();
+	}
+};
+
+//setting up a vote next map object
+VoteObject@ Create_VoteScramble(CPlayer@ byplayer)
+{
+	VoteObject vote;
+
+	@vote.onvotepassed = VoteScrambleFunctor(byplayer);
+	@vote.canvote = VoteScrambleCheckFunctor();
+
+	vote.title = "Scramble the teams?";
+	vote.reason = "";
+	vote.byuser = byplayer.getUsername();
+	vote.forcePassFeature = "scramble";
+	vote.cancel_on_restart = true;
+
+	CalculateVoteThresholds(vote);
+
+	return vote;
+}
+
 //create menus for kick and nextmap
 
 void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
@@ -374,6 +450,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 	CContextMenu@ kickmenu = Menu::addContextMenu(votemenu, getTranslatedString("Kick"));
 	CContextMenu@ mapmenu = Menu::addContextMenu(votemenu, getTranslatedString("Next Map"));
 	CContextMenu@ surrendermenu = Menu::addContextMenu(votemenu, getTranslatedString("Surrender"));
+	CContextMenu@ scramblemenu = Menu::addContextMenu(votemenu, getTranslatedString("Scramble"));
 	Menu::addSeparator(votemenu); //before the back button
 
 	bool can_skip_wait = getSecurity().checkAccess_Feature(me, "skip_votewait");
@@ -605,6 +682,64 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 		);
 	}
 	Menu::addSeparator(surrendermenu);
+
+	if (!this.isWarmup() && !can_skip_wait)
+	{
+		Menu::addInfoBox(
+			scramblemenu,
+			getTranslatedString("Can't Start Vote"),
+			getTranslatedString(
+				"Voting for team scramble\n" +
+				"is not allowed after the game starts.\n"
+			)
+		);
+	}
+	else if (g_lastNextmapCounter < 60 * getTicksASecond()*required_minutes_nextmap
+			 && (!can_skip_wait || g_haveStartedVote))
+	{
+		string cantstart_info = getTranslatedString(
+			"Voting for team scramble\n" +
+			"requires a {NEXTMAP_MINS} min wait\n" +
+			"after each started vote\n" +
+			"to prevent spamming.\n"
+		).replace("{NEXTMAP_MINS}", "" + required_minutes_nextmap);
+		Menu::addInfoBox(scramblemenu, getTranslatedString("Can't Start Vote"), cantstart_info);
+	}
+	else if (me.getTeamNum() == rules.getSpectatorTeamNum())
+	{
+		Menu::addInfoBox(
+			scramblemenu,
+			getTranslatedString("Can't Start Vote"),
+			getTranslatedString(
+				"Voting for team scramble\n" +
+				"is not available as a spectator\n"
+			)
+		);
+	}
+	else
+	{
+		Menu::addInfoBox(
+			scramblemenu,
+			getTranslatedString("Vote team scramble"),
+			getTranslatedString(
+				"Vote to scramble teams\nto hopefully make them balanced.\n\n" +
+				"- report any abuse of this feature.\n" +
+				"\nTo Use:\n\n" +
+				"- select scramble if you're sure.\n" +
+				"- everyone votes.\n"
+			)
+		);
+
+		Menu::addSeparator(scramblemenu);
+		CBitStream params;
+		Menu::addContextItemWithParams(
+			scramblemenu,
+			getTranslatedString("Rebalance Teams! (I'm sure)"),
+			"DefaultVotes.as", "Callback_Scramble",
+			params
+		);
+	}
+	Menu::addSeparator(scramblemenu);
 }
 
 void CloseMenu()
@@ -698,6 +833,21 @@ void Callback_Surrender(CBitStream@ params)
 	onPlayerStartedVote();
 }
 
+void Callback_Scramble(CBitStream@ params)
+{
+	CloseMenu(); //definitely close the menu
+
+	CPlayer@ me = getLocalPlayer();
+	if (me is null) return;
+
+	CBitStream params2;
+
+	params2.write_u16(me.getNetworkID());
+
+	getRules().SendCommand(getRules().getCommandID(votescramble_id), params2);
+	onPlayerStartedVote();
+}
+
 //actually setting up the votes
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
@@ -744,6 +894,19 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 
 		if (byplayer !is null)
 			Rules_SetVote(this, Create_VoteSurrender(byplayer));
+
+		g_lastNextmapCounter = 0;
+	}
+	else if (cmd == this.getCommandID(votescramble_id))
+	{
+		u16 byplayerid;
+
+		if (!params.saferead_u16(byplayerid)) return;
+
+		CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
+
+		if (byplayer !is null)
+			Rules_SetVote(this, Create_VoteScramble(byplayer));
 
 		g_lastNextmapCounter = 0;
 	}

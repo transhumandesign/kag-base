@@ -35,7 +35,7 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic || this.exists("component")) return;
+	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f position = this.getPosition() / 8;
 
@@ -44,10 +44,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.set_u8("state", 0);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		grid.setAll(
 		component.x,                        // x
@@ -60,7 +60,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite is null) return;
+	if (sprite is null) return;
 
 	sprite.SetFacingLeft(false);
 	sprite.SetZ(-50);
@@ -70,7 +70,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	if(!this.isOverlapping(caller) || !this.getShape().isStatic() || this.get_u8("state") != 0) return;
+	if (!this.isOverlapping(caller) || !this.getShape().isStatic() || this.get_u8("state") != 0) return;
 
 	CButton@ button = caller.CreateGenericButton(
 	"$pushbutton_1$",                           // icon token
@@ -85,13 +85,13 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onTick(CBlob@ this)
 {
-	if(getGameTime() < this.get_u32("duration")) return;
+	if (getGameTime() < this.get_u32("duration")) return;
 
 	Component@ component = null;
-	if(!this.get("component", @component)) return;
+	if (!this.get("component", @component)) return;
 
 	MapPowerGrid@ grid;
-	if(!getRules().get("power grid", @grid)) return;
+	if (!getRules().get("power grid", @grid)) return;
 
 	// set state on server, sync to clients
 	this.set_u8("state", 0);
@@ -107,18 +107,18 @@ void onTick(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if(cmd == this.getCommandID("activate"))
+	if (cmd == this.getCommandID("activate"))
 	{
-		if(getNet().isServer())
+		if (getNet().isServer())
 		{
 			// double check state, if state != 0, return
-			if(this.get_u8("state") != 0) return;
+			if (this.get_u8("state") != 0) return;
 
 			Component@ component = null;
-			if(!this.get("component", @component)) return;
+			if (!this.get("component", @component)) return;
 
 			MapPowerGrid@ grid;
-			if(!getRules().get("power grid", @grid)) return;
+			if (!getRules().get("power grid", @grid)) return;
 
 			// only set tag on server, so only the server ticks
 			this.Tag("active");
@@ -136,7 +136,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 
 		CSprite@ sprite = this.getSprite();
-		if(sprite is null) return;
+		if (sprite is null) return;
 
 		sprite.SetAnimation("default");
 		sprite.SetAnimation("activate");

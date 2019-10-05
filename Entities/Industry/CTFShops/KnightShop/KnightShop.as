@@ -49,7 +49,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	if(caller.getConfig() == this.get_string("required class"))
+	if (caller.getConfig() == this.get_string("required class"))
 	{
 		this.set_Vec2f("shop offset", Vec2f_zero);
 	}
