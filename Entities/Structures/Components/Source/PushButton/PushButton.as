@@ -1,6 +1,7 @@
 // PushButton.as
 
 #include "MechanismsCommon.as";
+#include "GenericButtonCommon.as";
 
 class PushButton : Component
 {
@@ -67,6 +68,8 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (!this.isOverlapping(caller) || !this.getShape().isStatic() || this.get_u8("state") != 0) return;
 
 	CButton@ button = caller.CreateGenericButton(

@@ -1,6 +1,7 @@
 // Lever.as
 
 #include "MechanismsCommon.as";
+#include "GenericButtonCommon.as";
 
 class Lever : Component
 {
@@ -71,6 +72,8 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (!this.isOverlapping(caller) || !this.getShape().isStatic()) return;
 
 	u8 state = this.get_u8("state");

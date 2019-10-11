@@ -1,4 +1,5 @@
 #include "Hitters.as"
+#include "GenericButtonCommon.as"
 
 const u32 VANISH_BODY_SECS = 45;
 const f32 CARRIED_BLOB_VEL_SCALE = 1.0;
@@ -148,7 +149,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
-	return (this.hasTag("dead") && this.getInventory().getItemsCount() > 0);
+	return (this.hasTag("dead") && this.getInventory().getItemsCount() > 0 && canSeeButtons(this, forBlob));
 }
 
 void StuffFallsOut(CBlob@ this)

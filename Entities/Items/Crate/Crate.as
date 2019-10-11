@@ -6,6 +6,7 @@
 #include "MiniIconsInc.as"
 #include "Help.as"
 #include "Hitters.as"
+#include "GenericButtonCommon.as"
 
 //property name
 const string required_space = "required space";
@@ -191,7 +192,7 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
-	if (this.hasTag("unpackall"))
+	if (this.hasTag("unpackall") || !canSeeButtons(this, forBlob))
 		return false;
 
 	if (!hasSomethingPacked(this)) // It's a normal crate
@@ -233,6 +234,8 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	Vec2f buttonpos(0, 0);
 
 	bool putting = caller.getCarriedBlob() !is null && caller.getCarriedBlob() !is this;

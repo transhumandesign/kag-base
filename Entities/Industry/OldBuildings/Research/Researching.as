@@ -4,6 +4,7 @@
 #include "WAR_Structs.as"
 #include "RulesCore.as"
 #include "ResearchCommon.as"
+#include "GenericButtonCommon.as"
 
 const int OPT_TICK = 15;
 
@@ -89,6 +90,8 @@ void onTick( CBlob@ this )
 
 void GetButtonsFor( CBlob@ this, CBlob@ caller )
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	// add button for adding scroll if caller has it
 
 	CBitStream params;

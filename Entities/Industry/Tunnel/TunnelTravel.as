@@ -3,6 +3,7 @@
 
 #include "TunnelCommon.as";
 #include "Knocked.as";
+#include "GenericButtonCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -23,6 +24,8 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (this.isOverlapping(caller) &&
 	        this.hasTag("travel tunnel") &&
 	        (!this.hasTag("teamlocked tunnel") || this.getTeamNum() == caller.getTeamNum()) &&

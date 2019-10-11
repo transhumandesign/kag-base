@@ -1,5 +1,7 @@
 ﻿// Storage
 
+#include "GenericButtonCommon.as"
+
 const Vec2f STORAGE_SIZE(20,6);
 string LAST_LABEL;
 
@@ -48,6 +50,8 @@ bool canAccessStorage( CBlob@ this, CBlob@ caller )
 		 
 void GetButtonsFor( CBlob@ this, CBlob@ caller )
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	CBitStream params;
 	params.write_u16( caller.getNetworkID() );	 
 	if (canAccessStorage(this, caller)) 

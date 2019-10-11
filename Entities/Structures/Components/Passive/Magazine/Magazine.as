@@ -1,6 +1,7 @@
 // Bolter.as
 
 #include "MechanismsCommon.as";
+#include "GenericButtonCommon.as";
 
 class Magazine : Component
 {
@@ -60,6 +61,8 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (this.getDistanceTo(caller) > 16.0f || !this.getShape().isStatic()) return;
 
 	CBlob@ carried = caller.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();

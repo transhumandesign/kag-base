@@ -2,6 +2,7 @@
 
 #include "MechanismsCommon.as";
 #include "LootCommon.as";
+#include "GenericButtonCommon.as";
 
 enum state
 {
@@ -80,6 +81,8 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (!this.isOverlapping(caller) || !this.getShape().isStatic()) return;
 
 	CPlayer@ player = caller.getPlayer();

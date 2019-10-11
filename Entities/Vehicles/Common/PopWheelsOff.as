@@ -1,5 +1,7 @@
 //Wheeled vehicle deactivate script
 
+#include "GenericButtonCommon.as"
+
 void onInit(CBlob@ this)
 {
 	this.addCommandID("pop_wheels");
@@ -11,6 +13,8 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (this.getAttachments().getAttachmentPointByName("DRIVER").getOccupied() !is null) return;
 
 	if (this.getTeamNum() == caller.getTeamNum() && isOverlapping(this, caller) && !caller.isAttached() && !this.hasTag("immobile"))

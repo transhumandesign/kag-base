@@ -1,6 +1,7 @@
 // Modified chest for Christmas
 
 #include "LootCommon.as";
+#include "GenericButtonCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -12,7 +13,7 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (this.exists(DROP)) return;
+	if (!canSeeButtons(this, caller) || this.exists(DROP)) return;
 
 	const f32 DISTANCE_MAX = this.getRadius() + caller.getRadius() + 8.0f;
 	if (this.getDistanceTo(caller) > DISTANCE_MAX || this.isAttached()) return;
