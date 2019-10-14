@@ -466,3 +466,30 @@ void onRender(CSprite@ this)
 		GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 2), SColor(transparency, 183, 51, 51));
 	}
 }
+
+bool canBePutInInventory( CBlob@ this, CBlob@ inventoryBlob )
+{
+	u8 heat = this.get_u8(heat_prop); 
+	if(heat > 0) this.set_u32("time_enter",getGameTime()); // set time we enter the invo
+
+	return true;
+}
+
+void onThisRemoveFromInventory( CBlob@ this, CBlob@ inventoryBlob )
+{
+	u8 heat = this.get_u8(heat_prop);
+	if(heat > 0) // do we need to run this?
+	{
+		u32 gameTimeCache = getGameTime(); // so we dont need to keep calling it
+		u32 dif = this.get_u32("time_enter"); // grab the temp time, better then doing difference since we might underflow
+
+		while(dif < gameTimeCache)
+		{ 
+			dif += heat_cooldown_time; // add so we can beat our condition
+			heat--; 
+			if(heat == 0) break; // if we reach the limit, stop running
+		}
+
+		this.set_u8(heat_prop, heat);
+	}
+}
