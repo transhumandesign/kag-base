@@ -4,6 +4,7 @@
 #include "MakeSeed.as"
 #include "Requirements.as"
 #include "TradingCommon.as"
+#include "GenericButtonCommon.as"
 
 const int DROP_SECS = 8;
 
@@ -50,6 +51,8 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (!this.hasTag("dead"))
 	{
 		CBitStream params;

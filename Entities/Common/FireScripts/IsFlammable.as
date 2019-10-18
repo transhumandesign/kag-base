@@ -28,7 +28,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	         hitterBlob.isInFlames() && !this.isInFlames()))	   // Flaming enemy
 	{
 		server_setFireOn(this);
-		if(hitterBlob.getDamageOwnerPlayer() !is null){
+		if (hitterBlob.getDamageOwnerPlayer() !is null){
 			this.set_netid("burn starter player", hitterBlob.getDamageOwnerPlayer().getNetworkID());
 		}
 	}

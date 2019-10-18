@@ -1,4 +1,5 @@
 #include "VehicleCommon.as"
+#include "GenericButtonCommon.as"
 
 // Boat logic
 
@@ -32,7 +33,9 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (caller.getTeamNum() == this.getTeamNum() && !this.isAttached())
+	if (!canSeeButtons(this, caller)) return;
+
+	if (caller.getTeamNum() == this.getTeamNum())
 	{
 		CInventory @inv = caller.getInventory();
 		if (inv is null) return;

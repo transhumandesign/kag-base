@@ -81,7 +81,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if(this is null || attached is null) {return;}
+	if (this is null || attached is null) {return;}
 
 	if (isServer())
 	{
@@ -89,14 +89,14 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	}
 
 	CPlayer@ p = attached.getPlayer();
-	if(p is null){return;}
+	if (p is null){return;}
 
 	this.set_u16("healer", p.getNetworkID());
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 {
-	if(this is null || detached is null) {return;}
+	if (this is null || detached is null) {return;}
 
 	if (isServer())
 	{
@@ -104,7 +104,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 	}
 	
 	CPlayer@ p = detached.getPlayer();
-	if(p is null){return;}
+	if (p is null){return;}
 
 	this.set_u16("healer", p.getNetworkID());
 }

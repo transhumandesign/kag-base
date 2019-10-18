@@ -668,7 +668,7 @@ void drawHoverExplanation(int hovered_accolade, int hovered_age, int hovered_tie
 
 void onTick(CRules@ this)
 {
-	if(getNet().isServer() && this.getCurrentState() == GAME)
+	if(isServer() && this.getCurrentState() == GAME)
 	{
 		this.set_u32("match_time", this.get_u32("match_time")+1);
 		this.Sync("match_time", true);
@@ -677,18 +677,29 @@ void onTick(CRules@ this)
 
 void onInit(CRules@ this)
 {
-	if(getNet().isServer())
-	{
-		this.set_u32("match_time", 0);
-		this.Sync("match_time", true);
-	}
+	onRestart(this);
 }
 
 void onRestart(CRules@ this)
 {
-	if(getNet().isServer())
+	if(isServer())
 	{
 		this.set_u32("match_time", 0);
 		this.Sync("match_time", true);
+		getMapName(this);
+	}
+}
+
+void getMapName(CRules@ this)
+{
+	CMap@ map = getMap();
+	if(map !is null)
+	{
+		string[] name = map.getMapName().split('/');	 //Official server maps seem to show up as
+		string mapName = name[name.length() - 1];		 //``Maps/CTF/MapNameHere.png`` while using this instead of just the .png
+		mapName = mapName.substr(0,mapName.length() - 4);//Sub by 4 so .cfg OR .png are removed when loading the map 
+
+		this.set_string("map_name",mapName);
+		this.Sync("map_name",true);
 	}
 }

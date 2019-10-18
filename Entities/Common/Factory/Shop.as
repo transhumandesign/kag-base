@@ -7,6 +7,7 @@
 #include "Requirements_Tech.as"
 #include "MakeCrate.as"
 #include "CheckSpam.as"
+#include "GenericButtonCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -14,23 +15,23 @@ void onInit(CBlob@ this)
 	this.addCommandID("shop buy");
 	this.addCommandID("shop made item");
 
-	if(!this.exists("shop available"))
+	if (!this.exists("shop available"))
 		this.set_bool("shop available", true);
-	if(!this.exists("shop offset"))
+	if (!this.exists("shop offset"))
 		this.set_Vec2f("shop offset", Vec2f_zero);
-	if(!this.exists("shop menu size"))
+	if (!this.exists("shop menu size"))
 		this.set_Vec2f("shop menu size", Vec2f(7, 7));
-	if(!this.exists("shop description"))
+	if (!this.exists("shop description"))
 		this.set_string("shop description", "Workbench");
-	if(!this.exists("shop icon"))
+	if (!this.exists("shop icon"))
 		this.set_u8("shop icon", 15);
-	if(!this.exists("shop offset is buy offset"))
+	if (!this.exists("shop offset is buy offset"))
 		this.set_bool("shop offset is buy offset", false);
 
-	if(!this.exists("shop button radius"))
+	if (!this.exists("shop button radius"))
 	{
 		CShape@ shape = this.getShape();
-		if(shape !is null)
+		if (shape !is null)
 		{
 			this.set_u8("shop button radius", Maths::Max(this.getRadius(), (shape.getWidth() + shape.getHeight()) / 2));
 		}
@@ -43,13 +44,15 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller) || caller.isAttachedTo(this)) return;
+
 	ShopItem[]@ shop_items;
-	if(!this.get(SHOP_ARRAY, @shop_items))
+	if (!this.get(SHOP_ARRAY, @shop_items))
 	{
 		return;
 	}
 
-	if(shop_items.length > 0 && this.get_bool("shop available") && !this.hasTag("shop disabled"))
+	if (shop_items.length > 0 && this.get_bool("shop available") && !this.hasTag("shop disabled"))
 	{
 		CBitStream params;
 		params.write_u16(caller.getNetworkID());

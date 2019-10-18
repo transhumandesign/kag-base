@@ -596,17 +596,17 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	if (getKnocked(this) > 0)
+	if (getKnocked(this) > 0 || this.isInInventory())
 	{
 		archer.grappling = false;
 		archer.charge_state = 0;
 		archer.charge_time = 0;
+		this.getSprite().SetEmitSoundPaused(true);
+		getHUD().SetCursorFrame(0);
 		return;
 	}
 
 	ManageGrapple(this, archer);
-
-	if (this.isInInventory()) return;
 
 	RunnerMoveVars@ moveVars;
 	if (!this.get("moveVars", @moveVars))

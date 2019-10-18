@@ -158,10 +158,10 @@ bool is_emote(CBlob@ this, u8 emote = 255, bool checkBlank = false)
 ConfigFile@ openEmoteBindingsConfig()
 {
 	ConfigFile cfg = ConfigFile();
-	if(!cfg.loadFile("../Cache/EmoteBindings.cfg"))
+	if (!cfg.loadFile("../Cache/EmoteBindings.cfg"))
 	{
 		// grab the one with defaults from base
-		if(!cfg.loadFile("EmoteBindings.cfg"))
+		if (!cfg.loadFile("EmoteBindings.cfg"))
 		{
 			warn("missing default emote binding");
 			cfg.add_string("emote_1", "attn");
@@ -199,16 +199,16 @@ u8 read_emote(ConfigFile@ cfg, string name, u8 default_value)
 		for(int i = 0; i < check_str.length; i++)
 		{
 			string check = check_str[i];
-			if(check_pos[i]) //check front
+			if (check_pos[i]) //check front
 			{
-				if(attempt.substr(0, 1) == check)
+				if (attempt.substr(0, 1) == check)
 				{
 					attempt = attempt.substr(1, attempt.size() - 1);
 				}
 			}
 			else //check back
 			{
-				if(attempt.substr(attempt.size() - 1, 1) == check)
+				if (attempt.substr(attempt.size() - 1, 1) == check)
 				{
 					attempt = attempt.substr(0, attempt.size() - 1);
 				}
@@ -217,7 +217,7 @@ u8 read_emote(ConfigFile@ cfg, string name, u8 default_value)
 		//match
 		for(int i = 0; i < Emotes::names.length; i++)
 		{
-			if(attempt == Emotes::names[i])
+			if (attempt == Emotes::names[i])
 			{
 				return i;
 			}

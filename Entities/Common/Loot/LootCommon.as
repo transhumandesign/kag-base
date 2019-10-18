@@ -126,7 +126,7 @@ const u8[]          INDEX_TDM =
 // addLoot(this, "mat_bombs");
 void addLoot(CBlob@ this, const string &in NAME)
 {
-	if(!this.exists(LOOT))
+	if (!this.exists(LOOT))
 	{
 		string[] loot_table;
 		this.set(LOOT, loot_table);
@@ -164,7 +164,7 @@ void addLoot(CBlob@ this, const u8[]&in INDEX, u8 &in count, const u8 &in NONE)
 		for(u8 i = 0; i < INDEX.length; i++)
 		{
 			total += WEIGHT[INDEX[i]];
-			if(total > RANDOM)
+			if (total > RANDOM)
 			{
 				addLoot(this, NAME[INDEX[i]]);
 				break;
@@ -178,23 +178,23 @@ void addLoot(CBlob@ this, const u8[]&in INDEX, u8 &in count, const u8 &in NONE)
 // createLoot(this, this.getPosition(), this.getTeamNum());
 void server_CreateLoot(CBlob@ this, const Vec2f &in POSITION, const u8 &in TEAM)
 {
-	if(this.exists(DROP))
+	if (this.exists(DROP))
 	{
 		return;
 	}
 
-	if(this.exists(PURSE))
+	if (this.exists(PURSE))
 	{
 		server_DropCoins(POSITION, this.get_u16(PURSE));
 	}
 
 	string[]@ loot;
-	if(this.get(LOOT, @loot))
+	if (this.get(LOOT, @loot))
 	{
 		for(u8 i = 0; i < loot.length; i++)
 		{
 			CBlob@ item = server_CreateBlob(loot[i], TEAM, POSITION);
-			if(item !is null)
+			if (item !is null)
 			{
 				const f32 ANGLE = XORRandom(300) * 0.1f - 15;
 				Vec2f force = Vec2f(0, -1);
@@ -213,7 +213,7 @@ void server_CreateLoot(CBlob@ this, const Vec2f &in POSITION, const u8 &in TEAM)
 // addCoin(this, 100);
 void addCoin(CBlob@ this, const u16 &in COUNT)
 {
-	if(!this.exists(PURSE))
+	if (!this.exists(PURSE))
 	{
 		this.set_u16(PURSE, COUNT);
 		return;

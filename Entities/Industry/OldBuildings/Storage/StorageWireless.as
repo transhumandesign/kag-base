@@ -1,5 +1,7 @@
 ﻿// Storage
 
+#include "GenericButtonCommon.as"
+
 const Vec2f STORAGE_SIZE(20,6);
 string LAST_LABEL;
 
@@ -32,7 +34,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 				caller.ClearMenus();
 		}
 	}
-    else if( cmd == this.getCommandID("shipment") )
+    else if (cmd == this.getCommandID("shipment") )
 	{
 		CBlob@ localBlob = getLocalPlayerBlob();
 		if (localBlob !is null && localBlob.getTeamNum() == this.getTeamNum()) {
@@ -48,6 +50,8 @@ bool canAccessStorage( CBlob@ this, CBlob@ caller )
 		 
 void GetButtonsFor( CBlob@ this, CBlob@ caller )
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	CBitStream params;
 	params.write_u16( caller.getNetworkID() );	 
 	if (canAccessStorage(this, caller)) 

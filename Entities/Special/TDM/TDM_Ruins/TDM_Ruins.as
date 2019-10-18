@@ -4,6 +4,7 @@
 #include "StandardRespawnCommand.as"
 #include "StandardControlsCommon.as"
 #include "RespawnCommandCommon.as"
+#include "GenericButtonCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -25,7 +26,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if(enable_quickswap)
+	if (enable_quickswap)
 	{
 		//quick switch class
 		CBlob@ blob = getLocalPlayerBlob();
@@ -63,6 +64,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (canChangeClass(this, caller))
 	{
 		if (isInRadius(this, caller))

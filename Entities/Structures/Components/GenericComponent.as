@@ -9,15 +9,15 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic && this.exists("component"))
+	if (!isStatic && this.exists("component"))
 	{
 		Component@ component = null;
-		if(!this.get("component", @component)) return;
+		if (!this.get("component", @component)) return;
 
-		if(getNet().isServer())
+		if (getNet().isServer())
 		{
 			MapPowerGrid@ grid;
-			if(!getRules().get("power grid", @grid)) return;
+			if (!getRules().get("power grid", @grid)) return;
 
 			grid.setAll(component.x, component.y, 0, 0, 0, 0, 0);
 		}
@@ -29,9 +29,9 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 /*
 void onDie(CBlob@ this)
 {
-	if(!this.exists("component")) return;
+	if (!this.exists("component")) return;
 
 	Component@ component = null;
-	if(!this.get("component", @component)) return;
+	if (!this.get("component", @component)) return;
 }
 */

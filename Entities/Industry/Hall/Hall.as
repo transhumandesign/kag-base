@@ -6,6 +6,7 @@
 #include "HallCommon.as";
 #include "Requirements.as"
 #include "AddSectorOnTiles.as"
+#include "GenericButtonCommon.as"
 
 #include "Help.as"
 
@@ -373,7 +374,7 @@ int getCaptureLimit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!caller.isOverlapping(this))
+	if (!canSeeButtons(this, caller) || !caller.isOverlapping(this))
 		return;
 
 	if (this.getTeamNum() != 255)
@@ -383,7 +384,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 		CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(12, 7), this, SpawnCmd::buildMenu, getTranslatedString("Change class"), params);
 
-		if(caller.getName() == "builder")
+		if (caller.getName() == "builder")
 		{
 			Vec2f buttonpos = this.hasTag("script added") ? Vec2f(0, -7) : Vec2f(-12, -7);
 
@@ -484,7 +485,8 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 	return (this.getTeamNum() != 255 && //not neutral
 	        forBlob.getTeamNum() == this.getTeamNum() && //teammate
 	        forBlob.isOverlapping(this) && //inside
-	        !getRules().hasTag("singleplayer"));
+	        !getRules().hasTag("singleplayer") &&
+			canSeeButtons(this, forBlob));
 }
 
 void Capture(CBlob@ this, const int attackerTeam)

@@ -2,6 +2,7 @@
 #include "Knocked.as";
 #include "MakeCrate.as";
 #include "MiniIconsInc.as";
+#include "GenericButtonCommon.as";
 
 // Catapult logic
 
@@ -134,6 +135,8 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	CBlob@ occupiedBlob = this.getAttachments().getAttachmentPointByName("MAG").getOccupied();
 	if (
 		!Vehicle_AddFlipButton(this, caller) &&

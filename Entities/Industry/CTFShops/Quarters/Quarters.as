@@ -6,6 +6,7 @@
 #include "Costs.as"
 #include "CheckSpam.as"
 #include "StandardControlsCommon.as"
+#include "GenericButtonCommon.as"
 
 const f32 beer_amount = 1.0f;
 const f32 heal_amount = 0.25f;
@@ -158,13 +159,15 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	// TODO: fix GetButtonsFor Overlapping, when detached this.isOverlapping(caller) returns false until you leave collision box and re-enter
 	Vec2f tl, br, c_tl, c_br;
 	this.getShape().getBoundingRect(tl, br);
 	caller.getShape().getBoundingRect(c_tl, c_br);
 	bool isOverlapping = br.x - c_tl.x > 0.0f && br.y - c_tl.y > 0.0f && tl.x - c_br.x < 0.0f && tl.y - c_br.y < 0.0f;
 
-	if(!isOverlapping || !bedAvailable(this) || !requiresTreatment(this, caller))
+	if (!isOverlapping || !bedAvailable(this) || !requiresTreatment(this, caller))
 	{
 		this.set_Vec2f("shop offset", Vec2f_zero);
 	}

@@ -6,6 +6,7 @@
 #include "MiniIconsInc.as"
 #include "Help.as"
 #include "Hitters.as"
+#include "GenericButtonCommon.as"
 
 //property name
 const string required_space = "required space";
@@ -191,7 +192,7 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
-	if (this.hasTag("unpackall"))
+	if (this.hasTag("unpackall") || !canSeeButtons(this, forBlob))
 		return false;
 
 	if (!hasSomethingPacked(this)) // It's a normal crate
@@ -212,7 +213,7 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 			f32 dist = (this.getPosition() - forBlob.getPosition()).Length();
 			f32 rad = (this.getRadius() + forBlob.getRadius());
 
-			if(dist < rad * ally_allowed_distance)
+			if (dist < rad * ally_allowed_distance)
 			{
 				return true; // Allies can access from further away
 			}
@@ -233,6 +234,8 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	Vec2f buttonpos(0, 0);
 
 	bool putting = caller.getCarriedBlob() !is null && caller.getCarriedBlob() !is this;
@@ -400,7 +403,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("activate"))
 	{
-		CBlob@ carrier = this.getAttachments().getAttachedBlob("PICKUP", 0);
+		CBlob@ carrier = this.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();
 		if (carrier !is null)
 		{
 			DumpOutItems(this, 5.0f, carrier.getVelocity(), false);
@@ -410,7 +413,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void Unpack(CBlob@ this)
 {
-	if(!getNet().isServer()) return;
+	if (!getNet().isServer()) return;
 
 	CBlob@ blob = server_CreateBlob(this.get_string("packed"), this.getTeamNum(), Vec2f_zero);
 
@@ -676,9 +679,9 @@ bool canUnpackHere(CBlob@ this)
 
 	string packed = this.get_string("packed");
 	//required vertical buffer for siege engines and boats
-	if(packed == "ballista" || packed == "catapult" || packed == "longboat" || packed == "warboat")
+	if (packed == "ballista" || packed == "catapult" || packed == "longboat" || packed == "warboat")
 	{
-		if(pos.y < 40)
+		if (pos.y < 40)
 		{
 			return false;
 		}
@@ -687,7 +690,7 @@ bool canUnpackHere(CBlob@ this)
 	bool water = packed == "longboat" || packed == "warboat";
 	if (this.isAttached())
 	{
-		CBlob@ parent = this.getAttachments().getAttachedBlob("PICKUP", 0);
+		CBlob@ parent = this.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();
 		if (parent !is null)
 		{
 			return ((!water && parent.isOnGround()) || (water && map.isInWater(parent.getPosition() + Vec2f(0.0f, 8.0f))));

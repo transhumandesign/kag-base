@@ -4,6 +4,7 @@
 #include "WAR_Structs.as"
 #include "RulesCore.as"
 #include "ResearchCommon.as"
+#include "GenericButtonCommon.as"
 
 const int OPT_TICK = 15;
 
@@ -60,7 +61,7 @@ void onTick( CBlob@ this )
 	if (stat is null)
 		return;
 
-	if(this.hasTag("update_paths"))
+	if (this.hasTag("update_paths"))
 	{
 		stat.FindPathsFromVotes();
 		this.Untag("update_paths");
@@ -89,6 +90,8 @@ void onTick( CBlob@ this )
 
 void GetButtonsFor( CBlob@ this, CBlob@ caller )
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	// add button for adding scroll if caller has it
 
 	CBitStream params;
@@ -134,9 +137,9 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 	else if (cmd == this.getCommandID(tech_vote_cmd))
 	{
 		string name, tech;
-		if(!params.saferead_string(name))
+		if (!params.saferead_string(name))
 			return;
-		if(!params.saferead_string(tech))
+		if (!params.saferead_string(tech))
 			return;
 
 		ResearchStatus@ stat;

@@ -22,38 +22,38 @@ class Spiker : Component
 		Vec2f position = this.getPosition();
 
 		CMap@ map = getMap();
-		if(map.rayCastSolid(position + offset * 5, position + offset * 11))
+		if (map.rayCastSolid(position + offset * 5, position + offset * 11))
 		{
 			this.getSprite().PlaySound("dry_hit.ogg");
 			return;
 		}
 
 		AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
-		if(mechanism is null) return;
+		if (mechanism is null) return;
 
 		mechanism.offset = Vec2f(0, -7);
 
 		CBlob@ spike = mechanism.getOccupied();
-		if(spike is null) return;
+		if (spike is null) return;
 
 		spike.set_u8("state", 1);
 
 		// hit flesh at target position
-		if(getNet().isServer())
+		if (getNet().isServer())
 		{
 			CBlob@[] blobs;
 			map.getBlobsAtPosition(offset * 8 + position, @blobs);
 			for(uint i = 0; i < blobs.length; i++)
 			{
 				CBlob@ blob = blobs[i];
-				if(!blob.hasTag("flesh")) continue;
+				if (!blob.hasTag("flesh")) continue;
 
 				spike.server_Hit(blob, blob.getPosition(), blob.getVelocity() * -1, 1.0f, Hitters::spikes, true);
 			}
 		}
 
 		CSprite@ sprite = this.getSprite();
-		if(sprite is null) return;
+		if (sprite is null) return;
 
 		sprite.PlaySound("SpikerThrust.ogg", 2.0f);
 	}
@@ -63,17 +63,17 @@ class Spiker : Component
 		// if ! blocked, do stuff
 
 		AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
-		if(mechanism is null) return;
+		if (mechanism is null) return;
 
 		mechanism.offset = Vec2f(0, 0);
 
 		CBlob@ spike = mechanism.getOccupied();
-		if(spike is null) return;
+		if (spike is null) return;
 
 		spike.set_u8("state", 0);
 
 		CSprite@ sprite = this.getSprite();
-		if(sprite is null) return;
+		if (sprite is null) return;
 
 		sprite.PlaySound("LoadingTick.ogg");
 	}
@@ -93,7 +93,7 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic || this.exists("component")) return;
+	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f position = this.getPosition() / 8;
 	const u16 angle = this.getAngleDegrees();
@@ -104,10 +104,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.getAttachments().getAttachmentPointByName("MECHANISM").offsetZ = -5;
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		grid.setAll(
 		component.x,                        // x
@@ -130,7 +130,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite is null) return;
+	if (sprite is null) return;
 
 	sprite.SetZ(500);
 	sprite.SetFrameIndex(angle / 90);
@@ -145,10 +145,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void onDie(CBlob@ this)
 {
-	if(!getNet().isServer()) return;
+	if (!getNet().isServer()) return;
 
 	CBlob@ spike = this.getAttachments().getAttachmentPointByName("MECHANISM").getOccupied();
-	if(spike is null) return;
+	if (spike is null) return;
 
 	spike.server_Die();
 }

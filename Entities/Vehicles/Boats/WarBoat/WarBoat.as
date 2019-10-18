@@ -1,6 +1,7 @@
 #include "VehicleCommon.as"
 #include "ClassSelectMenu.as";
 #include "StandardRespawnCommand.as";
+#include "GenericButtonCommon.as";
 //#include "Requirements_Tech.as";
 
 // Boat logic
@@ -205,6 +206,8 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (caller.getTeamNum() == this.getTeamNum())
 	{
 		CBitStream params;

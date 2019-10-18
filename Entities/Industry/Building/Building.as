@@ -5,6 +5,7 @@
 #include "Descriptions.as"
 #include "Costs.as"
 #include "CheckSpam.as"
+#include "GenericButtonCommon.as"
 
 //are builders the only ones that can finish construction?
 const bool builder_only = false;
@@ -76,6 +77,8 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (this.isOverlapping(caller))
 		this.set_bool("shop available", !builder_only || caller.getName() == "builder");
 	else
