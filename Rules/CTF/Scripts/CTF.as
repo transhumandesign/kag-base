@@ -13,7 +13,15 @@
 // no scripting required!
 void Config(CTFCore@ this)
 {
+	// default vars
 	string configstr = "Rules/CTF/ctf_vars.cfg";
+
+	// override if small maps ctf
+	if (sv_gamemode == "SmallCTF")
+	{
+		configstr = "Rules/SmallCTF/smallctf_vars.cfg";
+	}
+
 	if (getRules().exists("ctfconfig"))
 	{
 		configstr = getRules().get_string("ctfconfig");
