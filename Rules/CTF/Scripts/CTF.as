@@ -314,7 +314,7 @@ shared class CTFCore : RulesCore
 		gamestart = getGameTime();
 		@ctf_spawns = cast < CTFSpawns@ > (_respawns);
 		_rules.set_string("music - base name", base_name());
-		server_CreateBlob("Entities/Meta/WARMusic.cfg");
+		server_CreateBlob("ctf_music");
 		players_in_small_team = -1;
 	}
 
