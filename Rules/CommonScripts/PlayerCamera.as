@@ -203,7 +203,7 @@ void onRender(CRules@ this)
 		ul -= size * 0.5;
 		lr = ul + size;
 		//wiggle up and down
-		f32 wave = Maths::Sin(getGameTime() / 10.0f) * 5.0f;
+		float wave = Maths::Sin(getGameTime() / 10.0f) * 5.0f;
 		ul.y += wave;
 		lr.y += wave;
 		//draw
@@ -214,17 +214,64 @@ void onRender(CRules@ this)
 
 void onTick(CRules@ this)
 {
-	//initially position camera to view entire map
-	if (getGameTime() == 1)
+	if (isCinematic())
 	{
-		CMap@ map = getMap();
-		CCamera@ camera = getCamera();
-		if (map !is null && camera !is null)
+		Vec2f mapDim = getMap().getMapDimensions();
+
+		if (getGameTime() == 1)
 		{
-			Vec2f mapDim = map.getMapDimensions();
-			pos = mapDim / 2;
+			//initially position camera to view entire map
+			CCamera@ camera = getCamera();
+			pos = mapDim / 2.0f;
 			camera.setPosition(pos);
-			camera.targetDistance = Maths::Min(calculateZoomLevelW(mapDim.x), calculateZoomLevelH(mapDim.y));
+			float zoomW = calculateZoomLevelW(mapDim.x);
+			float zoomH = calculateZoomLevelH(mapDim.y);
+			camera.targetDistance = Maths::Min(zoomW, zoomH);
+		}
+
+		if (this.isMatchRunning() && !this.isWarmup() && !this.isGameOver())
+		{
+			if (getGameTime() % CINEMATIC_UPDATE_INTERVAL == 0)
+			{
+				CBlob@[] blobs;
+				getBlobs(@blobs);
+				blobs = calculateImportance(blobs);
+				SortBlobsByImportance(blobs);
+				importantBlobs = blobs;
+			}
+
+			if (!FOCUS_ON_IMPORTANT_BLOBS || !focusOnBlob(importantBlobs))
+			{
+				CBlob@[] playerBlobs;
+				if (getBlobsByTag("player", @playerBlobs))
+				{
+					//max distance along x axis
+					SortBlobsByXPosition(playerBlobs);
+					float maxDistX = Maths::Abs(playerBlobs[0].getPosition().x - playerBlobs[playerBlobs.length - 1].getPosition().x);
+
+					//max distance along y axis
+					SortBlobsByYPosition(playerBlobs);
+					float maxDistY = Maths::Abs(playerBlobs[0].getPosition().y - playerBlobs[playerBlobs.length - 1].getPosition().y);
+
+					calculateZoomTarget(maxDistX, maxDistY);
+
+					//calculate mean position of all players
+					posTarget = Vec2f_zero;
+					for (uint i = 0; i < playerBlobs.length; i++)
+					{
+						posTarget += playerBlobs[i].getInterpolatedPosition();
+					}
+					posTarget /= playerBlobs.length;
+				}
+				else //no player blobs
+				{
+					ViewEntireMap();
+				}
+			}
+		}
+		else //game not in progress
+		{
+			ViewEntireMap();
 		}
 	}
 

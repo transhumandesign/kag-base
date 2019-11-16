@@ -2,24 +2,25 @@
 
 #define CLIENT_ONLY
 
-const f32 CINEMATIC_PAN_X_EASE = 12.0f;					//amount of ease along the x-axis while cinematic
-const f32 CINEMATIC_PAN_Y_EASE = 12.0f;					//amount of ease along the y-axis while cinematic
+const bool FOCUS_ON_IMPORTANT_BLOBS = true;						//whether camera should focus on important blobs
 
-const f32 CINEMATIC_ZOOM_EASE = 14.0f;					//amount of ease when zooming while cinematic
-const f32 CINEMATIC_CLOSEST_ZOOM = 1.5f;				//how close the camera can zoom in while cinematic (default is 2.0f)
-const f32 CINEMATIC_FURTHEST_ZOOM = 0.75f;				//how far the camera can zoom out while cinematic (default is 0.5f)
+const float CINEMATIC_PAN_X_EASE = 12.0f;						//amount of ease along the x-axis while cinematic
+const float CINEMATIC_PAN_Y_EASE = 12.0f;						//amount of ease along the y-axis while cinematic
 
-const bool AUTO_CINEMATIC = false;						//whether camera automatically becomes cinematic after no input
-const f32 CINEMATIC_TIME = 10.0f * getTicksASecond();	//time until camera automatically becomes cinematic in seconds
+const float CINEMATIC_ZOOM_EASE = 14.0f;						//amount of ease when zooming while cinematic
+const float CINEMATIC_CLOSEST_ZOOM = 1.5f;						//how close the camera can zoom in while cinematic (default is 2.0f)
+const float CINEMATIC_FURTHEST_ZOOM = 0.75f;					//how far the camera can zoom out while cinematic (default is 0.5f)
 
-const u32 CINEMATIC_UPDATE_INTERVAL = 6; 				//how often the cinematic camera updates its target position/zoom
+const float AUTO_CINEMATIC_TIME = 0.0f;							//time until camera automatically becomes cinematic. set to zero to disable
+const uint CINEMATIC_UPDATE_INTERVAL = 3 * getTicksASecond();	//how often the cinematic camera updates its target position/zoom
 
-Vec2f posTarget;										//position which cinematic camera moves towards
-f32 zoomTarget = 1.0f;									//zoom level which camera zooms towards
-float timeToScroll = 0.0f;								//time until next able to scroll to zoom camera
-float timeToCinematic = 0.0f;							//time until camera automatically becomes cinematic
-CBlob@ currentTarget;									//the current target blob
-u32 switchTarget;										//time when camera can move onto new target
+Vec2f posTarget;												//position which cinematic camera moves towards
+float zoomTarget = 1.0f;										//zoom level which camera zooms towards
+float timeToScroll = 0.0f;										//time until next able to scroll to zoom camera
+float timeToCinematic = 0.0f;									//time until camera automatically becomes cinematic
+CBlob@ currentTarget;											//the current target blob
+uint switchTarget;												//time when camera can move onto new target
+CBlob@[] importantBlobs;										//a list of important blobs sorted from most to least important
 
 bool justClicked = false;
 string _targetPlayer;
@@ -50,7 +51,7 @@ void Spectator(CRules@ this)
 
 	//variables
 	Vec2f mapDim = map.getMapDimensions();
-	f32 camSpeed = getRenderApproximateCorrectionFactor() * 15.0f / zoomTarget;
+	float camSpeed = getRenderApproximateCorrectionFactor() * 15.0f / zoomTarget;
 
     if (this.get_bool("set new target"))
     {
@@ -142,7 +143,7 @@ void Spectator(CRules@ this)
 			camera.targetDistance = zoomTarget;
 		}
 
-		if (AUTO_CINEMATIC)
+		if (AUTO_CINEMATIC_TIME > 0)
 		{
 			timeToCinematic -= getRenderApproximateCorrectionFactor();
 			if (timeToCinematic <= 0)
@@ -153,78 +154,6 @@ void Spectator(CRules@ this)
 	}
 	else //cinematic camera
 	{
-		if (this.isMatchRunning() && !this.isWarmup() && !this.isGameOver()) //game running
-		{
-			CBlob@[] blobs;
-			getBlobs(@blobs);
-			calculateImportance(blobs);
-			blobs = sortBlobsByImportance(blobs);
-
-			CBlob@[] players;
-
-			if (
-				!focusOnBlob(blobs) && //not focusing on a blob
-				getGameTime() % CINEMATIC_UPDATE_INTERVAL == 0 && //dont update every tick
-				getBlobsByTag("player", @players) //players exist
-			) {
-				f32 maxDistX = 0.0f;
-				f32 maxDistY = 0.0f;
-				bool furthestZoom = false;
-
-				//calculate mean position of all players
-				posTarget = Vec2f_zero;
-				for (uint i = 0; i < players.length; i++)
-				{
-					CBlob@ blob = players[i];
-					Vec2f blobPos = blob.getInterpolatedPosition();
-
-					posTarget += blobPos;
-
-					if (!furthestZoom)
-					{
-						//look for largest distance between two players
-						for (uint j = i + 1; j < players.length; j++)
-						{
-							CBlob@ blob2 = players[j];
-							Vec2f blob2Pos = blob2.getInterpolatedPosition();
-
-							f32 distX = Maths::Abs(blobPos.x - blob2Pos.x);
-							f32 distY = Maths::Abs(blobPos.y - blob2Pos.y);
-							maxDistX = Maths::Max(distX, maxDistX);
-							maxDistY = Maths::Max(distY, maxDistY);
-
-							//dynamic zoom to fit all players
-							calculateZoomTarget(maxDistX, maxDistY);
-
-							//stop calculating max dist if furthest zoom is reached
-							if (zoomTarget <= CINEMATIC_FURTHEST_ZOOM)
-							{
-								furthestZoom = true;
-								break;
-							}
-						}
-					}
-				}
-				posTarget /= players.length;
-
-				if (players.length == 1)
-				{
-					//follow blob with normal zoom
-					zoomTarget = 1.0f;
-				}
-			}
-		}
-		else
-		{
-			//view entire map from center
-			posTarget = Vec2f(mapDim.x, mapDim.y) / 2.0f;
-			f32 zoomW = calculateZoomLevelW(mapDim.x);
-			f32 zoomH = calculateZoomLevelH(mapDim.y);
-			zoomTarget = Maths::Min(zoomW, zoomH);
-			zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f); //its fine to clamp between default min/max zoom here
-		}
-
-		//adjust camera pos and zoom
 		camera.targetDistance += (zoomTarget - camera.targetDistance) / CINEMATIC_ZOOM_EASE * getRenderApproximateCorrectionFactor();
 		pos.x += (posTarget.x - pos.x) / CINEMATIC_PAN_X_EASE * getRenderApproximateCorrectionFactor();
 		pos.y += (posTarget.y - pos.y) / CINEMATIC_PAN_Y_EASE * getRenderApproximateCorrectionFactor();
@@ -284,8 +213,8 @@ void Spectator(CRules@ this)
 	}
 
 	//keep camera within map boundaries
-	f32 borderMarginX = map.tilesize * 2.0f / zoomTarget;
-	f32 borderMarginY = map.tilesize * 2.0f / zoomTarget;
+	float borderMarginX = map.tilesize * 2.0f / zoomTarget;
+	float borderMarginY = map.tilesize * 2.0f / zoomTarget;
 	pos.x = Maths::Clamp(pos.x, borderMarginX, mapDim.x - borderMarginX);
 	pos.y = Maths::Clamp(pos.y, borderMarginY, mapDim.y - borderMarginY);
 

@@ -8,34 +8,43 @@ enum ImportanceRank
 	missing_flag
 }
 
-f32 calculateZoomLevelH(u32 height)
+enum ComparisonType
+{
+	cinematic_importance,
+	x_position,
+	y_position
+}
+
+float calculateZoomLevelH(uint height)
 {
 	return 360.0f / Maths::Max(height, 1.0f);
 }
 
-f32 calculateZoomLevelW(u32 width)
+float calculateZoomLevelW(uint width)
 {
 	Driver@ driver = getDriver();
-	f32 ratio = f32(driver.getScreenHeight()) / f32(driver.getScreenWidth());
+	float ratio = float(driver.getScreenHeight()) / float(driver.getScreenWidth());
 	return calculateZoomLevelH(width * ratio);
 }
 
-void calculateZoomTarget(f32 distX, f32 distH)
+void calculateZoomTarget(float distX, float distH)
 {
-	f32 zoomW = calculateZoomLevelW(distX * 1.8f);
-	f32 zoomH = calculateZoomLevelH(distH * 1.8f);
+	float zoomW = calculateZoomLevelW(distX * 1.8f);
+	float zoomH = calculateZoomLevelH(distH * 1.8f);
 	zoomTarget = Maths::Min(zoomW, zoomH);
 	zoomTarget = Maths::Clamp(zoomTarget, CINEMATIC_FURTHEST_ZOOM, CINEMATIC_CLOSEST_ZOOM);
 }
 
-void calculateImportance(CBlob@[] blobs)
+CBlob@[] calculateImportance(CBlob@[] blobs)
 {
 	CMap@ map = getMap();
+	CBlob@[] filtered_blobs;
 
 	for (uint i = 0; i < blobs.length; i++)
 	{
 		CBlob@ blob = blobs[i];
 		blob.set_f32("cinematic importance", -1);
+		bool importantBlob = false;
 
 		//lit keg
 		if (blob.getName() == "keg" && blob.hasTag("exploding"))
@@ -43,6 +52,7 @@ void calculateImportance(CBlob@[] blobs)
 			//kegs about to explode are MORE important
 			float fuse = Maths::Max(blob.get_s32("explosion_timer") - getGameTime(), 0) / blob.get_f32("keg_time");
 			blob.set_f32("cinematic importance", ImportanceRank::lit_keg + 1 - fuse);
+			importantBlob = true;
 		}
 
 		//missing flag
@@ -54,6 +64,7 @@ void calculateImportance(CBlob@[] blobs)
 				//flags about to be returned are LESS important
 				float returnTime = float(blob.get_u16("return time")) / blob.get_u16("max return time");
 				blob.set_f32("cinematic importance", ImportanceRank::missing_flag + 1 - returnTime);
+				importantBlob = true;
 			}
 		}
 
@@ -66,11 +77,13 @@ void calculateImportance(CBlob@[] blobs)
 			if (blob.hasTag("vehicle") && blob.hasTag("respawn")) //ballista, warboat
 			{
 				blob.set_f32("cinematic importance", ImportanceRank::capturing_vehicle + 1 - capture);
+				importantBlob = true;
 			}
 
 			if (blob.getName() == "hall")
 			{
 				blob.set_f32("cinematic importance", ImportanceRank::capturing_hall + 1 - capture);
+				importantBlob = true;
 			}
 		}
 
@@ -89,6 +102,7 @@ void calculateImportance(CBlob@[] blobs)
 					b.getTeamNum() != blob.getTeamNum()
 				) {
 					blob.set_f32("cinematic importance", ImportanceRank::player_near_tent);
+					importantBlob = true;
 					break;
 				}
 			}
@@ -107,67 +121,151 @@ void calculateImportance(CBlob@[] blobs)
 						b.getTeamNum() != blob.getTeamNum()
 					) {
 						blob.set_f32("cinematic importance", ImportanceRank::builder_near_flag);
+						importantBlob = true;
 						break;
 					}
 				}
 			}
 		}
-	}
-}
 
-CBlob@[] sortBlobsByImportance(CBlob@[] blobs)
-{
-	if (blobs.length > 0)
-	{
-		CBlob@ temp;
-		for (uint i = 0; i < blobs.length - 1; i++)
+		//add important blob to filtered list so sorting is quicker
+		if (importantBlob)
 		{
-			for (uint j = i + 1; j < blobs.length; j++)
-			{
-				if (blobs[i].get_f32("cinematic importance") < blobs[j].get_f32("cinematic importance"))
-				{
-					@temp = blobs[j];
-					@blobs[j] = blobs[i];
-					@blobs[i] = temp;
-				}
-			}
+			filtered_blobs.push_back(blob);
 		}
 	}
-	return blobs;
+
+	return filtered_blobs;
+}
+
+void SortBlobsByImportance(CBlob@[]@ blobs)
+{
+	Quicksort(blobs, 0, blobs.length - 1, ComparisonType::cinematic_importance);
+}
+
+void SortBlobsByXPosition(CBlob@[]@ blobs)
+{
+	Quicksort(blobs, 0, blobs.length - 1, ComparisonType::x_position);
+}
+
+void SortBlobsByYPosition(CBlob@[]@ blobs)
+{
+	Quicksort(blobs, 0, blobs.length - 1, ComparisonType::y_position);
+}
+
+int partition(CBlob@[]@ arr, int low, int high, u8 comparisonType)
+{
+	CBlob@ pivot = arr[high];
+	int i = low - 1; //index of smaller element
+	for (int j = low; j < high; j++)
+	{
+		bool shouldSwap = false;
+		switch (comparisonType)
+		{
+			case ComparisonType::cinematic_importance:
+				shouldSwap = arr[j].get_f32("cinematic importance") > pivot.get_f32("cinematic importance");
+				break;
+			case ComparisonType::x_position:
+				shouldSwap = arr[j].getPosition().x < pivot.getPosition().x;
+				break;
+			case ComparisonType::y_position:
+				shouldSwap = arr[j].getPosition().y < pivot.getPosition().y;
+				break;
+		}
+
+		if (shouldSwap)
+		{
+			i++;
+
+			//swap arr[i] and arr[j]
+			Swap(arr, i, j);
+		}
+	}
+
+	//swap arr[i+1] and arr[high] (or pivot)
+	Swap(arr, i + 1, high);
+
+	return i + 1;
+}
+
+void Swap(CBlob@[]@ arr, int index1, int index2)
+{
+	CBlob@ temp = arr[index1];
+	@arr[index1] = arr[index2];
+	@arr[index2] = temp;
+}
+
+void Quicksort(CBlob@[]@ arr, int low, int high, u8 comparisonType)
+{
+	if (low < high)
+	{
+		int pi = partition(arr, low, high, comparisonType);
+
+		//recursively sort elements
+		Quicksort(arr, low, pi - 1, comparisonType);
+		Quicksort(arr, pi + 1, high, comparisonType);
+	}
 }
 
 bool focusOnBlob(CBlob@[] blobs)
 {
 	const float CHANGE_FOCUS_DELAY = 1.5f; //time before camera moves on from focused blob
 
-	if (
-		(blobs.length == 0 || //no blobs
-		(currentTarget !is null && currentTarget.getHealth() <= 0) || //focus blob doesnt exist
-		blobs[0] !is currentTarget || //higher importance blob
-		blobs[0].get_f32("cinematic importance") == -1) && //no important blobs
-		getGameTime() < switchTarget //wait a bit before moving to next important blob
-	) {
-		//stay at focus blob's position for a bit before moving on
+	if (getGameTime() < switchTarget && currentTarget !is null && currentTarget.getHealth() <= 0)
+	{
+		//stay at focus blob's position for a bit after they die
 		posTarget = currentTarget.getInterpolatedPosition();
 		zoomTarget = 1.0f;
+		return true;
 	}
-	else if (
-		blobs.length > 0 && //blobs exist
-		blobs[0].get_f32("cinematic importance") != -1 //important blob
-	) {
-		//follow important blob
-		posTarget = blobs[0].getInterpolatedPosition();
-		zoomTarget = 1.0f;
-		@currentTarget = blobs[0];
-		switchTarget = getGameTime() + CHANGE_FOCUS_DELAY * getTicksASecond();
-	}
-	else
+	else if (blobs.length > 0)
 	{
-		//no blobs
-		return false;
+		for (uint i = 0; i < blobs.length; i++)
+		{
+			CBlob@ blob = blobs[i];
+			u16 networkID = blob.getNetworkID();
+			@blob = getBlobByNetworkID(networkID);
+
+			if (blob !is null)
+			{
+				if (getGameTime() < switchTarget && blob !is currentTarget)
+				{
+					//stay at focus blob's position for a bit before focusing on a more important blob
+					posTarget = currentTarget.getInterpolatedPosition();
+					zoomTarget = 1.0f;
+					return true;
+				}
+				else if (blob.get_f32("cinematic importance") != -1)
+				{
+					//follow important blob
+					posTarget = blob.getInterpolatedPosition();
+					zoomTarget = 1.0f;
+					@currentTarget = blob;
+					switchTarget = getGameTime() + CHANGE_FOCUS_DELAY * getTicksASecond();
+
+					return true;
+				}
+				else
+				{
+					//no more important blobs in list. break early
+					break;
+				}
+			}
+		}
 	}
 
-	return true;
+	//not following an important blob
+	return false;
+}
+
+void ViewEntireMap()
+{
+	Vec2f mapDim = getMap().getMapDimensions();
+	posTarget = mapDim / 2.0f;
+	float zoomW = calculateZoomLevelW(mapDim.x);
+	float zoomH = calculateZoomLevelH(mapDim.y);
+	zoomTarget = Maths::Min(zoomW, zoomH);
+	zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f);
 }
 
 ConfigFile@ openCinematicConfig()
@@ -188,11 +286,24 @@ void setCinematicEnabled(bool enabled)
 	cfg.add_bool("cinematic_enabled", enabled);
 	cfg.saveFile("cinematic_prefs.cfg");
 
-	timeToCinematic = enabled ? 0.0f : CINEMATIC_TIME;
+	timeToCinematic = enabled ? 0.0f : AUTO_CINEMATIC_TIME;
 }
 
 bool isCinematicEnabled()
 {
 	ConfigFile cfg = openCinematicConfig();
 	return cfg.read_bool("cinematic_enabled");
+}
+
+bool isCinematic()
+{
+	return isCinematicEnabled() && canCinematic();
+}
+
+bool canCinematic()
+{
+	return (
+		getCamera() !is null &&
+		getLocalPlayerBlob() is null && getLocalPlayer() !is null
+	);
 }
