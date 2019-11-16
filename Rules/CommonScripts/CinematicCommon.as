@@ -233,23 +233,17 @@ bool focusOnBlob(CBlob@[] blobs)
 					//stay at focus blob's position for a bit before focusing on a more important blob
 					posTarget = currentTarget.getInterpolatedPosition();
 					zoomTarget = 1.0f;
-					return true;
 				}
-				else if (blob.get_f32("cinematic importance") != -1)
+				else
 				{
 					//follow important blob
 					posTarget = blob.getInterpolatedPosition();
 					zoomTarget = 1.0f;
 					@currentTarget = blob;
 					switchTarget = getGameTime() + CHANGE_FOCUS_DELAY * getTicksASecond();
+				}
 
-					return true;
-				}
-				else
-				{
-					//no more important blobs in list. break early
-					break;
-				}
+				return true;
 			}
 		}
 	}
