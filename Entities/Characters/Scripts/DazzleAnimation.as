@@ -19,8 +19,10 @@ void onInit(CSprite@ this)
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
-
 	CSpriteLayer@ stars = this.getSpriteLayer("dazzle stars");
+
+	if (blob is null) return;
+	
 	if (blob.hasTag("dazzled") && !blob.hasTag("dead"))
 	{
 		stars.SetVisible(true);

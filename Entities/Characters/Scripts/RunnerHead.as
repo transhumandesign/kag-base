@@ -216,10 +216,9 @@ void onGib(CSprite@ this)
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
-
 	ScriptData@ script = this.getCurrentScript();
-	if (script is null)
-		return;
+	
+	if (script is null || blob is null) return;
 
 	if (blob.getShape().isStatic())
 	{

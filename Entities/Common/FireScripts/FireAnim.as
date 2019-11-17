@@ -31,8 +31,12 @@ void onInit(CSprite@ this)
 void onTick(CSprite@ this)
 {
 	this.getCurrentScript().tickFrequency = 24; // opt
+
 	CBlob@ blob = this.getBlob();
 	CSpriteLayer@ fire = this.getSpriteLayer("fire_animation_large");
+
+	if (blob is null) return;
+
 	if (fire !is null)
 	{
 		//if we're burning

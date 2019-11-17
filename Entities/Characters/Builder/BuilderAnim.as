@@ -222,14 +222,7 @@ const string cursorTexture = "Entities/Characters/Sprites/TileCursor.png";
 void onRender(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
-	if (!blob.isMyPlayer())
-	{
-		return;
-	}
-	if (getHUD().hasButtons())
-	{
-		return;
-	}
+	if (blob is null || !blob.isMyPlayer() || getHud().hasButtons()) return;
 
 	// draw tile cursor
 

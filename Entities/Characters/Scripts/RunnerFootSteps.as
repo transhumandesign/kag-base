@@ -13,6 +13,7 @@ void onInit(CSprite@ this)
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
+	if (blob is null) return;
 
 	const bool left		= blob.isKeyPressed(key_left);
 	const bool right	= blob.isKeyPressed(key_right);
