@@ -62,95 +62,124 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 		SetHelp(blob, "help rotate", "", getTranslatedString("${ITEM}$ $Rotate$ Rotate    $KEY_SPACE$").replace("{ITEM}", blob.getName()), "", 3);
 	}
 
+	switch (name.getHash())
+	{
+		case -792805582: // hall
+		{
+			SetHelp(blob, "help use", "", getTranslatedString("$CLASSCHANGE$ Change class    $KEY_E$"), "", 5);
+		}
+		break;
 
+		case 916369496: // trap_block
+		{
+			SetHelp(blob, "help show", "builder", getTranslatedString("$trap_block$ Opens on enemy"), "", 15);
+		}
+		break;
 
-	if (name == "hall")
-	{
-		SetHelp(blob, "help use", "", getTranslatedString("$CLASSCHANGE$ Change class    $KEY_E$"), "", 5);
+		case 439106706: // spikes
+		{
+			SetHelp(blob, "help show", "builder", getTranslatedString("$spikes$ Retracts on enemy if on stone $STONE$"), "", 20);
+		}
+
+		case 804095823: // wooden_platform
+		{
+			SetHelp(blob, "help rotate", "", getTranslatedString("$wooden_platform$  $Rotate$ Rotate    $KEY_SPACE$"), "", 3);
+		}
+
+		case 6339497: // ladder
+		{
+			SetHelp(blob, "help rotate", "", getTranslatedString("$ladder$  $Rotate$ Rotate    $KEY_SPACE$"), "", 3);
+		}
+
+		case -1172577820: // tdm_ruins
+		{
+			SetHelp(blob, "help use", "", getTranslatedString("Change class    $KEY_E$"), "", 5);
+		}
+
+		case -1469294289: // lantern
+		{
+			SetHelp(blob, "help activate", "", getTranslatedString("$lantern$ On/Off     $KEY_SPACE$"), "");
+			SetHelp(blob, "help pickup", "", getTranslatedString("$lantern$ Pick up    $KEY_C$"));
+		}
+
+		case -863144459: // satchel
+		{
+			SetHelp(blob, "help activate", "knight", getTranslatedString("$satchel$ Light     $KEY_SPACE$"), getTranslatedString("$satchel$ Only KNIGHT can light satchel"), 3);
+			SetHelp(blob, "help throw", "knight", getTranslatedString("$satchel$ THROW!    $KEY_SPACE$"), "", 3);
+		}
+
+		case 1062293841: // log
+		{
+			SetHelp(blob, "help action2", "builder", getTranslatedString("$log$ Chop $mat_wood$   $RMB$"), "", 3);
+		}
+
+		case 2115365646: // keg
+		{
+			SetHelp(blob, "help pickup", "", getTranslatedString("$keg$Pick up    $KEY_C$"), "", 3);
+			SetHelp(blob, "help activate", "knight", getTranslatedString("$keg$Light    $KEY_SPACE$"), getTranslatedString("$keg$Only KNIGHT can light keg"), 5);
+			SetHelp(blob, "help throw", "", getTranslatedString("$keg$THROW!    $KEY_SPACE$"), "", 3);
+		}
+
+		case -895937135: // bomb
+		{
+			SetHelp(blob, "help throw", "", getTranslatedString("$mat_bombs$THROW!    $KEY_SPACE$"), "", 3);
+		}
+
+		case 392075840: // crate
+		{
+			SetHelp(blob, "help pickup", "", getTranslatedString("$crate$Pick up    $KEY_C$"), "", 3);
+		}
+
+		case 1106789566: // workbench
+		{
+			SetHelp(blob, "help use", "", getTranslatedString("$workbench$    $KEY_TAP$$KEY_E$"), "", 4);
+		}
+
+		case 1898442385: // catapult
+		case -258437141: // ballista
+		{
+			SetHelp(blob, "help DRIVER movement", "", getTranslatedString("${VEHICLE}$Drive     $KEY_A$ $KEY_S$ $KEY_D$").replace("{VEHICLE}", blob.getName()), "", 3);
+			SetHelp(blob, "help GUNNER action", "", getTranslatedString("${VEHICLE}$FIRE     $KEY_HOLD$$LMB$").replace("{VEHICLE}", blob.getName()), "", 3);
+		}
+
+		case -1071691608: // mounted_bow
+		{
+			SetHelp(blob, "help GUNNER action", "", getTranslatedString("${VEHICLE}$FIRE     $LMB$").replace("{VEHICLE}", blob.getName()), "", 3);
+		}
+
+		case 1028682697: // food
+		{
+			SetHelp(blob, "help switch", "", getTranslatedString("$food$Take out food  $KEY_HOLD$$KEY_F$"), "", 3);
+		}
+
+		case -951587406: // boulder
+		{
+			SetHelp(blob, "help pickup", "", getTranslatedString("$boulder$ Pick up    $KEY_C$"));
+		}
+
+		case 954139509: // building
+		{
+			SetHelp(blob, "help use", "", getTranslatedString("$building$Construct    $KEY_E$"), "", 3);
+		}
+
+		case -1441575328: // tent
+		{
+			SetHelp( blob, "help use", "", "Change class $KEY_E$", "", 5 );
+		}
+
+		case -157922210: // archershop
+		case -1425345689: // boatshop
+		case 391074896: // knightshop
+		case -1716664852: // buildershop
+		case -1501035293: // vehicleshop
+		{
+			SetHelp(blob, "help use", "", getTranslatedString("$building$ Press $KEY_E$"), "", 3);
+		}
+
+		case -1413381533: // ctf_flag
+		{
+			SetHelp( blob, "help use", "", "$ctf_flag$ Bring enemy flag to our flag to capture it", "", 5 );
+		}
+
 	}
-	else if (name == "trap_block")
-	{
-		SetHelp(blob, "help show", "builder", getTranslatedString("$trap_block$ Opens on enemy"), "", 15);
-	}
-	else if (name == "spikes")
-	{
-		SetHelp(blob, "help show", "builder", getTranslatedString("$spikes$ Retracts on enemy if on stone $STONE$"), "", 20);
-	}
-	else if (name == "wooden_platform")
-	{
-		SetHelp(blob, "help rotate", "", getTranslatedString("$wooden_platform$  $Rotate$ Rotate    $KEY_SPACE$"), "", 3);
-	}
-	else if (name == "ladder")
-	{
-		SetHelp(blob, "help rotate", "", getTranslatedString("$ladder$  $Rotate$ Rotate    $KEY_SPACE$"), "", 3);
-	}
-	else if (name == "tdm_ruins")
-	{
-		SetHelp(blob, "help use", "", getTranslatedString("Change class    $KEY_E$"), "", 5);
-	}
-	else if (name == "lantern")
-	{
-		SetHelp(blob, "help activate", "", getTranslatedString("$lantern$ On/Off     $KEY_SPACE$"), "");
-		SetHelp(blob, "help pickup", "", getTranslatedString("$lantern$ Pick up    $KEY_C$"));
-	}
-	else if (name == "satchel")
-	{
-		SetHelp(blob, "help activate", "knight", getTranslatedString("$satchel$ Light     $KEY_SPACE$"), getTranslatedString("$satchel$ Only KNIGHT can light satchel"), 3);
-		SetHelp(blob, "help throw", "knight", getTranslatedString("$satchel$ THROW!    $KEY_SPACE$"), "", 3);
-	}
-	else if (name == "log")
-	{
-		SetHelp(blob, "help action2", "builder", getTranslatedString("$log$ Chop $mat_wood$   $RMB$"), "", 3);
-	}
-	else if (name == "keg")
-	{
-		SetHelp(blob, "help pickup", "", getTranslatedString("$keg$Pick up    $KEY_C$"), "", 3);
-		SetHelp(blob, "help activate", "knight", getTranslatedString("$keg$Light    $KEY_SPACE$"), getTranslatedString("$keg$Only KNIGHT can light keg"), 5);
-		SetHelp(blob, "help throw", "", getTranslatedString("$keg$THROW!    $KEY_SPACE$"), "", 3);
-	}
-	else if (name == "bomb")
-	{
-		SetHelp(blob, "help throw", "", getTranslatedString("$mat_bombs$THROW!    $KEY_SPACE$"), "", 3);
-	}
-	else if (name == "crate")
-	{
-		SetHelp(blob, "help pickup", "", getTranslatedString("$crate$Pick up    $KEY_C$"), "", 3);
-	}
-	else if (name == "workbench")
-	{
-		SetHelp(blob, "help use", "", getTranslatedString("$workbench$    $KEY_TAP$$KEY_E$"), "", 4);
-	}
-	else if (name == "catapult" || name == "ballista")
-	{
-		SetHelp(blob, "help DRIVER movement", "", getTranslatedString("${VEHICLE}$Drive     $KEY_A$ $KEY_S$ $KEY_D$").replace("{VEHICLE}", blob.getName()), "", 3);
-		SetHelp(blob, "help GUNNER action", "", getTranslatedString("${VEHICLE}$FIRE     $KEY_HOLD$$LMB$").replace("{VEHICLE}", blob.getName()), "", 3);
-	}
-	else if (name == "mounted_bow")
-	{
-		SetHelp(blob, "help GUNNER action", "", getTranslatedString("${VEHICLE}$FIRE     $LMB$").replace("{VEHICLE}", blob.getName()), "", 3);
-	}
-	else if (name == "food")
-	{
-		SetHelp(blob, "help switch", "", getTranslatedString("$food$Take out food  $KEY_HOLD$$KEY_F$"), "", 3);
-	}
-	else if (name == "boulder")
-	{
-		SetHelp(blob, "help pickup", "", getTranslatedString("$boulder$ Pick up    $KEY_C$"));
-	}
-	//else if (name == "tent")
-	//{
-	//	SetHelp( blob, "help use", "", "Change class    $KEY_E$", "", 5 );
-	//}
-	else if (name == "building")
-	{
-		SetHelp(blob, "help use", "", getTranslatedString("$building$Construct    $KEY_E$"), "", 3);
-	}
-	else if (name == "archershop" || name == "boatshop" || name == "knightshop" || name == "buildershop" || name == "vehicleshop")
-	{
-		SetHelp(blob, "help use", "", getTranslatedString("$building$Use    $KEY_E$"), "", 3);
-	}
-	//else if (name == "ctf_flag")
-	//{
-	//	SetHelp( blob, "help use", "", "$$ctf_flag$ Bring enemy flag to capture", "", 3 );
-	//}
 }
