@@ -38,20 +38,16 @@ void onTick(CSprite@ this)
 
 			stars.SetOffset(off);
 		}
+
+		if(!blob.hasTag("flashed") && blob.isMyPlayer())
+		{
+			blob.Tag("flashed");
+			SetScreenFlash(128, 230, 240, 254,blob.get_u8("knocked") / 20);
+		}
 	}
 	else
 	{
+		blob.Untag("flashed");
 		stars.SetVisible(false);
-	}
-}
-
-void onRender(CSprite@ this)
-{
-	CBlob@ blob = this.getBlob();
-	if (!blob.isMyPlayer()) return;
-
-	if (blob.hasTag("dazzled"))
-	{
-		SetScreenFlash(128, 230, 240, 255);
 	}
 }
