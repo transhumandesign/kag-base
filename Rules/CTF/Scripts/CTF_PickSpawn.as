@@ -24,14 +24,11 @@ void BuildRespawnMenu(CRules@ this, CPlayer@ player)
         if(isUnderRaid(oldrespawn))
         {
             LAST_PICK = 0;
-
         }
-
     }
 
 	if (teamNum != this.getSpectatorTeamNum())
 	{
-
 		if (!MENU_ALREADY)
 		{
 			MENU_ALREADY = true;
@@ -40,7 +37,6 @@ void BuildRespawnMenu(CRules@ this, CPlayer@ player)
 
 		CBlob@[] respawns;
 		PopulateSpawnList(@respawns, teamNum);
-
 		SortByPosition(@respawns, teamNum);
 
 		// if there are no posts just respawn
@@ -81,7 +77,6 @@ void BuildRespawnMenu(CRules@ this, CPlayer@ player)
                     {
                         button2.SetEnabled(false);
                         button2.SetHoverText(getTranslatedString("respawn is contested"));
-
                     }
 
 					if (LAST_PICK == respawn.getNetworkID())
@@ -119,6 +114,8 @@ void onTick(CRules@ this)
 		}
 	}*/
 
+	if (!isClient()) { return; }
+
 	CPlayer@ p = getLocalPlayer();
 
 	if (p is null || !p.isMyPlayer()) { return; }
@@ -131,11 +128,8 @@ void onTick(CRules@ this)
         {
             getHUD().ClearMenus(true);
             return;
-
         }
-
     }
-
 }
 
 //hook after the change has been decided
@@ -144,7 +138,6 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 	if (player !is null && player.isMyPlayer())  //please stop ;(
 	{
 		BuildRespawnMenu(this, player);
-
 	}
 }
 
@@ -166,7 +159,6 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 
 		MENU_ALREADY = false;
 	}
-
 }
 
 void ReadPickCmd(CRules@ this, CBitStream @params)
@@ -196,10 +188,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 	{
 		ReadPickCmd(this, params);
 	}
-	else if (cmd == this.getCommandID("pick default"))
-	{
-
-	}
+	/*else if (cmd == this.getCommandID("pick default"))*/
 }
 
 void SortByPosition(CBlob@[]@ spawns, const int teamNum)

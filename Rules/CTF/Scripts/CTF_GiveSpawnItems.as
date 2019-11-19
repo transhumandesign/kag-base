@@ -9,8 +9,6 @@ const u32 materials_wait_warmup = 40; //seconds between free mats
 //property
 const string SPAWN_ITEMS_TIMER = "CTF SpawnItems:";
 
-string base_name() { return "tent"; }
-
 bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity)
 {
 	CInventory@ inv = blob.getInventory();
@@ -43,40 +41,49 @@ bool GiveSpawnResources(CRules@ this, CBlob@ blob, CPlayer@ player, CTFPlayerInf
 {
 	bool ret = false;
 
-	if (blob.getName() == "builder")
-	{
-		if (this.isWarmup())
-		{
-			ret = SetMaterials(blob, "mat_wood", 300) || ret;
-			ret = SetMaterials(blob, "mat_stone", 100) || ret;
 
-		}
-		else
-		{
-			ret = SetMaterials(blob, "mat_wood", 100) || ret;
-			ret = SetMaterials(blob, "mat_stone", 30) || ret;
-		}
-
-		if (ret)
-		{
-			info.items_collected |= ItemFlag::Builder;
-		}
-	}
-	else if (blob.getName() == "archer")
+	switch(blob.getName().getHash()) // instead of getting the name and comparing, get hash once
 	{
-		ret = SetMaterials(blob, "mat_arrows", 30) || ret;
+		case -466287296: // builder
+		{
+			if (this.isWarmup())
+			{
+				ret = SetMaterials(blob, "mat_wood", 300) || ret;
+				ret = SetMaterials(blob, "mat_stone", 100) || ret;
+			}
+			else
+			{
+				ret = SetMaterials(blob, "mat_wood", 100) || ret;
+				ret = SetMaterials(blob, "mat_stone", 30) || ret;
+			}
 
-		if (ret)
-		{
-			info.items_collected |= ItemFlag::Archer;
+			if (ret)
+			{
+				info.items_collected |= ItemFlag::Builder;
+			}
 		}
-	}
-	else if (blob.getName() == "knight")
-	{
-		if (ret)
+		break;
+
+		case 871806850: // archer
 		{
-			info.items_collected |= ItemFlag::Knight;
+			ret = SetMaterials(blob, "mat_arrows", 30) || ret;
+
+			if (ret)
+			{
+				info.items_collected |= ItemFlag::Archer;
+			}
 		}
+		break;
+
+		case -541330116: // knight
+		{
+			if (ret)
+			{
+				info.items_collected |= ItemFlag::Knight;
+			}
+		}
+		break;
+
 	}
 
 	return ret;
@@ -85,7 +92,7 @@ bool GiveSpawnResources(CRules@ this, CBlob@ blob, CPlayer@ player, CTFPlayerInf
 //when the player is set, give materials if possible
 void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 {
-	if (!getNet().isServer())
+	if (!isServer())
 		return;
 
 	if (blob !is null && player !is null)
@@ -137,13 +144,30 @@ bool canGetSpawnmats(CRules@ this, CPlayer@ p, RulesCore@ core)
 		u32 flag = 0;
 
 		CBlob@ b = p.getBlob();
-		string name = b.getName();
-		if (name == "builder")
-			flag = ItemFlag::Builder;
-		else if (name == "knight")
-			flag = ItemFlag::Knight;
-		else if (name == "archer")
-			flag = ItemFlag::Archer;
+		if(b !is null)
+		{
+			switch(b.getName().getHash()) // instead of getting the name and comparing, get hash once
+			{
+				case -466287296: // builder
+				{
+					flag = ItemFlag::Builder;
+				}
+				break;
+
+				case 871806850: // archer
+				{
+					flag = ItemFlag::Archer;
+				}
+				break;
+
+				case -541330116: // knight
+				{
+					flag = ItemFlag::Archer;
+				}
+				break;
+
+			}
+		}
 
 		if (info.items_collected & flag == 0)
 		{
@@ -163,6 +187,7 @@ string getCTFTimerPropertyName(CPlayer@ p)
 s32 getCTFTimer(CRules@ this, CPlayer@ p)
 {
 	string property = getCTFTimerPropertyName(p);
+
 	if (this.exists(property))
 		return this.get_s32(property);
 	else
@@ -215,7 +240,7 @@ void onInit(CRules@ this)
 
 void onTick(CRules@ this)
 {
-	if (!getNet().isServer())
+	if (!isServer())
 		return;
 
 	s32 gametime = getGameTime();
@@ -230,7 +255,7 @@ void onTick(CRules@ this)
 	{
 
 		CBlob@[] spots;
-		getBlobsByName(base_name(), @spots);
+		getBlobsByName("tent", @spots);
 		getBlobsByName("buildershop", @spots);
 		getBlobsByName("knightshop", @spots);
 		getBlobsByName("archershop", @spots);

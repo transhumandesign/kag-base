@@ -13,7 +13,7 @@ void onTick(CRules@ this)
 	CMap@ map = getMap();
 	if (p !is null && p.isMod())
 	{
-		CControl@ c = getControls();
+		CControls@ c = getControls();
 		if (c is null) return;
 
 		if (c.isKeyJustPressed(KEY_KEY_X))

@@ -15,7 +15,8 @@ void onInit(CRules@ this)
 
 void ShowTeamMenu(CRules@ this)
 {
-	if (getLocalPlayer() is null)
+	CPlayer@ p = getLocalPlayer();
+	if (p is null)
 	{
 		return;
 	}
@@ -35,7 +36,7 @@ void ShowTeamMenu(CRules@ this)
 		for (int i = 0; i < this.getTeamsCount(); i++)
 		{
 			CBitStream params;
-			params.write_u16(getLocalPlayer().getNetworkID());
+			params.write_u16(p.getNetworkID());
 			params.write_u8(i);
 
 			if (i == 0)
@@ -48,7 +49,7 @@ void ShowTeamMenu(CRules@ this)
 				// spectator
 				{
 					CBitStream params;
-					params.write_u16(getLocalPlayer().getNetworkID());
+					params.write_u16(p.getNetworkID());
 					params.write_u8(this.getSpectatorTeamNum());
 					CGridButton@ button2 = menu.AddButton("$SPECTATOR$", getTranslatedString("Spectator"), this.getCommandID("pick spectator"), Vec2f(BUTTON_SIZE / 2, BUTTON_SIZE), params);
 				}
