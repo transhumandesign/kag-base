@@ -14,7 +14,7 @@ void onInit(CRules@ this)
 
 void onTick(CRules@ this)
 {
-	if (!getNet().isServer() || !this.isMatchRunning() || this.get_bool("no timer"))
+	if (!isServer() || !this.isMatchRunning() || this.get_bool("no timer"))
 	{
 		return;
 	}

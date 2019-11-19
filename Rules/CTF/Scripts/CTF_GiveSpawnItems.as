@@ -42,7 +42,7 @@ bool GiveSpawnResources(CRules@ this, CBlob@ blob, CPlayer@ player, CTFPlayerInf
 	bool ret = false;
 
 
-	switch(blob.getName().getHash()) // instead of getting the name and comparing, get hash once
+	switch (blob.getName().getHash()) // instead of getting the name and comparing, get hash once
 	{
 		case -466287296: // builder
 		{
@@ -146,7 +146,7 @@ bool canGetSpawnmats(CRules@ this, CPlayer@ p, RulesCore@ core)
 		CBlob@ b = p.getBlob();
 		if(b !is null)
 		{
-			switch(b.getName().getHash()) // instead of getting the name and comparing, get hash once
+			switch (b.getName().getHash()) // instead of getting the name and comparing, get hash once
 			{
 				case -466287296: // builder
 				{
