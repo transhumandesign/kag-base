@@ -13,9 +13,8 @@ void onTick(CRules@ this)
 	CMap@ map = getMap();
 	if (p !is null && p.isMod())
 	{
-		// delete blob
 		CControl@ c = getControls();
-		if(c is null) return;
+		if (c is null) return;
 
 		if (c.isKeyJustPressed(KEY_KEY_X))
 		{
@@ -31,6 +30,7 @@ void onTick(CRules@ this)
 				map.server_SetTile(pos, CMap::tile_empty);
 			}
 		}
+		
 		if (c.isKeyJustPressed(KEY_KEY_Z))
 		{
 			Vec2f pos = getBottomOfCursor(getControls().getMouseWorldPos());
