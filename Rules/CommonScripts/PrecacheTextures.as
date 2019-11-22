@@ -24,7 +24,11 @@ namespace _precache {
 		//capes
 		"archer_cape, ArcherCape, 32, 32",
 		"knight_cape, KnightCape, 32, 32",
-		"builder_cape, BuilderCape, 32, 32"
+		"builder_cape, BuilderCape, 32, 32",
+		//gold
+		"archer_gold, ArcherGold, 32, 32",
+		"knight_gold, KnightGold, 32, 32",
+		"builder_gold, BuilderGold, 32, 32"
 	};
 
 	void runner_textures()
