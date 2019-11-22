@@ -150,14 +150,14 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 				{
 					occBlob.setPosition(tunnel.getPosition());
 					occBlob.setVelocity(Vec2f_zero);
-					occBlob.getShape().PutOnGround();
+					//occBlob.getShape().PutOnGround();
 				}
 			}
 		}
 		// move caller
 		caller.setPosition(tunnel.getPosition());
 		caller.setVelocity(Vec2f_zero);
-		caller.getShape().PutOnGround();
+		//caller.getShape().PutOnGround();
 
 		if (caller.isMyPlayer())
 		{
