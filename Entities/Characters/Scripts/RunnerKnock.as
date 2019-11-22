@@ -174,3 +174,25 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 //  print("KNOCK!" + this.get_u8("knocked") + " dmg " + damage );
 	return damage; //damage not affected
 }
+
+void onHealthChange(CBlob@ this, f32 oldHealth)
+{
+	const f32 currentHealth = this.getHealth();
+	f32 temp = currentHealth - oldHealth;
+
+	while(temp >= 0) // if we've been healed, play a particle for each healed unit
+	{
+		const string particleName = "HealParticle"+(XORRandom(2)+1)+".png";
+		const Vec2f pos = this.getPosition() + getRandomVelocity(0, this.getRadius(), 360);
+		
+		CParticle@ p = ParticleAnimated(particleName, pos, Vec2f(0,0),  0.0f, 1.0f, 1+XORRandom(5), -0.1f, false);
+		if(p !is null)
+		{
+			p.diesoncollide = true;
+			p.fastcollision = true;
+			p.lighting = true; // required unless you want it so show up under ground
+		}
+
+		temp -= 0.125f; // now go down to prevent a loop
+	}
+}
