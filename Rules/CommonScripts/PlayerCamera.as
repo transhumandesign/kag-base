@@ -245,23 +245,31 @@ void onTick(CRules@ this)
 				CBlob@[] playerBlobs;
 				if (getBlobsByTag("player", @playerBlobs))
 				{
-					//max distance along x axis
-					SortBlobsByXPosition(playerBlobs);
-					float maxDistX = Maths::Abs(playerBlobs[0].getPosition().x - playerBlobs[playerBlobs.length - 1].getPosition().x);
-
-					//max distance along y axis
-					SortBlobsByYPosition(playerBlobs);
-					float maxDistY = Maths::Abs(playerBlobs[0].getPosition().y - playerBlobs[playerBlobs.length - 1].getPosition().y);
-
-					calculateZoomTarget(maxDistX, maxDistY);
-
-					//calculate mean position of all players
 					posTarget = Vec2f_zero;
+					Vec2f minPos = mapDim;
+					Vec2f maxPos = Vec2f_zero;
+
 					for (uint i = 0; i < playerBlobs.length; i++)
 					{
-						posTarget += playerBlobs[i].getInterpolatedPosition();
+						CBlob@ blob = playerBlobs[i];
+						Vec2f pos = blob.getPosition();
+
+						//max distance along each axis
+						if (pos.x > maxPos.x) maxPos.x = pos.x;
+						if (pos.y > maxPos.y) maxPos.y = pos.y;
+						if (pos.x < minPos.x) minPos.x = pos.x;
+						if (pos.y < minPos.y) minPos.y = pos.y;
+
+						//sum player positions
+						posTarget += pos;
 					}
+
+					//mean position of all players
 					posTarget /= playerBlobs.length;
+
+					//zoom target
+					Vec2f maxDist = maxPos - minPos;
+					calculateZoomTarget(maxDist.x, maxDist.y);
 				}
 				else //no player blobs
 				{
