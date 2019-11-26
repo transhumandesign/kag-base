@@ -116,26 +116,28 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 	if (rules.isWarmup())
 	{
 		gameStarted = false;
-
-		Vec2f pos = blob.getPosition();
-
-		bool isUnderground = checkUnderground(pos, map);
-		if (isUnderground)
+		
+		if (timer % getTicksASecond() * 3 == 0)
 		{
-			changeMusic(mixer, world_ambient_underground, 2.0f, 2.0f);
-			toggleAmbience(mixer, false, 1.0f);
-		}
-		else if (pos.y < map.tilemapheight * map.tilesize * 0.2f)
-		{
-			changeMusic(mixer, world_ambient_mountain, 2.0f, 2.0f);
-			toggleAmbience(mixer, false, 1.0f);
-		}
-		else
-		{
-			changeMusic(mixer, world_home, 2.0f, 2.0f);
-			toggleAmbience(mixer, true, 1.0f);
-		}
+			Vec2f pos = blob.getPosition();
 
+			bool isUnderground = checkUnderground(pos, map);
+			if (isUnderground)
+			{
+				changeMusic(mixer, world_ambient_underground, 2.0f, 2.0f);
+				toggleAmbience(mixer, false, 1.0f);
+			}
+			else if (pos.y < map.tilemapheight * map.tilesize * 0.2f)
+			{
+				changeMusic(mixer, world_ambient_mountain, 2.0f, 2.0f);
+				toggleAmbience(mixer, false, 1.0f);
+			}
+			else
+			{
+				changeMusic(mixer, world_home, 2.0f, 2.0f);
+				toggleAmbience(mixer, true, 1.0f);
+			}
+		}
 	}
 	else if (rules.isMatchRunning())
 	{
