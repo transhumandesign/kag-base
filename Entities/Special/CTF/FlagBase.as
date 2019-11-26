@@ -106,6 +106,7 @@ void onTick(CBlob@ this)
 		{
 			this.Untag("flag missing");
 		}
+		this.Sync("flag missing", true);
 	}
 }
 
