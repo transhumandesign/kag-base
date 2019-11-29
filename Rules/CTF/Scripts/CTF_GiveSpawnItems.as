@@ -125,8 +125,7 @@ bool canGetSpawnmats(CRules@ this, CPlayer@ p, RulesCore@ core)
 
 	CTFPlayerInfo@ info = cast < CTFPlayerInfo@ > (core.getInfoFromPlayer(p));
 
-	if (gametime > next_items ||		//timer expired
-	        gametime < next_items - materials_wait * getTicksASecond() * 4) //residual prop
+	if (gametime > next_items ||)		// timer expired
 	{
 		info.items_collected = 0; //reset available class items
 		return true;
@@ -200,7 +199,7 @@ void Reset(CRules@ this)
 {
 	//restart everyone's timers
 	for (uint i = 0; i < getPlayersCount(); ++i)
-		SetCTFTimer(this, getPlayer(i), materials_wait_warmup);//this used to be set to 0, but now its not
+		SetCTFTimer(this, getPlayer(i), 0);
 }
 
 void onRestart(CRules@ this)
