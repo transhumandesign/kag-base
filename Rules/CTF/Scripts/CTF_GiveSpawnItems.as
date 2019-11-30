@@ -125,7 +125,7 @@ bool canGetSpawnmats(CRules@ this, CPlayer@ p, RulesCore@ core)
 
 	CTFPlayerInfo@ info = cast < CTFPlayerInfo@ > (core.getInfoFromPlayer(p));
 
-	if (gametime > next_items ||)		// timer expired
+	if (gametime > next_items)		// timer expired
 	{
 		info.items_collected = 0; //reset available class items
 		return true;
