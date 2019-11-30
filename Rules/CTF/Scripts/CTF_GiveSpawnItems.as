@@ -276,11 +276,7 @@ void onRender(CRules@ this)
 	if (b !is null && this.exists(propname))
 	{
 		s32 next_items = this.get_s32(propname);
-		if (getGameTime() < next_items - materials_wait * getTicksASecond() * 2)
-		{
-			this.set_s32(propname, 0); //clear residue
-		}
-		else if (next_items > getGameTime())
+		if (next_items > getGameTime())
 		{
 			string action = (b.getName() == "builder" ? "Go Build" : "Go Fight");
 			if (this.isWarmup())
