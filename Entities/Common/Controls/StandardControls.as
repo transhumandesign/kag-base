@@ -323,7 +323,7 @@ void AdjustCamera(CBlob@ this, bool is_in_render)
 	CCamera@ camera = getCamera();
 	f32 zoom = camera.targetDistance;
 
-	f32 zoomSpeed = 0.1f;
+	f32 zoomSpeed = 0.05f;
 	if (is_in_render)
 	{
 		zoomSpeed *= getRenderApproximateCorrectionFactor();
@@ -335,8 +335,14 @@ void AdjustCamera(CBlob@ this, bool is_in_render)
 	f32 zoom_target = 1.0f;
 	switch (zoomLevel) {
 		case 0: zoom_target = 0.5f; break;
-		case 1: zoom_target = 1.0f; break;
-		case 2: zoom_target = 2.0f; break;
+		case 1: zoom_target = 0.625f; break;
+		case 2: zoom_target = 0.75f; break;
+		case 3: zoom_target = 0.875f; break;
+		case 4: zoom_target = 1.0f; break;
+		case 5: zoom_target = 1.125f; break;
+		case 6: zoom_target = 1.3125f; break;
+		case 7: zoom_target = 1.5f; break;
+		case 8: zoom_target = 2.0f; break;
 	}
 
 	if (zoom > zoom_target)
@@ -357,39 +363,17 @@ void ManageCamera(CBlob@ this)
 	CControls@ controls = this.getControls();
 
 	// mouse look & zoom
-	if ((getGameTime() - this.get_s32("tap_time") > 5) && controls !is null)
+	if ((getGameTime() - this.get_s32("tap_time") > 2) && controls !is null)
 	{
 		if (controls.isKeyJustPressed(controls.getActionKeyKey(AK_ZOOMOUT)))
 		{
-			if (zoomLevel == 2)
-			{
-				zoomLevel = 1;
-			}
-			else if (zoomLevel == 1)
-			{
-				zoomLevel = 0;
-			}
-			else if (zoomLevel == 3)
-			{
-				zoomLevel = 0;
-			}
+			zoomLevel = Maths::Max(0, zoomLevel - 1);
 
 			Tap(this);
 		}
-		else  if (controls.isKeyJustPressed(controls.getActionKeyKey(AK_ZOOMIN)))
+		else if (controls.isKeyJustPressed(controls.getActionKeyKey(AK_ZOOMIN)))
 		{
-			if (zoomLevel == 0)
-			{
-				zoomLevel = 3;
-			}
-			else if (zoomLevel == 3)
-			{
-				zoomLevel = 2;
-			}
-			else if (zoomLevel == 1)
-			{
-				zoomLevel = 2;
-			}
+			zoomLevel = Maths::Min(8, zoomLevel + 1);
 
 			Tap(this);
 		}
