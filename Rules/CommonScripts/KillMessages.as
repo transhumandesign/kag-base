@@ -12,10 +12,19 @@ class KillMessage
 {
 	string victim;
 	string victim_tag;
+	string victim_head;
+	int victim_head_index;
+	
 	string attacker;
 	string attacker_tag;
+	string attacker_head;
+	int attacker_head_index;
+
 	string helper;
 	string helper_tag;
+	string helper_head;
+	int helper_head_index;
+
 	int attackerteam;
 	int victimteam;
 	int helperteam;
@@ -28,12 +37,16 @@ class KillMessage
 	{
 		victim = _victim.getCharacterName();
 		victim_tag = _victim.getClantag();
+		victim_head = _victim.getBlob().get_string("head texture");
+		victim_head_index = _victim.getBlob().get_s32("head index");
 		victimteam = _victim.getTeamNum();
 
 		if (_attacker !is null)
 		{
 			attacker = _attacker.getCharacterName();
 			attacker_tag = _attacker.getClantag();
+			attacker_head = _attacker.getBlob().get_string("head texture");
+			attacker_head_index = _attacker.getBlob().get_s32("head index");
 			attackerteam = _attacker.getTeamNum();
 			//print("victimteam " + victimteam  + " " + (_victim.getBlob() !is null) + " attackerteam " + attackerteam + " " + (_attacker.getBlob() !is null));
 		}
@@ -41,6 +54,8 @@ class KillMessage
 		{
 			attacker = "";
 			attacker_tag = "";
+			attacker_head = "";
+			attacker_head_index = -1;
 			attackerteam = -1;
 		}
 
@@ -49,12 +64,16 @@ class KillMessage
 		{
 			helper = _helper.getCharacterName();
 			helper_tag = _helper.getClantag();
+			helper_head = _helper.getBlob().get_string("head texture");
+			helper_head_index = _helper.getBlob().get_s32("head index");
 			helperteam = _helper.getTeamNum();
 		}
 		else
 		{
 			helper = "";
 			helper_tag = "";
+			helper_head = "";
+			helper_head_index = -1;
 			helperteam = -1;
 		}
 
@@ -120,6 +139,11 @@ class KillFeed
 				ul.x -= attacker_tag_size.x;
 				col = getTeamColor(-1);
 				GUI::DrawText(message.attacker_tag, ul, col);
+				
+				// draw attacker head
+				ul.x -= 28;
+				ul.y -= 12;
+				GUI::DrawIcon(message.attacker_head, message.attacker_head_index, Vec2f(16, 16), ul, 1.0f, message.attackerteam);
 			}
 
 			if (message.helperteam != -1)
@@ -138,6 +162,11 @@ class KillFeed
 				ul.x -= helper_tag_size.x;
 				col = getTeamColor(-1);
 				GUI::DrawText(message.helper_tag, ul, col);
+				
+				// draw helper head
+				ul.x -= 28;
+				ul.y -= 12;
+				GUI::DrawIcon(message.helper_head, message.helper_head_index, Vec2f(16, 16), ul, 1.0f, message.helperteam);
 
 				//slight offset for kills with an assist
 				yOffset += 0.5f;
@@ -188,7 +217,7 @@ class KillFeed
 			if (hitterIcon != "")
 			{
 				Vec2f dim(getScreenWidth() - max_username_size.x - max_clantag_size.x - (single_space_size.x*2) - 32, 0);
-				ul.Set(dim.x, ((message_step + yOffset + assists) * 16) - 8);
+				ul.Set(dim.x + 4, ((message_step + yOffset + assists) * 16) - 8);
 				GUI::DrawIconByName(hitterIcon, ul);
 			}
 
@@ -209,6 +238,11 @@ class KillFeed
 				ul.Set(dim.x + victim_tag_size.x, (message_step + yOffset + assists) * 16);
 				col = getTeamColor(message.victimteam);
 				GUI::DrawText(message.victim, ul, col);
+
+				// draw victim head
+				ul.x += victim_name_size.x;
+				ul.y -= 12;
+				GUI::DrawIcon(message.victim_head, message.victim_head_index, Vec2f(16, 16), ul, 1.0f, message.victimteam);
 			}
 
 			//account for the extra height from assists
