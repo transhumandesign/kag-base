@@ -2,6 +2,7 @@
 
 #define CLIENT_ONLY
 
+const string[] classList = {"knight", "archer", "builder"};
 const string[] blobList = {"knight", "archer", "builder", "ballista", "tunnel", "keg"};
 
 enum GameMusicTag
@@ -147,7 +148,7 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 		}
 
 		gameStarted = true;
-		if (timer % getTicksASecond() * 3 == 0)
+		if (timer % getTicksASecond() * (mixer.isPlaying(world_battle) ? 5 : 2) == 0)
 		{
 			Vec2f pos = blob.getPosition();
 
@@ -215,10 +216,10 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 						if (blobList.find(b.getConfig()) >= 0)
 						{
 
-							if (b.getConfig() == "keg" && !b.hasTag("exploding"))
+							if (b.getConfig() == "keg" && !b.hasTag("exploding")) // only exploding kegs
 								continue;
 
-							if (b.getConfig() != "keg" && b.getTeamNum() == blob.getTeamNum())
+							if (classList.find(b.getConfig() && b.hasTag("dead")) // skip corpses
 								continue;
 
 							chosen = world_battle;
