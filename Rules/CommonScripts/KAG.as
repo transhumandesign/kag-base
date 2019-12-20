@@ -26,6 +26,9 @@ void onInit(CRules@ this)
 	driver.AddShader("hq2x", 1.0f);
 	driver.SetShader("hq2x", true);
 
+	//reset var if you came from another gamemode that edits it
+	SetGridMenusSize(24,2.0f,32);
+
 	//also restart stuff
 	onRestart(this);
 }
