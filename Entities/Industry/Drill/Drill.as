@@ -76,7 +76,7 @@ void onInit(CBlob@ this)
 bool canBePutInInventory( CBlob@ this, CBlob@ inventoryBlob )
 {
 	u8 heat = this.get_u8(heat_prop); 
-	if(heat > 0) this.set_u32("time_enter",getGameTime()); // set time we enter the invo
+	if (heat > 0) this.set_u32("time_enter",getGameTime()); // set time we enter the invo
 
 	return true;
 }
@@ -84,16 +84,16 @@ bool canBePutInInventory( CBlob@ this, CBlob@ inventoryBlob )
 void onThisRemoveFromInventory( CBlob@ this, CBlob@ inventoryBlob )
 {
 	u8 heat = this.get_u8(heat_prop);
-	if(heat > 0) // do we need to run this?
+	if (heat > 0) // do we need to run this?
 	{
 		u32 gameTimeCache = getGameTime(); // so we dont need to keep calling it
 		u32 dif = this.get_u32("time_enter"); // grab the temp time, better then doing difference since we might underflow
 
-		while(dif < gameTimeCache)
+		while (dif < gameTimeCache)
 		{ 
 			dif += heat_cooldown_time; // add so we can beat our condition
 			heat--; 
-			if(heat == 0) break; // if we reach the limit, stop running
+			if (heat == 0) break; // if we reach the limit, stop running
 		}
 
 		this.set_u8(heat_prop, heat);
@@ -266,18 +266,13 @@ void onTick(CBlob@ this)
 							if (b !is null) // blob
 							{
 								// blob ignore list, this stops the drill from overheating f a s t
-								// or blobs to increase damage to
-								int nhash = b.getName().getHash();
-								switch(nhash)
-								{
-									case 575725963:   // mat_stone
-									case -282477713:  // mat_wood
-									case -1370030172: // mat_gold
-									{
-										continue;     // we dont want to damage them
-									}
-								}
+								// or blobs to increase damage to (for the future)
+								string name = b.getName();
 
+								if (name == "mat_stone" || name == "mat_wood" || name == "mat_gold")
+								{
+									continue; // carry on onto the next loop, dont waste time & heat on this
+								}
 
 								//detect
 								const bool is_ground = b.hasTag("blocks sword") && !b.isAttached() && b.isCollidable();
@@ -293,7 +288,7 @@ void onTick(CBlob@ this)
 								}
 								
 								//if hot enough, increase damage
-								if(int(heat) > heat_max * 0.7f)
+								if (int(heat) > heat_max * 0.7f)
 								{
 									attack_dam += 0.5f;
 								}
@@ -326,7 +321,7 @@ void onTick(CBlob@ this)
 
 										map.server_DestroyTile(hi.hitpos, 1.0f, this);
 
-										if(map.isTileCastle(tile) || map.isTileWood(tile) || map.isTileGold(tile))
+										if (map.isTileCastle(tile) || map.isTileWood(tile) || map.isTileGold(tile))
 										{
 											Material::fromTile(holder, tile, 1.0f);
 										}
