@@ -63,11 +63,41 @@ void onInit(CBlob@ this)
 	this.Tag("place45 perp");
 	this.set_u8(heat_prop, 0);
 	this.set_u16("showHeatTo", 0);
+	this.set_u16("harvestWoodDoorCap", 4);
+	this.set_u16("harvestStoneDoorCap",4);
+	this.set_u16("harvestPlatformCap", 2);
 
 	AddIconToken("$opaque_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 0);
 	AddIconToken("$transparent_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 1);
 
 	this.set_u32(last_drill_prop, 0);
+}
+
+bool canBePutInInventory( CBlob@ this, CBlob@ inventoryBlob )
+{
+	u8 heat = this.get_u8(heat_prop); 
+	if(heat > 0) this.set_u32("time_enter",getGameTime()); // set time we enter the invo
+
+	return true;
+}
+
+void onThisRemoveFromInventory( CBlob@ this, CBlob@ inventoryBlob )
+{
+	u8 heat = this.get_u8(heat_prop);
+	if(heat > 0) // do we need to run this?
+	{
+		u32 gameTimeCache = getGameTime(); // so we dont need to keep calling it
+		u32 dif = this.get_u32("time_enter"); // grab the temp time, better then doing difference since we might underflow
+
+		while(dif < gameTimeCache)
+		{ 
+			dif += heat_cooldown_time; // add so we can beat our condition
+			heat--; 
+			if(heat == 0) break; // if we reach the limit, stop running
+		}
+
+		this.set_u8(heat_prop, heat);
+	}
 }
 
 
@@ -273,7 +303,7 @@ void onTick(CBlob@ this)
 								{
 									this.server_Hit(b, hi.hitpos, attackVel, attack_dam, Hitters::drill);
 
-									Material::fromBlob(holder, b, attack_dam * 0.75f);
+									Material::fromBlob(holder, hi.blob, attack_dam, this);
 								}
 
 								hitsomething = true;
@@ -291,11 +321,20 @@ void onTick(CBlob@ this)
 									for (uint i = 0; i < 2; i++)
 									{
 										//tile destroyed last hit
-										if (!map.isTileSolid(map.getTile(hi.hitpos)))
-											break;
+										
+										if (!map.isTileSolid(map.getTile(hi.tileOffset))){ break; }
 
 										map.server_DestroyTile(hi.hitpos, 1.0f, this);
-										Material::fromTile(holder, tile, 0.75f);
+
+										if(map.isTileCastle(tile) || map.isTileWood(tile) || map.isTileGold(tile))
+										{
+											Material::fromTile(holder, tile, 1.0f);
+										}
+										else
+										{
+											Material::fromTile(holder, tile, 0.75f);
+										}
+
 									}
 
 								}
