@@ -1,9 +1,7 @@
 // Christmas.as
 //
-//TODO: re-apply new holiday sprites when holiday is active 
+//TODO: re-apply new holiday sprites when holiday is active
 //		(check git history around xmas 2018 for holiday versions)
-
-#include "TreeCommon.as";
 
 const int present_interval = 30 * 60 * 5; // 5 minutes
 
@@ -35,7 +33,6 @@ void onTick(CRules@ this)
 	if (!getNet().isServer() || this.isWarmup() || !(this.gamemode_name == "CTF" || this.gamemode_name == "TTH"))
 		return;
 
-	
 	if (!this.exists("present timer"))
 	{
 		return;
@@ -57,15 +54,7 @@ void onTick(CRules@ this)
 
 			for (uint i = 0; i < trees.length; i++)
 			{
-				CBlob@ current_tree = trees[i];
-				if (current_tree is null) {continue;}
-
-				TreeVars@ data;
-				trees[i].get("TreeVars", @data);
-
-				if (data is null) {continue;}
-
-				if (data.height >= 5)
+				if (trees[i].get_u8("height") >= 5)
 				{
 					// sort trees based on position..
 					if (trees[i].getPosition().x < mapCenter)
