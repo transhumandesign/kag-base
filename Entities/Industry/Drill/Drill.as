@@ -430,11 +430,15 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	CPlayer@ player = attached.getPlayer();
 	if (player !is null)
 		this.set_u16("showHeatTo", player.getNetworkID());
+
+	this.getShape().server_SetActive(false); // stops sinking when its attached
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 {
 	this.set_u16("showHeatTo", 0);
+
+	this.getShape().server_SetActive(true);
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ blob)
@@ -474,7 +478,7 @@ void onRender(CSprite@ this)
 		u8 heat = blob.get_u8(heat_prop);
 		f32 percentage = Maths::Min(1.0, f32(heat) / f32(heat_max));
 
-		Vec2f pos = blob.getScreenPos() + Vec2f(-22, 16);
+		Vec2f pos = getDriver().getScreenPosFromWorldPos(holderBlob.getInterpolatedPosition() + (blob.getPosition() - holderBlob.getPosition())) + Vec2f(-22, 16);
 		Vec2f dimension = Vec2f(42, 4);
 		Vec2f bar = Vec2f(pos.x + (dimension.x * percentage), pos.y + dimension.y);
 
