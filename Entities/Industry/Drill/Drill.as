@@ -58,9 +58,9 @@ void onInit(CBlob@ this)
 	}*/
 
 	this.set_u32("hittime", 0);
-	this.Tag("place45");
-	this.set_s8("place45 distance", 1);
-	this.Tag("place45 perp");
+	//this.Tag("place45");
+	//this.set_s8("place45 distance", 1);
+	//this.Tag("place45 perp");
 	this.set_u8(heat_prop, 0);
 	this.set_u16("showHeatTo", 0);
 	this.set_u16("harvestWoodDoorCap", 4);
@@ -182,13 +182,14 @@ void onTick(CBlob@ this)
 
 		if (holder is null) return;
 
+		AimAtMouse(this, holder); // aim at our mouse pos
+
+
 		// cool faster if holder is moving
 		if (heat > 0 && holder.getShape().vellen > 0.01f && getGameTime() % 3 == 0)
 		{
 			heat--;
 		}
-
-		this.getShape().SetRotationsAllowed(false);
 
 		if (int(heat) >= heat_max - (heat_add * 1.5))
 		{
@@ -286,16 +287,20 @@ void onTick(CBlob@ this)
 								{
 									continue;
 								}
-								
-								//if hot enough, increase damage
-								if (int(heat) > heat_max * 0.7f)
-								{
-									attack_dam += 0.5f;
-								}
 
 
 								if (isServer())
 								{
+									if (int(heat) > heat_max * 0.7f) // are we at high heat? more damamge!
+									{
+										attack_dam += 0.5f;
+									}
+
+									if (b.hasTag("shielded")) // are they shielding? reduce damage!
+									{
+										attack_dam /= 2;
+									}
+
 									this.server_Hit(b, hi.hitpos, attackVel, attack_dam, Hitters::drill);
 
 									Material::fromBlob(holder, hi.blob, attack_dam, this);
@@ -398,7 +403,6 @@ void onTick(CBlob@ this)
 	}
 	else
 	{
-		this.getShape().SetRotationsAllowed(true);
 		this.set_bool(buzz_prop, false);
 		if (heat <= 0)
 		{
@@ -430,11 +434,25 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	CPlayer@ player = attached.getPlayer();
 	if (player !is null)
 		this.set_u16("showHeatTo", player.getNetworkID());
+
+	CShape@ shape = this.getShape();
+	if (shape !is null)
+	{
+		shape.server_SetActive(false); // stops sinking when its attached
+		shape.SetRotationsAllowed(false); // stops rotation
+	}
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 {
 	this.set_u16("showHeatTo", 0);
+
+	CShape@ shape = this.getShape();
+	if (shape !is null)
+	{
+		shape.server_SetActive(true);
+		shape.SetRotationsAllowed(true);
+	}
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ blob)
@@ -474,7 +492,9 @@ void onRender(CSprite@ this)
 		u8 heat = blob.get_u8(heat_prop);
 		f32 percentage = Maths::Min(1.0, f32(heat) / f32(heat_max));
 
-		Vec2f pos = blob.getScreenPos() + Vec2f(-22, 16);
+		//Vec2f pos = blob.getScreenPos() + Vec2f(-22, 16);
+
+		Vec2f pos = holderBlob.getInterpolatedScreenPos() + (blob.getScreenPos() - holderBlob.getScreenPos()) + Vec2f(-22, 16);
 		Vec2f dimension = Vec2f(42, 4);
 		Vec2f bar = Vec2f(pos.x + (dimension.x * percentage), pos.y + dimension.y);
 
@@ -517,5 +537,30 @@ void makeSteamPuff(CBlob@ this, const f32 velocity = 1.0f, const int smallpartic
 		f32 randomness = (XORRandom(32) + 32) * 0.015625f * 0.5f + 0.75f;
 		Vec2f vel = getRandomVelocity(-90, velocity * randomness, 360.0f);
 		makeSteamParticle(this, vel);
+	}
+}
+
+void AimAtMouse(CBlob@ this, CBlob@ holder)
+{
+	// code used from BlobPlacement.as, just edited to use mouse pos instead of 45 degree angle
+	Vec2f aimpos = holder.getAimPos();
+	Vec2f pos = this.getPosition();
+	Vec2f aim_vec = (pos - aimpos);
+	aim_vec.Normalize();
+
+	f32 mouseAngle = aim_vec.getAngleDegrees();
+
+	if (!this.isFacingLeft()) mouseAngle += 180;
+
+	this.setAngleDegrees(-mouseAngle);
+
+	AttachmentPoint@ hands = this.getAttachments().getAttachmentPointByName("PICKUP");
+
+	aim_vec *= 1.0f;
+
+	if (hands !is null)
+	{
+		hands.offset.x = 0 + (aim_vec.x * 2 * (this.isFacingLeft() ? 1.0f : -1.0f)); // if blob config has offset other than 0,0 there is a desync on client, dont know why
+		hands.offset.y = -(aim_vec.y * (1.0f < 0 ? 1.0f : 1.0f));
 	}
 }
