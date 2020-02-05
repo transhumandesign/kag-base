@@ -4,6 +4,7 @@
 #include "BuilderHittable.as";
 #include "ParticleSparks.as";
 #include "MaterialCommon.as";
+#include "ShieldCommon.as";
 
 const f32 speed_thresh = 2.4f;
 const f32 speed_hard_thresh = 2.6f;
@@ -176,7 +177,6 @@ void onTick(CBlob@ this)
 	sprite.SetEmitSoundPaused(true);
 	if (this.isAttached())
 	{
-		this.getCurrentScript().runFlags &= ~(Script::tick_not_sleeping);
 		AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 		CBlob@ holder = point.getOccupied();
 
@@ -296,7 +296,7 @@ void onTick(CBlob@ this)
 										attack_dam += 0.5f;
 									}
 
-									if (b.hasTag("shielded")) // are they shielding? reduce damage!
+									if (b.hasTag("shielded") && blockAttack(b, attackVel, 0.0f)) // are they shielding? reduce damage!
 									{
 										attack_dam /= 2;
 									}
@@ -439,7 +439,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	if (shape !is null)
 	{
 		shape.server_SetActive(false); // stops sinking when its attached
-		shape.SetRotationsAllowed(false); // stops rotation
+		shape.SetRotationsAllowed(true); // stops rotation
 	}
 }
 
