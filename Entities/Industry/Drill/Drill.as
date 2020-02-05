@@ -553,14 +553,4 @@ void AimAtMouse(CBlob@ this, CBlob@ holder)
 	if (!this.isFacingLeft()) mouseAngle += 180;
 
 	this.setAngleDegrees(-mouseAngle);
-
-	AttachmentPoint@ hands = this.getAttachments().getAttachmentPointByName("PICKUP");
-
-	aim_vec *= 1.0f;
-
-	if (hands !is null)
-	{
-		hands.offset.x = 0 + (aim_vec.x * 2 * (this.isFacingLeft() ? 1.0f : -1.0f)); // if blob config has offset other than 0,0 there is a desync on client, dont know why
-		hands.offset.y = -(aim_vec.y * (1.0f < 0 ? 1.0f : 1.0f));
-	}
 }
