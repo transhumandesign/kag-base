@@ -552,5 +552,6 @@ void AimAtMouse(CBlob@ this, CBlob@ holder)
 
 	if (!this.isFacingLeft()) mouseAngle += 180;
 
-	this.setAngleDegrees(-mouseAngle);
+	//this.setAngleDegrees(-mouseAngle); // weirdly locks it self to 90/260 degrees if mouse goes to a certain angle
+	this.getShape().SetAngleDegrees(-mouseAngle);
 }
