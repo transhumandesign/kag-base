@@ -102,7 +102,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 			{
 				killer.server_setCoins(killer.getCoins() + coinsOnKillAdd);
 			}
-			else if (killer.getTeamNum() == victim.getTeamNum())
+			else if (killer !is victim && killer.getTeamNum() == victim.getTeamNum())
 			{
 				killer.server_setCoins(killer.getCoins() - coinsOnTKLose);
 			}

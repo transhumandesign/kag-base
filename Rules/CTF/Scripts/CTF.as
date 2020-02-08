@@ -14,6 +14,7 @@
 void Config(CTFCore@ this)
 {
 	string configstr = "Rules/CTF/ctf_vars.cfg";
+
 	if (getRules().exists("ctfconfig"))
 	{
 		configstr = getRules().get_string("ctfconfig");
