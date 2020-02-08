@@ -259,7 +259,8 @@ void onTick(CBlob@ this)
 						{
 							CBlob@ blob = b[nearblob_step];
 
-							if (blob is carryBlob || blob.hasTag("player")) continue;
+							string bname = blob.getName();
+							if (blob is carryBlob || blob.hasTag("player") || bname == "bush" || bname == "flowers" || bname == "log") continue;
 
 							overlapped = (blob.getPosition() - ontilepos).LengthSquared() < tsqr;
 						}
