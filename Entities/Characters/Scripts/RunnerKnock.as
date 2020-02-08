@@ -123,12 +123,20 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			defended = false;
 		}
 
-		if (customData == Hitters::water_stun && !defended
+		if (customData == Hitters::water_stun
 			|| customData == Hitters::water_stun_force)
 		{
 			if (has_sponge)
 			{
-				time = 5;
+				if(customData == Hitters::water_stun_force)
+				{
+					time = 22;
+				}
+				else
+				{
+					time = 5;
+
+				}
 				wet_sponge = true;
 			}
 			else
@@ -189,7 +197,7 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 	{
 		const string particleName = "HealParticle"+(XORRandom(2)+1)+".png";
 		const Vec2f pos = this.getPosition() + getRandomVelocity(0, this.getRadius(), XORRandom(360));
-		
+
 		CParticle@ p = ParticleAnimated(particleName, pos, Vec2f(0,0),  0.0f, 1.0f, 1+XORRandom(5), -0.1f, false);
 		if (p !is null)
 		{

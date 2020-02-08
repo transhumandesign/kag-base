@@ -78,7 +78,7 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 				}
 				else if (this.getName() == "waterbomb") //stun player
 				{
-					this.server_Hit(doomed, pos, Vec2f(), 0.0f, Hitters::water_stun, true);
+					this.server_Hit(doomed, pos, Vec2f(), 0.0f, Hitters::water_stun_force, true);
 				}
 			}
 		}
