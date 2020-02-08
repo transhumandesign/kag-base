@@ -259,7 +259,7 @@ void onTick(CBlob@ this)
 						{
 							CBlob@ blob = b[nearblob_step];
 
-							if (blob is carryBlob || blob is this) continue;
+							if (blob is carryBlob || blob.hasTag("player")) continue;
 
 							overlapped = (blob.getPosition() - ontilepos).LengthSquared() < tsqr;
 						}
