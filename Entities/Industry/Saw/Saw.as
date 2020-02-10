@@ -108,7 +108,7 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 				blob.Tag('custom quantity');
 				blob.Init();
 
-				blob.setPosition(this.getPosition() + Vec2f(0, 12));
+				blob.setPosition(this.getPosition());
 				blob.setVelocity(Vec2f(0, -4.0f));
 				blob.server_SetQuantity(50);
 			}
