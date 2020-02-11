@@ -23,7 +23,7 @@ void Reset(CRules@ this)
 	}
 
 	helptime = 0;
-	setCinematicEnabled(isCinematicEnabled());
+	SetTimeToCinematic();
 	@currentTarget = null;
 	switchTarget = 0;
 }
@@ -35,6 +35,7 @@ void onRestart(CRules@ this)
 
 void onInit(CRules@ this)
 {
+	LoadCinematicConfig(this);
 	Reset(this);
 }
 
@@ -60,7 +61,7 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 	{
 		spectatorTeam = true;
 		camera.setTarget(null);
-		setCinematicEnabled(isCinematicEnabled());
+		SetTimeToCinematic();
 		if (playerBlob !is null)
 		{
 			playerBlob.ClearButtons();
@@ -98,7 +99,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 				deathLock = victimBlob.getPosition();
 			}
 			deathTime = getGameTime() + 2 * getTicksASecond();
-			setCinematicEnabled(isCinematicEnabled());
+			SetTimeToCinematic();
 		}
 		else
 		{
@@ -116,7 +117,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 			else
 			{
 				camera.setTarget(null);
-				setCinematicEnabled(isCinematicEnabled());
+				SetTimeToCinematic();
 
 			}
 			deathTime = getGameTime() + 2 * getTicksASecond();
@@ -221,15 +222,10 @@ void onTick(CRules@ this)
 		if (getGameTime() == 1)
 		{
 			//initially position camera to view entire map
-			CCamera@ camera = getCamera();
-			pos = mapDim / 2.0f;
-			camera.setPosition(pos);
-			float zoomW = calculateZoomLevelW(mapDim.x);
-			float zoomH = calculateZoomLevelH(mapDim.y);
-			camera.targetDistance = Maths::Min(zoomW, zoomH);
+			ViewEntireMap();
 		}
 
-		if (this.isMatchRunning() && !this.isWarmup() && !this.isGameOver())
+		if (this.isMatchRunning())
 		{
 			if (getGameTime() % CINEMATIC_UPDATE_INTERVAL == 0)
 			{
@@ -255,10 +251,10 @@ void onTick(CRules@ this)
 						Vec2f pos = blob.getPosition();
 
 						//max distance along each axis
-						if (pos.x > maxPos.x) maxPos.x = pos.x;
-						if (pos.y > maxPos.y) maxPos.y = pos.y;
-						if (pos.x < minPos.x) minPos.x = pos.x;
-						if (pos.y < minPos.y) minPos.y = pos.y;
+						maxPos.x = Maths::Max(maxPos.x, pos.x);
+						maxPos.y = Maths::Max(maxPos.y, pos.y);
+						minPos.x = Maths::Min(minPos.x, pos.x);
+						minPos.y = Maths::Min(minPos.y, pos.y);
 
 						//sum player positions
 						posTarget += pos;

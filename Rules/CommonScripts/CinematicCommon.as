@@ -15,23 +15,20 @@ enum ComparisonType
 	y_position
 }
 
-float calculateZoomLevelH(uint height)
-{
-	return 360.0f / Maths::Max(height, 1.0f);
-}
-
-float calculateZoomLevelW(uint width)
+Vec2f calculateZoomLevel(float width, float height)
 {
 	Driver@ driver = getDriver();
 	float ratio = float(driver.getScreenHeight()) / float(driver.getScreenWidth());
-	return calculateZoomLevelH(width * ratio);
+	return Vec2f(
+		360.0f / Maths::Max(width * ratio, 1.0f),
+		360.0f / Maths::Max(height, 1.0f)
+	);
 }
 
-void calculateZoomTarget(float distX, float distH)
+void calculateZoomTarget(float distX, float distY)
 {
-	float zoomW = calculateZoomLevelW(distX * 1.8f);
-	float zoomH = calculateZoomLevelH(distH * 1.8f);
-	zoomTarget = Maths::Min(zoomW, zoomH);
+	Vec2f zoomLevel = calculateZoomLevel(distX * 1.8f, distY * 1.8f);
+	zoomTarget = Maths::Min(zoomLevel.x, zoomLevel.y);
 	zoomTarget = Maths::Clamp(zoomTarget, CINEMATIC_FURTHEST_ZOOM, CINEMATIC_CLOSEST_ZOOM);
 }
 
@@ -256,13 +253,12 @@ void ViewEntireMap()
 {
 	Vec2f mapDim = getMap().getMapDimensions();
 	posTarget = mapDim / 2.0f;
-	float zoomW = calculateZoomLevelW(mapDim.x);
-	float zoomH = calculateZoomLevelH(mapDim.y);
-	zoomTarget = Maths::Min(zoomW, zoomH);
+	Vec2f zoomLevel = calculateZoomLevel(mapDim.x, mapDim.y);
+	zoomTarget = Maths::Min(zoomLevel.x, zoomLevel.y);
 	zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f);
 }
 
-ConfigFile@ openCinematicConfig()
+void LoadCinematicConfig(CRules@ this)
 {
 	ConfigFile cfg = ConfigFile();
 	if (!cfg.loadFile("../Cache/cinematic_prefs.cfg") || !cfg.exists("cinematic_enabled"))
@@ -271,21 +267,29 @@ ConfigFile@ openCinematicConfig()
 		cfg.saveFile("cinematic_prefs.cfg");
 	}
 
-	return cfg;
+	this.set("cinematic_cfg", cfg);
 }
 
 void setCinematicEnabled(bool enabled)
 {
-	ConfigFile cfg = openCinematicConfig();
+	ConfigFile@ cfg;
+	getRules().get("cinematic_cfg", @cfg);
 	cfg.add_bool("cinematic_enabled", enabled);
 	cfg.saveFile("cinematic_prefs.cfg");
 
-	timeToCinematic = enabled ? 0.0f : AUTO_CINEMATIC_TIME;
+	SetTimeToCinematic();
+}
+
+void SetTimeToCinematic()
+{
+	timeToCinematic = isCinematicEnabled() ? 0.0f : AUTO_CINEMATIC_TIME;
 }
 
 bool isCinematicEnabled()
 {
-	ConfigFile cfg = openCinematicConfig();
+	ConfigFile cfg;
+	getRules().get("cinematic_cfg", cfg);
+	print("isCinematicEnabled: "+cfg.read_bool("cinematic_enabled"));
 	return cfg.read_bool("cinematic_enabled");
 }
 
