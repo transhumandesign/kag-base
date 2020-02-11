@@ -19,6 +19,7 @@ void onInit(CBlob@ this)
 	                     u8(CBlob::map_collide_sides));
 
 	this.set_u16(return_prop, 0);
+	this.set_u16("max return time", return_time); //for normalizing return time
 
 	this.Tag("medium weight"); //slow carrier a little
 
