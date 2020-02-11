@@ -289,7 +289,6 @@ bool isCinematicEnabled()
 {
 	ConfigFile cfg;
 	getRules().get("cinematic_cfg", cfg);
-	print("isCinematicEnabled: "+cfg.read_bool("cinematic_enabled"));
 	return cfg.read_bool("cinematic_enabled");
 }
 
