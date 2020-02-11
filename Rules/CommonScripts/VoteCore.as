@@ -14,6 +14,9 @@ Vec2f getTopLeft()
 
 void onRender(CRules@ this)
 {
+	if (g_videorecording)
+		return;
+
 	if (!Rules_AlreadyHasVote(this)) return;
 
 	VoteObject@ vote = Rules_getVote(this);

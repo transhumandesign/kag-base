@@ -1,6 +1,7 @@
 // Saw logic
 
 #include "Hitters.as"
+#include "GenericButtonCommon.as"
 
 const string toggle_id = "toggle_power";
 const string sawteammate_id = "sawteammate";
@@ -29,6 +30,8 @@ bool getSawOn(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (caller.getTeamNum() != this.getTeamNum() || this.getDistanceTo(caller) > 16) return;
 
 	string desc = getTranslatedString("Turn Saw " + (getSawOn(this) ? "Off" : "On"));
@@ -105,7 +108,7 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 				blob.Tag('custom quantity');
 				blob.Init();
 
-				blob.setPosition(this.getPosition() + Vec2f(0, 12));
+				blob.setPosition(this.getPosition());
 				blob.setVelocity(Vec2f(0, -4.0f));
 				blob.server_SetQuantity(50);
 			}

@@ -28,19 +28,19 @@
 bool CreatePaletteSwappedTexture(ImageData@ input, string output_name, ImageData@ palette, int palette_index)
 {
 	//not needed on server or something went wrong with getting imagedata
-	if(!getNet().isClient() || input is null || palette is null)
+	if (!getNet().isClient() || input is null || palette is null)
 	{
 		return false;
 	}
 
-	if(Texture::exists(output_name))
+	if (Texture::exists(output_name))
 		return false;
 
-	if(!Texture::createFromData(output_name, input))
+	if (!Texture::createFromData(output_name, input))
 		return false;
 
 	//done, no colouring required
-	if(palette_index == 0)
+	if (palette_index == 0)
 		return true;
 
 	//read out the relevant palette colours
@@ -55,7 +55,7 @@ bool CreatePaletteSwappedTexture(ImageData@ input, string output_name, ImageData
 	//get the existing data
 	ImageData@ edit = Texture::data(output_name);
 
-	if(edit is null)
+	if (edit is null)
 	{
 		Texture::destroy(output_name);
 		return false;
@@ -64,7 +64,7 @@ bool CreatePaletteSwappedTexture(ImageData@ input, string output_name, ImageData
 	//do the remap
 	edit.remap(in_colours, out_colours, 1, true, true);
 
-	if(!Texture::update(output_name, edit))
+	if (!Texture::update(output_name, edit))
 	{
 		Texture::destroy(output_name);
 		return false;
@@ -88,7 +88,7 @@ string PaletteSwapTexture(string in_tex, string palette_filename, int palette_in
 {
 	//we make an extra copy - it's not great but these files are pretty small and widely reused
 	string pal_name = "palette_"+palette_filename;
-	if(!Texture::exists(pal_name))
+	if (!Texture::exists(pal_name))
 	{
 		Texture::createFromFile(pal_name, palette_filename);
 	}
@@ -110,9 +110,9 @@ string PaletteSwapTexture(string in_tex, string palette_filename, int palette_in
 	string output_name = in_tex + "_p" + filename_digest + "_" + palette_index;
 
 	//use it if it exists
-	if(!Texture::exists(output_name))
+	if (!Texture::exists(output_name))
 	{
-		if(!CreatePaletteSwappedTexture(Texture::data(in_tex), output_name, palette, palette_index))
+		if (!CreatePaletteSwappedTexture(Texture::data(in_tex), output_name, palette, palette_index))
 		{
 			//failure - just use the in texture
 			return in_tex;

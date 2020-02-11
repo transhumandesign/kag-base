@@ -178,7 +178,7 @@ void Pierce(CBlob @this)
 	bool hit = false;
 	bool ricochet = (gametime + this.getNetworkID() * 17) % 3 == 0;
 
-	if (map.getHitInfosFromArc(oldpos, -angle, 0, displen, this, false, @hitInfos))
+	if (map.getHitInfosFromArc(oldpos, -angle, 0, displen, this, true, @hitInfos))
 	{
 		for (uint i = 0; i < hitInfos.length; i++)
 		{

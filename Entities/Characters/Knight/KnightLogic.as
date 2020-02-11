@@ -98,9 +98,7 @@ void onSetPlayer(CBlob@ this, CPlayer@ player)
 void onTick(CBlob@ this)
 {
 	u8 knocked = getKnocked(this);
-
-	if (this.isInInventory())
-		return;
+	CHUD@ hud = getHUD();
 
 	//knight logic stuff
 	//get the vars to turn various other scripts on/off
@@ -113,6 +111,18 @@ void onTick(CBlob@ this)
 	KnightInfo@ knight;
 	if (!this.get("knightInfo", @knight))
 	{
+		return;
+	}
+
+	if (this.isInInventory())
+	{
+		//prevent players from insta-slashing when exiting crates
+		knight.state = 0;
+		knight.swordTimer = 0;
+		knight.shieldTimer = 0;
+		knight.slideTime = 0;
+		knight.doubleslash = false;
+		hud.SetCursorFrame(0);
 		return;
 	}
 
@@ -129,8 +139,8 @@ void onTick(CBlob@ this)
 	bool shieldState = isShieldState(knight.state);
 	bool specialShieldState = isSpecialShieldState(knight.state);
 	bool swordState = isSwordState(knight.state);
-	bool pressed_a1 = this.isKeyPressed(key_action1);
-	bool pressed_a2 = this.isKeyPressed(key_action2);
+	bool pressed_a1 = this.isKeyPressed(key_action1) && !hud.hasMenus() && (this.getTickSinceCreated() > 2);
+	bool pressed_a2 = this.isKeyPressed(key_action2) && !hud.hasMenus() && (this.getTickSinceCreated() > 2);
 	bool walking = (this.isKeyPressed(key_left) || this.isKeyPressed(key_right));
 
 	const bool myplayer = this.isMyPlayer();
@@ -639,11 +649,12 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 {
 		if (knight.swordTimer >= KnightVars::slash_charge_level2 || knight.doubleslash || knight.state == KnightStates::sword_power_super)
 		{
-			getHUD().SetCursorFrame(10);
+			getHUD().SetCursorFrame(19);
 		}
 		else if (knight.swordTimer >= KnightVars::slash_charge)
 		{
-			getHUD().SetCursorFrame(9);
+			int frame = 1 + int((float(knight.swordTimer - KnightVars::slash_charge) / (KnightVars::slash_charge_level2 - KnightVars::slash_charge)) * 9) * 2;
+			getHUD().SetCursorFrame(frame);
 		}
 		// the yellow circle stays for the duration of a slash, helpful for newplayers (note: you cant attack while its yellow)
 		else if (knight.state == KnightStates::normal) // disappear after slash is done
@@ -652,10 +663,10 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 		{
 			getHUD().SetCursorFrame(0);
 		}
-		else if (knight.swordTimer <= KnightVars::slash_charge && knight.state == KnightStates::sword_drawn)
+		else if (knight.swordTimer < KnightVars::slash_charge && knight.state == KnightStates::sword_drawn)
 		{
-			int frame = 1 + (knight.swordTimer * 8.5) / KnightVars::slash_charge;
-			if (knight.swordTimer <= 3) //prevent from appearing when jabbing/jab spamming
+			int frame = 2 + int((float(knight.swordTimer) / KnightVars::slash_charge) * 8) * 2;
+			if (knight.swordTimer <= KnightVars::resheath_time) //prevent from appearing when jabbing/jab spamming
 			{
 				getHUD().SetCursorFrame(0);
 			}

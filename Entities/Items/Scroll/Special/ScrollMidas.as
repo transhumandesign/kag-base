@@ -1,6 +1,7 @@
 // scroll script that builds gold into
 
 #include "Hitters.as";
+#include "GenericButtonCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -11,6 +12,8 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	CBitStream params;
 	params.write_u16(caller.getNetworkID());
 	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("midas"), getTranslatedString("Use this to turn all stone in the area into gold"), params);

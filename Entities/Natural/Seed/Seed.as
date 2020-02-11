@@ -130,7 +130,7 @@ void onTick(CBlob@ this)
 		{
 			float rad = f32(this.get_u8("created_blob_radius")) - this.getRadius();
 			CBlob@ b = server_CreateBlob(this.get_string("seed_grow_blobname"), -1, this.getPosition() + Vec2f(0, rad));
-			/*if(b !is null) //not needed, pushes out of the ground unecessarily
+			/*if (b !is null) //not needed, pushes out of the ground unecessarily
 			{
 			    b.getShape().PutOnGround();
 			}*/

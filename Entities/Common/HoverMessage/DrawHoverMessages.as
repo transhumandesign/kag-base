@@ -6,6 +6,9 @@
 
 void onRender(CSprite@ this)
 {
+	if (g_videorecording)
+		return;
+
 	if (this.getBlob().isMyPlayer())
 	{
 		HoverMessages@ messages = @get_messages();

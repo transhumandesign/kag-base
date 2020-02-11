@@ -11,7 +11,7 @@
 //	  that uses it currently.
 void DetermineRect(array<u32>@ offsets, array<Vec2f>@ rects)
 {
-	if(offsets.length == 0) return;
+	if (offsets.length == 0) return;
 
 	CMap@ map = getMap();
 
@@ -26,13 +26,13 @@ void DetermineRect(array<u32>@ offsets, array<Vec2f>@ rects)
 	{
 		found_next = false;
 		u32 next_offset = offsets[0];
-		if(next_offset == last_offset + 1)
+		if (next_offset == last_offset + 1)
 		{
 			last_offset = next_offset;
 			lr.x += map.tilesize;
 			offsets.removeAt(0);
 			//do not wrap around the edge of the map
-			if(next_offset % map.tilemapwidth != 0)
+			if (next_offset % map.tilemapwidth != 0)
 			{
 				found_next = true;
 			}
@@ -84,7 +84,7 @@ void AddSectorOnSolid(Vec2f ul, Vec2f lr, string sectorName, u16 nid = 0)
 		{
 			Vec2f pos = ul + Vec2f(x, y);
 			u32 offset = map.getTileOffset(pos);
-			if(map.isTileSolid(map.getTile(offset)))
+			if (map.isTileSolid(map.getTile(offset)))
 			{
 				offsets.push_back(offset);
 			}

@@ -124,7 +124,7 @@ void Vehicle_SetupWeapon(CBlob@ this, VehicleInfo@ v, int fireDelay, int fireAmo
 	v.fire_style = fireStyle;
 	v.wep_angle = 0.0f;
 
-	if (getRules().exists("singleplayer"))
+	if (getRules().hasTag("singleplayer"))
 	{
 		v.infinite_ammo = true;
 	}
@@ -233,7 +233,9 @@ AttachmentPoint@ getMagAttachmentPoint(CBlob@ this)
 
 CBlob@ getMagBlob(CBlob@ this)
 {
-	return this.getAttachments().getAttachedBlob("MAG");
+	AttachmentPoint@ a = getMagAttachmentPoint(this);
+	if (a is null) return null;
+	return a.getOccupied();
 }
 
 bool isMagEmpty(CBlob@ this)

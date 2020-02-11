@@ -35,7 +35,7 @@ const string[] builder_alwayshit_fragment =
 
 bool BuilderAlwaysHit(CBlob@ blob)
 {
-	if(blob.hasTag("builder always hit"))
+	if (blob.hasTag("builder always hit"))
 	{
 		return true;
 	}
@@ -48,7 +48,7 @@ bool BuilderAlwaysHit(CBlob@ blob)
 	}
 	for(uint i = 0; i < builder_alwayshit_fragment.length; ++i)
 	{
-		if(name.find(builder_alwayshit_fragment[i]) != -1)
+		if (name.find(builder_alwayshit_fragment[i]) != -1)
 			return true;
 	}
 	return false;

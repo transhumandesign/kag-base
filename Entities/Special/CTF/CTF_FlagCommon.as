@@ -3,10 +3,10 @@ bool canPickupFlag(CBlob@ blob)
 
 	bool pick = !blob.hasAttached();
 		
-	if(!pick)
+	if (!pick)
 	{
 		CBlob@ carried = blob.getCarriedBlob();
-		if(carried !is null)
+		if (carried !is null)
 		{
 			pick = carried.hasTag("temp blob");
 		}
@@ -26,11 +26,11 @@ bool shouldFastReturn(CBlob@ this)
 		
 	bool fast_return = false;
 	CBlob@[] overlapping;
-	if(this.getOverlapping(overlapping))
+	if (this.getOverlapping(overlapping))
 	{
 		for(uint i = 0; i < overlapping.length; i++)
 		{
-			if(overlapping[i].getTeamNum() == team && overlapping[i].hasTag("player"))
+			if (overlapping[i].getTeamNum() == team && overlapping[i].hasTag("player"))
 			{
 				fast_return = true;
 				break;

@@ -5,6 +5,7 @@
 
 #include "ClassSelectMenu.as";
 #include "StandardRespawnCommand.as";
+#include "GenericButtonCommon.as";
 
 void onInit( CBlob@ this )
 {
@@ -30,6 +31,8 @@ void onDie(CBlob@ this)
 
 void GetButtonsFor( CBlob@ this, CBlob@ caller )
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	CBitStream params;
 	params.write_u16( caller.getNetworkID() );
 	if (canChangeClass( this, caller ))	 

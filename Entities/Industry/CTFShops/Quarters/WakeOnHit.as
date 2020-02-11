@@ -4,7 +4,7 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 {
 	if (this.getHealth() < oldHealth)
 	{
-		CBlob@ bed = this.getAttachments().getAttachedBlob("BED");
+		CBlob@ bed = this.getAttachments().getAttachmentPointByName("BED").getOccupied();
 		if (bed !is null)
 		{
 			this.getSprite().PlaySound("WilhelmShort.ogg");

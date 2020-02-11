@@ -61,23 +61,23 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		//tick down
-		if(this.getVelocity().LengthSquared() < 1.0f && !this.isAttached())
+		if (this.getVelocity().LengthSquared() < 1.0f && !this.isAttached())
 		{
 			u8 timer = this.get_u8(MINE_TIMER);
 			timer++;
 			this.set_u8(MINE_TIMER, timer);
 
-			if(timer >= MINE_PRIMING_TIME)
+			if (timer >= MINE_PRIMING_TIME)
 			{
 				this.Untag(MINE_PRIMING);
 				this.SendCommand(this.getCommandID(MINE_PRIMED));
 			}
 		}
 		//reset if bumped/moved
-		else if(this.hasTag(MINE_PRIMING))
+		else if (this.hasTag(MINE_PRIMING))
 		{
 			this.set_u8(MINE_TIMER, 0);
 		}
@@ -86,7 +86,7 @@ void onTick(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if(cmd == this.getCommandID(MINE_PRIMED))
+	if (cmd == this.getCommandID(MINE_PRIMED))
 	{
 		if (this.isAttached()) return;
 
@@ -98,7 +98,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 		this.getShape().checkCollisionsAgain = true;
 
 		CSprite@ sprite = this.getSprite();
-		if(sprite !is null)
+		if (sprite !is null)
 		{
 			sprite.SetFrameIndex(1);
 			sprite.PlaySound("MineArmed.ogg");
@@ -110,16 +110,16 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 {
 	this.Untag(MINE_PRIMING);
 
-	if(this.get_u8(MINE_STATE) == PRIMED)
+	if (this.get_u8(MINE_STATE) == PRIMED)
 	{
 		this.set_u8(MINE_STATE, NONE);
 		this.getSprite().SetFrameIndex(0);
 	}
 
-	if(this.getDamageOwnerPlayer() is null || this.getTeamNum() != attached.getTeamNum())
+	if (this.getDamageOwnerPlayer() is null || this.getTeamNum() != attached.getTeamNum())
 	{
 		CPlayer@ player = attached.getPlayer();
-		if(player !is null)
+		if (player !is null)
 		{
 			this.SetDamageOwnerPlayer(player);
 		}
@@ -130,16 +130,16 @@ void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
 	this.Untag(MINE_PRIMING);
 
-	if(this.get_u8(MINE_STATE) == PRIMED)
+	if (this.get_u8(MINE_STATE) == PRIMED)
 	{
 		this.set_u8(MINE_STATE, NONE);
 		this.getSprite().SetFrameIndex(0);
 	}
 
-	if(this.getDamageOwnerPlayer() is null || this.getTeamNum() != inventoryBlob.getTeamNum())
+	if (this.getDamageOwnerPlayer() is null || this.getTeamNum() != inventoryBlob.getTeamNum())
 	{
 		CPlayer@ player = inventoryBlob.getPlayer();
-		if(player !is null)
+		if (player !is null)
 		{
 			this.SetDamageOwnerPlayer(player);
 		}
@@ -148,7 +148,7 @@ void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		this.Tag(MINE_PRIMING);
 		this.set_u8(MINE_TIMER, 0);
@@ -157,7 +157,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 
 void onThisRemoveFromInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
-	if(getNet().isServer() && !this.isAttached())
+	if (getNet().isServer() && !this.isAttached())
 	{
 		this.Tag(MINE_PRIMING);
 		this.set_u8(MINE_TIMER, 0);
@@ -177,9 +177,9 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if(getNet().isServer() && blob !is null)
+	if (getNet().isServer() && blob !is null)
 	{
-		if(this.get_u8(MINE_STATE) == PRIMED && explodeOnCollideWithBlob(this, blob))
+		if (this.get_u8(MINE_STATE) == PRIMED && explodeOnCollideWithBlob(this, blob))
 		{
 			this.Tag("exploding");
 			this.Sync("exploding", true);
@@ -192,7 +192,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 void onDie(CBlob@ this)
 {
-	if(getNet().isServer() && this.hasTag("exploding"))
+	if (getNet().isServer() && this.hasTag("exploding"))
 	{
 		const Vec2f POSITION = this.getPosition();
 
@@ -201,7 +201,7 @@ void onDie(CBlob@ this)
 		for(u16 i = 0; i < blobs.length; i++)
 		{
 			CBlob@ target = blobs[i];
-			if(target.hasTag("flesh") &&
+			if (target.hasTag("flesh") &&
 			(target.getTeamNum() != this.getTeamNum() || target.getPlayer() is this.getDamageOwnerPlayer()))
 			{
 				this.server_Hit(target, POSITION, Vec2f_zero, 8.0f, Hitters::mine_special, true);

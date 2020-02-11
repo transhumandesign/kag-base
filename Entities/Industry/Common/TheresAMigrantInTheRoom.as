@@ -1,6 +1,7 @@
 // script for rooms that hold migrants in them
 
 #include "MigrantCommon.as"
+#include "GenericButtonCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -24,6 +25,8 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	CBlob@ carried = caller.getCarriedBlob();
 	if (carried !is null && carried.hasTag("migrant") && !isRoomFullOfMigrants(this))
 	{

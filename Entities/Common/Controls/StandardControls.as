@@ -3,6 +3,8 @@
 #include "EmotesCommon.as"
 #include "StandardControlsCommon.as"
 
+bool zoomModifier = false; // decides whether to use the 3 zoom system or not
+int zoomModifierLevel = 4; // for the extra zoom levels when pressing the modifier key
 int zoomLevel = 1; // we can declare a global because this script is just used by myPlayer
 
 void onInit(CBlob@ this)
@@ -328,15 +330,28 @@ void AdjustCamera(CBlob@ this, bool is_in_render)
 	{
 		zoomSpeed *= getRenderApproximateCorrectionFactor();
 	}
-
+	
 	f32 minZoom = 0.5f; // TODO: make vars
 	f32 maxZoom = 2.0f;
 
 	f32 zoom_target = 1.0f;
-	switch (zoomLevel) {
-		case 0: zoom_target = 0.5f; break;
-		case 1: zoom_target = 1.0f; break;
-		case 2: zoom_target = 2.0f; break;
+
+	if (zoomModifier) {
+		switch (zoomModifierLevel) {
+			case 0:	zoom_target = 0.5f; zoomLevel = 0; break;
+			case 1: zoom_target = 0.5625f; zoomLevel = 0; break;
+			case 2: zoom_target = 0.625f; zoomLevel = 0; break;
+			case 3: zoom_target = 0.75f; zoomLevel = 0; break;
+			case 4: zoom_target = 1.0f; zoomLevel = 1; break;
+			case 5: zoom_target = 1.5f; zoomLevel = 1; break;
+			case 6: zoom_target = 2.0f; zoomLevel = 2; break;
+		}
+	} else {
+		switch (zoomLevel) {
+			case 0: zoom_target = 0.5f; zoomModifierLevel = 0; break;
+			case 1: zoom_target = 1.0f; zoomModifierLevel = 4; break;
+			case 2:	zoom_target = 2.0f; zoomModifierLevel = 6; break;
+		}
 	}
 
 	if (zoom > zoom_target)
@@ -361,35 +376,19 @@ void ManageCamera(CBlob@ this)
 	{
 		if (controls.isKeyJustPressed(controls.getActionKeyKey(AK_ZOOMOUT)))
 		{
-			if (zoomLevel == 2)
-			{
-				zoomLevel = 1;
-			}
-			else if (zoomLevel == 1)
-			{
-				zoomLevel = 0;
-			}
-			else if (zoomLevel == 3)
-			{
-				zoomLevel = 0;
-			}
+			zoomModifier = controls.isKeyPressed(KEY_LCONTROL);
+			
+			zoomModifierLevel = Maths::Max(0, zoomModifierLevel - 1);
+			zoomLevel = Maths::Max(0, zoomLevel - 1);
 
 			Tap(this);
 		}
 		else  if (controls.isKeyJustPressed(controls.getActionKeyKey(AK_ZOOMIN)))
 		{
-			if (zoomLevel == 0)
-			{
-				zoomLevel = 3;
-			}
-			else if (zoomLevel == 3)
-			{
-				zoomLevel = 2;
-			}
-			else if (zoomLevel == 1)
-			{
-				zoomLevel = 2;
-			}
+			zoomModifier = controls.isKeyPressed(KEY_LCONTROL);
+			
+			zoomModifierLevel = Maths::Min(6, zoomModifierLevel + 1);
+			zoomLevel = Maths::Min(2, zoomLevel + 1);
 
 			Tap(this);
 		}

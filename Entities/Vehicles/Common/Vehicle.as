@@ -1,6 +1,7 @@
 #include "SeatsCommon.as"
 #include "VehicleCommon.as"
 #include "VehicleAttachmentCommon.as"
+#include "GenericButtonCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -231,7 +232,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
-	if (forBlob.getTeamNum() == this.getTeamNum())
+	if (forBlob.getTeamNum() == this.getTeamNum() && canSeeButtons(this, forBlob))
 	{
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v))
