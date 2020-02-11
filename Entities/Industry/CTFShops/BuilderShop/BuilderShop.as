@@ -1,4 +1,4 @@
-﻿// BuilderShop.as
+// BuilderShop.as
 
 #include "Requirements.as"
 #include "ShopCommon.as"
@@ -61,7 +61,6 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Drill", "$drill$", "drill", Descriptions::drill, false);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::drill_stone);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::drill);
-		AddRequirement(s.requirements, "limit", "drill", "7200‬", CTFCosts::drill);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Saw", "$saw$", "saw", Descriptions::saw, false);

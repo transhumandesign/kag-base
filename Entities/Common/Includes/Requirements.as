@@ -69,25 +69,7 @@ string getButtonRequirementsText(CBitStream& inout bs, bool missing)
 			text += "At least " + quantity + " " + friendlyName + " required. \n";
 			text += quantityColor;
 		}
-		else if (requiredType == "limit" && missing)
-		{
-			CRules@ rules = getRules();
-			if (rules is null) { continue; }
 
-			u32 matchTime = rules.get_u32("match_time");
-
-			text += quantityColor;
-			if (rules.isMatchRunning())
-			{
-				text += "Must wait " + (timestamp( (parseInt(friendlyName) - matchTime) / 30)) + "until the drill is available\n";
-			}
-			else
-			{
-				text += "Must wait until the match begins and the time reaches " + (timestamp( (parseInt(friendlyName)) / 30 )) + "to unlock \n";
-			}
-			text += quantityColor;
-
-		}
 	}
 
 	return text;
@@ -213,24 +195,6 @@ bool hasRequirements(CInventory@ inv1, CInventory@ inv2, CBitStream &inout bs, C
 				has = false;
 			}
 		}
-		else if (req == "limit")
-		{
-			CRules@ rules = getRules();
-			if (rules is null) { has = false; }
-
-			if (rules.gamemode_name == "CTF")
-			{
-				u32 matchTime = rules.get_u32("match_time");
-
-				f32 timeRequired = parseInt(friendlyName);
-
-				if (!(matchTime > timeRequired))
-				{
-					AddRequirement(missingBs, req, blobName, friendlyName, quantity);
-					has = false;
-				}
-			}
-		}
 	}
 
 	missingBs.ResetBitIndex();
@@ -295,28 +259,4 @@ void server_TakeRequirements(CInventory@ inv1, CInventory@ inv2, CBitStream &ino
 void server_TakeRequirements(CInventory@ inv, CBitStream &inout bs)
 {
 	server_TakeRequirements(inv, null, bs);
-}
-
-
-string timestamp(uint s)
-{
-	string ret;
-	int hours = s/60/60;
-	if (hours > 0)
-		ret += hours + getTranslatedString("h ");
-
-	int minutes = s/60%60;
-	if (minutes < 10 && minutes > 0)
-		ret += "0";
-	
-	if (minutes > 0)
-		ret += minutes + getTranslatedString("m ");
-
-	int seconds = s%60;
-	if (seconds < 10)
-		ret += "0";
-
-	ret += seconds + getTranslatedString("s ");
-
-	return ret;
 }
