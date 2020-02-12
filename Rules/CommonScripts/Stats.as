@@ -1,5 +1,27 @@
 #define SERVER_ONLY
 
+const string mapStatsTag = "map stats";
+
+void onInit(CRules@ this)
+{
+	onRestart(this);
+}
+
+void onRestart(CRules@ this)
+{
+	this.Untag(mapStatsTag);
+}
+
+void onTick(CRules@ this)
+{
+	if(sv_tcpr && this.isGameOver() && this.getTeamWon() >= 0 && !this.hasTag(mapStatsTag))
+	{
+		this.Tag(mapStatsTag);
+		string mapName = getFilenameWithoutExtension(getFilenameWithoutPath(getMap().getMapName()));
+		tcpr("MapStats {\"name\":\"" + mapName + "\",\"duration\":" + getGameTime() + "}");
+	}
+}
+
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 {
 	if(!this.isMatchRunning())
@@ -61,7 +83,8 @@ string JSONPlayer(CPlayer@ player)
 	array<string> props = {
 		JSONString("username", player.getUsername()),
 		JSONString("charactername", player.getCharacterName()),
-		JSONString("clantag", player.getClantag())
+		JSONString("clantag", player.getClantag()),
+		JSONString("ip", player.server_getIP())
 	};
 
 	if(player.exists("stats_id"))
