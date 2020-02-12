@@ -3,6 +3,9 @@
 
 #include "StandardControlsCommon.as"
 #include "ThrowCommon.as"
+#include "WheelMenuCommon.as"
+
+string[] pickup_items = {"keg", "bomb", "mat_gold", "mat_wood", "mat_stone"};
 
 const u32 PICKUP_ERASE_TICKS = 80;
 
@@ -17,6 +20,18 @@ void onInit(CBlob@ this)
 
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
+
+	// setup wheel MinimapEnum
+	WheelMenu@ menu = get_wheel_menu("pickup");
+	menu.option_notice = "Pickup";
+
+	for (uint i = 0; i < pickup_items.length; i++)
+	{
+		IconTokenWheelMenuEntry entry(pickup_items[i]);
+		entry.visible_name = pickup_items[i];
+		entry.icon_name = "$" + pickup_items[i] + "$";
+		menu.entries.push_back(@entry);
+	}
 }
 
 void onTick(CBlob@ this)
@@ -28,22 +43,50 @@ void onTick(CBlob@ this)
 		return;
 	}
 
+	CControls@ controls = getControls();
+
 	// drop / pickup / throw
-	if (this.isKeyJustPressed(key_pickup))
+	if (controls.isKeyPressed(KEY_LSHIFT))
+	{
+		WheelMenu@ menu = get_wheel_menu("pickup");
+		if (this.isKeyJustPressed(key_pickup))
+		{
+			set_active_wheel_menu(@menu);
+
+		}
+
+		if (this.isKeyPressed(key_pickup))
+		{
+			GatherPickupBlobs(this);
+
+			CBlob@[]@ pickupBlobs;
+			this.get("pickup blobs", @pickupBlobs);
+
+			for (uint i = 0; i < menu.entries.length; i++)
+			{
+				WheelMenuEntry@ entry = menu.entries[i];
+				cast<IconTokenWheelMenuEntry>(entry).disabled = true;
+
+				for (uint j = 0; j < pickupBlobs.length; j++)
+				{
+					if (entry.name == pickupBlobs[j].getName())
+					{
+						cast<IconTokenWheelMenuEntry>(entry).disabled = false;
+						break;
+					}
+				}
+
+			}
+
+		}
+
+	}
+	else if (this.isKeyJustPressed(key_pickup))
 	{
 		TapPickup(this);
 
 		CBlob @carryBlob = this.getCarriedBlob();
 
-		/*if (isTap( this ))	tap pickup
-		{
-		CBlob@ carry = this.getCarriedBlob();
-		if (carry !is null)
-		{
-		server_PutIn( this, this, carry );
-		}
-		}
-		else*/
 		if (this.isAttached()) // default drop from attachment
 		{
 			int count = this.getAttachmentPointCount();
@@ -76,6 +119,49 @@ void onTick(CBlob@ this)
 	}
 	else
 	{
+		WheelMenu@ menu = get_wheel_menu("pickup");
+		if ((this.isKeyJustReleased(key_pickup) || controls.isKeyJustReleased(KEY_LSHIFT))
+			&&  get_active_wheel_menu() is menu)
+		{
+			WheelMenuEntry@ selected = menu.get_selected();
+			set_active_wheel_menu(null);
+
+			if (selected !is null)
+			{
+				CBlob@[] blobsInRadius;
+				if (this.getMap().getBlobsInRadius(this.getPosition(), this.getRadius() + 50.0f, @blobsInRadius))
+				{
+					float closestDist = 600.0f;
+					CBlob@ closest;
+
+					for (uint i = 0; i < blobsInRadius.length; i++)
+					{
+						CBlob@ b = blobsInRadius[i];
+						if (b.getName() == selected.name)
+						{
+							float dist = (this.getPosition() - b.getPosition()).Length();
+							if (dist < closestDist)
+							{
+								closestDist = dist;
+								@closest = @b;
+							}
+
+						}
+					}
+
+					if (closest !is null)
+					{
+						server_Pickup(this, this, closest);
+					}
+
+				}
+
+			}
+
+			return;
+
+		}
+
 		if (this.isKeyPressed(key_pickup))
 		{
 			GatherPickupBlobs(this);
@@ -247,7 +333,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 			return factor_military_lit;
 		}
 	}
-	
+
 	//// MATERIALS ////
 	if (material)
 	{
@@ -295,7 +381,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 		float factor_full_life = (thisname == "archer" ? factor_resource_useful : factor_resource_boring);
 		return this.getHealth() < this.getInitialHealth() ? factor_resource_critical : factor_full_life;
 	}
-	
+
 	//low priority
 	if (name == "log" || b.hasTag("tree"))
 	{
@@ -370,7 +456,7 @@ CBlob@ getClosestBlob(CBlob@ this)
 		}
 
 		float closestFactor = 999999.9f;
-		
+
 		for (uint i = 0; i < available.length; ++i)
 		{
 			CBlob @b = available[i];

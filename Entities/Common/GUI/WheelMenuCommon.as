@@ -90,6 +90,36 @@ class IconWheelMenuEntry : WheelMenuEntry
 	}
 };
 
+class IconTokenWheelMenuEntry : WheelMenuEntry
+{
+	// Visual parameters
+	string icon_name;
+	float scale;
+	bool disabled;
+
+	IconTokenWheelMenuEntry(const string&in p_name)
+	{
+		super(p_name);
+		scale = 1.0f;
+		disabled = false;
+	}
+
+	void render() override
+	{
+		string icon = icon_name;
+		if (disabled)
+		{
+			icon = "$DISABLED$";
+		}
+
+		GUI::DrawIconByName(
+			icon,
+			position,
+			scale
+		);
+	}
+};
+
 class WheelMenu
 {
 	WheelMenuEntry@[] entries;
