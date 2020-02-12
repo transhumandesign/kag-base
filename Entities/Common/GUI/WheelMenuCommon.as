@@ -90,6 +90,49 @@ class IconWheelMenuEntry : WheelMenuEntry
 	}
 };
 
+class PickupWheelMenuEntry : WheelMenuEntry
+{
+	// Visual parameters
+	string icon_name;
+	float scale;
+	bool disabled;
+	string[] options;
+	Vec2f offset;
+
+	PickupWheelMenuEntry(const string&in p_name, const string&in p_icon_name, string[] p_options, Vec2f p_offset = Vec2f(0, 0))
+	{
+		super(p_name);
+		visible_name = p_name;
+		icon_name = p_icon_name;
+		options = p_options;
+		scale = 1.0f;
+		disabled = false;
+		offset = p_offset;
+	}
+
+	void render() override
+	{
+		if (disabled)
+		{
+			return;
+		}
+
+		GUI::DrawIcon(
+			"InteractionIconsBackground.png",
+			0,
+			Vec2f(32, 32),
+			position - Vec2f(32, 32),
+			1.5f
+		);
+
+		GUI::DrawIconByName(
+			icon_name,
+			position + offset,
+			scale
+		);
+	}
+};
+
 class WheelMenu
 {
 	WheelMenuEntry@[] entries;

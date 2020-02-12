@@ -4,6 +4,7 @@
 #include "BuilderHittable.as";
 #include "ParticleSparks.as";
 #include "MaterialCommon.as";
+#include "ShieldCommon.as";
 
 const f32 speed_thresh = 2.4f;
 const f32 speed_hard_thresh = 2.6f;
@@ -58,9 +59,12 @@ void onInit(CBlob@ this)
 	}*/
 
 	this.set_u32("hittime", 0);
-	this.Tag("place45");
-	this.set_s8("place45 distance", 1);
-	this.Tag("place45 perp");
+	this.Tag("place norotate"); // required to prevent drill from locking in place (blame builder code :kag_angry:)
+	
+	//this.Tag("place45"); // old 45 degree angle lock
+	//this.set_s8("place45 distance", 1);
+	//this.Tag("place45 perp");
+
 	this.set_u8(heat_prop, 0);
 	this.set_u16("showHeatTo", 0);
 	this.set_u16("harvestWoodDoorCap", 4);
@@ -176,19 +180,18 @@ void onTick(CBlob@ this)
 	sprite.SetEmitSoundPaused(true);
 	if (this.isAttached())
 	{
-		this.getCurrentScript().runFlags &= ~(Script::tick_not_sleeping);
 		AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 		CBlob@ holder = point.getOccupied();
 
 		if (holder is null) return;
+
+		AimAtMouse(this, holder); // aim at our mouse pos
 
 		// cool faster if holder is moving
 		if (heat > 0 && holder.getShape().vellen > 0.01f && getGameTime() % 3 == 0)
 		{
 			heat--;
 		}
-
-		this.getShape().SetRotationsAllowed(false);
 
 		if (int(heat) >= heat_max - (heat_add * 1.5))
 		{
@@ -286,16 +289,20 @@ void onTick(CBlob@ this)
 								{
 									continue;
 								}
-								
-								//if hot enough, increase damage
-								if (int(heat) > heat_max * 0.7f)
-								{
-									attack_dam += 0.5f;
-								}
 
 
 								if (isServer())
 								{
+									if (int(heat) > heat_max * 0.7f) // are we at high heat? more damamge!
+									{
+										attack_dam += 0.5f;
+									}
+
+									if (b.hasTag("shielded") && blockAttack(b, attackVel, 0.0f)) // are they shielding? reduce damage!
+									{
+										attack_dam /= 2;
+									}
+
 									this.server_Hit(b, hi.hitpos, attackVel, attack_dam, Hitters::drill);
 
 									Material::fromBlob(holder, hi.blob, attack_dam, this);
@@ -398,7 +405,6 @@ void onTick(CBlob@ this)
 	}
 	else
 	{
-		this.getShape().SetRotationsAllowed(true);
 		this.set_bool(buzz_prop, false);
 		if (heat <= 0)
 		{
@@ -430,11 +436,25 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	CPlayer@ player = attached.getPlayer();
 	if (player !is null)
 		this.set_u16("showHeatTo", player.getNetworkID());
+
+	CShape@ shape = this.getShape();
+	if (shape !is null)
+	{
+		this.setPosition(attached.getPosition()); // required to stop the first tick to be out of position
+
+		shape.SetGravityScale(0); // this stops the shape from 'falling' when its attached to something, (helps the heat bar from looking bad above 30 fps)
+	}
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 {
 	this.set_u16("showHeatTo", 0);
+
+	CShape@ shape = this.getShape();
+	if (shape !is null)
+	{
+		shape.SetGravityScale(1);
+	}
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ blob)
@@ -474,7 +494,9 @@ void onRender(CSprite@ this)
 		u8 heat = blob.get_u8(heat_prop);
 		f32 percentage = Maths::Min(1.0, f32(heat) / f32(heat_max));
 
-		Vec2f pos = blob.getScreenPos() + Vec2f(-22, 16);
+		//Vec2f pos = blob.getScreenPos() + Vec2f(-22, 16);
+
+		Vec2f pos = holderBlob.getInterpolatedScreenPos() + (blob.getScreenPos() - holderBlob.getScreenPos()) + Vec2f(-22, 16);
 		Vec2f dimension = Vec2f(42, 4);
 		Vec2f bar = Vec2f(pos.x + (dimension.x * percentage), pos.y + dimension.y);
 
@@ -518,4 +540,19 @@ void makeSteamPuff(CBlob@ this, const f32 velocity = 1.0f, const int smallpartic
 		Vec2f vel = getRandomVelocity(-90, velocity * randomness, 360.0f);
 		makeSteamParticle(this, vel);
 	}
+}
+
+void AimAtMouse(CBlob@ this, CBlob@ holder)
+{
+	// code used from BlobPlacement.as, just edited to use mouse pos instead of 45 degree angle
+	Vec2f aimpos = holder.getAimPos();
+	Vec2f pos = this.getPosition();
+	Vec2f aim_vec = (pos - aimpos);
+	aim_vec.Normalize();
+
+	f32 mouseAngle = aim_vec.getAngleDegrees();
+
+	if (!this.isFacingLeft()) mouseAngle += 180;
+
+	this.setAngleDegrees(-mouseAngle); // set aim pos
 }

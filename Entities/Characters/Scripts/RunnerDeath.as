@@ -122,6 +122,13 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	return damage;
 }
 
+
+bool canBePutInInventory( CBlob@ this, CBlob@ inventoryBlob )
+{
+	// can't be put in player inventory.
+	return inventoryBlob.getPlayer() is null;
+}
+
 void onTick(CBlob@ this)
 {
 	// (drop anything attached)
