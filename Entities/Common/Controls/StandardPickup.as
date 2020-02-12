@@ -21,17 +21,41 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
 
-	// setup wheel MinimapEnum
+	// setup pickup menu wheel
 	WheelMenu@ menu = get_wheel_menu("pickup");
-	menu.option_notice = "Pickup";
-
-	for (uint i = 0; i < pickup_items.length; i++)
+	if (menu.entries.length == 0)
 	{
-		IconTokenWheelMenuEntry entry(pickup_items[i]);
-		entry.visible_name = pickup_items[i];
-		entry.icon_name = "$" + pickup_items[i] + "$";
-		menu.entries.push_back(@entry);
+		menu.option_notice = "Pickup";
+
+		// knight stuff
+		menu.add_entry(PickupWheelMenuEntry("Keg", "$keg$", array<string>(1, "keg")));
+
+		const string[] bomb_options = {"bomb", "mat_bombs"};
+		menu.add_entry(PickupWheelMenuEntry("Bomb", "$mat_bombs$", bomb_options));
+
+		const string[] waterbomb_options = {"waterbomb", "mat_waterbombs"};
+		menu.add_entry(PickupWheelMenuEntry("Water Bomb", "$mat_waterbombs$", waterbomb_options));
+
+		menu.add_entry(PickupWheelMenuEntry("Mine", "$mine$", array<string>(1, "mine")));
+
+		// archer stuff
+		menu.add_entry(PickupWheelMenuEntry("Arrows", "$mat_arrows$", array<string>(1, "mat_arrows")));
+		menu.add_entry(PickupWheelMenuEntry("Water Arrows", "$mat_waterarrows$", array<string>(1, "mat_waterarrows")));
+		menu.add_entry(PickupWheelMenuEntry("Fire Arrows", "$mat_firearrows$", array<string>(1, "mat_firearrows")));
+		menu.add_entry(PickupWheelMenuEntry("Bomb Arrows", "$mat_bombarrows$", array<string>(1, "mat_bombarrows")));
+
+		// builder stuff
+		menu.add_entry(PickupWheelMenuEntry("Gold", "$mat_gold$", array<string>(1, "mat_gold")));
+		menu.add_entry(PickupWheelMenuEntry("Stone", "$mat_stone$", array<string>(1, "mat_stone")));
+		menu.add_entry(PickupWheelMenuEntry("Wood", "$mat_wood$", array<string>(1, "mat_wood")));
+		menu.add_entry(PickupWheelMenuEntry("Drill", "$drill$", array<string>(1, "drill")));
+
+		// misc
+		const string[] food_options = {"food", "heart", "fishy", "grain", "steak", "egg", "flowers"};
+		menu.add_entry(PickupWheelMenuEntry("Food", "$food$", food_options));
+		menu.add_entry(PickupWheelMenuEntry("Ballista Ammo", "$mat_bolts$", array<string>(1, "mat_bolts")));
 	}
+
 }
 
 void onTick(CBlob@ this)
@@ -62,18 +86,31 @@ void onTick(CBlob@ this)
 			CBlob@[]@ pickupBlobs;
 			this.get("pickup blobs", @pickupBlobs);
 
+			CBlob@[] available;
+			FillAvailable(this, available, pickupBlobs);
+
 			for (uint i = 0; i < menu.entries.length; i++)
 			{
-				WheelMenuEntry@ entry = menu.entries[i];
-				cast<IconTokenWheelMenuEntry>(entry).disabled = true;
+				PickupWheelMenuEntry@ entry = cast<PickupWheelMenuEntry>(menu.entries[i]);
+				entry.disabled = true;
 
-				for (uint j = 0; j < pickupBlobs.length; j++)
+				for (uint j = 0; j < available.length; j++)
 				{
-					if (entry.name == pickupBlobs[j].getName())
+					string bname = available[j].getName();
+					for (uint k = 0; k < entry.options.length; k++)
 					{
-						cast<IconTokenWheelMenuEntry>(entry).disabled = false;
+						if (entry.options[k] == bname)
+						{
+							entry.disabled = false;
+							break;
+						}
+					}
+
+					if (!entry.disabled)
+					{
 						break;
 					}
+
 				}
 
 			}
@@ -123,30 +160,46 @@ void onTick(CBlob@ this)
 		if ((this.isKeyJustReleased(key_pickup) || controls.isKeyJustReleased(KEY_LSHIFT))
 			&&  get_active_wheel_menu() is menu)
 		{
-			WheelMenuEntry@ selected = menu.get_selected();
+			PickupWheelMenuEntry@ selected = cast<PickupWheelMenuEntry>(menu.get_selected());
 			set_active_wheel_menu(null);
 
-			if (selected !is null)
+			if (selected !is null && !selected.disabled)
 			{
 				CBlob@[] blobsInRadius;
 				if (this.getMap().getBlobsInRadius(this.getPosition(), this.getRadius() + 50.0f, @blobsInRadius))
 				{
-					float closestDist = 600.0f;
+					float closestScore = 600.0f;
 					CBlob@ closest;
 
 					for (uint i = 0; i < blobsInRadius.length; i++)
 					{
 						CBlob@ b = blobsInRadius[i];
-						if (b.getName() == selected.name)
-						{
-							float dist = (this.getPosition() - b.getPosition()).Length();
-							if (dist < closestDist)
-							{
-								closestDist = dist;
-								@closest = @b;
-							}
 
+						string bname = b.getName();
+						for (uint j = 0; j < selected.options.length; j++)
+						{
+							if (bname == selected.options[j])
+							{
+								if (!canBlobBePickedUp(this, b))
+								{
+									break;
+								}
+
+								float maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
+								float dist = (this.getPosition() - b.getPosition()).Length();
+								float factor = dist / maxDist;
+
+								float score = getPriorityPickupScale(this, b, factor);
+
+								if (score < closestScore)
+								{
+									closestScore = score;
+									@closest = @b;
+								}
+
+							}
 						}
+
 					}
 
 					if (closest !is null)
@@ -173,11 +226,13 @@ void onTick(CBlob@ this)
 			if (closest !is null)
 			{
 				closestBlobs.push_back(closest);
+				/*
 				if (this.isKeyJustPressed(key_action1))	// pickup
 				{
 					server_Pickup(this, this, closest);
 					this.set_bool("release click", false);
 				}
+				*/
 			}
 
 		}
@@ -245,7 +300,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 		name = b.getName();
 	u32 unpackTime = b.get_u32("unpack time");
 
-	const bool same_team = b.getTeamNum() != this.getTeamNum();
+	const bool same_team = b.getTeamNum() == this.getTeamNum();
 	const bool material = b.hasTag("material");
 
 	// Military scale factor constants, NOT including military resources
@@ -441,11 +496,6 @@ CBlob@ getClosestBlob(CBlob@ this)
 		CBlob@[] available;
 		FillAvailable(this, available, pickupBlobs);
 
-		if (available.length == 0)
-		{
-			FillAvailable(this, available, pickupBlobs);
-		}
-
 		if (!isTapPickup(this))
 		{
 			CBlob@ closestAimed = getClosestAimedBlob(this, available);
@@ -455,20 +505,22 @@ CBlob@ getClosestBlob(CBlob@ this)
 			}
 		}
 
-		float closestFactor = 999999.9f;
+		float closestScore = 999999.9f;
 
 		for (uint i = 0; i < available.length; ++i)
 		{
 			CBlob @b = available[i];
 			Vec2f bpos = b.getPosition();
 
-			float dist = (bpos - pos).getLength();
-			float factor = dist / 30.0f;
-			factor += getPriorityPickupScale(this, b);
+			float maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
 
-			if (factor < closestFactor)
+			float dist = (bpos - pos).getLength();
+			float factor = dist / maxDist;
+			float score = getPriorityPickupScale(this, b, factor);
+
+			if (score < closestScore)
 			{
-				closestFactor = factor;
+				closestScore = score;
 				@closest = @b;
 			}
 		}
@@ -479,9 +531,11 @@ CBlob@ getClosestBlob(CBlob@ this)
 
 bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 {
+	float maxDist = Maths::Max(this.getRadius() + blob.getRadius() + 20.0f, 36.0f);
+
 	Vec2f pos = this.getPosition() + Vec2f(0.0f, -this.getRadius() * 0.9f);
 	Vec2f pos2 = blob.getPosition();
-	return (((pos2 - pos).getLength() < (this.getRadius() + blob.getRadius()) + 20.0f)
+	return (((pos2 - pos).getLength() <= maxDist)
 	        && !blob.isAttached() && !blob.hasTag("no pickup")
 	        && (!this.getMap().rayCastSolid(pos, pos2) || (this.isOverlapping(blob)) ) //overlapping fixes "in platform" issue
 	       );

@@ -90,30 +90,33 @@ class IconWheelMenuEntry : WheelMenuEntry
 	}
 };
 
-class IconTokenWheelMenuEntry : WheelMenuEntry
+class PickupWheelMenuEntry : WheelMenuEntry
 {
 	// Visual parameters
 	string icon_name;
 	float scale;
 	bool disabled;
+	string[] options;
 
-	IconTokenWheelMenuEntry(const string&in p_name)
+	PickupWheelMenuEntry(const string&in p_name, const string&in p_icon_name, string[] p_options)
 	{
 		super(p_name);
+		visible_name = p_name;
+		icon_name = p_icon_name;
+		options = p_options;
 		scale = 1.0f;
 		disabled = false;
 	}
 
 	void render() override
 	{
-		string icon = icon_name;
 		if (disabled)
 		{
-			icon = "$DISABLED$";
+			return;
 		}
 
 		GUI::DrawIconByName(
-			icon,
+			icon_name,
 			position,
 			scale
 		);
