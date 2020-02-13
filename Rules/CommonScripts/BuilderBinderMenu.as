@@ -1,7 +1,7 @@
 #include "CommonBuilderBlocks.as"
 
 const u8 MENU_WIDTH = 9;
-const u8 MENU_HEIGHT  = 5;
+const u8 MENU_HEIGHT  = 4;
 const string SELECTED_PROP = "selected block: ";
 
 const string BUILD_CMD = "builder binder command";
@@ -96,22 +96,13 @@ void ShowBuilderMenu(CPlayer@ player)
 			read_block(cfg, "block_6", 5),
 			read_block(cfg, "block_7", 6),
 			read_block(cfg, "block_8", 7),
-			read_block(cfg, "block_9", 8),
-			read_block(cfg, "block_10", 9),
-			read_block(cfg, "block_11", 10),
-			read_block(cfg, "block_12", 0),
-			read_block(cfg, "block_13", 1),
-			read_block(cfg, "block_14", 2),
-			read_block(cfg, "block_15", 3),
-			read_block(cfg, "block_16", 4),
-			read_block(cfg, "block_17", 5),
-			read_block(cfg, "block_18", 6)
+			read_block(cfg, "block_9", 8)
 		};
 
 		string propname = SELECTED_PROP + player.getUsername();
 		u8 selected = rules.get_u8(propname);
 
-		for (int i = 0; i < 18; i++)
+		for (int i = 0; i < 9; i++)
 		{
 			CBitStream params;
 			params.write_u8(SELECT_KEYBIND);
@@ -169,11 +160,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 		string key = "block_" + (selected + 1);
 
-		//get emote bindings cfg file
+		//get block bindings cfg file
 		ConfigFile@ cfg = openBlockBindingsConfig();
 
-		//bind emote
-		cfg.add_u8(key, block);
+		//bind block
+		cfg.add_string(key, "" + block);
 		cfg.saveFile("BlockBindings.cfg");
 
 		//update keybinds in menu
@@ -190,5 +181,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	else if (subcmd == CLOSE_MENU)
 	{
 		getHUD().ClearMenus(true);
+	}
+
+	CBlob@ blob = caller.getBlob();
+	if (blob !is null)
+	{
+		blob.Tag("reload blocks");
 	}
 }
