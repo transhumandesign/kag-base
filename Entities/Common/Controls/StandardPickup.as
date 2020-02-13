@@ -5,8 +5,6 @@
 #include "ThrowCommon.as"
 #include "WheelMenuCommon.as"
 
-string[] pickup_items = {"keg", "bomb", "mat_gold", "mat_wood", "mat_stone"};
-
 const u32 PICKUP_ERASE_TICKS = 80;
 
 void onInit(CBlob@ this)
@@ -595,6 +593,13 @@ void onRender(CSprite@ this)
 					hover = true;
 					Vec2f dimensions;
 					GUI::SetFont("menu");
+
+					GUI::DrawCircle(
+						getDriver().getScreenPosFromWorldPos(b.getPosition()),
+						32.0f,
+						SColor(255, 255, 255, 255)
+					);
+
 					GUI::GetTextDimensions(b.getInventoryName(), dimensions);
 					GUI::DrawText(getTranslatedString(b.getInventoryName()), getDriver().getScreenPosFromWorldPos(b.getPosition() - Vec2f(0, -b.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);
 

@@ -115,6 +115,14 @@ class PickupWheelMenuEntry : WheelMenuEntry
 			return;
 		}
 
+		GUI::DrawIcon(
+			"InteractionIconsBackground.png",
+			0,
+			Vec2f(32, 32),
+			position - Vec2f(32, 32),
+			1.5f
+		);
+
 		GUI::DrawIconByName(
 			icon_name,
 			position,
