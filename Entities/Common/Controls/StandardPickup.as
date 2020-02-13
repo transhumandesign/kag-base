@@ -47,11 +47,18 @@ void onInit(CBlob@ this)
 		menu.add_entry(PickupWheelMenuEntry("Stone", "$mat_stone$", array<string>(1, "mat_stone"), Vec2f(0, -6.0f)));
 		menu.add_entry(PickupWheelMenuEntry("Wood", "$mat_wood$", array<string>(1, "mat_wood"), Vec2f(0, -6.0f)));
 		menu.add_entry(PickupWheelMenuEntry("Drill", "$drill$", array<string>(1, "drill"), Vec2f(-16.0f, 0.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Saw", "$saw$", array<string>(1, "saw"), Vec2f(-16.0f, -16.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Trampoline", "$trampoline$", array<string>(1, "trampoline"), Vec2f(-16.0f, -8.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Boulder", "$boulder$", array<string>(1, "boulder")));
+		menu.add_entry(PickupWheelMenuEntry("Sponge", "$sponge$", array<string>(1, "sponge"), Vec2f(0, 8.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Seed", "$seed$", array<string>(1, "seed"), Vec2f(8.0f, 8.0f)));
 
 		// misc
+		menu.add_entry(PickupWheelMenuEntry("Log", "$log$", array<string>(1, "log")));
 		const string[] food_options = {"food", "heart", "fishy", "grain", "steak", "egg", "flowers"};
 		menu.add_entry(PickupWheelMenuEntry("Food", "$food$", food_options));
 		menu.add_entry(PickupWheelMenuEntry("Ballista Ammo", "$mat_bolts$", array<string>(1, "mat_bolts")));
+		menu.add_entry(PickupWheelMenuEntry("Crate", "$crate$", array<string>(1, "crate"), Vec2f(-16.0f, 0)));
 	}
 
 }
