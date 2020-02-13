@@ -343,6 +343,27 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 	}
 }
 
+void onTick(CBlob@ blob)
+{
+	CControls@ controls = getControls();
+	if (controls.isKeyPressed(KEY_LSHIFT))
+	{
+		if (controls.isKeyPressed(KEY_KEY_0))
+		{
+			blob.SendCommand(Builder::make_block + 9);
+		}
+
+		for (uint i = 0; i < 9; i++)
+		{
+			if (controls.isKeyPressed(KEY_KEY_1 + i))
+			{
+				blob.SendCommand(Builder::make_block + i);
+			}
+		}
+
+	}
+}
+
 void onRender(CSprite@ this)
 {
 	CMap@ map = getMap();
