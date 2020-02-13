@@ -75,7 +75,7 @@ void onTick(CBlob@ this)
 	CControls@ controls = getControls();
 
 	// drop / pickup / throw
-	if (controls.isKeyPressed(KEY_LSHIFT))
+	if (controls.isKeyPressed(KEY_LSHIFT) || controls.isKeyPressed(KEY_RSHIFT))
 	{
 		WheelMenu@ menu = get_wheel_menu("pickup");
 		if (this.isKeyPressed(key_pickup) && menu !is get_active_wheel_menu())
@@ -162,7 +162,7 @@ void onTick(CBlob@ this)
 	else
 	{
 		WheelMenu@ menu = get_wheel_menu("pickup");
-		if ((this.isKeyJustReleased(key_pickup) || controls.isKeyJustReleased(KEY_LSHIFT))
+		if ((this.isKeyJustReleased(key_pickup) || controls.isKeyJustReleased(KEY_LSHIFT) || controls.isKeyJustReleased(KEY_RSHIFT))
 			&&  get_active_wheel_menu() is menu)
 		{
 			PickupWheelMenuEntry@ selected = cast<PickupWheelMenuEntry>(menu.get_selected());
