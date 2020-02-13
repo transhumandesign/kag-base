@@ -71,7 +71,7 @@ void onTick(CBlob@ this)
 	if (controls.isKeyPressed(KEY_LSHIFT))
 	{
 		WheelMenu@ menu = get_wheel_menu("pickup");
-		if (this.isKeyJustPressed(key_pickup))
+		if (this.isKeyPressed(key_pickup) && menu !is get_active_wheel_menu())
 		{
 			set_active_wheel_menu(@menu);
 
