@@ -97,8 +97,9 @@ class PickupWheelMenuEntry : WheelMenuEntry
 	float scale;
 	bool disabled;
 	string[] options;
+	Vec2f offset;
 
-	PickupWheelMenuEntry(const string&in p_name, const string&in p_icon_name, string[] p_options)
+	PickupWheelMenuEntry(const string&in p_name, const string&in p_icon_name, string[] p_options, Vec2f p_offset = Vec2f(0, 0))
 	{
 		super(p_name);
 		visible_name = p_name;
@@ -106,6 +107,7 @@ class PickupWheelMenuEntry : WheelMenuEntry
 		options = p_options;
 		scale = 1.0f;
 		disabled = false;
+		offset = p_offset;
 	}
 
 	void render() override
@@ -125,7 +127,7 @@ class PickupWheelMenuEntry : WheelMenuEntry
 
 		GUI::DrawIconByName(
 			icon_name,
-			position,
+			position + offset,
 			scale
 		);
 	}

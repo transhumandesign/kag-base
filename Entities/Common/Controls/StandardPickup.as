@@ -29,24 +29,24 @@ void onInit(CBlob@ this)
 		menu.add_entry(PickupWheelMenuEntry("Keg", "$keg$", array<string>(1, "keg")));
 
 		const string[] bomb_options = {"bomb", "mat_bombs"};
-		menu.add_entry(PickupWheelMenuEntry("Bomb", "$mat_bombs$", bomb_options));
+		menu.add_entry(PickupWheelMenuEntry("Bomb", "$mat_bombs$", bomb_options, Vec2f(0, -8.0f)));
 
 		const string[] waterbomb_options = {"waterbomb", "mat_waterbombs"};
-		menu.add_entry(PickupWheelMenuEntry("Water Bomb", "$mat_waterbombs$", waterbomb_options));
+		menu.add_entry(PickupWheelMenuEntry("Water Bomb", "$mat_waterbombs$", waterbomb_options, Vec2f(0, -6.0f)));
 
 		menu.add_entry(PickupWheelMenuEntry("Mine", "$mine$", array<string>(1, "mine")));
 
 		// archer stuff
-		menu.add_entry(PickupWheelMenuEntry("Arrows", "$mat_arrows$", array<string>(1, "mat_arrows")));
-		menu.add_entry(PickupWheelMenuEntry("Water Arrows", "$mat_waterarrows$", array<string>(1, "mat_waterarrows")));
-		menu.add_entry(PickupWheelMenuEntry("Fire Arrows", "$mat_firearrows$", array<string>(1, "mat_firearrows")));
+		menu.add_entry(PickupWheelMenuEntry("Arrows", "$mat_arrows$", array<string>(1, "mat_arrows"), Vec2f(0, -8.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Water Arrows", "$mat_waterarrows$", array<string>(1, "mat_waterarrows"), Vec2f(0, 2.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Fire Arrows", "$mat_firearrows$", array<string>(1, "mat_firearrows"), Vec2f(0, -6.0f)));
 		menu.add_entry(PickupWheelMenuEntry("Bomb Arrows", "$mat_bombarrows$", array<string>(1, "mat_bombarrows")));
 
 		// builder stuff
-		menu.add_entry(PickupWheelMenuEntry("Gold", "$mat_gold$", array<string>(1, "mat_gold")));
-		menu.add_entry(PickupWheelMenuEntry("Stone", "$mat_stone$", array<string>(1, "mat_stone")));
-		menu.add_entry(PickupWheelMenuEntry("Wood", "$mat_wood$", array<string>(1, "mat_wood")));
-		menu.add_entry(PickupWheelMenuEntry("Drill", "$drill$", array<string>(1, "drill")));
+		menu.add_entry(PickupWheelMenuEntry("Gold", "$mat_gold$", array<string>(1, "mat_gold"), Vec2f(0, -6.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Stone", "$mat_stone$", array<string>(1, "mat_stone"), Vec2f(0, -6.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Wood", "$mat_wood$", array<string>(1, "mat_wood"), Vec2f(0, -6.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Drill", "$drill$", array<string>(1, "drill"), Vec2f(-16.0f, 0.0f)));
 
 		// misc
 		const string[] food_options = {"food", "heart", "fishy", "grain", "steak", "egg", "flowers"};
