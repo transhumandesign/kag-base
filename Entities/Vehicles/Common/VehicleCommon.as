@@ -650,7 +650,7 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 					}
 				}  // driver
 
-				if (blob.isMyPlayer() && ap.name == "GUNNER" && !isKnocked(blob))
+				if (ap.name == "GUNNER" && !isKnocked(blob))
 				{
 					// set facing
 					blob.SetFacingLeft(this.isFacingLeft());
@@ -664,7 +664,7 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 							if (ap.isKeyPressed(key_action1))
 							{
 								v.firing = true;
-								if (canFire(this, v))
+								if (canFire(this, v) && blob.isMyPlayer())
 								{
 									CBitStream fireParams;
 									fireParams.write_u16(blob.getNetworkID());
@@ -685,7 +685,7 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 								v.charge = 0;
 								v.cooldown_time = Maths::Max(v.cooldown_time, 15);
 							}
-							else if (Vehicle_canFire(this, v, ap.isKeyPressed(key_action1), ap.wasKeyPressed(key_action1), charge) && canFire(this, v))
+							else if (Vehicle_canFire(this, v, ap.isKeyPressed(key_action1), ap.wasKeyPressed(key_action1), charge) && canFire(this, v) && blob.isMyPlayer())
 							{
 								CBitStream fireParams;
 								fireParams.write_u16(blob.getNetworkID());
