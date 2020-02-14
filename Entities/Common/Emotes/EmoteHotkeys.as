@@ -73,6 +73,12 @@ void onTick(CBlob@ this)
 	}
 
 	CControls@ controls = getControls();
+	if (controls.isKeyPressed(KEY_LSHIFT) || controls.isKeyPressed(KEY_RSHIFT))
+	{
+		return;
+	}
+
+
 	if (controls.isKeyJustPressed(KEY_KEY_1))
 	{
 		set_emote(this, emote_1);
