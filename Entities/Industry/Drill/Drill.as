@@ -442,7 +442,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	{
 		this.setPosition(attached.getPosition()); // required to stop the first tick to be out of position
 
-		shape.server_SetActive(false); // stops sinking when its attached
+		shape.SetGravityScale(0); // this stops the shape from 'falling' when its attached to something, (helps the heat bar from looking bad above 30 fps)
 	}
 }
 
@@ -453,7 +453,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 	CShape@ shape = this.getShape();
 	if (shape !is null)
 	{
-		shape.server_SetActive(true);
+		shape.SetGravityScale(1);
 	}
 }
 
