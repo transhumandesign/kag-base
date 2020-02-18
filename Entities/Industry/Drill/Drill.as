@@ -59,9 +59,12 @@ void onInit(CBlob@ this)
 	}*/
 
 	this.set_u32("hittime", 0);
-	//this.Tag("place45");
+	this.Tag("place norotate"); // required to prevent drill from locking in place (blame builder code :kag_angry:)
+	
+	//this.Tag("place45"); // old 45 degree angle lock
 	//this.set_s8("place45 distance", 1);
 	//this.Tag("place45 perp");
+
 	this.set_u8(heat_prop, 0);
 	this.set_u16("showHeatTo", 0);
 	this.set_u16("harvestWoodDoorCap", 4);
@@ -183,7 +186,6 @@ void onTick(CBlob@ this)
 		if (holder is null) return;
 
 		AimAtMouse(this, holder); // aim at our mouse pos
-
 
 		// cool faster if holder is moving
 		if (heat > 0 && holder.getShape().vellen > 0.01f && getGameTime() % 3 == 0)
@@ -438,8 +440,9 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	CShape@ shape = this.getShape();
 	if (shape !is null)
 	{
+		this.setPosition(attached.getPosition()); // required to stop the first tick to be out of position
+
 		shape.server_SetActive(false); // stops sinking when its attached
-		shape.SetRotationsAllowed(true); // stops rotation
 	}
 }
 
@@ -451,7 +454,6 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 	if (shape !is null)
 	{
 		shape.server_SetActive(true);
-		shape.SetRotationsAllowed(true);
 	}
 }
 
@@ -552,6 +554,5 @@ void AimAtMouse(CBlob@ this, CBlob@ holder)
 
 	if (!this.isFacingLeft()) mouseAngle += 180;
 
-	//this.setAngleDegrees(-mouseAngle); // weirdly locks it self to 90/260 degrees if mouse goes to a certain angle
-	this.getShape().SetAngleDegrees(-mouseAngle);
+	this.setAngleDegrees(-mouseAngle); // set aim pos
 }
