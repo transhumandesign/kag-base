@@ -214,7 +214,8 @@ class VoteNextmapFunctor : VoteFunctor
 		{
 			if (getNet().isServer())
 			{
-				LoadNextMap();
+				CRules@ rules = getRules();
+				rules.SetCurrentState(GAME_OVER);
 			}
 		}
 		else
