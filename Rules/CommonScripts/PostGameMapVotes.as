@@ -2,6 +2,7 @@
 #include "MapVotesCommon.as";
 
 const int VoteSecs = 16;
+const int PrePostVoteSecs = -4;
 const u16 FadeTicks = 60; //2(secs)*30(ticks)
 s16 fadeTimer;
 const string vote_end_id = "mapvote: ended";
@@ -13,7 +14,7 @@ void onInit( CRules@ this )
 	onRestart(this);
 
 	string AveriaSerif = CFileMatcher("AveriaSerif-Bold.ttf").getFirst();	
-	GUI::LoadFont("arial_20", AveriaSerif, 20);
+	GUI::LoadFont("AveriaSerif-Bold_20", AveriaSerif, 20);
 
 	this.addCommandID(vote_end_id);
 	this.addCommandID(vote_selectmap_id);
@@ -21,7 +22,7 @@ void onInit( CRules@ this )
 	MapVotesMenu mvm();
 	this.set("MapVotesMenu", @mvm);
 
-	int id = Render::addScript(Render::layer_posthud, "PostGameMapVotes.as", "RenderFunction", 0.0f);
+	int id = Render::addScript(Render::layer_posthud, "PostGameMapVotes.as", "RenderRaw", 0.0f);
 }
 
 void onRestart(CRules@ this)
@@ -39,7 +40,7 @@ void onTick( CRules@ this )
 	if (!this.isGameOver()) return;
 	if (!mvm.isSetup)
 	{	
-		fadeTimer = -(4*30); // ticks of endgame time before fading
+		fadeTimer = PrePostVoteSecs*getTicksASecond(); // endgame time before fading
 		mvm.VoteTimeLeft = VoteSecs;
 		mvm.Refresh();
 
@@ -68,7 +69,7 @@ void onTick( CRules@ this )
 	}
 
 	// Vote is now setup, faded to black and is counting down
-	if (getGameTime() % 30 == 0)
+	if (getGameTime() % getTicksASecond() == 0)
 	mvm.VoteTimeLeft--;
 
 	if (mvm.VotedCount1 > mvm.VotedCount2 && mvm.VotedCount1 > mvm.VotedCount3)
@@ -85,7 +86,7 @@ void onTick( CRules@ this )
 	}
 
 	CBitStream params;
-	if (getNet().isServer() && mvm.VoteTimeLeft == -4) //timeup + 4 secs, load voted map
+	if (getNet().isServer() && mvm.VoteTimeLeft == PrePostVoteSecs) //timeup + some, load voted map
 	{
 		params.write_u8(mvm.MostVoted);
 		this.SendCommand(this.getCommandID(vote_end_id), params);
@@ -98,7 +99,7 @@ void onTick( CRules@ this )
 	CControls@ controls = getControls();
 	if (controls is null) return;
 
-	if (mvm.VoteTimeLeft <= 0 || mvm.VoteTimeLeft >= VoteSecs || me.getTeamNum() == this.getSpectatorTeamNum()) return;
+	if (mvm.VoteTimeLeft <= 0 || mvm.VoteTimeLeft >= VoteSecs-1) return;
 
 	u8 SelectedNum;	//default to zero, so command is sent only once
 	mvm.Update(controls, SelectedNum);
@@ -149,9 +150,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (getNet().isServer() && cmd == this.getCommandID(vote_end_id))
 	{		
-		SaveVoteStats(this);
-
-		PrintVoteStats(this);
+		tcpr("(MapVotes) Map1: "+mvm.button1.shortname+" = "+mvm.VotedCount1+" Map2: "+mvm.button3.shortname+" = "+mvm.VotedCount3+" Random/Inconclusive = "+mvm.VotedCount2);
 
 		u8 MostVoted = params.read_u8(); 
 		switch (MostVoted)
@@ -172,7 +171,7 @@ void onRender(CRules@ this)
 	mvm.RenderGUI();
 }
 
-void RenderFunction(int id)
+void RenderRaw(int id)
 {	
 	MapVotesMenu@ mvm;
 	if (!getRules().get("MapVotesMenu", @mvm)) return;
@@ -182,67 +181,4 @@ void RenderFunction(int id)
 	Render::SetAlphaBlend(true);
 	Render::SetBackfaceCull(true);
 	mvm.RenderRaw();
-}
-
-void SaveVoteStats(CRules@ this)
-{
-	MapVotesMenu@ mvm;
-	if (!this.get("MapVotesMenu", @mvm)) return;
-
-	if (getNet().isServer())
-	{
-		string mode = this.gamemode_name;
-		string statsFile = "Stats_"+mode+"_MapVotes""/"+mode+"_mapvote_stats.cfg";
-		ConfigFile stats;
-
-		if (stats.loadFile("../Cache/" + statsFile))
-		{
-			const u32 b1votes = stats.exists(mvm.button1.shortname) ? stats.read_u32(mvm.button1.shortname) : 0;
-			const u32 b2votes = stats.exists("Random_Map") ? stats.read_u32("Random_Map") : 0;
-			const u32 b3votes = stats.exists(mvm.button3.shortname) ? stats.read_u32(mvm.button3.shortname) : 0;
-			
-			stats.add_u32(mvm.button1.shortname, b1votes+mvm.VotedCount1);
-			stats.add_u32("Random_Map", b2votes+mvm.VotedCount2);
-			stats.add_u32(mvm.button3.shortname, b3votes+mvm.VotedCount3);
-
-			stats.saveFile(statsFile);
-		}
-	}
-}
-
-void PrintVoteStats(CRules@ this)
-{
-	if (getNet().isServer())
-	{
-		ConfigFile stats;
-		string mode = this.gamemode_name;
-		string statsFile = "Stats_"+mode+"_MapVotes""/"+mode+"_mapvote_stats.cfg";
-
-		if (mode == "Team Deathmatch") mode = "TDM";
-		string mapcycle =  "Rules/"+mode+"/mapcycle.cfg";
-
-		ConfigFile cfg;	
-		bool loaded = false;
-		if (CFileMatcher(mapcycle).getFirst() == mapcycle && cfg.loadFile(mapcycle)) loaded = true;
-		else if (cfg.loadFile(mapcycle)) loaded = true;
-		if (!loaded) { warn( mapcycle+ " not found!"); return; }
-
-		string[] map_names;
-		if (cfg.readIntoArray_string(map_names, "mapcycle"))
-		{
-			if (stats.loadFile("../Cache/" + statsFile))
-			{
-				for (uint i = 0; i < map_names.length(); i++)
-				{
-					string filename = map_names[i];				
-					string shortname = getFilenameWithoutExtension(getFilenameWithoutPath(filename));
-
-					if (stats.exists(shortname))
-					printf(""+shortname +" = " +stats.read_u32(shortname));
-				}	
-				if (stats.exists("Random_Map"))
-				printf("Random_Map = " +stats.read_u32("Random_Map"));
-			}
-		}
-	}
 }

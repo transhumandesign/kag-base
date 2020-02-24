@@ -1,6 +1,8 @@
 //-- Written by Monkey_Feats 22/2/2020 --//
 #include "LoaderColors.as";
 
+Random _random();
+
 class MapVotesMenu
 {
 	bool isSetup;
@@ -35,6 +37,7 @@ class MapVotesMenu
 		VotedCount1 = VotedCount2 = VotedCount3 = 0;
 		Selected = -1;
 
+		_random.Reset(getGameTime());
 		//Refresh button names, textures and size
 		RandomizeButtonNames();
 		RefreshButtons();
@@ -48,7 +51,6 @@ class MapVotesMenu
 		button1.Pos.x += TL_Position.x;
 		button2.Pos.x += TL_Position.x;
 		button3.Pos.x += TL_Position.x;
-
 		button1.Pos.y = button2.Pos.y = button3.Pos.y = TL_Position.y+40;
 
 		isSetup = true;
@@ -56,9 +58,13 @@ class MapVotesMenu
 
 	void RandomizeButtonNames()
 	{
-		string mode_name = getRules().gamemode_name;
-		if (mode_name == "Team Deathmatch") mode_name = "TDM";
-		string mapcycle =  "Rules/"+mode_name+"/mapcycle.cfg";
+		string mapcycle = sv_mapcycle;
+		if (mapcycle == "")
+		{
+			string mode_name = sv_gamemode;
+			if (mode_name == "Team Deathmatch") mode_name = "TDM";
+			mapcycle =  "Rules/"+mode_name+"/mapcycle.cfg";
+		}
 
 		ConfigFile cfg;	
 		bool loaded = false;
@@ -69,108 +75,89 @@ class MapVotesMenu
 		string[] map_names;
 		if (cfg.readIntoArray_string(map_names, "mapcycle"))
 		{
-			const u16 arrayleng = map_names.length();
-			const string currentMap = getMap().getMapName();
-			Random _random(getGameTime());
+			int arrayleng = map_names.length();	
 
-			// randomize button 1 map name
-			int count = 0;
-			bool done = false;
-			while (!done)
-			{				
-				count++;
-				string temp = map_names[_random.NextRanged(arrayleng)];
-				
-				//test to see if the map filename is inside parentheses and cut it out
-				//incase someone wants to add map votes to a gamemode that loads maps via scripts, eg. Challenge/mapcycle.cfg				 
-				string temptest = temp.substr(temp.length() - 1,temp.length() - 1);
-				if (temptest == ")")
+			if (arrayleng <= 1)
+			{
+				LoadNextMap(); // we don't care about voting, get me out
+			}
+			else if (arrayleng == 2)
+			{
+				button1.filename = map_names[0];
+				button3.filename = map_names[1];
+			}
+			else // more than 2 maps left
+			{
+				//remove the current map first
+				const string currentMap = getMap().getMapName();	
+				const int currentMapNum = map_names.find(currentMap);
+				if (currentMapNum != -1)
 				{
-					string[] name = temp.split(' (');
-					string mapName = name[name.length() - 1];
-					temp = mapName.substr(0,mapName.length() - 1);
+					map_names.removeAt(currentMapNum);
 				}
 
- 				//lots of cases to be sure we get the most randomization and exit safely
+				//check again
+				arrayleng = map_names.length();
 				if (arrayleng == 2)
 				{
 					button1.filename = map_names[0];
-					button1.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button1.filename));
-					done = true;
+					button3.filename = map_names[1];
 				}
-				else if (temp != button1.filename && temp != button3.filename && temp != currentMap)
+				else if (button1.filename != currentMap) // remove the old button 1
 				{
-					button1.filename = temp;
-					button1.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(temp));
-					done = true;
+					const int oldMap1Num = map_names.find(button1.filename);
+					if (oldMap1Num != -1)
+					{
+						map_names.removeAt(oldMap1Num);
+					}
 				}
-				else if (temp != button1.filename && temp != button3.filename)
+				else if (button3.filename != currentMap) // remove the old button 3
 				{
-					button1.filename = temp;
-					button1.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(temp));
-					done = true;
-				}
-				else if (temp != button3.filename)
-				{
-					button1.filename = temp;
-					button1.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(temp));
-					done = true;
-				}
-				else if (count == arrayleng) //safely exit the loop, pure random, probably only 1 map in the pool
+					const int oldMap3Num = map_names.find(button3.filename);
+					if (oldMap3Num != -1)
+					{
+						map_names.removeAt(oldMap3Num);
+					}
+				}				
+				
+				// random based on what's left
+				arrayleng = map_names.length();
+				if (arrayleng > 2)
 				{
 					button1.filename = map_names[_random.NextRanged(arrayleng)];
-					button1.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button1.filename));
-					done = true;
-				}
-			}
-
-			//randomize button 3 map name
-			count = 0;
-			done = false; 
-			while (!done)
-			{
-				count++;
-				string temp = map_names[_random.NextRanged(arrayleng)];
-
-				string temptest = temp.substr(temp.length() - 1,temp.length() - 1);
-				if (temptest == ")")
-				{
-					string[] name = temp.split(' (');
-					string mapName = name[name.length() - 1];
-					temp = mapName.substr(0,mapName.length() - 1);
-				}
-
-				if (arrayleng == 2)
-				{
-					button3.filename = map_names[1];
-					button3.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button3.filename));
-					done = true;
-				}
-				else if (temp != button3.filename && temp != button1.filename && temp != currentMap)
-				{
-					button3.filename = temp;
-					button3.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(temp));
-					done = true;
-				}
-				else if (temp != button3.filename && temp != button1.filename)
-				{
-					button3.filename = temp;
-					button3.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(temp));
-					done = true;
-				}
-				else if (temp != button1.filename)
-				{
-					button3.filename = temp;
-					button3.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(temp));
-					done = true;
-				}
-				else if (count == arrayleng)
-				{
+					map_names.removeAt(map_names.find(button1.filename));
 					button3.filename = map_names[_random.NextRanged(arrayleng)];
-					button3.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button3.filename));
-					done = true;
 				}
+				else if (arrayleng == 2)
+				{
+					button1.filename = map_names[0];
+					button3.filename = map_names[1];
+				}
+				else //if (arrayleng <= 1)
+				{
+					LoadNextMap(); // we don't care about voting, get me out
+				}
+			}			
+
+			//test to see if the map filename is inside parentheses and cut it out
+			//incase someone wants to add map votes to a gamemode that loads maps via scripts, eg. Challenge/mapcycle.cfg				 
+			string temptest = button1.filename.substr(button1.filename.length() - 1, button1.filename.length() - 1);
+			if (temptest == ")")
+			{
+				string[] name = button1.filename.split(' (');
+				string mapName = name[name.length() - 1];
+				button1.filename = mapName.substr(0,mapName.length() - 1);
 			}
+			temptest = button3.filename.substr(button3.filename.length() - 1, button3.filename.length() - 1);
+			if (temptest == ")")
+			{
+				string[] name = button1.filename.split(' (');
+				string mapName = name[name.length() - 1];
+				button3.filename = mapName.substr(0,mapName.length() - 1);
+			}
+
+			button1.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button1.filename));
+			button3.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button3.filename));
 		}
 	}
 
@@ -280,17 +267,16 @@ class MapVotesMenu
 			else
 			{
 			 	GUI::DrawText("Map Vote Ends In : "+ VoteTimeLeft +" Secs", TL_Position+Vec2f(20,8), color_white);
-			}
-			
+			}			
 
 			const Vec2f NameMid1 = button1.Pos+Vec2f((button1.Size.x/2)-2, button1.Size.y + 36);
 			const Vec2f NameMid2 = button2.Pos+Vec2f((button2.Size.x/2)-2, button2.Size.y + 36);
 			const Vec2f NameMid3 = button3.Pos+Vec2f((button3.Size.x/2)-2, button3.Size.y + 36);
 			
-			GUI::SetFont("arial_20");
-			GUI::DrawTextCentered(""+ VotedCount1, NameMid1, MostVoted == 1 ? SColor(colors::green_color) : color_white);
-			GUI::DrawTextCentered(""+ VotedCount2, NameMid2, MostVoted == 2 ? SColor(colors::green_color) : color_white);
-			GUI::DrawTextCentered(""+ VotedCount3, NameMid3, MostVoted == 3 ? SColor(colors::green_color) : color_white);
+			GUI::SetFont("AveriaSerif-Bold_20");
+			GUI::DrawTextCentered(""+ VotedCount1, NameMid1, color_white);
+			GUI::DrawTextCentered(""+ VotedCount2, NameMid2, color_white);
+			GUI::DrawTextCentered(""+ VotedCount3, NameMid3, color_white);
 			
 			GUI::SetFont("menu");
 			button1.RenderGUI();
