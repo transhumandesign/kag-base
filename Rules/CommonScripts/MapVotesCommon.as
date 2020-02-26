@@ -37,9 +37,8 @@ class MapVotesMenu
 		VotedCount1 = VotedCount2 = VotedCount3 = 0;
 		Selected = -1;
 
-		_random.Reset(getGameTime());
 		//Refresh button names, textures and size
-		RandomizeButtonNames();
+		//RandomizeButtonNames();
 		RefreshButtons();
 
 		//Refresh menu pos/size after getting button sizes
@@ -54,111 +53,6 @@ class MapVotesMenu
 		button1.Pos.y = button2.Pos.y = button3.Pos.y = TL_Position.y+40;
 
 		isSetup = true;
-	}
-
-	void RandomizeButtonNames()
-	{
-		string mapcycle = sv_mapcycle;
-		if (mapcycle == "")
-		{
-			string mode_name = sv_gamemode;
-			if (mode_name == "Team Deathmatch") mode_name = "TDM";
-			mapcycle =  "Rules/"+mode_name+"/mapcycle.cfg";
-		}
-
-		ConfigFile cfg;	
-		bool loaded = false;
-		if (CFileMatcher(mapcycle).getFirst() == mapcycle && cfg.loadFile(mapcycle)) loaded = true;
-		else if (cfg.loadFile(mapcycle)) loaded = true;
-		if (!loaded) { warn( mapcycle+ " not found!"); return; }
-
-		string[] map_names;
-		if (cfg.readIntoArray_string(map_names, "mapcycle"))
-		{
-			int arrayleng = map_names.length();	
-
-			if (arrayleng <= 1)
-			{
-				LoadNextMap(); // we don't care about voting, get me out
-			}
-			else if (arrayleng == 2)
-			{
-				button1.filename = map_names[0];
-				button3.filename = map_names[1];
-			}
-			else // more than 2 maps left
-			{
-				//remove the current map first
-				const string currentMap = getMap().getMapName();	
-				const int currentMapNum = map_names.find(currentMap);
-				if (currentMapNum != -1)
-				{
-					map_names.removeAt(currentMapNum);
-				}
-
-				//check again
-				arrayleng = map_names.length();
-				if (arrayleng == 2)
-				{
-					button1.filename = map_names[0];
-					button3.filename = map_names[1];
-				}
-				else if (button1.filename != currentMap) // remove the old button 1
-				{
-					const int oldMap1Num = map_names.find(button1.filename);
-					if (oldMap1Num != -1)
-					{
-						map_names.removeAt(oldMap1Num);
-					}
-				}
-				else if (button3.filename != currentMap) // remove the old button 3
-				{
-					const int oldMap3Num = map_names.find(button3.filename);
-					if (oldMap3Num != -1)
-					{
-						map_names.removeAt(oldMap3Num);
-					}
-				}				
-				
-				// random based on what's left
-				arrayleng = map_names.length();
-				if (arrayleng > 2)
-				{
-					button1.filename = map_names[_random.NextRanged(arrayleng)];
-					map_names.removeAt(map_names.find(button1.filename));
-					button3.filename = map_names[_random.NextRanged(arrayleng)];
-				}
-				else if (arrayleng == 2)
-				{
-					button1.filename = map_names[0];
-					button3.filename = map_names[1];
-				}
-				else //if (arrayleng <= 1)
-				{
-					LoadNextMap(); // we don't care about voting, get me out
-				}
-			}			
-
-			//test to see if the map filename is inside parentheses and cut it out
-			//incase someone wants to add map votes to a gamemode that loads maps via scripts, eg. Challenge/mapcycle.cfg				 
-			string temptest = button1.filename.substr(button1.filename.length() - 1, button1.filename.length() - 1);
-			if (temptest == ")")
-			{
-				string[] name = button1.filename.split(' (');
-				string mapName = name[name.length() - 1];
-				button1.filename = mapName.substr(0,mapName.length() - 1);
-			}
-			temptest = button3.filename.substr(button3.filename.length() - 1, button3.filename.length() - 1);
-			if (temptest == ")")
-			{
-				string[] name = button1.filename.split(' (');
-				string mapName = name[name.length() - 1];
-				button3.filename = mapName.substr(0,mapName.length() - 1);
-			}
-
-			button1.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button1.filename));
-			button3.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button3.filename));
-		}
 	}
 
 	void RefreshButtons()

@@ -7,6 +7,7 @@ const u16 FadeTicks = 60; //2(secs)*30(ticks)
 s16 fadeTimer;
 const string vote_end_id = "mapvote: ended";
 const string vote_selectmap_id = "mapvote: selectmap";
+const string vote_random_names_id = "mapvote: random_names";
 u8 current_Selected = 0;
 
 void onInit( CRules@ this )
@@ -18,6 +19,7 @@ void onInit( CRules@ this )
 
 	this.addCommandID(vote_end_id);
 	this.addCommandID(vote_selectmap_id);
+	this.addCommandID(vote_random_names_id);
 
 	MapVotesMenu mvm();
 	this.set("MapVotesMenu", @mvm);
@@ -40,10 +42,14 @@ void onTick( CRules@ this )
 	if (!this.isGameOver()) return;
 	if (!mvm.isSetup)
 	{	
-		fadeTimer = PrePostVoteSecs*getTicksASecond(); // endgame time before fading
-		mvm.VoteTimeLeft = VoteSecs;
-		mvm.Refresh();
+		RandomizeButtonNames(this);
 
+		if (mvm.button1.filename != "" || mvm.button3.filename != "")
+		{
+			fadeTimer = PrePostVoteSecs*getTicksASecond(); // endgame time before fading
+			mvm.VoteTimeLeft = VoteSecs;
+			mvm.Refresh();
+		}
 		return;
 	}
 
@@ -147,6 +153,18 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 			if (myPlayer) current_Selected = selected;
 		}
+	}	
+	else if (cmd == this.getCommandID(vote_random_names_id))
+	{		
+		string m1fn = params.read_string();
+		string m1sn = params.read_string();
+		string m3fn = params.read_string();
+		string m3sn = params.read_string();
+
+		mvm.button1.filename = m1fn;
+		mvm.button1.shortname = m1sn;
+		mvm.button3.filename = m3fn;
+		mvm.button3.shortname = m3sn;
 	}
 	else if (getNet().isServer() && cmd == this.getCommandID(vote_end_id))
 	{		
@@ -162,11 +180,110 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	}
 }
 
-void onRender(CRules@ this)
+string map1name;
+string map3name;
+
+void RandomizeButtonNames(CRules@ this)
 {
+	string mapcycle = sv_mapcycle;
+	if (mapcycle == "")
+	{
+		string mode_name = sv_gamemode;
+		if (mode_name == "Team Deathmatch") mode_name = "TDM";
+		mapcycle =  "Rules/"+mode_name+"/mapcycle.cfg";
+	}
+
+	ConfigFile cfg;	
+	bool loaded = false;
+	if (CFileMatcher(mapcycle).getFirst() == mapcycle && cfg.loadFile(mapcycle)) loaded = true;
+	else if (cfg.loadFile(mapcycle)) loaded = true;
+	if (!loaded) { warn( mapcycle+ " not found!"); return; }
+
+	string[] map_names;
+	if (cfg.readIntoArray_string(map_names, "mapcycle"))
+	{		
+		const string currentMap = getMap().getMapName();	
+		const int currentMapNum = map_names.find(currentMap);	
+
+		int arrayleng = map_names.length();	
+		if (arrayleng > 4)
+		{
+			//remove the current map first
+			if (currentMapNum != -1)
+				map_names.removeAt(currentMapNum);
+
+			if (map1name != currentMap)
+			{ 	// remove the old button 1
+				const int oldMap1Num = map_names.find(map1name);
+				if (oldMap1Num != -1)
+					map_names.removeAt(oldMap1Num);
+			}
+			else if (map3name != currentMap) 
+			{	// remove the old button 3
+				const int oldMap3Num = map_names.find(map3name);
+				if (oldMap3Num != -1)
+					map_names.removeAt(oldMap3Num);
+			}					
+			
+			// random based on what's left				
+			map1name = map_names[_random.NextRanged(map_names.length())];
+			map_names.removeAt(map_names.find(map1name));
+			map3name = map_names[_random.NextRanged(map_names.length())];
+		}
+		else if (arrayleng >= 3)
+		{
+			//remove the current map
+			if (currentMapNum != -1)
+			map_names.removeAt(currentMapNum); 
+			// random based on what's left
+			map1name = map_names[_random.NextRanged(map_names.length())];
+			map_names.removeAt(map_names.find(map1name));
+			map3name = map_names[_random.NextRanged(map_names.length())];
+		}
+		else if (arrayleng == 2)
+		{
+			map1name = map_names[0];
+			map3name = map_names[1];
+		}
+		else //if (arrayleng <= 1)
+		{
+			LoadNextMap(); // we don't care about voting, get me out
+		}		
+
+		//test to see if the map filename is inside parentheses and cut it out
+		//incase someone wants to add map votes to a gamemode that loads maps via scripts, eg. Challenge/mapcycle.cfg				 
+		string temptest = map1name.substr(map1name.length() - 1, map1name.length() - 1);
+		if (temptest == ")")
+		{
+			string[] name = map1name.split(' (');
+			string mapName = name[name.length() - 1];
+			map1name = mapName.substr(0,mapName.length() - 1);
+		}
+		temptest = map3name.substr(map3name.length() - 1, map3name.length() - 1);
+		if (temptest == ")")
+		{
+			string[] name = map1name.split(' (');
+			string mapName = name[name.length() - 1];
+			map3name = mapName.substr(0,mapName.length() - 1);
+		}
+		string map1shortname = getFilenameWithoutExtension(getFilenameWithoutPath(map1name));
+		string map3shortname = getFilenameWithoutExtension(getFilenameWithoutPath(map3name));
+
+		CBitStream params;
+		params.write_string(map1name);
+		params.write_string(map1shortname);
+		params.write_string(map3name);	
+		params.write_string(map3shortname);
+		this.SendCommand(this.getCommandID(vote_random_names_id), params);
+	}	
+}
+
+void onRender(CRules@ this)
+{	
 	MapVotesMenu@ mvm;
 	if (!this.get("MapVotesMenu", @mvm)) return;
 	if (!this.isGameOver() || !mvm.isSetup) return;
+	if (!getNet().isClient()) return;
 
 	mvm.RenderGUI();
 }
@@ -176,6 +293,7 @@ void RenderRaw(int id)
 	MapVotesMenu@ mvm;
 	if (!getRules().get("MapVotesMenu", @mvm)) return;
 	if (!getRules().isGameOver() || !mvm.isSetup) return;
+	if (!getNet().isClient()) return;
 
 	Render::SetTransformScreenspace();
 	Render::SetAlphaBlend(true);
