@@ -22,8 +22,6 @@ enum GameMusicTag
 	world_music_end,
 };
 
-string base_blob_name = "hall";
-
 void onInit(CBlob@ this)
 {
 	CMixer@ mixer = getMixer();
@@ -33,14 +31,7 @@ void onInit(CBlob@ this)
 	mixer.ResetMixer();
 	this.set_bool("initialized game", false);
 
-	CRules@ rules = getRules();
-	if (rules !is null)
-	{
-		if (rules.exists("music - base name"))
-		{
-			base_blob_name = rules.get_string("music - base name");
-		}
-	}
+	this.getCurrentScript().tickFrequency = 10
 }
 
 void onTick(CBlob@ this)
@@ -93,14 +84,20 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 	mixer.AddTrack("Sounds/Music/KAGWorld1-14outro.ogg", world_outro);
 }
 
-uint timer = 0;
+u8 battle_timer = 0;
+u8 battle_delay = 5; // seconds
 bool gameStarted = true;
 
 void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 {
-	timer++;
 	if (mixer is null || !s_gamemusic)
 		return;
+
+	if (mixer.isPlaying(world_battle))
+	{
+		battle_timer++;
+		battle_timer = battle_timer % (battle_delay * getTicksASecond());
+	}
 
 	CRules @rules = getRules();
 	CBlob @blob = getLocalPlayerBlob();
@@ -117,27 +114,24 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 	if (rules.isWarmup())
 	{
 		gameStarted = false;
-		
-		if (timer % getTicksASecond() * 3 == 0)
-		{
-			Vec2f pos = blob.getPosition();
 
-			bool isUnderground = checkUnderground(pos, map);
-			if (isUnderground)
-			{
-				changeMusic(mixer, world_ambient_underground, 2.0f, 2.0f);
-				toggleAmbience(mixer, false, 1.0f);
-			}
-			else if (pos.y < map.tilemapheight * map.tilesize * 0.2f)
-			{
-				changeMusic(mixer, world_ambient_mountain, 2.0f, 2.0f);
-				toggleAmbience(mixer, false, 1.0f);
-			}
-			else
-			{
-				changeMusic(mixer, world_home, 2.0f, 2.0f);
-				toggleAmbience(mixer, true, 1.0f);
-			}
+		Vec2f pos = blob.getPosition();
+
+		bool isUnderground = checkUnderground(pos, map);
+		if (isUnderground)
+		{
+			changeMusic(mixer, world_ambient_underground, 2.0f, 2.0f);
+			toggleAmbience(mixer, false, 1.0f);
+		}
+		else if (pos.y < map.tilemapheight * map.tilesize * 0.2f)
+		{
+			changeMusic(mixer, world_ambient_mountain, 2.0f, 2.0f);
+			toggleAmbience(mixer, false, 1.0f);
+		}
+		else
+		{
+			changeMusic(mixer, world_home, 2.0f, 2.0f);
+			toggleAmbience(mixer, true, 1.0f);
 		}
 	}
 	else if (rules.isMatchRunning())
@@ -148,7 +142,7 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 		}
 
 		gameStarted = true;
-		if (timer % getTicksASecond() * (mixer.isPlaying(world_battle) ? 5 : 2) == 0)
+		if (!mixer.isPlaying(world_battle) || battle_timer == getTicksASecond() * 5) // hold onto battle music at least 5 seconds
 		{
 			Vec2f pos = blob.getPosition();
 
@@ -219,7 +213,7 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 							if (b.getConfig() == "keg" && !b.hasTag("exploding")) // only exploding kegs
 								continue;
 
-							if (classList.find(b.getConfig() && b.hasTag("dead")) // skip corpses
+							if (classList.find(b.getConfig()) && b.hasTag("dead")) // skip corpses
 								continue;
 
 							chosen = world_battle;
@@ -230,9 +224,11 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 			}
 
 			if (!mixer.isPlaying(chosen))
+			{
 				changeMusic(mixer, chosen, 2.0f, 2.0f);
 
-			timer = 0;
+				battle_timer = 0;
+			}
 		}
 	}
 	else //end of game, fade out music
