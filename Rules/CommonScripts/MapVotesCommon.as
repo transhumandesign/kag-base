@@ -5,26 +5,24 @@ Random _random();
 
 class MapVotesMenu
 {
-	bool isSetup;
-
 	MapVoteButton@ button1;
 	MapVoteButton@ button2;
 	MapVoteButton@ button3;
-
-	int Selected;
-	int VotedCount1;
-	int VotedCount2;
-	int VotedCount3;
-	u8 MostVoted;
 
 	Vec2f TL_Position;
 	Vec2f BR_Pos;
 	Vec2f MenuSize;
 
-	s32 VoteTimeLeft;
+	u16[] Votes1;
+	u16[] Votes2;
+	u16[] Votes3;
+
+	u8 MostVoted;
+	s16 VoteTimeLeft;
+	bool isSetup;
 
 	MapVotesMenu()
-	{
+	{		
 		isSetup = false;
 
 		@button1 = MapVoteButton(false);
@@ -34,11 +32,7 @@ class MapVotesMenu
 
 	void Refresh()
 	{
-		VotedCount1 = VotedCount2 = VotedCount3 = 0;
-		Selected = -1;
-
-		//Refresh button names, textures and size
-		//RandomizeButtonNames();
+		//Refresh textures and sizes
 		RefreshButtons();
 
 		//Refresh menu pos/size after getting button sizes
@@ -74,58 +68,59 @@ class MapVotesMenu
 		MenuSize.y = (ButtonSize.y+100) > MenuSize.y ? ButtonSize.y+95 : MenuSize.y;
 	}
 
-	void Update(CControls@ controls, u8 &out SelectedNum)
+	void Update(CControls@ controls, u8 &out NewSelectedNum)
 	{
+		if (VoteTimeLeft == VoteSecs) return; // Hack, mouseJustReleased returns true once?
+
 		Vec2f mousepos = controls.getMouseScreenPos();
 		const bool mousePressed = controls.isKeyPressed(KEY_LBUTTON);
 		const bool mouseJustReleased = controls.isKeyJustReleased(KEY_LBUTTON);
 
-		int hoverednum;
 		if (button1.isHovered(mousepos))
 		{
-			if (button1.State == 3) return; 
-			else button1.State = 1; 
-			
-			if (mousePressed) button1.State = 2;
-			else if(mouseJustReleased) 
+			if (button1.State == ButtonStates::Selected) return; 
+			else if (button1.State == ButtonStates::None) {button1.State = ButtonStates::Hovered; Sound::Play("select.ogg");}
+
+			if (mousePressed) button1.State = ButtonStates::Pressed;
+			else if (mouseJustReleased) 
 			{
-				SelectedNum = 1;
-				button1.State = 3;
-				button2.State = button3.State = 0;
+				NewSelectedNum = 1;
+				button1.State = ButtonStates::Selected;
+				button2.State = button3.State = ButtonStates::None;		
 			}
 		}
 		else if (button2.isHovered(mousepos))
 		{
-			if (button2.State == 3) return; 
-			else button2.State = 1; 
+			if (button2.State == ButtonStates::Selected) return; 
+			else if (button2.State == 0) {button2.State = ButtonStates::Hovered; Sound::Play("select.ogg");} 
 			
-			if (mousePressed) button2.State = 2;
-			else if(mouseJustReleased) 
+			if (mousePressed) button2.State = ButtonStates::Pressed;
+			else if (mouseJustReleased) 
 			{
-				SelectedNum = 2;
-				button2.State = 3;
-				button1.State = button3.State = 0;
+				NewSelectedNum = 2;
+				button2.State = ButtonStates::Selected;
+				button1.State = button3.State = ButtonStates::None;
 			}
 		}
 		else if (button3.isHovered(mousepos))
 		{
-			if (button3.State == 3) return; 
-			else button3.State = 1; 
-			
-			if (mousePressed) button3.State = 2;
-			else if(mouseJustReleased) 
+			if (button3.State == ButtonStates::Selected) return; 
+			else if (button3.State == 0) { button3.State = ButtonStates::Hovered; Sound::Play("select.ogg"); } 	
+
+			if (mousePressed) button3.State = ButtonStates::Pressed;
+			else if (mouseJustReleased) 
 			{
-				SelectedNum = 3;
-				button3.State = 3;
-				button1.State = button2.State = 0;
+				NewSelectedNum = 3;
+				button3.State = ButtonStates::Selected;
+				button1.State = button2.State = ButtonStates::None;
 			}
 		}
 		else
 		{
-			SelectedNum = 0;
-			button1.State = button1.State != 3 ? 0 : 3; 
-			button2.State = button2.State != 3 ? 0 : 3;
-			button3.State = button3.State != 3 ? 0 : 3;
+			NewSelectedNum = 0;
+			button1.State = button1.State != ButtonStates::Selected ? ButtonStates::None : ButtonStates::Selected; 
+			button2.State = button2.State != ButtonStates::Selected ? ButtonStates::None : ButtonStates::Selected;
+			button3.State = button3.State != ButtonStates::Selected ? ButtonStates::None : ButtonStates::Selected;
 		}		
 	}
 
@@ -145,7 +140,7 @@ class MapVotesMenu
 		{			
 			GUI::SetFont("menu");	
 			GUI::DrawRectangle(Vec2f_zero, ScreenDim, colors::menu_fadeout_color);
-			GUI::DrawFramedPane(TL_Position, BR_Pos);		
+			GUI::DrawFramedPane(TL_Position, BR_Pos);
 
 			if (VoteTimeLeft < 1)
 			{	
@@ -167,10 +162,10 @@ class MapVotesMenu
 			const Vec2f NameMid2 = button2.Pos+Vec2f((button2.Size.x/2)-2, button2.Size.y + 36);
 			const Vec2f NameMid3 = button3.Pos+Vec2f((button3.Size.x/2)-2, button3.Size.y + 36);
 			
-			GUI::SetFont("AveriaSerif-Bold_20");
-			GUI::DrawTextCentered(""+ VotedCount1, NameMid1, color_white);
-			GUI::DrawTextCentered(""+ VotedCount2, NameMid2, color_white);
-			GUI::DrawTextCentered(""+ VotedCount3, NameMid3, color_white);
+			//GUI::SetFont("AveriaSerif-Bold_20");
+			GUI::DrawTextCentered(""+ Votes1.length(), NameMid1, color_white);
+			GUI::DrawTextCentered(""+ Votes2.length(), NameMid2, color_white);
+			GUI::DrawTextCentered(""+ Votes3.length(), NameMid3, color_white);
 			
 			GUI::SetFont("menu");
 			button1.RenderGUI();
@@ -227,13 +222,6 @@ class MapVoteButton
 	void RefreshButton( u16 MenuWidth, Vec2f &out ButtonSize)
 	{		
 		State = 0;	
-		if (getNet().isServer() && !getNet().isClient()) return; //works for local host and on dedicated
-
-		if(!Texture::exists(shortname))
-		{
-			CreateMapTexture();
-		}
-
 		if(Texture::exists(shortname))
 		{
 			ImageData@ edit = Texture::data(shortname);
@@ -266,106 +254,6 @@ class MapVoteButton
 		}
 	}
 
-	void CreateMapTexture()
-	{
-		// not a perfect minimap replication, but the image is so small it's too hard to tell
-		if(!Texture::createFromFile(shortname, filename))
-		{
-			warn("texture creation failed");
-		}
-		else
-		{	
-			const bool show_gold = getRules().get_bool("show_gold");
-			ImageData@ edit = Texture::data(shortname);
-			u16 minimapW = edit.width();
-			u16 minimapH = edit.height();
-
-			CFileImage image( CFileMatcher(filename).getFirst() );
-			if (image.isLoaded())
-			{
-				while(image.nextPixel())
-				{
-					const int offset = image.getPixelOffset();
-					const Vec2f pixelpos = image.getPixelPosition();
-
-					const SColor PixelCol = image.readPixel();
-
-					const SColor PixelCol_u = edit.get(pixelpos.x, pixelpos.y-1);
-					const SColor PixelCol_d = edit.get(pixelpos.x, pixelpos.y+1);
-					const SColor PixelCol_r = edit.get(pixelpos.x+1, pixelpos.y);
-					const SColor PixelCol_l = edit.get(pixelpos.x-1, pixelpos.y);
-
-					SColor editcol = colors::minimap_open;
-					
-					if ( type(PixelCol) == 0  )      			
-					{
-						editcol = colors::minimap_open;
-					}
-					else if ( type(PixelCol) == 1  )       			
-	    			{				
-	    				// Foreground	
-						editcol = colors::minimap_solid;
-						
-						if ((type(PixelCol_u) != 1 ) || 
-						    (type(PixelCol_l) != 1 ) ||
-							(type(PixelCol_d) != 1 ) ||
-						    (type(PixelCol_r) != 1 ) ) 
-						{
-							editcol = colors::minimap_solid_edge;
-						}
-					}
-					else if ( show_gold && type(PixelCol) == 2 )
-					{
-						//Gold
-						editcol = colors::minimap_gold;
-
-						//Edge
-						if (( type(PixelCol_u) != 1 && type(PixelCol_u) != 2 ) || 
-							( type(PixelCol_l) != 1 && type(PixelCol_l) != 2 ) ||
-						 	( type(PixelCol_d) != 1 && type(PixelCol_d) != 2 ) || 
-							( type(PixelCol_r) != 1 && type(PixelCol_r) != 2 ) )
-						{
-							editcol = colors::minimap_gold_edge;
-						}
-					}										
-					else if (type(PixelCol) == 3)
-					{
-						//Background
-						editcol = colors::minimap_back;
-
-						//Edge
-						if(( type(PixelCol_u) == 0 ) || 
-						   ( type(PixelCol_l) == 0 ) ||
-					 	   ( type(PixelCol_d) == 0 ) || 
-						   ( type(PixelCol_r) == 0 )  )
-						{
-							editcol = colors::minimap_back_edge;
-						}
-					}							
-					else 
-					{
-						editcol = PixelCol_u;
-					}
-
-					//tint the map based on Water
-					if ( PixelCol == SColor(map_colors::water_backdirt) || PixelCol == SColor(map_colors::water_air) )
-					{
-						//overides water backwall edge for some reason...
-						editcol = editcol.getInterpolated( colors::minimap_water, 0.5f);
-					}
-
-					edit[offset] = editcol;	
-				}				
-
-				if(!Texture::update(shortname, edit))
-				{
-					warn("texture update failed");
-					return;
-				}
-			}
-		}
-	}
-
 	bool isHovered(Vec2f mousepos)
 	{
 		Vec2f tl = Pos;
@@ -378,8 +266,9 @@ class MapVoteButton
 		return false;
 	}
 
+
 	void RenderGUI()
-	{
+	{	
 		SColor col(color_white);
 		switch (State)
 		{
@@ -388,7 +277,7 @@ class MapVoteButton
 			case 3: {col = SColor(255,100,255,100);} break; //selected
 			default: {col = color_white;}
 		}
-
+//
 		const Vec2f Padding_outline = Vec2f(8,8);
 		const Vec2f TL_outline = Pos-Padding_outline;
 		const Vec2f BR_outline = Pos+Size+Padding_outline;
@@ -397,10 +286,10 @@ class MapVoteButton
 		const Vec2f BR_window = Pos+Size+Padding_window;
 		GUI::DrawPane(TL_outline, BR_outline, col);
 		GUI::DrawWindow(TL_window, BR_window);	
-
+//
 		const Vec2f NameMid = Pos+Vec2f((Size.x/2)-2, Size.y+16);
 		GUI::DrawTextCentered(displayname, NameMid, color_white);
-
+//
 		if (isRandomButton)
 		{
 			const Vec2f IconOffset = Pos+Vec2f(24,20);
@@ -417,6 +306,14 @@ class MapVoteButton
 		Render::SetModelTransform(model);
 		Render::RawTrianglesIndexed(shortname, maptex_raw, square_IDs);
 	}	
+};
+
+enum ButtonStates
+{
+	None = 0,
+	Hovered,
+	Pressed,
+	Selected
 };
 
 namespace colors
@@ -487,4 +384,105 @@ u8 type(SColor PixelCol)
 		} 
 	}
 	return type;
+}
+
+void CreateMapTexture(string shortname, string filename)
+{
+	// not a perfect minimap replication, but the image is so small it's too hard to tell
+	
+	if(!Texture::createFromFile(shortname, filename))
+	{
+		warn("texture creation failed");
+	}
+	else
+	{	
+		const bool show_gold = getRules().get_bool("show_gold");
+		ImageData@ edit = Texture::data(shortname);
+		u16 minimapW = edit.width();
+		u16 minimapH = edit.height();
+
+		CFileImage image( CFileMatcher(filename).getFirst() );
+		if (image.isLoaded())
+		{
+			while(image.nextPixel())
+			{
+				const int offset = image.getPixelOffset();
+				const Vec2f pixelpos = image.getPixelPosition();
+
+				const SColor PixelCol = image.readPixel();
+
+				const SColor PixelCol_u = edit.get(pixelpos.x, pixelpos.y-1);
+				const SColor PixelCol_d = edit.get(pixelpos.x, pixelpos.y+1);
+				const SColor PixelCol_r = edit.get(pixelpos.x+1, pixelpos.y);
+				const SColor PixelCol_l = edit.get(pixelpos.x-1, pixelpos.y);
+
+				SColor editcol = colors::minimap_open;
+				
+				if ( type(PixelCol) == 0  )      			
+				{
+					editcol = colors::minimap_open;
+				}
+				else if ( type(PixelCol) == 1  )       			
+    			{				
+    				// Foreground	
+					editcol = colors::minimap_solid;
+					
+					if ((type(PixelCol_u) != 1 ) || 
+					    (type(PixelCol_l) != 1 ) ||
+						(type(PixelCol_d) != 1 ) ||
+					    (type(PixelCol_r) != 1 ) ) 
+					{
+						editcol = colors::minimap_solid_edge;
+					}
+				}
+				else if ( show_gold && type(PixelCol) == 2 )
+				{
+					//Gold
+					editcol = colors::minimap_gold;
+
+					//Edge
+					if (( type(PixelCol_u) != 1 && type(PixelCol_u) != 2 ) || 
+						( type(PixelCol_l) != 1 && type(PixelCol_l) != 2 ) ||
+					 	( type(PixelCol_d) != 1 && type(PixelCol_d) != 2 ) || 
+						( type(PixelCol_r) != 1 && type(PixelCol_r) != 2 ) )
+					{
+						editcol = colors::minimap_gold_edge;
+					}
+				}										
+				else if (type(PixelCol) == 3)
+				{
+					//Background
+					editcol = colors::minimap_back;
+
+					//Edge
+					if(( type(PixelCol_u) == 0 ) || 
+					   ( type(PixelCol_l) == 0 ) ||
+				 	   ( type(PixelCol_d) == 0 ) || 
+					   ( type(PixelCol_r) == 0 )  )
+					{
+						editcol = colors::minimap_back_edge;
+					}
+				}							
+				else 
+				{
+					editcol = PixelCol_u;
+				}
+
+				//tint the map based on Water
+				if ( PixelCol == SColor(map_colors::water_backdirt) || PixelCol == SColor(map_colors::water_air) )
+				{
+					//overides water backwall edge for some reason...
+					editcol = editcol.getInterpolated( colors::minimap_water, 0.5f);
+				}
+
+				edit[offset] = editcol;	
+			}				
+
+			if(!Texture::update(shortname, edit))
+			{
+				warn("texture update failed");
+				return;
+			}
+		}
+	}
 }
