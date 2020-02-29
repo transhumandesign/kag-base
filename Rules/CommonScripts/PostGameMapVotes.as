@@ -21,6 +21,14 @@ void onInit( CRules@ this )
 	MapVotesMenu mvm();
 	this.set("MapVotesMenu", @mvm);
 
+	if (!GUI::isFontLoaded("AveriaSerif-Bold_22"))
+	{		
+		string AveriaSerif = CFileMatcher("AveriaSerif-Bold.ttf").getFirst();
+		GUI::LoadFont("AveriaSerif-Bold_22", AveriaSerif, 22, true);
+	}
+
+	_random.Reset(XORRandom(999999)); //required otherwise we get the same seed (the same random order)
+
 	int id = Render::addScript(Render::layer_posthud, "PostGameMapVotes.as", "RenderRaw", 0.0f);
 	onRestart(this);
 }
@@ -102,10 +110,10 @@ void onTick( CRules@ this )
 
 			if (blob !is null)
 			{
-				blob.server_Die();				
-				getHUD().SetDefaultCursor();
+				blob.server_Die(); // just a simple way of locking the camera, might be a better way			
 			}
 		}
+		getHUD().SetDefaultCursor();
 	}
 
 	// Vote is now setup, faded to black and is counting down
@@ -137,8 +145,8 @@ void onTick( CRules@ this )
 		this.SendCommand(this.getCommandID(vote_end_id), params);
 	}
 
-	//---------- CLIENT -----------\\
-	if (!getNet().isClient()) return;
+	//--------------------- CLIENT -----------------------\\
+	if (getNet().isServer() && !getNet().isClient()) return; //not server, but also not localhost
 
 	if (mvm.VoteTimeLeft <= 0) return;
 
@@ -173,7 +181,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		int p2 = mvm.Votes2.find(id);
 		if (p2 != -1) mvm.Votes2.removeAt(p2);
 		int p3 = mvm.Votes3.find(id);
-		if (p3 != -1) mvm.Votes3.removeAt(p3);			
+		if (p3 != -1) mvm.Votes3.removeAt(p3);		
 
 		switch (selected)
 		{
@@ -261,7 +269,6 @@ void RandomizeButtonNames(CRules@ this, MapVotesMenu@ mvm)
 {	
 	string map1name;
 	string map3name;
-	_random.Reset(getGameTime());
 	string mapcycle = sv_mapcycle;
 	if (mapcycle == "")
 	{

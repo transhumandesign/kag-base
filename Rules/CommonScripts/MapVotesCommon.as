@@ -57,15 +57,15 @@ class MapVotesMenu
 
 		button1.RefreshButton( MenuSize.x, ButtonSize);
 		MenuSize.x += ButtonSize.x+30;
-		MenuSize.y = (ButtonSize.y+100) > MenuSize.y ? ButtonSize.y+95 : MenuSize.y;
+		MenuSize.y = (ButtonSize.y+95) > MenuSize.y ? ButtonSize.y+95 : MenuSize.y;
 
 		button2.RefreshRandomButton( MenuSize.x, ButtonSize);
 		MenuSize.x += ButtonSize.x+30;
-		MenuSize.y = (ButtonSize.y+100) > MenuSize.y ? ButtonSize.y+95 : MenuSize.y;
+		MenuSize.y = (ButtonSize.y+95) > MenuSize.y ? ButtonSize.y+95 : MenuSize.y;
 		
 		button3.RefreshButton( MenuSize.x, ButtonSize);
 		MenuSize.x += ButtonSize.x+30;
-		MenuSize.y = (ButtonSize.y+100) > MenuSize.y ? ButtonSize.y+95 : MenuSize.y;
+		MenuSize.y = (ButtonSize.y+95) > MenuSize.y ? ButtonSize.y+95 : MenuSize.y;
 	}
 
 	void Update(CControls@ controls, u8 &out NewSelectedNum)
@@ -121,7 +121,7 @@ class MapVotesMenu
 			button1.State = button1.State != ButtonStates::Selected ? ButtonStates::None : ButtonStates::Selected; 
 			button2.State = button2.State != ButtonStates::Selected ? ButtonStates::None : ButtonStates::Selected;
 			button3.State = button3.State != ButtonStates::Selected ? ButtonStates::None : ButtonStates::Selected;
-		}		
+		}
 	}
 
 	void RenderGUI()
@@ -151,26 +151,24 @@ class MapVotesMenu
 					case 3:	winner = button3.shortname; break;
 					default: winner = "A Random Map"; break;
 				}
-			 	GUI::DrawText("Map Vote Has Ended.. Loading : "+winner, TL_Position+Vec2f(20,8), color_white);
+			 	GUI::DrawText("Map Voting Has Ended.. Loading: "+ winner, TL_Position+Vec2f(22,10), color_white);
 			}
 			else
 			{
-			 	GUI::DrawText("Map Vote Ends In : "+ VoteTimeLeft +" Secs", TL_Position+Vec2f(20,8), color_white);
-			}			
+			 	GUI::DrawText("Map Voting Ends In: "+ VoteTimeLeft, TL_Position+Vec2f(22,10), color_white);
+			}
 
-			const Vec2f NameMid1 = button1.Pos+Vec2f((button1.Size.x/2)-2, button1.Size.y + 36);
-			const Vec2f NameMid2 = button2.Pos+Vec2f((button2.Size.x/2)-2, button2.Size.y + 36);
-			const Vec2f NameMid3 = button3.Pos+Vec2f((button3.Size.x/2)-2, button3.Size.y + 36);
-			
-			//GUI::SetFont("AveriaSerif-Bold_20");
-			GUI::DrawTextCentered(""+ Votes1.length(), NameMid1, color_white);
-			GUI::DrawTextCentered(""+ Votes2.length(), NameMid2, color_white);
-			GUI::DrawTextCentered(""+ Votes3.length(), NameMid3, color_white);
-			
-			GUI::SetFont("menu");
 			button1.RenderGUI();
 			button2.RenderGUI();
 			button3.RenderGUI();
+
+			const Vec2f CountMid1 = button1.Pos+Vec2f((button1.Size.x/2)-2, button1.Size.y + 38);
+			const Vec2f CountMid2 = button2.Pos+Vec2f((button2.Size.x/2)-2, button2.Size.y + 38);
+			const Vec2f CountMid3 = button3.Pos+Vec2f((button3.Size.x/2)-2, button3.Size.y + 38);
+			GUI::SetFont("AveriaSerif-Bold_22");
+			GUI::DrawTextCentered(""+Votes1.length(), CountMid1, color_white);
+			GUI::DrawTextCentered(""+Votes2.length(), CountMid2, color_white);
+			GUI::DrawTextCentered(""+Votes3.length(), CountMid3, color_white);
 		}
 	}
 	void RenderRaw()
@@ -221,7 +219,7 @@ class MapVoteButton
 
 	void RefreshButton( u16 MenuWidth, Vec2f &out ButtonSize)
 	{		
-		State = 0;	
+		State = 0;
 		if(Texture::exists(shortname))
 		{
 			ImageData@ edit = Texture::data(shortname);
@@ -281,11 +279,11 @@ class MapVoteButton
 		const Vec2f Padding_outline = Vec2f(8,8);
 		const Vec2f TL_outline = Pos-Padding_outline;
 		const Vec2f BR_outline = Pos+Size+Padding_outline;
-		const Vec2f Padding_window = Vec2f(4,4);		
+		const Vec2f Padding_window = Vec2f(4,4);
 		const Vec2f TL_window = Pos-Padding_window;
 		const Vec2f BR_window = Pos+Size+Padding_window;
 		GUI::DrawPane(TL_outline, BR_outline, col);
-		GUI::DrawWindow(TL_window, BR_window);	
+		GUI::DrawWindow(TL_window, BR_window);
 //
 		const Vec2f NameMid = Pos+Vec2f((Size.x/2)-2, Size.y+16);
 		GUI::DrawTextCentered(displayname, NameMid, color_white);
@@ -418,16 +416,16 @@ void CreateMapTexture(string shortname, string filename)
 
 				SColor editcol = colors::minimap_open;
 				
-				if ( type(PixelCol) == 0  )      			
+				if ( type(PixelCol) == 0  )
 				{
 					editcol = colors::minimap_open;
 				}
-				else if ( type(PixelCol) == 1  )       			
-    			{				
+				else if ( type(PixelCol) == 1  )
+    			{
     				// Foreground	
 					editcol = colors::minimap_solid;
 					
-					if ((type(PixelCol_u) != 1 ) || 
+					if ((type(PixelCol_u) != 1 ) ||
 					    (type(PixelCol_l) != 1 ) ||
 						(type(PixelCol_d) != 1 ) ||
 					    (type(PixelCol_r) != 1 ) ) 
@@ -448,21 +446,21 @@ void CreateMapTexture(string shortname, string filename)
 					{
 						editcol = colors::minimap_gold_edge;
 					}
-				}										
+				}
 				else if (type(PixelCol) == 3)
 				{
 					//Background
 					editcol = colors::minimap_back;
 
 					//Edge
-					if(( type(PixelCol_u) == 0 ) || 
+					if(( type(PixelCol_u) == 0 ) ||
 					   ( type(PixelCol_l) == 0 ) ||
-				 	   ( type(PixelCol_d) == 0 ) || 
+				 	   ( type(PixelCol_d) == 0 ) ||
 					   ( type(PixelCol_r) == 0 )  )
 					{
 						editcol = colors::minimap_back_edge;
 					}
-				}							
+				}
 				else 
 				{
 					editcol = PixelCol_u;
@@ -475,8 +473,8 @@ void CreateMapTexture(string shortname, string filename)
 					editcol = editcol.getInterpolated( colors::minimap_water, 0.5f);
 				}
 
-				edit[offset] = editcol;	
-			}				
+				edit[offset] = editcol;
+			}
 
 			if(!Texture::update(shortname, edit))
 			{
