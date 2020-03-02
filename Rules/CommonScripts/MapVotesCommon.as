@@ -165,6 +165,7 @@ class MapVotesMenu
 			const Vec2f CountMid1 = button1.Pos+Vec2f((button1.Size.x/2)-2, button1.Size.y + 38);
 			const Vec2f CountMid2 = button2.Pos+Vec2f((button2.Size.x/2)-2, button2.Size.y + 38);
 			const Vec2f CountMid3 = button3.Pos+Vec2f((button3.Size.x/2)-2, button3.Size.y + 38);
+			
 			GUI::SetFont("AveriaSerif-Bold_22");
 			GUI::DrawTextCentered(""+Votes1.length(), CountMid1, color_white);
 			GUI::DrawTextCentered(""+Votes2.length(), CountMid2, color_white);
@@ -233,8 +234,8 @@ class MapVoteButton
 			tex_offsetY = mapH <= 100 ? (100-mapH) : 0;
 
 			//crop names longer than the map size
-			Vec2f dim;
-			displayname = shortname;	
+			Vec2f dim;			
+			displayname = shortname == "test.kaggen" ? "Generated Map" : shortname;	
 			GUI::SetFont("menu");
 			GUI::GetTextDimensions(displayname, dim);
 			if (dim.x > mapW - 10)
@@ -275,7 +276,7 @@ class MapVoteButton
 			case 3: {col = SColor(255,100,255,100);} break; //selected
 			default: {col = color_white;}
 		}
-//
+
 		const Vec2f Padding_outline = Vec2f(8,8);
 		const Vec2f TL_outline = Pos-Padding_outline;
 		const Vec2f BR_outline = Pos+Size+Padding_outline;
@@ -284,10 +285,10 @@ class MapVoteButton
 		const Vec2f BR_window = Pos+Size+Padding_window;
 		GUI::DrawPane(TL_outline, BR_outline, col);
 		GUI::DrawWindow(TL_window, BR_window);
-//
+
 		const Vec2f NameMid = Pos+Vec2f((Size.x/2)-2, Size.y+16);
 		GUI::DrawTextCentered(displayname, NameMid, color_white);
-//
+
 		if (isRandomButton)
 		{
 			const Vec2f IconOffset = Pos+Vec2f(24,20);
@@ -306,87 +307,65 @@ class MapVoteButton
 	}	
 };
 
-enum ButtonStates
-{
-	None = 0,
-	Hovered,
-	Pressed,
-	Selected
-};
-
-namespace colors
-{
-	enum color
+void CreateGenTexture(string shortname)
+{		
+	if(!Texture::exists(shortname))
 	{
-		minimap_solid_edge   = 0xff844715,
-		minimap_solid        = 0xffc4873a,
-		minimap_back_edge    = 0xffc4873b, //yep, same as above *(almost, changed to prevent duplicate case)
-		minimap_back         = 0xfff3ac5c,
-		minimap_open         = 0xffedcca6,
-		minimap_gold         = 0xffffbd34,
-		minimap_gold_edge    = 0xffc56c22,
-		minimap_gold_exposed = 0xfff0872c,
-		minimap_water        = 0xff2cafde,
-		minimap_fire         = 0xffd5543f,
-
-		menu_invisible_color = 0x00000000,
-		menu_fadeout_color	   = 0xbe000000,
-
-		red_color	   = 0xffff0000,
-		green_color	   = 0xff00ff00,
-		blue_color	   = 0xff0000ff
-	}
-}
-
-u8 type(SColor PixelCol)
-{
-	u8 type = 4;
-	switch (PixelCol.color)
-	{
-		case map_colors::water_air:
-		case 0xffa5bdc8: //sky col
-		case colors::minimap_open:
+		if(!Texture::createBySize(shortname, 150,100))
 		{
-			 type = 0; break;
+			warn("texture creation failed");
 		}
-		case colors::minimap_solid:
-		//case colors::minimap_solid_edge: //duplicated case
-		case map_colors::tile_ground: 
-		case map_colors::tile_stone: 
-		case map_colors::tile_thickstone: 
-		case map_colors::tile_bedrock: 
-		case map_colors::tile_castle: 
-		case map_colors::tile_castle_moss:
-		case map_colors::tile_wood:
-		{
-			 type = 1; break;
+		else
+		{	
+			ImageData@ edit = Texture::data(shortname);
+			u16 mapW = edit.width();
+			u16 mapH = edit.height();
+
+			int Sine;
+			for(int i = 0; i < edit.size(); i++)
+			{
+				edit[i] = SColor(0x00000000);
+				int x = i%mapW;
+				int y = i/mapW;
+
+				Sine = Maths::Sin(x/8)*(2+XORRandom(2));
+
+				if ( y+Sine < (mapH/2) ) 
+				{
+					edit[i] = colors::minimap_open;
+					continue;
+				}
+				else if ( y+Sine > (mapH/2) )
+				{
+					edit[i] = colors::minimap_solid;
+					continue;
+				}					
+				else if ( y+Sine == (mapH/2) && x > 20 && x < mapW-20 )
+				{
+					edit[ i+(XORRandom(3)*mapW) ] = colors::minimap_solid;
+				}
+				else
+				{
+					edit[i] = colors::minimap_solid;
+				}
+			}								
+
+			if(!Texture::update(shortname, edit))
+			{
+				warn("texture update failed");
+				return;
+			}
 		}
-
-		case colors::minimap_gold_exposed:
-		case colors::minimap_gold:
-		case colors::minimap_gold_edge:
-		case map_colors::tile_gold:
-		{
-			 type = 2; break;
-		} 
-
-		case colors::minimap_back:
-		case colors::minimap_back_edge:
-		case map_colors::tile_ground_back:
-		case map_colors::tile_castle_back: 
-		case map_colors::tile_wood_back:
-		case map_colors::tile_castle_back_moss:
-		case map_colors::water_backdirt:
-		{
-			 type = 3; break;
-		} 
 	}
-	return type;
 }
 
 void CreateMapTexture(string shortname, string filename)
 {
-	// not a perfect minimap replication, but the image is so small it's too hard to tell
+	if (shortname == "test.kaggen")
+	{
+		CreateGenTexture(shortname);
+		return;
+	}
 	
 	if(!Texture::createFromFile(shortname, filename))
 	{
@@ -394,83 +373,99 @@ void CreateMapTexture(string shortname, string filename)
 	}
 	else
 	{	
+		// a perfect minimap replication
 		const bool show_gold = getRules().get_bool("show_gold");
 		ImageData@ edit = Texture::data(shortname);
-		u16 minimapW = edit.width();
-		u16 minimapH = edit.height();
 
 		CFileImage image( CFileMatcher(filename).getFirst() );
 		if (image.isLoaded())
 		{
+			const int h = image.getHeight();			
+			const int w = image.getWidth();
 			while(image.nextPixel())
 			{
 				const int offset = image.getPixelOffset();
 				const Vec2f pixelpos = image.getPixelPosition();
 
 				const SColor PixelCol = image.readPixel();
+				const SColor PixelCol_u = edit.get(pixelpos.x, Maths::Min(pixelpos.y-1, h));
+				const SColor PixelCol_d = edit.get(pixelpos.x, Maths::Max(pixelpos.y+1, 0));
+				const SColor PixelCol_r = edit.get(Maths::Min(pixelpos.x+1, w), pixelpos.y);
+				const SColor PixelCol_l = edit.get(Maths::Max(pixelpos.x-1, 0), pixelpos.y);
 
-				const SColor PixelCol_u = edit.get(pixelpos.x, pixelpos.y-1);
-				const SColor PixelCol_d = edit.get(pixelpos.x, pixelpos.y+1);
-				const SColor PixelCol_r = edit.get(pixelpos.x+1, pixelpos.y);
-				const SColor PixelCol_l = edit.get(pixelpos.x-1, pixelpos.y);
+				u8 tile = type(PixelCol, show_gold);
+				u8 tile_u = type(PixelCol_u, show_gold);
+				u8 tile_l = type(PixelCol_l, show_gold);
+				u8 tile_r = type(PixelCol_r, show_gold);
+				u8 tile_d = type(PixelCol_d, show_gold);
 
-				SColor editcol = colors::minimap_open;
+				SColor editcol = PixelCol;
+
+				if (tile == ColTileType::Other)
+				{
+					SColor mostlike = getMostLikelyCol(PixelCol_u, PixelCol_d, PixelCol_l, PixelCol_r, show_gold);
+					tile = type(mostlike, show_gold);
+				}
 				
-				if ( type(PixelCol) == 0  )
-				{
-					editcol = colors::minimap_open;
-				}
-				else if ( type(PixelCol) == 1  )
+				if (tile == ColTileType::Solid)
     			{
-    				// Foreground	
+    				//Foreground
 					editcol = colors::minimap_solid;
-					
-					if ((type(PixelCol_u) != 1 ) ||
-					    (type(PixelCol_l) != 1 ) ||
-						(type(PixelCol_d) != 1 ) ||
-					    (type(PixelCol_r) != 1 ) ) 
-					{
-						editcol = colors::minimap_solid_edge;
-					}
-				}
-				else if ( show_gold && type(PixelCol) == 2 )
-				{
-					//Gold
-					editcol = colors::minimap_gold;
 
-					//Edge
-					if (( type(PixelCol_u) != 1 && type(PixelCol_u) != 2 ) || 
-						( type(PixelCol_l) != 1 && type(PixelCol_l) != 2 ) ||
-					 	( type(PixelCol_d) != 1 && type(PixelCol_d) != 2 ) || 
-						( type(PixelCol_r) != 1 && type(PixelCol_r) != 2 ) )
+					//Edge					
+					if ( (tile_u != ColTileType::Solid && tile_u != ColTileType::Gold) || (tile_d != ColTileType::Solid && tile_d != ColTileType::Gold) || 
+						 (tile_l != ColTileType::Solid && tile_l != ColTileType::Gold) || (tile_r != ColTileType::Solid && tile_r != ColTileType::Gold) )
+					{
+						editcol = colors::minimap_solid_edge;						
+					}
+					else if (tile_u == ColTileType::Gold || tile_d == ColTileType::Gold || tile_l == ColTileType::Gold || tile_r == ColTileType::Gold)
 					{
 						editcol = colors::minimap_gold_edge;
 					}
 				}
-				else if (type(PixelCol) == 3)
+				else if ( tile == ColTileType::Backwall && PixelCol != SColor(map_colors::tile_grass) )
 				{
 					//Background
 					editcol = colors::minimap_back;
 
 					//Edge
-					if(( type(PixelCol_u) == 0 ) ||
-					   ( type(PixelCol_l) == 0 ) ||
-				 	   ( type(PixelCol_d) == 0 ) ||
-					   ( type(PixelCol_r) == 0 )  )
+					if ( tile_u == ColTileType::Sky || tile_d == ColTileType::Sky || tile_l == ColTileType::Sky || tile_r == ColTileType::Sky ||
+						 tile_u == ColTileType::Sky_Water || tile_d == ColTileType::Sky_Water || tile_l == ColTileType::Sky_Water || tile_r == ColTileType::Sky_Water )
 					{
 						editcol = colors::minimap_back_edge;
 					}
 				}
-				else 
+				else if (tile == ColTileType::Gold)
 				{
-					editcol = PixelCol_u;
-				}
+					//Gold
+					editcol = colors::minimap_gold;
 
-				//tint the map based on Water
-				if ( PixelCol == SColor(map_colors::water_backdirt) || PixelCol == SColor(map_colors::water_air) )
+					//Edge
+					if ( (tile_u != ColTileType::Solid && tile_u != ColTileType::Gold) || (tile_d != ColTileType::Solid && tile_d != ColTileType::Gold) || 
+						 (tile_l != ColTileType::Solid && tile_l != ColTileType::Gold) || (tile_r != ColTileType::Solid && tile_r != ColTileType::Gold) )
+					{
+						editcol = colors::minimap_gold_exposed;
+					}
+				}				
+				else if ( tile == ColTileType::Backwall_Water )
 				{
-					//overides water backwall edge for some reason...
-					editcol = editcol.getInterpolated( colors::minimap_water, 0.5f);
+					//Background
+					editcol = colors::interpolated_water_backwall;
+
+					//Edge
+					if ( tile_u == ColTileType::Sky || tile_d == ColTileType::Sky || tile_l == ColTileType::Sky || tile_r == ColTileType::Sky ||
+						 tile_u == ColTileType::Sky_Water || tile_d == ColTileType::Sky_Water || tile_l == ColTileType::Sky_Water || tile_r == ColTileType::Sky_Water )
+					{
+						editcol = colors::interpolated_water_backwall_edge;
+					}
+				}
+				else if (tile == ColTileType::Sky_Water)
+				{   //Sky
+					editcol = colors::interpolated_water_sky;
+				}
+				else 
+				{   //Sky
+					editcol =  colors::minimap_open;
 				}
 
 				edit[offset] = editcol;
@@ -484,3 +479,145 @@ void CreateMapTexture(string shortname, string filename)
 		}
 	}
 }
+
+SColor getMostLikelyCol(SColor tile_u, SColor tile_d, SColor tile_l, SColor tile_r, bool show_gold)
+{
+	if (type(tile_u, show_gold) != ColTileType::Sky)
+	{
+		const SColor[] neighborhood = { tile_u, tile_d, tile_l, tile_r };
+				
+		if ((neighborhood.find(map_colors::water_backdirt) != -1))
+		{
+			return map_colors::water_backdirt;
+		}
+		else if ((neighborhood.find(map_colors::water_air) != -1))
+		{
+			return map_colors::water_air;
+		}
+		else if ((neighborhood.find(map_colors::tile_castle) != -1) ||
+		    (neighborhood.find(map_colors::tile_castle_back) != -1))
+		{
+			return map_colors::tile_castle_back;
+		}
+		else if ((neighborhood.find(map_colors::tile_wood) != -1) ||
+		         (neighborhood.find(map_colors::tile_wood_back) != -1))
+		{
+			return map_colors::tile_wood_back;
+		}
+		else if ((neighborhood.find(map_colors::tile_ground) != -1) ||
+		         (neighborhood.find(map_colors::tile_ground_back) != -1))
+		{
+			return map_colors::tile_ground_back;
+		}
+	}
+	else if (type(tile_d, show_gold) != ColTileType::Solid && (tile_l == map_colors::tile_grass || tile_r == map_colors::tile_grass))
+	{
+		return map_colors::tile_grass;
+	}
+
+	return colors::minimap_open;
+}
+
+u8 type(SColor PixelCol, bool show_gold)
+{
+	switch (PixelCol.color)
+	{
+		case map_colors::tile_grass:
+		case colors::map_skyblue:
+		case colors::minimap_open:
+		{
+			 return ColTileType::Sky;
+		}		
+
+		case colors::minimap_solid:	
+		case colors::minimap_gold_edge:
+		case map_colors::tile_ground: //duplicate case colors::minimap_solid_edge:
+		case map_colors::tile_stone: 
+		case map_colors::tile_thickstone: 
+		case map_colors::tile_bedrock: 
+		case map_colors::tile_castle: 
+		case map_colors::tile_castle_moss:
+		case map_colors::tile_wood:
+		{
+			 return ColTileType::Solid;
+		}
+
+		case colors::minimap_gold_exposed:
+		case colors::minimap_gold:
+		//case colors::minimap_gold_edge:
+		case map_colors::tile_gold:
+		{
+			 return show_gold ? ColTileType::Gold : ColTileType::Solid;
+		} 
+
+		case colors::minimap_back:
+		case colors::minimap_back_edge:
+		case map_colors::tile_ground_back:
+		case map_colors::tile_castle_back: 
+		case map_colors::tile_wood_back:
+		case map_colors::tile_castle_back_moss:
+		{
+			 return ColTileType::Backwall;
+		}
+
+		case map_colors::water_air:
+		case colors::interpolated_water_sky:
+		{
+			 return ColTileType::Sky_Water;
+		}
+
+		case map_colors::water_backdirt:
+		case map_colors::interpolated_water_backwall:
+		case map_colors::interpolated_water_backwall_edge:
+		{
+			 return ColTileType::Backwall_Water;
+		}
+	}
+	return ColTileType::Other;
+}
+
+enum colors
+{
+	minimap_solid_edge   = 0xff844715,
+	minimap_solid        = 0xffc4873a,
+	minimap_back_edge    = 0xffc4873b, //yep, same as above *(almost, changed to prevent duplicate case)
+	minimap_back         = 0xfff3ac5c,
+	minimap_open         = 0xffedcca6,
+	minimap_gold         = 0xffffbd34,
+	minimap_gold_edge    = 0xffc56c22,
+	minimap_gold_exposed = 0xfff0872c,
+	minimap_water        = 0xff2cafde,
+	minimap_fire         = 0xffd5543f,
+
+	map_skyblue          = 0xffa5bdc8, //common blue sky colour used in map making
+
+	interpolated_water_sky = 0xff8dbec2,
+	interpolated_water_backwall_edge = 0xff789b8d,
+	interpolated_water_backwall = 0xff90ae9d,
+
+	menu_invisible_color = 0x00000000,
+	menu_fadeout_color	   = 0xbe000000,
+
+	red_color	   = 0xffff0000,
+	green_color	   = 0xff00ff00,
+	blue_color	   = 0xff0000ff
+}
+
+enum ColTileType
+{
+	Sky = 0,
+	Sky_Water,
+	Solid,
+	Gold,
+	Backwall,
+	Backwall_Water,
+	Other
+};
+
+enum ButtonStates
+{
+	None = 0,
+	Hovered,
+	Pressed,
+	Selected
+};

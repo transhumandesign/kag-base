@@ -91,7 +91,7 @@ void onTick( CRules@ this )
 	if (!this.isGameOver()) return;
 	if (!mvm.isSetup)
 	{	
-		mvm.Refresh(); //refresh menu sizes here for persons who join mid vote
+		mvm.Refresh();
 		return;
 	}	
 
@@ -110,7 +110,7 @@ void onTick( CRules@ this )
 
 			if (blob !is null)
 			{
-				blob.server_Die(); // just a simple way of locking the camera, might be a better way			
+				blob.server_Die(); // just a simple way of locking the camera and setting cursor, might be a better way			
 			}
 		}
 		getHUD().SetDefaultCursor();
@@ -119,7 +119,6 @@ void onTick( CRules@ this )
 	// Vote is now setup, faded to black and is counting down
 	if (getGameTime() % getTicksASecond() == 0)
 	mvm.VoteTimeLeft--;
-
 
 	u8 count1 = mvm.Votes1.length();
 	u8 count2 = mvm.Votes2.length();
@@ -192,13 +191,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		}
 
 		CPlayer@ player = getPlayerByNetworkId(id);
-
 		if (getNet().isClient() && player.isMyPlayer()) 
 		{
 			current_Selected = selected;
 			Sound::Play("buttonclick.ogg");
 		}
-
 	}	
 	else if (cmd == this.getCommandID(vote_unselectmap_id))
 	{
@@ -248,7 +245,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			if(!Texture::exists(mvm.button3.shortname))
 			{
 				CreateMapTexture(mvm.button3.shortname, mvm.button3.filename);
-			}	
+			}
 		}	
 	}
 	else if (getNet().isServer() && cmd == this.getCommandID(vote_end_id))
