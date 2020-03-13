@@ -31,7 +31,7 @@ void onInit(CBlob@ this)
 	mixer.ResetMixer();
 	this.set_bool("initialized game", false);
 
-	this.getCurrentScript().tickFrequency = 10
+	this.getCurrentScript().tickFrequency = 10;
 }
 
 void onTick(CBlob@ this)
