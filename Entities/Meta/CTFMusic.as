@@ -215,7 +215,7 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 								if (b.getConfig() == "keg" && !b.hasTag("exploding")) // only exploding kegs
 									continue;
 
-								if (classList.find(b.getConfig()) && b.hasTag("dead")) // skip corpses
+								if (classList.find(b.getConfig()) != -1 && b.hasTag("dead")) // skip corpses
 									continue;
 
 								chosen = world_battle;
