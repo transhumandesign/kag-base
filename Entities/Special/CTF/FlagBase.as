@@ -106,6 +106,7 @@ void onTick(CBlob@ this)
 		{
 			this.Untag("flag missing");
 		}
+		this.Sync("flag missing", true);
 	}
 }
 
@@ -178,6 +179,15 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 			//smash the flag
 			this.server_Hit(b, b.getPosition(), Vec2f(), 5.0f, 0xfa, true);
+
+			if (sv_tcpr)
+			{
+				if (blob !is null && blob.getPlayer() !is null)
+				{
+					tcpr("FlagCaptured {\"player\":\"" + blob.getPlayer().getUsername() + "\",\"ticks\":" + getGameTime() + "}");
+				}
+
+			}
 
 			CBitStream params;
 			params.write_u16(blob.getNetworkID());
