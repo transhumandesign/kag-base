@@ -201,23 +201,26 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 					}
 				}
 
-				CBlob@[] blobsInRadius;
-				if (map.getBlobsInRadius(pos, 48.0f, @blobsInRadius))
+				if (chosen == world_battle)
 				{
-					for (uint i = 0; i < blobsInRadius.length; i++)
+					CBlob@[] blobsInRadius;
+					if (map.getBlobsInRadius(pos, 48.0f, @blobsInRadius))
 					{
-						CBlob @b = blobsInRadius[i];
-						if (blobList.find(b.getConfig()) >= 0)
+						for (uint i = 0; i < blobsInRadius.length; i++)
 						{
+							CBlob @b = blobsInRadius[i];
+							if (blobList.find(b.getConfig()) >= 0)
+							{
 
-							if (b.getConfig() == "keg" && !b.hasTag("exploding")) // only exploding kegs
-								continue;
+								if (b.getConfig() == "keg" && !b.hasTag("exploding")) // only exploding kegs
+									continue;
 
-							if (classList.find(b.getConfig()) && b.hasTag("dead")) // skip corpses
-								continue;
+								if (classList.find(b.getConfig()) && b.hasTag("dead")) // skip corpses
+									continue;
 
-							chosen = world_battle;
-							break;
+								chosen = world_battle;
+								break;
+							}
 						}
 					}
 				}
