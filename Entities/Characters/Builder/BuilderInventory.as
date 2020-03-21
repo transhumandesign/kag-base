@@ -216,7 +216,11 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 		{
 			BuildBlock@ block = @blocks[PAGE][i];
 
-			if (!canBuild(blob, @blocks[PAGE], i)) return;
+			if (!canBuild(blob, @blocks[PAGE], i))
+			{
+				Sound::Play("/NoAmmo");
+				return;
+			}
 
 			// put carried in inventory thing first
 			if (isServer)
@@ -340,6 +344,43 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 		{
 			Sound::Play("/CycleInventory.ogg");
 		}
+	}
+}
+
+u8[] blockBinds = {
+	0, 1, 2, 3, 4, 5, 6, 7, 8
+};
+
+void onInit(CBlob@ this)
+{
+	ConfigFile@ cfg = openBlockBindingsConfig();
+
+	for (uint i = 0; i < 9; i++)
+	{
+		blockBinds[i] = read_block(cfg, "block_" + (i + 1), blockBinds[i]);
+	}
+
+}
+
+void onTick(CBlob@ this)
+{
+	if (this.hasTag("reload blocks"))
+	{
+		this.Untag("reload blocks");
+		onInit(this);
+	}
+
+	CControls@ controls = getControls();
+	if (controls.isKeyPressed(KEY_LSHIFT) || controls.isKeyPressed(KEY_RSHIFT))
+	{
+		for (uint i = 0; i < 9; i++)
+		{
+			if (controls.isKeyJustPressed(KEY_KEY_1 + i))
+			{
+				this.SendCommand(Builder::make_block + blockBinds[i]);
+			}
+		}
+
 	}
 }
 

@@ -98,6 +98,7 @@ void onSetPlayer(CBlob@ this, CPlayer@ player)
 void onTick(CBlob@ this)
 {
 	u8 knocked = getKnocked(this);
+	CHUD@ hud = getHUD();
 
 	//knight logic stuff
 	//get the vars to turn various other scripts on/off
@@ -121,7 +122,7 @@ void onTick(CBlob@ this)
 		knight.shieldTimer = 0;
 		knight.slideTime = 0;
 		knight.doubleslash = false;
-		getHUD().SetCursorFrame(0);
+		hud.SetCursorFrame(0);
 		return;
 	}
 
@@ -138,8 +139,8 @@ void onTick(CBlob@ this)
 	bool shieldState = isShieldState(knight.state);
 	bool specialShieldState = isSpecialShieldState(knight.state);
 	bool swordState = isSwordState(knight.state);
-	bool pressed_a1 = this.isKeyPressed(key_action1);
-	bool pressed_a2 = this.isKeyPressed(key_action2);
+	bool pressed_a1 = this.isKeyPressed(key_action1) && !hud.hasMenus() && (this.getTickSinceCreated() > 2);
+	bool pressed_a2 = this.isKeyPressed(key_action2) && !hud.hasMenus() && (this.getTickSinceCreated() > 2);
 	bool walking = (this.isKeyPressed(key_left) || this.isKeyPressed(key_right));
 
 	const bool myplayer = this.isMyPlayer();

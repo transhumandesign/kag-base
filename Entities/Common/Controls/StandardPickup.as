@@ -3,6 +3,7 @@
 
 #include "StandardControlsCommon.as"
 #include "ThrowCommon.as"
+#include "WheelMenuCommon.as"
 
 const u32 PICKUP_ERASE_TICKS = 80;
 
@@ -17,6 +18,49 @@ void onInit(CBlob@ this)
 
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
+
+	// setup pickup menu wheel
+	WheelMenu@ menu = get_wheel_menu("pickup");
+	if (menu.entries.length == 0)
+	{
+		menu.option_notice = "Pickup";
+
+		// knight stuff
+		menu.add_entry(PickupWheelMenuEntry("Keg", "$keg$", array<string>(1, "keg")));
+
+		const string[] bomb_options = {"bomb", "mat_bombs"};
+		menu.add_entry(PickupWheelMenuEntry("Bomb", "$mat_bombs$", bomb_options, Vec2f(0, -8.0f)));
+
+		const string[] waterbomb_options = {"waterbomb", "mat_waterbombs"};
+		menu.add_entry(PickupWheelMenuEntry("Water Bomb", "$mat_waterbombs$", waterbomb_options, Vec2f(0, -6.0f)));
+
+		menu.add_entry(PickupWheelMenuEntry("Mine", "$mine$", array<string>(1, "mine")));
+
+		// archer stuff
+		menu.add_entry(PickupWheelMenuEntry("Arrows", "$mat_arrows$", array<string>(1, "mat_arrows"), Vec2f(0, -8.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Water Arrows", "$mat_waterarrows$", array<string>(1, "mat_waterarrows"), Vec2f(0, 2.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Fire Arrows", "$mat_firearrows$", array<string>(1, "mat_firearrows"), Vec2f(0, -6.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Bomb Arrows", "$mat_bombarrows$", array<string>(1, "mat_bombarrows")));
+
+		// builder stuff
+		menu.add_entry(PickupWheelMenuEntry("Gold", "$mat_gold$", array<string>(1, "mat_gold"), Vec2f(0, -6.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Stone", "$mat_stone$", array<string>(1, "mat_stone"), Vec2f(0, -6.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Wood", "$mat_wood$", array<string>(1, "mat_wood"), Vec2f(0, -6.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Drill", "$drill$", array<string>(1, "drill"), Vec2f(-16.0f, 0.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Saw", "$saw$", array<string>(1, "saw"), Vec2f(-16.0f, -16.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Trampoline", "$trampoline$", array<string>(1, "trampoline"), Vec2f(-16.0f, -8.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Boulder", "$boulder$", array<string>(1, "boulder")));
+		menu.add_entry(PickupWheelMenuEntry("Sponge", "$sponge$", array<string>(1, "sponge"), Vec2f(0, 8.0f)));
+		menu.add_entry(PickupWheelMenuEntry("Seed", "$seed$", array<string>(1, "seed"), Vec2f(8.0f, 8.0f)));
+
+		// misc
+		menu.add_entry(PickupWheelMenuEntry("Log", "$log$", array<string>(1, "log")));
+		const string[] food_options = {"food", "heart", "fishy", "grain", "steak", "egg", "flowers"};
+		menu.add_entry(PickupWheelMenuEntry("Food", "$food$", food_options));
+		menu.add_entry(PickupWheelMenuEntry("Ballista Ammo", "$mat_bolts$", array<string>(1, "mat_bolts")));
+		menu.add_entry(PickupWheelMenuEntry("Crate", "$crate$", array<string>(1, "crate"), Vec2f(-16.0f, 0)));
+	}
+
 }
 
 void onTick(CBlob@ this)
@@ -28,22 +72,63 @@ void onTick(CBlob@ this)
 		return;
 	}
 
+	CControls@ controls = getControls();
+
 	// drop / pickup / throw
-	if (this.isKeyJustPressed(key_pickup))
+	if (controls.isKeyPressed(KEY_LSHIFT) || controls.isKeyPressed(KEY_RSHIFT))
+	{
+		WheelMenu@ menu = get_wheel_menu("pickup");
+		if (this.isKeyPressed(key_pickup) && menu !is get_active_wheel_menu())
+		{
+			set_active_wheel_menu(@menu);
+
+		}
+
+		if (this.isKeyPressed(key_pickup))
+		{
+			GatherPickupBlobs(this);
+
+			CBlob@[]@ pickupBlobs;
+			this.get("pickup blobs", @pickupBlobs);
+
+			CBlob@[] available;
+			FillAvailable(this, available, pickupBlobs);
+
+			for (uint i = 0; i < menu.entries.length; i++)
+			{
+				PickupWheelMenuEntry@ entry = cast<PickupWheelMenuEntry>(menu.entries[i]);
+				entry.disabled = true;
+
+				for (uint j = 0; j < available.length; j++)
+				{
+					string bname = available[j].getName();
+					for (uint k = 0; k < entry.options.length; k++)
+					{
+						if (entry.options[k] == bname)
+						{
+							entry.disabled = false;
+							break;
+						}
+					}
+
+					if (!entry.disabled)
+					{
+						break;
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+	else if (this.isKeyJustPressed(key_pickup))
 	{
 		TapPickup(this);
 
 		CBlob @carryBlob = this.getCarriedBlob();
 
-		/*if (isTap( this ))	tap pickup
-		{
-		CBlob@ carry = this.getCarriedBlob();
-		if (carry !is null)
-		{
-		server_PutIn( this, this, carry );
-		}
-		}
-		else*/
 		if (this.isAttached()) // default drop from attachment
 		{
 			int count = this.getAttachmentPointCount();
@@ -76,6 +161,65 @@ void onTick(CBlob@ this)
 	}
 	else
 	{
+		WheelMenu@ menu = get_wheel_menu("pickup");
+		if ((this.isKeyJustReleased(key_pickup) || controls.isKeyJustReleased(KEY_LSHIFT) || controls.isKeyJustReleased(KEY_RSHIFT))
+			&&  get_active_wheel_menu() is menu)
+		{
+			PickupWheelMenuEntry@ selected = cast<PickupWheelMenuEntry>(menu.get_selected());
+			set_active_wheel_menu(null);
+
+			if (selected !is null && !selected.disabled)
+			{
+				CBlob@[] blobsInRadius;
+				if (this.getMap().getBlobsInRadius(this.getPosition(), this.getRadius() + 50.0f, @blobsInRadius))
+				{
+					float closestScore = 600.0f;
+					CBlob@ closest;
+
+					for (uint i = 0; i < blobsInRadius.length; i++)
+					{
+						CBlob@ b = blobsInRadius[i];
+
+						string bname = b.getName();
+						for (uint j = 0; j < selected.options.length; j++)
+						{
+							if (bname == selected.options[j])
+							{
+								if (!canBlobBePickedUp(this, b))
+								{
+									break;
+								}
+
+								float maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
+								float dist = (this.getPosition() - b.getPosition()).Length();
+								float factor = dist / maxDist;
+
+								float score = getPriorityPickupScale(this, b, factor);
+
+								if (score < closestScore)
+								{
+									closestScore = score;
+									@closest = @b;
+								}
+
+							}
+						}
+
+					}
+
+					if (closest !is null)
+					{
+						server_Pickup(this, this, closest);
+					}
+
+				}
+
+			}
+
+			return;
+
+		}
+
 		if (this.isKeyPressed(key_pickup))
 		{
 			GatherPickupBlobs(this);
@@ -87,11 +231,13 @@ void onTick(CBlob@ this)
 			if (closest !is null)
 			{
 				closestBlobs.push_back(closest);
+				/*
 				if (this.isKeyJustPressed(key_action1))	// pickup
 				{
 					server_Pickup(this, this, closest);
 					this.set_bool("release click", false);
 				}
+				*/
 			}
 
 		}
@@ -159,7 +305,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 		name = b.getName();
 	u32 unpackTime = b.get_u32("unpack time");
 
-	const bool same_team = b.getTeamNum() != this.getTeamNum();
+	const bool same_team = b.getTeamNum() == this.getTeamNum();
 	const bool material = b.hasTag("material");
 
 	// Military scale factor constants, NOT including military resources
@@ -247,7 +393,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 			return factor_military_lit;
 		}
 	}
-	
+
 	//// MATERIALS ////
 	if (material)
 	{
@@ -295,7 +441,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 		float factor_full_life = (thisname == "archer" ? factor_resource_useful : factor_resource_boring);
 		return this.getHealth() < this.getInitialHealth() ? factor_resource_critical : factor_full_life;
 	}
-	
+
 	//low priority
 	if (name == "log" || b.hasTag("tree"))
 	{
@@ -355,11 +501,6 @@ CBlob@ getClosestBlob(CBlob@ this)
 		CBlob@[] available;
 		FillAvailable(this, available, pickupBlobs);
 
-		if (available.length == 0)
-		{
-			FillAvailable(this, available, pickupBlobs);
-		}
-
 		if (!isTapPickup(this))
 		{
 			CBlob@ closestAimed = getClosestAimedBlob(this, available);
@@ -369,20 +510,22 @@ CBlob@ getClosestBlob(CBlob@ this)
 			}
 		}
 
-		float closestFactor = 999999.9f;
-		
+		float closestScore = 999999.9f;
+
 		for (uint i = 0; i < available.length; ++i)
 		{
 			CBlob @b = available[i];
 			Vec2f bpos = b.getPosition();
 
-			float dist = (bpos - pos).getLength();
-			float factor = dist / 30.0f;
-			factor += getPriorityPickupScale(this, b);
+			float maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
 
-			if (factor < closestFactor)
+			float dist = (bpos - pos).getLength();
+			float factor = dist / maxDist;
+			float score = getPriorityPickupScale(this, b, factor);
+
+			if (score < closestScore)
 			{
-				closestFactor = factor;
+				closestScore = score;
 				@closest = @b;
 			}
 		}
@@ -393,9 +536,11 @@ CBlob@ getClosestBlob(CBlob@ this)
 
 bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 {
+	float maxDist = Maths::Max(this.getRadius() + blob.getRadius() + 20.0f, 36.0f);
+
 	Vec2f pos = this.getPosition() + Vec2f(0.0f, -this.getRadius() * 0.9f);
 	Vec2f pos2 = blob.getPosition();
-	return (((pos2 - pos).getLength() < (this.getRadius() + blob.getRadius()) + 20.0f)
+	return (((pos2 - pos).getLength() <= maxDist)
 	        && !blob.isAttached() && !blob.hasTag("no pickup")
 	        && (!this.getMap().rayCastSolid(pos, pos2) || (this.isOverlapping(blob)) ) //overlapping fixes "in platform" issue
 	       );
@@ -455,6 +600,13 @@ void onRender(CSprite@ this)
 					hover = true;
 					Vec2f dimensions;
 					GUI::SetFont("menu");
+
+					GUI::DrawCircle(
+						getDriver().getScreenPosFromWorldPos(b.getPosition()),
+						32.0f,
+						SColor(255, 255, 255, 255)
+					);
+
 					GUI::GetTextDimensions(b.getInventoryName(), dimensions);
 					GUI::DrawText(getTranslatedString(b.getInventoryName()), getDriver().getScreenPosFromWorldPos(b.getPosition() - Vec2f(0, -b.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);
 

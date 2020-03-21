@@ -75,7 +75,7 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 
 	this.set_bool("initialized game", true);
 	mixer.ResetMixer();
-	mixer.AddTrack("Sounds/Music/ambient_forrest.ogg", world_ambient);
+	mixer.AddTrack("Sounds/Music/ambient_forest.ogg", world_ambient);
 	mixer.AddTrack("Sounds/Music/ambient_mountain.ogg", world_ambient_mountain);
 	mixer.AddTrack("Sounds/Music/ambient_cavern.ogg", world_ambient_underground);
 	mixer.AddTrack("Sounds/Music/KAGWorldIntroShortA.ogg", world_intro);

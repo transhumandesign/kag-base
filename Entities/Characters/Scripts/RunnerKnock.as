@@ -123,12 +123,20 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			defended = false;
 		}
 
-		if (customData == Hitters::water_stun && !defended
+		if (customData == Hitters::water_stun
 			|| customData == Hitters::water_stun_force)
 		{
 			if (has_sponge)
 			{
-				time = 5;
+				if(customData == Hitters::water_stun_force)
+				{
+					time = 22;
+				}
+				else
+				{
+					time = 5;
+
+				}
 				wet_sponge = true;
 			}
 			else
@@ -177,16 +185,21 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
+	if (this.getPlayer() == null) // so drills and what not dont come up with it
+	{
+		return;
+	}
+
 	const f32 currentHealth = this.getHealth();
 	f32 temp = currentHealth - oldHealth;
 
-	while(temp >= 0) // if we've been healed, play a particle for each healed unit
+	while (temp > 0) // if we've been healed, play a particle for each healed unit
 	{
 		const string particleName = "HealParticle"+(XORRandom(2)+1)+".png";
-		const Vec2f pos = this.getPosition() + getRandomVelocity(0, this.getRadius(), 360);
-		
+		const Vec2f pos = this.getPosition() + getRandomVelocity(0, this.getRadius(), XORRandom(360));
+
 		CParticle@ p = ParticleAnimated(particleName, pos, Vec2f(0,0),  0.0f, 1.0f, 1+XORRandom(5), -0.1f, false);
-		if(p !is null)
+		if (p !is null)
 		{
 			p.diesoncollide = true;
 			p.fastcollision = true;

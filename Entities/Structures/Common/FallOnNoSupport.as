@@ -11,7 +11,7 @@ void onInit(CBlob@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point)
 {
-	if (getNet().isServer() && solid && !this.getShape().isStatic() && !this.isAttached())
+	if (isServer() && solid && !this.getShape().isStatic() && !this.isAttached())
 	{
 		if (this.getOldVelocity().y < 1.0f && !this.hasTag("can settle"))
 		{
@@ -24,10 +24,14 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	}
 }
 
-// TODO: make this on an event
-void onTick(CBlob@ this)
+void onDetach( CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint )
 {
-	if (!getNet().isServer() || getGameTime() < 60 || this.hasTag("fallen")) return;
+	this.set_u16("timePlaced",getGameTime());
+}
+
+void onBlobCollapse(CBlob@ this)
+{
+	if (!isServer() || getGameTime() - this.get_u16("timePlaced") < 3 || getGameTime() < 60 || this.hasTag("fallen")) return;
 
 	CShape@ shape = this.getShape();
 	if (shape.getCurrentSupport() < 0.001f)

@@ -1,4 +1,4 @@
-﻿// BuilderShop.as
+// BuilderShop.as
 
 #include "Requirements.as"
 #include "ShopCommon.as"
