@@ -264,9 +264,18 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			// otherwise, try to spawn an actor with this name !actor
 			string name = text_in.substr(1, text_in.size());
 
-			if (server_CreateBlob(name, team, pos) is null)
+			CBlob@ newBlob = server_CreateBlobNoInit(name);
+
+			if (newBlob is null)
 			{
 				client_AddToChat("blob " + text_in + " not found", SColor(255, 255, 0, 0));
+			}
+			else
+			{
+				newBlob.setPosition(pos);
+				newBlob.server_setTeamNum(team);
+				newBlob.Tag("cheated"); // tag item with this so we know it was made with chat commands
+				newBlob.Init();
 			}
 		}
 	}

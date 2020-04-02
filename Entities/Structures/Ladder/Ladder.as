@@ -32,6 +32,14 @@ void onInit(CBlob@ this)
 			this.set('harvest', harvest);
 		}
 	}
+
+	if (this.hasTag("cheated")) // spawned in using chat commands
+	{
+		shape.SetStatic(true); // stop from falling
+		shape.SetGravityScale(0.0f);
+		this.set_u16("timePlaced",0);
+		this.Tag("fallen");
+	}
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
