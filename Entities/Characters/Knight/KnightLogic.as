@@ -57,6 +57,7 @@ void onInit(CBlob@ this)
 	this.set("knightInfo", @knight);
 
 	this.set_f32("gib health", -1.5f);
+	this.set_bool("hasMenu", false);
 	addShieldVars(this, SHIELD_BLOCK_ANGLE, 2.0f, 5.0f);
 	knight_actorlimit_setup(this);
 	this.getShape().SetRotationsAllowed(false);
@@ -136,11 +137,18 @@ void onTick(CBlob@ this)
 	const int direction = this.getAimDirection(vec);
 	const f32 side = (this.isFacingLeft() ? 1.0f : -1.0f);
 
+	if (isClient() && this.get_bool("hasMenu") != hud.hasMenus())
+	{
+		this.set_bool("hasMenu", hud.hasMenus());
+		this.Sync("hasMenu", false);
+	}
+
+
 	bool shieldState = isShieldState(knight.state);
 	bool specialShieldState = isSpecialShieldState(knight.state);
 	bool swordState = isSwordState(knight.state);
-	bool pressed_a1 = this.isKeyPressed(key_action1) && !hud.hasMenus() && (this.getTickSinceCreated() > 2);
-	bool pressed_a2 = this.isKeyPressed(key_action2) && !hud.hasMenus() && (this.getTickSinceCreated() > 2);
+	bool pressed_a1 = this.isKeyPressed(key_action1) && !this.get_bool("hasMenu") && (this.getTickSinceCreated() > 2);
+	bool pressed_a2 = this.isKeyPressed(key_action2) && !this.get_bool("hasMenu") && (this.getTickSinceCreated() > 2);
 	bool walking = (this.isKeyPressed(key_left) || this.isKeyPressed(key_right));
 
 	const bool myplayer = this.isMyPlayer();
