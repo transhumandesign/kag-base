@@ -135,12 +135,11 @@ void onTick(CBlob@ this)
 
 	const int direction = this.getAimDirection(vec);
 	const f32 side = (this.isFacingLeft() ? 1.0f : -1.0f);
-
 	bool shieldState = isShieldState(knight.state);
 	bool specialShieldState = isSpecialShieldState(knight.state);
 	bool swordState = isSwordState(knight.state);
-	bool pressed_a1 = this.isKeyPressed(key_action1) && !hud.hasMenus() && (this.getTickSinceCreated() > 2);
-	bool pressed_a2 = this.isKeyPressed(key_action2) && !hud.hasMenus() && (this.getTickSinceCreated() > 2);
+	bool pressed_a1 = this.isKeyPressed(key_action1);
+	bool pressed_a2 = this.isKeyPressed(key_action2);
 	bool walking = (this.isKeyPressed(key_left) || this.isKeyPressed(key_right));
 
 	const bool myplayer = this.isMyPlayer();

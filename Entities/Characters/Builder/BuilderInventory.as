@@ -364,6 +364,11 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	if (this !is getLocalPlayerBlob())
+	{
+		return;
+	}
+
 	if (this.hasTag("reload blocks"))
 	{
 		this.Untag("reload blocks");
