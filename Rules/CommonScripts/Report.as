@@ -200,15 +200,7 @@ bool reportAllowed(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 		return false;
 	}
 
-	// unique player cannot report another unique player more than once
-	// if (this.get_bool(p_name + "_reported_" + b_name))
-	// {
-	// 	client_AddToChat("You cannot report the same player twice", reportMessageColor);
-	// 	return false;
-	// }
-
 	// hasn't reported in a while
-	client_AddToChat(formatInt(s32(s32(Time_Local()) - s32(this.get_u32(p_name + "_reported_at"))), '', 0));
 	bool allowed = s32(s32(Time_Local()) - s32(this.get_u32(p_name + "_reported_at"))) > reportRepeatTime;
 
 	return allowed;
