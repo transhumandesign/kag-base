@@ -287,9 +287,15 @@ void SetTimeToCinematic()
 
 bool isCinematicEnabled()
 {
-	ConfigFile cfg;
-	getRules().get("cinematic_cfg", cfg);
-	return cfg.read_bool("cinematic_enabled");
+	ConfigFile@ cfg;
+	getRules().get("cinematic_cfg", @cfg);
+	if (cfg.exists("cinematic_enabled"))
+	{
+		return cfg.read_bool("cinematic_enabled");
+	}
+
+	LoadCinematicConfig(getRules());
+	return false; 
 }
 
 bool isCinematic()
