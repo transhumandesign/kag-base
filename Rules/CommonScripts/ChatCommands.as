@@ -284,7 +284,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			else
 			{
 				string name = text_in.substr(1, text_in.size());
-				if (IsBlacklisted(name))
+				if (!isMod && IsBlacklisted(name))
 				{
 					wasCommandSuccessful = false;
 					errorMessage = "blob is currently blacklisted";
@@ -312,7 +312,6 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 	}
 	else if(errorMessage != "") // send error message to client
 	{
-		print("sending command");
 		CBitStream params;
 		params.write_string(errorMessage);
 
