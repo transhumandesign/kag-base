@@ -7,6 +7,18 @@
 #include "MakeCrate.as";
 #include "MakeScroll.as";
 
+const bool ChatCommandCoolDown = false; // enable if you want cooldown on your server
+const uint ChatCommandDelay = 3 * 30; // Cooldown in seconds
+
+
+void onInit(CRules@ this)
+{
+	this.addCommandID("SendChatMessage");
+}
+
+
+
+
 bool onServerProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
 {
 	//--------MAKING CUSTOM COMMANDS-------//
@@ -43,29 +55,41 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 	CBlob@ blob = player.getBlob(); // now, when the code references "blob," it means the player who called the command
 
-	if (blob is null)
+	if (blob is null || text_in.substr(0, 1) != "!") // dont continue if its not a command
 	{
 		return true;
 	}
 
-	Vec2f pos = blob.getPosition(); // grab player position (x, y)
-	int team = blob.getTeamNum(); // grab player team number (for i.e. making all flags you spawn be your team's flags)
+	const Vec2f pos = blob.getPosition(); // grab player position (x, y)
+	const int team = blob.getTeamNum(); // grab player team number (for i.e. making all flags you spawn be your team's flags)
+	const bool isMod = player.isMod();
+	const string gamemode = this.gamemode_name;
+	bool wasCommandSuccessful = true; // assume command is successful 
+	string errorMessage = ""; // so errors can be printed out of wasCommandSuccessful is false
+	SColor errorColor = SColor(255,255,0,0); // ^
 
-	// MODDERS --- WRITE ALL COMMANDS BELOW!!
+	if (!isMod && gamemode == "Sandbox" || ChatCommandCoolDown) // chat command cooldown timer
+	{
+		uint lastChatTime = 0;
+		uint gameTime = getGameTime();
+		if (blob.exists("chat_last_sent"))
+		{
+			lastChatTime = blob.get_u16("chat_last_sent");
+			if (gameTime < lastChatTime)
+			{
+				return true;
+			}
+		}
+	}
 
+	
 	// commands that don't rely on sv_test being on (sv_test = 1)
 
-	if (text_in == "!bot" && player.isMod()) // TODO: whoaaa check seclevs
+	if (text_in == "!bot" && isMod) // TODO: whoaaa check seclevs
 	{
 		CPlayer@ bot = AddBot("Henry"); //when there are multiple "Henry" bots, they'll be differentiated by a number (i.e. Henry2)
-		return true;
 	}
-	else if (text_in == "!endgame" && player.isMod())
-	{
-		this.SetCurrentState(GAME_OVER); //go to map vote
-		return true;
-	}
-	else if (text_in == "!debug" && player.isMod())
+	else if (text_in == "!debug" && isMod)
 	{
 		// print all blobs
 		CBlob@[] all;
@@ -75,56 +99,6 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		{
 			CBlob@ blob = all[i];
 			print("[" + blob.getName() + " " + blob.getNetworkID() + "] ");
-		}
-	}
-
-	// if the game mode is Sandbox OR if sv_test is true, you can use these commands
-	if (this.gamemode_name == "Sandbox" || sv_test == true)
-	{
-		if (text_in == "!allmats") // 500 wood, 500 stone, 100 gold
-		{
-			//wood
-			CBlob@ wood = server_CreateBlob('mat_wood', -1, pos);
-			wood.server_SetQuantity(500); // so I don't have to repeat the server_CreateBlob line again
-			//stone
-			CBlob@ stone = server_CreateBlob('mat_stone', -1, pos);
-			stone.server_SetQuantity(500);
-			//gold
-			CBlob@ gold = server_CreateBlob('mat_gold', -1, pos);
-			gold.server_SetQuantity(100);
-		}
-		else if (text_in == "!woodstone") // 250 wood, 500 stone
-		{
-			CBlob@ b = server_CreateBlob('mat_wood', -1, pos);
-
-			for (int i = 0; i < 2; i++)
-			{
-				CBlob@ b = server_CreateBlob('mat_stone', -1, pos);
-			}
-		}
-		else if (text_in == "!stonewood") // 500 wood, 250 stone
-		{
-			CBlob@ b = server_CreateBlob('mat_stone', -1, pos);
-
-			for (int i = 0; i < 2; i++)
-			{
-				CBlob@ b = server_CreateBlob('mat_wood', -1, pos);
-			}
-		}
-		else if (text_in == "!wood") // 250 wood
-		{
-			CBlob@ b = server_CreateBlob('mat_wood', -1, pos);
-		}
-		else if (text_in == "!stones" || text_in == "!stone") // 250 stone
-		{
-			CBlob@ b = server_CreateBlob('mat_stone', -1, pos);
-		}
-		else if (text_in == "!gold") // 200 gold
-		{
-			for (int i = 0; i < 4; i++)
-			{
-				CBlob@ b = server_CreateBlob('mat_gold', -1, pos);
-			}
 		}
 	}
 
@@ -145,31 +119,31 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		}
 		else if (text_in == "!allarrows") // 30 normal arrows, 2 water arrows, 2 fire arrows, 1 bomb arrow (full inventory for archer)
 		{
-			CBlob@ normal = server_CreateBlob('mat_arrows', -1, pos);
-			CBlob@ water = server_CreateBlob('mat_waterarrows', -1, pos);
-			CBlob@ fire = server_CreateBlob('mat_firearrows', -1, pos);
-			CBlob@ bomb = server_CreateBlob('mat_bombarrows', -1, pos);
+			server_CreateBlob('mat_arrows', -1, pos);
+			server_CreateBlob('mat_waterarrows', -1, pos);
+			server_CreateBlob('mat_firearrows', -1, pos);
+			server_CreateBlob('mat_bombarrows', -1, pos);
 		}
 		else if (text_in == "!arrows") // 3 mats of 30 arrows (90 arrows)
 		{
 			for (int i = 0; i < 3; i++)
 			{
-				CBlob@ b = server_CreateBlob('mat_arrows', -1, pos);
+				server_CreateBlob('mat_arrows', -1, pos);
 			}
 		}
 		else if (text_in == "!allbombs") // 2 normal bombs, 1 water bomb
 		{
 			for (int i = 0; i < 2; i++)
 			{
-				CBlob@ bomb = server_CreateBlob('mat_bombs', -1, pos);
+				server_CreateBlob('mat_bombs', -1, pos);
 			}
-			CBlob@ water = server_CreateBlob('mat_waterbombs', -1, pos);
+			server_CreateBlob('mat_waterbombs', -1, pos);
 		}
 		else if (text_in == "!bombs") // 3 (unlit) bomb mats
 		{
 			for (int i = 0; i < 3; i++)
 			{
-				CBlob@ b = server_CreateBlob('mat_bombs', -1, pos);
+				server_CreateBlob('mat_bombs', -1, pos);
 			}
 		}
 		else if (text_in == "!spawnwater" && player.isMod())
@@ -201,14 +175,59 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		{
 			for (int i = 0; i < 12; i++)
 			{
-				CBlob@ b = server_CreateBlob('fishy', -1, pos);
+				server_CreateBlob('fishy', -1, pos);
 			}
 		}
 		else if (text_in == "!chickenflock") // spawns 12 chickens
 		{
 			for (int i = 0; i < 12; i++)
 			{
-				CBlob@ b = server_CreateBlob('chicken', -1, pos);
+				server_CreateBlob('chicken', -1, pos);
+			}
+		}
+		else if (text_in == "!allmats") // 500 wood, 500 stone, 100 gold
+		{
+			//wood
+			CBlob@ wood = server_CreateBlob('mat_wood', -1, pos);
+			wood.server_SetQuantity(500); // so I don't have to repeat the server_CreateBlob line again
+			//stone
+			CBlob@ stone = server_CreateBlob('mat_stone', -1, pos);
+			stone.server_SetQuantity(500);
+			//gold
+			CBlob@ gold = server_CreateBlob('mat_gold', -1, pos);
+			gold.server_SetQuantity(100);
+		}
+		else if (text_in == "!woodstone") // 250 wood, 500 stone
+		{
+			server_CreateBlob('mat_wood', -1, pos);
+
+			for (int i = 0; i < 2; i++)
+			{
+				server_CreateBlob('mat_stone', -1, pos);
+			}
+		}
+		else if (text_in == "!stonewood") // 500 wood, 250 stone
+		{
+			server_CreateBlob('mat_stone', -1, pos);
+
+			for (int i = 0; i < 2; i++)
+			{
+				server_CreateBlob('mat_wood', -1, pos);
+			}
+		}
+		else if (text_in == "!wood") // 250 wood
+		{
+			server_CreateBlob('mat_wood', -1, pos);
+		}
+		else if (text_in == "!stones" || text_in == "!stone") // 250 stone
+		{
+			server_CreateBlob('mat_stone', -1, pos);
+		}
+		else if (text_in == "!gold") // 200 gold
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				server_CreateBlob('mat_gold', -1, pos);
 			}
 		}
 		// removed/commented out since this can easily be abused...
@@ -226,9 +245,8 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				CBlob@ b = server_CreateBlob('bison', -1, pos);
 			}
 		}*/
-		else if (text_in.substr(0, 1) == "!")
+		else
 		{
-			// check if we have tokens
 			string[]@ tokens = text_in.split(" ");
 
 			if (tokens.length > 1)
@@ -257,27 +275,54 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					}
 					server_MakePredefinedScroll(pos, s);
 				}
-
-				return true;
-			}
-
-			// otherwise, try to spawn an actor with this name !actor
-			string name = text_in.substr(1, text_in.size());
-
-			CBlob@ newBlob = server_CreateBlobNoInit(name);
-
-			if (newBlob is null)
-			{
-				client_AddToChat("blob " + text_in + " not found", SColor(255, 255, 0, 0));
+				else if(tokens[0] == "!coins")
+				{
+					int money = parseInt(tokens[1]);
+					player.server_setCoins(money);
+				}
 			}
 			else
 			{
-				newBlob.setPosition(pos);
-				newBlob.server_setTeamNum(team);
-				newBlob.Tag("cheated"); // tag item with this so we know it was made with chat commands
-				newBlob.Init();
+				string name = text_in.substr(1, text_in.size());
+				if (IsBlacklisted(name))
+				{
+					wasCommandSuccessful = false;
+					errorMessage = "blob is currently blacklisted";
+				}
+				else
+				{
+					CBlob@ newBlob = server_CreateBlob(name, team, pos); // currently any blob made will come back with a valid pointer
+
+					if (newBlob !is null)
+					{
+						if (newBlob.getName() != name)  // invalid blobs will have 'broken' names
+						{
+							wasCommandSuccessful = false;
+							errorMessage = "blob " + text_in + " not found";
+						}
+					}
+				}
 			}
 		}
+	}
+
+	if (wasCommandSuccessful)
+	{
+		blob.set_u16("chat_last_sent", getGameTime() + ChatCommandDelay);
+	}
+	else if(errorMessage != "") // send error message to client
+	{
+		print("sending command");
+		CBitStream params;
+		params.write_string(errorMessage);
+
+		// List is reverse so we can read it correctly into SColor when reading
+		params.write_u8(errorColor.getBlue());
+		params.write_u8(errorColor.getGreen());
+		params.write_u8(errorColor.getRed());
+		params.write_u8(errorColor.getAlpha());
+
+		this.SendCommand(this.getCommandID("SendChatMessage"), params, player);
 	}
 
 	return true;
@@ -312,4 +357,26 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 	}
 
 	return true;
+}
+
+
+void onCommand(CRules@ this, u8 cmd, CBitStream @para)
+{
+	if (cmd == this.getCommandID("SendChatMessage"))
+	{
+		string errorMessage = para.read_string();
+		SColor col = SColor(para.read_u8(), para.read_u8(), para.read_u8(), para.read_u8());
+		client_AddToChat(errorMessage, col);
+	}
+}
+
+bool IsBlacklisted(string name)
+{
+	return  name=="hall" || // used to dig hole to bottom of the map, spawns lots of migrants
+			name=="shark" || // greif
+			name=="bison" ||
+			name=="necromancer" || // annoying / grief
+			name=="greg" || // annoying / grief
+			name=="ctf_flag" || // sound spam
+			name=="flag_base";// sound spam / grief
 }
