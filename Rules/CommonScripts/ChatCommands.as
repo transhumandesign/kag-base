@@ -85,20 +85,27 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 	
 	// commands that don't rely on sv_test being on (sv_test = 1)
 
-	if (text_in == "!bot" && isMod) // TODO: whoaaa check seclevs
+	if (isMod)
 	{
-		CPlayer@ bot = AddBot("Henry"); //when there are multiple "Henry" bots, they'll be differentiated by a number (i.e. Henry2)
-	}
-	else if (text_in == "!debug" && isMod)
-	{
-		// print all blobs
-		CBlob@[] all;
-		getBlobs(@all);
-
-		for (u32 i = 0; i < all.length; i++)
+		if (text_in == "!bot")
 		{
-			CBlob@ blob = all[i];
-			print("[" + blob.getName() + " " + blob.getNetworkID() + "] ");
+			AddBot("Henry");
+		}
+		else if (text_in == "!debug")
+		{
+			CBlob@[] all;
+			getBlobs(@all);
+
+			for (u32 i = 0; i < all.length; i++)
+			{
+				CBlob@ blob = all[i];
+				print("[" + blob.getName() + " " + blob.getNetworkID() + "] ");
+			}
+		}
+		else if (text_in == "!endgame")
+		{
+			this.SetCurrentState(GAME_OVER); //go to map vote
+			return true;
 		}
 	}
 
