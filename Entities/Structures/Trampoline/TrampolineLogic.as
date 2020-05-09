@@ -1,4 +1,5 @@
 // TrampolineLogic.as
+#include "StandardControlsCommon.as"
 
 namespace Trampoline
 {
@@ -41,12 +42,20 @@ void onTick(CBlob@ this)
 
 	Vec2f ray = holder.getAimPos() - this.getPosition();
 	ray.Normalize();
-
+	
 	f32 angle = ray.Angle();
-	angle = angle > 135 || angle < 45? (holder.isFacingLeft()? 135 : 45) : 90;
-	angle -= 90;
+	CControls@ controls = getControls();
 
-	this.setAngleDegrees(-angle);
+	if (controls.isKeyPressed(KEY_LCONTROL))
+	{
+		angle = angle > 135 || angle < 45? (holder.isFacingLeft()? 135 : 45) : 90;
+		angle -= 90;
+		this.setAngleDegrees(-angle);
+	}
+	else
+	{
+		this.setAngleDegrees(-angle+90);
+	}
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1, Vec2f point2)
