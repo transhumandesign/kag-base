@@ -216,7 +216,7 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 		{
 			BuildBlock@ block = @blocks[PAGE][i];
 
-			if (!canBuild(blob, @blocks[PAGE], i))
+			if (!canBuild(blob, @blocks[PAGE], i) && blob.isMyPlayer())
 			{
 				Sound::Play("/NoAmmo");
 				return;
