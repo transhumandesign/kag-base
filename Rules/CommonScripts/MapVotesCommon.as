@@ -30,6 +30,17 @@ class MapVotesMenu
 		@button3 = MapVoteButton(false);
 	}
 
+	void ClearVotes()
+	{
+		Votes1.clear();
+		Votes2.clear();
+		Votes3.clear();
+		isSetup = false;
+		VoteTimeLeft = VoteSecs;
+		current_Selected = 0;
+		fadeTimer = PrePostVoteSecs * getTicksASecond(); // endgame time before fading
+	}
+
 	void Refresh()
 	{
 		//Refresh textures and sizes
