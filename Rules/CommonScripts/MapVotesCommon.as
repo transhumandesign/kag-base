@@ -65,7 +65,6 @@ class MapVotesMenu
 		Votes3.clear();
 		isSetup = false;
 		current_Selected = 0;
-		sentVoteResults = false;
 	}
 
 	void Refresh()
