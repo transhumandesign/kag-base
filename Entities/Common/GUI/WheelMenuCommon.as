@@ -90,16 +90,35 @@ class IconWheelMenuEntry : WheelMenuEntry
 	}
 };
 
+class PickupWheelOption
+{
+	string name;
+
+	// If two options are available with a different priority, regardless of score, we pick the one with the highest priority.
+	uint priority;
+
+	PickupWheelOption(const string&in p_name, uint p_priority = 0)
+	{
+		name = p_name;
+		priority = p_priority;
+	}
+};
+
 class PickupWheelMenuEntry : WheelMenuEntry
 {
 	// Visual parameters
 	string icon_name;
 	float scale;
 	bool disabled;
-	string[] options;
+	PickupWheelOption[] options;
 	Vec2f offset;
 
-	PickupWheelMenuEntry(const string&in p_name, const string&in p_icon_name, string[] p_options, Vec2f p_offset = Vec2f(0, 0))
+	PickupWheelMenuEntry(const string&in p_name, const string&in p_icon_name, const string&in p_option, Vec2f p_offset = Vec2f(0, 0))
+	{
+		this = PickupWheelMenuEntry(p_name, p_icon_name, PickupWheelOption[](1, PickupWheelOption(p_option)), p_offset);
+	}
+
+	PickupWheelMenuEntry(const string&in p_name, const string&in p_icon_name, PickupWheelOption[] p_options, Vec2f p_offset = Vec2f(0, 0))
 	{
 		super(p_name);
 		visible_name = p_name;
