@@ -49,8 +49,6 @@ class MapVotesMenu
 	u8 MostVoted;
 	bool isSetup;
 
-	bool sentVoteResults;
-
 	MapVotesMenu()
 	{		
 		isSetup = false;
