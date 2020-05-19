@@ -1,16 +1,6 @@
 //-- Written by Monkey_Feats 22/2/2020 --//
 #include "MapVotesCommon.as";
 
-const int VoteSecs = 16;
-const int PrePostVoteSecs = -4;
-const u16 FadeTicks = 60; //2(secs)*30(ticks)
-const string vote_end_id = "mapvote: ended";
-const string vote_selectmap_id = "mapvote: selectmap";
-const string vote_unselectmap_id = "mapvote: unselectmap";
-const string vote_sync_id = "mapvote: sync";
-u8 current_Selected = 0;
-s16 fadeTimer;
-
 void onInit( CRules@ this )
 {
 	this.addCommandID(vote_end_id);
@@ -27,53 +17,39 @@ void onInit( CRules@ this )
 		GUI::LoadFont("AveriaSerif-Bold_22", AveriaSerif, 22, true);
 	}
 
-	_random.Reset(XORRandom(999999)); //required otherwise we get the same seed (the same random order)
+	if (isServer())
+	{
+		_random.Reset(Time());
+	}
 
-	int id = Render::addScript(Render::layer_posthud, "PostGameMapVotes.as", "RenderRaw", 0.0f);
+	if (isClient())
+	{
+		Render::addScript(Render::layer_last, "PostGameMapVotes.as", "RenderRaw", 0.0f);
+	}
+
 	onRestart(this);
 }
 
-void onRestart(CRules@ this)
+void onRestart(CRules@ rules)
 {	
 	MapVotesMenu@ mvm;
-	if (!this.get("MapVotesMenu", @mvm)) return;
+	if (!rules.get("MapVotesMenu", @mvm))
+	{
+		warn("MapVotesMenu null in onRestart");
+	}
 
-    RandomizeButtonNames(this, mvm);   
+	if (isServer())
+	{
+    	randomizeMapOptions(@rules, mvm);
+		syncVoteOptions(@rules);
+	}
 
-	mvm.Votes1.clear(); mvm.Votes2.clear(); mvm.Votes3.clear();
-	mvm.isSetup = false;
-	mvm.VoteTimeLeft = VoteSecs;
-	current_Selected = 0;
-	fadeTimer = PrePostVoteSecs*getTicksASecond(); // endgame time before fading
+	mvm.ClearVotes();
 }
 
-void onNewPlayerJoin(CRules@ this, CPlayer@ player)
+void onNewPlayerJoin(CRules@ rules, CPlayer@ player)
 {
-	MapVotesMenu@ mvm;
-	if (!this.get("MapVotesMenu", @mvm)) return;
-	CBitStream params;
-	u16 id = player.getNetworkID();
-	params.write_u16(id);
-	params.write_string(mvm.button1.filename);
-	params.write_string(mvm.button3.filename);
-	params.write_string(mvm.button1.shortname);
-	params.write_string(mvm.button3.shortname);
-	params.write_s16(fadeTimer);
-	params.write_s16(mvm.VoteTimeLeft);
-	params.write_u8(mvm.MostVoted);
-
-	params.write_u8(mvm.Votes1.length());
-	params.write_u8(mvm.Votes2.length());
-	params.write_u8(mvm.Votes3.length());
-
-	for (uint i = 0; i < mvm.Votes1.length(); i++)
-	{ params.write_u16(mvm.Votes1[i]); }
-	for (uint i = 0; i < mvm.Votes2.length(); i++)
-	{ params.write_u16(mvm.Votes2[i]); }
-	for (uint i = 0; i < mvm.Votes3.length(); i++)
-	{ params.write_u16(mvm.Votes3[i]); }
-
-	this.SendCommand(this.getCommandID(vote_sync_id), params);
+	syncVoteOptions(@rules, @player);
 }
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)
@@ -87,38 +63,22 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 void onTick( CRules@ this )
 {
 	MapVotesMenu@ mvm;
-	if (!this.get("MapVotesMenu", @mvm)) return;
-	if (!this.isGameOver()) return;
+	if (!this.get("MapVotesMenu", @mvm))
+	{
+		warn("MapVotesMenu null in onTick");
+		return;
+	}
+
+	if (!this.isGameOver())
+	{
+		this.set_s32(gameEndTimePointTag, getGameTime() + this.get_s32(gameRestartDelayTag));
+	}
+
 	if (!mvm.isSetup)
 	{	
 		mvm.Refresh();
 		return;
-	}	
-
-	if (fadeTimer < FadeTicks)
-	{
-		fadeTimer++;
-		return;
 	}
-	else if (fadeTimer == FadeTicks)
-	{
-		CPlayer@ player;
-		for (int i = 0; i < getPlayersCount(); i++)
-		{
-			@player = getPlayer(i);
-			CBlob@ blob = player.getBlob();
-
-			if (blob !is null)
-			{
-				blob.server_Die(); // just a simple way of locking the camera and setting cursor, might be a better way			
-			}
-		}
-		getHUD().SetDefaultCursor();
-	}
-
-	// Vote is now setup, faded to black and is counting down
-	if (getGameTime() % getTicksASecond() == 0)
-	mvm.VoteTimeLeft--;
 
 	u8 count1 = mvm.Votes1.length();
 	u8 count2 = mvm.Votes2.length();
@@ -138,7 +98,7 @@ void onTick( CRules@ this )
 	}
 
 	CBitStream params;
-	if (getNet().isServer() && mvm.VoteTimeLeft == PrePostVoteSecs) //timeup + some, load voted map
+	if (isServer() && ticksRemainingBeforeRestart() <= 0)
 	{
 		params.write_u8(mvm.MostVoted);
 		this.SendCommand(this.getCommandID(vote_end_id), params);
@@ -147,12 +107,12 @@ void onTick( CRules@ this )
 	//--------------------- CLIENT -----------------------\\
 	if (getNet().isServer() && !getNet().isClient()) return; //not server, but also not localhost
 
-	if (mvm.VoteTimeLeft <= 0) return;
+	if (isMapVoteOver()) return;
 
 	CControls@ controls = getControls();
 	if (controls is null) return;
 	
-	u8 NewSelectedNum;
+	u8 NewSelectedNum = 0;
 	mvm.Update(controls, NewSelectedNum);
 
 	if (NewSelectedNum != 0)
@@ -209,44 +169,42 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (getNet().isClient() && cmd == this.getCommandID(vote_sync_id))
 	{	
-		u16 id = params.read_u16();
-		CPlayer@ player = getPlayerByNetworkId(id);
-		if (player.isMyPlayer()) 
+		mvm.button1.filename = params.read_string();
+		mvm.button3.filename = params.read_string();		
+		mvm.button1.shortname = params.read_string();
+		mvm.button3.shortname = params.read_string();
+		mvm.MostVoted = params.read_u8();
+
+		u8 l1 = params.read_u8();
+		u8 l2 = params.read_u8();
+		u8 l3 = params.read_u8();
+
+		for (uint i = 0; i < l1; i++)
+		{ 
+			mvm.Votes1.push_back(params.read_u8()); 
+		}
+		
+		for (uint i = 0; i < l2; i++)
 		{
-			mvm.button1.filename = params.read_string();
-			mvm.button3.filename = params.read_string();		
-			mvm.button1.shortname = params.read_string();
-			mvm.button3.shortname = params.read_string();
-			fadeTimer = params.read_s16();
-			mvm.VoteTimeLeft = params.read_s16();
-			mvm.MostVoted = params.read_u8();
-
-			u8 l1 = params.read_u8();
-			u8 l2 = params.read_u8();
-			u8 l3 = params.read_u8();
-
-			for (uint i = 0; i < l1; i++)
-			{ 
-				mvm.Votes1.push_back(params.read_u8()); 
-			}
-			for (uint i = 0; i < l2; i++)
-			{
-				mvm.Votes2.push_back(params.read_u8()); 
-			}
-			for (uint i = 0; i < l3; i++)
-			{ 
-				mvm.Votes3.push_back(params.read_u8());
-			}
+			mvm.Votes2.push_back(params.read_u8()); 
+		}
+		
+		for (uint i = 0; i < l3; i++)
+		{ 
+			mvm.Votes3.push_back(params.read_u8());
+		}
 			
-			if(!Texture::exists(mvm.button1.shortname))
-			{
-				CreateMapTexture(mvm.button1.shortname, mvm.button1.filename);
-			}
-			if(!Texture::exists(mvm.button3.shortname))
-			{
-				CreateMapTexture(mvm.button3.shortname, mvm.button3.filename);
-			}
-		}	
+		if (!Texture::exists(mvm.button1.shortname))
+		{
+			CreateMapTexture(mvm.button1.shortname, mvm.button1.filename);
+		}
+		
+		if (!Texture::exists(mvm.button3.shortname))
+		{
+			CreateMapTexture(mvm.button3.shortname, mvm.button3.filename);
+		}
+
+		mvm.ClearVotes();
 	}
 	else if (getNet().isServer() && cmd == this.getCommandID(vote_end_id))
 	{		
@@ -262,7 +220,45 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	}
 }
 
-void RandomizeButtonNames(CRules@ this, MapVotesMenu@ mvm)
+void syncVoteOptions(CRules@ rules, CPlayer@ targetPlayer = null)
+{
+	MapVotesMenu@ mvm;
+	if (!rules.get("MapVotesMenu", @mvm))
+	{
+		warn("MapVotesMenu null in syncVoteOptions");
+		return;
+	}
+
+	CBitStream params;
+	params.write_string(mvm.button1.filename);
+	params.write_string(mvm.button3.filename);
+	params.write_string(mvm.button1.shortname);
+	params.write_string(mvm.button3.shortname);
+	params.write_u8(mvm.MostVoted);
+
+	params.write_u8(mvm.Votes1.length());
+	params.write_u8(mvm.Votes2.length());
+	params.write_u8(mvm.Votes3.length());
+
+	for (uint i = 0; i < mvm.Votes1.length(); i++)
+	{ params.write_u16(mvm.Votes1[i]); }
+	for (uint i = 0; i < mvm.Votes2.length(); i++)
+	{ params.write_u16(mvm.Votes2[i]); }
+	for (uint i = 0; i < mvm.Votes3.length(); i++)
+	{ params.write_u16(mvm.Votes3[i]); }
+
+	if (targetPlayer is null)
+	{
+		// Send to everyone
+		rules.SendCommand(rules.getCommandID(vote_sync_id), params);
+	}
+	else
+	{
+		rules.SendCommand(rules.getCommandID(vote_sync_id), params, @targetPlayer);
+	}
+}
+
+void randomizeMapOptions(CRules@ this, MapVotesMenu@ mvm)
 {	
 	string map1name;
 	string map3name;
@@ -353,18 +349,6 @@ void RandomizeButtonNames(CRules@ this, MapVotesMenu@ mvm)
 	mvm.button3.filename = map3name;		
 	mvm.button1.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(mvm.button1.filename));
 	mvm.button3.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(mvm.button3.filename));
-
-	if (getNet().isClient())
-    {
-    	if(!Texture::exists(mvm.button1.shortname))
-		{
-			CreateMapTexture(mvm.button1.shortname, mvm.button1.filename);
-		}
-		if(!Texture::exists(mvm.button3.shortname))
-		{
-			CreateMapTexture(mvm.button3.shortname, mvm.button3.filename);
-		}
-    }
 }
 
 void onRender(CRules@ this)
