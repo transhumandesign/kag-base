@@ -161,6 +161,7 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 			if (b.temporaryBlob)
 			{
 				blockBlob.Tag("temp blob");
+				blockBlob.getShape().getConsts().collidable = false; // disable collision 
 			}
 			return blockBlob;
 		}
