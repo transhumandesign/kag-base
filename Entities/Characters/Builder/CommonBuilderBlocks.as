@@ -48,6 +48,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, const string&in gamemode_ove
 	}
 
 	const bool CTF = gamemode == "CTF";
+	const bool SCTF = gamemode == "SmallCTF";
 	const bool TTH = gamemode == "TTH";
 	const bool SBX = gamemode == "Sandbox";
 
@@ -104,7 +105,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, const string&in gamemode_ove
 		blocks[0].push_back(b);
 	}
 
-	if (CTF)
+	if (CTF || SCTF)
 	{
 		BuildBlock b(0, "building", "$building$", "Workshop\nStand in an open space\nand tap this button.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", CTFCosts::workshop_wood);
