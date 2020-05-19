@@ -13,6 +13,9 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 {
 	if (blob !is null)
 	{
+		CShape@ shape = blob.getShape();
+		shape.server_SetActive(true);
+
 		blob.Tag("temp blob placed");
 		// hack for spike kills
 		// TODO: add proper functionality for any block with a specific tag to blob.SetDamageOwnerPlayer(this.getPlayer());
@@ -25,8 +28,6 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 			blob.setPosition(cursorPos);
 			if (blob.isSnapToGrid())
 			{
-				CShape@ shape = blob.getShape();
-				shape.getConsts().collidable = true;
 				shape.SetStatic(true);
 			}
 		}

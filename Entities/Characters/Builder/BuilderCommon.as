@@ -151,9 +151,15 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 
 	if (getNet().isServer())
 	{
-		CBlob@ blockBlob = server_CreateBlob(b.name, this.getTeamNum(), pos);
+		CBlob@ blockBlob = server_CreateBlob(b.name, this.getTeamNum(), Vec2f(0,0));
 		if (blockBlob !is null)
 		{
+			CShape@ shape = blockBlob.getShape();
+			shape.SetStatic(false);
+			shape.server_SetActive(false);
+			blockBlob.setPosition(pos);
+			//blockBlob.
+
 			if (!b.buildOnGround)
 			{
 				this.server_Pickup(blockBlob);
@@ -161,7 +167,6 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 			if (b.temporaryBlob)
 			{
 				blockBlob.Tag("temp blob");
-				blockBlob.getShape().getConsts().collidable = false; // disable collision 
 			}
 			return blockBlob;
 		}
