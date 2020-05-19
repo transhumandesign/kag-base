@@ -1,7 +1,36 @@
 //-- Written by Monkey_Feats 22/2/2020 --//
 #include "LoaderColors.as";
 
+const uint voteLockDuration = 3 * getTicksASecond();
+const string vote_end_id = "mapvote: ended";
+const string vote_selectmap_id = "mapvote: selectmap";
+const string vote_unselectmap_id = "mapvote: unselectmap";
+const string vote_sync_id = "mapvote: sync";
+const string gameEndTimePointTag = "restart_rules_after_game";
+const string gameRestartDelayTag = "restart_rules_after_game_time";
+u8 current_Selected = 0;
+
 Random _random();
+
+int ticksRemainingBeforeRestart()
+{
+	CRules@ rules = getRules();
+
+	const int32 gameEndTimePoint = rules.get_s32(gameEndTimePointTag);
+	const int32 gameRestartDelay = rules.get_s32(gameRestartDelayTag);
+
+	return gameEndTimePoint - getGameTime();
+}
+
+int ticksRemainingForMapVote()
+{
+	return ticksRemainingBeforeRestart() - voteLockDuration;
+}
+
+bool isMapVoteOver()
+{
+	return ticksRemainingForMapVote() <= 0;
+}
 
 class MapVotesMenu
 {
@@ -18,8 +47,9 @@ class MapVotesMenu
 	u16[] Votes3;
 
 	u8 MostVoted;
-	s16 VoteTimeLeft;
 	bool isSetup;
+
+	bool sentVoteResults;
 
 	MapVotesMenu()
 	{		
@@ -36,9 +66,8 @@ class MapVotesMenu
 		Votes2.clear();
 		Votes3.clear();
 		isSetup = false;
-		VoteTimeLeft = VoteSecs;
 		current_Selected = 0;
-		fadeTimer = PrePostVoteSecs * getTicksASecond(); // endgame time before fading
+		sentVoteResults = false;
 	}
 
 	void Refresh()
@@ -48,8 +77,8 @@ class MapVotesMenu
 
 		//Refresh menu pos/size after getting button sizes
 		Vec2f screenCenter = getDriver().getScreenDimensions()/2;
-		TL_Position = screenCenter-(MenuSize/2);
-		BR_Pos = screenCenter+(MenuSize/2);
+		TL_Position = Vec2f(screenCenter.x - MenuSize.x / 2, 64);
+		BR_Pos = Vec2f(screenCenter.x + MenuSize.x / 2, 64 + MenuSize.y);
 
 		//Reposition buttons to menu
 		button1.Pos.x += TL_Position.x;
@@ -81,7 +110,7 @@ class MapVotesMenu
 
 	void Update(CControls@ controls, u8 &out NewSelectedNum)
 	{
-		if (VoteTimeLeft == VoteSecs) return; // Hack, mouseJustReleased returns true once?
+		if (isMapVoteOver()) return; // Hack, mouseJustReleased returns true once?
 
 		Vec2f mousepos = controls.getMouseScreenPos();
 		const bool mousePressed = controls.isKeyPressed(KEY_LBUTTON);
@@ -139,58 +168,59 @@ class MapVotesMenu
 	{
 		Vec2f ScreenDim = getDriver().getScreenDimensions();
 
-		if (fadeTimer > 0 && fadeTimer < FadeTicks)
+		const bool shouldNag = current_Selected == 0;
+
+		if (shouldNag)
 		{
-			SColor col(colors::menu_invisible_color);
-			float fadeamount = 1.0 - (fadeTimer*0.01f);
-			col = col.getInterpolated(colors::menu_fadeout_color, fadeamount);
-
-			GUI::DrawRectangle(Vec2f_zero, ScreenDim, col);
+			GUI::DrawRectangle(Vec2f_zero, ScreenDim, SColor(200, 0, 0, 0));
 		}
-		else if (fadeTimer >= FadeTicks) // draw menu
-		{			
-			GUI::SetFont("menu");	
-			GUI::DrawRectangle(Vec2f_zero, ScreenDim, colors::menu_fadeout_color);
-			GUI::DrawFramedPane(TL_Position, BR_Pos);
 
-			if (VoteTimeLeft < 1)
-			{	
-				string winner = "";
-				switch (MostVoted)
-				{
-					case 1: winner = button1.shortname; break;
-					case 3:	winner = button3.shortname; break;
-					default: winner = "A Random Map"; break;
-				}
-			 	GUI::DrawText("Map Voting Has Ended.. Loading: "+ winner, TL_Position+Vec2f(22,10), color_white);
-			}
-			else
+		GUI::SetFont("menu");	
+		GUI::DrawFramedPane(TL_Position, BR_Pos);
+
+		if (isMapVoteOver())
+		{	
+			string winner = "";
+			switch (MostVoted)
 			{
-			 	GUI::DrawText("Map Voting Ends In: "+ VoteTimeLeft, TL_Position+Vec2f(22,10), color_white);
+				case 1: winner = button1.shortname; break;
+				case 3:	winner = button3.shortname; break;
+				default: winner = "A Random Map"; break;
 			}
+		 	GUI::DrawText("Map Voting Has Ended.. Loading: "+ winner, TL_Position+Vec2f(22,10), color_white);
+		}
+		else
+		{
+		 	GUI::DrawText(
+				"Map Voting Ends In: " + ticksRemainingForMapVote() / getTicksASecond(),
+				TL_Position+Vec2f(22,10),
+				color_white
+			);
+		}
 
-			button1.RenderGUI();
-			button2.RenderGUI();
-			button3.RenderGUI();
+		button1.RenderGUI();
+		button2.RenderGUI();
+		button3.RenderGUI();
 
-			const Vec2f CountMid1 = button1.Pos+Vec2f((button1.Size.x/2)-2, button1.Size.y + 38);
-			const Vec2f CountMid2 = button2.Pos+Vec2f((button2.Size.x/2)-2, button2.Size.y + 38);
-			const Vec2f CountMid3 = button3.Pos+Vec2f((button3.Size.x/2)-2, button3.Size.y + 38);
+		const Vec2f CountMid1 = button1.Pos+Vec2f((button1.Size.x/2)-2, button1.Size.y + 38);
+		const Vec2f CountMid2 = button2.Pos+Vec2f((button2.Size.x/2)-2, button2.Size.y + 38);
+		const Vec2f CountMid3 = button3.Pos+Vec2f((button3.Size.x/2)-2, button3.Size.y + 38);
 			
-			GUI::SetFont("AveriaSerif-Bold_22");
-			GUI::DrawTextCentered(""+Votes1.length(), CountMid1, color_white);
-			GUI::DrawTextCentered(""+Votes2.length(), CountMid2, color_white);
-			GUI::DrawTextCentered(""+Votes3.length(), CountMid3, color_white);
+		GUI::SetFont("AveriaSerif-Bold_22");
+		GUI::DrawTextCentered(""+Votes1.length(), CountMid1, color_white);
+		GUI::DrawTextCentered(""+Votes2.length(), CountMid2, color_white);
+		GUI::DrawTextCentered(""+Votes3.length(), CountMid3, color_white);
+
+		if (shouldNag)
+		{
+			GUI::DrawTextCentered("Please vote for a map", Vec2f(getDriver().getScreenDimensions()/2), color_white);
 		}
 	}
 	void RenderRaw()
 	{
-		if (fadeTimer >= FadeTicks)
-		{
-			button1.RenderRaw();
-			button2.RenderRaw();
-			button3.RenderRaw();
-		}
+		button1.RenderRaw();
+		button2.RenderRaw();
+		button3.RenderRaw();
 	}
 };
 
@@ -476,7 +506,13 @@ void CreateMapTexture(string shortname, string filename)
 				}
 				else 
 				{   //Sky
-					editcol =  colors::minimap_open;
+					editcol = colors::minimap_open;
+				}
+
+				if (pixelpos.y == 0)
+				{
+					// show the effective ceiling
+					editcol = colors::minimap_back;
 				}
 
 				edit[offset] = editcol;

@@ -1,16 +1,6 @@
 //-- Written by Monkey_Feats 22/2/2020 --//
 #include "MapVotesCommon.as";
 
-const int VoteSecs = 16;
-const int PrePostVoteSecs = -4;
-const u16 FadeTicks = 60; //2(secs)*30(ticks)
-const string vote_end_id = "mapvote: ended";
-const string vote_selectmap_id = "mapvote: selectmap";
-const string vote_unselectmap_id = "mapvote: unselectmap";
-const string vote_sync_id = "mapvote: sync";
-u8 current_Selected = 0;
-s16 fadeTimer;
-
 void onInit( CRules@ this )
 {
 	this.addCommandID(vote_end_id);
@@ -34,7 +24,7 @@ void onInit( CRules@ this )
 
 	if (isClient())
 	{
-		Render::addScript(Render::layer_posthud, "PostGameMapVotes.as", "RenderRaw", 0.0f);
+		Render::addScript(Render::layer_last, "PostGameMapVotes.as", "RenderRaw", 0.0f);
 	}
 
 	onRestart(this);
@@ -79,37 +69,16 @@ void onTick( CRules@ this )
 		return;
 	}
 
-	if (!this.isGameOver()) return;
+	if (!this.isGameOver())
+	{
+		this.set_s32(gameEndTimePointTag, getGameTime() + this.get_s32(gameRestartDelayTag));
+	}
+
 	if (!mvm.isSetup)
 	{	
 		mvm.Refresh();
 		return;
-	}	
-
-	if (fadeTimer < FadeTicks)
-	{
-		fadeTimer++;
-		return;
 	}
-	else if (fadeTimer == FadeTicks)
-	{
-		CPlayer@ player;
-		for (int i = 0; i < getPlayersCount(); i++)
-		{
-			@player = getPlayer(i);
-			CBlob@ blob = player.getBlob();
-
-			if (blob !is null)
-			{
-				blob.server_Die(); // just a simple way of locking the camera and setting cursor, might be a better way			
-			}
-		}
-		getHUD().SetDefaultCursor();
-	}
-
-	// Vote is now setup, faded to black and is counting down
-	if (getGameTime() % getTicksASecond() == 0)
-	mvm.VoteTimeLeft--;
 
 	u8 count1 = mvm.Votes1.length();
 	u8 count2 = mvm.Votes2.length();
@@ -129,7 +98,7 @@ void onTick( CRules@ this )
 	}
 
 	CBitStream params;
-	if (getNet().isServer() && mvm.VoteTimeLeft == PrePostVoteSecs) //timeup + some, load voted map
+	if (isServer() && ticksRemainingBeforeRestart() <= 0)
 	{
 		params.write_u8(mvm.MostVoted);
 		this.SendCommand(this.getCommandID(vote_end_id), params);
@@ -138,12 +107,12 @@ void onTick( CRules@ this )
 	//--------------------- CLIENT -----------------------\\
 	if (getNet().isServer() && !getNet().isClient()) return; //not server, but also not localhost
 
-	if (mvm.VoteTimeLeft <= 0) return;
+	if (isMapVoteOver()) return;
 
 	CControls@ controls = getControls();
 	if (controls is null) return;
 	
-	u8 NewSelectedNum;
+	u8 NewSelectedNum = 0;
 	mvm.Update(controls, NewSelectedNum);
 
 	if (NewSelectedNum != 0)
@@ -204,8 +173,6 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		mvm.button3.filename = params.read_string();		
 		mvm.button1.shortname = params.read_string();
 		mvm.button3.shortname = params.read_string();
-		fadeTimer = params.read_s16();
-		mvm.VoteTimeLeft = params.read_s16();
 		mvm.MostVoted = params.read_u8();
 
 		u8 l1 = params.read_u8();
@@ -267,8 +234,6 @@ void syncVoteOptions(CRules@ rules, CPlayer@ targetPlayer = null)
 	params.write_string(mvm.button3.filename);
 	params.write_string(mvm.button1.shortname);
 	params.write_string(mvm.button3.shortname);
-	params.write_s16(fadeTimer);
-	params.write_s16(mvm.VoteTimeLeft);
 	params.write_u8(mvm.MostVoted);
 
 	params.write_u8(mvm.Votes1.length());
