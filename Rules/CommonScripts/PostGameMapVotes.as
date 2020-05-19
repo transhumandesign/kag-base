@@ -72,6 +72,7 @@ void onTick( CRules@ this )
 	if (!this.isGameOver())
 	{
 		this.set_s32(gameEndTimePointTag, getGameTime() + this.get_s32(gameRestartDelayTag));
+		return;
 	}
 
 	if (!mvm.isSetup)
