@@ -10,14 +10,10 @@
 const bool ChatCommandCoolDown = false; // enable if you want cooldown on your server
 const uint ChatCommandDelay = 3 * 30; // Cooldown in seconds
 
-
 void onInit(CRules@ this)
 {
 	this.addCommandID("SendChatMessage");
 }
-
-
-
 
 bool onServerProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
 {
@@ -90,6 +86,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		if (text_in == "!bot")
 		{
 			AddBot("Henry");
+			return true;
 		}
 		else if (text_in == "!debug")
 		{
@@ -105,6 +102,11 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		else if (text_in == "!endgame")
 		{
 			this.SetCurrentState(GAME_OVER); //go to map vote
+			return true;
+		}
+		else if (text_in == "!startgame")
+		{
+			this.SetCurrentState(GAME);
 			return true;
 		}
 	}
