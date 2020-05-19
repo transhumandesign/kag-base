@@ -74,8 +74,8 @@ class MapVotesMenu
 
 		//Refresh menu pos/size after getting button sizes
 		Vec2f screenCenter = getDriver().getScreenDimensions()/2;
-		TL_Position = Vec2f(screenCenter.x - MenuSize.x / 2, 64);
-		BR_Pos = Vec2f(screenCenter.x + MenuSize.x / 2, 64 + MenuSize.y);
+		TL_Position = Vec2f(screenCenter.x - MenuSize.x / 2, 16);
+		BR_Pos = Vec2f(screenCenter.x + MenuSize.x / 2, 16 + MenuSize.y);
 
 		//Reposition buttons to menu
 		button1.Pos.x += TL_Position.x;
@@ -107,7 +107,7 @@ class MapVotesMenu
 
 	void Update(CControls@ controls, u8 &out NewSelectedNum)
 	{
-		if (isMapVoteOver()) return; // Hack, mouseJustReleased returns true once?
+		if (isMapVoteOver() ) return; // Hack, mouseJustReleased returns true once?
 
 		Vec2f mousepos = controls.getMouseScreenPos();
 		const bool mousePressed = controls.isKeyPressed(KEY_LBUTTON);
@@ -165,7 +165,7 @@ class MapVotesMenu
 	{
 		Vec2f ScreenDim = getDriver().getScreenDimensions();
 
-		const bool shouldNag = current_Selected == 0;
+		const bool shouldNag = current_Selected == 0 && !isMapVoteOver();
 
 		if (shouldNag)
 		{
@@ -210,7 +210,11 @@ class MapVotesMenu
 
 		if (shouldNag)
 		{
-			GUI::DrawTextCentered("Please vote for a map", Vec2f(getDriver().getScreenDimensions()/2), color_white);
+			GUI::DrawTextCentered(
+				"Please vote for a map!",
+				ScreenDim / 2,
+				color_white
+			);
 		}
 	}
 	void RenderRaw()
@@ -218,6 +222,12 @@ class MapVotesMenu
 		button1.RenderRaw();
 		button2.RenderRaw();
 		button3.RenderRaw();
+	}
+
+	void Render()
+	{
+		RenderGUI();
+		RenderRaw();
 	}
 };
 

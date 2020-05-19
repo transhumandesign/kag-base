@@ -24,7 +24,7 @@ void onInit( CRules@ this )
 
 	if (isClient())
 	{
-		Render::addScript(Render::layer_last, "PostGameMapVotes.as", "RenderRaw", 0.0f);
+		Render::addScript(Render::layer_posthud, "PostGameMapVotes.as", "RenderRaw", 0.0f);
 	}
 
 	onRestart(this);
@@ -352,16 +352,6 @@ void randomizeMapOptions(CRules@ this, MapVotesMenu@ mvm)
 	mvm.button3.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(mvm.button3.filename));
 }
 
-void onRender(CRules@ this)
-{	
-	MapVotesMenu@ mvm;
-	if (!this.get("MapVotesMenu", @mvm)) return;
-	if (!this.isGameOver() || !mvm.isSetup) return;
-	if (!getNet().isClient()) return;
-
-	mvm.RenderGUI();
-}
-
 void RenderRaw(int id)
 {	
 	MapVotesMenu@ mvm;
@@ -372,5 +362,6 @@ void RenderRaw(int id)
 	Render::SetTransformScreenspace();
 	Render::SetAlphaBlend(true);
 	Render::SetBackfaceCull(true);
-	mvm.RenderRaw();
+	Render::SetZBuffer(false, false);
+	mvm.Render();
 }
