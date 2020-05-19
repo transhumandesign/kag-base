@@ -192,6 +192,11 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 
 	const f32 currentHealth = this.getHealth();
 	f32 temp = currentHealth - oldHealth;
+	
+	if (temp > 25)
+	{
+		temp = 25;
+	}
 
 	while (temp > 0) // if we've been healed, play a particle for each healed unit
 	{

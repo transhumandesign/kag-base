@@ -26,6 +26,7 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 			if (blob.isSnapToGrid())
 			{
 				CShape@ shape = blob.getShape();
+				shape.getConsts().collidable = true;
 				shape.SetStatic(true);
 			}
 		}
