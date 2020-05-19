@@ -144,65 +144,69 @@ void ShowEmotesMenu(CPlayer@ player)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
-	string name;
-	u8 subcmd;
-
-	if(!params.saferead_u8(subcmd)) return;
-	if(!params.saferead_string(name)) return;
-
-	CPlayer@ caller = getPlayerByUsername(name);
-
-	//check validity so far
-	if (caller is null || !caller.isMyPlayer() || subcmd >= EMOTE_SUBCMD_COUNT)
+	if(cmd == this.getCommandID(EMOTE_CMD))
 	{
-		return;
-	}
+		string name;
+		u8 subcmd;
 
-	if (subcmd == BIND_EMOTE)
-	{
-		string propname = SELECTED_PROP + caller.getUsername();
-		u8 selected = this.get_u8(propname);
+		if(!params.saferead_u8(subcmd)) return;
+		if(!params.saferead_string(name)) return;
 
-		//must select keybind first
-		if (selected == -1)
+		CPlayer@ caller = getPlayerByUsername(name);
+
+		//check validity so far
+		if (caller is null || !caller.isMyPlayer() || subcmd >= EMOTE_SUBCMD_COUNT)
 		{
 			return;
 		}
 
-		u8 emote;
-		if(!params.saferead_u8(emote)) return;
+		if (subcmd == BIND_EMOTE)
+		{
+			string propname = SELECTED_PROP + caller.getUsername();
+			u8 selected = this.get_u8(propname);
 
-		string key = "emote_" + (selected + 1);
+			//must select keybind first
+			if (selected == -1)
+			{
+				return;
+			}
 
-		//get emote bindings cfg file
-		ConfigFile@ cfg = openEmoteBindingsConfig();
+			u8 emote;
+			if(!params.saferead_u8(emote)) return;
 
-		//bind emote
-		cfg.add_string(key, "" + emote);
-		cfg.saveFile("EmoteBindings.cfg");
+			string key = "emote_" + (selected + 1);
 
-		//update keybinds in menu
-		ShowEmotesMenu(caller);
+			//get emote bindings cfg file
+			ConfigFile@ cfg = openEmoteBindingsConfig();
+
+			//bind emote
+			cfg.add_string(key, "" + emote);
+			cfg.saveFile("EmoteBindings.cfg");
+
+			//update keybinds in menu
+			ShowEmotesMenu(caller);
+		}
+		else if (subcmd == SELECT_KEYBIND)
+		{
+			u8 emote;
+			if(!params.saferead_u8(emote)) return;
+
+			string propname = SELECTED_PROP + caller.getUsername();
+			this.set_u8(propname, emote);
+		}
+		else if (subcmd == CLOSE_MENU)
+		{
+			getHUD().ClearMenus(true);
+		}
+
+		//trigger a reload of the blob's emote bindings either way
+		CBlob@ cblob = caller.getBlob();
+		if (cblob !is null)
+		{
+			cblob.Tag("reload emotes");
+		}
 	}
-	else if (subcmd == SELECT_KEYBIND)
-	{
-		u8 emote;
-		if(!params.saferead_u8(emote)) return;
-
-		string propname = SELECTED_PROP + caller.getUsername();
-		this.set_u8(propname, emote);
-	}
-	else if (subcmd == CLOSE_MENU)
-	{
-		getHUD().ClearMenus(true);
-	}
-
-	//trigger a reload of the blob's emote bindings either way
-	CBlob@ cblob = caller.getBlob();
-	if (cblob !is null)
-	{
-		cblob.Tag("reload emotes");
-	}
+	
 }
 
 string getIconName(u8 emoteIndex)
