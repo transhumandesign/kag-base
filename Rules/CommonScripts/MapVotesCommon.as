@@ -773,8 +773,8 @@ u8 type(SColor PixelCol, bool show_gold)
 		}
 
 		case map_colors::water_backdirt:
-		case map_colors::interpolated_water_backwall:
-		case map_colors::interpolated_water_backwall_edge:
+		case colors::interpolated_water_backwall:
+		case colors::interpolated_water_backwall_edge:
 		{
 			 return ColTileType::Backwall_Water;
 		}
