@@ -215,8 +215,8 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 		if (blocks !is null && i >= 0 && i < blocks[PAGE].length)
 		{
 			BuildBlock@ block = @blocks[PAGE][i];
-
-			if (!canBuild(blob, @blocks[PAGE], i) && blob.isMyPlayer())
+			bool canBuildBlock = canBuild(blob, @blocks[PAGE], i);
+			if (!canBuildBlock && blob.isMyPlayer())
 			{
 				Sound::Play("/NoAmmo");
 				return;
@@ -251,7 +251,7 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 				}
 			}
 
-			if (block.tile == 0)
+			if (block.tile == 0 && canBuildBlock)
 			{
 				server_BuildBlob(blob, @blocks[PAGE], i);
 			}
