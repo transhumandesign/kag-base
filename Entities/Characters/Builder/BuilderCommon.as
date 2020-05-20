@@ -164,6 +164,11 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 			{
 				this.server_Pickup(blockBlob);
 			}
+			else
+			{
+				shape.server_SetActive(true); // have it enable if its a shop
+			}
+
 			if (b.temporaryBlob)
 			{
 				blockBlob.Tag("temp blob");
