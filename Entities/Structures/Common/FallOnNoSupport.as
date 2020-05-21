@@ -24,14 +24,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	}
 }
 
-void onDetach( CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint )
-{
-	this.set_u16("timePlaced",getGameTime());
-}
-
 void onBlobCollapse(CBlob@ this)
 {
-	if (!isServer() || getGameTime() - this.get_u16("timePlaced") < 3 || getGameTime() < 60 || this.hasTag("fallen")) return;
+	if (!isServer() || getGameTime() < 60 || this.hasTag("fallen")) return;
 
 	CShape@ shape = this.getShape();
 	if (shape.getCurrentSupport() < 0.001f)
