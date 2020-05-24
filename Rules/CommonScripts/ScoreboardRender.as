@@ -131,10 +131,25 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 		bool playerHover = mousePos.y > topleft.y && mousePos.y < topleft.y + 15;
 
-		if (playerHover && controls.mousePressed1)
+		if (playerHover)
 		{
-			setSpectatePlayer(p.getUsername());
-
+			if (controls.mousePressed1)
+			{
+				setSpectatePlayer(p.getUsername());
+			}
+			
+			if (controls.mousePressed2)
+			{
+				// reason for this is because this is called multiple per click (since its onRender, and clicking is updated per tick)
+				// we don't want to spam anybody using a clipboard history program
+				if (getFromClipboard() != p.getUsername()) 
+				{
+					CopyToClipboard(p.getUsername());
+					localplayer.set_u16("copy_time", getGameTime());
+					localplayer.set_string("copy_name", p.getUsername());
+					localplayer.set_Vec2f("copy_pos", mousePos + Vec2f(0, -10));
+				}
+			}
 		}
 
 		Vec2f lineoffset = Vec2f(0, -2);
@@ -472,6 +487,16 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 		GUI::DrawText("" + formatFloat(getKDR(p), "", 0, 2), Vec2f(bottomright.x - 50, topleft.y), SColor(0xffffffff));
 	}
 
+	// username copied text, goes at bottom to overlay above everything else
+	uint durationLeft = localplayer.get_u16("copy_time");
+
+	if ((durationLeft + 64) > getGameTime()) 
+	{
+		durationLeft = getGameTime() - durationLeft;
+		DrawFancyCopiedText(localplayer.get_string("copy_name"), localplayer.get_Vec2f("copy_pos"), durationLeft);
+	}
+	
+
 	return topleft.y;
 
 }
@@ -702,4 +727,13 @@ void getMapName(CRules@ this)
 		this.set_string("map_name",mapName);
 		this.Sync("map_name",true);
 	}
+}
+
+void DrawFancyCopiedText(string username, Vec2f mousePos, uint duration)
+{
+	string text = "Username copied: " + username;
+	Vec2f pos = mousePos - Vec2f(0, duration);
+	int col = (255 - duration * 3);
+
+	GUI::DrawTextCentered(text, pos, SColor((255 - duration * 4), col, col, col));
 }
