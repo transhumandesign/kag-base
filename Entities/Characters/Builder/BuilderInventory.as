@@ -222,7 +222,7 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 				{
 					Sound::Play("/NoAmmo");
 				}
-				
+
 				return;
 			}
 
@@ -380,7 +380,7 @@ void onTick(CBlob@ this)
 	}
 
 	CControls@ controls = getControls();
-	if (controls.ActionKeyPressed(AK_BLOCK_HOTKEY) || controls.isKeyPressed(KEY_RSHIFT))
+	if (controls.ActionKeyPressed(AK_MODIFIER))
 	{
 		for (uint i = 0; i < 9; i++)
 		{

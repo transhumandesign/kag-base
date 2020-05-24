@@ -73,7 +73,7 @@ void onTick(CBlob@ this)
 	}
 
 	CControls@ controls = getControls();
-	if (controls.ActionKeyPressed(AK_BLOCK_HOTKEY) || controls.isKeyPressed(KEY_RSHIFT))
+	if (controls.ActionKeyPressed(AK_MODIFIER))
 	{
 		return;
 	}
