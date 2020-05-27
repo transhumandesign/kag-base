@@ -380,7 +380,7 @@ void onTick(CBlob@ this)
 	}
 
 	CControls@ controls = getControls();
-	if (controls.isKeyPressed(KEY_LSHIFT) || controls.isKeyPressed(KEY_RSHIFT))
+	if (controls.ActionKeyPressed(AK_BLOCK_HOTKEY) || controls.isKeyPressed(KEY_RSHIFT))
 	{
 		for (uint i = 0; i < 9; i++)
 		{
