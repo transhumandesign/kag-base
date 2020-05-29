@@ -18,7 +18,6 @@ void onInit(CBlob@ this)
 	this.addCommandID("convert");
 	this.getCurrentScript().tickFrequency = 15;
 	this.set_s16(counter_prop, GetCaptureTime(this));
-	this.set_s16("max capture ticks", GetCaptureTime(this)); //for normalizing capture ticks
 	this.set_s16(friendly_prop, 0);
 	this.set_s16(enemy_prop, 0);
 }

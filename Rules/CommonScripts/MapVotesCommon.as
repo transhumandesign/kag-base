@@ -1,7 +1,33 @@
 //-- Written by Monkey_Feats 22/2/2020 --//
 #include "LoaderColors.as";
 
-Random _random();
+const uint voteLockDuration = 3 * getTicksASecond();
+const string voteEndTag = "mapvote: ended";
+const string voteSelectMapTag = "mapvote: selectmap";
+const string voteUnselectMapTag = "mapvote: unselectmap";
+const string voteSyncTag = "mapvote: sync";
+const string gameEndTimePointTag = "restart_rules_after_game";
+const string gameRestartDelayTag = "restart_rules_after_game_time";
+
+int ticksRemainingBeforeRestart()
+{
+	CRules@ rules = getRules();
+
+	const int32 gameEndTimePoint = rules.get_s32(gameEndTimePointTag);
+	const int32 gameRestartDelay = rules.get_s32(gameRestartDelayTag);
+
+	return gameEndTimePoint - getGameTime();
+}
+
+int ticksRemainingForMapVote()
+{
+	return ticksRemainingBeforeRestart() - voteLockDuration;
+}
+
+bool isMapVoteOver()
+{
+	return ticksRemainingForMapVote() <= 0;
+}
 
 class MapVotesMenu
 {
@@ -9,17 +35,31 @@ class MapVotesMenu
 	MapVoteButton@ button2;
 	MapVoteButton@ button3;
 
-	Vec2f TL_Position;
-	Vec2f BR_Pos;
-	Vec2f MenuSize;
+	Vec2f topLeftCorner;
+	Vec2f bottomRightCorner;
+	Vec2f menuSize;
 
-	u16[] Votes1;
-	u16[] Votes2;
-	u16[] Votes3;
-
-	u8 MostVoted;
-	s16 VoteTimeLeft;
 	bool isSetup;
+
+	u16[] votes1;
+	u16[] votes2;
+	u16[] votes3;
+	u8 mostVoted;
+	u8 selectedOption;
+
+	Random random;
+
+	MapVoteButton@ getButton(uint index)
+	{
+		switch (index)
+		{
+		case 1: return @button1;
+		case 2: return @button2;
+		case 3: return @button3;
+		}
+
+		return null;
+	}
 
 	MapVotesMenu()
 	{		
@@ -28,6 +68,20 @@ class MapVotesMenu
 		@button1 = MapVoteButton(false);
 		@button2 = MapVoteButton(true);
 		@button3 = MapVoteButton(false);
+
+		if (isServer())
+		{
+			random.Reset(Time());
+		}
+	}
+
+	void ClearVotes()
+	{
+		votes1.clear();
+		votes2.clear();
+		votes3.clear();
+		isSetup = false;
+		selectedOption = 0;
 	}
 
 	void Refresh()
@@ -36,15 +90,22 @@ class MapVotesMenu
 		RefreshButtons();
 
 		//Refresh menu pos/size after getting button sizes
-		Vec2f screenCenter = getDriver().getScreenDimensions()/2;
-		TL_Position = screenCenter-(MenuSize/2);
-		BR_Pos = screenCenter+(MenuSize/2);
+		Vec2f screenDims = getDriver().getScreenDimensions();
+		topLeftCorner = Vec2f(screenDims.x - menuSize.x - 16, 16);
+		bottomRightCorner = Vec2f(screenDims.x - 16, 16 + menuSize.y);
 
-		//Reposition buttons to menu
-		button1.Pos.x += TL_Position.x;
-		button2.Pos.x += TL_Position.x;
-		button3.Pos.x += TL_Position.x;
-		button1.Pos.y = button2.Pos.y = button3.Pos.y = TL_Position.y+40;
+		//Process button position relative to size
+		for (uint i = 1; i <= 3; ++i)
+		{
+			MapVoteButton@ button = getButton(i);
+			button.clickableOrigin.x += topLeftCorner.x;
+			button.clickableOrigin.y += topLeftCorner.y + 30;
+
+			button.clickableSize.y = menuSize.y - 30;
+
+			button.previewOrigin =
+				button.clickableOrigin + (Vec2f(button.clickableSize.x, menuSize.y - 80)) / 2 - button.previewSize / 2;
+		}
 
 		isSetup = true;
 	}
@@ -52,25 +113,28 @@ class MapVotesMenu
 	void RefreshButtons()
 	{	
 		Vec2f ButtonSize;
-		MenuSize.x = 30;
-		MenuSize.y = 200;
+		menuSize.x = 30;
+		menuSize.y = 200;
 
-		button1.RefreshButton( MenuSize.x, ButtonSize);
-		MenuSize.x += ButtonSize.x+30;
-		MenuSize.y = (ButtonSize.y+95) > MenuSize.y ? ButtonSize.y+95 : MenuSize.y;
-
-		button2.RefreshRandomButton( MenuSize.x, ButtonSize);
-		MenuSize.x += ButtonSize.x+30;
-		MenuSize.y = (ButtonSize.y+95) > MenuSize.y ? ButtonSize.y+95 : MenuSize.y;
-		
-		button3.RefreshButton( MenuSize.x, ButtonSize);
-		MenuSize.x += ButtonSize.x+30;
-		MenuSize.y = (ButtonSize.y+95) > MenuSize.y ? ButtonSize.y+95 : MenuSize.y;
+		for (uint i = 1; i <= 3; ++i)
+		{
+			if (i == 2)
+			{
+				button2.RefreshRandomButton(menuSize.x, ButtonSize);	
+			}
+			else
+			{
+				getButton(i).RefreshButton(menuSize.x, ButtonSize);
+			}
+			
+			menuSize.x += ButtonSize.x + 30;
+			menuSize.y = Maths::Max(ButtonSize.y + 128, menuSize.y);
+		}
 	}
 
-	void Update(CControls@ controls, u8 &out NewSelectedNum)
+	void Update(CControls@ controls, u8 &out newSelectedNum)
 	{
-		if (VoteTimeLeft == VoteSecs) return; // Hack, mouseJustReleased returns true once?
+		if (isMapVoteOver()) { return; }
 
 		Vec2f mousepos = controls.getMouseScreenPos();
 		const bool mousePressed = controls.isKeyPressed(KEY_LBUTTON);
@@ -84,7 +148,7 @@ class MapVotesMenu
 			if (mousePressed) button1.State = ButtonStates::Pressed;
 			else if (mouseJustReleased) 
 			{
-				NewSelectedNum = 1;
+				newSelectedNum = 1;
 				button1.State = ButtonStates::Selected;
 				button2.State = button3.State = ButtonStates::None;		
 			}
@@ -97,7 +161,7 @@ class MapVotesMenu
 			if (mousePressed) button2.State = ButtonStates::Pressed;
 			else if (mouseJustReleased) 
 			{
-				NewSelectedNum = 2;
+				newSelectedNum = 2;
 				button2.State = ButtonStates::Selected;
 				button1.State = button3.State = ButtonStates::None;
 			}
@@ -110,17 +174,143 @@ class MapVotesMenu
 			if (mousePressed) button3.State = ButtonStates::Pressed;
 			else if (mouseJustReleased) 
 			{
-				NewSelectedNum = 3;
+				newSelectedNum = 3;
 				button3.State = ButtonStates::Selected;
 				button1.State = button2.State = ButtonStates::None;
 			}
 		}
 		else
 		{
-			NewSelectedNum = 0;
+			newSelectedNum = 0;
 			button1.State = button1.State != ButtonStates::Selected ? ButtonStates::None : ButtonStates::Selected; 
 			button2.State = button2.State != ButtonStates::Selected ? ButtonStates::None : ButtonStates::Selected;
 			button3.State = button3.State != ButtonStates::Selected ? ButtonStates::None : ButtonStates::Selected;
+		}
+	}
+
+	void Randomize()
+	{
+		string map1name;
+		string map3name;
+		string mapcycle = sv_mapcycle;
+		if (mapcycle == "")
+		{
+			string mode_name = sv_gamemode;
+			if (mode_name == "Team Deathmatch") mode_name = "TDM";
+			mapcycle =  "Rules/"+mode_name+"/mapcycle.cfg";
+		}
+
+		ConfigFile cfg;	
+		bool loaded = false;
+		if (CFileMatcher(mapcycle).getFirst() == mapcycle && cfg.loadFile(mapcycle)) loaded = true;
+		else if (cfg.loadFile(mapcycle)) loaded = true;
+		if (!loaded) { warn( mapcycle+ " not found!"); return; }
+
+		string[] map_names;
+		if (cfg.readIntoArray_string(map_names, "mapcycle"))
+		{		
+			const string currentMap = getMap().getMapName();	
+			const int currentMapNum = map_names.find(currentMap);	
+
+			int arrayleng = map_names.length();	
+			if (arrayleng > 4)
+			{
+				//remove the current map first
+				if (currentMapNum != -1)
+					map_names.removeAt(currentMapNum);
+
+				if (map1name != currentMap)
+				{ 	// remove the old button 1
+					const int oldMap1Num = map_names.find(map1name);
+					if (oldMap1Num != -1)
+						map_names.removeAt(oldMap1Num);
+				}
+				else if (map3name != currentMap) 
+				{	// remove the old button 3
+					const int oldMap3Num = map_names.find(map3name);
+					if (oldMap3Num != -1)
+						map_names.removeAt(oldMap3Num);
+				}					
+				
+				// random based on what's left				
+				map1name = map_names[random.NextRanged(map_names.length())];
+				map_names.removeAt(map_names.find(map1name));
+				map3name = map_names[random.NextRanged(map_names.length())];
+			}
+			else if (arrayleng >= 3)
+			{
+				//remove the current map
+				if (currentMapNum != -1)
+				map_names.removeAt(currentMapNum); 
+				// random based on what's left
+				map1name = map_names[random.NextRanged(map_names.length())];
+				map_names.removeAt(map_names.find(map1name));
+				map3name = map_names[random.NextRanged(map_names.length())];
+			}
+			else if (arrayleng == 2)
+			{
+				map1name = map_names[0];
+				map3name = map_names[1];
+			}
+			else //if (arrayleng <= 1)
+			{
+				LoadNextMap(); // we don't care about voting, get me out
+			}		
+
+			//test to see if the map filename is inside parentheses and cut it out
+			//incase someone wants to add map votes to a gamemode that loads maps via scripts, eg. Challenge/mapcycle.cfg				 
+			string temptest = map1name.substr(map1name.length() - 1, map1name.length() - 1);
+			if (temptest == ")")
+			{
+				string[] name = map1name.split(' (');
+				string mapName = name[name.length() - 1];
+				map1name = mapName.substr(0,mapName.length() - 1);
+			}
+			temptest = map3name.substr(map3name.length() - 1, map3name.length() - 1);
+			if (temptest == ")")
+			{
+				string[] name = map1name.split(' (');
+				string mapName = name[name.length() - 1];
+				map3name = mapName.substr(0,mapName.length() - 1);
+			}
+		}	
+
+		button1.filename = map1name;
+		button3.filename = map3name;		
+		button1.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button1.filename));
+		button3.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button3.filename));
+	}
+
+	void Sync(CPlayer@ targetPlayer = null)
+	{
+		CRules@ rules = getRules();
+
+		CBitStream params;
+		params.write_string(button1.filename);
+		params.write_string(button3.filename);
+		params.write_string(button1.shortname);
+		params.write_string(button3.shortname);
+		params.write_u8(mostVoted);
+
+		params.write_u8(votes1.length());
+		params.write_u8(votes2.length());
+		params.write_u8(votes3.length());
+
+		for (uint i = 0; i < votes1.length(); i++)
+		{ params.write_u16(votes1[i]); }
+		for (uint i = 0; i < votes2.length(); i++)
+		{ params.write_u16(votes2[i]); }
+		for (uint i = 0; i < votes3.length(); i++)
+		{ params.write_u16(votes3[i]); }
+
+		if (targetPlayer is null)
+		{
+			// Send to everyone
+			rules.SendCommand(rules.getCommandID(voteSyncTag), params);
+		}
+		else
+		{
+			rules.SendCommand(rules.getCommandID(voteSyncTag), params, @targetPlayer);
 		}
 	}
 
@@ -128,58 +318,75 @@ class MapVotesMenu
 	{
 		Vec2f ScreenDim = getDriver().getScreenDimensions();
 
-		if (fadeTimer > 0 && fadeTimer < FadeTicks)
+		const bool shouldNag = selectedOption == 0 && !isMapVoteOver();
+
+		if (shouldNag)
 		{
-			SColor col(colors::menu_invisible_color);
-			float fadeamount = 1.0 - (fadeTimer*0.01f);
-			col = col.getInterpolated(colors::menu_fadeout_color, fadeamount);
-
-			GUI::DrawRectangle(Vec2f_zero, ScreenDim, col);
+			GUI::DrawRectangle(Vec2f_zero, ScreenDim, SColor(200, 0, 0, 0));
 		}
-		else if (fadeTimer >= FadeTicks) // draw menu
-		{			
-			GUI::SetFont("menu");	
-			GUI::DrawRectangle(Vec2f_zero, ScreenDim, colors::menu_fadeout_color);
-			GUI::DrawFramedPane(TL_Position, BR_Pos);
 
-			if (VoteTimeLeft < 1)
-			{	
-				string winner = "";
-				switch (MostVoted)
-				{
-					case 1: winner = button1.shortname; break;
-					case 3:	winner = button3.shortname; break;
-					default: winner = "A Random Map"; break;
-				}
-			 	GUI::DrawText("Map Voting Has Ended.. Loading: "+ winner, TL_Position+Vec2f(22,10), color_white);
-			}
-			else
+		GUI::SetFont("menu");	
+		GUI::DrawFramedPane(topLeftCorner, bottomRightCorner);
+
+		if (isMapVoteOver())
+		{	
+			string winner = "";
+			switch (mostVoted)
 			{
-			 	GUI::DrawText("Map Voting Ends In: "+ VoteTimeLeft, TL_Position+Vec2f(22,10), color_white);
+				case 1: winner = button1.shortname; button1.State = ButtonStates::WonVote; break;
+				case 3:	winner = button3.shortname; button3.State = ButtonStates::WonVote; break;
+				default: winner = "A Random Map"; button2.State = ButtonStates::WonVote; break;
 			}
+		 	GUI::DrawText("Map Voting Has Ended.. Loading: "+ winner, topLeftCorner+Vec2f(22,10), color_white);
+		}
+		else
+		{
+		 	GUI::DrawText(
+				"Map Voting Ends In: " + ticksRemainingForMapVote() / getTicksASecond(),
+				topLeftCorner+Vec2f(22,10),
+				color_white
+			);
+		}
 
-			button1.RenderGUI();
-			button2.RenderGUI();
-			button3.RenderGUI();
+		for (uint i = 1; i <= 3; ++i)
+		{
+			MapVoteButton@ button = getButton(i);
+			button.RenderGUI();
+		}
 
-			const Vec2f CountMid1 = button1.Pos+Vec2f((button1.Size.x/2)-2, button1.Size.y + 38);
-			const Vec2f CountMid2 = button2.Pos+Vec2f((button2.Size.x/2)-2, button2.Size.y + 38);
-			const Vec2f CountMid3 = button3.Pos+Vec2f((button3.Size.x/2)-2, button3.Size.y + 38);
+		const Vec2f CountMid1 = button1.clickableOrigin+Vec2f(button1.clickableSize.x / 2, button1.clickableSize.y - 24.0f);
+		const Vec2f CountMid2 = button2.clickableOrigin+Vec2f(button2.clickableSize.x / 2, button2.clickableSize.y - 24.0f);
+		const Vec2f CountMid3 = button3.clickableOrigin+Vec2f(button3.clickableSize.x / 2, button3.clickableSize.y - 24.0f);
 			
-			GUI::SetFont("AveriaSerif-Bold_22");
-			GUI::DrawTextCentered(""+Votes1.length(), CountMid1, color_white);
-			GUI::DrawTextCentered(""+Votes2.length(), CountMid2, color_white);
-			GUI::DrawTextCentered(""+Votes3.length(), CountMid3, color_white);
+		GUI::SetFont("AveriaSerif-Bold_22");
+		GUI::DrawTextCentered(""+votes1.length(), CountMid1, color_white);
+		GUI::DrawTextCentered(""+votes2.length(), CountMid2, color_white);
+		GUI::DrawTextCentered(""+votes3.length(), CountMid3, color_white);
+
+		if (shouldNag)
+		{
+			GUI::DrawTextCentered(
+				"Please vote for a map!",
+				Vec2f(
+					(topLeftCorner.x + bottomRightCorner.x) / 2,
+					bottomRightCorner.y + 64 + Maths::Sin(getGameTime() * 0.1) * 8.0
+				),
+				color_white
+			);
 		}
 	}
+
 	void RenderRaw()
 	{
-		if (fadeTimer >= FadeTicks)
-		{
-			button1.RenderRaw();
-			button2.RenderRaw();
-			button3.RenderRaw();
-		}
+		button1.RenderRaw();
+		button2.RenderRaw();
+		button3.RenderRaw();
+	}
+
+	void Render()
+	{
+		RenderGUI();
+		RenderRaw();
 	}
 };
 
@@ -189,9 +396,8 @@ class MapVoteButton
 	string shortname;
 	string displayname;
 	Vertex[] maptex_raw;
-	Vec2f Pos;
-	Vec2f Size;
-	u8 tex_offsetY;
+	Vec2f clickableOrigin, clickableSize;
+	Vec2f previewOrigin, previewSize;
 	int State;
 	bool isRandomButton;
 
@@ -200,12 +406,12 @@ class MapVoteButton
 		State = 0;
 		isRandomButton = _r;
 
-		if (!isRandomButton) // initilze vertices array
+		if (!isRandomButton)
 		{
-			maptex_raw.push_back(Vertex( 0, 0, 0, 0, 0 ));
-			maptex_raw.push_back(Vertex( 1, 0, 0, 1, 0 ));
-			maptex_raw.push_back(Vertex( 1, 1, 0, 1, 1 ));
-			maptex_raw.push_back(Vertex( 0, 1, 0, 0, 1 ));			
+			maptex_raw.push_back(Vertex(0, 0, 0, 0, 0));
+			maptex_raw.push_back(Vertex(1, 0, 0, 1, 0));
+			maptex_raw.push_back(Vertex(1, 1, 0, 1, 1));
+			maptex_raw.push_back(Vertex(0, 1, 0, 0, 1));
 		}
 	}
 
@@ -213,40 +419,34 @@ class MapVoteButton
 	{
 		State = 0;
 		displayname = "Random Map";
-		Size = Vec2f(110,100);
-		ButtonSize = Size;
-		Pos.x = MenuWidth;
+		ButtonSize = clickableSize = previewSize = Vec2f(110,100);
+		clickableOrigin.x = previewOrigin.x = MenuWidth;
+		clickableOrigin.y = previewOrigin.y = 0.0f;
 	}
 
 	void RefreshButton( u16 MenuWidth, Vec2f &out ButtonSize)
 	{		
 		State = 0;
-		if(Texture::exists(shortname))
+		if (Texture::exists(shortname))
 		{
 			ImageData@ edit = Texture::data(shortname);
 
-			u16 mapW = edit.width();
-			u16 mapH = edit.height();
+			const u16 mapW = edit.width();
+			const u16 mapH = edit.height();
 
-			Size = Vec2f(mapW, mapH > 100 ? mapH : 100);
-			ButtonSize = Size;
-			Pos.x = MenuWidth;
-			tex_offsetY = mapH <= 100 ? (100-mapH) : 0;
+			clickableOrigin = Vec2f(MenuWidth, 0.0f);
+			previewSize = Vec2f(mapW, mapH);
 
-			//crop names longer than the map size
+			// Expand frame if the name is too long
 			Vec2f dim;			
 			displayname = shortname == "test.kaggen" ? "Generated Map" : shortname;	
 			GUI::SetFont("menu");
 			GUI::GetTextDimensions(displayname, dim);
-			if (dim.x > mapW - 10)
-			{
-				while (dim.x > mapW - 15)
-				{
-					displayname = displayname.substr(0,displayname.length()-1);
-					GUI::GetTextDimensions(displayname, dim);
-				}	
-				displayname += "..";
-			}
+			
+			clickableSize = previewSize;
+			clickableSize.x = Maths::Max(dim.x, clickableSize.x);
+
+			ButtonSize = clickableSize;
 
 			maptex_raw[1].x = maptex_raw[2].x = mapW;
 			maptex_raw[2].y = maptex_raw[3].y = mapH;
@@ -255,8 +455,9 @@ class MapVoteButton
 
 	bool isHovered(Vec2f mousepos)
 	{
-		Vec2f tl = Pos;
-		Vec2f br = Pos + Size;
+		Vec2f tl = clickableOrigin;
+		Vec2f br = clickableOrigin + clickableSize;
+
 		if (mousepos.x > tl.x && mousepos.y > tl.y &&
 		     mousepos.x < br.x && mousepos.y < br.y)
 		{
@@ -265,43 +466,48 @@ class MapVoteButton
 		return false;
 	}
 
-
 	void RenderGUI()
 	{	
-		SColor col(color_white);
+		SColor col;
 		switch (State)
 		{
-			case 1: {col = SColor(255,220,220,220);} break; //hovered
-			case 2: {col = SColor(255,200,200,200);} break; //pressed
-			case 3: {col = SColor(255,100,255,100);} break; //selected
-			default: {col = color_white;}
+			case ButtonStates::Hovered: col = SColor(255, 220, 220, 220); break;
+			case ButtonStates::Pressed: col = SColor(255, 200, 200, 200); break;
+			case ButtonStates::Selected: col = SColor(255, 100, 255, 100); break;
+			case ButtonStates::WonVote: col = SColor(255, 0, 255, 255); break;
+			default: col = color_white;
 		}
 
 		const Vec2f Padding_outline = Vec2f(8,8);
-		const Vec2f TL_outline = Pos-Padding_outline;
-		const Vec2f BR_outline = Pos+Size+Padding_outline;
+		const Vec2f TL_outline = previewOrigin - Padding_outline;
+		const Vec2f BR_outline = previewOrigin + previewSize + Padding_outline;
 		const Vec2f Padding_window = Vec2f(4,4);
-		const Vec2f TL_window = Pos-Padding_window;
-		const Vec2f BR_window = Pos+Size+Padding_window;
+		const Vec2f TL_window = previewOrigin - Padding_window;
+		const Vec2f BR_window = previewOrigin + previewSize + Padding_window;
 		GUI::DrawPane(TL_outline, BR_outline, col);
 		GUI::DrawWindow(TL_window, BR_window);
 
-		const Vec2f NameMid = Pos+Vec2f((Size.x/2)-2, Size.y+16);
+		const Vec2f NameMid = Vec2f(
+			clickableOrigin.x + clickableSize.x / 2,
+			clickableOrigin.y + clickableSize.y - 48
+		);
+
 		GUI::DrawTextCentered(displayname, NameMid, color_white);
 
 		if (isRandomButton)
 		{
-			const Vec2f IconOffset = Pos+Vec2f(24,20);
+			const Vec2f IconOffset = previewOrigin + Vec2f(24,20);
 			GUI::DrawIcon( "InteractionIcons.png", 14, Vec2f(32,32), IconOffset, 1.0f, 2);
 		}
 	}
+
 	void RenderRaw()
 	{
 		const u16[] square_IDs = {0,1,2,2,3,0};
 		float[] model;
 
 		Matrix::MakeIdentity(model);
-		Matrix::SetTranslation(model, Pos.x, Pos.y+tex_offsetY, 0);
+		Matrix::SetTranslation(model, previewOrigin.x, previewOrigin.y, 0);
 		Render::SetModelTransform(model);
 		Render::RawTrianglesIndexed(shortname, maptex_raw, square_IDs);
 	}	
@@ -465,7 +671,7 @@ void CreateMapTexture(string shortname, string filename)
 				}
 				else 
 				{   //Sky
-					editcol =  colors::minimap_open;
+					editcol = colors::minimap_open;
 				}
 
 				edit[offset] = editcol;
@@ -567,8 +773,8 @@ u8 type(SColor PixelCol, bool show_gold)
 		}
 
 		case map_colors::water_backdirt:
-		case map_colors::interpolated_water_backwall:
-		case map_colors::interpolated_water_backwall_edge:
+		case colors::interpolated_water_backwall:
+		case colors::interpolated_water_backwall_edge:
 		{
 			 return ColTileType::Backwall_Water;
 		}
@@ -619,5 +825,6 @@ enum ButtonStates
 	None = 0,
 	Hovered,
 	Pressed,
-	Selected
+	Selected,
+	WonVote
 };

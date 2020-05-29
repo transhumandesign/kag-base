@@ -215,10 +215,14 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 		if (blocks !is null && i >= 0 && i < blocks[PAGE].length)
 		{
 			BuildBlock@ block = @blocks[PAGE][i];
-
-			if (!canBuild(blob, @blocks[PAGE], i))
+			bool canBuildBlock = canBuild(blob, @blocks[PAGE], i) && blob.get_u8("knocked") == 0;
+			if (!canBuildBlock)
 			{
-				Sound::Play("/NoAmmo");
+				if (blob.isMyPlayer())
+				{
+					Sound::Play("/NoAmmo");
+				}
+				
 				return;
 			}
 

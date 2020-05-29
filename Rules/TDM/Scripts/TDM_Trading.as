@@ -135,8 +135,8 @@ void Reset(CRules@ this)
 		if (player is null) continue;
 
 		s32 coins = player.getCoins();
-		coins = Maths::Max(coins, min_coins);
-		coins = Maths::Min(coins, max_coins);
+		if (min_coins >= 0) coins = Maths::Max(coins, min_coins);
+		if (max_coins >= 0) coins = Maths::Min(coins, max_coins);
 		player.server_setCoins(coins);
 	}
 
