@@ -380,7 +380,7 @@ void onTick(CBlob@ this)
 	}
 
 	CControls@ controls = getControls();
-	if (controls.ActionKeyPressed(AK_MODIFIER))
+	if (controls.ActionKeyPressed(AK_BUILD_MODIFIER))
 	{
 		for (uint i = 0; i < 9; i++)
 		{
