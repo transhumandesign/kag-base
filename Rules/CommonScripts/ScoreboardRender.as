@@ -57,6 +57,9 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 {
 	if (players.size() <= 0 || team is null)
 		return topleft.y;
+
+
+	CRules@ rules = getRules();
 	Vec2f orig = topleft; //save for later
 
 	f32 lineheight = 16;
@@ -145,9 +148,9 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 				if (getFromClipboard() != p.getUsername()) 
 				{
 					CopyToClipboard(p.getUsername());
-					localplayer.set_u16("copy_time", getGameTime());
-					localplayer.set_string("copy_name", p.getUsername());
-					localplayer.set_Vec2f("copy_pos", mousePos + Vec2f(0, -10));
+					rules.set_u16("client_copy_time", getGameTime());
+					rules.set_string("client_copy_name", p.getUsername());
+					rules.set_Vec2f("client_copy_pos", mousePos + Vec2f(0, -10));
 				}
 			}
 		}
@@ -488,12 +491,12 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 	}
 
 	// username copied text, goes at bottom to overlay above everything else
-	uint durationLeft = localplayer.get_u16("copy_time");
+	uint durationLeft = rules.get_u16("client_copy_time");
 
 	if ((durationLeft + 64) > getGameTime()) 
 	{
 		durationLeft = getGameTime() - durationLeft;
-		DrawFancyCopiedText(localplayer.get_string("copy_name"), localplayer.get_Vec2f("copy_pos"), durationLeft);
+		DrawFancyCopiedText(rules.get_string("client_copy_name"), rules.get_Vec2f("client_copy_pos"), durationLeft);
 	}
 	
 
