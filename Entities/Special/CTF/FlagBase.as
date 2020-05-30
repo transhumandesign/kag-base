@@ -66,7 +66,12 @@ void onTick(CBlob@ this)
 
 		if (!this.hasAttached())
 		{
-			this.Tag("flag missing");
+			if (!this.hasTag("flag missing"))
+			{
+				this.Tag("flag missing");
+				this.Sync("flag missing", true);
+			}
+			
 			u16 id = this.get_u16("flag id");
 			CBlob@ b = getBlobByNetworkID(id);
 			if (b !is null)
@@ -104,9 +109,12 @@ void onTick(CBlob@ this)
 		}
 		else
 		{
-			this.Untag("flag missing");
+			if (this.hasTag("flag missing"))
+			{
+				this.Untag("flag missing");
+				this.Sync("flag missing", true);
+			}
 		}
-		this.Sync("flag missing", true);
 	}
 }
 

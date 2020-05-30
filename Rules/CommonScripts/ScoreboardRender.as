@@ -14,6 +14,8 @@ bool draw_tier = false;
 float scoreboardMargin = 52.0f;
 float scrollOffset = 0.0f;
 float scrollSpeed = 4.0f;
+float maxMenuWidth = 600;
+float screenMidX = getScreenWidth()/2;
 
 string[] age_description = {
 	"New Player - Welcome them to the game!",
@@ -57,12 +59,15 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 {
 	if (players.size() <= 0 || team is null)
 		return topleft.y;
+
+
+	CRules@ rules = getRules();
 	Vec2f orig = topleft; //save for later
 
 	f32 lineheight = 16;
 	f32 padheight = 6;
 	f32 stepheight = lineheight + padheight;
-	Vec2f bottomright(getScreenWidth() - 100, topleft.y + (players.length + 5.5) * stepheight);
+	Vec2f bottomright(Maths::Min(getScreenWidth() - 100, screenMidX+maxMenuWidth), topleft.y + (players.length + 5.5) * stepheight);
 	GUI::DrawPane(topleft, bottomright, team.color);
 
 	//offset border
@@ -145,9 +150,9 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 				if (getFromClipboard() != p.getUsername()) 
 				{
 					CopyToClipboard(p.getUsername());
-					localplayer.set_u16("copy_time", getGameTime());
-					localplayer.set_string("copy_name", p.getUsername());
-					localplayer.set_Vec2f("copy_pos", mousePos + Vec2f(0, -10));
+					rules.set_u16("client_copy_time", getGameTime());
+					rules.set_string("client_copy_name", p.getUsername());
+					rules.set_Vec2f("client_copy_pos", mousePos + Vec2f(0, -10));
 				}
 			}
 		}
@@ -488,12 +493,12 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 	}
 
 	// username copied text, goes at bottom to overlay above everything else
-	uint durationLeft = localplayer.get_u16("copy_time");
+	uint durationLeft = rules.get_u16("client_copy_time");
 
 	if ((durationLeft + 64) > getGameTime()) 
 	{
 		durationLeft = getGameTime() - durationLeft;
-		DrawFancyCopiedText(localplayer.get_string("copy_name"), localplayer.get_Vec2f("copy_pos"), durationLeft);
+		DrawFancyCopiedText(rules.get_string("client_copy_name"), rules.get_Vec2f("client_copy_pos"), durationLeft);
 	}
 	
 
@@ -565,7 +570,7 @@ void onRenderScoreboard(CRules@ this)
 
 	@hoveredPlayer = null;
 
-	Vec2f topleft(100, 150);
+	Vec2f topleft(Maths::Max( 100, screenMidX-maxMenuWidth), 150);
 	drawServerInfo(40);
 
 	// start the scoreboard lower or higher.

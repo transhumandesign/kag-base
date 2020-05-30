@@ -68,8 +68,11 @@ void onTick(CBlob@ this)
 			}
 		}
 
-		this.set_u8("air_count", aircount);
-		this.Sync("air_count", true);
+		if (aircount != this.get_u8("air_count"))
+		{
+			this.set_u8("air_count", aircount);
+			this.Sync("air_count", true);
+		}
 	}
 }
 
