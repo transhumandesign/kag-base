@@ -76,8 +76,14 @@ void onTick(CBlob@ this)
 	if (isClient()) // sound control
 	{
 		aircount -= 6; // -6 since the lowest value we every get from the server is 6 (which means no sound plays)
+		
 		if (inwater)
 		{
+			if (this.hasTag("gasping"))
+			{
+				this.Untag("gasping");
+			}
+
 			if (aircount < FREQ)
 			{
 				Sound::Play("Gurgle", pos, 2.0f);
@@ -85,8 +91,9 @@ void onTick(CBlob@ this)
 		}
 		else
 		{
-			if(aircount < default_aircount/2)
+			if(aircount < default_aircount/2 && !this.hasTag("gasping"))
 			{
+				this.Tag("gasping");
 				Sound::Play("Sounds/gasp.ogg", pos, 3.0f);
 			}
 		}
