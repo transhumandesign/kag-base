@@ -14,7 +14,7 @@ bool draw_tier = false;
 float scoreboardMargin = 52.0f;
 float scrollOffset = 0.0f;
 float scrollSpeed = 4.0f;
-float maxMenuWidth = 600;
+float maxMenuWidth = 700;
 float screenMidX = getScreenWidth()/2;
 
 string[] age_description = {
@@ -142,12 +142,12 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 			{
 				setSpectatePlayer(p.getUsername());
 			}
-			
+
 			if (controls.mousePressed2)
 			{
 				// reason for this is because this is called multiple per click (since its onRender, and clicking is updated per tick)
 				// we don't want to spam anybody using a clipboard history program
-				if (getFromClipboard() != p.getUsername()) 
+				if (getFromClipboard() != p.getUsername())
 				{
 					CopyToClipboard(p.getUsername());
 					rules.set_u16("client_copy_time", getGameTime());
@@ -495,12 +495,12 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 	// username copied text, goes at bottom to overlay above everything else
 	uint durationLeft = rules.get_u16("client_copy_time");
 
-	if ((durationLeft + 64) > getGameTime()) 
+	if ((durationLeft + 64) > getGameTime())
 	{
 		durationLeft = getGameTime() - durationLeft;
 		DrawFancyCopiedText(rules.get_string("client_copy_name"), rules.get_Vec2f("client_copy_pos"), durationLeft);
 	}
-	
+
 
 	return topleft.y;
 
@@ -727,7 +727,7 @@ void getMapName(CRules@ this)
 	{
 		string[] name = map.getMapName().split('/');	 //Official server maps seem to show up as
 		string mapName = name[name.length() - 1];		 //``Maps/CTF/MapNameHere.png`` while using this instead of just the .png
-		mapName = mapName.substr(0,mapName.length() - 4);//Sub by 4 so .cfg OR .png are removed when loading the map 
+		mapName = mapName.substr(0,mapName.length() - 4);//Sub by 4 so .cfg OR .png are removed when loading the map
 
 		this.set_string("map_name",mapName);
 		this.Sync("map_name",true);
