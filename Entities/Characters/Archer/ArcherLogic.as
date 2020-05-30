@@ -302,8 +302,11 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			}
 		}
 
-		this.set_bool("has_arrow", hasarrow);
-		this.Sync("has_arrow", isServer());
+		if (hasarrow != this.get_bool("has_arrow"))
+		{
+			this.set_bool("has_arrow", hasarrow);
+			this.Sync("has_arrow", isServer());
+		}
 
 		archer.stab_delay = 0;
 	}
