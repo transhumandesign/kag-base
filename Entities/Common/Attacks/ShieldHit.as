@@ -1,9 +1,7 @@
 // Shield hit - make sure to set up the shield vars elsewhere
-
 #include "ShieldCommon.as";
-
 #include "ParticleSparks.as";
-
+#include "KnockedCommon.as";
 #include "Hitters.as";
 
 bool canBlockThisType(u8 type) // this function needs to use a tag on the hitterBlob, like ("bypass shield")
@@ -30,7 +28,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 
 	//no shield when stunned
-	if (this.get_u8("knocked") > 0)
+	if (isKnocked(this))
 	{
 		return damage;
 	}

@@ -10,6 +10,7 @@
 // Tag: "change class store inventory" - if you want players to store previous items in this respawn blob
 
 #include "ClassSelectMenu.as"
+#include "KnockedCommon.as"
 
 void InitRespawnCommand(CBlob@ this)
 {
@@ -131,10 +132,9 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 						}
 
 						//copy stun
-						if (caller.exists("knocked"))
+						if (isKnockable(caller))
 						{
-							newBlob.set_u8("knocked", caller.get_u8("knocked"));
-							newBlob.Sync("knocked", true);
+							setKnocked(newBlob, getKnockedRemaining(caller));
 						}
 
 						// plug the soul

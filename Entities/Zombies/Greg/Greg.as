@@ -1,5 +1,5 @@
 #include "EmotesCommon.as"
-#include "Knocked.as"
+#include "KnockedCommon.as"
 
 Random gregRand(Time());
 
@@ -223,8 +223,7 @@ void onTick(CBlob@ this)
 
         }
 
-        u8 knocked = this.get_u8("knocked");
-        if (knocked > 0)
+        if (isKnocked(this))
         {
             if (targetAttached)
             {
@@ -432,8 +431,7 @@ void onTick(CBlob@ this)
 
 void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 {
-    u8 knocked = this.get_u8("knocked");
-    if (knocked > 0 || blob is null)
+    if (isKnocked(this) || blob is null)
     {
         return;
 
@@ -476,7 +474,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 
         }
 
-        SetKnocked(blob, 60); //knock the player when we first pick them up so they can't fight back
+        setKnocked(blob, 60); //knock the player when we first pick them up so they can't fight back
         blob.Tag("dazzled");
 
         //make player play the stunned sound

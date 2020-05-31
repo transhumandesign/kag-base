@@ -3,7 +3,7 @@
 #include "KnightCommon.as";
 #include "RunnerAnimCommon.as";
 #include "RunnerCommon.as";
-#include "Knocked.as";
+#include "KnockedCommon.as";
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
 #include "Accolades.as"
@@ -94,7 +94,7 @@ void onTick(CSprite@ this)
 		return;
 	}
 
-	const u8 knocked = getKnocked(blob);
+	bool knocked = isKnocked(blob);
 
 	bool shieldState = isShieldState(knight.state);
 	bool specialShieldState = isSpecialShieldState(knight.state);
@@ -162,7 +162,7 @@ void onTick(CSprite@ this)
 
 	bool shinydot = false;
 
-	if (knocked > 0)
+	if (knocked)
 	{
 		if (inair)
 		{
@@ -365,7 +365,7 @@ void onTick(CSprite@ this)
 	}
 
 	//set the head anim
-	if (knocked > 0)
+	if (knocked)
 	{
 		blob.Tag("dead head");
 	}

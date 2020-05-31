@@ -6,7 +6,7 @@
 #include "BombCommon.as";
 #include "SplashWater.as";
 #include "TeamStructureNear.as";
-#include "Knocked.as"
+#include "KnockedCommon.as"
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
@@ -797,7 +797,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 				speed > ArcherParams::shoot_max_vel * 0.845f &&
 				hitBlob.hasTag("player")
 			) {
-				SetKnocked(hitBlob, 20);
+				setKnocked(hitBlob, 20);
 				Sound::Play("/Stun", hitBlob.getPosition(), 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 			}
 		}

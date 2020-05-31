@@ -4,6 +4,7 @@
 #include "StandardControlsCommon.as"
 #include "ThrowCommon.as"
 #include "WheelMenuCommon.as"
+#include "KnockedCommon.as"
 
 const u32 PICKUP_ERASE_TICKS = 80;
 
@@ -73,7 +74,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.isInInventory() || this.get_u8("knocked") > 0)
+	if (this.isInInventory() || isKnocked(this))
 	{
 		this.clear("pickup blobs");
 		this.clear("closest blobs");

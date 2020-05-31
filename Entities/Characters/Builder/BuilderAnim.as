@@ -5,7 +5,7 @@
 #include "Requirements.as"
 #include "RunnerAnimCommon.as"
 #include "RunnerCommon.as"
-#include "Knocked.as"
+#include "KnockedCommon.as"
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
 #include "Accolades.as"
@@ -84,7 +84,7 @@ void onTick(CSprite@ this)
 	}
 	// animations
 
-	const u8 knocked = getKnocked(blob);
+	bool knocked = isKnocked(blob);
 	const bool action2 = blob.isKeyPressed(key_action2);
 	const bool action1 = blob.isKeyPressed(key_action1);
 
@@ -103,7 +103,7 @@ void onTick(CSprite@ this)
 			return;
 		}
 
-		if (knocked > 0)
+		if (knocked)
 		{
 			if (inair)
 			{
@@ -191,7 +191,7 @@ void onTick(CSprite@ this)
 
 	//set the attack head
 
-	if (knocked > 0)
+	if (knocked)
 	{
 		blob.Tag("dead head");
 	}
