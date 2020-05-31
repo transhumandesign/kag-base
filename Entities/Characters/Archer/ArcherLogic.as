@@ -404,7 +404,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 				if (ismyplayer && !this.wasKeyPressed(key_action1))   // playing annoying no ammo sound
 				{
-					Sound::Play("Entities/Characters/Sounds/NoAmmo.ogg");
+					this.getSprite().PlaySound("Entities/Characters/Sounds/NoAmmo.ogg", 0.5);
 				}
 
 			}

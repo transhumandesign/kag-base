@@ -132,7 +132,7 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 		{
 			if (this.isMyPlayer())
 			{
-				Sound::Play("/NoAmmo");
+				this.getSprite().PlaySound("/NoAmmo", 0.5);
 			}
 			this.set_Vec2f("building space", space);
 			this.set_u32("cant build time", getGameTime());

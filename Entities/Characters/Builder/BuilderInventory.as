@@ -220,7 +220,7 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 			{
 				if (blob.isMyPlayer())
 				{
-					Sound::Play("/NoAmmo");
+					blob.getSprite().PlaySound("/NoAmmo", 0.5);
 				}
 
 				return;

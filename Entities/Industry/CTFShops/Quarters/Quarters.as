@@ -136,7 +136,7 @@ void onTick(CBlob@ this)
 				{
 					if (patient.isMyPlayer())
 					{
-						Sound::Play("Heart.ogg", patient.getPosition());
+						Sound::Play("Heart.ogg", patient.getPosition(), 0.5);
 					}
 					if (isServer)
 					{
