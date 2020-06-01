@@ -23,7 +23,6 @@ bool setKnocked(CBlob@ blob, int ticks)
 	u32 currentKnockedTime = blob.get_u32(knockedProp);
 	if (knockedTime > currentKnockedTime)
 	{
-		print("knocking for " + ticks + " ticks");
 		blob.set_u32(knockedProp, knockedTime);
 		if (getNet().isServer())
 		{

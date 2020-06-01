@@ -377,7 +377,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 		//	printf("charge_state " + charge_state );
 
-		if ((just_action1 || this.wasKeyPressed(key_action2) && !pressed_action2) &&
+		if ((just_action1 || (this.wasKeyPressed(key_action2) && !pressed_action2)) &&
 		        (charge_state == ArcherParams::not_aiming || charge_state == ArcherParams::fired))
 		{
 			charge_state = ArcherParams::readying;
