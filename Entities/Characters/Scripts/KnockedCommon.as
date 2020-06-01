@@ -40,7 +40,7 @@ bool setKnocked(CBlob@ blob, int ticks)
 
 void KnockedCommands(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("knocked"))
+	if (cmd == this.getCommandID("knocked") && getNet().isClient())
 	{
 		u32 knockedTime = 0;
 		if (!params.saferead_u32(knockedTime))
@@ -49,6 +49,7 @@ void KnockedCommands(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		}
 
+		this.Tag("justKnocked");
 		this.set_u32(knockedProp, knockedTime);
 	}
 }
@@ -71,8 +72,18 @@ bool isKnocked(CBlob@ this)
 	return (knockedRemaining > 0);
 }
 
+bool isJustKnocked(CBlob@ this)
+{
+	return this.hasTag("justKnocked");
+}
+
 void DoKnockedUpdate(CBlob@ this)
 {
+	if (this.hasTag("justKnocked"))
+	{
+		this.Untag("justKnocked");
+	}
+
 	if (this.hasTag("invincible"))
 	{
 		this.DisableKeys(0);
