@@ -573,7 +573,7 @@ void onRenderScoreboard(CRules@ this)
 	{
 		//draw spectators
 		f32 stepheight = 16;
-		Vec2f bottomright(getScreenWidth() - 100, topleft.y + stepheight * 2);
+		Vec2f bottomright(Maths::Min(getScreenWidth() - 100, screenMidX+maxMenuWidth), topleft.y + stepheight * 2);
 		f32 specy = topleft.y + stepheight * 0.5;
 		GUI::DrawPane(topleft, bottomright, SColor(0xffc0c0c0));
 
