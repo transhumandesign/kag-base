@@ -178,7 +178,7 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 			caller.Sync("invincible", true);
 
 			//actually do the knocking
-			setKnocked(caller, 30);
+			setKnocked(caller, 30, true);
 		}
 	}
 }

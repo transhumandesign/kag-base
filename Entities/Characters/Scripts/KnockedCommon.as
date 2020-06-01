@@ -13,7 +13,7 @@ void InitKnockable(CBlob@ this)
 }
 
 // returns true if the new knocked time would be longer than the current.
-bool setKnocked(CBlob@ blob, int ticks)
+bool setKnocked(CBlob@ blob, int ticks, bool server_only = false)
 {
 	if (blob.hasTag("invincible"))
 		return false; //do nothing
@@ -23,15 +23,27 @@ bool setKnocked(CBlob@ blob, int ticks)
 	u32 currentKnockedTime = blob.get_u32(knockedProp);
 	if (knockedTime > currentKnockedTime)
 	{
-		blob.set_u32(knockedProp, knockedTime);
+
 		if (getNet().isServer())
 		{
+			blob.set_u32(knockedProp, knockedTime);
+
+			print(blob.getPlayer().getUsername() + " knocked: " + knockedTime);
+			print("knocked sent");
+
 			CBitStream params;
 			params.write_u32(knockedTime);
 
 			blob.SendCommand(blob.getCommandID("knocked"), params);
 
 		}
+
+		if(!server_only)
+		{
+			print(blob.getPlayer().getUsername() + " unsyncd knocked: " + knockedTime);
+			blob.set_u32(knockedProp, knockedTime);
+		}
+
 		return true;
 	}
 	return false;
@@ -49,6 +61,7 @@ void KnockedCommands(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		}
 
+		print(this.getPlayer().getUsername() + " recieved knocked: " + knockedTime);
 		this.Tag("justKnocked");
 		this.set_u32(knockedProp, knockedTime);
 	}

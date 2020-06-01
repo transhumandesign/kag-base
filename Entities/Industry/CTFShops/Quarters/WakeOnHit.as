@@ -16,7 +16,7 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 			}
 			if (isKnockable(this))
 			{
-				setKnocked(this, 30);
+				setKnocked(this, 30, true);
 			}
 		}
 	}
