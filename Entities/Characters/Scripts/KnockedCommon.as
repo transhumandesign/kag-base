@@ -62,7 +62,7 @@ void KnockedCommands(CBlob@ this, u8 cmd, CBitStream@ params)
 		}
 
 		print(this.getPlayer().getUsername() + " recieved knocked: " + knockedTime + " gameTime: " + getGameTime());
-		this.Tag("justKnocked");
+		this.set_u32("justKnocked", getGameTime());
 		this.set_u32(knockedProp, knockedTime);
 	}
 }
@@ -93,16 +93,11 @@ bool isKnocked(CBlob@ this)
 
 bool isJustKnocked(CBlob@ this)
 {
-	return this.hasTag("justKnocked");
+	return this.get_u32("justKnocked") == getGameTime();
 }
 
 void DoKnockedUpdate(CBlob@ this)
 {
-	if (this.hasTag("justKnocked"))
-	{
-		this.Untag("justKnocked");
-	}
-
 	if (this.hasTag("invincible"))
 	{
 		this.DisableKeys(0);
