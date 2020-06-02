@@ -19,9 +19,7 @@ bool canBlockThisType(u8 type) // this function needs to use a tag on the hitter
 // if your health is lower than it was last time you got hit
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	print("onHit: " + getGameTime());
 	if (this.hasTag("dead") ||
-	        !this.hasTag("shielded") ||
 	        !canBlockThisType(customData) ||
 	        this is hitterBlob)
 	{
@@ -35,7 +33,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		return damage;
 	}
 
-	if (blockAttack(this, velocity, 0.0f))
+	if (blockAttack(this, velocity, 0.0f) && this.hasTag("shielded"))
 	{
 		if (isExplosionHitter(customData)) //bomb jump
 		{

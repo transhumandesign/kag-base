@@ -28,9 +28,6 @@ bool setKnocked(CBlob@ blob, int ticks, bool server_only = false)
 		{
 			blob.set_u32(knockedProp, knockedTime);
 
-			print(blob.getPlayer().getUsername() + " knocked: " + knockedTime);
-			print("knocked sent");
-
 			CBitStream params;
 			params.write_u32(knockedTime);
 
@@ -40,7 +37,6 @@ bool setKnocked(CBlob@ blob, int ticks, bool server_only = false)
 
 		if(!server_only)
 		{
-			print(blob.getPlayer().getUsername() + " unsyncd knocked: " + knockedTime);
 			blob.set_u32(knockedProp, knockedTime);
 		}
 
@@ -61,7 +57,6 @@ void KnockedCommands(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		}
 
-		print(this.getPlayer().getUsername() + " recieved knocked: " + knockedTime + " gameTime: " + getGameTime());
 		this.set_u32("justKnocked", getGameTime());
 		this.set_u32(knockedProp, knockedTime);
 	}
