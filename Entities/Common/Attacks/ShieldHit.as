@@ -110,11 +110,6 @@ void onHealthChange( CBlob@ this, f32 oldHealth )
 	{
 		if (this.getHealth() == oldHealth)
 		{
-			if (this.hasTag("shieldNoBlock"))
-			{
-				print("actually we did block");
-			}
-
 			f32 damage = this.get_f32("shieldDamage");
 			Vec2f velocity = this.get_Vec2f("shieldDamageVel");
 			Vec2f worldPoint = this.get_Vec2f("ShieldWorldPoint");
@@ -124,7 +119,6 @@ void onHealthChange( CBlob@ this, f32 oldHealth )
 		else if(this.hasTag("shieldDoesBlock"))
 		{
 			// drop shield
-			print("actually we didn't block");
 			knockShieldDown(this);
 		}
 
