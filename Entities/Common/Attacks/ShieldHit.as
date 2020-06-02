@@ -16,8 +16,10 @@ bool canBlockThisType(u8 type) // this function needs to use a tag on the hitter
 	       isExplosionHitter(type);
 }
 
+// if your health is lower than it was last time you got hit
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
+	print("onHit: " + getGameTime());
 	if (this.hasTag("dead") ||
 	        !this.hasTag("shielded") ||
 	        !canBlockThisType(customData) ||
@@ -78,11 +80,67 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			this.Tag("force_knock");
 		}
 
-		Sound::Play("Entities/Characters/Knight/ShieldHit.ogg", worldPoint);
-		const f32 vellen = velocity.Length();
-		sparks(worldPoint, -velocity.Angle(), Maths::Max(vellen * 0.05f, damage));
+		if (getNet().isClient())
+		{
+			this.Tag("shieldDoesBlock");
+			this.set_f32("shieldDamage", damage);
+			this.set_Vec2f("shieldDamageVel", velocity);
+			this.set_Vec2f("ShieldWorldPoint", worldPoint);
+
+		}
+
 		return 0.0f;
+	}
+	else
+	{
+		if (getNet().isClient() && isJustKnocked(hitterBlob))
+		{
+			this.Tag("shieldNoBlock");
+			this.set_f32("shieldDamage", damage);
+			this.set_Vec2f("shieldDamageVel", velocity);
+			this.set_Vec2f("ShieldWorldPoint", worldPoint);
+		}
+
 	}
 
 	return damage; //no block, damage goes through
+}
+
+void onHealthChange( CBlob@ this, f32 oldHealth )
+{
+	if(getNet().isClient() && (this.hasTag("shieldNoBlock") || this.hasTag("shieldDoesBlock")))
+	{
+		if (this.getHealth() == oldHealth)
+		{
+			if (this.hasTag("shieldNoBlock"))
+			{
+				print("actually we did block");
+			}
+
+			f32 damage = this.get_f32("shieldDamage");
+			Vec2f velocity = this.get_Vec2f("shieldDamageVel");
+			Vec2f worldPoint = this.get_Vec2f("ShieldWorldPoint");
+
+			shieldHit(damage, velocity, worldPoint);
+		}
+		else if(this.hasTag("shieldDoesBlock"))
+		{
+			// drop shield
+			print("actually we didn't block");
+			knockShieldDown(this);
+		}
+
+		this.Untag("shieldNoBlock");
+		this.Untag("shieldDoesBlock");
+
+	}
+
+
+}
+
+void shieldHit(f32 damage, Vec2f velocity, Vec2f worldPoint)
+{
+	Sound::Play("Entities/Characters/Knight/ShieldHit.ogg", worldPoint);
+	const f32 vellen = velocity.Length();
+	sparks(worldPoint, -velocity.Angle(), Maths::Max(vellen * 0.05f, damage));
 }

@@ -61,7 +61,7 @@ void KnockedCommands(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		}
 
-		print(this.getPlayer().getUsername() + " recieved knocked: " + knockedTime);
+		print(this.getPlayer().getUsername() + " recieved knocked: " + knockedTime + " gameTime: " + getGameTime());
 		this.Tag("justKnocked");
 		this.set_u32(knockedProp, knockedTime);
 	}
