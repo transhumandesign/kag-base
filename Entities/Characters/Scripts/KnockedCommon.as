@@ -81,8 +81,14 @@ u32 getKnockedRemaining(CBlob@ this)
 
 bool isKnocked(CBlob@ this)
 {
+	if (this.getPlayer() !is null && this.getPlayer().freeze)
+	{
+		return true;
+
+	}
+
 	u32 knockedRemaining = getKnockedRemaining(this);
-	return (knockedRemaining > 0) || this.getPlayer().freeze;
+	return (knockedRemaining > 0);
 }
 
 bool isJustKnocked(CBlob@ this)
@@ -105,8 +111,13 @@ void DoKnockedUpdate(CBlob@ this)
 	}
 
 	u32 knockedRemaining = getKnockedRemaining(this);
+	bool frozen = false;
+	if (this.getPlayer() !is null && this.getPlayer().freeze)
+	{
+		frozen = true;
+	}
 
-	if (knockedRemaining > 0 || this.getPlayer().freeze)
+	if (knockedRemaining > 0 || frozen)
 	{
 		u16 takekeys;
 		if (knockedRemaining < 2 || (this.hasTag("dazzled") && knockedRemaining < 30))
