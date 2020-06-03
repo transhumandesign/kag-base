@@ -1346,7 +1346,6 @@ class ResheathState : KnightState
 
 void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 {
-		print("swordTimer: " + knight.swordTimer);
 		if (knight.swordTimer >= KnightVars::slash_charge_level2 || knight.doubleslash || knight.state == KnightStates::sword_power_super)
 		{
 			getHUD().SetCursorFrame(19);

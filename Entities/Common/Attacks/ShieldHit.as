@@ -120,7 +120,6 @@ void onHealthChange( CBlob@ this, f32 oldHealth )
 		else if(this.hasTag("shieldDoesBlock"))
 		{
 			// drop shield
-			print("drop shield");
 			knockShieldDown(this);
 			KnightInfo@ knight;
 			if (this.get("knightInfo", @knight))
