@@ -91,6 +91,13 @@ bool isJustKnocked(CBlob@ this)
 	return this.get_u32("justKnocked") == getGameTime();
 }
 
+bool knockedJustEnded(CBlob@ this)
+{
+	u32 currentKnockedTime = this.get_u32(knockedProp);
+	u32 time = getGameTime();
+	return currentKnockedTime == time;
+}
+
 void DoKnockedUpdate(CBlob@ this)
 {
 	if (this.hasTag("invincible"))

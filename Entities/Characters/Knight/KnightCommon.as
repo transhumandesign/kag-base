@@ -1,4 +1,6 @@
 //common knight header
+#include "RunnerCommon.as";
+
 namespace KnightStates
 {
 	enum States
@@ -39,7 +41,6 @@ namespace KnightVars
 shared class KnightInfo
 {
 	u8 swordTimer;
-	u8 shieldTimer;
 	bool doubleslash;
 	u8 tileDestructionLimiter;
 	u32 slideTime;
@@ -48,6 +49,17 @@ shared class KnightInfo
 	Vec2f slash_direction;
 	s32 shield_down;
 };
+
+shared class KnightState
+{
+	KnightState() {}
+	u8 getStateValue() { return 0; }
+	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state) {}
+	// set knight.state to change states
+	// return true if we should tick the next state right away
+	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars) { return false; }
+	void StateExited(CBlob@ this, KnightInfo@ knight, u8 next_state) {}
+}
 
 
 namespace BombType

@@ -2,6 +2,7 @@
 #include "/Entities/Common/Attacks/Hitters.as";
 #include "KnockedCommon.as";
 #include "ShieldCommon.as";
+#include "KnightCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -25,6 +26,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		{
 			this.Untag("force_knock");
 		}
+
 
 		switch (customData)
 		{
@@ -172,11 +174,25 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		}
 	}
 
+	KnightInfo@ knight;
+	if (!this.get("knightInfo", @knight))
+	{
+		return damage;
+	}
+
+	s32 currentStateIndex = this.get_s32("currentKnightState");
+	u8 state = knight.state;
+
+	print("key2 pressed? " + this.isKeyPressed(key_action2));
+	print("knocked? " + getKnockedRemaining(this));
+	print("onHit: " + this.getPlayer().getUsername() + " currentIndex: " + currentStateIndex + " state: " + state);
+
 	if (time > 0)
 	{
 		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 		setKnocked(this, Maths::Min(time, 60), true);
 	}
+
 
 //  print("KNOCK!" + this.get_u8("knocked") + " dmg " + damage );
 	return damage; //damage not affected
