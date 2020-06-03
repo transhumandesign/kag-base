@@ -174,6 +174,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		}
 	}
 
+	/*
 	KnightInfo@ knight;
 	if (!this.get("knightInfo", @knight))
 	{
@@ -186,6 +187,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	print("key2 pressed? " + this.isKeyPressed(key_action2));
 	print("knocked? " + getKnockedRemaining(this));
 	print("onHit: " + this.getPlayer().getUsername() + " currentIndex: " + currentStateIndex + " state: " + state);
+	*/
 
 	if (time > 0)
 	{

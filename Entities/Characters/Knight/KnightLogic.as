@@ -122,18 +122,35 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 	}
 
 	s32 currentStateIndex = this.get_s32("currentKnightState");
+
 	u8 state = knight.state;
 	KnightState@ currentState = states[currentStateIndex];
 
 	bool tickNext = false;
 	tickNext = currentState.TickState(this, knight, moveVars);
+	if (getNet().isClient() && !this.isMyPlayer())
+	{
+		if (this.exists("serverKnightState"))
+		{
+			s32 serverState = this.get_s32("serverKnightState");
+			this.set_s32("serverKnightState", -1);
+			if (serverState != -1 && serverState != currentStateIndex)
+			{
+				//print("server override state");
+				knight.state = serverState;
+				tickNext = true;
+			}
+		}
+	}
+
 	if (state != knight.state)
 	{
-		if (this.getPlayer().getUsername() == "Verrazano")
+		/*
+		if (this.getPlayer() !is null && this.getPlayer().getUsername() == "Verrazano")
 		{
 			print(this.getPlayer().getUsername() + " oldState: " + state + " newState: " + knight.state);
 			print("currentIndex: " + currentStateIndex);
-		}
+		}*/
 
 		for (s32 i = 0; i < states.size(); i++)
 		{
@@ -144,6 +161,11 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 				currentState.StateExited(this, knight, nextState.getStateValue());
 				nextState.StateEntered(this, knight, currentState.getStateValue());
 				this.set_s32("currentKnightState", nextStateIndex);
+				if (getNet().isServer())
+				{
+					this.set_s32("serverKnightState", nextStateIndex);
+					this.Sync("serverKnightState", true);
+				}
 				if (tickNext)
 				{
 					RunStateMachine(this, knight, moveVars);
