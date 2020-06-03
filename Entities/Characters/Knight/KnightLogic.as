@@ -167,6 +167,7 @@ void onTick(CBlob@ this)
 	else if (!pressed_a1 && !swordState &&
 	         (pressed_a2 || (specialShieldState)))
 	{
+		print("shielding");
 		moveVars.jumpFactor *= 0.5f;
 		moveVars.walkFactor *= 0.9f;
 		knight.swordTimer = 0;
@@ -322,10 +323,11 @@ void onTick(CBlob@ this)
 			this.AddForce(Vec2f(vel.x * -5.0, 0.0f));   //horizontal slowing force (prevents SANICS)
 		}
 
-		if (knight.state == KnightStates::normal ||
-		        this.isKeyJustPressed(key_action1) &&
-		        (!inMiddleOfAttack(knight.state) || shieldState))
+		// TODO: buffer inputs while resheathing so we don't go back to a shield state if jab spamming
+		if ((knight.state == KnightStates::normal || shieldState) &&
+		        this.isKeyJustPressed(key_action1))
 		{
+			print("start charging");
 			knight.state = KnightStates::sword_drawn;
 			knight.swordTimer = 0;
 		}
@@ -337,12 +339,20 @@ void onTick(CBlob@ this)
 
 		//responding to releases/noaction
 		s32 delta = knight.swordTimer;
+		print("delta: " + delta);
 		if (knight.swordTimer < 128)
 			knight.swordTimer++;
 
-		if (knight.state == KnightStates::sword_drawn && !pressed_a1 &&
-		        !this.isKeyJustReleased(key_action1) && delta > KnightVars::resheath_time)
+		if(knight.state == KnightStates::resheathing_cut && delta >= KnightVars::resheath_cut_time)
 		{
+			print("resheathed cut");
+			delta = 0;
+			knight.state = KnightStates::normal;
+		}
+		else if(knight.state == KnightStates::resheathing_slash && delta >= KnightVars::resheath_slash_time)
+		{
+			print("resheathed slash");
+			delta = 0;
 			knight.state = KnightStates::normal;
 		}
 		else if (this.isKeyJustReleased(key_action1) && knight.state == KnightStates::sword_drawn)
@@ -351,6 +361,7 @@ void onTick(CBlob@ this)
 
 			if (delta < KnightVars::slash_charge)
 			{
+				print("jabbing");
 				if (direction == -1)
 				{
 					knight.state = KnightStates::sword_cut_up;
@@ -373,6 +384,7 @@ void onTick(CBlob@ this)
 			}
 			else if (delta < KnightVars::slash_charge_level2)
 			{
+				print("slashing");
 				knight.state = KnightStates::sword_power;
 				Vec2f aiming_direction = vel;
 				aiming_direction.y *= 2;
@@ -416,8 +428,9 @@ void onTick(CBlob@ this)
 			}
 			else if (delta >= 9)
 			{
+				print("jab finished");
 				knight.swordTimer = 0;
-				knight.state = KnightStates::sword_drawn;
+				knight.state = KnightStates::resheathing_cut;
 			}
 		}
 		else if (knight.state == KnightStates::sword_power ||
@@ -455,7 +468,8 @@ void onTick(CBlob@ this)
 				}
 				else
 				{
-					knight.state = KnightStates::sword_drawn;
+					print("finishing slash");
+					knight.state = KnightStates::resheathing_slash;
 				}
 			}
 		}
@@ -665,7 +679,7 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 		else if (knight.swordTimer < KnightVars::slash_charge && knight.state == KnightStates::sword_drawn)
 		{
 			int frame = 2 + int((float(knight.swordTimer) / KnightVars::slash_charge) * 8) * 2;
-			if (knight.swordTimer <= KnightVars::resheath_time) //prevent from appearing when jabbing/jab spamming
+			if (knight.swordTimer <= KnightVars::resheath_cut_time) //prevent from appearing when jabbing/jab spamming
 			{
 				getHUD().SetCursorFrame(0);
 			}

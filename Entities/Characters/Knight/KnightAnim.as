@@ -227,6 +227,14 @@ void onTick(CSprite@ this)
 			}
 		}
 	}
+	else if (knight.state == KnightStates::resheathing_slash)
+	{
+		this.SetAnimation("resheath_slash");
+	}
+	else if(knight.state == KnightStates::resheathing_cut)
+	{
+		this.SetAnimation("draw_sword");
+	}
 	else if (knight.state == KnightStates::sword_drawn)
 	{
 		if (knight.swordTimer < KnightVars::slash_charge)

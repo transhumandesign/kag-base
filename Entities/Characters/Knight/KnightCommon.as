@@ -13,13 +13,16 @@ namespace KnightStates
 		sword_cut_up,
 		sword_cut_down,
 		sword_power,
-		sword_power_super
+		sword_power_super,
+		resheathing_cut,
+		resheathing_slash
 	}
 }
 
 namespace KnightVars
 {
-	const ::s32 resheath_time = 2;
+	const ::s32 resheath_cut_time = 2;
+	const ::s32 resheath_slash_time = 7;
 
 	const ::s32 slash_charge = 15;
 	const ::s32 slash_charge_level2 = 38;
@@ -84,7 +87,7 @@ bool isSpecialShieldState(u8 state)
 
 bool isSwordState(u8 state)
 {
-	return (state >= KnightStates::sword_drawn && state <= KnightStates::sword_power_super);
+	return (state >= KnightStates::sword_drawn && state <= KnightStates::resheathing_slash);
 }
 
 bool inMiddleOfAttack(u8 state)
