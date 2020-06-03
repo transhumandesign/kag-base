@@ -2,6 +2,7 @@
 #include "ShieldCommon.as";
 #include "ParticleSparks.as";
 #include "KnockedCommon.as";
+#include "KnightCommon.as";
 #include "Hitters.as";
 
 bool canBlockThisType(u8 type) // this function needs to use a tag on the hitterBlob, like ("bypass shield")
@@ -119,7 +120,15 @@ void onHealthChange( CBlob@ this, f32 oldHealth )
 		else if(this.hasTag("shieldDoesBlock"))
 		{
 			// drop shield
+			print("drop shield");
 			knockShieldDown(this);
+			KnightInfo@ knight;
+			if (this.get("knightInfo", @knight))
+			{
+				knight.state = KnightStates::normal;
+				this.set_s32("currentKnightState", 0);
+			}
+
 		}
 
 		this.Untag("shieldNoBlock");

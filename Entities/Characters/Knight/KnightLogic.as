@@ -123,25 +123,49 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 
 	s32 currentStateIndex = this.get_s32("currentKnightState");
 
+	if (getNet().isClient())
+	{
+		if (this.exists("serverKnightState"))
+		{
+			s32 serverStateIndex = this.get_s32("serverKnightState");
+			this.set_s32("serverKnightState", -1);
+			if (serverStateIndex != -1 && serverStateIndex != currentStateIndex)
+			{
+				KnightState@ serverState = states[serverStateIndex];
+				u8 net_state = states[serverStateIndex].getStateValue();
+				if (this.isMyPlayer())
+				{
+					if (net_state >= KnightStates::sword_cut_mid && net_state <= KnightStates::sword_power_super)
+					{
+						if (knight.state != KnightStates::sword_drawn)
+						{
+							knight.state = net_state;
+							serverState.StateEntered(this, knight, serverState.getStateValue());
+							this.set_s32("currentKnightState", serverStateIndex);
+							currentStateIndex = serverStateIndex;
+						}
+
+					}
+				}
+				else
+				{
+					knight.state = net_state;
+					serverState.StateEntered(this, knight, serverState.getStateValue());
+					this.set_s32("currentKnightState", serverStateIndex);
+					currentStateIndex = serverStateIndex;
+				}
+
+			}
+		}
+	}
+
+
+
 	u8 state = knight.state;
 	KnightState@ currentState = states[currentStateIndex];
 
 	bool tickNext = false;
 	tickNext = currentState.TickState(this, knight, moveVars);
-	if (getNet().isClient() && !this.isMyPlayer())
-	{
-		if (this.exists("serverKnightState"))
-		{
-			s32 serverState = this.get_s32("serverKnightState");
-			this.set_s32("serverKnightState", -1);
-			if (serverState != -1 && serverState != currentStateIndex)
-			{
-				//print("server override state");
-				knight.state = serverState;
-				tickNext = true;
-			}
-		}
-	}
 
 	if (state != knight.state)
 	{
@@ -846,6 +870,11 @@ class ShieldingState : KnightState
 class ShieldGlideState : KnightState
 {
 	u8 getStateValue() { return KnightStates::shieldgliding; }
+	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
+	{
+		knight.swordTimer = 0;
+	}
+
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 	{
 		if (this.isKeyPressed(key_action1))
@@ -919,7 +948,7 @@ class ShieldSlideState : KnightState
 	u8 getStateValue() { return KnightStates::shielddropping; }
 	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
 	{
-		knight.slideTime = 0;
+		knight.swordTimer = 0;
 	}
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
@@ -1317,6 +1346,7 @@ class ResheathState : KnightState
 
 void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 {
+		print("swordTimer: " + knight.swordTimer);
 		if (knight.swordTimer >= KnightVars::slash_charge_level2 || knight.doubleslash || knight.state == KnightStates::sword_power_super)
 		{
 			getHUD().SetCursorFrame(19);
@@ -1327,7 +1357,7 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 			getHUD().SetCursorFrame(frame);
 		}
 		// the yellow circle stays for the duration of a slash, helpful for newplayers (note: you cant attack while its yellow)
-		else if (knight.state == KnightStates::normal) // disappear after slash is done
+		else if (knight.state == KnightStates::normal || knight.state == KnightStates::resheathing_cut || knight.state == KnightStates::resheathing_slash) // disappear after slash is done
 		// the yellow circle dissapears after mouse button release, more intuitive for improving slash timing
 		// else if (knight.swordTimer == 0) (disappear right after mouse release)
 		{
