@@ -161,11 +161,12 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 				currentState.StateExited(this, knight, nextState.getStateValue());
 				nextState.StateEntered(this, knight, currentState.getStateValue());
 				this.set_s32("currentKnightState", nextStateIndex);
-				if (getNet().isServer())
+				if (getNet().isServer() && knight.state >= KnightStates::sword_drawn && knight.state <= KnightStates::sword_power_super)
 				{
 					this.set_s32("serverKnightState", nextStateIndex);
 					this.Sync("serverKnightState", true);
 				}
+
 				if (tickNext)
 				{
 					RunStateMachine(this, knight, moveVars);
@@ -852,11 +853,39 @@ class ShieldGlideState : KnightState
 			knight.state = KnightStates::sword_drawn;
 			return true;
 		}
-
-		ShieldMovement(moveVars);
+		else if (!this.isKeyPressed(key_action2))
+		{
+			knight.state = KnightStates::normal;
+			return false;
+		}
 
 		Vec2f pos = this.getPosition();
 		bool forcedrop = getForceDrop(this, moveVars);
+
+		bool inair = getInAir(this);
+		if (inair && !this.isInWater())
+		{
+			Vec2f vec;
+			const int direction = this.getAimDirection(vec);
+			if (direction == -1 && !forcedrop && !getMap().isInWater(pos + Vec2f(0, 16)) && !moveVars.wallsliding)
+			{
+				// already in KnightStates::shieldgliding;
+			}
+			else if (forcedrop || direction == 1)
+			{
+				knight.state = KnightStates::shielddropping;
+				return true;
+			}
+			else
+			{
+				knight.state = KnightStates::normal;
+				ShieldMovement(moveVars);
+				return false;
+			}
+
+		}
+
+		ShieldMovement(moveVars);
 
 		if (this.isInWater() || forcedrop)
 		{
@@ -865,7 +894,6 @@ class ShieldGlideState : KnightState
 		else
 		{
 			Vec2f vel = this.getVelocity();
-			bool inair = getInAir(this);
 
 			moveVars.stoppingFactor *= 0.5f;
 			f32 glide_amount = 1.0f - (moveVars.fallCount / f32(KnightVars::glide_down_time * 2));
@@ -875,12 +903,7 @@ class ShieldGlideState : KnightState
 				this.AddForce(Vec2f(0, -20.0f * glide_amount));
 			}
 
-			if ( !this.isKeyPressed(key_action2) )
-			{
-				knight.state = KnightStates::normal;
-
-			}
-			else if (!inair)
+			if (!inair)
 			{
 				knight.state = KnightStates::shielding;
 			}
@@ -906,6 +929,37 @@ class ShieldSlideState : KnightState
 			knight.state = KnightStates::sword_drawn;
 			return true;
 		}
+		else if (!this.isKeyPressed(key_action2))
+		{
+			knight.state = KnightStates::normal;
+			return false;
+		}
+
+		Vec2f pos = this.getPosition();
+		bool forcedrop = getForceDrop(this, moveVars);
+
+		bool inair = getInAir(this);
+		if (inair && !this.isInWater())
+		{
+			Vec2f vec;
+			const int direction = this.getAimDirection(vec);
+			if (direction == -1 && !forcedrop && !getMap().isInWater(pos + Vec2f(0, 16)) && !moveVars.wallsliding)
+			{
+				knight.state = KnightStates::shieldgliding;
+				return true;
+			}
+			else if (forcedrop || direction == 1)
+			{
+				// already in KnightStates::shielddropping;
+				knight.slideTime = 0;
+			}
+			else
+			{
+				knight.state = KnightStates::normal;
+				ShieldMovement(moveVars);
+				return false;
+			}
+		}
 
 		ShieldMovement(moveVars);
 
@@ -924,13 +978,7 @@ class ShieldSlideState : KnightState
 			}
 		}
 
-		bool inair = getInAir(this);
-
-		if (!this.isKeyPressed(key_action2))
-		{
-			knight.state = KnightStates::normal;
-		}
-		else if (!inair && this.getShape().vellen < 1.0f)
+		if (!inair && this.getShape().vellen < 1.0f)
 		{
 			knight.state = KnightStates::shielding;
 		}
@@ -1046,7 +1094,7 @@ class SwordDrawnState : KnightState
 		AttackMovement(this, knight, moveVars);
 		s32 delta = getSwordTimerDelta(knight);
 
-		if (this.isKeyJustReleased(key_action1))
+		if (!this.isKeyPressed(key_action1))
 		{
 			if (delta < KnightVars::slash_charge)
 			{
@@ -1248,6 +1296,11 @@ class ResheathState : KnightState
 			return false;
 
 		}
+		else if (this.isKeyPressed(key_action1))
+		{
+			knight.state = KnightStates::sword_drawn;
+			return true;
+		}
 
 		AttackMovement(this, knight, moveVars);
 		s32 delta = getSwordTimerDelta(knight);
@@ -1255,6 +1308,7 @@ class ResheathState : KnightState
 		if (delta >= time)
 		{
 			knight.state = KnightStates::normal;
+			return true;
 		}
 
 		return false;
