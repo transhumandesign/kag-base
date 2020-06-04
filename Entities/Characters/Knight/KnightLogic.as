@@ -773,6 +773,9 @@ bool getInAir(CBlob@ this)
 
 }
 
+bool timing_on = false;
+s32 timing_ticks = 0;
+
 class NormalState : KnightState
 {
 	u8 getStateValue() { return KnightStates::normal; }
@@ -826,6 +829,12 @@ class ShieldingState : KnightState
 	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
 	{
 		knight.swordTimer = 0;
+		if (timing_on)
+		{
+			timing_on = false;
+			print("time from attack to shield: " + timing_ticks);
+			timing_ticks = 0;
+		}
 	}
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
@@ -1062,6 +1071,7 @@ s32 getSwordTimerDelta(KnightInfo@ knight)
 	if (knight.swordTimer < 128)
 	{
 		knight.swordTimer++;
+		timing_ticks++;
 	}
 	return delta;
 }
@@ -1079,6 +1089,8 @@ void AttackMovement(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 	{
 		this.AddForce(Vec2f(vel.x * -5.0, 0.0f));   //horizontal slowing force (prevents SANICS)
 	}
+
+	moveVars.canVault = false;
 }
 
 class SwordDrawnState : KnightState
@@ -1087,6 +1099,8 @@ class SwordDrawnState : KnightState
 	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
 	{
 		knight.swordTimer = 0;
+		timing_on = true;
+		timing_ticks = 0;
 	}
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
@@ -1298,8 +1312,6 @@ class SlashState : KnightState
 				this.AddForce(slash_vel);
 			}
 		}
-
-		moveVars.canVault = false;
 
 		return false;
 
