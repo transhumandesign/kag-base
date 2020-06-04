@@ -4,7 +4,7 @@
 #include "ShieldCommon.as";
 #include "KnightCommon.as";
 
-const u8 slash_knock = 9;
+const u8 slash_knock = 10;
 
 void onInit(CBlob@ this)
 {
