@@ -137,7 +137,7 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 				{
 					if (net_state >= KnightStates::sword_cut_mid && net_state <= KnightStates::sword_power_super)
 					{
-						if (knight.state != KnightStates::sword_drawn)
+						if (knight.state != KnightStates::sword_drawn && knight.state != KnightStates::resheathing_cut && knight.state != KnightStates::resheathing_slash)
 						{
 							knight.state = net_state;
 							serverState.StateEntered(this, knight, serverState.getStateValue());
@@ -777,6 +777,12 @@ bool timing_on = false;
 s32 timing_ticks = 0;
 s32 timing_ticks_total = 0;
 
+void ShieldMovement(RunnerMoveVars@ moveVars)
+{
+	moveVars.jumpFactor *= 0.5f;
+	moveVars.walkFactor *= 0.9f;
+}
+
 class NormalState : KnightState
 {
 	u8 getStateValue() { return KnightStates::normal; }
@@ -804,16 +810,12 @@ class NormalState : KnightState
 				resetShieldKnockdown(this);
 			}
 
+			ShieldMovement(moveVars);
+
 		}
 
 		return false;
 	}
-}
-
-void ShieldMovement(RunnerMoveVars@ moveVars)
-{
-	moveVars.jumpFactor *= 0.5f;
-	moveVars.walkFactor *= 0.9f;
 }
 
 bool getForceDrop(CBlob@ this, RunnerMoveVars@ moveVars)
@@ -917,7 +919,7 @@ class ShieldGlideState : KnightState
 			}
 			else
 			{
-				knight.state = KnightStates::normal;
+				knight.state = KnightStates::shielding;
 				ShieldMovement(moveVars);
 				return false;
 			}
@@ -994,7 +996,7 @@ class ShieldSlideState : KnightState
 			}
 			else
 			{
-				knight.state = KnightStates::normal;
+				knight.state = KnightStates::shielding
 				ShieldMovement(moveVars);
 				return false;
 			}

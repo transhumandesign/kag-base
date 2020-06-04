@@ -4,8 +4,6 @@
 #include "ShieldCommon.as";
 #include "KnightCommon.as";
 
-const u8 slash_knock = 10;
-
 void onInit(CBlob@ this)
 {
 	InitKnockable(this);   //already done in runnerdefault but some dont have that
@@ -39,7 +37,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 				{
 					time = 20;
 					if (force) //broke shield
-						time = slash_knock;
+						time = 10;
 				}
 				else
 				{
