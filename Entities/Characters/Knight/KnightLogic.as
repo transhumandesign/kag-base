@@ -775,6 +775,7 @@ bool getInAir(CBlob@ this)
 
 bool timing_on = false;
 s32 timing_ticks = 0;
+s32 timing_ticks_total = 0;
 
 class NormalState : KnightState
 {
@@ -832,8 +833,8 @@ class ShieldingState : KnightState
 		if (timing_on)
 		{
 			timing_on = false;
-			print("time from attack to shield: " + timing_ticks);
-			timing_ticks = 0;
+			print("time from attack to shield: " + timing_ticks_total + " gameTime: " + getGameTime());
+			timing_ticks_total = 0;
 		}
 	}
 
@@ -1072,6 +1073,7 @@ s32 getSwordTimerDelta(KnightInfo@ knight)
 	{
 		knight.swordTimer++;
 		timing_ticks++;
+		timing_ticks_total++;
 	}
 	return delta;
 }
@@ -1099,8 +1101,11 @@ class SwordDrawnState : KnightState
 	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
 	{
 		knight.swordTimer = 0;
+
+		print("attack started - gameTime: " + getGameTime());
 		timing_on = true;
 		timing_ticks = 0;
+		timing_ticks_total = 0;
 	}
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
@@ -1139,6 +1144,9 @@ class SwordDrawnState : KnightState
 
 		if (!this.isKeyPressed(key_action1))
 		{
+			print("attack released: " + timing_ticks + " total: " + timing_ticks_total);
+			timing_ticks = 0;
+
 			if (delta < KnightVars::slash_charge)
 			{
 				Vec2f vec;
@@ -1223,6 +1231,8 @@ class CutState : KnightState
 		}
 		else if (delta >= 9)
 		{
+			print("jab finished: " + timing_ticks + " total: " + timing_ticks_total);
+			timing_ticks = 0;
 			knight.state = KnightStates::resheathing_cut;
 		}
 
@@ -1288,6 +1298,7 @@ class SlashState : KnightState
 		else if (delta >= KnightVars::slash_time
 			|| (knight.doubleslash && delta >= KnightVars::double_slash_time))
 		{
+			print("slash finished: " + timing_ticks + " total: " + timing_ticks_total);
 			if (knight.doubleslash)
 			{
 				knight.doubleslash = false;
@@ -1346,10 +1357,10 @@ class ResheathState : KnightState
 		AttackMovement(this, knight, moveVars);
 		s32 delta = getSwordTimerDelta(knight);
 
-		if (delta >= time)
+		if (delta > time)
 		{
+			print("resheath finished: " + timing_ticks + " total: " + timing_ticks_total);
 			knight.state = KnightStates::normal;
-			return true;
 		}
 
 		return false;

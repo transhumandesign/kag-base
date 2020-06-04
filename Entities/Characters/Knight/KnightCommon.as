@@ -23,8 +23,8 @@ namespace KnightStates
 
 namespace KnightVars
 {
-	const ::s32 resheath_cut_time = 0;
-	const ::s32 resheath_slash_time = 0;
+	const ::s32 resheath_cut_time = 2;
+	const ::s32 resheath_slash_time = 2;
 
 	const ::s32 slash_charge = 15;
 	const ::s32 slash_charge_level2 = 38;
