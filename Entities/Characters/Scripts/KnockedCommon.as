@@ -10,6 +10,8 @@ void InitKnockable(CBlob@ this)
 	this.Sync(knockedTag, true);
 
 	this.addCommandID("knocked");
+
+	this.set_u32("justKnocked", 0);
 }
 
 // returns true if the new knocked time would be longer than the current.
@@ -55,7 +57,7 @@ void KnockedCommands(CBlob@ this, u8 cmd, CBitStream@ params)
 
 		}
 
-		this.set_u8("justKnocked", getGameTime());
+		this.set_u32("justKnocked", getGameTime());
 		this.set_u8(knockedProp, knockedTime);
 	}
 }
@@ -80,7 +82,7 @@ bool isKnocked(CBlob@ this)
 
 bool isJustKnocked(CBlob@ this)
 {
-	return this.get_u8("justKnocked") == getGameTime();
+	return this.get_u32("justKnocked") == getGameTime();
 }
 
 void DoKnockedUpdate(CBlob@ this)
