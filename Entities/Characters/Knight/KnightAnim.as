@@ -7,6 +7,7 @@
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
 #include "Accolades.as"
+#include "ShieldCommon.as"
 
 const string shiny_layer = "shiny bit";
 
@@ -185,7 +186,7 @@ void onTick(CSprite@ this)
 	{
 		this.SetAnimation("shield_drop");
 	}
-	else if (knight.state == KnightStates::shielding)
+	else if (knight.state == KnightStates::shielding && isShieldEnabled(blob))
 	{
 		if (walking)
 		{
