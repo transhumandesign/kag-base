@@ -10,6 +10,9 @@ void InitKnockable(CBlob@ this)
 	this.Sync(knockedTag, true);
 
 	this.addCommandID("knocked");
+
+	//this.set_u32("knocked_realticks", 0);
+	//this.set_s32("knocked_timer", 0);
 }
 
 // returns true if the new knocked time would be longer than the current.
@@ -18,12 +21,12 @@ bool setKnocked(CBlob@ blob, int ticks, bool server_only = false)
 	if (blob.hasTag("invincible"))
 		return false; //do nothing
 
-	// set knocked to current time + ticks
-	u32 knockedTime = getGameTime() + ticks;
+	u32 knockedTime = ticks;
 	u32 currentKnockedTime = blob.get_u32(knockedProp);
 	if (knockedTime > currentKnockedTime)
 	{
-
+		//blob.set_u32("knocked_realticks", getGameTime());
+		//print(blob.getPlayer().getUsername() + " stun amount " + knockedTime + " gameTime: " + getGameTime());
 		if (getNet().isServer())
 		{
 			blob.set_u32(knockedProp, knockedTime);
@@ -65,13 +68,7 @@ void KnockedCommands(CBlob@ this, u8 cmd, CBitStream@ params)
 u32 getKnockedRemaining(CBlob@ this)
 {
 	u32 currentKnockedTime = this.get_u32(knockedProp);
-	u32 time = getGameTime();
-	if (time >= currentKnockedTime)
-	{
-		return 0;
-	}
-
-	return currentKnockedTime - time;
+	return currentKnockedTime;
 }
 
 bool isKnocked(CBlob@ this)
@@ -89,13 +86,6 @@ bool isKnocked(CBlob@ this)
 bool isJustKnocked(CBlob@ this)
 {
 	return this.get_u32("justKnocked") == getGameTime();
-}
-
-bool knockedJustEnded(CBlob@ this)
-{
-	u32 currentKnockedTime = this.get_u32(knockedProp);
-	u32 time = getGameTime();
-	return currentKnockedTime == time;
 }
 
 void DoKnockedUpdate(CBlob@ this)
@@ -116,6 +106,10 @@ void DoKnockedUpdate(CBlob@ this)
 
 	if (knockedRemaining > 0 || frozen)
 	{
+		//this.set_s32("knocked_timer", 0);
+		knockedRemaining--;
+		this.set_u32(knockedProp, knockedRemaining);
+
 		u16 takekeys;
 		if (knockedRemaining < 2 || (this.hasTag("dazzled") && knockedRemaining < 30))
 		{
@@ -134,19 +128,34 @@ void DoKnockedUpdate(CBlob@ this)
 		this.DisableKeys(takekeys);
 		this.DisableMouse(true);
 
+		// for some reason keys are taken for 1 tick to long in the engine
+		if (knockedRemaining < 2)
+		{
+			this.DisableKeys(0);
+			this.DisableMouse(false);
+		}
+
+		if (knockedRemaining == 0)
+		{
+			this.Untag("dazzled");
+			//u32 knockedStart = this.get_u32("knocked_realticks");
+			//print(this.getPlayer().getUsername() + " knocked actual ticks: " + (getGameTime() - knockedStart));
+			//print(this.getPlayer().getUsername() + " knocked finished gameTime: " + getGameTime());
+		}
+
+
 		this.Tag("prevent crouch");
 	}
 	else
 	{
-
-		if (this.hasTag("dazzled"))
-		{
-			this.Untag("dazzled");
-		}
-
 		this.DisableKeys(0);
 		this.DisableMouse(false);
 	}
+
+	/*if (knockedRemaining <= 0)
+	{
+		this.set_s32("knocked_timer", this.get_s32("knocked_timer")+1);
+	}*/
 }
 
 bool isKnockable(CBlob@ blob)

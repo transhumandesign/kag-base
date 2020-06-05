@@ -102,6 +102,12 @@ void onInit(CBlob@ this)
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().removeIfTag = "dead";
+
+	/*this.set_u8("timing_on", 0);
+	this.set_u32("shield_start", 0);
+
+	this.set_u32("attack_start", 0);
+	*/
 }
 
 void onSetPlayer(CBlob@ this, CPlayer@ player)
@@ -271,6 +277,11 @@ void onTick(CBlob@ this)
 	}
 	else
 	{
+		/*if (this.getPlayer() !is null && this.getPlayer().getUsername() == "Verrazano")
+		{
+			print(this.getPlayer().getUsername() + " lmb? " + pressed_a1 + " rmb? " + pressed_a2 + " gameTime: " + getGameTime());
+		}*/
+
 		RunStateMachine(this, knight, moveVars);
 
 	}
@@ -670,6 +681,13 @@ void onTick(CBlob@ this)
 	{
 		int horiz = this.isFacingLeft() ? -1 : 1;
 		setShieldEnabled(this, true);
+		/*if (this.get_u8("timing_on") == 1 && this.hasTag("shielded"))
+		{
+			this.set_u8("timing_on", 2);
+			u32 ticks = getGameTime() - this.get_u32("shield_start");
+			print(this.getPlayer().getUsername() + " time to shield enabled: " + ticks);
+		}*/
+
 
 		setShieldAngle(this, SHIELD_BLOCK_ANGLE);
 
@@ -749,6 +767,10 @@ void onTick(CBlob@ this)
 	}
 	else
 	{
+		/*if (this.get_u8("timing_on") == 2)
+		{
+			this.set_u8("timing_on", 0);
+		}*/
 		setShieldEnabled(this, false);
 
 		if (this.hasTag("shieldplatform"))
@@ -772,10 +794,6 @@ bool getInAir(CBlob@ this)
 	return inair;
 
 }
-
-bool timing_on = false;
-s32 timing_ticks = 0;
-s32 timing_ticks_total = 0;
 
 void ShieldMovement(RunnerMoveVars@ moveVars)
 {
@@ -832,12 +850,11 @@ class ShieldingState : KnightState
 	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
 	{
 		knight.swordTimer = 0;
-		if (timing_on)
+		/*if (this.get_u8("timing_on") == 0)
 		{
-			timing_on = false;
-			print("time from attack to shield: " + timing_ticks_total + " gameTime: " + getGameTime());
-			timing_ticks_total = 0;
-		}
+			this.set_u8("timing_on", 1);
+			this.set_u32("shield_start", getGameTime());
+		}*/
 	}
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
@@ -996,7 +1013,7 @@ class ShieldSlideState : KnightState
 			}
 			else
 			{
-				knight.state = KnightStates::shielding
+				knight.state = KnightStates::shielding;
 				ShieldMovement(moveVars);
 				return false;
 			}
@@ -1074,8 +1091,6 @@ s32 getSwordTimerDelta(KnightInfo@ knight)
 	if (knight.swordTimer < 128)
 	{
 		knight.swordTimer++;
-		timing_ticks++;
-		timing_ticks_total++;
 	}
 	return delta;
 }
@@ -1103,11 +1118,8 @@ class SwordDrawnState : KnightState
 	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
 	{
 		knight.swordTimer = 0;
-
-		print("attack started - gameTime: " + getGameTime());
-		timing_on = true;
-		timing_ticks = 0;
-		timing_ticks_total = 0;
+		//this.set_u32("attack_start", getGameTime());
+		//print(this.getPlayer().getUsername() + " attack started gameTime: " + getGameTime());
 	}
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
@@ -1146,9 +1158,7 @@ class SwordDrawnState : KnightState
 
 		if (!this.isKeyPressed(key_action1))
 		{
-			print("attack released: " + timing_ticks + " total: " + timing_ticks_total);
-			timing_ticks = 0;
-
+			//print(this.getPlayer().getUsername() + " attack released gameTime: " + getGameTime());
 			if (delta < KnightVars::slash_charge)
 			{
 				Vec2f vec;
@@ -1221,6 +1231,7 @@ class CutState : KnightState
 		}
 		else if (delta > DELTA_BEGIN_ATTACK && delta < DELTA_END_ATTACK)
 		{
+			//print(this.getPlayer().getUsername() + " jab damage gameTime: " + getGameTime());
 			f32 attackarc = 90.0f;
 			f32 attackAngle = getCutAngle(this, knight.state);
 
@@ -1233,8 +1244,6 @@ class CutState : KnightState
 		}
 		else if (delta >= 9)
 		{
-			print("jab finished: " + timing_ticks + " total: " + timing_ticks_total);
-			timing_ticks = 0;
 			knight.state = KnightStates::resheathing_cut;
 		}
 
@@ -1294,13 +1303,12 @@ class SlashState : KnightState
 		{
 			Vec2f vec;
 			this.getAimDirection(vec);
-
+			//print(this.getPlayer().getUsername() + " slash damage gameTime: " + getGameTime());
 			DoAttack(this, 2.0f, -(vec.Angle()), 120.0f, Hitters::sword, delta, knight);
 		}
 		else if (delta >= KnightVars::slash_time
 			|| (knight.doubleslash && delta >= KnightVars::double_slash_time))
 		{
-			print("slash finished: " + timing_ticks + " total: " + timing_ticks_total);
 			if (knight.doubleslash)
 			{
 				knight.doubleslash = false;
@@ -1361,7 +1369,6 @@ class ResheathState : KnightState
 
 		if (delta > time)
 		{
-			print("resheath finished: " + timing_ticks + " total: " + timing_ticks_total);
 			knight.state = KnightStates::normal;
 		}
 
@@ -1806,6 +1813,34 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	{
 		return;
 	}
+
+	/*if (!this.exists("instajab_min"))
+	{
+		this.set_u8("instajab_min", 128);
+	}
+
+	const bool jab = isJab(damage);
+	if (jab && getNet().isServer() && this.getPlayer().getUsername() == "Verrazano" && !blockAttack(hitBlob, velocity, 0.0f))
+	{
+		s32 time_since_knocked = this.get_s32("knocked_timer");
+		if (time_since_knocked < this.get_u8("instajab_min"))
+		{
+			this.set_u8("instajab_min", time_since_knocked);
+			print("minimum instajab time since knocked: " + time_since_knocked);
+		}
+		print("actual attack time: " + (getGameTime() - this.get_u32("attack_start")));
+		print("jabbing at: " + getGameTime() + " knocked: " + this.get_u8("knocked") + "time since knocked: " + time_since_knocked);
+
+		KnightInfo@ hitKnight;
+		if (hitBlob.get("knightInfo", @hitKnight))
+		{
+			ShieldVars@ vars = getShieldVars(hitBlob);
+
+			if (vars !is null) {
+				print(hitBlob.getPlayer().getUsername() + " state: " + hitKnight.state + " shield.enabled: " + vars.enabled);
+			}
+		}
+	}*/
 
 	if (customData == Hitters::sword &&
 	        ( //is a jab - note we dont have the dmg in here at the moment :/
