@@ -193,7 +193,7 @@ void onRender(CRules@ this)
 		text = "If you click on a player the camera will follow them.\nSimply press the movement keys or click again to stop following a player.";
 	}
 
-	if (text != "")
+	if (text != "" && u_showtutorial)
 	{
 		//translate
 		text = getTranslatedString(text);

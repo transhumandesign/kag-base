@@ -223,7 +223,7 @@ void onTunnelCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 		else if (caller !is null && caller.isMyPlayer())
-			Sound::Play("NoAmmo.ogg");
+			caller.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 	}
 	else if (cmd == this.getCommandID("server travel to"))
 	{

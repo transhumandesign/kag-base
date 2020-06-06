@@ -302,8 +302,11 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			}
 		}
 
-		this.set_bool("has_arrow", hasarrow);
-		this.Sync("has_arrow", isServer());
+		if (hasarrow != this.get_bool("has_arrow"))
+		{
+			this.set_bool("has_arrow", hasarrow);
+			this.Sync("has_arrow", isServer());
+		}
 
 		archer.stab_delay = 0;
 	}
@@ -401,7 +404,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 				if (ismyplayer && !this.wasKeyPressed(key_action1))   // playing annoying no ammo sound
 				{
-					Sound::Play("Entities/Characters/Sounds/NoAmmo.ogg");
+					this.getSprite().PlaySound("Entities/Characters/Sounds/NoAmmo.ogg", 0.5);
 				}
 
 			}

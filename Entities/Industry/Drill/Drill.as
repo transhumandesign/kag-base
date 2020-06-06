@@ -60,7 +60,7 @@ void onInit(CBlob@ this)
 
 	this.set_u32("hittime", 0);
 	this.Tag("place norotate"); // required to prevent drill from locking in place (blame builder code :kag_angry:)
-	
+
 	//this.Tag("place45"); // old 45 degree angle lock
 	//this.set_s8("place45 distance", 1);
 	//this.Tag("place45 perp");
@@ -79,7 +79,7 @@ void onInit(CBlob@ this)
 
 bool canBePutInInventory( CBlob@ this, CBlob@ inventoryBlob )
 {
-	u8 heat = this.get_u8(heat_prop); 
+	u8 heat = this.get_u8(heat_prop);
 	if (heat > 0) this.set_u32("time_enter",getGameTime()); // set time we enter the invo
 
 	return true;
@@ -94,9 +94,9 @@ void onThisRemoveFromInventory( CBlob@ this, CBlob@ inventoryBlob )
 		u32 dif = this.get_u32("time_enter"); // grab the temp time, better then doing difference since we might underflow
 
 		while (dif < gameTimeCache)
-		{ 
+		{
 			dif += heat_cooldown_time; // add so we can beat our condition
-			heat--; 
+			heat--;
 			if (heat == 0) break; // if we reach the limit, stop running
 		}
 
@@ -118,7 +118,7 @@ void onTick(CSprite@ this)
 	{
 		this.SetAnimation("default");
 	}
-	
+
 	CSpriteLayer@ heatlayer = this.getSpriteLayer("heat");
 	if (heatlayer !is null)
 	{
@@ -283,7 +283,7 @@ void onTick(CBlob@ this)
 								{
 									hit_ground = true;
 								}
-								
+
 								if (b.getTeamNum() == holder.getTeamNum() ||
 								        hit_ground && !is_ground)
 								{
@@ -323,7 +323,7 @@ void onTick(CBlob@ this)
 									for (uint i = 0; i < 2; i++)
 									{
 										//tile destroyed last hit
-										
+
 										if (!map.isTileSolid(map.getTile(hi.tileOffset))){ break; }
 
 										map.server_DestroyTile(hi.hitpos, 1.0f, this);
@@ -397,7 +397,7 @@ void onTick(CBlob@ this)
 			{
 				if (holder.isKeyJustPressed(key_action1))
 				{
-					Sound::Play("NoAmmo.ogg");
+					holder.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 				}
 			}
 		}
@@ -480,14 +480,14 @@ void onRender(CSprite@ this)
 	if (holderBlob is null){return;}
 
 	if (holderBlob.getName() != required_class && sv_gamemode != "TDM"){return;}
-	
+
 	Vec2f mousePos = getControls().getMouseWorldPos();
 	Vec2f blobPos = blob.getPosition();
 	Vec2f localPos = localBlob.getPosition();
 
 	bool inRange = (blobPos - localPos).getLength() < max_heatbar_view_range;
 	bool hover = (mousePos - blobPos).getLength() < blob.getRadius() * 1.50f;
-	
+
 	if ((hover && inRange) || (holder !is null && holder.isLocal()))
 	{
 		int transparency = 255;

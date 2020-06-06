@@ -83,7 +83,7 @@ void onTick(CBlob@ this)
 	CControls@ controls = getControls();
 
 	// drop / pickup / throw
-	if (controls.isKeyPressed(KEY_LSHIFT) || controls.isKeyPressed(KEY_RSHIFT))
+	if (controls.ActionKeyPressed(AK_PICKUP_MODIFIER))
 	{
 		WheelMenu@ menu = get_wheel_menu("pickup");
 		if (this.isKeyPressed(key_pickup) && menu !is get_active_wheel_menu())
@@ -168,7 +168,7 @@ void onTick(CBlob@ this)
 	else
 	{
 		WheelMenu@ menu = get_wheel_menu("pickup");
-		if ((this.isKeyJustReleased(key_pickup) || controls.isKeyJustReleased(KEY_LSHIFT) || controls.isKeyJustReleased(KEY_RSHIFT))
+		if ((this.isKeyJustReleased(key_pickup) || controls.isKeyJustReleased(controls.getActionKeyKey(AK_PICKUP_MODIFIER)))
 			&&  get_active_wheel_menu() is menu)
 		{
 			PickupWheelMenuEntry@ selected = cast<PickupWheelMenuEntry>(menu.get_selected());
@@ -610,11 +610,13 @@ void onRender(CSprite@ this)
 					Vec2f dimensions;
 					GUI::SetFont("menu");
 
+					/*
 					GUI::DrawCircle(
 						getDriver().getScreenPosFromWorldPos(b.getPosition()),
 						32.0f,
 						SColor(255, 255, 255, 255)
 					);
+					*/
 
 					GUI::GetTextDimensions(b.getInventoryName(), dimensions);
 					GUI::DrawText(getTranslatedString(b.getInventoryName()), getDriver().getScreenPosFromWorldPos(b.getPosition() - Vec2f(0, -b.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);

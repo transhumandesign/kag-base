@@ -298,7 +298,7 @@ void onTick(CBlob@ this)
 				}
 				else if (snap && this.isKeyJustPressed(key_action1))
 				{
-					Sound::Play("NoAmmo.ogg");
+					this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 				}
 			}
 

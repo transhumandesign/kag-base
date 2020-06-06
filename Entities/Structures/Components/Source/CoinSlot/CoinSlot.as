@@ -88,7 +88,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	CPlayer@ player = caller.getPlayer();
 	if (player !is null && player.isMyPlayer() && player.getCoins() < COIN_COST)
 	{
-		Sound::Play("NoAmmo.ogg");
+		this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 		return;
 	}
 
