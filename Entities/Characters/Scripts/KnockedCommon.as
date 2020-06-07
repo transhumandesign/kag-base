@@ -124,17 +124,11 @@ void DoKnockedUpdate(CBlob@ this)
 		this.DisableKeys(takekeys);
 		this.DisableMouse(true);
 
-		// Disable keys takes the keys for tick after it's called
-		// so we want to end on time by not calling DisableKeys before knocked finishes
-		if (knockedRemaining < 2)
-		{
-			this.DisableKeys(0);
-			this.DisableMouse(false);
-		}
-
 		if (knockedRemaining == 0)
 		{
 			this.Untag("dazzled");
+			this.DisableKeys(0);
+			this.DisableMouse(false);
 		}
 
 		this.Tag("prevent crouch");

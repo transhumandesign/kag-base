@@ -444,6 +444,8 @@ class NormalState : KnightState
 	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
 	{
 		knight.swordTimer = 0;
+		this.set_u8("swordSheathPlayed", 0);
+		this.set_u8("animeSwordPlayed", 0);
 	}
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
@@ -750,6 +752,8 @@ class SwordDrawnState : KnightState
 	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
 	{
 		knight.swordTimer = 0;
+		this.set_u8("swordSheathPlayed", 0);
+		this.set_u8("animeSwordPlayed", 0);
 	}
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
@@ -769,10 +773,13 @@ class SwordDrawnState : KnightState
 			if (knight.swordTimer == KnightVars::slash_charge_level2)
 			{
 				Sound::Play("AnimeSword.ogg", pos, myplayer ? 1.3f : 0.7f);
+				this.set_u8("animeSwordPlayed", 1);
+
 			}
 			else if (knight.swordTimer == KnightVars::slash_charge)
 			{
 				Sound::Play("SwordSheath.ogg", pos, myplayer ? 1.3f : 0.7f);
+				this.set_u8("swordSheathPlayed",  1);
 			}
 		}
 
@@ -911,6 +918,24 @@ class SlashState : KnightState
 
 		}
 
+		if (getNet().isClient())
+		{
+			const bool myplayer = this.isMyPlayer();
+			Vec2f pos = this.getPosition();
+			if (knight.state == KnightStates::sword_power_super && this.get_u8("animeSwordPlayed") == 0)
+			{
+				Sound::Play("AnimeSword.ogg", pos, myplayer ? 1.3f : 0.7f);
+				this.set_u8("animeSwordPlayed", 1);
+				this.set_u8("swordSheathPlayed", 1);
+
+			}
+			else if (knight.state == KnightStates::sword_power && this.get_u8("swordSheathPlayed") == 0)
+			{
+				Sound::Play("SwordSheath.ogg", pos, myplayer ? 1.3f : 0.7f);
+				this.set_u8("swordSheathPlayed",  1);
+			}
+		}
+
 		this.Tag("prevent crouch");
 
 		AttackMovement(this, knight, moveVars);
@@ -975,6 +1000,8 @@ class ResheathState : KnightState
 	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
 	{
 		knight.swordTimer = 0;
+		this.set_u8("swordSheathPlayed", 0);
+		this.set_u8("animeSwordPlayed", 0);
 	}
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
