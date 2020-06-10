@@ -1185,6 +1185,7 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 	bool dontHitMore = false;
 	bool dontHitMoreMap = false;
 	const bool jab = isJab(damage);
+	bool dontHitMoreLogs = false;
 
 	//get the actual aim angle
 	f32 exact_aimangle = (this.getAimPos() - blobPos).Angle();
@@ -1223,9 +1224,25 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 				}
 
 				knight_add_actor_limit(this, b);
-				if (!dontHitMore)
+				if (!dontHitMore && (b.getName() != "log" || !dontHitMoreLogs))
 				{
 					Vec2f velocity = b.getPosition() - pos;
+
+					if (b.getName() == "log")
+					{
+						damage /= 3;
+						dontHitMoreLogs = true;
+						CBlob@ wood = server_CreateBlobNoInit("mat_wood");
+						if (wood !is null)
+						{
+							wood.Tag('custom quantity');
+							wood.Init();
+							wood.setPosition(pos);
+							wood.server_SetQuantity(20 * damage);
+						}
+
+					}
+
 					this.server_Hit(b, hi.hitpos, velocity, damage, type, true);  // server_Hit() is server-side only
 
 					// end hitting if we hit something solid, don't if its flesh
