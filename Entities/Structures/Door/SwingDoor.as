@@ -174,6 +174,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		damage *= 2;
 	if (customData == Hitters::bomb)
 		damage *= 1.3f;
+	if (customData == Hitters::sword)
+		damage *= 1.6f;
 
 	CSprite @sprite = this.getSprite();
 
