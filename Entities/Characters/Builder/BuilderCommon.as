@@ -67,6 +67,9 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 		Vec2f space = Vec2f(b.size.x / 8, b.size.y / 8);
 		Vec2f offsetPos = getBuildingOffsetPos(this, map, space);
 
+		Vec2f tl = offsetPos;
+		Vec2f br = offsetPos;
+
 		if (!fail)
 		{
 			// check every tile space of the built blob for "no build sector" or "solid tile"
@@ -88,8 +91,8 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 			// -> need to do some additional checking
 			if (!fail && b.name == "building")
 			{
-				Vec2f tl = Vec2f(offsetPos.x, offsetPos.y);
-				Vec2f br = Vec2f(offsetPos.x + b.size.x, offsetPos.y + b.size.y);
+				tl = Vec2f(offsetPos.x, offsetPos.y);
+				br = Vec2f(offsetPos.x + b.size.x, offsetPos.y + b.size.y);
 
 				Vec2f b_pos = Vec2f(tl.x + (b.size.x * 0.5f), tl.y + (b.size.y * 0.5f));
 				Vec2f b_half = Vec2f(b.size.x, b.size.y) * 0.5f;
@@ -116,8 +119,7 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 						{
 							//check if they aren't on the ignore list
 							//done here to avoid a bunch of string comp earlier
-							string o_name = o_blob.getName();
-							if (o_name != "bush" && !o_blob.hasTag("projectile"))
+							if (isBlocking(o_blob))
 							{
 								fail = true;
 								break;
@@ -144,6 +146,7 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 		this.getSprite().PlaySound("/Construct");
 		// take inv here instead of in onDetach
 		server_TakeRequirements(inv, b.reqs);
+		DestroyScenary(tl, br);
 		SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), b.name));
 	}
 

@@ -22,6 +22,7 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 	{
 		server_TakeRequirements(inv, bc.reqs);
 		getMap().server_SetTile(cursorPos, bc.tile);
+		DestroyScenary(cursorPos, cursorPos);
 
 		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), bc.tile));
 	}

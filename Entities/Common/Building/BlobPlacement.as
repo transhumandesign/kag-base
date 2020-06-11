@@ -31,6 +31,8 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 				shape.SetStatic(true);
 			}
 		}
+
+		DestroyScenary(cursorPos, cursorPos);
 	}
 }
 
@@ -222,10 +224,10 @@ void onTick(CBlob@ this)
 
 		carryBlob.SetVisible(!carryBlob.hasTag("temp blob"));
 
-		bool onetile = false;
+		bool isLadder = false;
 		if (carryBlob.getName() == "ladder")
 		{
-			onetile = true;
+			isLadder = true;
 		}
 
 		if (snap) // activate help line
@@ -246,7 +248,7 @@ void onTick(CBlob@ this)
 
 				bool overlapped;
 
-				if (onetile)
+				if (isLadder)
 				{
 					Vec2f ontilepos = halftileoffset + bc.tileAimPos;
 
@@ -262,7 +264,10 @@ void onTick(CBlob@ this)
 							CBlob@ blob = b[nearblob_step];
 
 							string bname = blob.getName();
-							if (blob is carryBlob || blob.hasTag("player") || bname == "bush" || bname == "flowers" || bname == "log") continue;
+							if (blob is carryBlob || blob.hasTag("player") || !isBlocking(blob) || !blob.getShape().isStatic())
+							{
+								continue;
+							}
 
 							overlapped = (blob.getPosition() - ontilepos).LengthSquared() < tsqr;
 						}

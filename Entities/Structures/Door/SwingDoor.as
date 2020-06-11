@@ -50,6 +50,9 @@ void onInit(CBlob@ this)
 	this.Tag("door");
 	this.Tag("blocks water");
 	this.Tag("explosion always teamkill"); // ignore 'no teamkill' for explosives
+
+	this.getShape().getConsts().collidable = false;
+
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -57,6 +60,33 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	if (!isStatic) return;
 
 	this.getSprite().PlaySound("/build_door.ogg");
+
+	// open if door is built into something else
+	CMap@ map = getMap();
+	if (map !is null)
+	{
+		Vec2f pos = this.getPosition();
+		CBlob@[] overlapping;
+		map.getBlobsInBox(pos, pos, @overlapping);
+		for (uint i = 0; i < overlapping.length; i++)
+		{
+			CBlob@ blob = overlapping[i];
+			print("overlapping blob: " + blob.getName());
+			string bname = blob.getName();
+			if (blob !is null
+				&& !blob.getShape().isStatic()
+				&& blob.isCollidable()
+				&& bname != "wooden_door" && bname != "stone_door")
+			{
+				setOpen(this, true, true);
+				return;
+			}
+
+		}
+
+	}
+
+	this.getShape().getConsts().collidable = true;
 }
 
 //TODO: fix flags sync and hitting
