@@ -44,6 +44,9 @@ void onInit(CBlob@ this)
 			this.set('harvest', harvest);
 		}
 	}
+
+	this.set_string("close_anim", "close");
+
 	this.Tag("door");
 	this.Tag("blocks water");
 	this.Tag("explosion always teamkill"); // ignore 'no teamkill' for explosives
@@ -82,7 +85,7 @@ void setOpen(CBlob@ this, bool open, bool faceLeft = false)
 	else
 	{
 		sprite.SetZ(100.0f);
-		sprite.SetAnimation("close");
+		sprite.SetAnimation(this.get_string("close_anim"));
 		this.getShape().getConsts().collidable = true;
 		this.getCurrentScript().tickFrequency = 0;
 		Sound::Play("/DoorClose.ogg", this.getPosition());
@@ -228,34 +231,33 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		u8 frame = 0;
 
-		Animation @destruction_anim = sprite.getAnimation("destruction");
-
-		if (destruction_anim !is null)
+		if (this.getHealth() < this.getInitialHealth())
 		{
-			if (this.getHealth() < this.getInitialHealth())
+			f32 ratio = (this.getHealth() - damage * getRules().attackdamage_modifier) / this.getInitialHealth();
+
+			if (ratio <= 0.0f)
 			{
-				f32 ratio = (this.getHealth() - damage * getRules().attackdamage_modifier) / this.getInitialHealth();
-
-
-				if (ratio <= 0.0f)
-				{
-					frame = destruction_anim.getFramesCount() - 1;
-				}
-				else
-				{
-					frame = (1.0f - ratio) * (destruction_anim.getFramesCount());
-				}
-
-				frame = destruction_anim.getFrame(frame);
+				frame = 3;
 			}
+			else
+			{
+				frame = (1.0f - ratio) * 3;
+			}
+
+			if (frame != 0)
+			{
+				string close_anim = "close_destruction_" + frame;
+				this.set_string("close_anim", close_anim);
+				if (!isOpen(this))
+				{
+					sprite.SetAnimation(close_anim);
+					sprite.animation.SetFrameIndex(2);
+				}
+
+			}
+
 		}
 
-		Animation @close_anim = sprite.getAnimation("close");
-		u8 lastframe = close_anim.getFrame(close_anim.getFramesCount() - 1);
-		if (lastframe < frame)
-		{
-			close_anim.AddFrame(frame);
-		}
 	}
 
 	return damage;
