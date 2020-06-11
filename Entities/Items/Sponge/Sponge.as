@@ -22,6 +22,8 @@ void onInit(CBlob@ this)
 
 	this.getSprite().ReloadSprites(0, 0);
 	this.set_u8(ABSORBED_PROP, 0);
+
+	this.Tag("pushedByDoor");
 }
 
 void onTick(CBlob@ this)

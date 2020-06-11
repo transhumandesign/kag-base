@@ -86,6 +86,37 @@ void setOpen(CBlob@ this, bool open, bool faceLeft = false)
 		this.getShape().getConsts().collidable = true;
 		this.getCurrentScript().tickFrequency = 0;
 		Sound::Play("/DoorClose.ogg", this.getPosition());
+
+		faceLeft = sprite.isFacingLeft();
+		Vec2f pos = this.getPosition();
+		CBlob@[] blobs;
+		if (getMap().getBlobsInRadius(pos, 3, blobs))
+		{
+			f32 angle = this.getAngleDegrees();
+			for (int i = 0; i < blobs.size(); i++)
+			{
+				CBlob@ blob = blobs[i];
+				if (blob.hasTag("pushedByDoor"))
+				{
+					f32 power = 3.0f;
+					f32 mass = blob.getShape().getConsts().mass;
+					if (mass > 1)
+					{
+						power = 2.0f;
+					}
+
+					if (!faceLeft)
+					{
+						blob.setVelocity(Vec2f(1, 0) * power);
+					}
+					else
+					{
+						blob.setVelocity(Vec2f(-1, 0) * power);
+					}
+
+				}
+			}
+		}
 	}
 
 	//TODO: fix flags sync and hitting
@@ -120,16 +151,30 @@ void onTick(CBlob@ this)
 bool canClose(CBlob@ this)
 {
 	const uint count = this.getTouchingCount();
-	uint collided = 0;
 	for (uint step = 0; step < count; ++step)
 	{
 		CBlob@ blob = this.getTouchingByIndex(step);
-		if (blob.isCollidable())
+		if (blob.isCollidable() && !blob.getShape().isStatic()  && !blob.hasTag("pushedByDoor"))
 		{
-			collided++;
+			return false;
 		}
 	}
-	return collided == 0;
+
+	Vec2f pos = this.getPosition();
+	CBlob@[] blobs;
+	if (getMap().getBlobsInRadius(pos, 4, blobs))
+	{
+		for (int i = 0; i < blobs.size(); i++)
+		{
+			CBlob@ blob = blobs[i];
+			if (blob.isCollidable() && !blob.getShape().isStatic() && !blob.hasTag("pushedByDoor"))
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
