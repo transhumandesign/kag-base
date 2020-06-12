@@ -18,6 +18,8 @@ void onInit(CSprite@ this)
 	LoadSprites(this);
 
 	this.getCurrentScript().runFlags |= Script::tick_not_infire;
+
+	this.getBlob().set_string("prev_attack_anim", "strike");
 }
 
 void onPlayerInfoChanged(CSprite@ this)
@@ -88,6 +90,13 @@ void onTick(CSprite@ this)
 	const bool action2 = blob.isKeyPressed(key_action2);
 	const bool action1 = blob.isKeyPressed(key_action1);
 
+	// set attack animation back to default
+	if (blob.isKeyJustReleased(key_action2))
+	{
+		blob.set_string("prev_attack_anim", "strike");
+
+	}
+
 	if (!blob.hasTag(burning_tag)) //give way to burning anim
 	{
 		const bool left = blob.isKeyPressed(key_left);
@@ -118,9 +127,63 @@ void onTick(CSprite@ this)
 		{
 			this.SetAnimation("crouch");
 		}
-		else if (action2 || (this.isAnimation("strike") && !this.isAnimationEnded()))
+		else if (action2 || ((this.isAnimation("strike") || this.isAnimation("chop")) && !this.isAnimationEnded()))
 		{
-			this.SetAnimation("strike");
+			string attack_anim = blob.get_string("prev_attack_anim");
+			HitData@ hitdata;
+			if (blob.get("hitdata", @hitdata))
+			{
+				bool hitting_wood = false;
+				bool hitting_stone = false;
+				if (hitdata.tilepos != Vec2f_zero)
+				{
+					CMap@ map = getMap();
+					Tile t = map.getTile(hitdata.tilepos);
+					if ((t.type >= CMap::tile_ladder && t.type <= CMap::tile_wood_back) || map.isTileGrass(t.type))
+					{
+						hitting_wood = true;
+					}
+					else if(t.type != CMap::tile_empty)
+					{
+						hitting_stone = true;
+					}
+				}
+				else if(hitdata.blobID != 0)
+				{
+					CBlob@ attacked = getBlobByNetworkID(hitdata.blobID);
+					if (attacked !is null)
+					{
+						string attacked_name = attacked.getName();
+						if ((attacked.hasTag("wooden") || attacked_name.toLower().find("tree") != -1 || attacked.hasTag("scenary"))
+							&& attacked_name != "mine" && attacked_name != "drill")
+						{
+							hitting_wood = true;
+						}
+						else
+						{
+							hitting_stone = true;
+						}
+
+					}
+				}
+
+				if (hitting_wood)
+				{
+					attack_anim = "chop";
+				}
+				else if(hitting_stone)
+				{
+					attack_anim = "strike";
+				}
+
+				this.SetAnimation(attack_anim);
+				blob.set_string("prev_attack_anim", attack_anim);
+			}
+			else
+			{
+				this.SetAnimation(attack_anim);
+			}
+
 		}
 		else if (action1  || (this.isAnimation("build") && !this.isAnimationEnded()))
 		{
@@ -233,7 +296,7 @@ void onRender(CSprite@ this)
 
 	// draw tile cursor
 
-	if (blob.isKeyPressed(key_action1) || this.isAnimation("strike"))
+	if (blob.isKeyPressed(key_action1) || this.isAnimation("strike") || this.isAnimation("chop"))
 	{
 
 		HitData@ hitdata;
