@@ -7,14 +7,10 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.isKeyPressed(key_down)) {
-		this.getShape().getVars().onladder = false;
-	 	return;
- 	}
-
 	if (this.getMap().getSectorAtPosition(this.getPosition(), "tree") !is null)
 	{
 		this.getShape().getVars().onladder = true;
+
 	}
 
 }
