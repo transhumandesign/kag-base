@@ -758,8 +758,6 @@ shared class WarCore : RulesCore
 			BaseTeamInfo@ team = teams[team_won];
 			rules.SetTeamWon(team_won);
 			rules.SetCurrentState(GAME_OVER);
-			rules.SetGlobalMessage("{WINNING_TEAM} wins the game!");
-			rules.AddGlobalMessageReplacement("WINNING_TEAM", team.name);
 		}
 	}
 
