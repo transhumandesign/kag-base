@@ -2,21 +2,10 @@
 
 const string mapStatsTag = "map stats";
 
-void onInit(CRules@ this)
+void onStateChange( CRules@ this, const u8 oldState )
 {
-	onRestart(this);
-}
-
-void onRestart(CRules@ this)
-{
-	this.Untag(mapStatsTag);
-}
-
-void onTick(CRules@ this)
-{
-	if(sv_tcpr && this.isGameOver() && this.getTeamWon() >= 0 && !this.hasTag(mapStatsTag))
+	if (this.isGameOver() && this.getTeamWon() >= 0)
 	{
-		this.Tag(mapStatsTag);
 		string mapName = getFilenameWithoutExtension(getFilenameWithoutPath(getMap().getMapName()));
 		tcpr("MapStats {\"name\":\"" + mapName + "\",\"duration\":" + getGameTime() + "}");
 	}
