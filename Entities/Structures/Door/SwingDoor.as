@@ -70,7 +70,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		for (uint i = 0; i < overlapping.length; i++)
 		{
 			CBlob@ blob = overlapping[i];
-			print("overlapping blob: " + blob.getName());
 			string bname = blob.getName();
 			if (blob !is null
 				&& !blob.getShape().isStatic()
@@ -87,12 +86,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.getShape().getConsts().collidable = true;
 }
-
-//TODO: fix flags sync and hitting
-/*void onDie(CBlob@ this)
-{
-    SetSolidFlag(this, false);
-}*/
 
 bool isOpen(CBlob@ this)
 {
@@ -151,8 +144,6 @@ void setOpen(CBlob@ this, bool open, bool faceLeft = false)
 		}
 	}
 
-	//TODO: fix flags sync and hitting
-	//SetSolidFlag(this, !open);
 }
 
 void onTick(CBlob@ this)
@@ -209,29 +200,27 @@ bool canClose(CBlob@ this)
 	return true;
 }
 
-/*void onCollision(CBlob@ this, CBlob@ blob, bool solid)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (blob !is null)
-	{
-		this.getCurrentScript().tickFrequency = 3;
-	}
+       if (blob !is null)
+       {
+               this.getCurrentScript().tickFrequency = 3;
+       }
 }
 
 void onEndCollision(CBlob@ this, CBlob@ blob)
 {
-	if (blob !is null)
-	{
-		if (canClose(this))
-		{
-			if (isOpen(this))
-			{
-				setOpen(this, false);
-			}
-			this.getCurrentScript().tickFrequency = 0;
-		}
-	}
-}*/
-
+       if (blob !is null)
+       {
+               if (canClose(this))
+               {
+                       if (isOpen(this))
+                       {
+                               setOpen(this, false);
+                       }
+               }
+       }
+}
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
@@ -291,7 +280,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	return damage;
 }
-
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {

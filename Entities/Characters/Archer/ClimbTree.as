@@ -9,7 +9,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-
+	// don't interact with tree if grappling is pulling you
 	ArcherInfo@ archer;
 	if (this.get("archerInfo", @archer))
 	{
@@ -17,6 +17,12 @@ void onTick(CBlob@ this)
 		{
 			return;
 		}
+	}
+
+	// fall off tree if pressing down
+	if (this.isKeyPressed(key_down))
+	{
+		return;
 	}
 
 	if (this.getMap().getSectorAtPosition(this.getPosition(), "tree") !is null)

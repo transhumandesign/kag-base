@@ -35,6 +35,24 @@
 const string blocks_property = "blocks";
 const string inventory_offset = "inventory offset";
 
+string getTeamIcon(string icon, string file_name, int team_num, Vec2f frame_size = Vec2f(8,8))
+{
+	if (!GUI::hasIconName("$" + icon + "$"))
+	{
+		return "$" + icon + "$";
+	}
+
+	string team_icon_name = "$" + icon + team_num + "$";
+	if (GUI::hasIconName(team_icon_name))
+	{
+		return team_icon_name;
+	}
+
+	GUI::AddIconToken(team_icon_name, file_name, frame_size, 0, team_num);
+	return team_icon_name;
+
+}
+
 void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const string&in gamemode_override = "")
 {
 	InitCosts();
@@ -65,7 +83,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "stone_door", "$stone_door$", "Stone Door\nPlace next to walls");
+		BuildBlock b(0, "stone_door", getTeamIcon("stone_door", "1x1StoneDoor.png", team_num, Vec2f(16, 8)), "Stone Door\nPlace next to walls");
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::stone_door);
 		blocks[0].push_back(b);
 	}
@@ -80,19 +98,17 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "wooden_door", "$wooden_door$", "Wooden Door\nPlace next to walls");
+		BuildBlock b(0, "wooden_door", getTeamIcon("wooden_door", "1x1WoodDoor.png", team_num, Vec2f(16, 8)), "Wooden Door\nPlace next to walls");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::wooden_door);
 		blocks[0].push_back(b);
 	}
 	/*{
-		BuildBlock b(0, "trap_block", "$trap_block$", "Trap Block\nOnly enemies can pass");
+		BuildBlock b(0, "trap_block", getTeamIcon("trap_block", "TrapBlock.png", team_num), "Trap Block\nOnly enemies can pass");
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::trap_block);
 		blocks[0].push_back(b);
 	}*/
 	{
-		string bridge_icon = "$blue_bridge_icon$";
-		if (team_num == 1) bridge_icon = "$red_bridge_icon$";
-		BuildBlock b(0, "bridge", bridge_icon, "Trap Bridge\nOnly team mates can stand on it");
+		BuildBlock b(0, "bridge", getTeamIcon("bridge", "Bridge.png", team_num), "Trap Bridge\nOnly your team can stand on it");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::bridge);
 		blocks[0].push_back(b);
 	}

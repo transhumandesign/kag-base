@@ -277,7 +277,7 @@ void onTick(CMovement@ this)
 		const f32 slidespeed = 2.45f;
 
 		// crouch through platforms
-		if (down)
+		if (blob.isKeyJustPressed(key_down))
 		{
 			int touching = blob.getTouchingCount();
 			for (int i = 0; i < touching; i++)
