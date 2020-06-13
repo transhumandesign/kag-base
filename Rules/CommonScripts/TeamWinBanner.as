@@ -4,7 +4,7 @@ Vec2f bannerStart = Vec2f_zero;
 Vec2f bannerPos = Vec2f_zero;
 Vec2f bannerDest = Vec2f_zero;
 f32 frameTime = 0;
-const f32 maxTime = 1;
+const f32 maxTime = 0.6f;
 
 bool minimap = true;
 
