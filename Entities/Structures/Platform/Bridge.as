@@ -29,8 +29,11 @@ void onInit(CBlob@ this)
 		this.set('harvest', harvest);
 	}
 
+	this.Tag("trapbridge");
+
 	MakeDamageFrame(this);
-	this.getCurrentScript().runFlags |= Script::tick_not_attached;
+	this.getCurrentScript().tickFrequency = 0;
+	this.set_u32("open_time", 0);
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
@@ -46,7 +49,6 @@ void MakeDamageFrame(CBlob@ this)
 	f32 hp = this.getHealth();
 	f32 full_hp = this.getInitialHealth();
 	int frame = (hp > full_hp * 0.9f) ? 0 : ((hp > full_hp * 0.4f) ? 1 : 2);
-	print("damage frame: " + frame);
 	this.getSprite().animation.frame = frame;
 }
 
@@ -54,6 +56,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic) return;
 
+	this.getCurrentScript().tickFrequency = 3;
 	this.getSprite().PlaySound("/build_wood.ogg");
 }
 
@@ -64,8 +67,14 @@ bool isOpen(CBlob@ this)
 
 void setOpen(CBlob@ this, bool open)
 {
-	if (isOpen(this) == open)
+	bool is_open = isOpen(this);
+	if (is_open == open)
 	{
+		if (is_open)
+		{
+			this.set_u32("open_time", getGameTime());
+		}
+
 		return;
 	}
 
@@ -78,6 +87,8 @@ void setOpen(CBlob@ this, bool open)
 		sprite.animation.SetFrameIndex(4);
 		shape.getConsts().collidable = false;
 		sprite.PlaySound("bridge_open.ogg");
+		this.set_u32("open_time", getGameTime());
+
 	}
 	else
 	{
@@ -85,9 +96,40 @@ void setOpen(CBlob@ this, bool open)
 		MakeDamageFrame(this);
 		shape.getConsts().collidable = true;
 		sprite.PlaySound("bridge_close.ogg");
+
 	}
 
+	// setAdjacentOpen(this, open);
+
 }
+
+/*void setAdjacentOpen(CBlob@ this, bool open)
+{
+	CMap@ map = getMap();
+	if (map !is null)
+	{
+		Vec2f pos = this.getPosition();
+		CBlob@[] blobs;
+		if (map.getBlobsInBox(pos - Vec2f(8, 0), pos + Vec2f(8, 0), blobs))
+		{
+			for (int i = 0; i < blobs.size(); i++)
+			{
+				CBlob@ blob = blobs[i];
+				if (blob.getName() == "bridge" && blob.getTeamNum() == this.getTeamNum() && blob.getPosition().y == pos.y)
+				{
+					if (isOpen(blob) != open)
+					{
+						setOpen(blob, open);
+					}
+
+				}
+
+			}
+
+		}
+	}
+
+}*/
 
 void onTick(CBlob@ this)
 {
@@ -98,6 +140,13 @@ void onTick(CBlob@ this)
 	}
 	else
 	{
+		u32 open_time = this.get_u32("open_time");
+		u32 ticks_since_open = getGameTime() - open_time;
+		if (ticks_since_open < 10)
+		{
+			return;
+		}
+
 		setOpen(this, false);
 
 	}

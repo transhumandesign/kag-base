@@ -92,7 +92,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	{
 		string bridge_icon = "$blue_bridge_icon$";
 		if (team_num == 1) bridge_icon = "$red_bridge_icon$";
-		BuildBlock b(0, "bridge", bridge_icon, "Bridge\nOnly team mates can stand on it");
+		BuildBlock b(0, "bridge", bridge_icon, "Trap Bridge\nOnly team mates can stand on it");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::bridge);
 		blocks[0].push_back(b);
 	}

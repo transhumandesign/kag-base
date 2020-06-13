@@ -209,7 +209,7 @@ bool canClose(CBlob@ this)
 	return true;
 }
 
-void onCollision(CBlob@ this, CBlob@ blob, bool solid)
+/*void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (blob !is null)
 	{
@@ -230,7 +230,7 @@ void onEndCollision(CBlob@ this, CBlob@ blob)
 			this.getCurrentScript().tickFrequency = 0;
 		}
 	}
-}
+}*/
 
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
