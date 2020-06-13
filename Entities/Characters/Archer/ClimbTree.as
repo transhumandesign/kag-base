@@ -1,3 +1,5 @@
+#include "ArcherCommon.as"
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
@@ -7,6 +9,16 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+
+	ArcherInfo@ archer;
+	if (this.get("archerInfo", @archer))
+	{
+		if (archer.grappling && archer.grapple_id != 0xffff)
+		{
+			return;
+		}
+	}
+
 	if (this.getMap().getSectorAtPosition(this.getPosition(), "tree") !is null)
 	{
 		this.getShape().getVars().onladder = true;
