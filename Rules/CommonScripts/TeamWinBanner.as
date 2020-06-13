@@ -3,7 +3,7 @@
 Vec2f bannerStart = Vec2f_zero;
 Vec2f bannerPos = Vec2f_zero;
 Vec2f bannerDest = Vec2f_zero;
-u32 startTime = 0;
+f32 frameTime = 0;
 const f32 maxTime = 1;
 
 bool minimap = true;
@@ -26,7 +26,7 @@ void onRestart(CRules@ this)
     this.Untag("animateGameOver");
     bannerPos = Vec2f_zero;
     bannerDest = Vec2f_zero;
-    startTime = 0;
+    frameTime = 0;
     this.minimap = minimap;
 }
 
@@ -42,7 +42,6 @@ void onStateChange(CRules@ this, const u8 oldState)
             bannerStart.y = 0;
             bannerPos = bannerStart;
 
-            startTime = getGameTime();
             this.Tag("animateGameOver");
             this.minimap = false;
         }
@@ -59,8 +58,9 @@ void onRender(CRules@ this)
         {
             if (bannerPos != bannerDest)
             {
-                f32 time = (float(getGameTime() - startTime)/float(getTicksASecond()))/maxTime;
-                bannerPos = Vec2f_lerp(bannerStart, bannerDest, time);
+                frameTime = Maths::Min(frameTime + (getRenderDeltaTime() / maxTime), 1);
+
+                bannerPos = Vec2f_lerp(bannerStart, bannerDest, frameTime);
             }
             DrawBanner(bannerPos, this.getTeamWon());
 
@@ -92,5 +92,4 @@ void DrawBanner(Vec2f center, int team)
     GUI::SetFont("AveriaSerif-Bold_32");
     string text = teamName + " team wins";
     GUI::DrawTranslatedTextCentered(text, center, SColor(255, 255, 255, 255));
-
 }
