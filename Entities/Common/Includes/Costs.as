@@ -63,7 +63,7 @@ string builder_costs_config_file = "BuilderCosts.cfg";
 namespace BuilderCosts
 {
 	s32 stone_block, back_stone_block, stone_door, wood_block, back_wood_block,
-		wooden_door, trap_block, ladder, wooden_platform, spikes;
+		wooden_door, trap_block, bridge, ladder, wooden_platform, spikes;
 }
 
 s32 ReadCost(ConfigFile cfg, string cfg_name, s32 default_cost)
@@ -193,6 +193,7 @@ void InitCosts()
 	BuilderCosts::back_wood_block =     ReadCost(cfg, "cost_back_wood_block"    , 2);
 	BuilderCosts::wooden_door =         ReadCost(cfg, "cost_wooden_door"        , 30);
 	BuilderCosts::trap_block =          ReadCost(cfg, "cost_trap_block"         , 25);
+	BuilderCosts::bridge =              ReadCost(cfg, "cost_bridge"             , 25);
 	BuilderCosts::ladder =              ReadCost(cfg, "cost_ladder"             , 10);
 	BuilderCosts::wooden_platform =     ReadCost(cfg, "cost_wooden_platform"    , 15);
 	BuilderCosts::spikes =              ReadCost(cfg, "cost_spikes"             , 30);

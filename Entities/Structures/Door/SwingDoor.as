@@ -8,7 +8,6 @@
 void onInit(CBlob@ this)
 {
 	this.getShape().SetRotationsAllowed(false);
-	this.getSprite().getConsts().accurateLighting = true;
 
 	this.set_s16(burn_duration , 300);
 	//transfer fire to underlying tiles

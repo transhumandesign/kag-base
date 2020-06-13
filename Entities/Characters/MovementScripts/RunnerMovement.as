@@ -90,6 +90,13 @@ void onTick(CMovement@ this)
 		}*/
 	}
 
+	u8 crouch_through_platform = blob.get_u8("crouch_through_platform");
+	if (crouch_through_platform > 0)
+	{
+		crouch_through_platform--;
+		blob.set_u8("crouch_through_platform", crouch_through_platform);
+	}
+
 	if (onground || blob.isInWater())  //also reset when vaulting
 	{
 		moveVars.walljumped_side = Walljump::NONE;
@@ -238,7 +245,7 @@ void onTick(CMovement@ this)
 	}
 
 	if (!blob.isOnCeiling() && !isknocked &&
-	        !blob.isOnLadder() && (up || left || right))  //key pressed
+	        !blob.isOnLadder() && (up || left || right || down))  //key pressed
 	{
 		//check solid tiles
 		const f32 ts = map.tilesize;
@@ -268,6 +275,22 @@ void onTick(CMovement@ this)
 		bool surface = surface_left || surface_right;
 
 		const f32 slidespeed = 2.45f;
+
+		// crouch through platforms
+		if (down)
+		{
+			int touching = blob.getTouchingCount();
+			for (int i = 0; i < touching; i++)
+			{
+				CBlob@ b = blob.getTouchingByIndex(i);
+				if (b.isPlatform() && b.getAngleDegrees() == 0.0f)
+				{
+					blob.getShape().checkCollisionsAgain = true;
+					blob.set_u8("crouch_through_platform", 3);
+				}
+			}
+		}
+
 
 		//wall jumping/running
 		if (up && surface && 									//only on surface

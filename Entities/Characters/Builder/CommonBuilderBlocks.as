@@ -35,7 +35,7 @@
 const string blocks_property = "blocks";
 const string inventory_offset = "inventory offset";
 
-void addCommonBuilderBlocks(BuildBlock[][]@ blocks, const string&in gamemode_override = "")
+void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const string&in gamemode_override = "")
 {
 	InitCosts();
 	CRules@ rules = getRules();
@@ -84,9 +84,16 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, const string&in gamemode_ove
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::wooden_door);
 		blocks[0].push_back(b);
 	}
-	{
+	/*{
 		BuildBlock b(0, "trap_block", "$trap_block$", "Trap Block\nOnly enemies can pass");
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::trap_block);
+		blocks[0].push_back(b);
+	}*/
+	{
+		string bridge_icon = "$blue_bridge_icon$";
+		if (team_num == 1) bridge_icon = "$red_bridge_icon$";
+		BuildBlock b(0, "bridge", bridge_icon, "Bridge\nOnly team mates can stand on it");
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::bridge);
 		blocks[0].push_back(b);
 	}
 	{

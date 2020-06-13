@@ -43,6 +43,8 @@ void LoadDefaultGUI()
 		AddIconToken("$back_stone_block$", "Sprites/World.png", Vec2f(8, 8), CMap::tile_castle_back);
 		AddIconToken("$wood_block$", "Sprites/World.png", Vec2f(8, 8), CMap::tile_wood);
 		AddIconToken("$back_wood_block$", "Sprites/World.png", Vec2f(8, 8), CMap::tile_wood_back);
+		AddIconToken("$blue_bridge_icon$", "Bridge.png", Vec2f(8, 8), 1);
+		AddIconToken("$red_bridge_icon$", "Bridge.png", Vec2f(8, 8), 1, 1);
 
 		// SOURCE
 		AddIconToken("$coin_slot$",     "CoinSlot.png",         Vec2f(16, 16), 3);

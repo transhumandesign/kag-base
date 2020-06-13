@@ -23,6 +23,7 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 		{
 			blob.SetDamageOwnerPlayer(this.getPlayer());
 		}
+
 		if (this.server_DetachFrom(blob))
 		{
 			blob.setPosition(cursorPos);

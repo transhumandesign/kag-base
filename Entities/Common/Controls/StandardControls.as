@@ -106,7 +106,6 @@ bool ClickGridMenu(CBlob@ this, int button)
 	return false;
 }
 
-
 void ButtonOrMenuClick(CBlob@ this, Vec2f pos, bool clear, bool doClosestClick)
 {
 	if (!ClickGridMenu(this, 0))
