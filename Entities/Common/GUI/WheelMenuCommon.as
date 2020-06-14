@@ -11,7 +11,7 @@ namespace WheelMenu
 	const SColor pane_title_color(0xFFCCCCCC);
 	const SColor pane_text_color(0xFFFFFFFF);
 
-	const float item_distance = 0.4f;
+	const float item_distance = 0.25f;
 
 	const float hover_distance = 0.07f;
 	const float auto_selection_distance = 0.3f;
@@ -140,13 +140,13 @@ class PickupWheelMenuEntry : WheelMenuEntry
 			"InteractionIconsBackground.png",
 			0,
 			Vec2f(32, 32),
-			position - Vec2f(32, 32),
+			position - Vec2f(32, 32)*1.5,
 			1.5f
 		);
 
 		GUI::DrawIconByName(
 			icon_name,
-			position + offset,
+			position + offset - Vec2f(16, 16),
 			scale
 		);
 	}
