@@ -775,7 +775,7 @@ bool checkForSolidMapBlob(CMap@ map, Vec2f pos, CBlob@ blob = null)
 		@_tempShape = _tempBlob.getShape();
 		if (_tempShape.isStatic())
 		{
-			if (_tempBlob.getName() == "wooden_platform")
+			if (_tempBlob.getName() == "wooden_platform" || _tempBlob.getName() == "bridge")
 			{
 				f32 angle = _tempBlob.getAngleDegrees();
 				if (angle > 180)

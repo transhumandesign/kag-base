@@ -45,6 +45,7 @@ void onInit(CBlob@ this)
 	}
 
 	this.set_string("close_anim", "close");
+	this.set_u8("just_opened", 0);
 
 	this.Tag("door");
 	this.Tag("blocks water");
@@ -84,6 +85,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	}
 
+	CSprite@ sprite = this.getSprite();
+	sprite.SetAnimation("close");
+	sprite.animation.SetFrameIndex(2);
+
 	this.getShape().getConsts().collidable = true;
 }
 
@@ -94,6 +99,18 @@ bool isOpen(CBlob@ this)
 
 void setOpen(CBlob@ this, bool open, bool faceLeft = false)
 {
+	bool is_open = isOpen(this);
+	if (is_open == open)
+	{
+		return;
+	}
+
+	// prevents spam of the door opening and closing
+	if (!open && this.get_u8("just_opened") > 0)
+	{
+		return;
+	}
+
 	CSprite@ sprite = this.getSprite();
 	if (open)
 	{
@@ -103,6 +120,7 @@ void setOpen(CBlob@ this, bool open, bool faceLeft = false)
 		this.getCurrentScript().tickFrequency = 3;
 		sprite.SetFacingLeft(faceLeft);   // swing left or right
 		Sound::Play("/DoorOpen.ogg", this.getPosition());
+		this.set_u8("just_opened", 2);
 	}
 	else
 	{
@@ -164,10 +182,20 @@ void onTick(CBlob@ this)
 		}
 	}
 	// close it
-	if (isOpen(this) && canClose(this))
+	if (isOpen(this))
 	{
-		setOpen(this, false);
+		if (canClose(this))
+		{
+			setOpen(this, false);
+		}
+
+		u8 just_opened = this.get_u8("just_opened");
+		if (just_opened > 0)
+		{
+			this.set_u8("just_opened", just_opened-1);
+		}
 	}
+
 }
 
 
@@ -208,20 +236,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
        }
 }
 
-void onEndCollision(CBlob@ this, CBlob@ blob)
-{
-       if (blob !is null)
-       {
-               if (canClose(this))
-               {
-                       if (isOpen(this))
-                       {
-                               setOpen(this, false);
-                       }
-               }
-       }
-}
-
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return false;
@@ -243,42 +257,30 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	if (customData == Hitters::sword)
 		damage *= 1.6f;
 
-	CSprite @sprite = this.getSprite();
-
-	if (sprite !is null)
-	{
-		u8 frame = 0;
-
-		if (this.getHealth() < this.getInitialHealth())
-		{
-			f32 ratio = (this.getHealth() - damage * getRules().attackdamage_modifier) / this.getInitialHealth();
-
-			if (ratio <= 0.0f)
-			{
-				frame = 3;
-			}
-			else
-			{
-				frame = (1.0f - ratio) * 3;
-			}
-
-			if (frame != 0)
-			{
-				string close_anim = "close_destruction_" + frame;
-				this.set_string("close_anim", close_anim);
-				if (!isOpen(this))
-				{
-					sprite.SetAnimation(close_anim);
-					sprite.animation.SetFrameIndex(2);
-				}
-
-			}
-
-		}
-
-	}
-
 	return damage;
+}
+
+void onHealthChange(CBlob@ this, f32 oldHealth)
+{
+	SetCloseAnim(this);
+
+	if (!isOpen(this))
+	{
+		CSprite@ sprite = this.getSprite();
+		sprite.SetAnimation(this.get_string("close_anim"));
+		sprite.animation.SetFrameIndex(2);
+	}
+}
+
+void SetCloseAnim(CBlob@ this)
+{
+	f32 hp = this.getHealth();
+	f32 full_hp = this.getInitialHealth();
+	int anim_count = 4;
+	int anim_num = anim_count - hp / full_hp * anim_count;
+	string anim = "close_destruction_" + anim_num;
+	print("set close anim: " + anim);
+	this.set_string("close_anim", anim);
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)

@@ -191,7 +191,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 						coins = coinsOnBuild;
 					}
 					else if (name == "wooden_platform" ||
-								name == "wooden_door")
+								name == "wooden_door" ||
+								name == "bridge")
 					{
 						coins = coinsOnBuildWood;
 					}

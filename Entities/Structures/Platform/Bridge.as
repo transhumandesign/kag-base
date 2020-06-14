@@ -4,7 +4,6 @@
 
 void onInit(CBlob@ this)
 {
-	this.getShape().SetRotationsAllowed(false);
 	this.Tag("place norotate");
 
 	this.Tag("explosion always teamkill"); // ignore 'no teamkill' for explosives
@@ -17,6 +16,7 @@ void onInit(CBlob@ this)
 	shape.AddPlatformDirection(Vec2f(0, -1), 89, false);
 	shape.SetRotationsAllowed(false);
 
+	//this.server_setTeamNum(-1); //allow anyone to break them
 	this.set_TileType("background tile", CMap::tile_wood_back);
 	this.set_s16(burn_duration , 300);
 	//transfer fire to underlying tiles
@@ -28,8 +28,6 @@ void onInit(CBlob@ this)
 		harvest.set('mat_wood', 4);
 		this.set('harvest', harvest);
 	}
-
-	this.Tag("trapbridge");
 
 	MakeDamageFrame(this);
 	this.getCurrentScript().tickFrequency = 0;
@@ -48,7 +46,8 @@ void MakeDamageFrame(CBlob@ this)
 {
 	f32 hp = this.getHealth();
 	f32 full_hp = this.getInitialHealth();
-	int frame = (hp > full_hp * 0.9f) ? 0 : ((hp > full_hp * 0.4f) ? 1 : 2);
+	int frame_count = this.getSprite().animation.getFramesCount();
+	int frame = frame_count - hp / full_hp * frame_count;
 	this.getSprite().animation.frame = frame;
 }
 
@@ -84,7 +83,7 @@ void setOpen(CBlob@ this, bool open)
 	if (open)
 	{
 		sprite.SetZ(-100.0f);
-		sprite.animation.SetFrameIndex(4);
+		sprite.SetAnimation("open");
 		shape.getConsts().collidable = false;
 		sprite.PlaySound("bridge_open.ogg");
 		this.set_u32("open_time", getGameTime());
@@ -93,6 +92,7 @@ void setOpen(CBlob@ this, bool open)
 	else
 	{
 		sprite.SetZ(100.0f);
+		sprite.SetAnimation("default");
 		MakeDamageFrame(this);
 		shape.getConsts().collidable = true;
 		sprite.PlaySound("bridge_close.ogg");
@@ -155,7 +155,9 @@ void onTick(CBlob@ this)
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	if (isOpen(this))
+	{
 		return false;
+	}
 
 	if (canOpen(this, blob))
 	{

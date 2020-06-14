@@ -325,7 +325,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	}
 
 	//definitely collide with non-team blobs
-	bool check = this.getTeamNum() != blob.getTeamNum();
+	bool check = this.getTeamNum() != blob.getTeamNum() || blob.getName() == "bridge";
 	//maybe collide with team structures
 	if (!check)
 	{
