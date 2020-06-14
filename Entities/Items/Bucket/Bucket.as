@@ -78,6 +78,19 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			TakeWaterCount(this);
 		}
 	}
+
+	if ((customData == Hitters::water || customData == Hitters::water_stun) && 
+	    hitterBlob.getName() == "waterbomb") 
+	{
+		u8 filled = this.get_u8("filled");
+		if (filled < splashes)
+		{
+			this.set_u8("filled", splashes);
+			this.set_u8("water_delay", 5); // only slight delay
+			this.getSprite().SetAnimation("full");
+		}
+	}
+
 	return damage;
 }
 
