@@ -202,8 +202,9 @@ void onTick(CBlob@ this)
 								float maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
 								float dist = (this.getPosition() - b.getPosition()).Length();
 								float factor = dist / maxDist;
+								float amount_factor = 0.2f * (b.maxQuantity - b.getQuantity()) / b.maxQuantity;
 
-								float score = getPriorityPickupScale(this, b, factor);
+								float score = getPriorityPickupScale(this, b, factor + amount_factor);
 
 								if (score < closestScore || selectedOption.priority > highestPriority)
 								{
@@ -531,7 +532,9 @@ CBlob@ getClosestBlob(CBlob@ this)
 
 			float dist = (bpos - pos).getLength();
 			float factor = dist / maxDist;
-			float score = getPriorityPickupScale(this, b, factor);
+			float amount_factor = 0.2f * (b.maxQuantity - b.getQuantity()) / b.maxQuantity;
+
+			float score = getPriorityPickupScale(this, b, factor + amount_factor);
 
 			if (score < closestScore)
 			{
