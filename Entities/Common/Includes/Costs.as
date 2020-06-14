@@ -193,7 +193,7 @@ void InitCosts()
 	BuilderCosts::back_wood_block =     ReadCost(cfg, "cost_back_wood_block"    , 2);
 	BuilderCosts::wooden_door =         ReadCost(cfg, "cost_wooden_door"        , 30);
 	BuilderCosts::trap_block =          ReadCost(cfg, "cost_trap_block"         , 25);
-	BuilderCosts::bridge =              ReadCost(cfg, "cost_bridge"             , 25);
+	BuilderCosts::bridge =              ReadCost(cfg, "cost_bridge"             , 30);
 	BuilderCosts::ladder =              ReadCost(cfg, "cost_ladder"             , 10);
 	BuilderCosts::wooden_platform =     ReadCost(cfg, "cost_wooden_platform"    , 15);
 	BuilderCosts::spikes =              ReadCost(cfg, "cost_spikes"             , 30);

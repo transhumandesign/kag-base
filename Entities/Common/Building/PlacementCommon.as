@@ -131,7 +131,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 			const string bname = blob.getName();
 			isLadder = bname == "ladder";
 			isSpikes = bname == "spikes";
-			isDoor = bname == "wooden_door" || bname == "stone_door";
+			isDoor = bname == "wooden_door" || bname == "stone_door" || bname == "bridge";
 		}
 
 		Vec2f middle = p;

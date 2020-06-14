@@ -277,6 +277,11 @@ void onTick(CMovement@ this)
 		const f32 slidespeed = 2.45f;
 
 		// crouch through platforms
+		if (down && !onground && this.getVars().aircount > 2)
+		{
+			blob.set_u8("crouch_through_platform", 3);
+		}
+
 		if (blob.isKeyJustPressed(key_down))
 		{
 			int touching = blob.getTouchingCount();
@@ -285,12 +290,29 @@ void onTick(CMovement@ this)
 				CBlob@ b = blob.getTouchingByIndex(i);
 				if (b.isPlatform() && b.getAngleDegrees() == 0.0f)
 				{
+					b.getShape().checkCollisionsAgain = true;
 					blob.getShape().checkCollisionsAgain = true;
 					blob.set_u8("crouch_through_platform", 3);
 				}
 			}
-		}
 
+			Vec2f pos = blob.getPosition() + Vec2f(0, 12);
+			CBlob@[] blobs;
+			if (getMap().getBlobsInRadius(pos, 4, blobs))
+			{
+				for (int i = 0; i < blobs.size(); i++)
+				{
+					CBlob@ b = blobs[i];
+					if (b.isPlatform() && b.getAngleDegrees() == 0.0f)
+					{
+						b.getShape().checkCollisionsAgain = true;
+						blob.getShape().checkCollisionsAgain = true;
+						blob.set_u8("crouch_through_platform", 3);
+					}
+				}
+			}
+
+		}
 
 		//wall jumping/running
 		if (up && surface && 									//only on surface
@@ -439,7 +461,6 @@ void onTick(CMovement@ this)
 
 	if (blob.isKeyPressed(key_up) && moveVars.canVault)
 	{
-
 		// boost over corner
 		Vec2f groundNormal = blob.getGroundNormal();
 		bool onMap = blob.isOnMap();

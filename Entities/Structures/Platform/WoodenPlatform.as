@@ -41,8 +41,3 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return false;
 }
-
-bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
-{
-	return true;
-}

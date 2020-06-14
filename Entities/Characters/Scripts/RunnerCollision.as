@@ -18,7 +18,9 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 		return false;
 	}
 
-	if (blob.isPlatform() && blob.getAngleDegrees() == 0 && this.get_u8("crouch_through_platform") > 0)
+	if (blob.isPlatform() && blob.getAngleDegrees() == 0
+		&& this.get_u8("crouch_through_platform") > 0
+		&& this.getTeamNum() == blob.getTeamNum())
 	{
 		return false;
 	}
