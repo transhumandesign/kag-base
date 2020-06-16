@@ -76,6 +76,7 @@ void onInit(CBlob@ this)
 	AddIconToken("$transparent_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 1);
 
 	this.set_u32(last_drill_prop, 0);
+		this.Tag("ignore fall");
 }
 
 bool canBePutInInventory( CBlob@ this, CBlob@ inventoryBlob )

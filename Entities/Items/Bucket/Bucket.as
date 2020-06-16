@@ -22,7 +22,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("splash");
 
 	this.set_u8("filled", this.hasTag("_start_filled") ? splashes : 0);
-
+	this.Tag("ignore fall");
 	this.getCurrentScript().runFlags |= Script::tick_attached;
 }
 

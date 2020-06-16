@@ -487,17 +487,11 @@ bool canHit(CBlob@ this, CBlob@ b, Vec2f tpos, bool extra = true)
 		if (b.isAttached())
 			return false;
 
-		//yes hitting corpses
-		if (b.hasTag("dead"))
+		if (BuilderAlwaysHit(b) || b.hasTag("dead") || b.hasTag("vehicle"))
 			return true;
 
-		//no hitting friendly mines (grif)
-		if (b.getName() == "mine")
-			return false;
+		return false;
 
-		//no hitting friendly living stuff
-		if (b.hasTag("flesh") || b.hasTag("player"))
-			return false;
 	}
 	//no hitting stuff in hands
 	else if (b.isAttached() && !b.hasTag("player"))
