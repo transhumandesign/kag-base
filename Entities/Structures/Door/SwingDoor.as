@@ -277,7 +277,7 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 void SetCloseAnim(CBlob@ this)
 {
 	f32 hp = this.getHealth();
-	f32 full_hp = this.getInitialHealth();
+	f32 full_hp = this.getInitialHealth() + 0.5f;
 	int anim_count = 4;
 	int anim_num = anim_count - hp / full_hp * anim_count;
 	string anim = "close_destruction_" + anim_num;
