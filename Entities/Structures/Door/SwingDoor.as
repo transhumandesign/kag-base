@@ -75,8 +75,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 			if (blob !is null
 				&& !blob.getShape().isStatic()
 				&& blob.isCollidable()
-				&& bname != "wooden_door" && bname != "stone_door")
+				&& bname != "wooden_door" && bname != "stone_door"
+				&& this.getTeamNum() == blob.getTeamNum())
 			{
+				this.getShape().getConsts().collidable = true;
 				setOpen(this, true, true);
 				return;
 			}
@@ -279,7 +281,6 @@ void SetCloseAnim(CBlob@ this)
 	int anim_count = 4;
 	int anim_num = anim_count - hp / full_hp * anim_count;
 	string anim = "close_destruction_" + anim_num;
-	print("set close anim: " + anim);
 	this.set_string("close_anim", anim);
 }
 

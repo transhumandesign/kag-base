@@ -31,27 +31,10 @@
 #include "BuildBlock.as"
 #include "Requirements.as"
 #include "Costs.as"
+#include "TeamIconToken.as"
 
 const string blocks_property = "blocks";
 const string inventory_offset = "inventory offset";
-
-string getTeamIcon(string icon, string file_name, int team_num, Vec2f frame_size = Vec2f(8,8))
-{
-	if (!GUI::hasIconName("$" + icon + "$"))
-	{
-		return "$" + icon + "$";
-	}
-
-	string team_icon_name = "$" + icon + team_num + "$";
-	if (GUI::hasIconName(team_icon_name))
-	{
-		return team_icon_name;
-	}
-
-	GUI::AddIconToken(team_icon_name, file_name, frame_size, 0, team_num);
-	return team_icon_name;
-
-}
 
 void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const string&in gamemode_override = "")
 {

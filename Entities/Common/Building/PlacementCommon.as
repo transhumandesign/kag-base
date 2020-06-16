@@ -160,7 +160,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 						Vec2f bpos = b.getPosition();
 
 						bool cantBuild = isBlocking(b);
-						bool buildingOnTeam = isDoor && (b.getTeamNum() == this.getTeamNum() || b.getTeamNum() == 255) && !b.getShape().isStatic();
+						bool buildingOnTeam = isDoor && (b.getTeamNum() == this.getTeamNum() || b.getTeamNum() == 255) && !b.getShape().isStatic() && this !is b;
 						bool ladderBuild = isLadder && !b.getShape().isStatic();
 
 						// cant place on any other blob
