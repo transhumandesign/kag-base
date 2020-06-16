@@ -202,9 +202,8 @@ void onTick(CBlob@ this)
 								float maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
 								float dist = (this.getPosition() - b.getPosition()).Length();
 								float factor = dist / maxDist;
-								float amount_factor = 0.2f * (b.maxQuantity - b.getQuantity()) / b.maxQuantity;
 
-								float score = getPriorityPickupScale(this, b, factor + amount_factor);
+								float score = getPriorityPickupScale(this, b, factor);
 
 								if (score < closestScore || selectedOption.priority > highestPriority)
 								{
@@ -212,14 +211,14 @@ void onTick(CBlob@ this)
 									closestScore = score;
 									@closest = @b;
 								}
-
 							}
 						}
-
 					}
 
 					if (closest !is null)
 					{
+						// NOTE: optimisation: use selected-option-blobs-in-radius
+						@closest = @GetBetterAlternativePickupBlobs(blobsInRadius, closest);
 						server_Pickup(this, this, closest);
 					}
 
@@ -288,6 +287,34 @@ void GatherPickupBlobs(CBlob@ this)
 			}
 		}
 	}
+}
+
+CBlob@ GetBetterAlternativePickupBlobs(CBlob@[] available_blobs, CBlob@ reference)
+{
+	if (reference is null) 
+		return reference;
+
+	CBlob@[] blobsInRadius;
+	const string ref_name = reference.getName();
+	const u32 ref_quantity = reference.getQuantity();
+	Vec2f ref_pos = reference.getPosition();
+
+	CBlob @result = reference;
+
+	for (uint i = 0; i < available_blobs.length; i++)
+	{
+		CBlob @b = available_blobs[i];
+		Vec2f b_pos = b.getPosition();
+		if ((b_pos - ref_pos).Length() > 10.0f)
+			continue;
+
+		const string name = b.getName();
+		const u32 quantity = b.getQuantity();
+		if (name == ref_name && quantity > ref_quantity)
+			@result = @b;
+	}
+
+	return result;
 }
 
 void ClearPickupBlobs(CBlob@ this)
@@ -532,15 +559,17 @@ CBlob@ getClosestBlob(CBlob@ this)
 
 			float dist = (bpos - pos).getLength();
 			float factor = dist / maxDist;
-			float amount_factor = 0.2f * (b.maxQuantity - b.getQuantity()) / b.maxQuantity;
-
-			float score = getPriorityPickupScale(this, b, factor + amount_factor);
+			float score = getPriorityPickupScale(this, b, factor);
 
 			if (score < closestScore)
 			{
 				closestScore = score;
 				@closest = @b;
 			}
+		}
+
+		if (closest !is null) {
+			@closest = @GetBetterAlternativePickupBlobs(available, closest);
 		}
 	}
 
