@@ -214,7 +214,7 @@ shared class RulesCore
 			RemovePlayerBlob(player);
 		}
 
-		if (player.lastBlobName.length() > 0 && p !is null)
+		if (player.lastBlobName.size() > 0 && p !is null)
 		{
 			p.blob_name = filterBlobNameToSpawn(player.lastBlobName, player);
 		}

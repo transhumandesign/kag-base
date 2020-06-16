@@ -34,7 +34,7 @@ void onTick(CBlob@ this)
 				}
 			}
 
-			if (eatables.length() == 0) // nothing to eat
+			if (eatables.size() == 0) // nothing to eat
 			{
 				return;
 			}
@@ -42,7 +42,7 @@ void onTick(CBlob@ this)
 			// find the most appropriate food to eat
 			CBlob@ bestFood;
 			u8 bestHeal = 0;
-			for (int i = 0; i < eatables.length(); i++)
+			for (int i = 0; i < eatables.size(); i++)
 			{
 				CBlob@ food = eatables[i];
 				u8 heal = getHealingAmount(food);

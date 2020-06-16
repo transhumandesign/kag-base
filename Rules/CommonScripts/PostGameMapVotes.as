@@ -95,9 +95,9 @@ void onTick( CRules@ this )
 		return;
 	}
 
-	u8 count1 = mvm.votes1.length();
-	u8 count2 = mvm.votes2.length();
-	u8 count3 = mvm.votes3.length();
+	u8 count1 = mvm.votes1.size();
+	u8 count2 = mvm.votes2.size();
+	u8 count3 = mvm.votes3.size();
 
 	if (count1 > count2 && count1 > count3)
 	{	//map 1 got the most votes
@@ -223,7 +223,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (getNet().isServer() && cmd == this.getCommandID(voteEndTag))
 	{		
-		tcpr("(MapVotes) Map1: "+mvm.button1.shortname+" = "+mvm.votes1.length()+" Map2: "+mvm.button3.shortname+" = "+mvm.votes3.length()+" Random = "+mvm.votes2.length());
+		tcpr("(MapVotes) Map1: "+mvm.button1.shortname+" = "+mvm.votes1.size()+" Map2: "+mvm.button3.shortname+" = "+mvm.votes3.size()+" Random = "+mvm.votes2.size());
 
 		u8 mostVoted = params.read_u8(); 
 		switch (mostVoted)

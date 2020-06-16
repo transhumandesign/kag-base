@@ -120,7 +120,7 @@ class MapVotesMenu
 		{
 			if (i == 2)
 			{
-				button2.RefreshRandomButton(menuSize.x, ButtonSize);	
+				button2.RefreshRandomButton(menuSize.x, ButtonSize);
 			}
 			else
 			{
@@ -150,7 +150,7 @@ class MapVotesMenu
 			{
 				newSelectedNum = 1;
 				button1.State = ButtonStates::Selected;
-				button2.State = button3.State = ButtonStates::None;		
+				button2.State = button3.State = ButtonStates::None;
 			}
 		}
 		else if (button2.isHovered(mousepos))
@@ -200,7 +200,7 @@ class MapVotesMenu
 			mapcycle =  "Rules/"+mode_name+"/mapcycle.cfg";
 		}
 
-		ConfigFile cfg;	
+		ConfigFile cfg;
 		bool loaded = false;
 		if (CFileMatcher(mapcycle).getFirst() == mapcycle && cfg.loadFile(mapcycle)) loaded = true;
 		else if (cfg.loadFile(mapcycle)) loaded = true;
@@ -209,10 +209,10 @@ class MapVotesMenu
 		string[] map_names;
 		if (cfg.readIntoArray_string(map_names, "mapcycle"))
 		{		
-			const string currentMap = getMap().getMapName();	
-			const int currentMapNum = map_names.find(currentMap);	
+			const string currentMap = getMap().getMapName();
+			const int currentMapNum = map_names.find(currentMap);
 
-			int arrayleng = map_names.length();	
+			int arrayleng = map_names.size();
 			if (arrayleng > 4)
 			{
 				//remove the current map first
@@ -233,9 +233,9 @@ class MapVotesMenu
 				}					
 				
 				// random based on what's left				
-				map1name = map_names[random.NextRanged(map_names.length())];
+				map1name = map_names[random.NextRanged(map_names.size())];
 				map_names.removeAt(map_names.find(map1name));
-				map3name = map_names[random.NextRanged(map_names.length())];
+				map3name = map_names[random.NextRanged(map_names.size())];
 			}
 			else if (arrayleng >= 3)
 			{
@@ -243,9 +243,9 @@ class MapVotesMenu
 				if (currentMapNum != -1)
 				map_names.removeAt(currentMapNum); 
 				// random based on what's left
-				map1name = map_names[random.NextRanged(map_names.length())];
+				map1name = map_names[random.NextRanged(map_names.size())];
 				map_names.removeAt(map_names.find(map1name));
-				map3name = map_names[random.NextRanged(map_names.length())];
+				map3name = map_names[random.NextRanged(map_names.size())];
 			}
 			else if (arrayleng == 2)
 			{
@@ -259,24 +259,24 @@ class MapVotesMenu
 
 			//test to see if the map filename is inside parentheses and cut it out
 			//incase someone wants to add map votes to a gamemode that loads maps via scripts, eg. Challenge/mapcycle.cfg				 
-			string temptest = map1name.substr(map1name.length() - 1, map1name.length() - 1);
+			string temptest = map1name.substr(map1name.size() - 1, map1name.size() - 1);
 			if (temptest == ")")
 			{
 				string[] name = map1name.split(' (');
-				string mapName = name[name.length() - 1];
-				map1name = mapName.substr(0,mapName.length() - 1);
+				string mapName = name[name.size() - 1];
+				map1name = mapName.substr(0,mapName.size() - 1);
 			}
-			temptest = map3name.substr(map3name.length() - 1, map3name.length() - 1);
+			temptest = map3name.substr(map3name.size() - 1, map3name.size() - 1);
 			if (temptest == ")")
 			{
 				string[] name = map1name.split(' (');
-				string mapName = name[name.length() - 1];
-				map3name = mapName.substr(0,mapName.length() - 1);
+				string mapName = name[name.size() - 1];
+				map3name = mapName.substr(0,mapName.size() - 1);
 			}
 		}	
 
 		button1.filename = map1name;
-		button3.filename = map3name;		
+		button3.filename = map3name;
 		button1.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button1.filename));
 		button3.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button3.filename));
 	}
@@ -292,15 +292,15 @@ class MapVotesMenu
 		params.write_string(button3.shortname);
 		params.write_u8(mostVoted);
 
-		params.write_u8(votes1.length());
-		params.write_u8(votes2.length());
-		params.write_u8(votes3.length());
+		params.write_u8(votes1.size());
+		params.write_u8(votes2.size());
+		params.write_u8(votes3.size());
 
-		for (uint i = 0; i < votes1.length(); i++)
+		for (uint i = 0; i < votes1.size(); i++)
 		{ params.write_u16(votes1[i]); }
-		for (uint i = 0; i < votes2.length(); i++)
+		for (uint i = 0; i < votes2.size(); i++)
 		{ params.write_u16(votes2[i]); }
-		for (uint i = 0; i < votes3.length(); i++)
+		for (uint i = 0; i < votes3.size(); i++)
 		{ params.write_u16(votes3[i]); }
 
 		if (targetPlayer is null)
@@ -325,7 +325,7 @@ class MapVotesMenu
 			GUI::DrawRectangle(Vec2f_zero, ScreenDim, SColor(200, 0, 0, 0));
 		}
 
-		GUI::SetFont("menu");	
+		GUI::SetFont("menu");
 		GUI::DrawFramedPane(topLeftCorner, bottomRightCorner);
 
 		if (isMapVoteOver())
@@ -359,9 +359,9 @@ class MapVotesMenu
 		const Vec2f CountMid3 = button3.clickableOrigin+Vec2f(button3.clickableSize.x / 2, button3.clickableSize.y - 24.0f);
 			
 		GUI::SetFont("AveriaSerif-Bold_22");
-		GUI::DrawTextCentered(""+votes1.length(), CountMid1, color_white);
-		GUI::DrawTextCentered(""+votes2.length(), CountMid2, color_white);
-		GUI::DrawTextCentered(""+votes3.length(), CountMid3, color_white);
+		GUI::DrawTextCentered(""+votes1.size(), CountMid1, color_white);
+		GUI::DrawTextCentered(""+votes2.size(), CountMid2, color_white);
+		GUI::DrawTextCentered(""+votes3.size(), CountMid3, color_white);
 
 		if (shouldNag)
 		{
@@ -438,8 +438,8 @@ class MapVoteButton
 			previewSize = Vec2f(mapW, mapH);
 
 			// Expand frame if the name is too long
-			Vec2f dim;			
-			displayname = shortname == "test.kaggen" ? "Generated Map" : shortname;	
+			Vec2f dim;
+			displayname = shortname == "test.kaggen" ? "Generated Map" : shortname;
 			GUI::SetFont("menu");
 			GUI::GetTextDimensions(displayname, dim);
 			
@@ -586,7 +586,7 @@ void CreateMapTexture(string shortname, string filename)
 		CFileImage image( CFileMatcher(filename).getFirst() );
 		if (image.isLoaded())
 		{
-			const int h = image.getHeight();			
+			const int h = image.getHeight();
 			const int w = image.getWidth();
 			while(image.nextPixel())
 			{
@@ -622,7 +622,7 @@ void CreateMapTexture(string shortname, string filename)
 					if ( (tile_u != ColTileType::Solid && tile_u != ColTileType::Gold) || (tile_d != ColTileType::Solid && tile_d != ColTileType::Gold) || 
 						 (tile_l != ColTileType::Solid && tile_l != ColTileType::Gold) || (tile_r != ColTileType::Solid && tile_r != ColTileType::Gold) )
 					{
-						editcol = colors::minimap_solid_edge;						
+						editcol = colors::minimap_solid_edge;
 					}
 					else if (tile_u == ColTileType::Gold || tile_d == ColTileType::Gold || tile_l == ColTileType::Gold || tile_r == ColTileType::Gold)
 					{
