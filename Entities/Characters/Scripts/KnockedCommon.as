@@ -35,7 +35,7 @@ bool setKnocked(CBlob@ blob, int ticks, bool server_only = false)
 
 		}
 
-		if(!server_only)
+		if(!server_only && blob.isMyPlayer())
 		{
 			blob.set_u8(knockedProp, knockedTime);
 		}
@@ -103,8 +103,13 @@ void DoKnockedUpdate(CBlob@ this)
 
 	if (knockedRemaining > 0 || frozen)
 	{
-		knockedRemaining--;
-		this.set_u8(knockedProp, knockedRemaining);
+		if (knockedRemaining > 0)
+		{
+			knockedRemaining--;
+			this.set_u8(knockedProp, knockedRemaining);
+
+		}
+
 
 		u16 takekeys;
 		if (knockedRemaining < 2 || (this.hasTag("dazzled") && knockedRemaining < 30))
@@ -126,7 +131,7 @@ void DoKnockedUpdate(CBlob@ this)
 
 		// Disable keys takes the keys for tick after it's called
 		// so we want to end on time by not calling DisableKeys before knocked finishes
-		if (knockedRemaining < 2)
+		if (knockedRemaining < 2 && !frozen)
 		{
 			this.DisableKeys(0);
 			this.DisableMouse(false);
