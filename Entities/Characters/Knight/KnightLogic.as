@@ -139,10 +139,15 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 					{
 						if (knight.state != KnightStates::sword_drawn && knight.state != KnightStates::resheathing_cut && knight.state != KnightStates::resheathing_slash)
 						{
-							knight.state = net_state;
-							serverState.StateEntered(this, knight, serverState.getStateValue());
-							this.set_s32("currentKnightState", serverStateIndex);
-							currentStateIndex = serverStateIndex;
+							if ((getGameTime() - serverState.stateEnteredTime) > 20)
+							{
+								knight.state = net_state;
+								serverState.stateEnteredTime = getGameTime();
+								serverState.StateEntered(this, knight, serverState.getStateValue());
+								this.set_s32("currentKnightState", serverStateIndex);
+								currentStateIndex = serverStateIndex;
+							}
+
 						}
 
 					}
@@ -150,6 +155,7 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 				else
 				{
 					knight.state = net_state;
+					serverState.stateEnteredTime = getGameTime();
 					serverState.StateEntered(this, knight, serverState.getStateValue());
 					this.set_s32("currentKnightState", serverStateIndex);
 					currentStateIndex = serverStateIndex;
@@ -176,6 +182,8 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 				s32 nextStateIndex = i;
 				KnightState@ nextState = states[nextStateIndex];
 				currentState.StateExited(this, knight, nextState.getStateValue());
+
+				nextState.stateEnteredTime = getGameTime();
 				nextState.StateEntered(this, knight, currentState.getStateValue());
 				this.set_s32("currentKnightState", nextStateIndex);
 				if (getNet().isServer() && knight.state >= KnightStates::sword_drawn && knight.state <= KnightStates::sword_power_super)
