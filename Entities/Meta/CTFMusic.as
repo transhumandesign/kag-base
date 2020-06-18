@@ -101,13 +101,17 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 
 	CRules @rules = getRules();
 	CBlob @blob = getLocalPlayerBlob();
-	if (blob is null)
+	CPlayer @player = getLocalPlayer();
+
+	// Stop music if we're unable to reference either player's blob or player instance. 
+	if (blob is null && 
+		( player is null || player.getTeamNum() != getRules().getSpectatorTeamNum()))
 	{
 		mixer.FadeOutAll(0.0f, 6.0f);
 		return;
 	}
 
-	CMap@ map = blob.getMap();
+	CMap@ map = getMap();
 	if (map is null)
 		return;
 
@@ -115,7 +119,17 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 	{
 		gameStarted = false;
 
-		Vec2f pos = blob.getPosition();
+		Vec2f pos; 
+		
+		// If the player is a spectating, base their location off of their camera.
+		if (player.getTeamNum() == getRules().getSpectatorTeamNum())
+		{
+			pos = getCamera().getPosition();
+		}
+		else 
+		{
+			pos = blob.getPosition();
+		}
 
 		bool isUnderground = checkUnderground(pos, map);
 		if (isUnderground)
@@ -144,7 +158,17 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 		gameStarted = true;
 		if (!mixer.isPlaying(world_battle) || battle_timer == getTicksASecond() * 5) // hold onto battle music at least 5 seconds
 		{
-			Vec2f pos = blob.getPosition();
+			Vec2f pos;
+
+			// If the player is a spectating, base their location off of their camera.
+			if (player.getTeamNum() == getRules().getSpectatorTeamNum())
+			{
+				pos = getCamera().getPosition();
+			}
+			else
+			{
+				pos = blob.getPosition();
+			}
 
 			GameMusicTag chosen = world_calm;
 
@@ -169,7 +193,7 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 				const f32 mapWidth = map.tilemapwidth * map.tilesize;
 				const f32 teamAreaWidth = mapWidth * 0.3;
 
-				u8 team_num = blob.getTeamNum();
+				u8 team_num = player.getTeamNum();
 
 				if (pos.x <= teamAreaWidth) // left side of map
 				{
