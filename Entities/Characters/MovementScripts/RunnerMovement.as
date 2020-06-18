@@ -799,13 +799,22 @@ bool checkForSolidMapBlob(CMap@ map, Vec2f pos, CBlob@ blob = null)
 			if (_tempBlob.getName() == "wooden_platform" || _tempBlob.getName() == "bridge")
 			{
 				f32 angle = _tempBlob.getAngleDegrees();
-				if (angle > 180)
-					angle -= 360;
-				angle = Maths::Abs(angle);
-				if (angle < 30 || angle > 150)
+				Vec2f runnerPos = blob.getPosition();
+				Vec2f platPos = _tempBlob.getPosition();
+
+				if (angle == 90.0f && runnerPos.x > platPos.x && (blob.isKeyPressed(key_left) || blob.wasKeyPressed(key_left)))
 				{
-					return false;
+					// platform is facing right
+					return true;
+
 				}
+				else if(angle == 270.0f && runnerPos.x < platPos.x && (blob.isKeyPressed(key_right) || blob.wasKeyPressed(key_right)))
+				{
+					// platform is facing left
+					return true;
+				}
+
+				return false;
 			}
 
 			if (blob !is null && !blob.doesCollideWithBlob(_tempBlob))
