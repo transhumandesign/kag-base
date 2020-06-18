@@ -461,6 +461,12 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 		return factor_boring;
 	}
 
+	if (name == "bucket" && b.get_u8("filled") > 0)
+	{
+		return factor_resource_useful;
+	}
+
+
 	// super low priority, dead stuff - sick of picking up corpses
 	if (b.hasTag("dead"))
 	{
