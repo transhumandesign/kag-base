@@ -224,7 +224,7 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
                                         // m_pos == position ignores blobs that are tiles when the explosion starts in the same tile
                                         if (b !is null && b !is this && b.isCollidable() && m_pos != b.getPosition())
                                         {
-                                            if (b.isPlatform())
+                                            /*if (b.isPlatform())
                                             {
                                                 // bad but only handle one platform
                                                 ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
@@ -242,7 +242,7 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
                                                 }
                                                 continue;
 
-                                            }
+                                            }*/
 
                                             canHit = false;
                                             break;
@@ -525,20 +525,15 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
 
 				if (hi.blob !is null) // blob
 				{
-					if (hi.blob is this || hi.blob is hit_blob || !hi.blob.isCollidable())
+                    // mapPos == position ignores blobs that are tiles when the explosion starts in the same tile
+					if (hi.blob is this || hi.blob is hit_blob || !hi.blob.isCollidable() || mapPos == hi.blob.getPosition())
 					{
 						continue;
 					}
 
-                    CBlob@ b = hi.blob;
+                    /*CBlob@ b = hi.blob;
                     if (b.isPlatform())
                     {
-                        // mapPos == position ignores blobs that are tiles when the explosion starts in the same tile
-                        if (mapPos == b.getPosition())
-                        {
-                            continue;
-                        }
-
                         ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
                         Vec2f dir = plat.direction;
                         if (!plat.ignore_rotations)
@@ -552,11 +547,11 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
                             return false;
                         }
                         continue;
-                    }
+                    }*/
 
 					// only shield and heavy things block explosions
 					if (hi.blob.hasTag("heavy weight") ||
-					        hi.blob.getMass() > 500 ||
+					        hi.blob.getMass() > 500 || hi.blob.getShape().isStatic() ||
 					        (hi.blob.hasTag("shielded") && blockAttack(hi.blob, hitvec, 0.0f)))
 					{
 						return false;

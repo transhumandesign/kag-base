@@ -12,7 +12,7 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	// don't interact with tree if grappling is pulling you
-	ArcherInfo@ archer;
+	/*ArcherInfo@ archer;
 	if (this.get("archerInfo", @archer))
 	{
 		if (archer.grappling && archer.grapple_id != 0xffff)
@@ -20,7 +20,7 @@ void onTick(CBlob@ this)
 			this.set_u16("climbed_tree", 0);
 			return;
 		}
-	}
+	}*/
 
 	// fall off tree if pressing down
 	if (this.isKeyPressed(key_down))
