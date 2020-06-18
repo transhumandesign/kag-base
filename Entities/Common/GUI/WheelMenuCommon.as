@@ -11,8 +11,6 @@ namespace WheelMenu
 	const SColor pane_title_color(0xFFCCCCCC);
 	const SColor pane_text_color(0xFFFFFFFF);
 
-	const float item_distance = 0.25f;
-
 	const float hover_distance = 0.07f;
 	const float auto_selection_distance = 0.3f;
 
@@ -26,6 +24,7 @@ class WheelMenuEntry
 {
 	// Identifier for the entry, never displayed
 	string name;
+	float item_distance = 0.4f;
 
 	WheelMenuEntry(const string&in p_name)
 	{
@@ -51,7 +50,7 @@ class WheelMenuEntry
 		angle_max = angle + step;
 
 		float angle_mid = (angle_min + angle_max) / 2.0f;
-		float distance = getDriver().getScreenHeight() * WheelMenu::item_distance;
+		float distance = getDriver().getScreenHeight() * item_distance;
 		Vec2f origin = getDriver().getScreenCenterPos();
 
 		position = origin - Vec2f(Maths::Cos(angle_mid), Maths::Sin(angle_mid)) * distance;
@@ -127,6 +126,7 @@ class PickupWheelMenuEntry : WheelMenuEntry
 		scale = 1.0f;
 		disabled = false;
 		offset = p_offset;
+		item_distance = 0.25f; // override
 	}
 
 	void render() override
