@@ -1,7 +1,7 @@
 
 #include "Hitters.as";
 #include "SplashWater.as";
-
+#include "ArcherCommon.as";
 //config
 
 const int splash_width = 9;
@@ -79,8 +79,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		}
 	}
 
-	if ((customData == Hitters::water || customData == Hitters::water_stun) && 
-	    hitterBlob.getName() == "waterbomb") 
+	const string name = hitterBlob.getName();
+	if ((customData == Hitters::water || customData == Hitters::water_stun) &&
+	    (name == "waterbomb" || (name == "arrow" && hitterBlob.get_u8("arrow type") == ArrowType::water)))
 	{
 		u8 filled = this.get_u8("filled");
 		if (filled < splashes)
