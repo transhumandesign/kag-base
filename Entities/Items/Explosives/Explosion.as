@@ -531,7 +531,7 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
 						continue;
 					}
 
-                    /*CBlob@ b = hi.blob;
+                    CBlob@ b = hi.blob;
                     if (b.isPlatform())
                     {
                         ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
@@ -542,12 +542,12 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
                         }
 
                         // Does the platform block damage
-                        if(Maths::Abs(dir.AngleWith(-hitvec)) < plat.angleLimit)
+                        if(Maths::Abs(dir.AngleWith(hitvec)) < plat.angleLimit)
                         {
                             return false;
                         }
                         continue;
-                    }*/
+                    }
 
 					// only shield and heavy things block explosions
 					if (hi.blob.hasTag("heavy weight") ||
