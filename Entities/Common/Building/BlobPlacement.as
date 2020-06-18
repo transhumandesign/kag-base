@@ -17,9 +17,7 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 		shape.server_SetActive(true);
 
 		blob.Tag("temp blob placed");
-		// hack for spike kills
-		// TODO: add proper functionality for any block with a specific tag to blob.SetDamageOwnerPlayer(this.getPlayer());
-		if (blob.getName() == "spikes")
+		if (blob.hasTag("has damage owner"))
 		{
 			blob.SetDamageOwnerPlayer(this.getPlayer());
 		}
