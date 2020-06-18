@@ -256,6 +256,10 @@ void onTick(CSprite@ this)
 	{
 		this.SetAnimation("default");
 	}
+	else if(archer.charge_state == ArcherParams::stabbing)
+	{
+		this.SetAnimation("stab");
+	}
 	else if (firing || legolas)
 	{
 		if (inair)
