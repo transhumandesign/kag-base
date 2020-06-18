@@ -550,9 +550,34 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 
 	Vec2f pos = this.getPosition() + Vec2f(0.0f, -this.getRadius() * 0.9f);
 	Vec2f pos2 = blob.getPosition();
+
+	Vec2f ray = pos2 - pos;
+	bool canRayCast = true;
+
+	CMap@ map = getMap();
+
+	HitInfo@[] hitInfos;
+	if(map.getHitInfosFromRay(pos, -ray.getAngle(), ray.Length(), this, hitInfos))
+	{
+		for (int i = 0; i < hitInfos.length; i++)
+		{
+			HitInfo@ hi = hitInfos[i];
+			CBlob@ b = hi.blob;
+			// collide with anything that isn't a platform
+			// could do proper platform direction check but probably not needed
+			if (b !is null && b !is this && b !is blob && b.isCollidable() && !b.isPlatform())
+			{
+				canRayCast = false;
+				break;
+
+			}
+		}
+
+	}
+
 	return (((pos2 - pos).getLength() <= maxDist)
 	        && !blob.isAttached() && !blob.hasTag("no pickup")
-	        && (!this.getMap().rayCastSolid(pos, pos2) || (this.isOverlapping(blob)) ) //overlapping fixes "in platform" issue
+	        && (canRayCast || this.isOverlapping(blob)) //overlapping fixes "in platform" issue
 	       );
 }
 
