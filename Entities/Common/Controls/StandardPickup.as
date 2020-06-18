@@ -20,6 +20,8 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
 
+	AddIconToken("$filled_bucket$", "Bucket.png", Vec2f(16, 16), 1);
+
 	// setup pickup menu wheel
 	WheelMenu@ menu = get_wheel_menu("pickup");
 	if (menu.entries.length == 0)
@@ -68,6 +70,7 @@ void onInit(CBlob@ this)
 		menu.add_entry(PickupWheelMenuEntry("Food", "$food$", food_options));
 		menu.add_entry(PickupWheelMenuEntry("Ballista Ammo", "$mat_bolts$", "mat_bolts"));
 		menu.add_entry(PickupWheelMenuEntry("Crate", "$crate$", "crate", Vec2f(-16.0f, 0)));
+		menu.add_entry(PickupWheelMenuEntry("Bucket", "$filled_bucket$", "bucket"));
 	}
 
 }
