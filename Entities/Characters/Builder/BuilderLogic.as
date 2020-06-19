@@ -257,7 +257,12 @@ void Pickaxe(CBlob@ this)
 		{
 			if (hitdata.blobID == 0)
 			{
-				SendHitCommand(this, null, hitdata.tilepos, attackVel, hit_damage);
+				TileType t = getMap().getTile(hitdata.tilepos).type;
+				if (t != CMap::tile_empty && t != CMap::tile_ground_back)
+				{
+					SendHitCommand(this, null, hitdata.tilepos, attackVel, hit_damage);
+				}
+
 			}
 			else
 			{

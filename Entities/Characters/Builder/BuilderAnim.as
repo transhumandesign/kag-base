@@ -139,7 +139,8 @@ void onTick(CSprite@ this)
 				{
 					CMap@ map = getMap();
 					Tile t = map.getTile(hitdata.tilepos);
-					if ((t.type >= CMap::tile_ladder && t.type <= CMap::tile_wood_back) || map.isTileGrass(t.type))
+					// 207 is damaged wood tile back
+					if (map.isTileWood(t.type) || map.isTileGrass(t.type) || t.type == CMap::tile_wood_back || t.type == 207)
 					{
 						hitting_wood = true;
 					}
