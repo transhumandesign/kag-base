@@ -81,12 +81,22 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	const string name = hitterBlob.getName();
 	if ((customData == Hitters::water || customData == Hitters::water_stun) &&
-	    (name == "waterbomb" || (name == "arrow" && hitterBlob.get_u8("arrow type") == ArrowType::water)))
+	    (name == "waterbomb" || (name == "arrow" && hitterBlob.get_u8("arrow type") == ArrowType::water)) && 
+	    !hitterBlob.hasTag("has filled"))
 	{
 		u8 filled = this.get_u8("filled");
+		u8 filling_left = hitterBlob.get_u8("filling left");
+		if (filling_left == 0) filling_left = splashes; // up to one full bucket
+		
 		if (filled < splashes)
 		{
-			this.set_u8("filled", splashes);
+			u8 d = Maths::Min(filling_left, splashes - filled);
+			this.set_u8("filled", filled + d);
+			filling_left -= d;
+			hitterBlob.set_u8("filling left" , filling_left);
+			if (filling_left <= 0)
+				hitterBlob.Tag("has filled");
+
 			this.set_u8("water_delay", 5); // only slight delay
 			this.getSprite().SetAnimation("full");
 		}
