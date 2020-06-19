@@ -222,7 +222,7 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
                                         HitInfo@ hi = hitInfos[i];
                                         CBlob@ b = hi.blob;
                                         // m_pos == position ignores blobs that are tiles when the explosion starts in the same tile
-                                        if (b !is null && b !is this && b.isCollidable() && m_pos != b.getPosition())
+                                        if (b !is null && b !is this && b.isCollidable() && b.getShape().isStatic() && m_pos != b.getPosition())
                                         {
                                             /*if (b.isPlatform())
                                             {
@@ -247,7 +247,8 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
                                             canHit = false;
                                             break;
                                         }
-                                        else if(map.isTileSolid(hi.tile))
+
+                                        if(map.isTileSolid(hi.tile))
                                         {
                                             canHit = false;
                                             break;
