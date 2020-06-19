@@ -12,8 +12,8 @@
 const int FLETCH_COOLDOWN = 45;
 const int PICKUP_COOLDOWN = 15;
 const int fletch_num_arrows = 1;
-const int STAB_DELAY = 10;
-const int STAB_TIME = 18;
+const int STAB_DELAY = 12;
+const int STAB_TIME = 20;
 
 void onInit(CBlob@ this)
 {
@@ -75,7 +75,8 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 		&& charge_state != ArcherParams::stabbing
 		&& !archer.grappling
 		&& this.isOnGround()
-		&& !this.isKeyPressed(key_action1))
+		&& !this.isKeyPressed(key_action1)
+		&& !this.wasKeyPressed(key_action1))
 	{
 		Vec2f aimpos = this.getAimPos();
 		CBlob@[] blobs;
@@ -532,12 +533,12 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 					{
 						if (stabTarget.getName() == "mat_wood")
 						{
-							stabTarget.server_SetQuantity(stabTarget.getQuantity()-2);
+							stabTarget.server_SetQuantity(stabTarget.getQuantity()-4);
 							fletchArrow(this);
 						}
 						else
 						{
-							this.server_Hit(stabTarget, stabTarget.getPosition(), Vec2f_zero, 0.1f,  Hitters::stab);
+							this.server_Hit(stabTarget, stabTarget.getPosition(), Vec2f_zero, 0.25f,  Hitters::stab);
 
 						}
 

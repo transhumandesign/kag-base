@@ -495,6 +495,9 @@ bool canHit(CBlob@ this, CBlob@ b, Vec2f tpos, bool extra = true)
 		if (BuilderAlwaysHit(b) || b.hasTag("dead") || b.hasTag("vehicle"))
 			return true;
 
+		if (b.getName() == "saw" || b.getName() == "trampoline")
+			return true;
+
 		return false;
 
 	}

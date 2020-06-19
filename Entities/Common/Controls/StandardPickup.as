@@ -294,7 +294,7 @@ void GatherPickupBlobs(CBlob@ this)
 
 CBlob@ GetBetterAlternativePickupBlobs(CBlob@[] available_blobs, CBlob@ reference)
 {
-	if (reference is null) 
+	if (reference is null)
 		return reference;
 
 	CBlob@[] blobsInRadius;
@@ -593,7 +593,7 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 	Vec2f pos2 = blob.getPosition();
 
 	Vec2f ray = pos2 - pos;
-	bool canRayCast = true;
+	bool canRayCast = false;
 
 	CMap@ map = getMap();
 
@@ -604,13 +604,26 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 		{
 			HitInfo@ hi = hitInfos[i];
 			CBlob@ b = hi.blob;
+
 			// collide with anything that isn't a platform
 			// could do proper platform direction check but probably not needed
-			if (b !is null && b !is this && b !is blob && b.isCollidable() && !b.isPlatform())
+			if (b !is null && b !is this && b !is blob && b.isCollidable() && b.getShape().isStatic() && !b.isPlatform())
 			{
 				canRayCast = false;
 				break;
 
+			}
+
+			if(map.isTileSolid(hi.tile))
+			{
+				canRayCast = false;
+				break;
+			}
+
+			// if our blob isn't in the list that means the ray stopped at a block
+			if (b is blob)
+			{
+				canRayCast = true;
 			}
 		}
 
