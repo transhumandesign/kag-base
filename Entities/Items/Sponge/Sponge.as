@@ -1,11 +1,6 @@
 #include "Hitters.as";
 #include "SplashWater.as";
-
-//config
-
-//note: if you change this, change in runnerknock water stun as well
-const int ABSORB_COUNT = 100;
-const string ABSORBED_PROP = "absorbed";
+#include "SpongeCommon.as";
 
 const int DRY_COOLDOWN = 8;
 int cooldown_time = 0;
@@ -51,11 +46,7 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-	else if (!this.isAttached() && this.getTicksToDie() <= 0) //auto destroy
-	{
-		this.server_SetTimeToDie(5.0f);
-	}
-
+	
 	//dry out sponge
 	if (absorbed > 0)
 	{
@@ -85,13 +76,7 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-
-	//cancel auto destroy
-	if ((this.isAttached() || absorbed < ABSORB_COUNT) && this.getTicksToDie() > 0)
-	{
-		this.server_SetTimeToDie(0.0f);
-	}
-
+	
 	//reduce cooldown time
 	if (cooldown_time > 0)
 	{
@@ -109,7 +94,7 @@ void onInit(CSprite@ this)
 void onTick(CSprite@ this)
 {
 	u8 absorbed = this.getBlob().get_u8(ABSORBED_PROP);
-	this.animation.setFrameFromRatio(f32(absorbed) / ABSORB_COUNT);
+	spongeUpdateSprite(this, absorbed);
 }
 
 u8 adjustAbsorbedAmount(CBlob@ this, f32 amount)
