@@ -136,4 +136,25 @@ void onTick(CBlob@ this)
 			}*/
 		}
 	}
+
+	if (isServer())
+	{
+		CMap@ map = getMap();
+		const f32 tilesize = map.tilesize;
+
+		Vec2f tpos = this.getPosition() + Vec2f(0, tilesize);
+		if (!map.isTileGround(map.getTile(tpos).type))
+		{
+			// drop down when not supported
+			CShape@ shape = this.getShape();
+			shape.server_SetActive(true);
+
+			shape.SetStatic(false);
+		}
+	}
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	return blob.getShape().isStatic() && blob.isCollidable();
 }
