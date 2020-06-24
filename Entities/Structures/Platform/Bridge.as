@@ -36,10 +36,7 @@ void onInit(CBlob@ this)
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
-	if (!isOpen(this))
-	{
-		MakeDamageFrame(this);
-	}
+	MakeDamageFrame(this);
 }
 
 void MakeDamageFrame(CBlob@ this)
@@ -93,11 +90,12 @@ void setOpen(CBlob@ this, bool open)
 	{
 		sprite.SetZ(100.0f);
 		sprite.SetAnimation("default");
-		MakeDamageFrame(this);
 		shape.getConsts().collidable = true;
 		sprite.PlaySound("bridge_close.ogg");
 
 	}
+
+	MakeDamageFrame(this);
 
 	// setAdjacentOpen(this, open);
 
