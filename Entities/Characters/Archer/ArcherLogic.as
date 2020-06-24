@@ -107,7 +107,8 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 	if (right_click && charge_state != ArcherParams::stabbing)
 	{
 		// cancel charging
-		if (charge_state != ArcherParams::not_aiming)
+		if (charge_state != ArcherParams::not_aiming &&
+		    charge_state != ArcherParams::fired) // allow grapple right after firing
 		{
 			charge_state = ArcherParams::not_aiming;
 			archer.charge_time = 0;
