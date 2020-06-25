@@ -134,13 +134,17 @@ void onRender(CSprite@ this)
 
 	if (returncount > 0)
 	{
-		Vec2f pos2d = getDriver().getScreenPosFromWorldPos(blob.getPosition() + Vec2f(0.0f, -blob.getHeight()));
-
-		f32 wave = Maths::Sin(getGameTime() / 5.0f) * 3.0f - 25.0f;
+		const f32 scalex = getDriver().getResolutionScaleFactor();
+		const f32 zoom = getCamera().targetDistance * scalex;
+		// adjust vertical offset depending on zoom
+		Vec2f pos2d =  blob.getInterpolatedScreenPos() + Vec2f(0.0f, (-blob.getHeight() - 20.0f) * zoom);
+		
+			
+		f32 wave = Maths::Sin(getGameTime() / 5.0f) * 5.0f - 25.0f;
 
 		if (returncount < return_time)
 		{
-			Vec2f pos = pos2d + Vec2f(-30.0f, -20.0f + wave);
+			Vec2f pos = pos2d + Vec2f(-30.0f, -40.0f);
 			Vec2f dimension = Vec2f(60.0f - 8.0f, 8.0f);
 				
 			GUI::DrawIconByName("$progress_bar$", pos);
@@ -161,16 +165,17 @@ void onRender(CSprite@ this)
 				GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 2), SColor(255, 125, 139, 120));
 			}
 
+			GUI::DrawIconByName("$ALERT$", Vec2f(pos2d.x - 32.0f, pos2d.y - 80.0f + wave));
+
 			if (getGameTime() % 15 > 10)
 			{
 				if (!shouldFastReturn(blob))
 				{
-					GUI::DrawIconByName("$ALERT$", Vec2f(pos2d.x - 32.0f, pos2d.y - 80.0f + wave));
-					GUI::DrawIconByName("$return_indicator$", Vec2f(pos2d.x-8.0f, pos2d.y-20.0f + wave));
+					GUI::DrawIconByName("$return_indicator$", Vec2f(pos2d.x-8.0f, pos2d.y-40.0f));
 				}
 				else
 				{
-					GUI::DrawIconByName("$fast_return_indicator$", Vec2f(pos2d.x-18.0f, pos2d.y-20.0f + wave));
+					GUI::DrawIconByName("$fast_return_indicator$", Vec2f(pos2d.x-18.0f, pos2d.y-40.0f));
 				}
 			}
 		}
