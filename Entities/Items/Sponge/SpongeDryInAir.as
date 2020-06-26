@@ -2,6 +2,8 @@
 
 const int slow_frequency = 5; // don't run this script too often
 
+#define SERVER
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().tickFrequency = 30 * 2 * slow_frequency; // 0.5 "absorbs" per seconds, run only every 5 "absorbs"
