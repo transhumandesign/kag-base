@@ -7,6 +7,7 @@
 #include "Help.as"
 #include "Hitters.as"
 #include "GenericButtonCommon.as"
+#include "KnockedCommon.as"
 
 //property name
 const string required_space = "required space";
@@ -371,9 +372,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller !is null && sneaky_player !is null) {
 			if (caller.getTeamNum() != sneaky_player.getTeamNum())
 			{
-				if (caller.exists("knocked"))
+				if (isKnockable(caller))
 				{
-					caller.set_u8("knocked", 30);
+					setKnocked(caller, 30);
 				}
 			}
 			this.Tag("crate escaped");
@@ -545,9 +546,9 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 				velocity = Vec2f(0, -1);
 			}
 			blob.setVelocity(velocity * 8);
-			if (blob.exists("knocked"))
+			if (isKnockable(blob))
 			{
-				blob.set_u8("knocked", 30);
+				setKnocked(blob, 30);
 			}
 		}
 		else if (this.hasTag("crate escaped"))
@@ -567,9 +568,9 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 		else
 		{
 			blob.setVelocity(this.getOldVelocity());
-			if (blob.exists("knocked"))
+			if (isKnockable(blob))
 			{
-				blob.set_u8("knocked", 2);
+				setKnocked(blob, 2);
 			}
 		}
 	}

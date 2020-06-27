@@ -1,4 +1,4 @@
-#include "Knocked.as"
+#include "KnockedCommon.as"
 #include "EatCommon.as";
 
 void onInit(CBlob@ this)

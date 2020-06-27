@@ -5,7 +5,7 @@
 #include "RunnerCommon.as";
 #include "Hitters.as";
 #include "ShieldCommon.as";
-#include "Knocked.as"
+#include "KnockedCommon.as"
 #include "Help.as";
 #include "Requirements.as"
 
@@ -48,13 +48,31 @@ void onInit(CBlob@ this)
 
 	knight.state = KnightStates::normal;
 	knight.swordTimer = 0;
-	knight.shieldTimer = 0;
 	knight.slideTime = 0;
 	knight.doubleslash = false;
 	knight.shield_down = getGameTime();
 	knight.tileDestructionLimiter = 0;
 
 	this.set("knightInfo", @knight);
+
+	KnightState@[] states;
+	states.push_back(NormalState());
+	states.push_back(ShieldingState());
+	states.push_back(ShieldGlideState());
+	states.push_back(ShieldSlideState());
+	states.push_back(SwordDrawnState());
+	states.push_back(CutState(KnightStates::sword_cut_up));
+	states.push_back(CutState(KnightStates::sword_cut_mid));
+	states.push_back(CutState(KnightStates::sword_cut_mid_down));
+	states.push_back(CutState(KnightStates::sword_cut_mid));
+	states.push_back(CutState(KnightStates::sword_cut_down));
+	states.push_back(SlashState(KnightStates::sword_power));
+	states.push_back(SlashState(KnightStates::sword_power_super));
+	states.push_back(ResheathState(KnightStates::resheathing_cut, KnightVars::resheath_cut_time));
+	states.push_back(ResheathState(KnightStates::resheathing_slash, KnightVars::resheath_slash_time));
+
+	this.set("knightStates", @states);
+	this.set_s32("currentKnightState", 0);
 
 	this.set_f32("gib health", -1.5f);
 	addShieldVars(this, SHIELD_BLOCK_ANGLE, 2.0f, 5.0f);
@@ -95,9 +113,91 @@ void onSetPlayer(CBlob@ this, CPlayer@ player)
 }
 
 
+void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
+{
+	KnightState@[]@ states;
+	if (!this.get("knightStates", @states))
+	{
+		return;
+	}
+
+	s32 currentStateIndex = this.get_s32("currentKnightState");
+
+	if (getNet().isClient())
+	{
+		if (this.exists("serverKnightState"))
+		{
+			s32 serverStateIndex = this.get_s32("serverKnightState");
+			this.set_s32("serverKnightState", -1);
+			if (serverStateIndex != -1 && serverStateIndex != currentStateIndex)
+			{
+				KnightState@ serverState = states[serverStateIndex];
+				u8 net_state = states[serverStateIndex].getStateValue();
+				if (this.isMyPlayer())
+				{
+					if (net_state >= KnightStates::sword_cut_mid && net_state <= KnightStates::sword_power_super)
+					{
+						if (knight.state != KnightStates::sword_drawn && knight.state != KnightStates::resheathing_cut && knight.state != KnightStates::resheathing_slash)
+						{
+							knight.state = net_state;
+							serverState.StateEntered(this, knight, serverState.getStateValue());
+							this.set_s32("currentKnightState", serverStateIndex);
+							currentStateIndex = serverStateIndex;
+						}
+
+					}
+				}
+				else
+				{
+					knight.state = net_state;
+					serverState.StateEntered(this, knight, serverState.getStateValue());
+					this.set_s32("currentKnightState", serverStateIndex);
+					currentStateIndex = serverStateIndex;
+				}
+
+			}
+		}
+	}
+
+
+
+	u8 state = knight.state;
+	KnightState@ currentState = states[currentStateIndex];
+
+	bool tickNext = false;
+	tickNext = currentState.TickState(this, knight, moveVars);
+
+	if (state != knight.state)
+	{
+		for (s32 i = 0; i < states.size(); i++)
+		{
+			if (states[i].getStateValue() == knight.state)
+			{
+				s32 nextStateIndex = i;
+				KnightState@ nextState = states[nextStateIndex];
+				currentState.StateExited(this, knight, nextState.getStateValue());
+				nextState.StateEntered(this, knight, currentState.getStateValue());
+				this.set_s32("currentKnightState", nextStateIndex);
+				if (getNet().isServer() && knight.state >= KnightStates::sword_drawn && knight.state <= KnightStates::sword_power_super)
+				{
+					this.set_s32("serverKnightState", nextStateIndex);
+					this.Sync("serverKnightState", true);
+				}
+
+				if (tickNext)
+				{
+					RunStateMachine(this, knight, moveVars);
+
+				}
+				break;
+			}
+		}
+	}
+}
+
 void onTick(CBlob@ this)
 {
-	u8 knocked = getKnocked(this);
+	bool knocked = isKnocked(this);
 	CHUD@ hud = getHUD();
 
 	//knight logic stuff
@@ -119,10 +219,10 @@ void onTick(CBlob@ this)
 		//prevent players from insta-slashing when exiting crates
 		knight.state = 0;
 		knight.swordTimer = 0;
-		knight.shieldTimer = 0;
 		knight.slideTime = 0;
 		knight.doubleslash = false;
 		hud.SetCursorFrame(0);
+		this.set_s32("currentKnightState", 0);
 		return;
 	}
 
@@ -149,346 +249,29 @@ void onTick(CBlob@ this)
 		SwordCursorUpdate(this, knight);
 	}
 
-	//with the code about menus and myplayer you can slash-cancel;
-	//we'll see if knights dmging stuff while in menus is a real issue and go from there
-	if (knocked > 0)// || myplayer && getHUD().hasMenus())
+	if (knocked)
 	{
 		knight.state = KnightStates::normal; //cancel any attacks or shielding
 		knight.swordTimer = 0;
-		knight.shieldTimer = 0;
 		knight.slideTime = 0;
 		knight.doubleslash = false;
+		this.set_s32("currentKnightState", 0);
 
 		pressed_a1 = false;
 		pressed_a2 = false;
 		walking = false;
 
 	}
-	else if (!pressed_a1 && !swordState &&
-	         (pressed_a2 || (specialShieldState)))
+	else
 	{
-		moveVars.jumpFactor *= 0.5f;
-		moveVars.walkFactor *= 0.9f;
-		knight.swordTimer = 0;
+		RunStateMachine(this, knight, moveVars);
 
-		if (!canRaiseShield(this))
-		{
-			if (knight.state != KnightStates::normal)
-			{
-				knight.shield_down = getGameTime() + 40;
-			}
-
-			knight.state = KnightStates::normal;
-
-			if (pressed_a2 && ((knight.shield_down - getGameTime()) <= 0))
-			{
-				resetShieldKnockdown(this);   //re-put up the shield
-			}
-		}
-		else
-		{
-			bool forcedrop = (vel.y > Maths::Max(Maths::Abs(vel.x), 2.0f) &&
-			                  moveVars.fallCount > KnightVars::glide_down_time);
-
-			if (pressed_a2 && inair && !this.isInWater())
-			{
-				if (direction == -1 && !forcedrop && !getMap().isInWater(pos + Vec2f(0, 16)) && !moveVars.wallsliding)
-				{
-					knight.state = KnightStates::shieldgliding;
-					knight.shieldTimer = 1;
-				}
-				else if (forcedrop || direction == 1)
-				{
-					knight.state = KnightStates::shielddropping;
-					knight.shieldTimer = 5;
-					knight.slideTime = 0;
-				}
-				else //remove this for partial locking in mid air
-				{
-					knight.state = KnightStates::shielding;
-				}
-			}
-
-			if (knight.state == KnightStates::shieldgliding && !this.isInWater() && !forcedrop)
-			{
-				moveVars.stoppingFactor *= 0.5f;
-
-				f32 glide_amount = 1.0f - (moveVars.fallCount / f32(KnightVars::glide_down_time * 2));
-
-				if (vel.y > -1.0f)
-				{
-					this.AddForce(Vec2f(0, -20.0f * glide_amount));
-				}
-
-				if (!inair || !pressed_a2)
-				{
-					knight.state = KnightStates::shielding;
-				}
-			}
-			else if (knight.state == KnightStates::shielddropping)
-			{
-				if (this.isInWater())
-				{
-					if (vel.y > 1.5f && Maths::Abs(vel.x) * 3 > Maths::Abs(vel.y))
-					{
-						vel.y = Maths::Max(-Maths::Abs(vel.y) + 1.0f, -8.0);
-						this.setVelocity(vel);
-					}
-					else
-					{
-						knight.state = KnightStates::shielding;
-					}
-				}
-
-				// shield sliding and end of slide
-				if ((!inair && this.getShape().vellen < 1.0f) || !pressed_a2)
-				{
-					knight.state = KnightStates::shielding;
-				}
-				else
-				{
-					// faster sliding
-					if (!inair)
-					{
-						knight.slideTime++;
-						if (knight.slideTime > 0)
-						{
-							if (knight.slideTime == 5)
-							{
-								this.getSprite().PlayRandomSound("/Scrape");
-							}
-
-							f32 factor = Maths::Max(1.0f, 2.2f / Maths::Sqrt(knight.slideTime));
-							moveVars.walkFactor *= factor;
-
-							//  printf("knight.slideTime = " + knight.slideTime  );
-							if (knight.slideTime > 30)
-							{
-								moveVars.walkFactor *= 0.75f;
-								if (knight.slideTime > 45)
-								{
-									knight.state = KnightStates::shielding;
-								}
-							}
-							else if (XORRandom(3) == 0)
-							{
-								Vec2f velr = getRandomVelocity(!this.isFacingLeft() ? 70 : 110, 4.3f, 40.0f);
-								velr.y = -Maths::Abs(velr.y) + Maths::Abs(velr.x) / 3.0f - 2.0f - float(XORRandom(100)) / 100.0f;
-								ParticlePixel(pos, velr, SColor(255, 255, 255, 0), true);
-							}
-						}
-					}
-					else if (vel.y > 1.05f)
-					{
-						knight.slideTime = 0;
-						//printf("vel.y  " + vel.y  );
-					}
-				}
-			}
-			else
-			{
-				knight.state = KnightStates::shielding;
-				knight.shieldTimer = 2;
-			}
-		}
-	}
-	else if ((pressed_a1 || swordState) && !moveVars.wallsliding)   //no attacking during a slide
-	{
-		if (getNet().isClient())
-		{
-			if (knight.swordTimer == KnightVars::slash_charge_level2)
-			{
-				Sound::Play("AnimeSword.ogg", pos, myplayer ? 1.3f : 0.7f);
-			}
-			else if (knight.swordTimer == KnightVars::slash_charge)
-			{
-				Sound::Play("SwordSheath.ogg", pos, myplayer ? 1.3f : 0.7f);
-			}
-		}
-
-		if (knight.swordTimer >= KnightVars::slash_charge_limit)
-		{
-			Sound::Play("/Stun", pos, 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
-			SetKnocked(this, 15);
-		}
-
-		bool strong = (knight.swordTimer > KnightVars::slash_charge_level2);
-		moveVars.jumpFactor *= (strong ? 0.6f : 0.8f);
-		moveVars.walkFactor *= (strong ? 0.8f : 0.9f);
-		knight.shieldTimer = 0;
-
-		if (!inair)
-		{
-			this.AddForce(Vec2f(vel.x * -5.0, 0.0f));   //horizontal slowing force (prevents SANICS)
-		}
-
-		if (knight.state == KnightStates::normal ||
-		        this.isKeyJustPressed(key_action1) &&
-		        (!inMiddleOfAttack(knight.state) || shieldState))
-		{
-			knight.state = KnightStates::sword_drawn;
-			knight.swordTimer = 0;
-		}
-
-		if (knight.state == KnightStates::sword_drawn && getNet().isServer())
-		{
-			knight_clear_actor_limits(this);
-		}
-
-		//responding to releases/noaction
-		s32 delta = knight.swordTimer;
-		if (knight.swordTimer < 128)
-			knight.swordTimer++;
-
-		if (knight.state == KnightStates::sword_drawn && !pressed_a1 &&
-		        !this.isKeyJustReleased(key_action1) && delta > KnightVars::resheath_time)
-		{
-			knight.state = KnightStates::normal;
-		}
-		else if (this.isKeyJustReleased(key_action1) && knight.state == KnightStates::sword_drawn)
-		{
-			knight.swordTimer = 0;
-
-			if (delta < KnightVars::slash_charge)
-			{
-				if (direction == -1)
-				{
-					knight.state = KnightStates::sword_cut_up;
-				}
-				else if (direction == 0)
-				{
-					if (aimpos.y < pos.y)
-					{
-						knight.state = KnightStates::sword_cut_mid;
-					}
-					else
-					{
-						knight.state = KnightStates::sword_cut_mid_down;
-					}
-				}
-				else
-				{
-					knight.state = KnightStates::sword_cut_down;
-				}
-			}
-			else if (delta < KnightVars::slash_charge_level2)
-			{
-				knight.state = KnightStates::sword_power;
-				Vec2f aiming_direction = vel;
-				aiming_direction.y *= 2;
-				aiming_direction.Normalize();
-				knight.slash_direction = aiming_direction;
-			}
-			else if (delta < KnightVars::slash_charge_limit)
-			{
-				knight.state = KnightStates::sword_power_super;
-				Vec2f aiming_direction = vel;
-				aiming_direction.y *= 2;
-				aiming_direction.Normalize();
-				knight.slash_direction = aiming_direction;
-			}
-			else
-			{
-				//knock?
-			}
-		}
-		else if (knight.state >= KnightStates::sword_cut_mid &&
-		         knight.state <= KnightStates::sword_cut_down) // cut state
-		{
-			this.Tag("prevent crouch");
-
-			if (delta == DELTA_BEGIN_ATTACK)
-			{
-				Sound::Play("/SwordSlash", this.getPosition());
-			}
-
-			if (delta > DELTA_BEGIN_ATTACK && delta < DELTA_END_ATTACK)
-			{
-				f32 attackarc = 90.0f;
-				f32 attackAngle = getCutAngle(this, knight.state);
-
-				if (knight.state == KnightStates::sword_cut_down)
-				{
-					attackarc *= 0.9f;
-				}
-
-				DoAttack(this, 1.0f, attackAngle, attackarc, Hitters::sword, delta, knight);
-			}
-			else if (delta >= 9)
-			{
-				knight.swordTimer = 0;
-				knight.state = KnightStates::sword_drawn;
-			}
-		}
-		else if (knight.state == KnightStates::sword_power ||
-		         knight.state == KnightStates::sword_power_super)
-		{
-			this.Tag("prevent crouch");
-
-			//setting double
-			if (knight.state == KnightStates::sword_power_super &&
-			        this.isKeyJustPressed(key_action1))
-			{
-				knight.doubleslash = true;
-			}
-
-			//attacking + noises
-			if (delta == 2)
-			{
-				Sound::Play("/ArgLong", this.getPosition());
-				Sound::Play("/SwordSlash", this.getPosition());
-			}
-			else if (delta > DELTA_BEGIN_ATTACK && delta < 10)
-			{
-				DoAttack(this, 2.0f, -(vec.Angle()), 120.0f, Hitters::sword, delta, knight);
-			}
-			else if (delta >= KnightVars::slash_time ||
-			         (knight.doubleslash && delta >= KnightVars::double_slash_time))
-			{
-				knight.swordTimer = 0;
-
-				if (knight.doubleslash)
-				{
-					knight_clear_actor_limits(this);
-					knight.doubleslash = false;
-					knight.state = KnightStates::sword_power;
-				}
-				else
-				{
-					knight.state = KnightStates::sword_drawn;
-				}
-			}
-		}
-
-		//special slash movement
-
-		if ((knight.state == KnightStates::sword_power ||
-		        knight.state == KnightStates::sword_power_super) &&
-		        delta < KnightVars::slash_move_time)
-		{
-
-			if (Maths::Abs(vel.x) < KnightVars::slash_move_max_speed &&
-			        vel.y > -KnightVars::slash_move_max_speed)
-			{
-				Vec2f slash_vel =  knight.slash_direction * this.getMass() * 0.5f;
-				this.AddForce(slash_vel);
-			}
-		}
-
-		moveVars.canVault = false;
-
-	}
-	else if (this.isKeyJustReleased(key_action2) || this.isKeyJustReleased(key_action1) || this.get_u32("knight_timer") <= getGameTime())
-	{
-		knight.state = KnightStates::normal;
 	}
 
 	//throwing bombs
-
 	if (myplayer)
 	{
 		// space
-
 		if (this.isKeyJustPressed(key_action3))
 		{
 			CBlob@ carried = this.getCarriedBlob();
@@ -548,7 +331,6 @@ void onTick(CBlob@ this)
 	{
 		int horiz = this.isFacingLeft() ? -1 : 1;
 		setShieldEnabled(this, true);
-
 		setShieldAngle(this, SHIELD_BLOCK_ANGLE);
 
 		if (specialShieldState)
@@ -641,7 +423,584 @@ void onTick(CBlob@ this)
 		knight_clear_actor_limits(this);
 	}
 
+}
 
+bool getInAir(CBlob@ this)
+{
+	bool inair = (!this.isOnGround() && !this.isOnLadder());
+	return inair;
+
+}
+
+void ShieldMovement(RunnerMoveVars@ moveVars)
+{
+	moveVars.jumpFactor *= 0.5f;
+	moveVars.walkFactor *= 0.9f;
+}
+
+class NormalState : KnightState
+{
+	u8 getStateValue() { return KnightStates::normal; }
+	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
+	{
+		knight.swordTimer = 0;
+	}
+
+	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
+	{
+		if (this.isKeyPressed(key_action1) && !moveVars.wallsliding)
+		{
+			knight.state = KnightStates::sword_drawn;
+			return true;
+		}
+		else if (this.isKeyPressed(key_action2))
+		{
+			if (canRaiseShield(this))
+			{
+				knight.state = KnightStates::shielding;
+				return true;
+			}
+			else
+			{
+				resetShieldKnockdown(this);
+			}
+
+			ShieldMovement(moveVars);
+
+		}
+
+		return false;
+	}
+}
+
+bool getForceDrop(CBlob@ this, RunnerMoveVars@ moveVars)
+{
+	Vec2f vel = this.getVelocity();
+	bool forcedrop = (vel.y > Maths::Max(Maths::Abs(vel.x), 2.0f) &&
+					  moveVars.fallCount > KnightVars::glide_down_time);
+	return forcedrop;
+}
+
+class ShieldingState : KnightState
+{
+	u8 getStateValue() { return KnightStates::shielding; }
+	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
+	{
+		knight.swordTimer = 0;
+	}
+
+	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
+	{
+		if (this.isKeyPressed(key_action1))
+		{
+			knight.state = KnightStates::sword_drawn;
+			return true;
+		}
+		else if (!this.isKeyPressed(key_action2))
+		{
+			knight.state = KnightStates::normal;
+			return false;
+		}
+
+		Vec2f pos = this.getPosition();
+		bool forcedrop = getForceDrop(this, moveVars);
+
+		bool inair = getInAir(this);
+		if (inair && !this.isInWater())
+		{
+			Vec2f vec;
+			const int direction = this.getAimDirection(vec);
+			if (direction == -1 && !forcedrop && !getMap().isInWater(pos + Vec2f(0, 16)) && !moveVars.wallsliding)
+			{
+				knight.state = KnightStates::shieldgliding;
+				return true;
+			}
+			else if (forcedrop || direction == 1)
+			{
+				knight.state = KnightStates::shielddropping;
+				return true;
+			}
+		}
+
+		ShieldMovement(moveVars);
+
+		return false;
+	}
+}
+
+class ShieldGlideState : KnightState
+{
+	u8 getStateValue() { return KnightStates::shieldgliding; }
+	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
+	{
+		knight.swordTimer = 0;
+	}
+
+	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
+	{
+		if (this.isKeyPressed(key_action1))
+		{
+			knight.state = KnightStates::sword_drawn;
+			return true;
+		}
+		else if (!this.isKeyPressed(key_action2))
+		{
+			knight.state = KnightStates::normal;
+			return false;
+		}
+
+		Vec2f pos = this.getPosition();
+		bool forcedrop = getForceDrop(this, moveVars);
+
+		bool inair = getInAir(this);
+		if (inair && !this.isInWater())
+		{
+			Vec2f vec;
+			const int direction = this.getAimDirection(vec);
+			if (direction == -1 && !forcedrop && !getMap().isInWater(pos + Vec2f(0, 16)) && !moveVars.wallsliding)
+			{
+				// already in KnightStates::shieldgliding;
+			}
+			else if (forcedrop || direction == 1)
+			{
+				knight.state = KnightStates::shielddropping;
+				return true;
+			}
+			else
+			{
+				knight.state = KnightStates::shielding;
+				ShieldMovement(moveVars);
+				return false;
+			}
+
+		}
+
+		ShieldMovement(moveVars);
+
+		if (this.isInWater() || forcedrop)
+		{
+			knight.state = KnightStates::shielding;
+		}
+		else
+		{
+			Vec2f vel = this.getVelocity();
+
+			moveVars.stoppingFactor *= 0.5f;
+			f32 glide_amount = 1.0f - (moveVars.fallCount / f32(KnightVars::glide_down_time * 2));
+
+			if (vel.y > -1.0f)
+			{
+				this.AddForce(Vec2f(0, -20.0f * glide_amount));
+			}
+
+			if (!inair)
+			{
+				knight.state = KnightStates::shielding;
+			}
+
+		}
+
+		return false;
+	}
+}
+
+class ShieldSlideState : KnightState
+{
+	u8 getStateValue() { return KnightStates::shielddropping; }
+	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
+	{
+		knight.swordTimer = 0;
+	}
+
+	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
+	{
+		if (this.isKeyPressed(key_action1))
+		{
+			knight.state = KnightStates::sword_drawn;
+			return true;
+		}
+		else if (!this.isKeyPressed(key_action2))
+		{
+			knight.state = KnightStates::normal;
+			return false;
+		}
+
+		Vec2f pos = this.getPosition();
+		bool forcedrop = getForceDrop(this, moveVars);
+
+		bool inair = getInAir(this);
+		if (inair && !this.isInWater())
+		{
+			Vec2f vec;
+			const int direction = this.getAimDirection(vec);
+			if (direction == -1 && !forcedrop && !getMap().isInWater(pos + Vec2f(0, 16)) && !moveVars.wallsliding)
+			{
+				knight.state = KnightStates::shieldgliding;
+				return true;
+			}
+			else if (forcedrop || direction == 1)
+			{
+				// already in KnightStates::shielddropping;
+				knight.slideTime = 0;
+			}
+			else
+			{
+				knight.state = KnightStates::shielding;
+				ShieldMovement(moveVars);
+				return false;
+			}
+		}
+
+		ShieldMovement(moveVars);
+
+		Vec2f vel = this.getVelocity();
+
+		if (this.isInWater())
+		{
+			if (vel.y > 1.5f && Maths::Abs(vel.x) * 3 > Maths::Abs(vel.y))
+			{
+				vel.y = Maths::Max(-Maths::Abs(vel.y) + 1.0f, -8.0);
+				this.setVelocity(vel);
+			}
+			else
+			{
+				knight.state = KnightStates::shielding;
+			}
+		}
+
+		if (!inair && this.getShape().vellen < 1.0f)
+		{
+			knight.state = KnightStates::shielding;
+		}
+		else
+		{
+			// faster sliding
+			if (!inair)
+			{
+				knight.slideTime++;
+				if (knight.slideTime > 0)
+				{
+					if (knight.slideTime == 5)
+					{
+						this.getSprite().PlayRandomSound("/Scrape");
+					}
+
+					f32 factor = Maths::Max(1.0f, 2.2f / Maths::Sqrt(knight.slideTime));
+					moveVars.walkFactor *= factor;
+
+					if (knight.slideTime > 30)
+					{
+						moveVars.walkFactor *= 0.75f;
+						if (knight.slideTime > 45)
+						{
+							knight.state = KnightStates::shielding;
+						}
+					}
+					else if (XORRandom(3) == 0)
+					{
+						Vec2f pos = this.getPosition();
+						Vec2f velr = getRandomVelocity(!this.isFacingLeft() ? 70 : 110, 4.3f, 40.0f);
+						velr.y = -Maths::Abs(velr.y) + Maths::Abs(velr.x) / 3.0f - 2.0f - float(XORRandom(100)) / 100.0f;
+						ParticlePixel(pos, velr, SColor(255, 255, 255, 0), true);
+					}
+				}
+			}
+			else if (vel.y > 1.05f)
+			{
+				knight.slideTime = 0;
+			}
+
+		}
+
+		return false;
+
+	}
+}
+
+s32 getSwordTimerDelta(KnightInfo@ knight)
+{
+	s32 delta = knight.swordTimer;
+	if (knight.swordTimer < 128)
+	{
+		knight.swordTimer++;
+	}
+	return delta;
+}
+
+void AttackMovement(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
+{
+	Vec2f vel = this.getVelocity();
+
+	bool strong = (knight.swordTimer > KnightVars::slash_charge_level2);
+	moveVars.jumpFactor *= (strong ? 0.6f : 0.8f);
+	moveVars.walkFactor *= (strong ? 0.8f : 0.9f);
+
+	bool inair = getInAir(this);
+	if (!inair)
+	{
+		this.AddForce(Vec2f(vel.x * -5.0, 0.0f));   //horizontal slowing force (prevents SANICS)
+	}
+
+	moveVars.canVault = false;
+}
+
+class SwordDrawnState : KnightState
+{
+	u8 getStateValue() { return KnightStates::sword_drawn; }
+	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
+	{
+		knight.swordTimer = 0;
+	}
+
+	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
+	{
+		if (moveVars.wallsliding)
+		{
+			knight.state = KnightStates::normal;
+			return false;
+
+		}
+
+		Vec2f pos = this.getPosition();
+
+		if (getNet().isClient())
+		{
+			const bool myplayer = this.isMyPlayer();
+			if (knight.swordTimer == KnightVars::slash_charge_level2)
+			{
+				Sound::Play("AnimeSword.ogg", pos, myplayer ? 1.3f : 0.7f);
+			}
+			else if (knight.swordTimer == KnightVars::slash_charge)
+			{
+				Sound::Play("SwordSheath.ogg", pos, myplayer ? 1.3f : 0.7f);
+			}
+		}
+
+		if (knight.swordTimer >= KnightVars::slash_charge_limit)
+		{
+			Sound::Play("/Stun", pos, 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
+			setKnocked(this, 15);
+			knight.state = KnightStates::normal;
+		}
+
+		AttackMovement(this, knight, moveVars);
+		s32 delta = getSwordTimerDelta(knight);
+
+		if (!this.isKeyPressed(key_action1))
+		{
+			if (delta < KnightVars::slash_charge)
+			{
+				Vec2f vec;
+				const int direction = this.getAimDirection(vec);
+
+				if (direction == -1)
+				{
+					knight.state = KnightStates::sword_cut_up;
+				}
+				else if (direction == 0)
+				{
+					Vec2f aimpos = this.getAimPos();
+					Vec2f pos = this.getPosition();
+					if (aimpos.y < pos.y)
+					{
+						knight.state = KnightStates::sword_cut_mid;
+					}
+					else
+					{
+						knight.state = KnightStates::sword_cut_mid_down;
+					}
+				}
+				else
+				{
+					knight.state = KnightStates::sword_cut_down;
+				}
+			}
+			else if (delta < KnightVars::slash_charge_level2)
+			{
+				knight.state = KnightStates::sword_power;
+			}
+			else if(delta < KnightVars::slash_charge_limit)
+			{
+				knight.state = KnightStates::sword_power_super;
+			}
+		}
+
+		return false;
+	}
+}
+
+class CutState : KnightState
+{
+	u8 state;
+	CutState(u8 s) { state = s; }
+	u8 getStateValue() { return state; }
+	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
+	{
+		knight_clear_actor_limits(this);
+		knight.swordTimer = 0;
+	}
+
+	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
+	{
+		if (moveVars.wallsliding)
+		{
+			knight.state = KnightStates::normal;
+			return false;
+
+		}
+
+		this.Tag("prevent crouch");
+
+		AttackMovement(this, knight, moveVars);
+		s32 delta = getSwordTimerDelta(knight);
+
+		if (delta == DELTA_BEGIN_ATTACK)
+		{
+			Sound::Play("/SwordSlash", this.getPosition());
+		}
+		else if (delta > DELTA_BEGIN_ATTACK && delta < DELTA_END_ATTACK)
+		{
+			f32 attackarc = 90.0f;
+			f32 attackAngle = getCutAngle(this, knight.state);
+
+			if (knight.state == KnightStates::sword_cut_down)
+			{
+				attackarc *= 0.9f;
+			}
+
+			DoAttack(this, 1.0f, attackAngle, attackarc, Hitters::sword, delta, knight);
+		}
+		else if (delta >= 9)
+		{
+			knight.state = KnightStates::resheathing_cut;
+		}
+
+		return false;
+
+	}
+}
+
+Vec2f getSlashDirection(CBlob@ this)
+{
+	Vec2f vel = this.getVelocity();
+	Vec2f aiming_direction = vel;
+	aiming_direction.y *= 2;
+	aiming_direction.Normalize();
+
+	return aiming_direction;
+}
+
+class SlashState : KnightState
+{
+	u8 state;
+	SlashState(u8 s) { state = s; }
+	u8 getStateValue() { return state; }
+	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
+	{
+		knight_clear_actor_limits(this);
+		knight.swordTimer = 0;
+		knight.slash_direction = getSlashDirection(this);
+	}
+
+	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
+	{
+		if (moveVars.wallsliding)
+		{
+			knight.state = KnightStates::normal;
+			return false;
+
+		}
+
+		this.Tag("prevent crouch");
+
+		AttackMovement(this, knight, moveVars);
+		s32 delta = getSwordTimerDelta(knight);
+
+		if (knight.state == KnightStates::sword_power_super
+			&& this.isKeyJustPressed(key_action1))
+		{
+			knight.doubleslash = true;
+		}
+
+		if (delta == 2)
+		{
+			Sound::Play("/ArgLong", this.getPosition());
+			Sound::Play("/SwordSlash", this.getPosition());
+		}
+		else if (delta > DELTA_BEGIN_ATTACK && delta < 10)
+		{
+			Vec2f vec;
+			this.getAimDirection(vec);
+			DoAttack(this, 2.0f, -(vec.Angle()), 120.0f, Hitters::sword, delta, knight);
+		}
+		else if (delta >= KnightVars::slash_time
+			|| (knight.doubleslash && delta >= KnightVars::double_slash_time))
+		{
+			if (knight.doubleslash)
+			{
+				knight.doubleslash = false;
+				knight.state = KnightStates::sword_power;
+			}
+			else
+			{
+				knight.state = KnightStates::resheathing_slash;
+			}
+		}
+
+		Vec2f vel = this.getVelocity();
+		if ((knight.state == KnightStates::sword_power ||
+				knight.state == KnightStates::sword_power_super) &&
+				delta < KnightVars::slash_move_time)
+		{
+
+			if (Maths::Abs(vel.x) < KnightVars::slash_move_max_speed &&
+					vel.y > -KnightVars::slash_move_max_speed)
+			{
+				Vec2f slash_vel =  knight.slash_direction * this.getMass() * 0.5f;
+				this.AddForce(slash_vel);
+			}
+		}
+
+		return false;
+
+	}
+}
+
+class ResheathState : KnightState
+{
+	u8 state;
+	s32 time;
+	ResheathState(u8 s, s32 t) { state = s; time = t; }
+	u8 getStateValue() { return state; }
+	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
+	{
+		knight.swordTimer = 0;
+	}
+
+	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
+	{
+		if (moveVars.wallsliding)
+		{
+			knight.state = KnightStates::normal;
+			return false;
+
+		}
+		else if (this.isKeyPressed(key_action1))
+		{
+			knight.state = KnightStates::sword_drawn;
+			return true;
+		}
+
+		AttackMovement(this, knight, moveVars);
+		s32 delta = getSwordTimerDelta(knight);
+
+		if (delta > time)
+		{
+			knight.state = KnightStates::normal;
+		}
+
+		return false;
+	}
 }
 
 void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
@@ -656,7 +1015,7 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 			getHUD().SetCursorFrame(frame);
 		}
 		// the yellow circle stays for the duration of a slash, helpful for newplayers (note: you cant attack while its yellow)
-		else if (knight.state == KnightStates::normal) // disappear after slash is done
+		else if (knight.state == KnightStates::normal || knight.state == KnightStates::resheathing_cut || knight.state == KnightStates::resheathing_slash) // disappear after slash is done
 		// the yellow circle dissapears after mouse button release, more intuitive for improving slash timing
 		// else if (knight.swordTimer == 0) (disappear right after mouse release)
 		{
@@ -665,7 +1024,7 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 		else if (knight.swordTimer < KnightVars::slash_charge && knight.state == KnightStates::sword_drawn)
 		{
 			int frame = 2 + int((float(knight.swordTimer) / KnightVars::slash_charge) * 8) * 2;
-			if (knight.swordTimer <= KnightVars::resheath_time) //prevent from appearing when jabbing/jab spamming
+			if (knight.swordTimer <= KnightVars::resheath_cut_time) //prevent from appearing when jabbing/jab spamming
 			{
 				getHUD().SetCursorFrame(0);
 			}
@@ -729,7 +1088,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("cycle"))  //from standardcontrols
 	{
-		// cycle arrows
+		// cycle bombs
 		u8 type = this.get_u8("bomb type");
 		int count = 0;
 		while (count < bombTypeNames.length)
@@ -976,7 +1335,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		if (knight.state == KnightStates::shielddropping &&
 		        (!onground || isSliding(knight)) &&
 		        (blob.getShape() !is null && !blob.getShape().isStatic()) &&
-		        getKnocked(blob) == 0)
+		        !isKnocked(blob))
 		{
 			Vec2f pos = this.getPosition();
 			Vec2f vel = this.getOldVelocity();
@@ -1092,12 +1451,12 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	        && blockAttack(hitBlob, velocity, 0.0f))
 	{
 		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
-		SetKnocked(this, 30);
+		setKnocked(this, 30, true);
 	}
 
 	if (customData == Hitters::shield)
 	{
-		SetKnocked(hitBlob, 20);
+		setKnocked(hitBlob, 20, true);
 		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 	}
 }

@@ -4,6 +4,7 @@
 #include "PlacementCommon.as";
 #include "Help.as";
 #include "CommonBuilderBlocks.as";
+#include "KnockedCommon.as";
 
 namespace Builder
 {
@@ -215,7 +216,7 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 		if (blocks !is null && i >= 0 && i < blocks[PAGE].length)
 		{
 			BuildBlock@ block = @blocks[PAGE][i];
-			bool canBuildBlock = canBuild(blob, @blocks[PAGE], i) && blob.get_u8("knocked") == 0;
+			bool canBuildBlock = canBuild(blob, @blocks[PAGE], i) && !isKnocked(blob);
 			if (!canBuildBlock)
 			{
 				if (blob.isMyPlayer())

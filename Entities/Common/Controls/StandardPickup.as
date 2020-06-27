@@ -4,6 +4,7 @@
 #include "StandardControlsCommon.as"
 #include "ThrowCommon.as"
 #include "WheelMenuCommon.as"
+#include "KnockedCommon.as"
 
 const u32 PICKUP_ERASE_TICKS = 80;
 
@@ -18,6 +19,8 @@ void onInit(CBlob@ this)
 
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
+
+	AddIconToken("$filled_bucket$", "Bucket.png", Vec2f(16, 16), 1);
 
 	// setup pickup menu wheel
 	WheelMenu@ menu = get_wheel_menu("pickup");
@@ -67,13 +70,14 @@ void onInit(CBlob@ this)
 		menu.add_entry(PickupWheelMenuEntry("Food", "$food$", food_options));
 		menu.add_entry(PickupWheelMenuEntry("Ballista Ammo", "$mat_bolts$", "mat_bolts"));
 		menu.add_entry(PickupWheelMenuEntry("Crate", "$crate$", "crate", Vec2f(-16.0f, 0)));
+		menu.add_entry(PickupWheelMenuEntry("Bucket", "$filled_bucket$", "bucket"));
 	}
 
 }
 
 void onTick(CBlob@ this)
 {
-	if (this.isInInventory() || this.get_u8("knocked") > 0)
+	if (this.isInInventory() || isKnocked(this))
 	{
 		this.clear("pickup blobs");
 		this.clear("closest blobs");
@@ -210,14 +214,14 @@ void onTick(CBlob@ this)
 									closestScore = score;
 									@closest = @b;
 								}
-
 							}
 						}
-
 					}
 
 					if (closest !is null)
 					{
+						// NOTE: optimisation: use selected-option-blobs-in-radius
+						@closest = @GetBetterAlternativePickupBlobs(blobsInRadius, closest);
 						server_Pickup(this, this, closest);
 					}
 
@@ -286,6 +290,34 @@ void GatherPickupBlobs(CBlob@ this)
 			}
 		}
 	}
+}
+
+CBlob@ GetBetterAlternativePickupBlobs(CBlob@[] available_blobs, CBlob@ reference)
+{
+	if (reference is null) 
+		return reference;
+
+	CBlob@[] blobsInRadius;
+	const string ref_name = reference.getName();
+	const u32 ref_quantity = reference.getQuantity();
+	Vec2f ref_pos = reference.getPosition();
+
+	CBlob @result = reference;
+
+	for (uint i = 0; i < available_blobs.length; i++)
+	{
+		CBlob @b = available_blobs[i];
+		Vec2f b_pos = b.getPosition();
+		if ((b_pos - ref_pos).Length() > 10.0f)
+			continue;
+
+		const string name = b.getName();
+		const u32 quantity = b.getQuantity();
+		if (name == ref_name && quantity > ref_quantity)
+			@result = @b;
+	}
+
+	return result;
 }
 
 void ClearPickupBlobs(CBlob@ this)
@@ -457,6 +489,12 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 		return factor_boring;
 	}
 
+	if (name == "bucket" && b.get_u8("filled") > 0)
+	{
+		return factor_resource_useful;
+	}
+
+
 	// super low priority, dead stuff - sick of picking up corpses
 	if (b.hasTag("dead"))
 	{
@@ -537,6 +575,10 @@ CBlob@ getClosestBlob(CBlob@ this)
 				closestScore = score;
 				@closest = @b;
 			}
+		}
+
+		if (closest !is null) {
+			@closest = @GetBetterAlternativePickupBlobs(available, closest);
 		}
 	}
 

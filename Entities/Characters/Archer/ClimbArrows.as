@@ -1,5 +1,5 @@
 #include "RunnerCommon.as"
-#include "Knocked.as"
+#include "KnockedCommon.as"
 
 void onInit(CBlob@ this)
 {

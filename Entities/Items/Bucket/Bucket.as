@@ -1,7 +1,7 @@
 
 #include "Hitters.as";
 #include "SplashWater.as";
-
+#include "ArcherCommon.as";
 //config
 
 const int splash_width = 9;
@@ -20,6 +20,7 @@ void onInit(CBlob@ this)
 
 	this.getSprite().ReloadSprites(0, 0);
 	this.addCommandID("splash");
+	this.addCommandID("fill");
 
 	this.set_u8("filled", this.hasTag("_start_filled") ? splashes : 0);
 
@@ -78,6 +79,35 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			TakeWaterCount(this);
 		}
 	}
+
+
+	if (getNet().isServer()) {
+		const string name = hitterBlob.getName();
+
+		if ((customData == Hitters::water || customData == Hitters::water_stun) &&
+		    (name == "waterbomb" || (name == "arrow" && hitterBlob.get_u8("arrow type") == ArrowType::water)) && 
+		    !hitterBlob.hasTag("tmp has filled"))
+		{
+			u8 filled = this.get_u8("filled");
+			u8 tmp_filling_left = hitterBlob.get_u8("tmp filling left");
+			if (tmp_filling_left == 0) tmp_filling_left = splashes; // up to one full bucket
+			
+			if (filled < splashes)
+			{
+				u8 d = Maths::Min(tmp_filling_left, splashes - filled);
+				tmp_filling_left -= d;
+				hitterBlob.set_u8("tmp filling left" , tmp_filling_left);
+
+				if (tmp_filling_left <= 0)
+					hitterBlob.Tag("tmp has filled");
+				
+				CBitStream params;
+				params.write_u8(filled + d);
+				this.SendCommand(this.getCommandID("fill"), params);
+			}
+		}
+	}
+
 	return damage;
 }
 
@@ -86,6 +116,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	if (cmd == this.getCommandID("splash"))
 	{
 		DoSplash(this);
+	}
+	else if (cmd == this.getCommandID("fill"))
+	{
+		const u8 filled = params.read_u8();
+		this.set_u8("water_delay", 5); // only slight delay
+		this.set_u8("filled", filled);
+				
+		this.getSprite().SetAnimation("full");
 	}
 }
 
