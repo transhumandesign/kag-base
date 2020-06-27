@@ -141,13 +141,13 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 
 	if (blobID == 0)
 	{
+		// block
 		CMap@ map = getMap();
 		if (map !is null)
 		{
-			if (map.getSectorAtPosition(tilepos, "no build") is null)
+			uint16 type = map.getTile(tilepos).type;
+			if (!inNoBuildZone(map, tilepos, type))
 			{
-				uint16 type = map.getTile(tilepos).type;
-
 				if (getNet().isServer())
 				{
 					map.server_DestroyTile(tilepos, 1.0f, this);
@@ -168,6 +168,7 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 	}
 	else
 	{
+		// blob
 		CBlob@ blob = getBlobByNetworkID(blobID);
 		if (blob !is null)
 		{
@@ -326,7 +327,8 @@ void Pickaxe(CBlob@ this)
 	@bestinfo = hit_p.bestinfo;
 	bestDistance = hit_p.bestDistance;
 
-	bool noBuildZone = map.getSectorAtPosition(tilepos, "no build") !is null;
+	Tile tile = map.getTile(tilepos);
+	bool noBuildZone = inNoBuildZone(map, tilepos, tile.type);
 	bool isgrass = false;
 
 	if ((tilepos - aimPos).Length() < bestDistance - 4.0f && map.getBlobAtPosition(tilepos) is null)
