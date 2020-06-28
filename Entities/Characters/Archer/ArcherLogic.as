@@ -961,6 +961,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				break;
 			}
 		}
+		if (archer.charge_state == ArcherParams::no_arrows)
+		{
+			archer.charge_state = ArcherParams::readying;
+		}
+
 	}
 	else
 	{
