@@ -492,7 +492,8 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			{
 				charge_time--;
 
-				if (charge_time <= 0)
+				// when no arrows, ignore charge timer
+				if (charge_time <= 0 || !hasarrow)
 				{
 					charge_state = ArcherParams::not_aiming;
 					charge_time = 0;
