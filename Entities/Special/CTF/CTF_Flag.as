@@ -47,6 +47,11 @@ void onInit(CBlob@ this)
 			warning("Flags spawned at (0,0), investigate!");
 		}
 	}
+
+	AddIconToken("$progress_bar$", "Entities/Special/CTF/FlagProgressBar.png", Vec2f(30, 8), 0);
+	AddIconToken("$fast_return_indicator$", "Entities/Special/CTF/FlagFastReturnIndicator.png", Vec2f(18, 10), 0);
+	AddIconToken("$return_indicator$", "Entities/Special/CTF/FlagTickIndicator.png", Vec2f(10, 10), 0);
+
 }
 
 void onTick(CBlob@ this)
@@ -129,24 +134,48 @@ void onRender(CSprite@ this)
 
 	if (returncount > 0)
 	{
-		Vec2f pos2d = getDriver().getScreenPosFromWorldPos(blob.getPosition() + Vec2f(0.0f, -blob.getHeight()));
-
-		f32 wave = Maths::Sin(getGameTime() / 5.0f) * 3.0f - 25.0f;
+		const f32 scalex = getDriver().getResolutionScaleFactor();
+		const f32 zoom = getCamera().targetDistance * scalex;
+		// adjust vertical offset depending on zoom
+		Vec2f pos2d =  blob.getInterpolatedScreenPos() + Vec2f(0.0f, (-blob.getHeight() - 20.0f) * zoom);
+		
+			
+		f32 wave = Maths::Sin(getGameTime() / 5.0f) * 5.0f - 25.0f;
 
 		if (returncount < return_time)
 		{
-			GUI::DrawProgressBar(Vec2f(pos2d.x - 30.0f, pos2d.y - 10.0f + wave), Vec2f(pos2d.x + 30.0f, pos2d.y + 5.0f + wave), 1.0f - float(returncount) / float(return_time));
+			Vec2f pos = pos2d + Vec2f(-30.0f, -40.0f);
+			Vec2f dimension = Vec2f(60.0f - 8.0f, 8.0f);
+				
+			GUI::DrawIconByName("$progress_bar$", pos);
+			
+			f32 percentage = 1.0f - float(returncount) / float(return_time);
+			Vec2f bar = Vec2f(pos.x + (dimension.x * percentage), pos.y + dimension.y);
+			
+			if (1.0f - float(returncount) / float(return_time) < 0.2f)
+			{
+				GUI::DrawRectangle(pos + Vec2f(4, 4), bar + Vec2f(4, 4), SColor(255, 59, 20, 6));
+				GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 4), SColor(255, 148, 27, 27));
+				GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 2), SColor(255, 183, 51, 51));
+			}
+			else
+			{
+				GUI::DrawRectangle(pos + Vec2f(4, 4), bar + Vec2f(4, 4), SColor(255, 58, 63, 21));
+				GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 4), SColor(255, 99, 112, 95));
+				GUI::DrawRectangle(pos + Vec2f(6, 6), bar + Vec2f(2, 2), SColor(255, 125, 139, 120));
+			}
+
+			GUI::DrawIconByName("$ALERT$", Vec2f(pos2d.x - 32.0f, pos2d.y - 80.0f + wave));
 
 			if (getGameTime() % 15 > 10)
 			{
 				if (!shouldFastReturn(blob))
 				{
-					GUI::DrawIconByName("$ALERT$", Vec2f(pos2d.x - 32.0f, pos2d.y - 30.0f + wave));
+					GUI::DrawIconByName("$return_indicator$", Vec2f(pos2d.x-8.0f, pos2d.y-40.0f));
 				}
 				else
 				{
-					//maybe a check icon?
-					//GUI::DrawIconByName( "$ALERT$", Vec2f(pos2d.x-32.0f, pos2d.y-30.0f + wave) );
+					GUI::DrawIconByName("$fast_return_indicator$", Vec2f(pos2d.x-18.0f, pos2d.y-40.0f));
 				}
 			}
 		}

@@ -97,7 +97,7 @@ void onTick(CBlob@ this)
 								splash = true;
 						}
 						//make splashes when rowing
-						if (!this.isOnGround() && (left || right) && splash)
+						if (this.isInWater() && (left || right) && splash)
 						{
 							Vec2f pos = oar.getWorldTranslation();
 							Vec2f vel = this.getVelocity();
@@ -140,7 +140,7 @@ void onTick(CBlob@ this)
 
 	// rear splash
 
-	if (!this.isOnGround() && this.getShape().vellen > 2.0f)
+	if (this.isInWater() && this.getShape().vellen > 2.0f)
 	{
 		Vec2f pos = this.getPosition();
 		f32 side = this.isFacingLeft() ? this.getWidth() : -this.getWidth();

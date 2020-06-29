@@ -125,15 +125,16 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 	{
 		bool isLadder = false;
 		bool isSpikes = false;
+		bool isSeed = false;
 		if (blob !is null)
 		{
 			const string bname = blob.getName();
 			isLadder = bname == "ladder";
 			isSpikes = bname == "spikes";
+			isSeed = bname == "seed";
 		}
 
 		Vec2f middle = p;
-
 		if (!isLadder && (buildSolid || isSpikes) && map.getSectorAtPosition(middle, "no build") !is null)
 		{
 			return false;
@@ -181,6 +182,14 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 					}
 				}
 			}
+		}
+
+
+		if (isSeed)
+		{
+			// from canGrow.as
+			return (map.isTileGround(map.getTile(p + Vec2f(0, 8)).type));
+
 		}
 	}
 
