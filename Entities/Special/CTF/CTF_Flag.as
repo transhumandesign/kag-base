@@ -171,11 +171,11 @@ void onRender(CSprite@ this)
 			{
 				if (!shouldFastReturn(blob))
 				{
-					GUI::DrawIconByName("$return_indicator$", Vec2f(pos2d.x-8.0f, pos2d.y-40.0f));
+					GUI::DrawIconByName("$return_indicator$", Vec2f(pos2d.x-8.0f, pos2d.y-41.0f));
 				}
 				else
 				{
-					GUI::DrawIconByName("$fast_return_indicator$", Vec2f(pos2d.x-18.0f, pos2d.y-40.0f));
+					GUI::DrawIconByName("$fast_return_indicator$", Vec2f(pos2d.x-18.0f, pos2d.y-41.0f));
 				}
 			}
 		}
