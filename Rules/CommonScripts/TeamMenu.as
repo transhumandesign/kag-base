@@ -15,6 +15,18 @@ void onInit(CRules@ this)
 
 void ShowTeamMenu(CRules@ this)
 {
+	BuildTeamMenu(this, 0);
+}
+
+/// 
+///	Builds the menu for selecting a team change.
+/// 
+/// <param> this	The gamemode's rules reference.
+/// <param> remainingSpawnTime	Used in CTF to display info for a respawning player.
+///		Default epxected value is 0.
+///
+void BuildTeamMenu(CRules@ this, u8 remainingSpawnTime)
+{
 	if (getLocalPlayer() is null)
 	{
 		return;
@@ -22,7 +34,11 @@ void ShowTeamMenu(CRules@ this)
 
 	getHUD().ClearMenus(true);
 
-	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos(), null, Vec2f((this.getTeamsCount() + 0.5f) * BUTTON_SIZE, BUTTON_SIZE), "Change team");
+	// If a valid remainingSpawnTime was given, allow for more vertical space
+	// for the additional countdown text button.
+	u8 yOffset = (remainingSpawnTime > 0) ? 1 : 0;
+
+	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos(), null, Vec2f((this.getTeamsCount() + 0.5f) * BUTTON_SIZE, (BUTTON_SIZE + yOffset) ), "Change team");
 
 	if (menu !is null)
 	{
@@ -63,6 +79,15 @@ void ShowTeamMenu(CRules@ this)
 
 			CGridButton@ button =  menu.AddButton(icon, getTranslatedString(name), this.getCommandID("pick teams"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
 		}
+
+		// Render additional text denoting how many seconds the player 
+		// has to change teams, before their option is locked in.
+		if (remainingSpawnTime > 0)
+		{
+			string lockInText = (remainingSpawnTime > 2) ? "Locking selection, in: " + (remainingSpawnTime - 2) : "Locked in!";
+			CGridButton@ countdownButton = menu.AddTextButton(lockInText, Vec2f( (BUTTON_SIZE * 2) + 2, BUTTON_SIZE/4));	
+		}
+
 	}
 }
 
