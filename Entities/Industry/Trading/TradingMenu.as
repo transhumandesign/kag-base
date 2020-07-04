@@ -232,9 +232,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 			TradeItem@ item = AddItemToShip(this, caller, itemIndex, goldCount);
 
-			CGridMenu@ menu = getGridMenuByName(getTranslatedString(this.get_string("trade menu caption")));
-			if (menu !is null) // if menu is still open, refresh
-				UpdateRequirementsTraderMenu(this, menu, caller);
+			if (getNet().isClient()) {
+				CGridMenu@ menu = getGridMenuByName(getTranslatedString(this.get_string("trade menu caption")));
+				if (menu !is null) // if menu is still open, refresh
+					UpdateRequirementsTraderMenu(this, menu, caller);
+			}
 		}
 	}
 }
