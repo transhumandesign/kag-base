@@ -12,7 +12,6 @@ void onInit(CBlob@ this)
 {
 	this.addCommandID("stock");
 	this.addCommandID("buy");
-	this.addCommandID("reload menu");
 	AddIconToken("$" + this.getName() + "$", "TradingPost.png", Vec2f(16, 16), 15);
 	AddIconToken("$parachute$", "Crate.png", Vec2f(32, 32), 4);
 	AddIconToken("$trade$", "Coins.png", Vec2f(16, 16), 1);
@@ -73,6 +72,9 @@ void BuildTradingMenu(CBlob@ this, CBlob @caller)
 		if (menu !is null)
 		{
 			addTradeItemsToMenu(this, menu, caller.getNetworkID());
+
+			UpdateRequirementsTraderMenu(this, menu, caller);
+
 			menu.deleteAfterClick = false;
 
 			//keybinds
@@ -141,37 +143,60 @@ void addTradeItemsToMenu(CBlob@ this, CGridMenu@ menu, u16 callerID)
 				params.write_bool(false); //used hotkey?
 
 				CGridButton@ button = menu.AddButton(item.iconName, getTranslatedString(item.name), this.getCommandID("buy"), params);
-				if (button !is null)
+
+				// requirements are handled by UpdateRequirementsTraderMenu
+			}
+		}
+	}
+}
+
+
+void UpdateRequirementsTraderMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
+{
+	if (caller is null || !caller.isMyPlayer())
+		return;
+	
+	const u32 gametime = getGameTime();
+	
+	TradeItem[]@ items;
+	if (!this.get("items", @items)) { return; }
+
+	// we assume shop-items and buttons are 1-to-1
+	// menu.buttons[i] <=> shop-items[i]
+	for (uint i = 0; i < menu.getButtonsCount(); i++) {
+		CGridButton@ button = menu.getButtonOfIndex(i);
+		if (button !is null)
+		{
+			TradeItem @item = items[i];
+			if (item is null) { continue; }
+
+			if (item.boughtTime != 0 && item.boughtTime + item.unavailableTime > gametime)
+			{
+				button.hoverText = getTranslatedString("Out of stock. Come back later.");
+				button.SetEnabled(false);
+			}
+			else
+			{
+				SetItemDescription(button, caller, item.reqs, item.getDescription());
+
+				if (item.prepaidGold)
 				{
-					if (item.boughtTime != 0 && item.boughtTime + item.unavailableTime > gametime)
+					const u16 goldCount = caller.getBlobCount("mat_gold");
+					if (goldCount > 0)
 					{
-						button.hoverText = getTranslatedString("Out of stock. Come back later.");
-						button.SetEnabled(false);
+						button.SetEnabled(true);
 					}
-					else
+
+					if (item.paidGold > 0)
 					{
-						SetItemDescription(button, caller, item.reqs, item.getDescription());
-
-						if (item.prepaidGold)
-						{
-							if (goldCount > 0)
-							{
-								button.SetEnabled(true);
-							}
-
-							if (item.paidGold > 0)
-							{
-								button.SetNumber(item.paidGold);
-								button.hoverText += "\n\n (" + item.paidGold + " paid already)";
-							}
-						}
+						button.SetNumber(item.paidGold);
+						button.hoverText += "\n\n (" + item.paidGold + " paid already)";
 					}
 				}
 			}
 		}
 	}
 }
-
 bool isInRadius(CBlob@ this, CBlob @caller)
 {
 	return (!this.hasTag("dead") && (this.getPosition() - caller.getPosition()).Length() < this.getRadius() * 4.0f + caller.getRadius());
@@ -207,20 +232,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 			TradeItem@ item = AddItemToShip(this, caller, itemIndex, goldCount);
 
-			if (item is null) // reload menu
-			{
-				caller.ClearMenus();
-				BuildTradingMenu(this, caller);
-			}
-		}
-	}
-	else if (cmd == this.getCommandID("reload menu"))
-	{
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		if (caller !is null)
-		{
-			caller.ClearMenus();
-			BuildTradingMenu(this, caller);
+			CGridMenu@ menu = getGridMenuByName(getTranslatedString(this.get_string("trade menu caption")));
+			if (menu !is null) // if menu is still open, refresh
+				UpdateRequirementsTraderMenu(this, menu, caller);
 		}
 	}
 }

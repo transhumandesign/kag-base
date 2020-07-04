@@ -300,6 +300,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 			}
 		}
+
+		
+		CGridMenu@ menu = getGridMenuByName(getTranslatedString(this.get_string("shop description")));
+		if (menu !is null) // if menu is still open, refresh
+			UpdateRequirementsShopMenu(this, menu, caller);
 	}
 }
 
@@ -333,61 +338,7 @@ void addShopItemsToMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
 			else
 				@button = menu.AddButton(s_item.iconName, getTranslatedString(s_item.name), this.getCommandID("shop buy"), params);
 
-
-			if (button !is null)
-			{
-				if (s_item.producing)		  // !! no click for production items
-					button.clickable = false;
-
-				button.selectOnClick = true;
-
-				bool tookReqs = false;
-				CBlob@ storageReq = null;
-				// try taking from the caller + this shop first
-				CBitStream missing;
-				if (hasRequirements_Tech(this.getInventory(), caller.getInventory(), s_item.requirements, missing))
-				{
-					tookReqs = true;
-				}
-				// try taking from caller + storages second
-				//if (!tookReqs)
-				//{
-				//	const s32 team = this.getTeamNum();
-				//	CBlob@[] storages;
-				//	if (getBlobsByTag( "storage", @storages ))
-				//		for (uint step = 0; step < storages.length; ++step)
-				//		{
-				//			CBlob@ storage = storages[step];
-				//			if (storage.getTeamNum() == team)
-				//			{
-				//				CBitStream missing;
-				//				if (hasRequirements_Tech( caller.getInventory(), storage.getInventory(), s_item.requirements, missing ))
-				//				{
-				//					@storageReq = storage;
-				//					break;
-				//				}
-				//			}
-				//		}
-				//}
-
-				const bool takeReqsFromStorage = (storageReq !is null);
-
-				if (s_item.ticksToMake > 0)		   // production
-					SetItemDescription_Tech(button, this, s_item.requirements, s_item.description, this.getInventory());
-				else
-				{
-					string desc = s_item.description;
-					//if (takeReqsFromStorage)
-					//	desc += "\n\n(Using resources from team storage)";
-
-					SetItemDescription_Tech(button, caller, s_item.requirements, getTranslatedString(desc), takeReqsFromStorage ? storageReq.getInventory() : this.getInventory());
-				}
-
-				//if (s_item.producing) {
-				//	button.SetSelected( 1 );
-				//	menu.deleteAfterClick = false;
-				//}
-			}
+			// requirements are handled in UpdateRequirementsShopMenu
 		}
 	}
 }
@@ -410,6 +361,8 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 		if (!this.hasTag(SHOP_AUTOCLOSE))
 			menu.deleteAfterClick = false;
 		addShopItemsToMenu(this, menu, caller);
+
+		UpdateRequirementsShopMenu(this, menu, caller);
 
 		//keybinds
 		array<EKEY_CODE> numKeys = { KEY_KEY_1, KEY_KEY_2, KEY_KEY_3, KEY_KEY_4, KEY_KEY_5, KEY_KEY_6, KEY_KEY_7, KEY_KEY_8, KEY_KEY_9, KEY_KEY_0 };
@@ -436,3 +389,53 @@ void BuildDefaultShopMenu(CBlob@ this, CBlob @caller)
 {
 	BuildShopMenu(this, caller, getTranslatedString("Shop"), Vec2f(0, 0), Vec2f(4, 4));
 }
+
+
+void UpdateRequirementsShopMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
+{
+	if (caller is null || !caller.isMyPlayer())
+		return;
+		
+	ShopItem[]@ shop_items;
+	if (!this.get(SHOP_ARRAY, @shop_items)) { return; }
+
+	// we assume shop-items and buttons are 1-to-1
+	// menu.buttons[i] <=> shop-items[i]
+	for (uint i = 0; i < menu.getButtonsCount(); i++) {
+		CGridButton@ button = menu.getButtonOfIndex(i);
+		if (button !is null)
+		{
+			ShopItem @s_item = shop_items[i];
+			if (s_item is null) { continue; }
+
+			if (s_item.producing)		  // !! no click for production items
+				button.clickable = false;
+
+			button.selectOnClick = false;
+
+			bool tookReqs = false;
+			CBlob@ storageReq = null;
+			// try taking from the caller + this shop first
+			CBitStream missing;
+			if (hasRequirements_Tech(this.getInventory(), caller.getInventory(), s_item.requirements, missing))
+			{
+				tookReqs = true;
+			}
+				
+			const bool takeReqsFromStorage = (storageReq !is null);
+
+			if (s_item.ticksToMake > 0)		   // production
+			{
+				SetItemDescription_Tech(button, this, s_item.requirements, s_item.description, this.getInventory());
+			}
+			else
+			{
+				string desc = s_item.description;
+
+				SetItemDescription_Tech(button, caller, s_item.requirements, getTranslatedString(desc), takeReqsFromStorage ? storageReq.getInventory() : this.getInventory());
+			}
+		}
+	}
+
+}
+
