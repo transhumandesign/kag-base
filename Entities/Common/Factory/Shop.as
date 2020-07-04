@@ -88,13 +88,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (this.hasTag("shop disabled"))
 			return;
 		
-		if (getNet().isClient())
-		{
-
-			// build menu for them
-			CBlob@ caller = getBlobByNetworkID(params.read_u16());
-			BuildShopMenu(this, caller, this.get_string("shop description"), Vec2f(0, 0), this.get_Vec2f("shop menu size"));
-		}
+		// build menu for them
+		CBlob@ caller = getBlobByNetworkID(params.read_u16());
+		BuildShopMenu(this, caller, this.get_string("shop description"), Vec2f(0, 0), this.get_Vec2f("shop menu size"));
 	}
 	else if (cmd == this.getCommandID("shop buy"))
 	{
@@ -306,13 +302,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					}
 				}
 			}
-			else
-			{
-				// on client
-				CGridMenu@ menu = getGridMenuByName(getTranslatedString(this.get_string("shop description")));
-				if (menu !is null) // if menu is still open, refresh
-					UpdateRequirementsShopMenu(this, menu, caller);
-			}
+
+			CGridMenu@ menu = getGridMenuByName(getTranslatedString(this.get_string("shop description")));
+			if (menu !is null) // if menu is still open, refresh
+				UpdateRequirementsShopMenu(this, menu, caller);
 		}
 	}
 }
