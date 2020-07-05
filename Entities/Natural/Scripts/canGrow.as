@@ -40,5 +40,18 @@ bool canGrowAt(CBlob@ this, Vec2f pos)
 		return false;
 	}
 
-	return (map.isTileGroundStuff(map.getTile(Vec2f(pos.x, pos.y + 8)).type));
+	CBlob@[] blobs;
+	map.getBlobsFromTile(map.getTile(pos), blobs);
+	for (uint i = 0; i < blobs.length; i++)
+	{
+		CBlob@ b = blobs[i];
+		string bname = b.getName();
+		if ((b.isCollidable() ||
+			bname == "wooden_door" ||
+			bname == "stone_door"))
+			return false;
+
+	}
+
+	return (map.isTileGround(map.getTile(Vec2f(pos.x, pos.y + 8)).type));
 }
