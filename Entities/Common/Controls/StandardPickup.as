@@ -521,7 +521,7 @@ CBlob@ getClosestAimedBlob(CBlob@ this, CBlob@[] available)
 		float cursorDistance = (this.getAimPos() - current.getPosition()).Length();
 
 		float radius = current.getRadius();
-		if (radius > 3.0f && cursorDistance > current.getRadius() * 1.5f)
+		if (radius > 3.0f && cursorDistance > radius * 1.5f)
 		{
 			continue;
 		}
@@ -539,6 +539,7 @@ CBlob@ getClosestAimedBlob(CBlob@ this, CBlob@[] available)
 CBlob@ getClosestBlob(CBlob@ this)
 {
 	CBlob@ closest;
+	CBlob@ target; // when hovering a blob
 
 	CBlob@[]@ pickupBlobs;
 	if (this.get("pickup blobs", @pickupBlobs))
@@ -558,11 +559,29 @@ CBlob@ getClosestBlob(CBlob@ this)
 		}
 
 		float closestScore = 999999.9f;
-
+		float drawOrderScore = -999999.9f;
 		for (uint i = 0; i < available.length; ++i)
 		{
 			CBlob @b = available[i];
 			Vec2f bpos = b.getPosition();
+
+			if (b.isPointInside(this.getAimPos())) 
+			{
+				// go through all layers. This is not perfect,
+				// as these don't always match the blob's CShape though.
+				CSprite @bs = this.getSprite();
+				for (int i = 0; i < bs.getSpriteLayerCount(); ++i)
+				{
+					float draworder = bs.getSpriteLayer(i).getDrawOrder();
+					if (draworder > drawOrderScore )
+					{
+						drawOrderScore = draworder;
+						@target = @b;
+					}
+				}
+				
+			}
+
 
 			float maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
 
@@ -581,6 +600,9 @@ CBlob@ getClosestBlob(CBlob@ this)
 			@closest = @GetBetterAlternativePickupBlobs(available, closest);
 		}
 	}
+
+	if (target !is null)
+		return target;
 
 	return closest;
 }
