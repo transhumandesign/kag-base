@@ -17,9 +17,9 @@ const u8 heat_max = 120;
 
 const string last_drill_prop = "drill last active";
 
-const u8 heat_add = 4;
+const u8 heat_add = 6;
 const u8 heat_add_constructed = 2;
-const u8 heat_add_blob = heat_add * 2;
+const u8 heat_add_blob = 8;
 const u8 heat_cool_amount = 2;
 
 const u8 heat_cooldown_time = 5;
@@ -228,7 +228,10 @@ void onTick(CBlob@ this)
 				heat++;
 			}
 
-			const u8 delay_amount = inwater ? 20 : 8;
+			u8 delay_amount = 8;
+			if (this.get_bool("just hit dirt")) delay_amount = 10;
+			if (inwater) delay_amount = 20;
+			
 			bool skip = (gametime < this.get_u32(last_drill_prop) + delay_amount);
 
 			if (skip)
@@ -238,6 +241,8 @@ void onTick(CBlob@ this)
 			else
 			{
 				this.set_u32(last_drill_prop, gametime); // update last drill time
+				this.set_bool("just hit dirt", false);	
+				this.Sync("just hit dirt", true);
 			}
 
 			// delay drill
@@ -337,6 +342,12 @@ void onTick(CBlob@ this)
 										{
 											Material::fromTile(holder, tile, 0.75f);
 										}
+										
+										if (map.isTileGround(tile) || map.isTileStone(tile) || map.isTileThickStone(tile)) 
+										{
+											this.set_bool("just hit dirt", true);
+											this.Sync("just hit dirt", true);
+										}
 
 									}
 
@@ -424,7 +435,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	if (customData == Hitters::water)
 	{
-		this.set_u8(heat_prop, 0);
+		s16 current_heat = this.get_u8(heat_prop) - heat_max/2;
+		if (current_heat < 0) current_heat= 0;
+		this.set_u8(heat_prop, current_heat);
 		makeSteamPuff(this);
 	}
 
