@@ -6,7 +6,7 @@
 
 const int splash_width = 9;
 const int splash_height = 7;
-const int splashes = 3;
+const int splashes = 2;
 
 //logic
 void onInit(CBlob@ this)
