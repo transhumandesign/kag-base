@@ -22,7 +22,7 @@ const u8 heat_add_constructed = 2;
 const u8 heat_add_blob = 8;
 const u8 heat_cool_amount = 2;
 
-const u8 heat_cooldown_time = 5;
+const u8 heat_cooldown_time = 6;
 const u8 heat_cooldown_time_water = u8(heat_cooldown_time / 3);
 
 const f32 max_heatbar_view_range = 65;
@@ -278,7 +278,7 @@ void onTick(CBlob@ this)
 								// or blobs to increase damage to (for the future)
 								string name = b.getName();
 
-								if (name == "mat_stone" || name == "mat_wood" || name == "mat_gold")
+								if (name.substr(0,4) == "mat_")
 								{
 									continue; // carry on onto the next loop, dont waste time & heat on this
 								}
