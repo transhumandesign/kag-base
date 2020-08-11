@@ -7,6 +7,10 @@ const bool CASUAL_MODE = false;
 void onInit(CBlob@ this)
 {
 	this.set_TileType("background tile", CMap::tile_castle_back);
+	
+	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
+	this.SetMinimapVars("GUI/Minimap/TunnelIcon.png", 0, Vec2f(7, 5));
+	this.SetMinimapRenderAlways(false);
 }
 
 // destroy tunnel after enemly uses it
