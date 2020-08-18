@@ -278,7 +278,7 @@ void onTick(CBlob@ this)
 								// or blobs to increase damage to (for the future)
 								string name = b.getName();
 
-								if (name.substr(0,4) == "mat_")
+								if (b.hasTag("material") || name == "tent" || name == "food")
 								{
 									continue; // carry on onto the next loop, dont waste time & heat on this
 								}
