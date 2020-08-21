@@ -22,7 +22,7 @@ const u8 heat_add_constructed = 2;
 const u8 heat_add_blob = 8;
 const u8 heat_cool_amount = 2;
 
-const u8 heat_cooldown_time = 6;
+const u8 heat_cooldown_time = 5;
 const u8 heat_cooldown_time_water = u8(heat_cooldown_time / 3);
 
 const f32 max_heatbar_view_range = 65;
@@ -396,6 +396,7 @@ void onTick(CBlob@ this)
 								}
 								hitsomething = false;
 								hitblob = false;
+								this.Sync(heat_prop, true);
 							}
 						}
 					}
@@ -435,7 +436,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	if (customData == Hitters::water)
 	{
-		s16 current_heat = this.get_u8(heat_prop) - heat_max/2;
+		s16 current_heat = this.get_u8(heat_prop) - heat_max*0.7f;
 		if (current_heat < 0) current_heat= 0;
 		this.set_u8(heat_prop, current_heat);
 		makeSteamPuff(this);
