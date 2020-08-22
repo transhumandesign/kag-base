@@ -396,7 +396,6 @@ void onTick(CBlob@ this)
 								}
 								hitsomething = false;
 								hitblob = false;
-								this.Sync(heat_prop, true);
 							}
 						}
 					}
