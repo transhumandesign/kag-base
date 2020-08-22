@@ -177,6 +177,7 @@ void onTick(CBlob@ this)
 			heat -= heat_cool_amount;
 		}
 		this.set_u8(heat_prop, heat);
+		this.Sync(heat_prop, true);
 	}
 	sprite.SetEmitSoundPaused(true);
 	if (this.isAttached())
@@ -414,6 +415,7 @@ void onTick(CBlob@ this)
 			}
 		}
 		this.set_u8(heat_prop, heat);
+		this.Sync(heat_prop, true);
 	}
 	else
 	{
