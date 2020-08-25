@@ -20,6 +20,7 @@
 #include "Hitters.as";
 #include "ShieldCommon.as";
 #include "SplashWater.as";
+#include "MaterialCommon.as";
 
 bool isOwnerBlob(CBlob@ this, CBlob@ that)
 {
@@ -218,6 +219,11 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 								{
 									if (!map.isTileBedrock(tile))
 									{
+										if (map.isTileGold(tile))
+										{
+											Material::fromTile(this, tile, 1.0f); // drops gold at bombs position
+										}
+
 										if (dist >= rad_thresh ||
 										        !canExplosionDestroy(map, tpos, tile))
 										{
