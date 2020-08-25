@@ -1,4 +1,4 @@
-﻿// include file for blobs that use tunnel travel capabilities
+// include file for blobs that use tunnel travel capabilities
 // apply "travel tunnel" tag to use
 
 #include "TunnelCommon.as";
@@ -139,7 +139,7 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 		//if (isKnockable(caller) && caller.get_u8("knocked") > 0)
 		//	return;
 
-		if (caller.isAttached())   // attached - like sitting in cata? move whole cata
+		if (caller.isAttached() && getRules().gamemode_name != "CTF")   // attached - like sitting in cata? move whole cata, only in none CTF
 		{
 			const int count = caller.getAttachmentPointCount();
 			for (int i = 0; i < count; i++)
@@ -154,10 +154,13 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 				}
 			}
 		}
-		// move caller
-		caller.setPosition(tunnel.getPosition());
-		caller.setVelocity(Vec2f_zero);
-		//caller.getShape().PutOnGround();
+		else
+		{
+			caller.server_DetachFromAll(); // detatch from all just in case.
+			caller.setPosition(tunnel.getPosition());
+			caller.setVelocity(Vec2f_zero);
+		}
+
 
 		if (caller.isMyPlayer())
 		{
