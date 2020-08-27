@@ -25,19 +25,6 @@ void onInit(CBlob @ this)
 	this.getCurrentScript().tickFrequency = 3;
 }
 
-void onTick(CBlob@ this)
-{
-	//rock and roll mode
-	/*
-	if (!this.getShape().getConsts().collidable)
-	{
-		Vec2f vel = this.getVelocity();
-		f32 angle = vel.Angle();
-		Slam(this, angle, vel, this.getShape().vellen * 1.5f);
-	}
-	*/
-}
-
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
 	this.set_u8("launch team", detached.getTeamNum());
@@ -52,8 +39,6 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 	if (attached.getName() != "catapult") // end of rock and roll
 	{
-		//this.getShape().getConsts().mapCollisions = true;
-		//this.getShape().getConsts().collidable = true;
 		this.Untag("rock_n_roll");
 	}
 	this.set_u8("launch team", attached.getTeamNum());
@@ -191,12 +176,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	Vec2f hitvel = this.getOldVelocity();
 	f32 vellen = hitvel.Length();
 	
-	/*if (blob is null)
-	{
-		if ((this.hasTag("rock_n_roll") || vellen > 6.0f) && getNet().isServer()) shatter(this, 10, 4.0f, 4);
-		return;
-	}
-	*/
 	if (solid && getNet().isServer())
 	{
 		if (this.hasTag("rock_n_roll"))
