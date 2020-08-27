@@ -237,8 +237,9 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 
 		if (bullet.getName() == "boulder") // rock n' roll baby
 		{
-			bullet.getShape().getConsts().mapCollisions = false;
-			bullet.getShape().getConsts().collidable = false;
+			bullet.Tag("rock_n_roll");
+			//bullet.getShape().getConsts().mapCollisions = false;
+			//bullet.getShape().getConsts().collidable = false;
 		}
 	}
 

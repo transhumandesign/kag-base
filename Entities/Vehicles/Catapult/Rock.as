@@ -42,7 +42,7 @@ void onTick(CBlob@ this)
 	bool isServer = getNet().isServer();
 	bool isClient = getNet().isClient();
 
-	if (vellen > 2.0f)
+	if (vellen > 2.0f || this.hasTag("fromBoulder"))
 	{
 		Vec2f pos = this.getPosition();
 
@@ -54,7 +54,7 @@ void onTick(CBlob@ this)
 		CMap@ map = this.getMap();
 		Tile tile = map.getTile(pos);
 
-		if (map.isTileBackgroundNonEmpty(tile) && this.getTickSinceCreated() > 9.0f - vellen*0.42f) // prevent hitting backtiles if just created.
+		if (map.isTileBackgroundNonEmpty(tile) && (this.getTickSinceCreated() > 9.0f - vellen*0.42f || this.hasTag("fromBoulder"))) // prevent hitting backtiles if just created.
 		{
 			if (isServer)
 			{

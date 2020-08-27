@@ -28,12 +28,14 @@ void onInit(CBlob @ this)
 void onTick(CBlob@ this)
 {
 	//rock and roll mode
+	/*
 	if (!this.getShape().getConsts().collidable)
 	{
 		Vec2f vel = this.getVelocity();
 		f32 angle = vel.Angle();
 		Slam(this, angle, vel, this.getShape().vellen * 1.5f);
 	}
+	*/
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
@@ -50,8 +52,9 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 	if (attached.getName() != "catapult") // end of rock and roll
 	{
-		this.getShape().getConsts().mapCollisions = true;
-		this.getShape().getConsts().collidable = true;
+		//this.getShape().getConsts().mapCollisions = true;
+		//this.getShape().getConsts().collidable = true;
+		this.Untag("rock_n_roll");
 	}
 	this.set_u8("launch team", attached.getTeamNum());
 }
@@ -162,9 +165,51 @@ bool BoulderHitMap(CBlob@ this, Vec2f worldPoint, int tileOffset, Vec2f velocity
 	return stuck;
 }
 
+void shatter(CBlob@ this, u16 rocks_amount, f32 min_vel, f32 max_vel_inc)
+{
+	for (int i = 0; i < rocks_amount; i++)
+		{
+			CBlob@ rock = server_CreateBlob("cata_rock", this.get_u8("launch team"), this.getPosition());
+			rock.Tag("fromBoulder");
+			rock.Sync("fromBoulder", true);
+			if (this.getDamageOwnerPlayer() !is null)
+				rock.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
+
+			Vec2f vel = Vec2f(-(XORRandom(max_vel_inc*10)/10+min_vel),0.0f);
+			f32 angle = XORRandom(3600)/10;
+
+			vel.RotateBy(angle);
+			rock.setVelocity(vel);
+		}
+		this.server_Die();
+}
+
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
+
+	Vec2f hitvel = this.getOldVelocity();
+	f32 vellen = hitvel.Length();
+	
+	/*if (blob is null)
+	{
+		if ((this.hasTag("rock_n_roll") || vellen > 6.0f) && getNet().isServer()) shatter(this, 10, 4.0f, 4);
+		return;
+	}
+	*/
+	if (solid && getNet().isServer())
+	{
+		if (this.hasTag("rock_n_roll"))
+		{
+			shatter(this, 10, 4.0f, 4);
+		}
+
+		if (vellen > 6.0f)
+		{
+			shatter(this, 10, 4.0f, 4);
+		}
+	}
+
 	if (solid && blob !is null)
 	{
 		Vec2f hitvel = this.getOldVelocity();
@@ -215,18 +260,28 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		hitvel.Normalize();
 		f32 dmg = vellen > 8.0f ? 5.0f : (vellen > 4.0f ? 1.5f : 0.5f);
 
+
+		//hurt
+		this.server_Hit(blob, point1, hitvel, dmg, Hitters::boulder, true);
+
+		if (getNet().isServer())
+		{
+			if (this.hasTag("rock_n_roll") || vellen > 6.0f)
+			{
+				shatter(this, 10, 4.0f, 4.0f);
+			}
+		}
+
 		//bounce off if not gibbed
 		if (dmg < 4.0f)
 		{
 			this.setVelocity(blob.getOldVelocity() + hitvec * -Maths::Min(dmg * 0.33f, 1.0f));
 		}
 
-		//hurt
-		this.server_Hit(blob, point1, hitvel, dmg, Hitters::boulder, true);
-
 		return;
 
 	}
+
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
@@ -237,6 +292,13 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 
 	return damage;
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	string name = blob.getName();
+	if ((name == "archer" || name == "knight" || name == "builder") && this.get_u8("launch team") == blob.getTeamNum()) return false;
+	else return true;
 }
 
 //sprite
