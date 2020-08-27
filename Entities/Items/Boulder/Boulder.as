@@ -176,14 +176,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	Vec2f hitvel = this.getOldVelocity();
 	f32 vellen = hitvel.Length();
 	
-	if (solid && getNet().isServer())
+	if (solid && isServer() && blob is null)
 	{
-		if (this.hasTag("rock_n_roll"))
-		{
-			shatter(this, 10, 4.0f, 4);
-		}
-
-		if (vellen > 6.0f)
+		if (this.hasTag("rock_n_roll") || vellen > 6.0f)
 		{
 			shatter(this, 10, 4.0f, 4);
 		}
@@ -243,7 +238,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		//hurt
 		this.server_Hit(blob, point1, hitvel, dmg, Hitters::boulder, true);
 
-		if (getNet().isServer())
+		if (isServer())
 		{
 			if (this.hasTag("rock_n_roll") || vellen > 6.0f)
 			{
