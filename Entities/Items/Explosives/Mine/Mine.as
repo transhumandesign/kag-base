@@ -16,24 +16,6 @@ enum State
 	PRIMED
 };
 
-void onRender(CSprite@ this)
-{
-	if (g_videorecording)
-		return;
-
-	CBlob@ blob = this.getBlob();
-	Vec2f center = blob.getPosition();
-	Vec2f mouseWorld = getControls().getMouseWorldPos();
-	const f32 renderRadius = (blob.getRadius()) * 0.95f;
-	bool mouseOnBlob = (mouseWorld - center).getLength() < renderRadius;
-	string mineOwner = "Owner: " + blob.get_string("owner");
-
-	if (mouseOnBlob && blob.getTeamNum() == getLocalPlayerBlob().getTeamNum())
-	{
-		GUI::SetFont("menu");
-		GUI::DrawTextCentered(mineOwner, blob.getScreenPos(), color_white);
-	}
-}
 
 void onInit(CBlob@ this)
 {
@@ -88,7 +70,7 @@ void onTick(CBlob@ this)
 	{
 		this.set_string("owner", this.getDamageOwnerPlayer().getUsername());
 	}
-	
+
 	this.Sync("owner", true);
 
 	if (getNet().isServer())
@@ -111,6 +93,25 @@ void onTick(CBlob@ this)
 		{
 			this.set_u8(MINE_TIMER, 0);
 		}
+	}
+}
+
+void onRender(CSprite@ this)
+{
+	if (g_videorecording)
+		return;
+
+	CBlob@ blob = this.getBlob();
+	Vec2f center = blob.getPosition();
+	Vec2f mouseWorld = getControls().getMouseWorldPos();
+	const f32 renderRadius = (blob.getRadius()) * 0.95f;
+	bool mouseOnBlob = (mouseWorld - center).getLength() < renderRadius;
+	string mineOwner = "Owner: " + blob.get_string("owner");
+
+	if (mouseOnBlob && blob !is null && getLocalPlayerBlob() !is null && blob.getTeamNum() == getLocalPlayerBlob().getTeamNum())
+	{
+		GUI::SetFont("menu");
+		GUI::DrawTextCentered(mineOwner, blob.getScreenPos() + Vec2f(0, -30), color_white);
 	}
 }
 
