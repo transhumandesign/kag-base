@@ -8,6 +8,8 @@ const f32 hit_amount_air = 1.0f;
 const f32 hit_amount_air_fast = 3.0f;
 const f32 hit_amount_cata = 10.0f;
 
+const bool shatter_from_cata_only = true; // should boulder shatter only if launched from a catapult
+
 void onInit(CBlob @ this)
 {
 	this.set_u8("launch team", 255);
@@ -15,10 +17,6 @@ void onInit(CBlob @ this)
 	this.Tag("medium weight");
 
 	LimitedAttack_setup(this);
-
-	this.set_u8("blocks_pierced", 0);
-	u32[] tileOffsets;
-	this.set("tileOffsets", tileOffsets);
 
 	// damage
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
@@ -42,112 +40,6 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 		this.Untag("rock_n_roll");
 	}
 	this.set_u8("launch team", attached.getTeamNum());
-}
-
-void Slam(CBlob @this, f32 angle, Vec2f vel, f32 vellen)
-{
-	if (vellen < 0.1f)
-		return;
-
-	CMap@ map = this.getMap();
-	Vec2f pos = this.getPosition();
-	HitInfo@[] hitInfos;
-	u8 team = this.get_u8("launch team");
-
-	if (map.getHitInfosFromArc(pos, -angle, 30, vellen, this, true, @hitInfos))
-	{
-		for (uint i = 0; i < hitInfos.length; i++)
-		{
-			HitInfo@ hi = hitInfos[i];
-			f32 dmg = 2.0f;
-
-			if (hi.blob is null) // map
-			{
-				if (BoulderHitMap(this, hi.hitpos, hi.tileOffset, vel, dmg, Hitters::cata_boulder))
-					return;
-			}
-			else if (team != u8(hi.blob.getTeamNum()))
-			{
-				this.server_Hit(hi.blob, pos, vel, dmg, Hitters::cata_boulder, true);
-				this.setVelocity(vel * 0.9f); //damp
-
-				// die when hit something large
-				if (hi.blob.getRadius() > 32.0f)
-				{
-					this.server_Hit(this, pos, vel, 10, Hitters::cata_boulder, true);
-				}
-			}
-		}
-	}
-
-	// chew through backwalls
-
-	Tile tile = map.getTile(pos);
-	if (map.isTileBackgroundNonEmpty(tile))
-	{
-		if (map.getSectorAtPosition(pos, "no build") !is null)
-		{
-			return;
-		}
-		map.server_DestroyTile(pos + Vec2f(7.0f, 7.0f), 10.0f, this);
-		map.server_DestroyTile(pos - Vec2f(7.0f, 7.0f), 10.0f, this);
-	}
-}
-
-bool BoulderHitMap(CBlob@ this, Vec2f worldPoint, int tileOffset, Vec2f velocity, f32 damage, u8 customData)
-{
-	//check if we've already hit this tile
-	u32[]@ offsets;
-	this.get("tileOffsets", @offsets);
-
-	if (offsets.find(tileOffset) >= 0) { return false; }
-
-	this.getSprite().PlaySound("ArrowHitGroundFast.ogg");
-	f32 angle = velocity.Angle();
-	CMap@ map = getMap();
-	TileType t = map.getTile(tileOffset).type;
-	u8 blocks_pierced = this.get_u8("blocks_pierced");
-	bool stuck = false;
-
-	if (map.isTileCastle(t) || map.isTileWood(t))
-	{
-		Vec2f tpos = this.getMap().getTileWorldPosition(tileOffset);
-		if (map.getSectorAtPosition(tpos, "no build") !is null)
-		{
-			return false;
-		}
-
-		//make a shower of gibs here
-
-		map.server_DestroyTile(tpos, 100.0f, this);
-		Vec2f vel = this.getVelocity();
-		this.setVelocity(vel * 0.8f); //damp
-		this.push("tileOffsets", tileOffset);
-
-		if (blocks_pierced < pierce_amount)
-		{
-			blocks_pierced++;
-			this.set_u8("blocks_pierced", blocks_pierced);
-		}
-		else
-		{
-			stuck = true;
-		}
-	}
-	else
-	{
-		stuck = true;
-	}
-
-	if (velocity.LengthSquared() < 5)
-		stuck = true;
-
-	if (stuck)
-	{
-		this.server_Hit(this, worldPoint, velocity, 10, Hitters::crush, true);
-	}
-
-	return stuck;
 }
 
 void shatter(CBlob@ this, u16 rocks_amount, f32 min_vel, f32 max_vel_inc)
@@ -176,9 +68,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	Vec2f hitvel = this.getOldVelocity();
 	f32 vellen = hitvel.Length();
 	
-	if (solid && isServer() && blob is null)
+	if (solid && isServer())
 	{
-		if (this.hasTag("rock_n_roll") || vellen > 6.0f)
+		if (this.hasTag("rock_n_roll") || (vellen > 7.5f && !shatter_from_cata_only))
 		{
 			shatter(this, 10, 4.0f, 4);
 		}
@@ -240,7 +132,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 		if (isServer())
 		{
-			if (this.hasTag("rock_n_roll") || vellen > 6.0f)
+			if (this.hasTag("rock_n_roll") || (vellen > 7.5f && !shatter_from_cata_only))
 			{
 				shatter(this, 10, 4.0f, 4.0f);
 			}
@@ -271,7 +163,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	string name = blob.getName();
-	if ((name == "archer" || name == "knight" || name == "builder") && this.get_u8("launch team") == blob.getTeamNum()) return false;
+	if (this.getPlayer() !is null && this.get_u8("launch team") == blob.getTeamNum()) return false;
 	else return true;
 }
 
