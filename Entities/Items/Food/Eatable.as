@@ -44,7 +44,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 				if (this.exists("owner"))
 				{
 					CPlayer@ player = theBlob.getPlayer();
-					CPlayer@ healer = getOwnerPlayer(CBlob@ this);
+					CPlayer@ healer = getOwnerPlayer(this);
 					if (player !is null && healer !is null)
 					{
 						bool healerHealed = healer is player;
