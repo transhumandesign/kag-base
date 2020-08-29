@@ -84,7 +84,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 	if (isServer())
 	{
-	Heal(attached, this);
+		Heal(attached, this);
 	}
 
 	setHealer(this, attached);
