@@ -11,12 +11,12 @@ CPlayer@ getOwnerPlayer(CBlob@ this)
 
 void SetOwner(CBlob@ this, CPlayer@ owner_player)
 {
-    if (isServer() && owner_player !is null && (this.getTeamNum() != owner_player.getTeamNum() || !this.exists("owner")))
-    {
-        this.server_setTeamNum(owner_player.getTeamNum());
-        this.set_u16("owner", owner_player.getNetworkID());
-        this.Sync("owner", true);
-    }
+	if (isServer() && owner_player !is null && (this.getTeamNum() != owner_player.getTeamNum() || !this.exists("owner")))
+	{
+		this.server_setTeamNum(owner_player.getTeamNum());
+		this.set_u16("owner", owner_player.getNetworkID());
+		this.Sync("owner", true);
+	}
 }
 
 void DrawOwnerText(CSprite@ this)
