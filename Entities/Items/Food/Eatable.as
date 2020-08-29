@@ -106,34 +106,12 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
         Heal(attached, this);
     }
     
-    CPlayer@ player = attached.getPlayer();
-
-    if (player !is null && (this.getTeamNum() != attached.getTeamNum() || !this.exists("healer")))
-    {
-        if (isServer())
-        {
-            this.server_setTeamNum(attached.getTeamNum());
-        }
-
-        this.set_u16("healer", player.getNetworkID());
-        this.Sync("healer", true);
-    }
+    setHealer(this, attached)
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
-    CPlayer@ player = inventoryBlob.getPlayer();
-
-    if (player !is null && (this.getTeamNum() != inventoryBlob.getTeamNum() || !this.exists("healer")))
-    {
-        if (isServer())
-        {
-            this.server_setTeamNum(inventoryBlob.getTeamNum());
-        }
-
-        this.set_u16("healer", player.getNetworkID());
-        this.Sync("healer", true);
-    }
+    setHealer(this, inventoryBlob)
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
