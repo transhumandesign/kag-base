@@ -10,6 +10,25 @@ void onInit(CBlob@ this)
 	this.addCommandID(heal_id);
 }
 
+void onTick(CBlob@ this)
+{
+	if(!this.exists("healer"))
+	{
+		this.set_string("owner", "No owner");
+	}
+	else
+	{
+		u16 healerID = this.get_u16("healer");
+		CPlayer@ healer = getPlayerByNetworkId(healerID);
+		if(healer !is null)
+		{
+			this.set_string("owner", healer.getUsername());
+		}
+	}
+
+	this.Sync("owner", true);
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID(heal_id))
@@ -78,20 +97,43 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 }
 
-
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if (this is null || attached is null) {return;}
+    if (this is null || attached is null) {return;}
 
-	if (isServer())
-	{
-		Heal(attached, this);
-	}
+    if (isServer())
+    {
+        Heal(attached, this);
+    }
+    
+    CPlayer@ player = attached.getPlayer();
 
-	CPlayer@ p = attached.getPlayer();
-	if (p is null){return;}
+    if (player !is null && (this.getTeamNum() != attached.getTeamNum() || !this.exists("healer")))
+    {
+        if (isServer())
+        {
+            this.server_setTeamNum(attached.getTeamNum());
+        }
 
-	this.set_u16("healer", p.getNetworkID());
+        this.set_u16("healer", player.getNetworkID());
+        this.Sync("healer", true);
+    }
+}
+
+void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
+{
+    CPlayer@ player = inventoryBlob.getPlayer();
+
+    if (player !is null && (this.getTeamNum() != inventoryBlob.getTeamNum() || !this.exists("healer")))
+    {
+        if (isServer())
+        {
+            this.server_setTeamNum(inventoryBlob.getTeamNum());
+        }
+
+        this.set_u16("healer", player.getNetworkID());
+        this.Sync("healer", true);
+    }
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
@@ -102,9 +144,4 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 	{
 		Heal(detached, this);
 	}
-	
-	CPlayer@ p = detached.getPlayer();
-	if (p is null){return;}
-
-	this.set_u16("healer", p.getNetworkID());
 }

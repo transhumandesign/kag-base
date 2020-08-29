@@ -15,7 +15,26 @@ void onInit(CBlob@ this)
 
 	this.getSprite().SetFrameIndex(index);
 	this.SetInventoryIcon(this.getSprite().getConsts().filename, index, Vec2f(16, 16));
-	this.server_setTeamNum(0); // blue fishy like in sprite sheet
+	// this.server_setTeamNum(0); // blue fishy like in sprite sheet
 
 	this.getCurrentScript().runFlags |= Script::remove_after_this;
+}
+
+void onRender(CSprite@ this)
+{
+	if (g_videorecording)
+		return;
+
+	CBlob@ blob = this.getBlob();
+	Vec2f center = blob.getPosition();
+	Vec2f mouseWorld = getControls().getMouseWorldPos();
+	const f32 renderRadius = (blob.getRadius()) * 0.95f;
+	bool mouseOnBlob = (mouseWorld - center).getLength() < renderRadius;
+	string foodOwner = "Owner: " + blob.get_string("owner");
+
+	if (mouseOnBlob && getLocalPlayerBlob() !is null && blob.getTeamNum() == getLocalPlayerBlob().getTeamNum() && !blob.isInInventory())
+	{
+		GUI::SetFont("menu");
+		GUI::DrawTextCentered(foodOwner, blob.getScreenPos() + Vec2f(0, -30), color_white);
+	}
 }
