@@ -1,3 +1,5 @@
+#include "OwnerCommon.as"
+
 void onInit(CBlob@ this)
 {
 	this.Tag("ignore_saw");
@@ -15,7 +17,14 @@ void onInit(CBlob@ this)
 
 	this.getSprite().SetFrameIndex(index);
 	this.SetInventoryIcon(this.getSprite().getConsts().filename, index, Vec2f(16, 16));
-	this.server_setTeamNum(0); // blue fishy like in sprite sheet
 
 	this.getCurrentScript().runFlags |= Script::remove_after_this;
+}
+
+void onRender(CSprite@ this)
+{
+	if (g_videorecording)
+		return;
+
+	DrawOwnerText(this);
 }

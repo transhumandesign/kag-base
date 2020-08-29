@@ -1,4 +1,5 @@
 #include "EatCommon.as";
+#include "OwnerCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -78,7 +79,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 }
 
-
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	if (this is null || attached is null) {return;}
@@ -88,10 +88,12 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 		Heal(attached, this);
 	}
 
-	CPlayer@ p = attached.getPlayer();
-	if (p is null){return;}
+	SetOwner(this, attached.getPlayer());
+}
 
-	this.set_u16("healer", p.getNetworkID());
+void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
+{
+	SetOwner(this, inventoryBlob.getPlayer());
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
@@ -102,9 +104,4 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 	{
 		Heal(detached, this);
 	}
-	
-	CPlayer@ p = detached.getPlayer();
-	if (p is null){return;}
-
-	this.set_u16("healer", p.getNetworkID());
 }

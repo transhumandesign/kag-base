@@ -2,6 +2,7 @@
 
 #include "Hitters.as";
 #include "Explosion.as";
+#include "OwnerCommon.as";
 
 const u8 MINE_PRIMING_TIME = 45;
 
@@ -15,6 +16,7 @@ enum State
 	NONE = 0,
 	PRIMED
 };
+
 
 void onInit(CBlob@ this)
 {
@@ -61,6 +63,11 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	if (this.getDamageOwnerPlayer() !is null)
+	{
+		SetOwner(this, this.getDamageOwnerPlayer());
+	}
+
 	if (getNet().isServer())
 	{
 		//tick down
@@ -82,6 +89,14 @@ void onTick(CBlob@ this)
 			this.set_u8(MINE_TIMER, 0);
 		}
 	}
+}
+
+void onRender(CSprite@ this)
+{
+	if (g_videorecording)
+		return;
+
+	DrawOwnerText(this);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
