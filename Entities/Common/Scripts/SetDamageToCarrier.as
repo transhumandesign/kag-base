@@ -5,18 +5,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 	CPlayer@ player = attached.getPlayer();
 	if (player !is null)
 	{
-		if (this.getName() == "keg")
-		{
-			s32 timer = this.get_s32("explosion_timer") - getGameTime();
-			if (timer > 60 || timer < 0 || this.getDamageOwnerPlayer() is null) // don't change keg ownership for final 2 seconds of fuse
-			{
-				this.SetDamageOwnerPlayer(player);
-			}
-		}
-		else 
-		{
-			this.SetDamageOwnerPlayer(player);
-		}
+		this.SetDamageOwnerPlayer(player);
 	}
 }
 

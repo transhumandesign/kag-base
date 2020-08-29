@@ -67,6 +67,13 @@ void onTick(CBlob@ this)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
+	s32 timer = this.get_s32("explosion_timer") - getGameTime();
+	if (timer > 60 || timer < 0 || this.getDamageOwnerPlayer() is null) // don't change keg ownership for final 2 seconds of fuse
+		{
+			this.SetDamageOwnerPlayer(player);
+		}
+	}
+	
 	if (getNet().isServer())
 	{
 		this.set_u16("_keg_carrier_id", attached.getNetworkID());
