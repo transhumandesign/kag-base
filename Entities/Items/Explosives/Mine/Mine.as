@@ -63,11 +63,6 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.getDamageOwnerPlayer() !is null)
-	{
-		SetOwner(this, this.getDamageOwnerPlayer());
-	}
-
 	if (getNet().isServer())
 	{
 		//tick down
@@ -137,6 +132,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 		if (player !is null)
 		{
 			this.SetDamageOwnerPlayer(player);
+			SetOwner(this, player);
 		}
 	}
 }
@@ -157,6 +153,7 @@ void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 		if (player !is null)
 		{
 			this.SetDamageOwnerPlayer(player);
+			SetOwner(this, player);
 		}
 	}
 }
