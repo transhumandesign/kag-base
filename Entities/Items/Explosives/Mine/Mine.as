@@ -108,7 +108,7 @@ void onRender(CSprite@ this)
 	bool mouseOnBlob = (mouseWorld - center).getLength() < renderRadius;
 	string mineOwner = "Owner: " + blob.get_string("owner");
 
-	if (mouseOnBlob && getLocalPlayerBlob() !is null && blob.getTeamNum() == getLocalPlayerBlob().getTeamNum())
+	if (mouseOnBlob && getLocalPlayerBlob() !is null && blob.getTeamNum() == getLocalPlayerBlob().getTeamNum() && !blob.isInInventory())
 	{
 		GUI::SetFont("menu");
 		GUI::DrawTextCentered(mineOwner, blob.getScreenPos() + Vec2f(0, -30), color_white);
