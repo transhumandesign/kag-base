@@ -27,21 +27,8 @@ void DrawOwnerText(CSprite@ this)
 	const f32 renderRadius = (blob.getRadius()) * 0.95f;
 	bool mouseOnBlob = (mouseWorld - center).getLength() < renderRadius;
 
-	string ownerName;
-
-	if(blob.exists("owner"))
-	{
-		uint16 ownerID = blob.get_u16("owner");
-		CPlayer@ player = getPlayerByNetworkId(ownerID);
-		if (player !is null)
-		{
-			ownerName = player.getUsername();
-		}
-	}
-	else 
-	{
-		ownerName = "No owner";
-	}
+	CPlayer@ player = getOwnerPlayer(blob);
+	string ownerName = player !is null ? player.getUsername() : "No owner";
 
 	string ownership = "Owner: " + ownerName;
 
