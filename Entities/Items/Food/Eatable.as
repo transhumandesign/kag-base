@@ -80,14 +80,14 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-    if (this is null || attached is null) {return;}
+	if (this is null || attached is null) {return;}
 
-    if (isServer())
-    {
-        Heal(attached, this);
-    }
-    
-    setHealer(this, attached);
+	if (isServer())
+	{
+	Heal(attached, this);
+	}
+
+	setHealer(this, attached);
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
