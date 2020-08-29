@@ -30,11 +30,30 @@ void onRender(CSprite@ this)
 	Vec2f mouseWorld = getControls().getMouseWorldPos();
 	const f32 renderRadius = (blob.getRadius()) * 0.95f;
 	bool mouseOnBlob = (mouseWorld - center).getLength() < renderRadius;
-	string foodOwner = "Owner: " + blob.get_string("owner");
+
+	string healerName;
+
+	if(!blob.exists("healer"))
+	{
+		healerName = "No owner";
+	}
+	else
+	{
+		u16 healerID = blob.get_u16("healer");
+		CPlayer@ healer = getPlayerByNetworkId(healerID);
+		if(healer !is null)
+		{
+			healerName = healer.getUsername(); 
+		}
+	}
+
+	blob.Sync("healer", true);
+
+	string foodOwnership = "Owner: " + blob.get_string("owner");
 
 	if (mouseOnBlob && getLocalPlayerBlob() !is null && blob.getTeamNum() == getLocalPlayerBlob().getTeamNum() && !blob.isInInventory())
 	{
 		GUI::SetFont("menu");
-		GUI::DrawTextCentered(foodOwner, blob.getScreenPos() + Vec2f(0, -30), color_white);
+		GUI::DrawTextCentered(foodOwnership, blob.getScreenPos() + Vec2f(0, -30), color_white);
 	}
 }

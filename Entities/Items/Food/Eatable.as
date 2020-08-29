@@ -10,25 +10,6 @@ void onInit(CBlob@ this)
 	this.addCommandID(heal_id);
 }
 
-void onTick(CBlob@ this)
-{
-	if(!this.exists("healer"))
-	{
-		this.set_string("owner", "No owner");
-	}
-	else
-	{
-		u16 healerID = this.get_u16("healer");
-		CPlayer@ healer = getPlayerByNetworkId(healerID);
-		if(healer !is null)
-		{
-			this.set_string("owner", healer.getUsername());
-		}
-	}
-
-	this.Sync("owner", true);
-}
-
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID(heal_id))
@@ -106,12 +87,12 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
         Heal(attached, this);
     }
     
-    setHealer(this, attached)
+    setHealer(this, attached);
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
-    setHealer(this, inventoryBlob)
+    setHealer(this, inventoryBlob);
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)

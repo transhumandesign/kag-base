@@ -37,8 +37,8 @@ void Heal(CBlob@ this, CBlob@ food)
 
 void setHealer(CBlob@ this, CBlob@ healer)
 {
-    CPlayer@ player = attached.getPlayer();
-	
+    CPlayer@ player = healer.getPlayer();
+
     if (isServer() && player !is null && (this.getTeamNum() != healer.getTeamNum() || !this.exists("healer")))
     {
         this.server_setTeamNum(healer.getTeamNum());
