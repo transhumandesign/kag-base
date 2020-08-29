@@ -73,7 +73,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 		this.SetDamageOwnerPlayer(player);
 	}
 	
-	if (getNet().isServer())
+	if (isServer())
 	{
 		this.set_u16("_keg_carrier_id", attached.getNetworkID());
 	}
