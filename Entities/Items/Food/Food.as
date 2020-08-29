@@ -49,7 +49,7 @@ void onRender(CSprite@ this)
 
 	blob.Sync("healer", true);
 
-	string foodOwnership = "Owner: " + blob.get_string("owner");
+	string foodOwnership = "Owner: " + healerName;
 
 	if (mouseOnBlob && getLocalPlayerBlob() !is null && blob.getTeamNum() == getLocalPlayerBlob().getTeamNum() && !blob.isInInventory())
 	{
