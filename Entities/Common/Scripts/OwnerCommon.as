@@ -26,11 +26,9 @@ void DrawOwnerText(CSprite@ this)
 	Vec2f mouseWorld = getControls().getMouseWorldPos();
 	const f32 renderRadius = (blob.getRadius()) * 0.95f;
 	bool mouseOnBlob = (mouseWorld - center).getLength() < renderRadius;
-
+	
 	CPlayer@ player = getOwnerPlayer(blob);
-	string ownerName = player !is null ? player.getUsername() : "No owner";
-
-	string ownership = "Owner: " + ownerName;
+	string ownership = "Owner: " + ( player !is null ? player.getUsername() : "No owner" );
 
 	if (mouseOnBlob && getLocalPlayerBlob() !is null && blob.getTeamNum() == getLocalPlayerBlob().getTeamNum() && !blob.isInInventory())
 	{
