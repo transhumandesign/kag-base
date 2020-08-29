@@ -3,7 +3,7 @@ CPlayer@ getOwnerPlayer(CBlob@ this)
 	if (this.exists("owner"))
 	{
 		u16 ownerID = this.get_u16("owner");
-		return getPlayerByNetworkId(ownerID);
+		return getPlayerByNetworkID(ownerID);
 	}
 
 	return null;
