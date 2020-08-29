@@ -92,7 +92,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
-    setHealer(this, inventoryBlob);
+	setHealer(this, inventoryBlob);
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
