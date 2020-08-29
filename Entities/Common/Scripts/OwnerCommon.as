@@ -1,3 +1,14 @@
+CPlayer@ getOwnerPlayer(CBlob@ this)
+{
+	if (this.exists("owner"))
+	{
+		u16 ownerID = this.get_u16("owner");
+		return getPlayerByNetworkId(ownerID);
+	}
+
+	return null;
+}
+
 void SetOwner(CBlob@ this, CPlayer@ owner_player)
 {
     if (isServer() && owner_player !is null && (this.getTeamNum() != owner_player.getTeamNum() || !this.exists("owner")))
@@ -20,8 +31,8 @@ void DrawOwnerText(CSprite@ this)
 
 	if(blob.exists("owner"))
 	{
-		uint16 ownerid = blob.get_u16("owner");
-		ownerName = getPlayerByNetworkId(ownerid).getUsername();
+		uint16 ownerID = blob.get_u16("owner");
+		ownerName = getPlayerByNetworkId(ownerID).getUsername();
 	}
 	else 
 	{

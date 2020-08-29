@@ -41,11 +41,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 				}
 
 				//give coins for healing teammate
-				if (this.exists("healer"))
+				if (this.exists("owner"))
 				{
 					CPlayer@ player = theBlob.getPlayer();
-					u16 healerID = this.get_u16("healer");
-					CPlayer@ healer = getPlayerByNetworkId(healerID);
+					CPlayer@ healer = getOwnerPlayer(CBlob@ this)
 					if (player !is null && healer !is null)
 					{
 						bool healerHealed = healer is player;
