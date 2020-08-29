@@ -32,7 +32,11 @@ void DrawOwnerText(CSprite@ this)
 	if(blob.exists("owner"))
 	{
 		uint16 ownerID = blob.get_u16("owner");
-		ownerName = getPlayerByNetworkId(ownerID).getUsername();
+		CPlayer@ player = getPlayerByNetworkId(ownerID);
+		if (player !is null)
+		{
+			ownerName = player.getUsername();
+		}
 	}
 	else 
 	{
