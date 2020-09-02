@@ -239,6 +239,8 @@ void onRestart(CRules@ this)
 
 void onInit(CRules@ this)
 {
+	this.addCommandID("killstreak message");
+
 	Reset(this);
 
 	AddIconToken("$killfeed_fall$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 1);
@@ -295,19 +297,16 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 			{
 				if (isServer())
 				{
-					if(!killerblob.exists("killstreak"))
+					if(!killer.exists("killstreak"))
 					{
-						killerblob.set_u8("killstreak", 1);
+						killer.set_u8("killstreak", 1);
 					}
 					else
 					{
-						killerblob.add_u8("killstreak", 1);
+						killer.add_u8("killstreak", 1);
 					}
 
-					killerblob.set_u32("kill time", getGameTime());
-
-					killerblob.Sync("kill time", true);
-					killerblob.Sync("killstreak", true);
+					killer.set_u32("kill time", getGameTime());
 				}
 				
 				if (killerblob.isMyPlayer())
@@ -332,21 +331,19 @@ void onTick(CRules@ this)
 		feed.Update();
 	}
 
-	// display message in chat whenever a killstreak happens
-	for(int a = 0; a < getPlayerCount(); a++) 
-	{ 
-		CPlayer@ player = getPlayer(a);
-		CBlob@ blob = player.getBlob();
+	if(isServer())
+	{
+		for(int a = 0; a < getPlayerCount(); a++) 
+		{ 
+			CPlayer@ player = getPlayer(a);
 
-		if (blob !is null && blob.exists("killstreak"))
-		{
-			if(getGameTime() - blob.get_u32("kill time") > 180 && blob.get_u8("killstreak") > 4)
+			if (player !is null && player.exists("killstreak"))
 			{
-				if(isClient())
+				if(getGameTime() - player.get_u32("kill time") > 6 * 30 && player.get_u8("killstreak") > 4)
 				{
 					string multiKill;
 
-					switch (blob.get_u8("killstreak"))
+					switch (player.get_u8("killstreak"))
 					{
 						case 5: multiKill = "a Pentakill";
 							break;
@@ -360,25 +357,27 @@ void onTick(CRules@ this)
 							break;
 						case 10: multiKill = "a Decakill";
 							break;
-						case 11: multiKill = "an " + blob.get_u8("killstreak") + " kill multikill";
+						case 11: multiKill = "an " + player.get_u8("killstreak") + " kill multikill";
 							break;
-						case 18: multiKill = "an " + blob.get_u8("killstreak") + " kill multikill";
+						case 18: multiKill = "an " + player.get_u8("killstreak") + " kill multikill";
 							break;
-						default: multiKill = "a " + blob.get_u8("killstreak") + " kill multikill";
+						default: multiKill = "a " + player.get_u8("killstreak") + " kill multikill";
 							break;
 					}
 
-					client_AddToChat(player.getCharacterName() + " got " + multiKill + "!", SColor(255, 180, 24, 94));
-				}
-					
-				if(isServer())
-				{
-					blob.set_u8("killstreak", 0);
-					blob.Sync("killstreak", true);
+					uint16 player_netid = player.getNetworkID();
+					uint16 kill_count = player.get_u8("killstreak");
+
+					CBitStream bs;
+					bs.write_u16(player_netid);
+					bs.write_u16(kill_count);
+					this.SendCommand(this.getCommandID("killstreak message"), bs);
+				
+					player.set_u8("killstreak", 0);
 				}
 			}
-		}
-	} 
+		} 
+	}
 }
 
 void onRender(CRules@ this)
@@ -391,5 +390,51 @@ void onRender(CRules@ this)
 	if (this.get("KillFeed", @feed) && feed !is null)
 	{
 		feed.Render();
+	}
+}
+
+void onCommand(CRules@ this, u8 cmd, CBitStream @params)
+{
+	if (isClient())
+	{
+		if (cmd == this.getCommandID("killstreak message"))
+		{
+			u16 player_netid, kill_count;
+
+			if (!params.saferead_u16(player_netid)
+			 || !params.saferead_u16(kill_count))
+			{
+				print("failed to parse killstreak message payload");
+				return;
+			}
+
+			CPlayer@ player = getPlayerByNetworkId(player_netid);
+
+			string multiKill;
+
+			switch (player.get_u8("killstreak"))
+			{
+				case 5: multiKill = "a Pentakill";
+					break;
+				case 6: multiKill = "a Hexakill";
+					break;
+				case 7: multiKill = "a Septakill";
+					break;
+				case 8: multiKill = "an Octakill";
+					break;
+				case 9: multiKill = "a Nonakill";
+					break;
+				case 10: multiKill = "a Decakill";
+					break;
+				case 11: multiKill = "an " + kill_count + " kill multikill";
+					break;
+				case 18: multiKill = "an " + kill_count + " kill multikill";
+					break;
+				default: multiKill = "a " + kill_count + " kill multikill";
+					break;
+			}
+
+			client_AddToChat(player.getCharacterName() + " got " + multiKill + "!", SColor(255, 180, 24, 94));
+		}
 	}
 }
