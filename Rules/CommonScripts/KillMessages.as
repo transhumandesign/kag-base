@@ -374,7 +374,7 @@ void onTick(CRules@ this)
 				if(isServer())
 				{
 					blob.set_u8("killstreak", 0);
-					killerblob.Sync("killstreak", true);
+					blob.Sync("killstreak", true);
 				}
 			}
 		}
