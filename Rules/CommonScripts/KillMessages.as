@@ -311,11 +311,11 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 
 				killerblob.Sync("kill time", true);
 				killerblob.Sync("killstreak", true);
-			}
-
-			if(kill && killerblob.isMyPlayer())
-			{
-				add_message(KillSpreeMessage(victim));
+				
+				if (killerblob.isMyPlayer())
+				{
+					add_message(KillSpreeMessage(victim));
+				}
 			}
 			else if (assist)
 			{
