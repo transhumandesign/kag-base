@@ -371,11 +371,11 @@ void onTick(CRules@ this)
 					client_AddToChat(player.getCharacterName() + " got " + multiKill + "!", SColor(255, 180, 24, 94));
 				}
 					
-				if(isServer()
+				if(isServer())
 				{
 					blob.set_u8("killstreak", 0);
 					killerblob.Sync("killstreak", true);
-			`	}
+				}
 			}
 		}
 	} 
