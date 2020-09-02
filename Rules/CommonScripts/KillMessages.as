@@ -304,7 +304,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 				}
 				else
 				{
-					killerblob.set_u8("killstreak", killerblob.get_u8("killstreak")+1);
+					killerblob.add_u8("killstreak", 1);
 				}
 
 				killerblob.set_u32("kill time", getGameTime());
