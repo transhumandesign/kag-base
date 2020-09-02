@@ -340,7 +340,7 @@ void onTick(CRules@ this)
 		CPlayer@ player = getPlayer(a);
 		CBlob@ blob = player.getBlob();
 
-		if (blob !is null && player !is null && blob.exists("killstreak"))
+		if (blob !is null && blob.exists("killstreak"))
 		{
 			if(getGameTime() - blob.get_u32("kill time") > 180 && blob.get_u8("killstreak") > 4)
 			{
