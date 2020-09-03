@@ -410,6 +410,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 
 			CPlayer@ player = getPlayerByNetworkId(player_netid);
 
+			if (player is null)
+			{
+				return;
+			}
+
 			string multiKill;
 
 			switch (kill_count)
