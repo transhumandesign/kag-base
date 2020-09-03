@@ -412,7 +412,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 
 			string multiKill;
 
-			switch (player.get_u8("killstreak"))
+			switch (kill_count)
 			{
 				case 5: multiKill = "a Pentakill";
 					break;
