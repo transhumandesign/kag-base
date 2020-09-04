@@ -315,17 +315,17 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 					if (victim.get_u8("killstreak") > 4)
 					{
 
-					uint16 victim_netid = victim.getNetworkID();
-					uint16 killer_netid = killer.getNetworkID();
-					uint16 kill_count = victim.get_u8("killstreak");
+						uint16 victim_netid = victim.getNetworkID();
+						uint16 killer_netid = killer.getNetworkID();
+						uint16 kill_count = victim.get_u8("killstreak");
 
-					CBitStream bs;
-					bs.write_u16(victim_netid);
-					bs.write_u16(killer_netid);
-					bs.write_u16(kill_count);
-					this.SendCommand(this.getCommandID("interrupt message"), bs);
+						CBitStream bs;
+						bs.write_u16(victim_netid);
+						bs.write_u16(killer_netid);
+						bs.write_u16(kill_count);
+						this.SendCommand(this.getCommandID("interrupt message"), bs);
 
-					victim.set_u8("killstreak", 0);
+						victim.set_u8("killstreak", 0);
 					}
 				}
 				
