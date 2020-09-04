@@ -766,9 +766,7 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 
 		while (inv !is null && (inv.getItemsCount() > target_items_left))
 		{
-			CBlob@ item;
-
-			@item = inv.getItem(item_num);
+			CBlob@ item = inv.getItem(item_num);
 
 			if (!item.hasTag("player") && item.getName() != "mine")
 			{
