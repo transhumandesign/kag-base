@@ -358,17 +358,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				CBlob@ item = inv.getItem(i);
 				if (item.getName() == "mine" && item.getTeamNum() != caller.getTeamNum())
 				{
-					@mine = item;
-					break;
+					CBitStream params;
+					params.write_u16(caller.getNetworkID());
+					params.write_u16(item.getNetworkID());
+					this.SendCommand(this.getCommandID("boobytrap"), params);
+					return;
 				}
-			}
-			if (mine !is null)
-			{
-				CBitStream params;
-				params.write_u16(caller.getNetworkID());
-				params.write_u16(mine.getNetworkID());
-				this.SendCommand(this.getCommandID("boobytrap"), params);
-				return;
 			}
 
 			// We might have to make room
@@ -516,18 +511,14 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 			// Get out of there, can't grab players
 			forBlob.ClearGridMenus();
 		}
-		if (item.getName() == "mine" && item.getTeamNum() != forBlob.getTeamNum())
+		if (item.getName() == "mine" && item.getTeamNum() != caller.getTeamNum())
 		{
-			@mine = item;
+			CBitStream params;
+			params.write_u16(caller.getNetworkID());
+			params.write_u16(item.getNetworkID());
+			this.SendCommand(this.getCommandID("boobytrap"), params);
 			break;
 		}
-	}
-	if (mine !is null)
-	{
-		CBitStream params;
-		params.write_u16(forBlob.getNetworkID());
-		params.write_u16(mine.getNetworkID());
-		this.SendCommand(this.getCommandID("boobytrap"), params);
 	}
 }
 
