@@ -242,6 +242,7 @@ void onInit(CRules@ this)
 	Reset(this);
 
 	this.addCommandID("killstreak message");
+	this.addCommandID("interrupt message");
 
 	AddIconToken("$killfeed_fall$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 1);
 	AddIconToken("$killfeed_water$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 2);
@@ -309,6 +310,22 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 						{
 							killer.add_u8("killstreak", 1);
 						}
+					}
+
+					if (victim.get_u8("killstreak") > 4)
+					{
+
+					uint16 victim_netid = victim.getNetworkID();
+					uint16 killer_netid = killer.getNetworkID();
+					uint16 kill_count = victim.get_u8("killstreak");
+
+					CBitStream bs;
+					bs.write_u16(victim_netid);
+					bs.write_u16(killer_netid);
+					bs.write_u16(kill_count);
+					this.SendCommand(this.getCommandID("interrupt message"), bs);
+
+					victim.set_u8("killstreak", 0);
 					}
 				}
 				
@@ -430,6 +447,53 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 			}
 
 			client_AddToChat(player.getCharacterName() + " got " + multiKill + "!", SColor(255, 180, 24, 94));
+		}
+
+		if (cmd == this.getCommandID("interrupt message"))
+		{
+			u16 victim_netid, killer_netid, kill_count;
+
+			if (!params.saferead_u16(victim_netid)
+			 || !params.saferead_u16(killer_netid)
+			 || !params.saferead_u16(kill_count))
+			{
+				print("failed to parse killstreak message payload");
+				return;
+			}
+
+			CPlayer@ killer = getPlayerByNetworkId(killer_netid);
+			CPlayer@ victim = getPlayerByNetworkId(victim_netid);
+
+			if (killer is null || victim is null)
+			{
+				return;
+			}
+
+			string multiKill;
+
+			switch (kill_count)
+			{
+				case 5: multiKill = "Pentakill";
+					break;
+				case 6: multiKill = "Hexakill";
+					break;
+				case 7: multiKill = "Septakill";
+					break;
+				case 8: multiKill = "Octakill";
+					break;
+				case 9: multiKill = "Nonakill";
+					break;
+				case 10: multiKill = "Decakill";
+					break;
+				case 11: multiKill = kill_count + " kill multikill";
+					break;
+				case 18: multiKill = kill_count + " kill multikill";
+					break;
+				default: multiKill = kill_count + " kill multikill";
+					break;
+			}
+
+			client_AddToChat(killer.getCharacterName() + " has interrupted " + victim.getCharacterName() + "'s " + multiKill + "!", SColor(255, 180, 24, 94));
 		}
 	}
 }
