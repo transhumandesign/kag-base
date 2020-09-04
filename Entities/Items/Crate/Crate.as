@@ -511,7 +511,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 			// Get out of there, can't grab players
 			forBlob.ClearGridMenus();
 		}
-		if (item.getName() == "mine" && item.getTeamNum() != caller.getTeamNum())
+		if (item.getName() == "mine" && item.getTeamNum() != forBlob.getTeamNum())
 		{
 			CBitStream params;
 			params.write_u16(caller.getNetworkID());
