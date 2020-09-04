@@ -429,7 +429,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ carrier = this.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();
 		if (carrier !is null)
 		{
-			DumpOutItems(this, 5.0f, carrier.getVelocity(), false, false);
+			DumpOutItems(this, 5.0f, carrier.getVelocity(), false);
 		}
 	}
 }
@@ -745,7 +745,7 @@ CBlob@ getPlayerInside(CBlob@ this)
 	return null;
 }
 
-bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_player = true, bool dump_mine = true)
+bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_special = true)
 {
 	bool dumped_anything = false;
 	if (getNet().isClient())
@@ -760,7 +760,6 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 	{
 		Vec2f velocity = (init_velocity == Vec2f_zero) ? this.getOldVelocity() : init_velocity;
 		CInventory@ inv = this.getInventory();
-		//u8 target_items_left = dump_player ? 0 : 1;
 		u8 target_items_left = 0;
 		u8 item_num = 0;
 
@@ -782,11 +781,7 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 					item.setVelocity(velocity + getRandomVelocity(90, magnitude, 45));
 				}
 			}
-			else if (dump_player && item.hasTag("player"))
-			{
-				this.server_PutOutInventory(item);
-			}
-			else if (dump_mine && item.getName() == "mine")
+			else if (dump_special && (item.hasTag("player") || item.getName() == "mine"))
 			{
 				this.server_PutOutInventory(item);
 			}
