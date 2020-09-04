@@ -239,9 +239,9 @@ void onRestart(CRules@ this)
 
 void onInit(CRules@ this)
 {
-	this.addCommandID("killstreak message");
-
 	Reset(this);
+
+	this.addCommandID("killstreak message");
 
 	AddIconToken("$killfeed_fall$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 1);
 	AddIconToken("$killfeed_water$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 2);
@@ -297,16 +297,19 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 			{
 				if (isServer())
 				{
-					if(!killer.exists("killstreak"))
+					if (killerblob.getTeamNum() != victimblob.getTeamNum())
 					{
-						killer.set_u8("killstreak", 1);
+						killer.set_u32("kill time", getGameTime());
+						
+						if(!killer.exists("killstreak"))
+						{
+							killer.set_u8("killstreak", 1);
+						}
+						else
+						{
+							killer.add_u8("killstreak", 1);
+						}
 					}
-					else
-					{
-						killer.add_u8("killstreak", 1);
-					}
-
-					killer.set_u32("kill time", getGameTime());
 				}
 				
 				if (killerblob.isMyPlayer())
@@ -339,31 +342,14 @@ void onTick(CRules@ this)
 
 			if (player !is null && player.exists("killstreak"))
 			{
-				if(getGameTime() - player.get_u32("kill time") > 6 * 30 && player.get_u8("killstreak") > 4)
+				if (getGameTime() < player.get_u32("kill time"))
+				{
+					player.set_u8("killstreak", 0);
+				}
+
+				if (getGameTime() - player.get_u32("kill time") > (6 * 30) && player.get_u8("killstreak") > 4)
 				{
 					string multiKill;
-
-					switch (player.get_u8("killstreak"))
-					{
-						case 5: multiKill = "a Pentakill";
-							break;
-						case 6: multiKill = "a Hexakill";
-							break;
-						case 7: multiKill = "a Septakill";
-							break;
-						case 8: multiKill = "an Octakill";
-							break;
-						case 9: multiKill = "a Nonakill";
-							break;
-						case 10: multiKill = "a Decakill";
-							break;
-						case 11: multiKill = "an " + player.get_u8("killstreak") + " kill multikill";
-							break;
-						case 18: multiKill = "an " + player.get_u8("killstreak") + " kill multikill";
-							break;
-						default: multiKill = "a " + player.get_u8("killstreak") + " kill multikill";
-							break;
-					}
 
 					uint16 player_netid = player.getNetworkID();
 					uint16 kill_count = player.get_u8("killstreak");
@@ -373,6 +359,10 @@ void onTick(CRules@ this)
 					bs.write_u16(kill_count);
 					this.SendCommand(this.getCommandID("killstreak message"), bs);
 				
+					player.set_u8("killstreak", 0);
+				}
+				else if (getGameTime() - player.get_u32("kill time") > (6 * 30))
+				{
 					player.set_u8("killstreak", 0);
 				}
 			}
