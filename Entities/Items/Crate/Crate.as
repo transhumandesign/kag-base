@@ -429,7 +429,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ carrier = this.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();
 		if (carrier !is null)
 		{
-			DumpOutItems(this, 5.0f, carrier.getVelocity(), false);
+			DumpOutItems(this, 5.0f, carrier.getVelocity(), false, false);
 		}
 	}
 }
@@ -745,7 +745,7 @@ CBlob@ getPlayerInside(CBlob@ this)
 	return null;
 }
 
-bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_player = true)
+bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_player = true, bool dump_mine = true)
 {
 	bool dumped_anything = false;
 	if (getNet().isClient())
@@ -762,19 +762,15 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 		CInventory@ inv = this.getInventory();
 		//u8 target_items_left = dump_player ? 0 : 1;
 		u8 target_items_left = 0;
-		bool skipping_player = false;
+		u8 item_num = 0;
+
 		while (inv !is null && (inv.getItemsCount() > target_items_left))
 		{
 			CBlob@ item;
-			if (skipping_player)
-			{
-				@item = inv.getItem(1);
-			}
-			else
-			{
-				@item = inv.getItem(0);
-			}
-			if (!item.hasTag("player"))
+
+			@item = inv.getItem(item_num);
+
+			if (!item.hasTag("player") && item.getName() != "mine")
 			{
 				dumped_anything = true;
 				this.server_PutOutInventory(item);
@@ -788,15 +784,18 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 					item.setVelocity(velocity + getRandomVelocity(90, magnitude, 45));
 				}
 			}
-			else if (dump_player)
+			else if (dump_player && item.hasTag("player"))
 			{
-				// Handled in onRemoveFromInventory
 				this.server_PutOutInventory(item);
 			}
-			else // Don't dump player
+			else if (dump_mine && item.getName() == "mine")
 			{
-				skipping_player = true;
+				this.server_PutOutInventory(item);
+			}
+			else // Don't dump player or mine
+			{
 				target_items_left++;
+				item_num++;
 			}
 		}
 	}
