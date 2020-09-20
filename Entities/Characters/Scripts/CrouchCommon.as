@@ -12,3 +12,15 @@ bool isCrouching(CBlob@ this)
 		//cannot have banned crouch (done in actor logic scripts)
 		&& !this.hasTag("prevent crouch");
 }
+
+bool hasJustCrouched(CBlob@ this)
+{
+	return
+	this.isOnGround()
+	&& this.isKeyJustPressed(key_down)
+	//cannot have movement intent
+	&& !this.isKeyPressed(key_left)
+	&& !this.isKeyPressed(key_right)
+	//cannot have banned crouch (done in actor logic scripts)
+	&& !this.hasTag("prevent crouch");
+}
