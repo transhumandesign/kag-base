@@ -364,7 +364,7 @@ void onTick(CRules@ this)
 					player.set_u8("killstreak", 0);
 				}
 
-				if (getGameTime() - player.get_u32("kill time") > (6 * 30) && player.get_u8("killstreak") > 4)
+				if (getGameTime() - player.get_u32("kill time") > (6 * getTicksASecond()) && player.get_u8("killstreak") > 4)
 				{
 					string multiKill;
 
@@ -438,8 +438,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 					break;
 				case 10: multiKill = "a Decakill";
 					break;
-				case 11: multiKill = "an " + kill_count + " kill multikill";
-					break;
+				case 11:
 				case 18: multiKill = "an " + kill_count + " kill multikill";
 					break;
 				default: multiKill = "a " + kill_count + " kill multikill";
