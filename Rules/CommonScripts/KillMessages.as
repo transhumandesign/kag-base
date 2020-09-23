@@ -484,10 +484,6 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 					break;
 				case 10: multiKill = "Decakill";
 					break;
-				case 11: multiKill = kill_count + " kill multikill";
-					break;
-				case 18: multiKill = kill_count + " kill multikill";
-					break;
 				default: multiKill = kill_count + " kill multikill";
 					break;
 			}
