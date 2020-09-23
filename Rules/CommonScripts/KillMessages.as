@@ -322,7 +322,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 						CBitStream bs;
 						bs.write_u16(victim_netid);
 						bs.write_u16(killer_netid);
-						bs.write_u16(kill_count);
+						bs.write_u8(kill_count);
 						this.SendCommand(this.getCommandID("interrupt message"), bs);
 
 						victim.set_u8("killstreak", 0);
@@ -373,7 +373,7 @@ void onTick(CRules@ this)
 
 					CBitStream bs;
 					bs.write_u16(player_netid);
-					bs.write_u16(kill_count);
+					bs.write_u8(kill_count);
 					this.SendCommand(this.getCommandID("killstreak message"), bs);
 				
 					player.set_u8("killstreak", 0);
@@ -406,10 +406,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 	{
 		if (cmd == this.getCommandID("killstreak message"))
 		{
-			u16 player_netid, kill_count;
+			u16 player_netid;
+			u8 kill_count;
 
 			if (!params.saferead_u16(player_netid)
-			 || !params.saferead_u16(kill_count))
+			 || !params.saferead_u8(kill_count))
 			{
 				print("failed to parse killstreak message payload");
 				return;
@@ -450,11 +451,12 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 
 		if (cmd == this.getCommandID("interrupt message"))
 		{
-			u16 victim_netid, killer_netid, kill_count;
+			u16 victim_netid, killer_netid;
+			u8 kill_count;
 
 			if (!params.saferead_u16(victim_netid)
 			 || !params.saferead_u16(killer_netid)
-			 || !params.saferead_u16(kill_count))
+			 || !params.saferead_u8(kill_count))
 			{
 				print("failed to parse killstreak message payload");
 				return;
