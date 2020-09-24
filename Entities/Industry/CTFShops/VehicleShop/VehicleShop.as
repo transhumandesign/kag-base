@@ -34,6 +34,7 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Ballista", "$ballista$", "ballista", "$ballista$\n\n\n" + Descriptions::ballista, false, true);
 		s.crate_icon = 5;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista);
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::ballista_gold);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Ballista Ammo", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + Descriptions::ballista_ammo, false, false);
