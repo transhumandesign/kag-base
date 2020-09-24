@@ -1611,3 +1611,22 @@ bool canHit(CBlob@ this, CBlob@ b)
 	return b.getTeamNum() != this.getTeamNum();
 
 }
+
+void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
+{
+	CheckSelectedBombRemovedFromInventory(this, blob);
+}
+
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+{
+	CheckSelectedBombRemovedFromInventory(this, detached);
+}
+
+void CheckSelectedBombRemovedFromInventory(CBlob@ this, CBlob@ blob)
+{
+	string name = blob.getName();
+	if (bombTypeNames.find(name) > -1 && this.getBlobCount(name) == 0)
+	{
+		SetFirstAvailableBomb(this);
+	}
+}
