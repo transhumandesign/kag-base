@@ -1557,13 +1557,14 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 void SetFirstAvailableBomb(CBlob@ this)
 {
 	u8 type = 255;
+	u8 nowType = 255;
 	if (this.exists("bomb type"))
-		type = this.get_u8("bomb type");
+		nowType = this.get_u8("bomb type");
 
 	CInventory@ inv = this.getInventory();
 
-	bool typeReal = (uint(type) < bombTypeNames.length);
-	if (typeReal && inv.getItem(bombTypeNames[type]) !is null)
+	bool typeReal = (uint(nowType) < bombTypeNames.length);
+	if (typeReal && inv.getItem(bombTypeNames[nowType]) !is null)
 		return;
 
 	for (int i = 0; i < inv.getItemsCount(); i++)
