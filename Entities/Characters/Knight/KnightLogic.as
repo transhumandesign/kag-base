@@ -1097,15 +1097,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			count++;
 			if (type >= bombTypeNames.length)
 				type = 0;
-			if (this.getBlobCount(bombTypeNames[type]) > 0)
+			if (hasBombs(this, type))
 			{
-				this.set_u8("bomb type", type);
-				if (this.isMyPlayer())
-				{
-					Sound::Play("/CycleInventory.ogg");
-				}
+				CycleToBombType(this, type);
 				break;
 			}
+		}
+	}
+	else if (cmd == this.getCommandID("switch"))
+	{
+		u8 type;
+		if (params.saferead_u8(type) && hasBombs(this, type))
+		{
+			CycleToBombType(this, type);
 		}
 	}
 	else if (cmd == this.getCommandID("activate/throw"))
@@ -1122,6 +1126,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				break;
 			}
 		}
+	}
+}
+
+void CycleToBombType(CBlob@ this, u8 bombType)
+{
+	this.set_u8("bomb type", bombType);
+	if (this.isMyPlayer())
+	{
+		Sound::Play("/CycleInventory.ogg");
 	}
 }
 
@@ -1489,7 +1502,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 
 			if (button !is null)
 			{
-				bool enabled = this.getBlobCount(bombTypeNames[i]) > 0;
+				bool enabled = hasBombs(this, i);
 				button.SetEnabled(enabled);
 				button.selectOneOnClick = true;
 				if (weaponSel == i)

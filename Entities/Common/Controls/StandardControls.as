@@ -298,7 +298,7 @@ void onTick(CBlob@ this)
 
 	// keybinds
 
-	if (controls.isKeyPressed(KEY_LSHIFT) || controls.isKeyPressed(KEY_RSHIFT))
+	if (controls.ActionKeyPressed(AK_BUILD_MODIFIER))
 	{
 		EKEY_CODE[] keybinds = { KEY_KEY_1, KEY_KEY_2, KEY_KEY_3, KEY_KEY_4, KEY_KEY_5, KEY_KEY_6, KEY_KEY_7, KEY_KEY_8, KEY_KEY_9, KEY_KEY_0 };
 

@@ -84,6 +84,10 @@ const string[] bombTypeNames = { "mat_bombs",
                                  "mat_waterbombs"
                                };
 
+bool hasBombs(CBlob@ this, u8 bombType)
+{
+	return bombType < BombType::count && this.getBlobCount(bombTypeNames[bombType]) > 0;
+}
 
 //checking state stuff
 
