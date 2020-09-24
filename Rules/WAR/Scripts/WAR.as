@@ -985,10 +985,10 @@ void Reset(CRules@ this)
 	this.set_u32("game_end_time", getGameTime() + core.gameDuration); //for TimeToEnd.as
 
 	// place no build zones at sides
-	CMap@ map = getMap();
-	f32 space = map.tilesize * 5.0f;
-	map.server_AddSector(Vec2f(0.0f, 0.0f), Vec2f(space, map.tilemapheight * map.tilesize), "no build");
-	map.server_AddSector(Vec2f(map.tilemapwidth * map.tilesize - space, 0.0f), Vec2f(map.tilemapwidth * map.tilesize, map.tilemapheight * map.tilesize), "no build");
+	// CMap@ map = getMap();
+	// f32 space = map.tilesize * 5.0f;
+	// map.server_AddSector(Vec2f(0.0f, 0.0f), Vec2f(space, map.tilemapheight * map.tilesize), "no build");
+	// map.server_AddSector(Vec2f(map.tilemapwidth * map.tilesize - space, 0.0f), Vec2f(map.tilemapwidth * map.tilesize, map.tilemapheight * map.tilesize), "no build");
 
 	//
 
