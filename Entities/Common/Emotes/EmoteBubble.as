@@ -46,7 +46,21 @@ void onTick(CBlob@ blob)
 			blob.getCurrentScript().tickFrequency = 1;
 			if (emote !is null)
 			{
-				emote.SetVisible(true);
+				Vec2f mouseWorldPos = getControls().getMouseWorldPos();
+				Vec2f emoteOffset = emote.getOffset();
+				Vec2f pos = blob.getPositionWithOffset(emoteOffset);
+
+				//approximate dimensions of most emotes
+				Vec2f tl = pos - Vec2f(8, 5);
+				Vec2f br = pos + Vec2f(8, 9);
+
+				//check if mouse is over emote
+				bool overEmote = (
+					mouseWorldPos.x >= tl.x && mouseWorldPos.y >= tl.y &&
+					mouseWorldPos.x < br.x && mouseWorldPos.y < br.y
+				);
+
+				emote.SetVisible(!overEmote);
 				emote.animation.frame = index;
 
 				emote.ResetTransform();
