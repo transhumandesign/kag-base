@@ -219,3 +219,24 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 {
 	return customData == Hitters::builder? this.getInitialHealth() / 2 : damage;
 }
+
+void onRender(CSprite@ this)
+{
+	if (g_videorecording) return;
+
+	//hover over primed mine to check if its my mine
+	CBlob@ blob = this.getBlob();
+	if (blob.getDamageOwnerPlayer() is getLocalPlayer() && blob.get_u8(MINE_STATE) == PRIMED)
+	{
+		Vec2f mouseWorldPos = getControls().getMouseWorldPos();
+		Vec2f minePos = blob.getPosition();
+
+		float radius = 10.0f;
+		float distanceSq = (mouseWorldPos - minePos).LengthSquared();
+
+		if (distanceSq < radius * radius)
+		{
+			blob.RenderForHUD(Vec2f_zero, RenderStyle::outline_front);
+		}
+	}
+}
