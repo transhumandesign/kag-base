@@ -16,7 +16,7 @@ void onRestart(CRules@ this)
 
 	const u16 mapWidth = map.tilemapwidth * map.tilesize;
 	const u16 mapHeight = map.tilemapheight * map.tilesize;
-	const u8 barrierWidth = 2 * map.tilesize;
+	// const u8 barrierWidth = 2 * map.tilesize;
 	const u8 barrierHeight = 3 * map.tilesize;
 
 	// Ceiling
@@ -25,12 +25,12 @@ void onRestart(CRules@ this)
 	map.server_AddSector(tlCeiling, brCeiling, "no build");
 
 	// Left
-	Vec2f tlLeft = Vec2f(0.0f, barrierHeight);
-	Vec2f brLeft = Vec2f(barrierWidth, mapHeight);
-	map.server_AddSector(tlLeft, brLeft, "no build");
+	// Vec2f tlLeft = Vec2f(0.0f, barrierHeight);
+	// Vec2f brLeft = Vec2f(barrierWidth, mapHeight);
+	// map.server_AddSector(tlLeft, brLeft, "no build");
 
 	// Right
-	Vec2f tlRight = Vec2f(mapWidth - barrierWidth, barrierHeight);
-	Vec2f brRight = Vec2f(mapWidth, mapHeight);
-	map.server_AddSector(tlRight, brRight, "no build");
+	// Vec2f tlRight = Vec2f(mapWidth - barrierWidth, barrierHeight);
+	// Vec2f brRight = Vec2f(mapWidth, mapHeight);
+	// map.server_AddSector(tlRight, brRight, "no build");
 }
