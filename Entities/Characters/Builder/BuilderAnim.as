@@ -245,6 +245,14 @@ void onRender(CSprite@ this)
 			if (!hitBlob.hasTag("flesh"))
 			{
 				hitBlob.RenderForHUD(RenderStyle::outline);
+
+				// hacky fix for shitty z-buffer issue
+				// the sprite layers go out of order while hitting with this fix,
+				// but its better than the entire blob glowing brighter than the sun
+				if (v_postprocess)
+				{
+					hitBlob.RenderForHUD(RenderStyle::normal);
+				}
 			}
 		}
 		else// map hit
