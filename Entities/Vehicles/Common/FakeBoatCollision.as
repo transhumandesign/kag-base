@@ -85,5 +85,5 @@ void onTick(CBlob@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	return !blob.hasTag("fake boat collision") || (blob.hasTag("fake boat collision") && blob.getTeamNum() != this.getTeamNum()) ;
+	return !blob.hasTag("fake boat collision") || blob.getTeamNum() != this.getTeamNum();
 }
