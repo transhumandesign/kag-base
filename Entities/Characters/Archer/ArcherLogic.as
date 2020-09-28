@@ -1107,3 +1107,18 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		}
 	}
 }
+
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
+{
+	ArcherInfo@ archer;
+	if (!this.get("archerInfo", @archer))
+	{
+		return;
+	}
+
+	if (canSend(this))
+	{
+		archer.grappling = false;
+		SyncGrapple(this);
+	}
+}
