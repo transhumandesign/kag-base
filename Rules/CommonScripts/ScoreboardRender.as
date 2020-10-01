@@ -83,7 +83,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 	topleft.y += stepheight * 2;
 
-	const int accolades_start = 740;
+	const int accolades_start = 770;
 	const int age_start = accolades_start + 80;
 
 	draw_age = false;
