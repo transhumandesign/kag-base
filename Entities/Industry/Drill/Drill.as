@@ -279,7 +279,7 @@ void onTick(CBlob@ this)
 								// or blobs to increase damage to (for the future)
 								string name = b.getName();
 
-								if (b.hasTag("material") || name == "tent" || name == "food")
+								if (b.hasTag("material") || b.hasTag("invincible") || b.hasScript("Eatable.as") || name == "tent")
 								{
 									continue; // carry on onto the next loop, dont waste time & heat on this
 								}
