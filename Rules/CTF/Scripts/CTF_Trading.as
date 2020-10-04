@@ -101,7 +101,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 		{
 			if (killer !is victim && killer.getTeamNum() != victim.getTeamNum())
 			{
-				killer.server_setCoins(killer.getCoins() + coinsOnKillAdd * (1+killer.get_u8("killstreak")*killstreakFactor));
+				killer.server_setCoins(killer.getCoins() + coinsOnKillAdd * Maths::Pow(killstreakFactor, killer.get_u8("killstreak")));
 			}
 			else if (killer !is victim && killer.getTeamNum() == victim.getTeamNum())
 			{
