@@ -22,7 +22,7 @@ const u8 heat_add_constructed = 2;
 const u8 heat_add_blob = 8;
 const u8 heat_cool_amount = 2;
 
-const u8 heat_cooldown_time = 5;
+const u8 heat_cooldown_time = 6;
 const u8 heat_cooldown_time_water = u8(heat_cooldown_time / 3);
 
 const f32 max_heatbar_view_range = 65;
