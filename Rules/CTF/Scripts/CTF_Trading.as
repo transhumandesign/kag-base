@@ -4,7 +4,7 @@
 
 const int coinsOnDamageAdd = 5;
 const int coinsOnKillAdd = 10;
-const f32 killstreakFactor = 1.05f;
+const f32 killstreakFactor = 1.2f;
 
 const int coinsOnDeathLosePercent = 20;
 const int coinsOnTKLose = 50;
