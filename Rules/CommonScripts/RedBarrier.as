@@ -178,7 +178,7 @@ void getBarrierPositions(f32 &out x1, f32 &out x2, f32 &out y1, f32 &out y2)
 	Vec2f[] barrierPositions;
 	if (map.getMarkers("red barrier", barrierPositions))
 	{
-		if (barrierPositions.length() == 2)
+		if (barrierPositions.size() == 2)
 		{
 			int left = barrierPositions[0].x < barrierPositions[1].x ? 0 : 1;
 			x1 = barrierPositions[left].x;

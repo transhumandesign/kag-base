@@ -250,10 +250,10 @@ CPlayer@ getReportedPlayer(string name)
 	}
 
 	//found any matches?
-	if(matches.length() > 0)
+	if(matches.size() > 0)
 	{
 		//only one? great!
-		if(matches.length() == 1)
+		if(matches.size() == 1)
 		{
 			return matches[0];
 		}
@@ -261,7 +261,7 @@ CPlayer@ getReportedPlayer(string name)
 		else
 		{
 			client_AddToChat("Closest options are:");
-			for(int i = 0; i < matches.length(); i++)
+			for(int i = 0; i < matches.size(); i++)
 			{
 				client_AddToChat("- " + matches[i].getCharacterName() + " (" + matches[i].getUsername() + ")");
 			}

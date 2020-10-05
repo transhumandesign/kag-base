@@ -413,7 +413,7 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 
 		//keybinds
 		array<EKEY_CODE> numKeys = { KEY_KEY_1, KEY_KEY_2, KEY_KEY_3, KEY_KEY_4, KEY_KEY_5, KEY_KEY_6, KEY_KEY_7, KEY_KEY_8, KEY_KEY_9, KEY_KEY_0 };
-		uint keybindCount = Maths::Min(shopitems.length(), numKeys.length());
+		uint keybindCount = Maths::Min(shopitems.size(), numKeys.size());
 
 		for (uint i = 0; i < keybindCount; i++)
 		{

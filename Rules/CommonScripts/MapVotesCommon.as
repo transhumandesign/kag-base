@@ -75,7 +75,7 @@ class MapVotesMenu
 		string[] map_names;
 		if (cfg.readIntoArray_string(map_names, "mapcycle"))
 		{
-			int arrayleng = map_names.length();	
+			int arrayleng = map_names.size();	
 
 			if (arrayleng <= 1)
 			{
@@ -97,7 +97,7 @@ class MapVotesMenu
 				}
 
 				//check again
-				arrayleng = map_names.length();
+				arrayleng = map_names.size();
 				if (arrayleng == 2)
 				{
 					button1.filename = map_names[0];
@@ -121,7 +121,7 @@ class MapVotesMenu
 				}				
 				
 				// random based on what's left
-				arrayleng = map_names.length();
+				arrayleng = map_names.size();
 				if (arrayleng > 2)
 				{
 					button1.filename = map_names[_random.NextRanged(arrayleng)];
@@ -141,19 +141,19 @@ class MapVotesMenu
 
 			//test to see if the map filename is inside parentheses and cut it out
 			//incase someone wants to add map votes to a gamemode that loads maps via scripts, eg. Challenge/mapcycle.cfg				 
-			string temptest = button1.filename.substr(button1.filename.length() - 1, button1.filename.length() - 1);
+			string temptest = button1.filename.substr(button1.filename.size() - 1, button1.filename.size() - 1);
 			if (temptest == ")")
 			{
 				string[] name = button1.filename.split(' (');
-				string mapName = name[name.length() - 1];
-				button1.filename = mapName.substr(0,mapName.length() - 1);
+				string mapName = name[name.size() - 1];
+				button1.filename = mapName.substr(0,mapName.size() - 1);
 			}
-			temptest = button3.filename.substr(button3.filename.length() - 1, button3.filename.length() - 1);
+			temptest = button3.filename.substr(button3.filename.size() - 1, button3.filename.size() - 1);
 			if (temptest == ")")
 			{
 				string[] name = button1.filename.split(' (');
-				string mapName = name[name.length() - 1];
-				button3.filename = mapName.substr(0,mapName.length() - 1);
+				string mapName = name[name.size() - 1];
+				button3.filename = mapName.substr(0,mapName.size() - 1);
 			}
 
 			button1.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button1.filename));
@@ -361,7 +361,7 @@ class MapVoteButton
 			{
 				while (dim.x > mapW - 15)
 				{
-					displayname = displayname.substr(0,displayname.length()-1);
+					displayname = displayname.substr(0,displayname.size()-1);
 					GUI::GetTextDimensions(displayname, dim);
 				}	
 				displayname += "..";

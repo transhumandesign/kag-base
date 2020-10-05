@@ -77,7 +77,7 @@ void BuildTradingMenu(CBlob@ this, CBlob @caller)
 
 			//keybinds
 			array<EKEY_CODE> numKeys = { KEY_KEY_1, KEY_KEY_2, KEY_KEY_3, KEY_KEY_4, KEY_KEY_5, KEY_KEY_6, KEY_KEY_7, KEY_KEY_8, KEY_KEY_9, KEY_KEY_0 };
-			uint keybindCount = Maths::Min(items.length(), numKeys.length());
+			uint keybindCount = Maths::Min(items.size(), numKeys.size());
 
 			u8 sepCount = 0;
 			u8 i = 0;
@@ -89,7 +89,7 @@ void BuildTradingMenu(CBlob@ this, CBlob @caller)
 					sepCount++;
 
 					//recalculate number of items excluding separators
-					keybindCount = Maths::Min(items.length() - sepCount, numKeys.length());
+					keybindCount = Maths::Min(items.size() - sepCount, numKeys.size());
 				}
 				else
 				{

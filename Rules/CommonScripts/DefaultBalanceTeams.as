@@ -141,7 +141,7 @@ u32 getMedianScore(int team)
 		if (getPlayer(i).getTeamNum() == team)
 			list.push_back(i);
 
-	begin = 0; end = list.length() - 1;
+	begin = 0; end = list.size() - 1;
 
 	while (true)
 	{
@@ -158,9 +158,9 @@ u32 getMedianScore(int team)
 		}
 		temp = list[c]; list[c] = list[end]; list[end] = temp; //move pivot to middle
 
-		if (list.length() / 2 == c)
+		if (list.size() / 2 == c)
 			return getPlayer(list[c]).getScore();
-		if (list.length() / 2 < c)
+		if (list.size() / 2 < c)
 			end = c - 1;
 		else
 			begin = c + 1;

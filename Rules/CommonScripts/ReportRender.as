@@ -43,13 +43,13 @@ void ReportRenderFunction(int id)
 					}
 				}
 
-				if(reported.length() > 0)											//draw side pane with reported players
+				if(reported.size() > 0)											//draw side pane with reported players
 				{
 					Vec2f screenPos = Vec2f(getScreenWidth() * 0.9f, getScreenHeight() * 0.70f);
 					GUI::SetFont("menu");
-					GUI::DrawPane(Vec2f(screenPos.x - 90, screenPos.y - 10), Vec2f(screenPos.x + 90, screenPos.y + (reported.length() * 18) - 5), SColor(128, 0, 0, 0));
+					GUI::DrawPane(Vec2f(screenPos.x - 90, screenPos.y - 10), Vec2f(screenPos.x + 90, screenPos.y + (reported.size() * 18) - 5), SColor(128, 0, 0, 0));
 
-					for (u8 i = 0; i < reported.length; i++)
+					for (u8 i = 0; i < reported.size(); i++)
 					{
 						CPlayer@ p = reported[i];
 						if (p !is null)
