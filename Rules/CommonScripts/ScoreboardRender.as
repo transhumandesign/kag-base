@@ -17,6 +17,8 @@ float scrollSpeed = 4.0f;
 float maxMenuWidth = 700;
 float screenMidX = getScreenWidth()/2;
 
+bool mouseWasPressed2 = false;
+
 string[] age_description = {
 	"New Player - Welcome them to the game!",
 	//first month
@@ -143,7 +145,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 				setSpectatePlayer(p.getUsername());
 			}
 
-			if (controls.mousePressed2)
+			if (controls.mousePressed2 && !mouseWasPressed2)
 			{
 				// reason for this is because this is called multiple per click (since its onRender, and clicking is updated per tick)
 				// we don't want to spam anybody using a clipboard history program
@@ -501,6 +503,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 		DrawFancyCopiedText(rules.get_string("client_copy_name"), rules.get_Vec2f("client_copy_pos"), durationLeft);
 	}
 
+	mouseWasPressed2 = controls.mousePressed2;
 
 	return topleft.y;
 
