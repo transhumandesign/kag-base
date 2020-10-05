@@ -27,6 +27,7 @@ void onInit(CBlob@ this)
 	this.set("hitdata", hitdata);
 
 	this.addCommandID("pickaxe");
+	this.addCommandID("hitdata sync");
 
 	CShape@ shape = this.getShape();
 	shape.SetRotationsAllowed(false);
@@ -201,6 +202,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			warn("error when recieving pickaxe command");
 		}
 	}
+	else if (cmd == this.getCommandID("hitdata sync") && !this.isMyPlayer())
+	{
+		HitData@ hitdata;
+		this.get("hitdata", @hitdata);
+
+		hitdata.tilepos = params.read_Vec2f();
+		hitdata.blobID = params.read_netid();
+	}
+	
 }
 
 //helper class to reduce function definition cancer
@@ -392,6 +402,12 @@ void Pickaxe(CBlob@ this)
 	{
 		hitdata.tilepos = tilepos;
 	}
+
+	CBitStream cbs;
+	cbs.write_Vec2f(hitdata.tilepos);
+	cbs.write_netid(hitdata.blobID);
+
+	this.SendCommand(this.getCommandID("hitdata sync"), cbs);
 }
 
 void SortHits(CBlob@ this, HitInfo@[]@ hitInfos, f32 damage, SortHitsParams@ p)
