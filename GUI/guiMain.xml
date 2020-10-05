@@ -105,7 +105,7 @@
 		<element type="button">
 			<attributes>
 				<int name="Id" value="12010" />
-				<string name="Caption" value="Tutorial" />
+				<string name="Caption" value="Solo" />
 				<rect name="Rect" value="480, 220, 800, 300" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
