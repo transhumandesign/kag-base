@@ -1,6 +1,6 @@
 #define SERVER_ONLY
 
-const bool moss_stone = true; //should stone turn into mossy stone
+const bool moss_stone = false; //should stone turn into mossy stone
 
 const f32 grass_grow_chance = 10;
 const f32 bush_grow_chance = 1;
