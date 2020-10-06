@@ -963,7 +963,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 		if (archer.charge_state == ArcherParams::no_arrows)
 		{
-			archer.charge_state = ArcherParams::readying;
+			archer.charge_state = ArcherParams::not_aiming;
 		}
 
 	}
