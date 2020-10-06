@@ -7,6 +7,11 @@
 #include "RulesCore.as";
 #include "RespawnSystem.as";
 
+const int maxMines = 20;
+const int maxKegs = 20;
+int mineCount = 0;
+int kegCount = 0;
+
 //simple config function - edit the variables below to change the basics
 
 void Config(SandboxCore@ this)
@@ -154,7 +159,10 @@ shared class SandboxSpawns : RespawnSystem
 				blob.server_Die();
 			}
 
-			p_info.blob_name = "builder"; //hard-set the respawn blob
+			if (p_info.blob_name == "") // if user is new
+			{
+				p_info.blob_name = "builder"; //hard-set the respawn blob
+			}
 			CBlob@ playerBlob = SpawnPlayerIntoWorld(getSpawnLocation(p_info), p_info);
 
 			if (playerBlob !is null)
@@ -378,5 +386,41 @@ void Reset(CRules@ this)
 	this.set("core", @core);
 	this.set("start_gametime", getGameTime() + core.warmUpTime);
 	this.set_u32("game_end_time", getGameTime() + core.gameDuration); //for TimeToEnd.as
+
+	kegCount = 0;
+	mineCount = 0;
+}
+
+void onBlobCreated(CRules@ this, CBlob@ blob)
+{
+	if (blob.getName() == "mine")
+	{
+		mineCount += 1;
+		if (mineCount > maxMines)
+		{
+			blob.server_Die(); // wont explode because its just been made
+		}
+	}
+	else if (blob.getName() == "keg")
+	{
+		kegCount += 1;
+		if (kegCount > maxKegs)
+		{
+			blob.server_Die();
+		}
+	}
+}
+
+
+void onBlobDie(CRules@ this, CBlob@ blob)
+{
+	if (blob.getName() == "mine")
+	{
+		mineCount -= 1;
+	}
+	else if (blob.getName() == "keg")
+	{
+		kegCount -= 1;
+	}
 }
 

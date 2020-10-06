@@ -2,7 +2,7 @@
 // apply "travel tunnel" tag to use
 
 #include "TunnelCommon.as";
-#include "Knocked.as";
+#include "KnockedCommon.as";
 #include "GenericButtonCommon.as";
 
 void onInit(CBlob@ this)
@@ -31,7 +31,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	        (!this.hasTag("teamlocked tunnel") || this.getTeamNum() == caller.getTeamNum()) &&
 	        !this.hasTag("under raid") &&
 	        //CANNOT travel when stunned
-			!(isKnockable(caller) && caller.get_u8("knocked") > 0)
+			!(isKnockable(caller) && isKnocked(caller))
 		)
 	{
 		MakeTravelButton(this, caller, this.get_Vec2f("travel button pos"), "Travel", "Travel (requires Transport Tunnels)");
@@ -178,7 +178,7 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 			caller.Sync("invincible", true);
 
 			//actually do the knocking
-			SetKnocked(caller, 30, true);
+			setKnocked(caller, 30, true);
 		}
 	}
 }
@@ -223,7 +223,7 @@ void onTunnelCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 		else if (caller !is null && caller.isMyPlayer())
-			Sound::Play("NoAmmo.ogg");
+			caller.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 	}
 	else if (cmd == this.getCommandID("server travel to"))
 	{

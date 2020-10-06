@@ -1,117 +1,143 @@
 //-- Written by Monkey_Feats 22/2/2020 --//
 #include "MapVotesCommon.as";
 
-const int VoteSecs = 16;
-const int PrePostVoteSecs = -4;
-const u16 FadeTicks = 60; //2(secs)*30(ticks)
-s16 fadeTimer;
-const string vote_end_id = "mapvote: ended";
-const string vote_selectmap_id = "mapvote: selectmap";
-u8 current_Selected = 0;
-
-void onInit( CRules@ this )
+void onInit(CRules@ rules)
 {
-	onRestart(this);
-
-	string AveriaSerif = CFileMatcher("AveriaSerif-Bold.ttf").getFirst();	
-	GUI::LoadFont("AveriaSerif-Bold_20", AveriaSerif, 20);
-
-	this.addCommandID(vote_end_id);
-	this.addCommandID(vote_selectmap_id);
-
+	rules.addCommandID(voteEndTag);
+	rules.addCommandID(voteSelectMapTag);
+	rules.addCommandID(voteUnselectMapTag);
+	rules.addCommandID(voteSyncTag);
+	
 	MapVotesMenu mvm();
-	this.set("MapVotesMenu", @mvm);
+	rules.set("MapVotesMenu", @mvm);
 
-	int id = Render::addScript(Render::layer_posthud, "PostGameMapVotes.as", "RenderRaw", 0.0f);
+	if (!GUI::isFontLoaded("AveriaSerif-Bold_22"))
+	{		
+		string AveriaSerif = CFileMatcher("AveriaSerif-Bold.ttf").getFirst();
+		GUI::LoadFont("AveriaSerif-Bold_22", AveriaSerif, 22, true);
+	}
+
+	if (isClient())
+	{
+		Render::addScript(Render::layer_posthud, "PostGameMapVotes.as", "RenderRaw", 0.0f);
+	}
+
+	shouldCallOnRestart = true;
 }
 
-void onRestart(CRules@ this)
+// HACK: if we call this directly within onInit we get a command error because initialization
+//       has to finish before commands work the way you would expect.
+//       as a workaround, we make it call on the first tick that occurs after onInit. 
+bool shouldCallOnRestart = false;
+
+void onRestart(CRules@ rules)
 {	
 	MapVotesMenu@ mvm;
-	if (this.get("MapVotesMenu", @mvm))
-	mvm.isSetup = false;
-	current_Selected = 0;
+	if (!rules.get("MapVotesMenu", @mvm))
+	{
+		warn("MapVotesMenu null in onRestart");
+		return;
+	}
+
+	if (isServer())
+	{
+    	mvm.Randomize();
+		mvm.Sync();
+	}
+
+	mvm.ClearVotes();
+}
+
+void onNewPlayerJoin(CRules@ rules, CPlayer@ player)
+{
+	MapVotesMenu@ mvm;
+	if (!rules.get("MapVotesMenu", @mvm))
+	{
+		warn("MapVotesMenu null in onNewPlayerJoin");
+		return;
+	}
+
+	mvm.Sync(@player);
+}
+
+void onPlayerLeave(CRules@ this, CPlayer@ player)
+{	
+	CBitStream params;
+	u16 id = player.getNetworkID();
+	params.write_u16(id);
+	this.SendCommand(this.getCommandID(voteUnselectMapTag), params);
 }
 
 void onTick( CRules@ this )
-{		
+{
+	if (shouldCallOnRestart)
+	{
+		onRestart(this);
+		shouldCallOnRestart = false;
+	}
+
 	MapVotesMenu@ mvm;
-	if (!this.get("MapVotesMenu", @mvm)) return;
-	if (!this.isGameOver()) return;
+	if (!this.get("MapVotesMenu", @mvm))
+	{
+		warn("MapVotesMenu null in onTick");
+		return;
+	}
+
+	if (!this.isGameOver())
+	{
+		this.set_s32(gameEndTimePointTag, getGameTime() + this.get_s32(gameRestartDelayTag));
+		return;
+	}
+
 	if (!mvm.isSetup)
 	{	
-		fadeTimer = PrePostVoteSecs*getTicksASecond(); // endgame time before fading
-		mvm.VoteTimeLeft = VoteSecs;
 		mvm.Refresh();
-
 		return;
 	}
 
-	if (fadeTimer < FadeTicks)
-	{
-		fadeTimer++;
-		return;
-	}
-	else if (fadeTimer == FadeTicks)
-	{
-		CPlayer@ player;
-		for (int i = 0; i < getPlayersCount(); i++)
-		{
-			@player = getPlayer(i);
-			CBlob@ blob = player.getBlob();
+	u8 count1 = mvm.votes1.length();
+	u8 count2 = mvm.votes2.length();
+	u8 count3 = mvm.votes3.length();
 
-			if (blob !is null)
-			{
-				blob.server_Die();				
-				getHUD().SetDefaultCursor();
-			}
-		}
-	}
-
-	// Vote is now setup, faded to black and is counting down
-	if (getGameTime() % getTicksASecond() == 0)
-	mvm.VoteTimeLeft--;
-
-	if (mvm.VotedCount1 > mvm.VotedCount2 && mvm.VotedCount1 > mvm.VotedCount3)
+	if (count1 > count2 && count1 > count3)
 	{	//map 1 got the most votes
-		mvm.MostVoted = 1;
+		mvm.mostVoted = 1;
 	}
-	else if (mvm.VotedCount3 > mvm.VotedCount1 && mvm.VotedCount3 > mvm.VotedCount2)
+	else if (count3 > count1 && count3 > count2)
 	{	//map 3 got the most votes
-		mvm.MostVoted = 3;
+		mvm.mostVoted = 3;
 	}
 	else 
 	{	//random map got the most votes or inconclusive
-		mvm.MostVoted = 2;
+		mvm.mostVoted = 2;
 	}
 
 	CBitStream params;
-	if (getNet().isServer() && mvm.VoteTimeLeft == PrePostVoteSecs) //timeup + some, load voted map
+	if (isServer() && ticksRemainingBeforeRestart() <= 0)
 	{
-		params.write_u8(mvm.MostVoted);
-		this.SendCommand(this.getCommandID(vote_end_id), params);
+		params.write_u8(mvm.mostVoted);
+		this.SendCommand(this.getCommandID(voteEndTag), params);
 	}
 
-	//---------- CLIENT -----------\\
-	CPlayer@ me = getLocalPlayer();
-	if (!getNet().isClient()) return;
+	//--------------------- CLIENT -----------------------\\
+	if (isServer() && !isClient()) return; //not server, but also not localhost
+
+	if (isMapVoteOver()) return;
 
 	CControls@ controls = getControls();
 	if (controls is null) return;
+	
+	u8 newSelectedNum = 0;
+	mvm.Update(controls, newSelectedNum);
 
-	if (mvm.VoteTimeLeft <= 0 || mvm.VoteTimeLeft >= VoteSecs-1) return;
-
-	u8 SelectedNum;	//default to zero, so command is sent only once
-	mvm.Update(controls, SelectedNum);
-
-	if (SelectedNum != 0)
+	if (newSelectedNum != 0)
 	{
+		CPlayer@ me = getLocalPlayer();
 		u16 id = me.getNetworkID();
 		params.write_u16(id);
-		params.write_u8(SelectedNum);
-		params.write_u8(current_Selected);
-		this.SendCommand(this.getCommandID(vote_selectmap_id), params);
-	}
+		params.write_u8(newSelectedNum);
+		this.SendCommand(this.getCommandID(voteSelectMapTag), params);
+	}	
 }
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
@@ -119,41 +145,88 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	MapVotesMenu@ mvm;
 	if (!this.get("MapVotesMenu", @mvm)) return;
 	
-	if (cmd == this.getCommandID(vote_selectmap_id))
+	if (cmd == this.getCommandID(voteSelectMapTag))
 	{
 		u16 id = params.read_u16();
-		u8 selected = params.read_u8(); 
-		u8 lastselected = params.read_u8();
-		CPlayer@ player = getPlayerByNetworkId(id);	
+		u8 selected = params.read_u8();
 
-		if (player !is null)
+		int p1 = mvm.votes1.find(id);
+		if (p1 != -1) mvm.votes1.removeAt(p1);
+		int p2 = mvm.votes2.find(id);
+		if (p2 != -1) mvm.votes2.removeAt(p2);
+		int p3 = mvm.votes3.find(id);
+		if (p3 != -1) mvm.votes3.removeAt(p3);		
+
+		switch (selected)
 		{
-			bool myPlayer = player.isMyPlayer();
-			
-			switch (selected)
-			{
-				case 0: break;
-				case 1: mvm.VotedCount1++; break;
-				case 2: mvm.VotedCount2++; break;
-				case 3: mvm.VotedCount3++; break;
-			}
-			switch (lastselected)
-			{
-				case 0: break;
-				case 1: mvm.VotedCount1--; break;
-				case 2: mvm.VotedCount2--; break;
-				case 3: mvm.VotedCount3--; break;
-			}
-
-			if (myPlayer) current_Selected = selected;
+			case 0: break;
+			case 1: if (p1 == -1) mvm.votes1.push_back(id); break;
+			case 2: if (p2 == -1) mvm.votes2.push_back(id); break;
+			case 3: if (p3 == -1) mvm.votes3.push_back(id); break;
 		}
-	}
-	else if (getNet().isServer() && cmd == this.getCommandID(vote_end_id))
-	{		
-		tcpr("(MapVotes) Map1: "+mvm.button1.shortname+" = "+mvm.VotedCount1+" Map2: "+mvm.button3.shortname+" = "+mvm.VotedCount3+" Random/Inconclusive = "+mvm.VotedCount2);
 
-		u8 MostVoted = params.read_u8(); 
-		switch (MostVoted)
+		CPlayer@ player = getPlayerByNetworkId(id);
+		if (getNet().isClient() && player !is null && player.isMyPlayer()) 
+		{
+			mvm.selectedOption = selected;
+			Sound::Play("buttonclick.ogg");
+		}
+	}	
+	else if (cmd == this.getCommandID(voteUnselectMapTag))
+	{
+		u16 id = params.read_u16();
+		int p1 = mvm.votes1.find(id);
+		if (p1 != -1) mvm.votes1.removeAt(p1);
+		int p2 = mvm.votes2.find(id);
+		if (p2 != -1) mvm.votes2.removeAt(p2);
+		int p3 = mvm.votes3.find(id);
+		if (p3 != -1) mvm.votes3.removeAt(p3);
+	}
+	else if (getNet().isClient() && cmd == this.getCommandID(voteSyncTag))
+	{	
+		mvm.button1.filename = params.read_string();
+		mvm.button3.filename = params.read_string();		
+		mvm.button1.shortname = params.read_string();
+		mvm.button3.shortname = params.read_string();
+		mvm.mostVoted = params.read_u8();
+
+		u8 l1 = params.read_u8();
+		u8 l2 = params.read_u8();
+		u8 l3 = params.read_u8();
+
+		for (uint i = 0; i < l1; i++)
+		{ 
+			mvm.votes1.push_back(params.read_u8()); 
+		}
+		
+		for (uint i = 0; i < l2; i++)
+		{
+			mvm.votes2.push_back(params.read_u8()); 
+		}
+		
+		for (uint i = 0; i < l3; i++)
+		{ 
+			mvm.votes3.push_back(params.read_u8());
+		}
+			
+		if (!Texture::exists(mvm.button1.shortname))
+		{
+			CreateMapTexture(mvm.button1.shortname, mvm.button1.filename);
+		}
+		
+		if (!Texture::exists(mvm.button3.shortname))
+		{
+			CreateMapTexture(mvm.button3.shortname, mvm.button3.filename);
+		}
+
+		mvm.ClearVotes();
+	}
+	else if (getNet().isServer() && cmd == this.getCommandID(voteEndTag))
+	{		
+		tcpr("(MapVotes) Map1: "+mvm.button1.shortname+" = "+mvm.votes1.length()+" Map2: "+mvm.button3.shortname+" = "+mvm.votes3.length()+" Random = "+mvm.votes2.length());
+
+		u8 mostVoted = params.read_u8(); 
+		switch (mostVoted)
 		{
 			case 1: LoadMap(mvm.button1.filename); break;
 			case 3:	LoadMap(mvm.button3.filename); break;
@@ -162,23 +235,16 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	}
 }
 
-void onRender(CRules@ this)
-{
-	MapVotesMenu@ mvm;
-	if (!this.get("MapVotesMenu", @mvm)) return;
-	if (!this.isGameOver() || !mvm.isSetup) return;
-
-	mvm.RenderGUI();
-}
-
 void RenderRaw(int id)
 {	
 	MapVotesMenu@ mvm;
 	if (!getRules().get("MapVotesMenu", @mvm)) return;
 	if (!getRules().isGameOver() || !mvm.isSetup) return;
+	if (!getNet().isClient()) return;
 
 	Render::SetTransformScreenspace();
 	Render::SetAlphaBlend(true);
 	Render::SetBackfaceCull(true);
-	mvm.RenderRaw();
+	Render::SetZBuffer(false, false);
+	mvm.Render();
 }

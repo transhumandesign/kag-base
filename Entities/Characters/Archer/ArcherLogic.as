@@ -2,7 +2,7 @@
 
 #include "ArcherCommon.as"
 #include "ThrowCommon.as"
-#include "Knocked.as"
+#include "KnockedCommon.as"
 #include "Hitters.as"
 #include "RunnerCommon.as"
 #include "ShieldCommon.as";
@@ -72,7 +72,8 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 	if (right_click)
 	{
 		// cancel charging
-		if (charge_state != ArcherParams::not_aiming)
+		if (charge_state != ArcherParams::not_aiming &&
+		    charge_state != ArcherParams::fired) // allow grapple right after firing
 		{
 			charge_state = ArcherParams::not_aiming;
 			archer.charge_time = 0;
@@ -302,8 +303,11 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			}
 		}
 
-		this.set_bool("has_arrow", hasarrow);
-		this.Sync("has_arrow", isServer());
+		if (hasarrow != this.get_bool("has_arrow"))
+		{
+			this.set_bool("has_arrow", hasarrow);
+			this.Sync("has_arrow", isServer());
+		}
 
 		archer.stab_delay = 0;
 	}
@@ -335,7 +339,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			if (archer.legolas_arrows == ArcherParams::legolas_arrows_count)
 			{
 				Sound::Play("/Stun", pos, 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
-				SetKnocked(this, 15);
+				setKnocked(this, 15);
 			}
 			else if (pressed)
 			{
@@ -374,7 +378,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 		//	printf("charge_state " + charge_state );
 
-		if ((just_action1 || this.wasKeyPressed(key_action2) && !pressed_action2) &&
+		if ((this.isKeyPressed(key_action1)|| (this.wasKeyPressed(key_action2) && !pressed_action2)) &&
 		        (charge_state == ArcherParams::not_aiming || charge_state == ArcherParams::fired))
 		{
 			charge_state = ArcherParams::readying;
@@ -401,7 +405,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 				if (ismyplayer && !this.wasKeyPressed(key_action1))   // playing annoying no ammo sound
 				{
-					Sound::Play("Entities/Characters/Sounds/NoAmmo.ogg");
+					this.getSprite().PlaySound("Entities/Characters/Sounds/NoAmmo.ogg", 0.5);
 				}
 
 			}
@@ -596,7 +600,7 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	if (getKnocked(this) > 0 || this.isInInventory())
+	if (isKnocked(this) || this.isInInventory())
 	{
 		archer.grappling = false;
 		archer.charge_state = 0;
@@ -1099,7 +1103,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		if (blockAttack(hitBlob, velocity, 0.0f))
 		{
 			this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
-			SetKnocked(this, 30);
+			setKnocked(this, 30);
 		}
 	}
 }

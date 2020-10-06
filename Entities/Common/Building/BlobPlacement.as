@@ -13,10 +13,11 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 {
 	if (blob !is null)
 	{
+		CShape@ shape = blob.getShape();
+		shape.server_SetActive(true);
+
 		blob.Tag("temp blob placed");
-		// hack for spike kills
-		// TODO: add proper functionality for any block with a specific tag to blob.SetDamageOwnerPlayer(this.getPlayer());
-		if (blob.getName() == "spikes")
+		if (blob.hasTag("has damage owner"))
 		{
 			blob.SetDamageOwnerPlayer(this.getPlayer());
 		}
@@ -25,7 +26,6 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 			blob.setPosition(cursorPos);
 			if (blob.isSnapToGrid())
 			{
-				CShape@ shape = blob.getShape();
 				shape.SetStatic(true);
 			}
 		}
@@ -296,7 +296,7 @@ void onTick(CBlob@ this)
 				}
 				else if (snap && this.isKeyJustPressed(key_action1))
 				{
-					Sound::Play("NoAmmo.ogg");
+					this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 				}
 			}
 

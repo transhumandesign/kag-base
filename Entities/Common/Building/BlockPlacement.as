@@ -116,7 +116,7 @@ void onTick(CBlob@ this)
 			}
 			else if (this.isKeyJustPressed(key_action1) && !bc.sameTileOnBack)
 			{
-				Sound::Play("NoAmmo.ogg");
+				this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 			}
 		}
 	}
@@ -227,4 +227,3 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		PlaceBlock(this, index, pos);
 	}
 }
-

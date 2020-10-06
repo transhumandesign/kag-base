@@ -1,6 +1,6 @@
 #include "SeatsCommon.as"
 #include "VehicleAttachmentCommon.as"
-#include "Knocked.as"
+#include "KnockedCommon.as"
 
 // HOOKS THAT YOU MUST IMPLEMENT WHEN INCLUDING THIS FILE
 // void Vehicle_onFire( CBlob@ this, CBlob@ bullet, const u8 charge )

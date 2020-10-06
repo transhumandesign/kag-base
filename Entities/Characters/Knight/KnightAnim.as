@@ -3,10 +3,11 @@
 #include "KnightCommon.as";
 #include "RunnerAnimCommon.as";
 #include "RunnerCommon.as";
-#include "Knocked.as";
+#include "KnockedCommon.as";
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
 #include "Accolades.as"
+#include "ShieldCommon.as"
 
 const string shiny_layer = "shiny bit";
 
@@ -94,7 +95,7 @@ void onTick(CSprite@ this)
 		return;
 	}
 
-	const u8 knocked = getKnocked(blob);
+	bool knocked = isKnocked(blob);
 
 	bool shieldState = isShieldState(knight.state);
 	bool specialShieldState = isSpecialShieldState(knight.state);
@@ -162,7 +163,7 @@ void onTick(CSprite@ this)
 
 	bool shinydot = false;
 
-	if (knocked > 0)
+	if (knocked)
 	{
 		if (inair)
 		{
@@ -185,7 +186,7 @@ void onTick(CSprite@ this)
 	{
 		this.SetAnimation("shield_drop");
 	}
-	else if (knight.state == KnightStates::shielding)
+	else if (knight.state == KnightStates::shielding && isShieldEnabled(blob))
 	{
 		if (walking)
 		{
@@ -226,6 +227,14 @@ void onTick(CSprite@ this)
 				this.animation.frame = 0;
 			}
 		}
+	}
+	else if (knight.state == KnightStates::resheathing_slash)
+	{
+		this.SetAnimation("resheath_slash");
+	}
+	else if(knight.state == KnightStates::resheathing_cut)
+	{
+		this.SetAnimation("draw_sword");
 	}
 	else if (knight.state == KnightStates::sword_drawn)
 	{
@@ -365,7 +374,7 @@ void onTick(CSprite@ this)
 	}
 
 	//set the head anim
-	if (knocked > 0)
+	if (knocked)
 	{
 		blob.Tag("dead head");
 	}

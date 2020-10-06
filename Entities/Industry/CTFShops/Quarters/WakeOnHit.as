@@ -1,5 +1,7 @@
 // WakeOnHit.as
 
+#include "KnockedCommon.as"
+
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
 	if (this.getHealth() < oldHealth)
@@ -12,9 +14,9 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 			{
 				this.server_DetachFrom(bed);
 			}
-			if (this.exists("knocked"))
+			if (isKnockable(this))
 			{
-				this.set_u8("knocked", 30);
+				setKnocked(this, 30, true);
 			}
 		}
 	}

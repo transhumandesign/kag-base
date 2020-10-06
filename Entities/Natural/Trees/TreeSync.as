@@ -34,12 +34,6 @@ void InitTree(CBlob@ this, TreeVars@ vars)
 	//prevent building overlap
 	CMap@ map = this.getMap();
 	const f32 radius = map.tilesize / 2.0f;
-	CMap::Sector@ nobuild = map.server_AddSector(Vec2f(pos.x - radius, pos.y - radius), Vec2f(pos.x + radius, pos.y + radius), "no build", "", this.getNetworkID());
-
-	if (nobuild !is null) // very useful for later
-	{
-		this.set("nobuild", @nobuild);
-	}
 
 	if (getNet().isServer())
 	{
@@ -165,10 +159,31 @@ void DoGrow(CBlob@ this, TreeVars@ vars)
 
 	if (map !is null/* && getNet().isServer()*/)
 	{
+		CMap::Sector@[] sectors;
 		CMap::Sector@ sector_nobuild = null;
-		CMap::Sector@ sector_tree = map.getSectorAtPosition(pos, "tree");
+		CMap::Sector@ sector_tree = null;
 
-		this.get("nobuild", @sector_nobuild);
+		map.getSectorsAtPosition(pos, sectors); // grab all sectors
+
+		u8 size = sectors.size();
+		u16 networkID = this.getNetworkID();
+
+		for (int a = 0; a < size; a++)
+		{
+			CMap::Sector@ sec = sectors[a];
+			if (sec !is null)
+			{
+				if (sec.name == "no build" && sec.ownerID == networkID) // find one that is made by us
+				{
+					@sector_nobuild = @sec;
+				}
+
+				if (sec.name == "tree" && sec.ownerID == networkID)
+				{
+					@sector_tree = @sec;
+				}
+			}
+		}
 
 		if (sector_nobuild is null)
 		{
@@ -182,7 +197,8 @@ void DoGrow(CBlob@ this, TreeVars@ vars)
 
 		if (sector_nobuild !is null && sector_tree !is null)
 		{
-			sector_nobuild.upperleft.y = sector_tree.upperleft.y = sector_nobuild.lowerright.y - (vars.height * segment_length);
+			sector_nobuild.upperleft.y = sector_nobuild.lowerright.y - (vars.height * segment_length);
+			sector_tree.upperleft.y = sector_nobuild.upperleft.y;
 		}
 	}
 

@@ -3,7 +3,7 @@
 #include "RunnerCommon.as"
 #include "MakeDustParticle.as";
 #include "FallDamageCommon.as";
-#include "Knocked.as";
+#include "KnockedCommon.as";
 
 void onInit(CMovement@ this)
 {

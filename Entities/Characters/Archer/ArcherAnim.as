@@ -4,7 +4,7 @@
 #include "FireParticle.as"
 #include "RunnerAnimCommon.as";
 #include "RunnerCommon.as";
-#include "Knocked.as";
+#include "KnockedCommon.as";
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
 #include "Accolades.as"
@@ -234,14 +234,14 @@ void onTick(CSprite@ this)
 	needs_shiny = false;
 	bool crouch = false;
 
-	const u8 knocked = getKnocked(blob);
+	bool knocked = isKnocked(blob);
 	Vec2f pos = blob.getPosition();
 	Vec2f aimpos = blob.getAimPos();
 	// get the angle of aiming with mouse
 	Vec2f vec = aimpos - pos;
 	f32 angle = vec.Angle();
 
-	if (knocked > 0)
+	if (knocked)
 	{
 		if (inair)
 		{
@@ -383,7 +383,7 @@ void onTick(CSprite@ this)
 	DrawBowEffects(this, blob, archer, arrowType);
 
 	//set the head anim
-	if (knocked > 0 || crouch)
+	if (knocked || crouch)
 	{
 		blob.Tag("dead head");
 	}

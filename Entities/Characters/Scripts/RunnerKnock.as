@@ -1,11 +1,13 @@
 // stun
 #include "/Entities/Common/Attacks/Hitters.as";
-#include "Knocked.as";
+#include "KnockedCommon.as";
 #include "ShieldCommon.as";
+#include "KnightCommon.as";
+#include "SpongeCommon.as";
 
 void onInit(CBlob@ this)
 {
-	setKnockable(this);   //already done in runnerdefault but some dont have that
+	InitKnockable(this);   //already done in runnerdefault but some dont have that
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
@@ -97,8 +99,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			for(int i = 0; i < sponges.length; i++)
 			{
 				CBlob@ current_sponge = sponges[i];
-				int absorbed = current_sponge.get_u8("absorbed");
-				if (absorbed > highest_absorbed)
+				int absorbed = current_sponge.get_u8(ABSORBED_PROP);
+				if (absorbed < ABSORB_COUNT && // skip full sponges
+				    absorbed > highest_absorbed)
 				{
 					highest_absorbed = absorbed;
 					@sponge = current_sponge;
@@ -156,28 +159,19 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 		if (has_sponge && wet_sponge)
 		{
-			string apn = "absorbed";
-			u8 sp_max = 100;
-			u8 sp_amount = Maths::Min(sp_max, sponge.get_u8(apn) + 50);
-			//full?
-			if (sp_amount == sp_max)
-			{
-				sponge.server_Die();
-			}
-			else
-			{
-				sponge.set_u8(apn, sp_amount);
-				sponge.Sync(apn, true);
-			}
+			u8 sp_amount = Maths::Min(ABSORB_COUNT, sponge.get_u8(ABSORBED_PROP) + 50);
+			sponge.set_u8(ABSORBED_PROP, sp_amount);
+			sponge.Sync(ABSORBED_PROP, true);
+			spongeUpdateSprite(sponge.getSprite(), sp_amount);
 		}
 	}
 
 	if (time > 0)
 	{
 		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
-		u8 currentstun = this.get_u8("knocked");
-		this.set_u8("knocked", Maths::Clamp(time, currentstun, 60));
+		setKnocked(this, Maths::Min(time, 60), true);
 	}
+
 
 //  print("KNOCK!" + this.get_u8("knocked") + " dmg " + damage );
 	return damage; //damage not affected
@@ -192,6 +186,11 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 
 	const f32 currentHealth = this.getHealth();
 	f32 temp = currentHealth - oldHealth;
+
+	if (temp > 25)
+	{
+		temp = 25;
+	}
 
 	while (temp > 0) // if we've been healed, play a particle for each healed unit
 	{
@@ -208,4 +207,9 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 
 		temp -= 0.125f; // now go down to prevent a loop
 	}
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
+{
+	KnockedCommands(this, cmd, params);
 }

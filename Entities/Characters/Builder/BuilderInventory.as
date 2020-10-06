@@ -4,6 +4,7 @@
 #include "PlacementCommon.as";
 #include "Help.as";
 #include "CommonBuilderBlocks.as";
+#include "KnockedCommon.as";
 
 namespace Builder
 {
@@ -215,10 +216,14 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 		if (blocks !is null && i >= 0 && i < blocks[PAGE].length)
 		{
 			BuildBlock@ block = @blocks[PAGE][i];
-
-			if (!canBuild(blob, @blocks[PAGE], i))
+			bool canBuildBlock = canBuild(blob, @blocks[PAGE], i) && !isKnocked(blob);
+			if (!canBuildBlock)
 			{
-				Sound::Play("/NoAmmo");
+				if (blob.isMyPlayer())
+				{
+					blob.getSprite().PlaySound("/NoAmmo", 0.5);
+				}
+
 				return;
 			}
 
@@ -364,6 +369,11 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	if (this !is getLocalPlayerBlob())
+	{
+		return;
+	}
+
 	if (this.hasTag("reload blocks"))
 	{
 		this.Untag("reload blocks");
@@ -371,7 +381,7 @@ void onTick(CBlob@ this)
 	}
 
 	CControls@ controls = getControls();
-	if (controls.isKeyPressed(KEY_LSHIFT) || controls.isKeyPressed(KEY_RSHIFT))
+	if (controls.ActionKeyPressed(AK_BUILD_MODIFIER))
 	{
 		for (uint i = 0; i < 9; i++)
 		{

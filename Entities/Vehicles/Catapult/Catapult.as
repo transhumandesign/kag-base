@@ -1,5 +1,5 @@
 #include "VehicleCommon.as"
-#include "Knocked.as";
+#include "KnockedCommon.as";
 #include "MakeCrate.as";
 #include "MiniIconsInc.as";
 #include "GenericButtonCommon.as";
@@ -232,7 +232,7 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 
 		if (isKnockable(bullet))
 		{
-			SetKnocked(bullet, 30);
+			setKnocked(bullet, 30);
 		}
 
 		if (bullet.getName() == "boulder") // rock n' roll baby

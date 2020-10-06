@@ -173,11 +173,13 @@ void ReadPickCmd(CRules@ this, CBitStream @params)
 {
 	CPlayer@ player = getPlayerByNetworkId(params.read_netid());
 	const u16 pick = params.read_netid();
-
-	LAST_PICK = pick; // global!
-
-	if (player is getLocalPlayer())
+    
+	if (player.isMyPlayer())
 	{
+        // Only set the respawn reference, after we've confirmed 
+        //  the involved player is our own. 
+		LAST_PICK = pick; 
+
 		if (player.getTeamNum() == this.getSpectatorTeamNum())
 		{
 			getHUD().ClearMenus(true);

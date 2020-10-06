@@ -66,7 +66,12 @@ void onTick(CBlob@ this)
 
 		if (!this.hasAttached())
 		{
-			this.Tag("flag missing");
+			if (!this.hasTag("flag missing"))
+			{
+				this.Tag("flag missing");
+				this.Sync("flag missing", true);
+			}
+			
 			u16 id = this.get_u16("flag id");
 			CBlob@ b = getBlobByNetworkID(id);
 			if (b !is null)
@@ -104,7 +109,11 @@ void onTick(CBlob@ this)
 		}
 		else
 		{
-			this.Untag("flag missing");
+			if (this.hasTag("flag missing"))
+			{
+				this.Untag("flag missing");
+				this.Sync("flag missing", true);
+			}
 		}
 	}
 }
@@ -178,6 +187,15 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 			//smash the flag
 			this.server_Hit(b, b.getPosition(), Vec2f(), 5.0f, 0xfa, true);
+
+			if (sv_tcpr)
+			{
+				if (blob !is null && blob.getPlayer() !is null)
+				{
+					tcpr("FlagCaptured {\"player\":\"" + blob.getPlayer().getUsername() + "\",\"ticks\":" + getGameTime() + "}");
+				}
+
+			}
 
 			CBitStream params;
 			params.write_u16(blob.getNetworkID());

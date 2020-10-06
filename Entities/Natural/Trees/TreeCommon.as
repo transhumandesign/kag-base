@@ -1,5 +1,5 @@
 #include "Hitters.as"
-#include "Knocked.as"
+#include "KnockedCommon.as"
 
 shared class TreeSegment
 {
@@ -144,7 +144,7 @@ bool CollapseToGround(CBlob@ this, f32 angle)
 					if (dist > 24.0f && angle > 20.0f)
 					{
 						hitsomething = true;
-						SetKnocked(hi.blob, 15, true);
+						setKnocked(hi.blob, 15);
 					}
 				}
 				else // map

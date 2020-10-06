@@ -73,7 +73,45 @@ void onTick(CBlob@ this)
 	}
 
 	CControls@ controls = getControls();
-	if (controls.isKeyPressed(KEY_LSHIFT) || controls.isKeyPressed(KEY_RSHIFT))
+
+	if (controls.isKeyJustPressed(KEY_NUMPAD1))
+	{
+		set_emote(this, emote_10);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD2))
+	{
+		set_emote(this, emote_11);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD3))
+	{
+		set_emote(this, emote_12);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD4))
+	{
+		set_emote(this, emote_13);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD5))
+	{
+		set_emote(this, emote_14);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD6))
+	{
+		set_emote(this, emote_15);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD7))
+	{
+		set_emote(this, emote_16);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD8))
+	{
+		set_emote(this, emote_17);
+	}
+	else if (controls.isKeyJustPressed(KEY_NUMPAD9))
+	{
+		set_emote(this, emote_18);
+	}
+
+	if (controls.ActionKeyPressed(AK_BUILD_MODIFIER))
 	{
 		return;
 	}
@@ -115,40 +153,5 @@ void onTick(CBlob@ this)
 	{
 		set_emote(this, emote_9);
 	}
-	if (controls.isKeyJustPressed(KEY_NUMPAD1))
-	{
-		set_emote(this, emote_10);
-	}
-	else if (controls.isKeyJustPressed(KEY_NUMPAD2))
-	{
-		set_emote(this, emote_11);
-	}
-	else if (controls.isKeyJustPressed(KEY_NUMPAD3))
-	{
-		set_emote(this, emote_12);
-	}
-	else if (controls.isKeyJustPressed(KEY_NUMPAD4))
-	{
-		set_emote(this, emote_13);
-	}
-	else if (controls.isKeyJustPressed(KEY_NUMPAD5))
-	{
-		set_emote(this, emote_14);
-	}
-	else if (controls.isKeyJustPressed(KEY_NUMPAD6))
-	{
-		set_emote(this, emote_15);
-	}
-	else if (controls.isKeyJustPressed(KEY_NUMPAD7))
-	{
-		set_emote(this, emote_16);
-	}
-	else if (controls.isKeyJustPressed(KEY_NUMPAD8))
-	{
-		set_emote(this, emote_17);
-	}
-	else if (controls.isKeyJustPressed(KEY_NUMPAD9))
-	{
-		set_emote(this, emote_18);
-	}
+
 }
