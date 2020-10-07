@@ -54,7 +54,7 @@ void onTick(CBlob@ this)
 		CMap@ map = this.getMap();
 		Tile tile = map.getTile(pos);
 
-		if (map.isTileBackgroundNonEmpty(tile) && (this.getTickSinceCreated() > 9.0f - vellen*0.42f || this.hasTag("fromBoulder"))) // prevent hitting backtiles if just created.
+		if (map.isTileBackgroundNonEmpty(tile) && (this.getTickSinceCreated() > 9.0f - vellen*0.42f || this.hasTag("fromBoulder"))) // prevent hitting backtiles if just created, unless spawned from boulder.
 		{
 			if (isServer)
 			{
