@@ -52,14 +52,13 @@ void onTick(CMovement@ this)
 	bool up = blob.isKeyPressed(key_up);
 
 	Vec2f vel = blob.getVelocity();
-	if (left)
-	{
-		blob.AddForce(Vec2f(-1.0f * vars.walkForce.x, vars.walkForce.y));
-	}
-	if (right)
-	{
-		blob.AddForce(Vec2f(1.0f * vars.walkForce.x, vars.walkForce.y));
-	}
+
+	//horizontal movement
+	s8 dir = 0;
+	if (left) dir--;
+	if (right) dir++;
+	if (dir != 0)
+		blob.AddForce(Vec2f(dir * vars.walkForce.x, vars.walkForce.y));
 
 	// jump at target
 

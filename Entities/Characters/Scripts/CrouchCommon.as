@@ -12,3 +12,8 @@ bool isCrouching(CBlob@ this)
 		//cannot have banned crouch (done in actor logic scripts)
 		&& !this.hasTag("prevent crouch");
 }
+
+bool hasJustCrouched(CBlob@ this)
+{
+	return isCrouching(this) && this.isKeyJustPressed(key_down);
+}
