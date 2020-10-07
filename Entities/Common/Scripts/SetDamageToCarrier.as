@@ -20,4 +20,4 @@ void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 	{
 		this.SetDamageOwnerPlayer(player);
 	}
-}
+} 
