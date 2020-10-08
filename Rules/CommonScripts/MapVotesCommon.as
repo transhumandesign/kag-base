@@ -335,17 +335,15 @@ class MapVotesMenu
 			{
 				case 1: winner = button1.shortname; button1.State = ButtonStates::WonVote; break;
 				case 3:	winner = button3.shortname; button3.State = ButtonStates::WonVote; break;
-				default: winner = "A Random Map"; button2.State = ButtonStates::WonVote; break;
+				default: winner = getTranslatedString("A Random Map"); button2.State = ButtonStates::WonVote; break;
 			}
-		 	GUI::DrawText("Map Voting Has Ended.. Loading: "+ winner, topLeftCorner+Vec2f(22,10), color_white);
+			string text = getTranslatedString("Map Voting Has Ended.. Loading: {MAP}").replace("{MAP}", winner);
+		 	GUI::DrawText(text, topLeftCorner + Vec2f(22, 10), color_white);
 		}
 		else
 		{
-		 	GUI::DrawText(
-				"Map Voting Ends In: " + ticksRemainingForMapVote() / getTicksASecond(),
-				topLeftCorner+Vec2f(22,10),
-				color_white
-			);
+			string text = getTranslatedString("Map Voting Ends In: {TIME}").replace("{TIME}", "" + (ticksRemainingForMapVote() / getTicksASecond()));
+		 	GUI::DrawText(text, topLeftCorner + Vec2f(22, 10), color_white);
 		}
 
 		for (uint i = 1; i <= 3; ++i)
