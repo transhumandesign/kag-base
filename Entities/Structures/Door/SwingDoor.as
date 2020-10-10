@@ -185,10 +185,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 		if (destruction_anim !is null)
 		{
-			if (this.getHealth() < this.getInitialHealth())
+			if ((this.getHealth() - damage) < this.getInitialHealth())
 			{
 				f32 ratio = (this.getHealth() - damage * getRules().attackdamage_modifier) / this.getInitialHealth();
-
 
 				if (ratio <= 0.0f)
 				{
