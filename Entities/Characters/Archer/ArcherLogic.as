@@ -449,7 +449,20 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		}
 		else if (charge_state == ArcherParams::charging)
 		{
-			charge_time++;
+			if(!hasarrow)
+			{
+				charge_state = ArcherParams::no_arrows;
+				charge_time = 0;
+				
+				if (ismyplayer)   // playing annoying no ammo sound
+				{
+					this.getSprite().PlaySound("Entities/Characters/Sounds/NoAmmo.ogg", 0.5);
+				}
+			}
+			else
+			{
+				charge_time++;
+			}
 
 			if (charge_time >= ArcherParams::legolas_period)
 			{
