@@ -531,7 +531,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 			{
 				//add arrow layer
 				CSprite@ sprite = hitBlob.getSprite();
-				if (sprite !is null && !hitShield && arrowType != ArrowType::bomb && !v_fastrender)
+				if (sprite !is null && !hitShield && arrowType != ArrowType::bomb && isClient() && !v_fastrender)
 				{
 					AddArrowLayer(this, hitBlob, sprite, worldPoint, velocity);
 				}
