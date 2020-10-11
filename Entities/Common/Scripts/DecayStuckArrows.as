@@ -19,7 +19,6 @@ void onTick(CBlob@ this)
 			//remove if arrow should decay, blob is dead, or player turned on fast render
 			if (decay || this.hasTag("dead") || v_fastrender)
 			{
-				//only show gibs on decay
 				if (arrow.isOnScreen())
 				{
 					//gib copied from Arrow.as
