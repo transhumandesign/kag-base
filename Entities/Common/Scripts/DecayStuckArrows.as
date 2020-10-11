@@ -1,3 +1,5 @@
+Random rand(Time());
+
 void onTick(CBlob@ this)
 {
 	string[]@ names;
@@ -11,10 +13,26 @@ void onTick(CBlob@ this)
 		{
 			string name = names[i];
 			uint time = times[i];
+			bool decay = time <= getGameTime();
+			CSpriteLayer@ arrow = sprite.getSpriteLayer(name);
 
 			//remove if arrow should decay, blob is dead, or player turned on fast render
-			if (time <= getGameTime() || this.hasTag("dead") || v_fastrender)
+			if (decay || this.hasTag("dead") || v_fastrender)
 			{
+				//only show gibs on decay
+				if (decay)
+				{
+					//gib copied from Arrow.as
+					Vec2f pos = arrow.getWorldTranslation();
+					Vec2f vel = this.getVelocity();
+					makeGibParticle(
+						"GenericGibs.png", pos, vel,
+						1, rand.NextRanged(4) + 4,
+						Vec2f(8, 8), 2.0f, 20, "/thud",
+						this.getTeamNum()
+					);
+				}
+
 				sprite.RemoveSpriteLayer(name);
 
 				names.removeAt(i);

@@ -18,7 +18,7 @@ const f32 SPECIAL_HIT_SCALE = 1.0f; //special hit on food items to shoot to team
 
 const s32 FIRE_IGNITE_TIME = 5;
 
-const u32 STUCK_ARROW_DECAY_SECS = 4.0f;
+const u32 STUCK_ARROW_DECAY_SECS = 30;
 
 //Arrow logic
 
