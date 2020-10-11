@@ -20,7 +20,7 @@ void onTick(CBlob@ this)
 			if (decay || this.hasTag("dead") || v_fastrender)
 			{
 				//only show gibs on decay
-				if (decay)
+				if (arrow.isOnScreen())
 				{
 					//gib copied from Arrow.as
 					Vec2f pos = arrow.getWorldTranslation();
