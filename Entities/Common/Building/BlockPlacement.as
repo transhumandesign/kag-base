@@ -18,10 +18,16 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 	CBitStream missing;
 
 	CInventory@ inv = this.getInventory();
-	if (bc.tile > 0 && hasRequirements(inv, bc.reqs, missing))
+	CMap@ map = getMap();
+
+	bool sameTile;
+	Vec2f tileCenter = cursorPos + Vec2f(map.tilesize, map.tilesize) / 2.0f;
+	bool buildable = isBuildableAtPos(this, tileCenter, bc.tile, null, sameTile);
+
+	if (bc.tile > 0 && hasRequirements(inv, bc.reqs, missing) && buildable)
 	{
 		server_TakeRequirements(inv, bc.reqs);
-		getMap().server_SetTile(cursorPos, bc.tile);
+		map.server_SetTile(cursorPos, bc.tile);
 
 		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), bc.tile));
 	}
