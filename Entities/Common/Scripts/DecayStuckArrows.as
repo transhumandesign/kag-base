@@ -38,6 +38,22 @@ void onTick(CBlob@ this)
 				times.removeAt(i);
 				i--;
 			}
+			else
+			{
+				//support blobs that use fake rolling
+				if ((this.hasScript("CheapFakeRolling.as") || this.hasScript("FakeRolling.as")) && !this.isAttached())
+				{
+					float angle = this.get_f32("angle");
+					float oldAngle = this.get_f32("old_angle");
+					float deltaAngle = (angle - oldAngle) % 360;
+
+					Vec2f offset = -arrow.getOffset();
+					if (arrow.isFacingLeft())
+						offset.x *= -1;
+
+					arrow.RotateBy(deltaAngle, offset);
+				}
+			}
 		}
 	}
 
