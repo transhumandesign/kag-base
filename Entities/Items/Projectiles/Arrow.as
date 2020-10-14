@@ -441,7 +441,7 @@ void AddArrowLayer(CBlob@ this, CBlob@ hitBlob, CSprite@ sprite, Vec2f worldPoin
 		hitBlob.push("stuck_arrow_times", getGameTime() + getTicksASecond() * STUCK_ARROW_DECAY_SECS);
 
 		//attach decay script
-		if (!hitBlob.hasScript("DecayStuckArrows.as") && isClient())
+		if (!hitBlob.hasScript("DecayStuckArrows.as"))
 		{
 			hitBlob.AddScript("DecayStuckArrows.as");
 		}
