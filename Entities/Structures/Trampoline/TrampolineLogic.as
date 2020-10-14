@@ -41,7 +41,6 @@ void onTick(CBlob@ this)
 	if (holder is null) return;
 
 	Vec2f ray = holder.getAimPos() - this.getPosition();
-	ray.Normalize();
 
 	f32 angle = 90 - ray.Angle();
 	CControls@ controls = getControls();
@@ -56,6 +55,11 @@ void onTick(CBlob@ this)
 		{
 			angle = 0;
 		}
+	}
+	else if (ray.LengthSquared() < 4)
+	{
+		//dont update rotation if cursor is close to pivot point
+		return;
 	}
 
 	this.setAngleDegrees(angle);
@@ -141,6 +145,16 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			}
 		}
 	}
+}
+
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
+{
+	this.getShape().SetRotationsAllowed(false);
+}
+
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+{
+	this.getShape().SetRotationsAllowed(true);
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
