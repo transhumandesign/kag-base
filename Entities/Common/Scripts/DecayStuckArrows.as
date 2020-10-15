@@ -19,7 +19,7 @@ void onTick(CBlob@ this)
 			//remove if arrow should decay, blob is dead, or player turned on fast render
 			if (decay || this.hasTag("dead") || v_fastrender)
 			{
-				if (arrow.isOnScreen())
+				if (arrow.isOnScreen() && !v_fastrender)
 				{
 					//gib copied from Arrow.as
 					Vec2f pos = arrow.getWorldTranslation();
