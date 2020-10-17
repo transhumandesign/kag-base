@@ -384,7 +384,7 @@ void onTick(CBlob@ this)
                         if (this.hasTag("paris"))
                         {
                             this.Tag("doneparis");
-                            this.Chat("i lied.");
+                            //this.Chat("i lied.");
                         }
 
                         pickedPlayerBlob.Untag("picked");
@@ -417,7 +417,7 @@ void onTick(CBlob@ this)
                 if (this.hasTag("paris"))
                 {
                     this.Tag("doneparis");
-                    this.Chat("i lied.");
+                    //this.Chat("i lied.");
                 }
 
                 pickedPlayerBlob.Untag("picked");
@@ -531,7 +531,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
         this.AddForce(Vec2f(0, -30.0f)); //get a little hop up into the air going.
 
         this.Tag("paris");
-        this.Chat("we're going to paris.");
+        //this.Chat("we're going to paris.");
         Sound::Play(getTranslatedString("MigrantSayHello") + ".ogg", this.getPosition());
         Sound::Play("GregRoar.ogg", this.getPosition()); //play sound
 
