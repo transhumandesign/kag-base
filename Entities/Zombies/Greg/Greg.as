@@ -19,7 +19,7 @@ u32 getElapsedTime(CBlob@ this)
 
 void pickRandTargetPos(CBlob@ this)
 {
-    CMap@ map = this.getMap();
+    CMap@ map = getMap();
     int width = map.tilemapwidth*8;
     Vec2f npos(Maths::Abs(gregRand.Next())%width, 20.0f + gregRand.Next()%40);
     this.set_Vec2f("target pos", npos);
@@ -98,7 +98,6 @@ void onInit(CBlob@ this)
     this.addCommandID("dropstatue");
     this.addCommandID("unstatue");
     this.set_s32("statue time", 0);
-    this.Sync("statue time", true);
 
     this.getShape().setFriction(0.7);
 
@@ -138,7 +137,6 @@ void onTick(CBlob@ this)
             if (statuetime == 0)
             {
                 this.set_s32("statue time", getGameTime() + 1);
-                this.Sync("statue time", true);
                 Vec2f pos = this.getPosition();
                 pos.y += 16;
 
@@ -162,7 +160,6 @@ void onTick(CBlob@ this)
                 if (statuetime < getGameTime())
                 {
                     this.set_s32("statue time", 0);
-                    this.Sync("statue time", true);
                     ParticleZombieLightning(this.getPosition());
                     this.Untag("statue");
                     pickRandTargetPos(this);
@@ -494,7 +491,6 @@ void onDie( CBlob@ this )
     if (pickedPlayerBlob !is null)
     {
         pickedPlayerBlob.Untag("picked");
-        pickedPlayerBlob.Sync("picked", true);
     }
 }
 
@@ -526,13 +522,10 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
     if (target is blob && !target.hasTag("picked"))
     {
         target.Tag("picked");
-        target.Sync("picked", true);
 
         target.set_s32("pickup time", getGameTime());
-        target.Sync("pickup time", true);
 
         this.set_s32("statue time", 0);
-        this.Sync("statue time", true);
         this.set_u16("struggle count", 0);
         this.server_AttachTo(blob, this.getAttachmentPoint(0));
         this.setVelocity(Vec2f_zero);
