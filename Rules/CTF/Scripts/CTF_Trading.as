@@ -1,8 +1,10 @@
 //not server only so the client also gets the game event setup stuff
 
 #include "GameplayEvents.as"
+#include "AssistCommon.as"
 
 const int coinsOnDamageAdd = 5;
+const int coinsOnAssistAdd = 7;
 const int coinsOnKillAdd = 10;
 
 const int coinsOnDeathLosePercent = 20;
@@ -106,6 +108,12 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 			{
 				killer.server_setCoins(killer.getCoins() - coinsOnTKLose);
 			}
+			
+			CPlayer@ helper = getAssistPlayer (victim, killer);
+			if (helper !is null) 
+			{ 
+				helper.server_setCoins(helper.getCoins() + coinsOnAssistAdd);
+			}
 		}
 		if (!this.isWarmup())	//only reduce coins if the round is on.
 		{
@@ -116,7 +124,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 			//drop coins
 			CBlob@ blob = victim.getBlob();
 			if (blob !is null)
-				server_DropCoins(blob.getPosition(), XORRandom(lost));
+				server_DropCoins(blob.getPosition(), lost*0.75f + XORRandom(lost*0.25f));
 		}
 	}
 }

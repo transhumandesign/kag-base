@@ -17,7 +17,7 @@ void Take(CBlob@ this, CBlob@ blob)
 		blobName == "mat_stone" ||
 		blobName == "mat_wood"
 	) {
-		if ((this.getDamageOwnerPlayer() is blob.getPlayer()) || getGameTime() > blob.get_u32("autopick time"))
+		if ((blob.getDamageOwnerPlayer() !is this.getPlayer()) || getGameTime() > blob.get_u32("autopick time"))
 		{
 			if (this.server_PutInInventory(blob))
 			{
@@ -86,7 +86,7 @@ void IgnoreCollisionLonger(CBlob@ this, CBlob@ blob)
 	        blobName == "mat_wood" || blobName == "grain")
 	{
 		blob.set_u32("autopick time", getGameTime() +  getTicksASecond() * 7);
-		blob.SetDamageOwnerPlayer(blob.getPlayer());
+		blob.SetDamageOwnerPlayer(this.getPlayer());
 	}
 }
 

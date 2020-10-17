@@ -1523,6 +1523,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @ap)
 		knight.state = KnightStates::normal; //cancel any attacks or shielding
 		knight.swordTimer = 0;
 		knight.doubleslash = false;
+		this.set_s32("currentKnightState", 0);
 	}
 }
 
