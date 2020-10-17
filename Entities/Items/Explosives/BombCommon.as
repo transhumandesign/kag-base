@@ -42,7 +42,7 @@ bool UpdateBomb(CBlob@ this)
 		{
 			this.getSprite().SetEmitSound("WaterSparkle.ogg");
 			this.getSprite().SetEmitSoundPaused(false);
-			lightColor = SColor(255, 44, 175, 222);
+			lightColor = SColor(255, 100, 113, 96);
 			this.SetLight(false);
 		}
 		else
