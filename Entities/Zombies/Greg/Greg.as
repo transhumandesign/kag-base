@@ -432,7 +432,6 @@ void onTick(CBlob@ this)
                 //detach and add some velocity so they hopefully die.
                 this.server_DetachAll();
                 pickedPlayerBlob.Untag("picked");
-                pickedPlayerBlob.Sync("picked", true);
                 this.set_bool("no target", true);
                 target.setVelocity(Vec2f(0, 4.0f));
 
