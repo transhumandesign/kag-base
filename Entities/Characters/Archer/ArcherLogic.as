@@ -541,7 +541,6 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 							}
 							else
 							{
-								print("Kill mat_wood");
 								stabTarget.server_Die();
 
 							}
