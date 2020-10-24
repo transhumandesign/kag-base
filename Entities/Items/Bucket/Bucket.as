@@ -127,6 +127,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 }
 
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point)
+{
+	if (solid && getNet().isServer() && this.getShape().vellen > 6.8f && this.get_u8("filled") > 0)
+	{
+		this.SendCommand(this.getCommandID("splash"));
+	}
+
+}
+
 void TakeWaterCount(CBlob@ this)
 {
 	u8 filled = this.get_u8("filled");
