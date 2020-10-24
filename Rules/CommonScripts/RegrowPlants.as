@@ -4,10 +4,13 @@
 const bool moss_stone = false;
 
 // random_growth is randomly set from 0 to 1.0
-// don't set values lower than 0.001
+// don't set values lower than 0.0001
 // if you want to prevent a thing from growing at all, set it's chance to -1 rather than 0
 const f32 grass_grow_chance = 0.015f;
-const f32 bush_grow_chance = 0.002f;
+const f32 bush_grow_chance = 0.003f;
+const f32 flower_grow_chance = 0.0005f;
+const f32 grain_grow_chance = 0.0005f;
+
 const f32 moss_stone_chance = 0.002f;
 
 // how many ticks has to pass before stone starts becoming mossy, 10 minutes = 30 * 60 * 10
@@ -17,8 +20,12 @@ const u32 moss_time = 30 * 60 * 10;
 // tile from castle_stuff will turn into a corresponding tile from castle_moss_stuff
 const u16[] castle_stuff = {CMap::tile_castle, CMap::tile_castle_back};
 const u16[] castle_moss_stuff = {CMap::tile_castle_moss, CMap::tile_castle_back_moss};
+const string[] plants_stuff = {"bush", "flowers", "grain_plant"};
 
-u8 random_time = 120;
+const u8 min_random_time = 200; // minimal time between growth checks
+const u8 max_random_inc = 60; // maximum random increase to time between growth checks
+
+u8 random_time = min_random_time;
 
 TileInfo@[] dirt_tiles;
 TileInfo@[] castle_tiles;
@@ -152,20 +159,22 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 	{
 		tindex = findTileByCoords(castle_tiles, coords);
 	}
-
-	if (this.isTileGround(oldtile)) // dirt leaves dirt background after it's destroyed, so no need to check for dirt tiles below it
+	// dirt leaves dirt background after it's destroyed, so no need to check for dirt tiles below it
+	// onSetTile runs when a tile is damaged, so check if new tile is just more damaged dirt
+	if (this.isTileGround(oldtile) && !this.isTileGround(newtile))
 	{
 		dirt_tiles.removeAt(tindex);
 	}
-
+	// castle tile got destroyed/damaged/mossified, remove from array
+	// don't check if new tile is just a damaged castle, because we don't mossify damaged stone (only full hp stone has moss variants)
 	if (castle_stuff.find(oldtile) != -1)
 	{
-		castle_tiles.removeAt(tindex); // castle tile got destroyed/mossified, remove from array
+		castle_tiles.removeAt(tindex);
 	}
-
+	// castle tile was built, add to array
 	if (castle_stuff.find(newtile) != -1 && tindex == 0)
 	{
-		castle_tiles.insertLast(TileInfo(coords, getGameTime(), this.getTile(coords))); // castle tile was built, add to array
+		castle_tiles.insertLast(TileInfo(coords, getGameTime(), this.getTile(coords)));
 	}
 }
 
@@ -194,21 +203,29 @@ void onTick(CRules@ this)
 		{
 			TileInfo tinfo = dirt_tiles[i];
 			if (tinfo is null) return;
-			if (map.getTile(tinfo.coords - Vec2f(0,tilesize)).type == CMap::tile_empty)
-			{
-				f32 random_grow = XORRandom(1000) * 0.001f;
+			Tile tile_above = map.getTile(tinfo.coords - Vec2f(0,tilesize));
 
-				if (random_grow - tinfo.grassLuck() <= grass_grow_chance)
+			if (tile_above.type == CMap::tile_empty || map.isTileGrass(tile_above.type))
+			{
+				f32 random_grow = XORRandom(10000) * 0.0001f;
+
+				if (random_grow - tinfo.grassLuck() <= grass_grow_chance && !map.isTileGrass(tile_above.type))
 				{
 					map.server_SetTile(tinfo.coords - Vec2f(0, tilesize), CMap::tile_grass + XORRandom(3));
 				}
 
-				random_grow = XORRandom(1000) * 0.001f; // generate new random_grow for every growth check to prevent situations where either nothing grows or everything grows on one tile
+				random_grow = XORRandom(10000) * 0.0001f; // generate new random_grow for every growth check to prevent situations where either nothing grows or everything grows on one tile
 
-				if (random_grow <= bush_grow_chance)
+				s16 plant = -1;
+
+				if (random_grow <= bush_grow_chance) plant = 0;
+				if (random_grow <= flower_grow_chance) plant = 1;
+				if (random_grow <= grain_grow_chance) plant = 2;
+
+				if (plant != -1)
 				{
 					CBlob@[] blobs;
-					bool near_bush = false;
+					bool near_plant = false;
 
 					if (map.getBlobsInRadius(tinfo.coords, 8.0f, blobs))
 					{
@@ -219,17 +236,17 @@ void onTick(CRules@ this)
 							{
 								continue;
 							}
-							if (blob.getName() == "bush") // check for bushes, don't grow if there's already one nearby
+							if (plants_stuff.find(blob.getName()) != -1) // check for plants, don't grow if there's already one nearby
 							{
-								near_bush = true; 
+								near_plant = true; 
 								break;
 							}
 						}
 					}
 
-					if (!near_bush)
+					if (!near_plant)
 					{
-						server_CreateBlob("bush", -1, tinfo.coords - Vec2f(0,tilesize));
+						server_CreateBlob(plants_stuff[plant], -1, tinfo.coords - Vec2f(0,tilesize));
 					}
 				}
 			}
@@ -238,7 +255,7 @@ void onTick(CRules@ this)
 		for (int i = 1; i < castle_tiles.size(); i++)
 		{
 			TileInfo tinfo = castle_tiles[i];
-			f32 random_grow = XORRandom(1000) * 0.001f;
+			f32 random_grow = XORRandom(10000) * 0.0001f;
 			u32 ttype = castle_stuff.find(tinfo.tile.type);
 			f32 luck = tinfo.mossLuck();
 			
@@ -251,6 +268,6 @@ void onTick(CRules@ this)
 			}
 		}
 
-		random_time = 100 + XORRandom(60); // make timing for growth checks semi-random so they're not too monotonous
+		random_time = min_random_time + XORRandom(max_random_inc); // make timing for growth checks semi-random so they're not too monotonous
 	}
 }
