@@ -534,7 +534,17 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 					{
 						if (stabTarget.getName() == "mat_wood")
 						{
-							stabTarget.server_SetQuantity(stabTarget.getQuantity()-4);
+							u16 quantity = stabTarget.getQuantity();
+							if (quantity > 4)
+							{
+								stabTarget.server_SetQuantity(quantity-4);
+							}
+							else
+							{
+								print("Kill mat_wood");
+								stabTarget.server_Die();
+
+							}
 							fletchArrow(this);
 						}
 						else
