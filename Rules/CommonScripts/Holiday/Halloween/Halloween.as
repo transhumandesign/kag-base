@@ -24,7 +24,17 @@ void onRestart(CRules@ this)
 
 void onPlayerDie( CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData )
 {
+	if (victim is null)
+	{
+		return;
+	}
+
     CBlob@ blob = victim.getBlob();
+
+	if (blob is null)
+	{
+		return;
+	}
 
     ParticleAnimated(
     "spirit.png",                   // file
