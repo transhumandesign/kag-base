@@ -87,7 +87,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		if (this.hasTag("shop disabled"))
 			return;
-		
+
 		// build menu for them
 		CBlob@ caller = getBlobByNetworkID(params.read_u16());
 		BuildShopMenu(this, caller, this.get_string("shop description"), Vec2f(0, 0), this.get_Vec2f("shop menu size"));
@@ -148,136 +148,113 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			//	return;
 			//}
 
-			if (getNet().isServer()) 
+			if (!getNet().isServer()) { return; } //only do this on server
+
+			bool tookReqs = false;
+
+			// try taking from the caller + this shop first
+			CBitStream missing;
+			if (hasRequirements_Tech(inv, this.getInventory(), s.requirements, missing))
 			{
-
-
-				bool tookReqs = false;
-
-				// try taking from the caller + this shop first
-				CBitStream missing;
-				if (hasRequirements_Tech(inv, this.getInventory(), s.requirements, missing))
-				{
-					server_TakeRequirements(inv, this.getInventory(), s.requirements);
-					tookReqs = true;
-				}
-				// try taking from caller + storages second
-				if (!tookReqs)
-				{
-					const s32 team = this.getTeamNum();
-					CBlob@[] storages;
-					if (getBlobsByTag("storage", @storages))
-						for (uint step = 0; step < storages.length; ++step)
+				server_TakeRequirements(inv, this.getInventory(), s.requirements);
+				tookReqs = true;
+			}
+			// try taking from caller + storages second
+			if (!tookReqs)
+			{
+				const s32 team = this.getTeamNum();
+				CBlob@[] storages;
+				if (getBlobsByTag("storage", @storages))
+					for (uint step = 0; step < storages.length; ++step)
+					{
+						CBlob@ storage = storages[step];
+						if (storage.getTeamNum() == team)
 						{
-							CBlob@ storage = storages[step];
-							if (storage.getTeamNum() == team)
+							CBitStream missing;
+							if (hasRequirements_Tech(inv, storage.getInventory(), s.requirements, missing))
 							{
-								CBitStream missing;
-								if (hasRequirements_Tech(inv, storage.getInventory(), s.requirements, missing))
-								{
-									server_TakeRequirements(inv, storage.getInventory(), s.requirements);
-									tookReqs = true;
-									break;
-								}
+								server_TakeRequirements(inv, storage.getInventory(), s.requirements);
+								tookReqs = true;
+								break;
 							}
 						}
-				}
+					}
+			}
 
-				if (tookReqs)
+			if (tookReqs)
+			{
+				if (s.spawnNothing)
 				{
-					if (s.spawnNothing)
+					CBitStream params;
+					params.write_netid(caller.getNetworkID());
+					params.write_netid(0);
+					params.write_string(blobName);
+					this.SendCommand(this.getCommandID("shop made item"), params);
+				}
+				else
+				{
+
+					//inv.server_TakeRequirements(s.requirements);
+					Vec2f spawn_offset = Vec2f();
+
+					if (this.exists("shop offset")) { Vec2f _offset = this.get_Vec2f("shop offset"); spawn_offset = Vec2f(2*_offset.x, _offset.y); }
+					if (this.isFacingLeft()) { spawn_offset.x *= -1; }
+					CBlob@ newlyMade = null;
+
+					if (spawnInCrate)
 					{
-						CBitStream params;
-						params.write_netid(caller.getNetworkID());
-						params.write_netid(0);
-						params.write_string(blobName);
-						this.SendCommand(this.getCommandID("shop made item"), params);
+						CBlob@ crate = server_MakeCrate(blobName, s.name, s.crate_icon, caller.getTeamNum(), caller.getPosition());
+
+						if (crate !is null)
+						{
+							if (spawnToInventory && caller.canBePutInInventory(crate))
+							{
+								caller.server_PutInInventory(crate);
+							}
+							else
+							{
+								caller.server_Pickup(crate);
+							}
+							@newlyMade = crate;
+						}
 					}
 					else
 					{
-
-						//inv.server_TakeRequirements(s.requirements);
-						Vec2f spawn_offset = Vec2f();
-
-						if (this.exists("shop offset")) { Vec2f _offset = this.get_Vec2f("shop offset"); spawn_offset = Vec2f(2*_offset.x, _offset.y); }
-						if (this.isFacingLeft()) { spawn_offset.x *= -1; }
-						CBlob@ newlyMade = null;
-
-						if (spawnInCrate)
+						CBlob@ blob = server_CreateBlob(blobName, caller.getTeamNum(), this.getPosition() + spawn_offset);
+						CInventory@ callerInv = caller.getInventory();
+						if (blob !is null)
 						{
-							CBlob@ crate = server_MakeCrate(blobName, s.name, s.crate_icon, caller.getTeamNum(), caller.getPosition());
-
-							if (crate !is null)
+							bool pickable = blob.getAttachments() !is null && blob.getAttachments().getAttachmentPointByName("PICKUP") !is null;
+							if (spawnToInventory)
 							{
-								if (spawnToInventory && caller.canBePutInInventory(crate))
+								if (!blob.canBePutInInventory(caller))
 								{
-									caller.server_PutInInventory(crate);
+									caller.server_Pickup(blob);
 								}
-								else
+								else if (!callerInv.isFull())
 								{
-									caller.server_Pickup(crate);
+									caller.server_PutInInventory(blob);
 								}
-								@newlyMade = crate;
-							}
-						}
-						else
-						{
-							CBlob@ blob = server_CreateBlob(blobName, caller.getTeamNum(), this.getPosition() + spawn_offset);
-							CInventory@ callerInv = caller.getInventory();
-							if (blob !is null)
-							{
-								bool pickable = blob.getAttachments() !is null && blob.getAttachments().getAttachmentPointByName("PICKUP") !is null;
-								if (spawnToInventory)
+								// Hack: Archer Shop can force Archer to drop Arrows.
+								else if (this.getName() == "archershop" && caller.getName() == "archer")
 								{
-									if (!blob.canBePutInInventory(caller))
+									int arrowCount = callerInv.getCount("mat_arrows");
+									int stacks = arrowCount / 30;
+									// Hack: Depends on Arrow stack size.
+									if (stacks > 1)
 									{
-										caller.server_Pickup(blob);
-									}
-									else if (!callerInv.isFull())
-									{
-										caller.server_PutInInventory(blob);
-									}
-									// Hack: Archer Shop can force Archer to drop Arrows.
-									else if (this.getName() == "archershop" && caller.getName() == "archer")
-									{
-										int arrowCount = callerInv.getCount("mat_arrows");
-										int stacks = arrowCount / 30;
-										// Hack: Depends on Arrow stack size.
-										if (stacks > 1)
+										CBlob@ arrowStack = caller.server_PutOutInventory("mat_arrows");
+										if (arrowStack !is null)
 										{
-											CBlob@ arrowStack = caller.server_PutOutInventory("mat_arrows");
-											if (arrowStack !is null)
+											if (arrowStack.getAttachments() !is null && arrowStack.getAttachments().getAttachmentPointByName("PICKUP") !is null)
 											{
-												if (arrowStack.getAttachments() !is null && arrowStack.getAttachments().getAttachmentPointByName("PICKUP") !is null)
-												{
-													caller.server_Pickup(arrowStack);
-												}
-												else
-												{
-													arrowStack.setPosition(caller.getPosition());
-												}
+												caller.server_Pickup(arrowStack);
 											}
-											caller.server_PutInInventory(blob);
+											else
+											{
+												arrowStack.setPosition(caller.getPosition());
+											}
 										}
-										else if (pickable)
-										{
-											caller.server_Pickup(blob);
-										}
-									}
-									else if (pickable)
-									{
-										caller.server_Pickup(blob);
-									}
-								}
-								else
-								{
-									CBlob@ carried = caller.getCarriedBlob();
-									if (carried is null && pickable)
-									{
-										caller.server_Pickup(blob);
-									}
-									else if (blob.canBePutInInventory(caller) && !callerInv.isFull())
-									{
 										caller.server_PutInInventory(blob);
 									}
 									else if (pickable)
@@ -285,27 +262,43 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 										caller.server_Pickup(blob);
 									}
 								}
-								@newlyMade = blob;
+								else if (pickable)
+								{
+									caller.server_Pickup(blob);
+								}
 							}
+							else
+							{
+								CBlob@ carried = caller.getCarriedBlob();
+								if (carried is null && pickable)
+								{
+									caller.server_Pickup(blob);
+								}
+								else if (blob.canBePutInInventory(caller) && !callerInv.isFull())
+								{
+									caller.server_PutInInventory(blob);
+								}
+								else if (pickable)
+								{
+									caller.server_Pickup(blob);
+								}
+							}
+							@newlyMade = blob;
 						}
+					}
 
-						if (newlyMade !is null)
-						{
-							newlyMade.set_u16("buyer", caller.getPlayer().getNetworkID());
+					if (newlyMade !is null)
+					{
+						newlyMade.set_u16("buyer", caller.getPlayer().getNetworkID());
 
-							CBitStream params;
-							params.write_netid(caller.getNetworkID());
-							params.write_netid(newlyMade.getNetworkID());
-							params.write_string(blobName);
-							this.SendCommand(this.getCommandID("shop made item"), params);
-						}
+						CBitStream params;
+						params.write_netid(caller.getNetworkID());
+						params.write_netid(newlyMade.getNetworkID());
+						params.write_string(blobName);
+						this.SendCommand(this.getCommandID("shop made item"), params);
 					}
 				}
 			}
-
-			CGridMenu@ menu = getGridMenuByName(getTranslatedString(this.get_string("shop description")));
-			if (menu !is null) // if menu is still open, refresh
-				UpdateRequirementsShopMenu(this, menu, caller);
 		}
 	}
 }
@@ -340,7 +333,61 @@ void addShopItemsToMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
 			else
 				@button = menu.AddButton(s_item.iconName, getTranslatedString(s_item.name), this.getCommandID("shop buy"), params);
 
-			// requirements are handled in UpdateRequirementsShopMenu
+
+			if (button !is null)
+			{
+				if (s_item.producing)		  // !! no click for production items
+					button.clickable = false;
+
+				button.selectOnClick = true;
+
+				bool tookReqs = false;
+				CBlob@ storageReq = null;
+				// try taking from the caller + this shop first
+				CBitStream missing;
+				if (hasRequirements_Tech(this.getInventory(), caller.getInventory(), s_item.requirements, missing))
+				{
+					tookReqs = true;
+				}
+				// try taking from caller + storages second
+				//if (!tookReqs)
+				//{
+				//	const s32 team = this.getTeamNum();
+				//	CBlob@[] storages;
+				//	if (getBlobsByTag( "storage", @storages ))
+				//		for (uint step = 0; step < storages.length; ++step)
+				//		{
+				//			CBlob@ storage = storages[step];
+				//			if (storage.getTeamNum() == team)
+				//			{
+				//				CBitStream missing;
+				//				if (hasRequirements_Tech( caller.getInventory(), storage.getInventory(), s_item.requirements, missing ))
+				//				{
+				//					@storageReq = storage;
+				//					break;
+				//				}
+				//			}
+				//		}
+				//}
+
+				const bool takeReqsFromStorage = (storageReq !is null);
+
+				if (s_item.ticksToMake > 0)		   // production
+					SetItemDescription_Tech(button, this, s_item.requirements, s_item.description, this.getInventory());
+				else
+				{
+					string desc = s_item.description;
+					//if (takeReqsFromStorage)
+					//	desc += "\n\n(Using resources from team storage)";
+
+					SetItemDescription_Tech(button, caller, s_item.requirements, getTranslatedString(desc), takeReqsFromStorage ? storageReq.getInventory() : this.getInventory());
+				}
+
+				//if (s_item.producing) {
+				//	button.SetSelected( 1 );
+				//	menu.deleteAfterClick = false;
+				//}
+			}
 		}
 	}
 }
@@ -363,8 +410,6 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 		if (!this.hasTag(SHOP_AUTOCLOSE))
 			menu.deleteAfterClick = false;
 		addShopItemsToMenu(this, menu, caller);
-
-		UpdateRequirementsShopMenu(this, menu, caller);
 
 		//keybinds
 		array<EKEY_CODE> numKeys = { KEY_KEY_1, KEY_KEY_2, KEY_KEY_3, KEY_KEY_4, KEY_KEY_5, KEY_KEY_6, KEY_KEY_7, KEY_KEY_8, KEY_KEY_9, KEY_KEY_0 };
@@ -391,53 +436,3 @@ void BuildDefaultShopMenu(CBlob@ this, CBlob @caller)
 {
 	BuildShopMenu(this, caller, getTranslatedString("Shop"), Vec2f(0, 0), Vec2f(4, 4));
 }
-
-
-void UpdateRequirementsShopMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
-{
-	if (caller is null || !caller.isMyPlayer())
-		return;
-		
-	ShopItem[]@ shop_items;
-	if (!this.get(SHOP_ARRAY, @shop_items)) { return; }
-
-	// we assume shop-items and buttons are 1-to-1
-	// menu.buttons[i] <=> shop-items[i]
-	for (uint i = 0; i < menu.getButtonsCount(); i++) {
-		CGridButton@ button = menu.getButtonOfIndex(i);
-		if (button !is null)
-		{
-			ShopItem @s_item = shop_items[i];
-			if (s_item is null) { continue; }
-
-			if (s_item.producing)		  // !! no click for production items
-				button.clickable = false;
-
-			button.selectOnClick = false;
-
-			bool tookReqs = false;
-			CBlob@ storageReq = null;
-			// try taking from the caller + this shop first
-			CBitStream missing;
-			if (hasRequirements_Tech(this.getInventory(), caller.getInventory(), s_item.requirements, missing))
-			{
-				tookReqs = true;
-			}
-				
-			const bool takeReqsFromStorage = (storageReq !is null);
-
-			if (s_item.ticksToMake > 0)		   // production
-			{
-				SetItemDescription_Tech(button, this, s_item.requirements, s_item.description, this.getInventory());
-			}
-			else
-			{
-				string desc = s_item.description;
-
-				SetItemDescription_Tech(button, caller, s_item.requirements, getTranslatedString(desc), takeReqsFromStorage ? storageReq.getInventory() : this.getInventory());
-			}
-		}
-	}
-
-}
-
