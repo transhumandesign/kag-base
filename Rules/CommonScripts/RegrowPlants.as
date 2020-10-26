@@ -194,7 +194,7 @@ u32 findTileByCoords(TileInfo@[] tiles, Vec2f coords)
 
 void onTick(CRules@ this)
 {	
-	if (random_time == 0)
+	if (random_time < min_random_time)
 	{
 		random_time = min_random_time;
 	}
