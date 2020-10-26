@@ -22,10 +22,10 @@ const u16[] castle_stuff = {CMap::tile_castle, CMap::tile_castle_back};
 const u16[] castle_moss_stuff = {CMap::tile_castle_moss, CMap::tile_castle_back_moss};
 const string[] plants_stuff = {"bush", "flowers", "grain_plant"};
 
-const u8 min_random_time = 200; // minimal time between growth checks
-const u8 max_random_inc = 60; // maximum random increase to time between growth checks
+const u16 min_random_time = 200; // minimal time between growth checks
+const u16 max_random_inc = 60; // maximum random increase to time between growth checks
 
-u8 random_time = min_random_time;
+u16 random_time = min_random_time;
 
 TileInfo@[] dirt_tiles;
 TileInfo@[] castle_tiles;
@@ -193,7 +193,12 @@ u32 findTileByCoords(TileInfo@[] tiles, Vec2f coords)
 }
 
 void onTick(CRules@ this)
-{		
+{	
+	if (random_time == 0)
+	{
+		random_time = min_random_time;
+	}
+	
 	if (getGameTime() % random_time == 0)
 	{
 		CMap@ map = getMap();
