@@ -90,6 +90,13 @@ void onTick(CMovement@ this)
 		}*/
 	}
 
+	u8 crouch_through_platform = blob.get_u8("crouch_through_platform");
+	if (crouch_through_platform > 0)
+	{
+		crouch_through_platform--;
+		blob.set_u8("crouch_through_platform", crouch_through_platform);
+	}
+
 	if (onground || blob.isInWater())  //also reset when vaulting
 	{
 		moveVars.walljumped_side = Walljump::NONE;
@@ -238,7 +245,7 @@ void onTick(CMovement@ this)
 	}
 
 	if (!blob.isOnCeiling() && !isknocked &&
-	        !blob.isOnLadder() && (up || left || right))  //key pressed
+	        !blob.isOnLadder() && (up || left || right || down))  //key pressed
 	{
 		//check solid tiles
 		const f32 ts = map.tilesize;
@@ -268,6 +275,44 @@ void onTick(CMovement@ this)
 		bool surface = surface_left || surface_right;
 
 		const f32 slidespeed = 2.45f;
+
+		// crouch through platforms
+		if (down && !onground && this.getVars().aircount > 2)
+		{
+			blob.set_u8("crouch_through_platform", 3);
+		}
+
+		if (blob.isKeyJustPressed(key_down))
+		{
+			int touching = blob.getTouchingCount();
+			for (int i = 0; i < touching; i++)
+			{
+				CBlob@ b = blob.getTouchingByIndex(i);
+				if (b.isPlatform() && b.getAngleDegrees() == 0.0f)
+				{
+					b.getShape().checkCollisionsAgain = true;
+					blob.getShape().checkCollisionsAgain = true;
+					blob.set_u8("crouch_through_platform", 3);
+				}
+			}
+
+			Vec2f pos = blob.getPosition() + Vec2f(0, 12);
+			CBlob@[] blobs;
+			if (getMap().getBlobsInRadius(pos, 4, blobs))
+			{
+				for (int i = 0; i < blobs.size(); i++)
+				{
+					CBlob@ b = blobs[i];
+					if (b.isPlatform() && b.getAngleDegrees() == 0.0f)
+					{
+						b.getShape().checkCollisionsAgain = true;
+						blob.getShape().checkCollisionsAgain = true;
+						blob.set_u8("crouch_through_platform", 3);
+					}
+				}
+			}
+
+		}
 
 		//wall jumping/running
 		if (up && surface && 									//only on surface
@@ -416,7 +461,6 @@ void onTick(CMovement@ this)
 
 	if (blob.isKeyPressed(key_up) && moveVars.canVault)
 	{
-
 		// boost over corner
 		Vec2f groundNormal = blob.getGroundNormal();
 		bool onMap = blob.isOnMap();
@@ -752,16 +796,25 @@ bool checkForSolidMapBlob(CMap@ map, Vec2f pos, CBlob@ blob = null)
 		@_tempShape = _tempBlob.getShape();
 		if (_tempShape.isStatic())
 		{
-			if (_tempBlob.getName() == "wooden_platform")
+			if (_tempBlob.getName() == "wooden_platform" || _tempBlob.getName() == "bridge")
 			{
 				f32 angle = _tempBlob.getAngleDegrees();
-				if (angle > 180)
-					angle -= 360;
-				angle = Maths::Abs(angle);
-				if (angle < 30 || angle > 150)
+				Vec2f runnerPos = blob.getPosition();
+				Vec2f platPos = _tempBlob.getPosition();
+
+				if (angle == 90.0f && runnerPos.x > platPos.x && (blob.isKeyPressed(key_left) || blob.wasKeyPressed(key_left)))
 				{
-					return false;
+					// platform is facing right
+					return true;
+
 				}
+				else if(angle == 270.0f && runnerPos.x < platPos.x && (blob.isKeyPressed(key_right) || blob.wasKeyPressed(key_right)))
+				{
+					// platform is facing left
+					return true;
+				}
+
+				return false;
 			}
 
 			if (blob !is null && !blob.doesCollideWithBlob(_tempBlob))

@@ -12,6 +12,8 @@ void onInit(CBlob@ this)
 
 	this.set_u8(growth_chance, default_growth_chance);
 	this.set_u8(growth_time, default_growth_time);
+
+	this.Tag("scenary");
 }
 
 

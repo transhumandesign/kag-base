@@ -6,6 +6,7 @@
 #include "Costs.as"
 #include "CheckSpam.as"
 #include "GenericButtonCommon.as"
+#include "TeamIconToken.as"
 
 void onInit(CBlob@ this)
 {
@@ -27,6 +28,8 @@ void onInit(CBlob@ this)
 	// CLASS
 	this.set_Vec2f("class offset", Vec2f(-6, 0));
 	this.set_string("required class", "builder");
+
+	int team_num = this.getTeamNum();
 
 	{
 		ShopItem@ s = addShopItem(this, "Lantern", "$lantern$", "lantern", Descriptions::lantern, false);
@@ -54,7 +57,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::boulder_stone);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Trampoline", "$trampoline$", "trampoline", Descriptions::trampoline, false);
+		ShopItem@ s = addShopItem(this, "Trampoline", getTeamIcon("trampoline", "Trampoline.png", team_num, Vec2f(32, 16), 3), "trampoline", Descriptions::trampoline, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::trampoline_wood);
 	}
 	{
@@ -63,7 +66,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::drill);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Saw", "$saw$", "saw", Descriptions::saw, false);
+		ShopItem@ s = addShopItem(this, "Saw", getTeamIcon("saw", "VehicleIcons.png", team_num, Vec2f(32, 32), 3), "saw", Descriptions::saw, false);
 		s.customButton = true;
 		s.buttonwidth = 2;
 		s.buttonheight = 1;
@@ -71,11 +74,11 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::saw_stone);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Crate (wood)", "$crate$", "crate", Descriptions::crate, false);
+		ShopItem@ s = addShopItem(this, "Crate (wood)", getTeamIcon("crate", "Crate.png", team_num, Vec2f(32, 16), 5), "crate", Descriptions::crate, false);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::crate_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Crate (coins)", "$crate$", "crate", Descriptions::crate, false);
+		ShopItem@ s = addShopItem(this, "Crate (coins)", getTeamIcon("crate", "Crate.png", team_num, Vec2f(32, 16), 5), "crate", Descriptions::crate, false);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::crate);
 	}
 }

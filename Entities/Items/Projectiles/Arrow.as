@@ -143,9 +143,14 @@ void onTick(CBlob@ this)
 		if (shape.vellen > 0.0001f)
 		{
 			if (shape.vellen > 13.5f)
+			{
 				shape.SetGravityScale(0.1f);
+			}
 			else
+			{
 				shape.SetGravityScale(Maths::Min(1.0f, 1.0f / (shape.vellen * 0.1f)));
+			}
+
 
 			processSticking = false;
 		}
@@ -242,7 +247,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		}
 
 		f32 dmg = 0.0f;
-		if (blob.getTeamNum() != this.getTeamNum())
+		if (blob.getTeamNum() != this.getTeamNum() || blob.getName() == "bridge")
 		{
 			dmg = getArrowDamage(this, vellen);
 		}
@@ -325,7 +330,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	}
 
 	//definitely collide with non-team blobs
-	bool check = this.getTeamNum() != blob.getTeamNum();
+	bool check = this.getTeamNum() != blob.getTeamNum() || blob.getName() == "bridge";
 	//maybe collide with team structures
 	if (!check)
 	{

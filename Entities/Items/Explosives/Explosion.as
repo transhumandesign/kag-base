@@ -154,15 +154,16 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 
 	if (getNet().isServer())
 	{
+        Vec2f m_pos = (pos / map.tilesize);
+        m_pos.x = Maths::Floor(m_pos.x);
+        m_pos.y = Maths::Floor(m_pos.y);
+        m_pos = (m_pos * map.tilesize) + Vec2f(map.tilesize / 2, map.tilesize / 2);
+
 		//hit map if we're meant to
 		if (map_damage_radius > 0.1f)
 		{
 			int tile_rad = int(map_damage_radius / map.tilesize) + 1;
 			f32 rad_thresh = map_damage_radius * map_damage_ratio;
-			Vec2f m_pos = (pos / map.tilesize);
-			m_pos.x = Maths::Floor(m_pos.x);
-			m_pos.y = Maths::Floor(m_pos.y);
-			m_pos = (m_pos * map.tilesize) + Vec2f(map.tilesize / 2, map.tilesize / 2);
 
 			//explode outwards
 			for (int x_step = 0; x_step <= tile_rad; ++x_step)
@@ -198,6 +199,12 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 
 						if (dist < map_damage_radius)
 						{
+                            Vec2f tpos = m_pos + offset;
+
+                            TileType tile = map.getTile(tpos).type;
+                            if (tile == CMap::tile_empty)
+                                continue;
+
 							//do we need to raycast?
 							bool canHit = !map_damage_raycast || (dist < 0.1f);
 
@@ -206,14 +213,53 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 								Vec2f v = offset;
 								v.Normalize();
 								v = v * (dist - map.tilesize);
-								canHit = !(map.rayCastSolid(m_pos, m_pos + v));
+                                canHit = true;
+                                HitInfo@[] hitInfos;
+                                if(map.getHitInfosFromRay(m_pos, v.Angle(), v.Length(), this, hitInfos))
+                                {
+                                    for (int i = 0; i < hitInfos.length; i++)
+                                    {
+                                        HitInfo@ hi = hitInfos[i];
+                                        CBlob@ b = hi.blob;
+                                        // m_pos == position ignores blobs that are tiles when the explosion starts in the same tile
+                                        if (b !is null && b !is this && b.isCollidable() && b.getShape().isStatic() && m_pos != b.getPosition())
+                                        {
+                                            /*if (b.isPlatform())
+                                            {
+                                                // bad but only handle one platform
+                                                ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
+                                                Vec2f dir = plat.direction;
+                                                if (!plat.ignore_rotations)
+                                                {
+                                                    dir.RotateBy(b.getAngleDegrees());
+                                                }
+
+                                                // Does the platform block damage?
+                                                if(Maths::Abs(dir.AngleWith(v)) < plat.angleLimit)
+                                                {
+                                                    canHit = false;
+                                                    break;
+                                                }
+                                                continue;
+
+                                            }*/
+
+                                            canHit = false;
+                                            break;
+                                        }
+
+                                        if(map.isTileSolid(hi.tile))
+                                        {
+                                            canHit = false;
+                                            break;
+                                        }
+                                    }
+
+                                }
 							}
 
 							if (canHit)
 							{
-								Vec2f tpos = m_pos + offset;
-
-								TileType tile = map.getTile(tpos).type;
 								if (canExplosionDamage(map, tpos, tile))
 								{
 									if (!map.isTileBedrock(tile))
@@ -248,7 +294,7 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 			if (hit_blob is this)
 				continue;
 
-			HitBlob(this, hit_blob, radius, damage, hitter, true, should_teamkill);
+			HitBlob(this, m_pos, hit_blob, radius, damage, hitter, true, should_teamkill);
 		}
 	}
 
@@ -288,6 +334,7 @@ void LinearExplosion(CBlob@ this, Vec2f _direction, f32 length, const f32 width,
 		normal.RotateBy(180.0f, Vec2f());
 
 	pos += normal * -(halfwidth / tilesize + 1.0f);
+    Vec2f m_pos = pos;
 
 	bool isserver = getNet().isServer();
 
@@ -397,7 +444,7 @@ void LinearExplosion(CBlob@ this, Vec2f _direction, f32 length, const f32 width,
 
 		if (p > 0.0f && p < length && q < halfwidth)
 		{
-			HitBlob(this, hit_blob, length, damage, hitter, false, should_teamkill);
+			HitBlob(this, m_pos, hit_blob, length, damage, hitter, false, should_teamkill);
 		}
 	}
 }
@@ -440,7 +487,7 @@ bool canExplosionDamage(CMap@ map, Vec2f tpos, TileType t)
 	if (blob !is null)
 	{
 		string name = blob.getName();
-		hasValidFrontBlob = (name == "wooden_door" || name == "stone_door" || name == "trap_block" || name == "wooden_platform");
+		hasValidFrontBlob = (name == "wooden_door" || name == "stone_door" || name == "trap_block" || name == "wooden_platform" || name == "bridge");
 	}
 	return map.getSectorAtPosition(tpos, "no build") is null &&
 	       (t != CMap::tile_ground_d0 && t != CMap::tile_stone_d0) && //don't _destroy_ ground, hit until its almost dead tho
@@ -452,7 +499,7 @@ bool canExplosionDestroy(CMap@ map, Vec2f tpos, TileType t)
 	return !(map.isTileGroundStuff(t));
 }
 
-bool HitBlob(CBlob@ this, CBlob@ hit_blob, f32 radius, f32 damage, const u8 hitter,
+bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage, const u8 hitter,
              const bool bother_raycasting = true, const bool should_teamkill = false)
 {
 	Vec2f pos = this.getPosition();
@@ -472,17 +519,41 @@ bool HitBlob(CBlob@ this, CBlob@ hit_blob, f32 radius, f32 damage, const u8 hitt
 		HitInfo@[] hitInfos;
 		if (map.getHitInfosFromRay(pos, -hitvec.getAngle(), hitvec.getLength(), this, @hitInfos))
 		{
-			bool blocked = false;
 			for (uint i = 0; i < hitInfos.length; i++)
 			{
 				HitInfo@ hi = hitInfos[i];
 
 				if (hi.blob !is null) // blob
 				{
-					if (hi.blob is this || hi.blob is hit_blob || !hi.blob.isCollidable())
+                    // mapPos == position ignores blobs that are tiles when the explosion starts in the same tile
+					if (hi.blob is this || hi.blob is hit_blob || !hi.blob.isCollidable() || mapPos == hi.blob.getPosition())
 					{
 						continue;
 					}
+
+                    CBlob@ b = hi.blob;
+                    if (b.isPlatform())
+                    {
+                        ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
+                        Vec2f dir = plat.direction;
+                        if (!plat.ignore_rotations)
+                        {
+                            dir.RotateBy(b.getAngleDegrees());
+                        }
+
+                        // Does the platform block damage
+                        Vec2f hitvec_dir = -hitvec;
+                        if (hit_blob.isPlatform())
+                        {
+                            hitvec_dir = hitvec;
+                        }
+
+                        if(Maths::Abs(dir.AngleWith(hitvec_dir)) < plat.angleLimit)
+                        {
+                            return false;
+                        }
+                        continue;
+                    }
 
 					// only shield and heavy things block explosions
 					if (hi.blob.hasTag("heavy weight") ||

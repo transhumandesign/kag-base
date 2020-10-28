@@ -8,6 +8,8 @@ void onInit(CBlob@ this)
 	}
 
 	this.addCommandID(heal_id);
+
+	this.Tag("pushedByDoor");
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
@@ -102,7 +104,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 	{
 		Heal(detached, this);
 	}
-	
+
 	CPlayer@ p = detached.getPlayer();
 	if (p is null){return;}
 

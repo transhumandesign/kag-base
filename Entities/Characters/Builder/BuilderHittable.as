@@ -12,6 +12,7 @@ const string[] builder_alwayshit =
 	//faketiles
 	"spikes",
 	"trap_block",
+	"bridge",
 	"flowers",
 
 	//buildings

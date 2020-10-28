@@ -197,6 +197,10 @@ namespace Material
 			{
 				maxHarvest = damageBlob.get_u16("harvestPlatformCap");
 			}
+			else if(name == "bridge" && damageBlob.exists("harvestPlatformCap"))
+			{
+				maxHarvest = damageBlob.get_u16("harvestPlatformCap");
+			}
 		}
 
 		array<string>@ names = harvest.getKeys();

@@ -52,7 +52,7 @@ void onInit(CInventory@ this)
 	if (!blob.exists(blocks_property))
 	{
 		BuildBlock[][] blocks;
-		addCommonBuilderBlocks(blocks);
+		addCommonBuilderBlocks(blocks, blob.getTeamNum());
 		blob.set(blocks_property, blocks);
 	}
 

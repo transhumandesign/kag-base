@@ -27,6 +27,7 @@ void onInit(CBlob@ this)
 	this.set("hitdata", hitdata);
 
 	this.addCommandID("pickaxe");
+	this.addCommandID("hitdata sync");
 
 	CShape@ shape = this.getShape();
 	shape.SetRotationsAllowed(false);
@@ -201,6 +202,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			warn("error when recieving pickaxe command");
 		}
 	}
+	else if (cmd == this.getCommandID("hitdata sync") && !this.isMyPlayer())
+	{
+		HitData@ hitdata;
+		this.get("hitdata", @hitdata);
+
+		hitdata.tilepos = params.read_Vec2f();
+		hitdata.blobID = params.read_netid();
+	}
+	
 }
 
 //helper class to reduce function definition cancer
@@ -221,7 +231,7 @@ void Pickaxe(CBlob@ this)
 {
 	HitData@ hitdata;
 	CSprite @sprite = this.getSprite();
-	bool strikeAnim = sprite.isAnimation("strike");
+	bool strikeAnim = sprite.isAnimation("strike") || sprite.isAnimation("chop");
 
 	if (!strikeAnim)
 	{
@@ -257,7 +267,12 @@ void Pickaxe(CBlob@ this)
 		{
 			if (hitdata.blobID == 0)
 			{
-				SendHitCommand(this, null, hitdata.tilepos, attackVel, hit_damage);
+				TileType t = getMap().getTile(hitdata.tilepos).type;
+				if (t != CMap::tile_empty && t != CMap::tile_ground_back)
+				{
+					SendHitCommand(this, null, hitdata.tilepos, attackVel, hit_damage);
+				}
+
 			}
 			else
 			{
@@ -387,6 +402,12 @@ void Pickaxe(CBlob@ this)
 	{
 		hitdata.tilepos = tilepos;
 	}
+
+	CBitStream cbs;
+	cbs.write_Vec2f(hitdata.tilepos);
+	cbs.write_netid(hitdata.blobID);
+
+	this.SendCommand(this.getCommandID("hitdata sync"), cbs);
 }
 
 void SortHits(CBlob@ this, HitInfo@[]@ hitInfos, f32 damage, SortHitsParams@ p)
@@ -487,17 +508,14 @@ bool canHit(CBlob@ this, CBlob@ b, Vec2f tpos, bool extra = true)
 		if (b.isAttached())
 			return false;
 
-		//yes hitting corpses
-		if (b.hasTag("dead"))
+		if (BuilderAlwaysHit(b) || b.hasTag("dead") || b.hasTag("vehicle"))
 			return true;
 
-		//no hitting friendly mines (grif)
-		if (b.getName() == "mine")
-			return false;
+		if (b.getName() == "saw" || b.getName() == "trampoline")
+			return true;
 
-		//no hitting friendly living stuff
-		if (b.hasTag("flesh") || b.hasTag("player"))
-			return false;
+		return false;
+
 	}
 	//no hitting stuff in hands
 	else if (b.isAttached() && !b.hasTag("player"))

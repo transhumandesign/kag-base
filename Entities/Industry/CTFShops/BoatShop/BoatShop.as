@@ -5,6 +5,7 @@
 #include "Descriptions.as"
 #include "Costs.as"
 #include "CheckSpam.as"
+#include "TeamIconToken.as"
 
 void onInit(CBlob@ this)
 {
@@ -22,19 +23,24 @@ void onInit(CBlob@ this)
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
 
+	int team_num = this.getTeamNum();
+
 	// TODO: Better information + icons like the vehicle shop, also make boats not suck
 	{
-		ShopItem@ s = addShopItem(this, "Dinghy", "$dinghy$", "dinghy", "$dinghy$\n\n\n" + Descriptions::dinghy);
+		string dinghy_icon = getTeamIcon("dinghy", "VehicleIcons.png", team_num, Vec2f(32, 32), 5);
+		ShopItem@ s = addShopItem(this, "Dinghy", dinghy_icon, "dinghy", dinghy_icon + "\n\n\n" + Descriptions::dinghy);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::dinghy_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Longboat", "$longboat$", "longboat", "$longboat$\n\n\n" + Descriptions::longboat, false, true);
+		string longboat_icon = getTeamIcon("longboat", "VehicleIcons.png", team_num, Vec2f(32, 32), 4);
+		ShopItem@ s = addShopItem(this, "Longboat", longboat_icon, "longboat", longboat_icon + "\n\n\n" + Descriptions::longboat, false, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::longboat);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::longboat_wood);
 		s.crate_icon = 1;
 	}
 	{
-		ShopItem@ s = addShopItem(this, "War Boat", "$warboat$", "warboat", "$warboat$\n\n\n" + Descriptions::warboat, false, true);
+		string warboat_icon = getTeamIcon("warboat", "VehicleIcons.png", team_num, Vec2f(32, 32), 4);
+		ShopItem@ s = addShopItem(this, "War Boat", warboat_icon, "warboat", warboat_icon + "\n\n\n" + Descriptions::warboat, false, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::warboat);
 		s.crate_icon = 2;
 	}

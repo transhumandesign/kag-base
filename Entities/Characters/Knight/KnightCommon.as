@@ -52,6 +52,8 @@ shared class KnightInfo
 
 shared class KnightState
 {
+	u32 stateEnteredTime = 0;
+
 	KnightState() {}
 	u8 getStateValue() { return 0; }
 	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state) {}

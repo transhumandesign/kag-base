@@ -77,7 +77,7 @@ void onTick(CBlob@ this)
 	}
 
 	//check if we're extinguished
-	if (burn_time == 0 || this.isInWater())
+	if (burn_time == 0 || this.isInWater() || map.isInWater(pos))
 	{
 		server_setFireOff(this);
 		this.set_netid("burn starter blob", 0);

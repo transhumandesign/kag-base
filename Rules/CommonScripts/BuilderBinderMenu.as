@@ -18,7 +18,7 @@ BuildBlock[][] blocks;
 void onInit(CRules@ this)
 {
 	this.addCommandID(BUILD_CMD);
-	addCommonBuilderBlocks(blocks, "CTF");
+	addCommonBuilderBlocks(blocks, 0, "CTF");
 
 }
 

@@ -106,7 +106,6 @@ bool ClickGridMenu(CBlob@ this, int button)
 	return false;
 }
 
-
 void ButtonOrMenuClick(CBlob@ this, Vec2f pos, bool clear, bool doClosestClick)
 {
 	if (!ClickGridMenu(this, 0))
@@ -159,7 +158,7 @@ void onTick(CBlob@ this)
 	}
 
 	CBlob @carryBlob = this.getCarriedBlob();
-	
+
 
 	// bubble menu
 
@@ -233,7 +232,8 @@ void onTick(CBlob@ this)
 		{
 			if (isTap(this, 7))     // tap - put thing in inventory
 			{
-				if (carryBlob !is null && !carryBlob.hasTag("temp blob"))
+				CInventory@ inv = this.getInventory();
+				if (carryBlob !is null && !carryBlob.hasTag("temp blob") && inv.canPutItem(carryBlob))
 				{
 					server_PutIn(this, this, carryBlob);
 				}
@@ -330,7 +330,7 @@ void AdjustCamera(CBlob@ this, bool is_in_render)
 	{
 		zoomSpeed *= getRenderApproximateCorrectionFactor();
 	}
-	
+
 	f32 minZoom = 0.5f; // TODO: make vars
 	f32 maxZoom = 2.0f;
 
@@ -377,7 +377,7 @@ void ManageCamera(CBlob@ this)
 		if (controls.isKeyJustPressed(controls.getActionKeyKey(AK_ZOOMOUT)))
 		{
 			zoomModifier = controls.isKeyPressed(KEY_LCONTROL);
-			
+
 			zoomModifierLevel = Maths::Max(0, zoomModifierLevel - 1);
 			zoomLevel = Maths::Max(0, zoomLevel - 1);
 
@@ -386,7 +386,7 @@ void ManageCamera(CBlob@ this)
 		else  if (controls.isKeyJustPressed(controls.getActionKeyKey(AK_ZOOMIN)))
 		{
 			zoomModifier = controls.isKeyPressed(KEY_LCONTROL);
-			
+
 			zoomModifierLevel = Maths::Min(6, zoomModifierLevel + 1);
 			zoomLevel = Maths::Min(2, zoomLevel + 1);
 
@@ -425,5 +425,3 @@ void ManageCamera(CBlob@ this)
 	// camera
 	camera.mouseFactor = 0.5f; // doesn't affect soldat cam
 }
-
-

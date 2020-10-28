@@ -506,7 +506,8 @@ void Capture(CBlob@ this, const int attackerTeam)
 				                                       b.getName() == "workbench" ||
 				                                       b.hasTag("migrant") ||
 				                                       b.getName() == "spikes" ||
-				                                       b.getName() == "trap_block"))
+				                                       b.getName() == "trap_block" ||
+													   b.getName() == "bridge"))
 				{
 					b.server_setTeamNum(attackerTeam);
 				}
