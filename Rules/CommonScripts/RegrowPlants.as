@@ -161,13 +161,13 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 	// onSetTile runs when a tile is damaged, so check if new tile is just more damaged dirt
 	if (this.isTileGround(oldtile) && !this.isTileGround(newtile) && tindex_dirt != 0 && dirt_tiles.size() > 0)
 	{
-		dirt_tiles.removeAt(tindex);
+		dirt_tiles.removeAt(tindex_dirt);
 	}
 	// castle tile got destroyed/damaged/mossified, remove from array
 	// don't check if new tile is just a damaged castle, because we don't mossify damaged stone (only full hp stone has moss variants)
 	if (castle_stuff.find(oldtile) != -1 && tindex_stone != 0 && castle_tiles.size() > 0)
 	{
-		castle_tiles.removeAt(tindex);
+		castle_tiles.removeAt(tindex_stone);
 	}
 	// castle tile was built, add to array
 	if (castle_stuff.find(newtile) != -1 && tindex_stone == 0)
