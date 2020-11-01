@@ -153,26 +153,24 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 		
 	u32 x = index % this.tilemapwidth;
 	u32 y = index / this.tilemapwidth;
-	Vec2f coords(x*this.tilesize,y*this.tilesize);
-	u32 tindex = findTileByCoords(dirt_tiles, coords);
-	if (tindex == 0)
-	{
-		tindex = findTileByCoords(castle_tiles, coords);
-	}
+	Vec2f coords(x * this.tilesize, y * this.tilesize);
+	u32 tindex_dirt = findTileByCoords(dirt_tiles, coords);
+	u32 tindex_stone = findTileByCoords(castle_tiles, coords);
+
 	// dirt leaves dirt background after it's destroyed, so no need to check for dirt tiles below it
 	// onSetTile runs when a tile is damaged, so check if new tile is just more damaged dirt
-	if (this.isTileGround(oldtile) && !this.isTileGround(newtile))
+	if (this.isTileGround(oldtile) && !this.isTileGround(newtile) && tindex_dirt != 0 && dirt_tiles.size() > 0)
 	{
-		dirt_tiles.removeAt(tindex);
+		dirt_tiles.removeAt(tindex_dirt);
 	}
 	// castle tile got destroyed/damaged/mossified, remove from array
 	// don't check if new tile is just a damaged castle, because we don't mossify damaged stone (only full hp stone has moss variants)
-	if (castle_stuff.find(oldtile) != -1)
+	if (castle_stuff.find(oldtile) != -1 && tindex_stone != 0 && castle_tiles.size() > 0)
 	{
-		castle_tiles.removeAt(tindex);
+		castle_tiles.removeAt(tindex_stone);
 	}
 	// castle tile was built, add to array
-	if (castle_stuff.find(newtile) != -1 && tindex == 0)
+	if (castle_stuff.find(newtile) != -1 && tindex_stone == 0)
 	{
 		castle_tiles.insertLast(TileInfo(coords, getGameTime(), this.getTile(coords)));
 	}

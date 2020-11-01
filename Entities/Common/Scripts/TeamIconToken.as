@@ -11,7 +11,7 @@ string getTeamIcon(string icon, string file_name, int team_num, Vec2f frame_size
 		return team_icon_name;
 	}
 
-	GUI::AddIconToken(team_icon_name, file_name, frame_size, frame_num, team_num);
+	AddIconToken(team_icon_name, file_name, frame_size, frame_num, team_num);
 	return team_icon_name;
 
 }
