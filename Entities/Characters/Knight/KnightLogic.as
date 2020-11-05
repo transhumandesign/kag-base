@@ -1245,7 +1245,11 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 						{
 							int quantity = Maths::Ceil(float(damage) * 20.0f);
 							int max_quantity = b.getHealth() / 0.024f; // initial log health / max mats
-							quantity = Maths::Min(quantity, max_quantity);
+							
+							quantity = Maths::Max(
+								Maths::Min(quantity, max_quantity),
+								0
+							);
 
 							wood.Tag('custom quantity');
 							wood.Init();
