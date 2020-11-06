@@ -541,7 +541,7 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 
 	Vec2f norm = velocity;
 	norm.Normalize();
-	norm *= (1.0f * radius);
+	norm *= (1.5f * radius);
 	Vec2f lock = worldPoint - norm;
 	this.set_Vec2f("lock", lock);
 
