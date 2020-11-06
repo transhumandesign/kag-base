@@ -10,7 +10,7 @@
 #include "Accolades.as"
 
 
-const f32 config_offset = -4.0f;
+const f32 config_offset = -6.0f;
 const string shiny_layer = "shiny bit";
 
 void onInit(CSprite@ this)
@@ -235,8 +235,13 @@ void onTick(CSprite@ this)
 	bool crouch = false;
 
 	bool knocked = isKnocked(blob);
-	Vec2f pos = blob.getPosition();
+	Vec2f pos = blob.getPosition() + Vec2f(0, -2);
 	Vec2f aimpos = blob.getAimPos();
+	if (this.isFacingLeft())
+		pos.x += 2;
+	else
+		pos.x -= 2;
+
 	// get the angle of aiming with mouse
 	Vec2f vec = aimpos - pos;
 	f32 angle = vec.Angle();
