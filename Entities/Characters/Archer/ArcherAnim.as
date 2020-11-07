@@ -237,10 +237,7 @@ void onTick(CSprite@ this)
 	bool knocked = isKnocked(blob);
 	Vec2f pos = blob.getPosition() + Vec2f(0, -2);
 	Vec2f aimpos = blob.getAimPos();
-	if (this.isFacingLeft())
-		pos.x += 2;
-	else
-		pos.x -= 2;
+	pos.x += this.isFacingLeft() ? 2 : -2;
 
 	// get the angle of aiming with mouse
 	Vec2f vec = aimpos - pos;
