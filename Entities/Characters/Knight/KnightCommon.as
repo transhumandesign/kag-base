@@ -36,6 +36,12 @@ namespace KnightVars
 	const ::f32 slash_move_max_speed = 3.5f;
 
 	const u32 glide_down_time = 50;
+
+	//// OLD MOD COMPATIBILITY ////
+	// These have no purpose in the current code base other then
+	// to allow old mods to still run without needing manual fixing
+	const u8 shieldTimer = 0;
+	const f32 resheath_time = 2.0f;
 }
 
 shared class KnightInfo
