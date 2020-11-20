@@ -40,7 +40,6 @@ namespace KnightVars
 	//// OLD MOD COMPATIBILITY ////
 	// These have no purpose in the current code base other then
 	// to allow old mods to still run without needing manual fixing
-	const u8 shieldTimer = 0;
 	const f32 resheath_time = 2.0f;
 }
 
@@ -54,6 +53,9 @@ shared class KnightInfo
 	u8 state;
 	Vec2f slash_direction;
 	s32 shield_down;
+
+	//// OLD MOD COMPATIBILITY ////
+	u8 shieldTimer;
 };
 
 shared class KnightState
