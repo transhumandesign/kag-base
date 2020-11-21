@@ -16,8 +16,7 @@ void onReload(CRules@ this)
 	ConfigFile cfg = ConfigFile(CFileMatcher("AutoRebuild.cfg").getFirst());
 
 	enabled = cfg.read_bool("enabled", true);
-	check_x_tick = cfg.read_bool("check_x_tick", false);
-	check_timer = cfg.read_s32("check_timer", 90);
+	check_timer = cfg.read_s32("check_timer", 0);
 	check_focus = cfg.read_bool("check_focus", true);
 
 	if (!enabled)
@@ -38,7 +37,7 @@ void onTick(CRules@ this)
 		focused = isWindowFocused();
 	}
 
-	if (check_x_tick && getGameTime() % check_timer == 0)
+	if (check_timer > 0 && getGameTime() % check_timer == 0)
 	{
 		rebuild();
 	}
