@@ -20,4 +20,6 @@ void InitializeGame()
 	LoadDefaultMapLoaders();
 	LoadDefaultMenuMusic();
 	RunLocalhost();
+	getRules().AddScript("AutoRebuild.as");
+
 }
