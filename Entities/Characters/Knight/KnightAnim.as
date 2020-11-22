@@ -1,7 +1,5 @@
 // Knight animations
 
-#define CLIENT_ONLY
-
 #include "KnightCommon.as";
 #include "RunnerAnimCommon.as";
 #include "RunnerCommon.as";
