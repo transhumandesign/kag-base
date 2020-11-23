@@ -74,10 +74,15 @@ void ReadChangeTeam(CRules@ this, CBitStream @params)
 
 	if (player is getLocalPlayer())
 	{
-		bool canSwitch = getPlayersCount_NotSpectator() < getNet().joined_maxplayers;
+		int maxPlayers = getNet().joined_maxplayers;
+		int reservedSlots = getNet().joined_reservedslots;
+		int playerCountNotSpec = getPlayersCount_NotSpectator(); 
+		u8 specTeamNum = this.getSpectatorTeamNum();
+
+		bool canSwitch = playerCountNotSpec < maxPlayers;
 		
-		if (canSwitch || player.getTeamNum() != this.getSpectatorTeamNum() || 
-			team == this.getSpectatorTeamNum() || player.isMod())
+		if (canSwitch || player.getTeamNum() != specTeamNum  || team == specTeamNum || player.isMod() ||
+			getSecurity().checkAccess_Feature(player, "join_reserved") && maxPlayers + reservedSlots < playerCountNotSpec)
 		{
 			ChangeTeam(player, team);
 		}
