@@ -57,7 +57,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			this.get_u8("shop icon"),                                // icon token
 			this.get_Vec2f("shop offset"),                           // button offset
 			this,                                                    // shop blob
-			CreateMenu,                                              // func callback
+			createMenu,                                              // func callback
 			getTranslatedString(this.get_string("shop description")) // description
 		);
 
@@ -66,7 +66,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 }
 
 
-void CreateMenu(CBlob@ this, CBlob@ caller)
+void createMenu(CBlob@ this, CBlob@ caller)
 {
 	if (this.hasTag("shop disabled"))
 		return;
