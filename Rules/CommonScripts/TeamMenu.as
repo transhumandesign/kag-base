@@ -76,7 +76,8 @@ void ReadChangeTeam(CRules@ this, CBitStream @params)
 	{
 		bool canSwitch = getPlayersCount_NotSpectator() < getNet().joined_maxplayers;
 		
-		if (canSwitch || player.getTeamNum() != this.getSpectatorTeamNum() || team == this.getSpectatorTeamNum())
+		if (canSwitch || player.getTeamNum() != this.getSpectatorTeamNum() || 
+			team == this.getSpectatorTeamNum() || player.isMod())
 		{
 			ChangeTeam(player, team);
 		}
