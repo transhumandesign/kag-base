@@ -1,5 +1,7 @@
 // show menu that only allows to join spectator
 
+#include "SwitchFromSpec.as"
+
 const int BUTTON_SIZE = 4;
 
 void onInit(CRules@ this)
@@ -74,16 +76,7 @@ void ReadChangeTeam(CRules@ this, CBitStream @params)
 
 	if (player is getLocalPlayer())
 	{
-		int maxPlayers = getNet().joined_maxplayers;
-		int reservedSlots = getNet().joined_reservedslots;
-		int playerCountNotSpec = getPlayersCount_NotSpectator(); 
-		u8 specTeamNum = this.getSpectatorTeamNum();
-
-		bool canSwitch = playerCountNotSpec < maxPlayers;
-		
-		if (canSwitch || player.getTeamNum() != specTeamNum  || team == specTeamNum || player.isMod() ||
-			getSecurity().checkAccess_Feature(player, "join_reserved") && maxPlayers + reservedSlots < playerCountNotSpec ||
-			getSecurity().checkAccess_Feature(player, "join_full"))
+		if (CanSwitchFromSpec(this, player, team))
 		{
 			ChangeTeam(player, team);
 		}

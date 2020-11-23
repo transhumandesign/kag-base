@@ -5,6 +5,7 @@
 //Make sure you dont forget JoinCoreHooks! :)
 
 #include "GameplayEvents.as"
+#include "SwitchFromSpec.as"
 
 //not server only so that all the players get this
 void onInit(CRules@ this)
@@ -60,6 +61,9 @@ void onPlayerRequestSpawn(CRules@ this, CPlayer@ player)
 void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 newteam)
 {
 	if (!getNet().isServer())
+		return;
+
+	if (!CanSwitchFromSpec(this, player, newteam))
 		return;
 
 	if (!this.get_bool("managed teams"))
