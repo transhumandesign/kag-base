@@ -11,7 +11,6 @@
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("shop menu");
 	this.addCommandID("shop buy");
 	this.addCommandID("shop made item");
 
@@ -54,19 +53,25 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (shop_items.length > 0 && this.get_bool("shop available") && !this.hasTag("shop disabled"))
 	{
-		CBitStream params;
-		params.write_u16(caller.getNetworkID());
-
 		CButton@ button = caller.CreateGenericButton(
-		this.get_u8("shop icon"),                   // icon token
-		this.get_Vec2f("shop offset"),              // button offset
-		this,                                       // button attachment
-		this.getCommandID("shop menu"),             // command id
-		getTranslatedString(this.get_string("shop description")),        // description
-		params);                                    // bit stream
+			this.get_u8("shop icon"),                                // icon token
+			this.get_Vec2f("shop offset"),                           // button offset
+			this,                                                    // shop blob
+			CreateMenu,                                              // func callback
+			getTranslatedString(this.get_string("shop description")) // description
+		);
 
 		button.enableRadius = this.get_u8("shop button radius");
 	}
+}
+
+
+void CreateMenu(CBlob@ this, CBlob@ caller)
+{
+	if (this.hasTag("shop disabled"))
+		return;
+
+	BuildShopMenu(this, caller, this.get_string("shop description"), Vec2f(0, 0), this.get_Vec2f("shop menu size"));
 }
 
 bool isInRadius(CBlob@ this, CBlob @caller)
@@ -83,16 +88,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	bool isServer = getNet().isServer();
 
-	if (cmd == this.getCommandID("shop menu"))
-	{
-		if (this.hasTag("shop disabled"))
-			return;
-
-		// build menu for them
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		BuildShopMenu(this, caller, this.get_string("shop description"), Vec2f(0, 0), this.get_Vec2f("shop menu size"));
-	}
-	else if (cmd == this.getCommandID("shop buy"))
+	if (cmd == this.getCommandID("shop buy"))
 	{
 		if (this.hasTag("shop disabled"))
 			return;
