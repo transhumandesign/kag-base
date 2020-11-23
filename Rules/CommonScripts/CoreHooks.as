@@ -65,7 +65,7 @@ void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 newteam)
 
 	if (!CanSwitchFromSpec(this, player, newteam))
 	{
-		player.server_setTeamNum(this.getSpectatorTeam());
+		player.server_setTeamNum(this.getSpectatorTeamNum());
 		return;
 	}
 
