@@ -5,7 +5,6 @@ const int BUTTON_SIZE = 4;
 void onInit(CRules@ this)
 {
 	this.addCommandID("pick teams");
-	this.addCommandID("pick spectator");
 	this.addCommandID("pick none");
 
 	AddIconToken("$BLUE_TEAM$", "GUI/TeamIcons.png", Vec2f(96, 96), 0);
@@ -50,7 +49,7 @@ void ShowTeamMenu(CRules@ this)
 					CBitStream params;
 					params.write_u16(getLocalPlayer().getNetworkID());
 					params.write_u8(this.getSpectatorTeamNum());
-					CGridButton@ button2 = menu.AddButton("$SPECTATOR$", getTranslatedString("Spectator"), this.getCommandID("pick spectator"), Vec2f(BUTTON_SIZE / 2, BUTTON_SIZE), params);
+					CGridButton@ button2 = menu.AddButton("$SPECTATOR$", getTranslatedString("Spectator"), this.getCommandID("pick teams"), Vec2f(BUTTON_SIZE / 2, BUTTON_SIZE), params);
 				}
 				icon = "$RED_TEAM$";
 				name = "Red Team";
@@ -93,10 +92,6 @@ void ReadChangeTeam(CRules@ this, CBitStream @params)
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("pick teams"))
-	{
-		ReadChangeTeam(this, params);
-	}
-	else if (cmd == this.getCommandID("pick spectator"))
 	{
 		ReadChangeTeam(this, params);
 	}
