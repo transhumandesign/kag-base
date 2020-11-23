@@ -13,7 +13,7 @@ int onProcessFullJoin(CRules@ this, APIPlayer@ user)
 		//user is good supporter
 		user.supportTier >= SUPPORT_TIER_ROYALGUARD
 		//not up to the extra slots yet
-		&& getPlayersCount() < (getNet().joined_maxplayers + PATRON_EXTRA_SLOTS)
+		&& getPlayersCount() < (sv_maxplayers + PATRON_EXTRA_SLOTS)
 	) {
 		return 1;
 	}
@@ -26,7 +26,7 @@ void onNewPlayerJoin( CRules@ this, CPlayer@ player )
 {
 	if (this.get_u16("supportTier " + player.getUsername()) >= SUPPORT_TIER_ROYALGUARD && // if we are high enough in the tier list
 		this.getSpectatorTeamNum() == player.getTeamNum() && // and we are a spectator
-		getPlayersNum_NotSpectator() + PATRON_EXTRA_SLOTS <= getNet().joined_maxplayers) // and there are still free slots for us
+		getPlayersCount_NotSpectator() + PATRON_EXTRA_SLOTS <= sv_maxplayers) // and there are still free slots for us
 	{
 		player.server_setTeamNum(255); // server will auto balance them
 	}
