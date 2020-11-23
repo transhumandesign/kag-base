@@ -82,6 +82,7 @@ void ReadChangeTeam(CRules@ this, CBitStream @params)
 		}
 		else
 		{
+			client_AddToChat("Game is currently full. Please wait for a new slot before switching teams.", ConsoleColour::GAME);
 			Sound::Play("NoAmmo.ogg");
 		}
 	}
