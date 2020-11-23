@@ -74,19 +74,23 @@ void ReadChangeTeam(CRules@ this, CBitStream @params)
 
 	if (player is getLocalPlayer())
 	{
-		bool canSwitch = !(getPlayersCount_NotSpectator() <= getNet().joined_maxplayers);
+		bool canSwitch = getPlayersCount_NotSpectator() < getNet().joined_maxplayers;
 		
-		if (canSwitch || team == this.getSpectatorTeamNum())
+		if (canSwitch || player.getTeamNum() != this.getSpectatorTeamNum() || team == this.getSpectatorTeamNum())
 		{
-			player.client_ChangeTeam(team);
-			getHUD().ClearMenus();
+			ChangeTeam(player, team);
 		}
 		else
 		{
-			print("no room"); // TODO: Print sound
+			Sound::Play("NoAmmo.ogg");
 		}
-		
 	}
+}
+
+void ChangeTeam(CPlayer@ player, u8 team)
+{
+	player.client_ChangeTeam(team);
+	getHUD().ClearMenus();
 }
 
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
