@@ -75,9 +75,18 @@ void ReadChangeTeam(CRules@ this, CBitStream @params)
 
 	if (player is getLocalPlayer())
 	{
-		player.client_ChangeTeam(team);
-		// player.client_RequestSpawn(0);
-		getHUD().ClearMenus();
+		bool canSwitch = !(getPlayersNum_NotSpectator() <= getNet().joined_maxplayers);
+		
+		if (canSwitch || team == this.getSpectatorTeamNum())
+		{
+			player.client_ChangeTeam(team);
+			getHUD().ClearMenus();
+		}
+		else
+		{
+			print("no room"); // TODO: Print sound
+		}
+		
 	}
 }
 
