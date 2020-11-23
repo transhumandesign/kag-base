@@ -82,7 +82,8 @@ void ReadChangeTeam(CRules@ this, CBitStream @params)
 		bool canSwitch = playerCountNotSpec < maxPlayers;
 		
 		if (canSwitch || player.getTeamNum() != specTeamNum  || team == specTeamNum || player.isMod() ||
-			getSecurity().checkAccess_Feature(player, "join_reserved") && maxPlayers + reservedSlots < playerCountNotSpec)
+			getSecurity().checkAccess_Feature(player, "join_reserved") && maxPlayers + reservedSlots < playerCountNotSpec ||
+			getSecurity().checkAccess_Feature(player, "join_full"))
 		{
 			ChangeTeam(player, team);
 		}
