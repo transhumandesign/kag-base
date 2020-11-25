@@ -388,11 +388,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @para)
 
 bool isBlacklisted(string name)
 {
-	return  name=="hall" || // used to dig hole to bottom of the map, spawns lots of migrants
-			name=="shark" || // greif
-			name=="bison" ||
+	return  name=="hall" ||        // used to dig hole to bottom of the map, spawns lots of migrants
+			name=="shark" ||       // greif spam
+			name=="bison" ||       // grief spam
 			name=="necromancer" || // annoying / grief
-			name=="greg" || // annoying / grief
-			name=="ctf_flag" || // sound spam
-			name=="flag_base";// sound spam / grief
+			name=="greg" ||        // annoying / grief
+			name=="ctf_flag" ||    // sound spam
+			name=="flag_base";     // sound spam / grief
 }
