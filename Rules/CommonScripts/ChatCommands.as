@@ -7,8 +7,17 @@
 #include "MakeCrate.as";
 #include "MakeScroll.as";
 
-const bool ChatCommandCoolDown = false; // enable if you want cooldown on your server
-const uint ChatCommandDelay = 3 * 30; // Cooldown in seconds
+const bool chatCommandCooldown = false; // enable if you want cooldown on your server
+const uint chatCommandDelay = 3 * 30; // Cooldown in seconds
+const string[] blacklistedItems = {
+	"hall",         // grief
+	"shark",        // grief spam
+	"bison",        // grief spam
+	"necromancer",  // annoying/grief
+	"greg",         // annoying/grief
+	"ctf_flag",     // sound spam
+	"flag_base"     // sound spam + bedrock grief
+};
 
 void onInit(CRules@ this)
 {
@@ -64,7 +73,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 	string errorMessage = ""; // so errors can be printed out of wasCommandSuccessful is false
 	SColor errorColor = SColor(255,255,0,0); // ^
 
-	if (!isMod && this.hasScript("Sandbox_Rules.as") || ChatCommandCoolDown) // chat command cooldown timer
+	if (!isMod && this.hasScript("Sandbox_Rules.as") || chatCommandCooldown) // chat command cooldown timer
 	{
 		uint lastChatTime = 0;
 		if (blob.exists("chat_last_sent"))
@@ -326,7 +335,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 	if (wasCommandSuccessful)
 	{
-		blob.set_u16("chat_last_sent", getGameTime() + ChatCommandDelay);
+		blob.set_u16("chat_last_sent", getGameTime() + chatCommandDelay);
 	}
 	else if(errorMessage != "") // send error message to client
 	{
@@ -388,11 +397,5 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @para)
 
 bool isBlacklisted(string name)
 {
-	return  name=="hall" ||        // used to dig hole to bottom of the map, spawns lots of migrants
-			name=="shark" ||       // greif spam
-			name=="bison" ||       // grief spam
-			name=="necromancer" || // annoying / grief
-			name=="greg" ||        // annoying / grief
-			name=="ctf_flag" ||    // sound spam
-			name=="flag_base";     // sound spam / grief
+	return blacklistedItems.find(name) != -1;
 }
