@@ -318,7 +318,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				}
 				else
 				{
-					CBlob@ newBlob = server_CreateBlob(name, team, pos); // currently any blob made will come back with a valid pointer
+					CBlob@ newBlob = server_CreateBlob(name, team, Vec2f(0, -5) + pos); // currently any blob made will come back with a valid pointer
 
 					if (newBlob !is null)
 					{
