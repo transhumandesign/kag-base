@@ -193,8 +193,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 					g.params.ResetBitIndex();
 					string name = g.params.read_string();
 
-					if (    name == "trap_block" ||
-					        name == "spikes")
+					if (name == "trap_block" ||
+					    name == "spikes")
 					{
 						coins = coinsOnBuildStoneBlock;
 					}
@@ -203,9 +203,9 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 						coins = coinsOnBuildStoneDoor;
 					}
 					else if (name == "wooden_platform" ||
-								name == "wooden_door" ||
-								name == "bridge" ||
-								name == "ladder")
+							name == "wooden_door" ||
+							name == "bridge" ||
+							name == "ladder")
 					{
 						coins = coinsOnBuildWood;
 					}
