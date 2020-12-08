@@ -238,6 +238,33 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		Vec2f bpos = blob.getPosition();
 		this.Tag("sawed");
 		this.server_Hit(blob, bpos, bpos - pos, 0.0f, Hitters::saw);
+
+		if (blob.getName() == "bomb")
+		{
+			if (this.get_u8("bombs_exploded") == 0)
+			{
+				this.set_u32("bomb_time", getGameTime());
+			}
+
+			this.add_u8("bombs_exploded", 1);
+		}
+	}
+}
+
+void onTick(CBlob@ this)
+{
+	if (this.get_u32("bomb_time") == 0) return;
+
+	if (getGameTime() - this.get_u32("bomb_time") > 8)
+	{
+		this.set_u32("bomb_time", 0);
+
+		if (this.get_u8("bombs_exploded") >= 3)
+		{
+			this.server_Hit(this, this.getPosition(), this.getPosition(), 100.0f, Hitters::crush);
+		}
+
+		this.set_u8("bombs_exploded", 0);
 	}
 }
 
