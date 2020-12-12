@@ -3,7 +3,7 @@
 //TODO: re-apply new holiday sprites when holiday is active
 //		(check git history around xmas 2018 for holiday versions)
 
-const int present_interval = 30 * 60 * 5; // 5 minutes
+const int present_interval = 30 * 60 * 10; // 10 minutes
 
 // Snow stuff
 bool _snow_ready = false;
