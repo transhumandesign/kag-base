@@ -4,7 +4,7 @@
 
 #include "GameplayEvents.as"
 
-//server-only
+// Called server side
 void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 {
 	BuildBlock @bc = getBlockByIndex(this, index);
@@ -15,17 +15,66 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 		return;
 	}
 
+	string name = "Blob " + this.getName();
+
+	CPlayer@ p = this.getPlayer();
+	if (p !is null) 
+		name = "User " + p.getUsername();
+
 	CBitStream missing;
 
 	CInventory@ inv = this.getInventory();
-	if (bc.tile > 0 && hasRequirements(inv, bc.reqs, missing))
+
+	bool validTile = bc.tile > 0;
+	bool hasReqs = hasRequirements(inv, bc.reqs, missing);
+	bool passesChecks = serverTileCheck(this, cursorPos);
+
+	if (!validTile)
+		warn(name + " tried to place an invalid tile");
+
+	if (!hasReqs)
+		warn(name + " tried to place a tile without having correct resoruces");
+
+	if (!passesChecks)
+		warn(name + " tried to place tile in an invalid way");
+
+	if (validTile && hasReqs && passesChecks)
 	{
+		DestroyScenary(cursorPos, cursorPos);
 		server_TakeRequirements(inv, bc.reqs);
 		getMap().server_SetTile(cursorPos, bc.tile);
-		DestroyScenary(cursorPos, cursorPos);
+
+		u32 delay = this.get_u32("build delay");
+		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
 
 		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), bc.tile));
 	}
+}
+
+bool serverTileCheck(CBlob@ blob, Vec2f cursorPos)
+{
+	// Pos check of about 8 tiles, accounts for people with lag
+	Vec2f pos = (blob.getPosition() - cursorPos) / 2;
+
+	if (pos.Length() > 30)
+		return false;
+    
+	// Are we still on cooldown?
+	if (isBuildDelayed(blob)) 
+		return true;
+
+	// Are we trying to place in a bad pos?
+	CMap@ map = getMap();
+	Tile backtile = map.getTile(cursorPos);
+
+	if (map.isTileBedrock(backtile.type) || map.isTileGroundStuff(backtile.type)) 
+		return false;
+
+	// Make sure we actually have support at our cursor pos
+	if (!map.hasSupportAtPos(cursorPos)) 
+		return false;
+
+	return true;
 }
 
 void onInit(CBlob@ this)
