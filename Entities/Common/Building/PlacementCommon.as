@@ -266,6 +266,33 @@ void SetupBuildDelay(CBlob@ this)
 	this.set_u32("build delay", 7);  // move this to builder init
 }
 
+// Returns true if pos is valid
+bool serverTileCheck(CBlob@ blob, Vec2f cursorPos)
+{
+	// Pos check of about 8 tiles, accounts for people with lag
+	Vec2f pos = (blob.getPosition() - cursorPos) / 2;
+
+	if (pos.Length() > 30)
+		return false;
+    
+	// Are we still on cooldown?
+	if (isBuildDelayed(blob)) 
+		return true;
+
+	// Are we trying to place in a bad pos?
+	CMap@ map = getMap();
+	Tile backtile = map.getTile(cursorPos);
+
+	if (map.isTileBedrock(backtile.type) || map.isTileGroundStuff(backtile.type)) 
+		return false;
+
+	// Make sure we actually have support at our cursor pos
+	if (!map.hasSupportAtPos(cursorPos)) 
+		return false;
+
+	return true;
+}
+
 bool isBuildDelayed(CBlob@ this)
 {
 	return (getGameTime() <= this.get_u32("build time"));

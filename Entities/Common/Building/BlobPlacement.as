@@ -13,6 +13,9 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 {
 	if (blob !is null)
 	{
+		if (!serverTileCheck(this, cursorPos))
+			return;
+
 		CShape@ shape = blob.getShape();
 		shape.server_SetActive(true);
 
