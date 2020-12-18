@@ -13,7 +13,7 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 {
 	if (blob !is null)
 	{
-		if (!serverTileCheck(this, cursorPos))
+		if (!serverBlobCheck(this, blob, cursorPos))
 			return;
 
 		u32 delay = this.get_u32("build delay");
@@ -40,6 +40,46 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 		DestroyScenary(cursorPos, cursorPos);
 	}
 }
+
+// Returns true if pos is valid
+bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
+{
+	// Pos check of about 8 tiles, accounts for people with lag
+	Vec2f pos = (blob.getPosition() - cursorPos) / 2;
+
+	if (pos.Length() > 30)
+		return false;
+    
+	// Are we still on cooldown?
+	if (isBuildDelayed(blob)) 
+		return true;
+
+	// Are we trying to place in a bad pos?
+	CMap@ map = getMap();
+	Tile backtile = map.getTile(cursorPos);
+
+	if (map.isTileBedrock(backtile.type) || map.isTileGroundStuff(backtile.type)) 
+		return false;
+
+	// Make sure we actually have support at our cursor pos
+	if (!(blobToPlace.getShape().getConsts().support > 0 ? map.hasSupportAtPos(cursorPos) : true)) 
+		return false;
+
+	// Is the pos currently collapsing?
+	if (map.isTileCollapsing(cursorPos))
+		return false;
+
+	if (blobToPlace.getName() != "ladder")
+	{
+		pos = cursorPos + Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
+
+		if (map.getSectorAtPosition(pos, "no build") !is null)
+			return false;
+	}
+
+
+	return true;
+} 
 
 Vec2f getBottomOfCursor(Vec2f cursorPos, CBlob@ carryBlob)
 {
