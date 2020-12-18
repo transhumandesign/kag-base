@@ -69,6 +69,7 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 	if (map.isTileCollapsing(cursorPos))
 		return false;
 
+	// Is our blob not a ladder and are we trying to place it into a no build area
 	if (blobToPlace.getName() != "ladder")
 	{
 		pos = cursorPos + Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
