@@ -58,7 +58,7 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 	CMap@ map = getMap();
 	Tile backtile = map.getTile(cursorPos);
 
-	if (map.isTileBedrock(backtile.type) || map.isTileGroundStuff(backtile.type)) 
+	if (map.isTileBedrock(backtile.type) || map.isTileSolid(backtile.type) && map.isTileGroundStuff(backtile.type)) 
 		return false;
 
 	// Make sure we actually have support at our cursor pos
