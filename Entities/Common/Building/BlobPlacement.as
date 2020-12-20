@@ -72,7 +72,7 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 	// Is our blob not a ladder and are we trying to place it into a no build area
 	if (blobToPlace.getName() != "ladder")
 	{
-		pos = cursorPos + Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
+		pos = cursorPos + Vec2f(map.tilesize * 0.2f, map.tilesize * 0.2f);
 
 		if (map.getSectorAtPosition(pos, "no build") !is null)
 			return false;
