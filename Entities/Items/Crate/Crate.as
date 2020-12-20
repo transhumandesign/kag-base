@@ -514,7 +514,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 		if (item.getName() == "mine" && item.getTeamNum() != forBlob.getTeamNum())
 		{
 			CBitStream params;
-			params.write_u16(caller.getNetworkID());
+			params.write_u16(forBlob.getNetworkID());
 			params.write_u16(item.getNetworkID());
 			this.SendCommand(this.getCommandID("boobytrap"), params);
 			break;
