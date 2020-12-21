@@ -54,6 +54,20 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	if (!isStatic) return;
 
 	this.getSprite().PlaySound("/build_door.ogg");
+	
+	int touchingBlobs = this.getTouchingCount();
+	for (int a = 0; a < touchingBlobs; a++)
+	{
+		CBlob@ blob = this.getTouchingByIndex(a);
+		if (blob is null)
+			continue;
+
+		if (this.getTeamNum() == blob.getTeamNum() && 
+			(blob.hasTag("player") || blob.hasTag("vehicle") || blob.hasTag("migrant")))
+		{
+			OpenDoor(this, blob);
+		}
+	}
 }
 
 //TODO: fix flags sync and hitting
@@ -102,11 +116,7 @@ void onTick(CBlob@ this)
 
 		if (canOpenDoor(this, blob) && !isOpen(this))
 		{
-			Vec2f pos = this.getPosition();
-			Vec2f other_pos = blob.getPosition();
-			Vec2f direction = Vec2f(1, 0);
-			direction.RotateBy(this.getAngleDegrees());
-			setOpen(this, true, ((pos - other_pos) * direction) < 0.0f);
+			OpenDoor(this, blob);
 		}
 	}
 	// close it
@@ -222,12 +232,18 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 	if (canOpenDoor(this, blob))
 	{
-		Vec2f pos = this.getPosition();
-		Vec2f other_pos = blob.getPosition();
-		Vec2f direction = Vec2f(1, 0);
-		direction.RotateBy(this.getAngleDegrees());
-		setOpen(this, true, ((pos - other_pos) * direction) < 0.0f);
+		OpenDoor(this, blob);
 		return false;
 	}
+
 	return true;
+}
+
+void OpenDoor(CBlob@ this, CBlob@ blob, bool open = true)
+{
+	Vec2f pos = this.getPosition();
+	Vec2f other_pos = blob.getPosition();
+	Vec2f direction = Vec2f(1, 0);
+	direction.RotateBy(this.getAngleDegrees());
+	setOpen(this, open, ((pos - other_pos) * direction) < 0.0f);
 }
