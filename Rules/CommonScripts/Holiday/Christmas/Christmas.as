@@ -15,7 +15,7 @@ void onInit(CRules@ this)
 {
 	if (isClient())
 	{
-		this.set_s16("snow_render_id", -1);
+		this.set_s16("snow_render_id", 0);
 	}
 
 	this.addCommandID("xmas sound");
@@ -36,16 +36,15 @@ void onTick(CRules@ this)
 	if (isClient())
 	{
 		s16 renderId = this.get_s16("snow_render_id");
-
 		// Have we just disabled fast render
-		if (renderId == -1 && !v_fastrender)
+		if (renderId == 0 && !v_fastrender)
 		{
 			this.set_s16("snow_render_id", Render::addScript(Render::layer_background, "Christmas.as", "DrawSnow", 0));
 		} 
-		else if (renderId != -1 && v_fastrender || this.get_string("holiday") != "Christmas") // Have we just enabled fast render OR is holiday over
+		else if (renderId != 0 && v_fastrender || this.get_string("holiday") != "Christmas") // Have we just enabled fast render OR is holiday over
 		{
 			Render::RemoveScript(renderId);
-			this.set_s16("snow_render_id", -1);
+			this.set_s16("snow_render_id", 0);
 		}
 	}
 	
