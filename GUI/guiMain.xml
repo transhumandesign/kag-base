@@ -244,7 +244,7 @@
 			<attributes>
 				<int name="Id" value="12017" />
 				<string name="Caption" value="Finish Account Linking" />
-				<rect name="Rect" value="20, 470, 290, 500" />
+				<rect name="Rect" value="195, 560, 435, 610" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
 				<enum name="LeftAlign" value="scale" />
