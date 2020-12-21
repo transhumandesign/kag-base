@@ -9,6 +9,8 @@ const string sawteammate_id = "sawteammate";
 void onInit(CBlob@ this)
 {
 	this.Tag("saw");
+	this.set_u32("bomb_time", 0);
+	this.set_u8("bombs_exploded", 0);
 
 	this.addCommandID(toggle_id);
 	this.addCommandID(sawteammate_id);
