@@ -503,8 +503,6 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 		DrawFancyCopiedText(rules.get_string("client_copy_name"), rules.get_Vec2f("client_copy_pos"), durationLeft);
 	}
 
-	mouseWasPressed2 = controls.mousePressed2;
-
 	return topleft.y;
 
 }
@@ -640,9 +638,9 @@ void onRenderScoreboard(CRules@ this)
 
 	float scoreboardHeight = topleft.y + scrollOffset;
 	float screenHeight = getScreenHeight();
+	CControls@ controls = getControls();
 
 	if(scoreboardHeight > screenHeight) {
-		CControls@ controls = getControls();
 		Vec2f mousePos = controls.getMouseScreenPos();
 
 		float fullOffset = (scoreboardHeight + scoreboardMargin) - screenHeight;
@@ -661,6 +659,7 @@ void onRenderScoreboard(CRules@ this)
 
 	drawHoverExplanation(hovered_accolade, hovered_age, hovered_tier, Vec2f(getScreenWidth() * 0.5, topleft.y));
 
+	mouseWasPressed2 = controls.mousePressed2; 
 }
 
 void drawHoverExplanation(int hovered_accolade, int hovered_age, int hovered_tier, Vec2f centre_top)
