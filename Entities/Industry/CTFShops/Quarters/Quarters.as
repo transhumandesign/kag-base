@@ -225,7 +225,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			return;
 
 		CBlob@ caller = getBlobByNetworkID(caller_id);
-		if (caller !is null)
+		if (caller !is null && !caller.isAttached())
 		{
 			AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
 			if (bed !is null && bedAvailable(this))

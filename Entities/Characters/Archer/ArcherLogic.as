@@ -1185,3 +1185,18 @@ void fletchArrow(CBlob@ this)
 	}
 	this.getSprite().PlaySound("Entities/Items/Projectiles/Sounds/ArrowHitGround.ogg");
 }
+
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
+{
+	ArcherInfo@ archer;
+	if (!this.get("archerInfo", @archer))
+	{
+		return;
+	}
+
+	if (canSend(this))
+	{
+		archer.grappling = false;
+		SyncGrapple(this);
+	}
+}
