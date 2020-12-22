@@ -810,7 +810,8 @@ void ClientFire(CBlob@ this, const s8 charge_time, const bool hasarrow, const u8
 			arrowspeed = ArcherParams::shoot_max_vel;
 		}
 
-		ShootArrow(this, this.getPosition() + Vec2f(0.0f, -2.0f), this.getAimPos() + Vec2f(0.0f, -2.0f), arrowspeed, arrow_type, legolas);
+		Vec2f offset(this.isFacingLeft() ? 2 : -2, -2);
+		ShootArrow(this, this.getPosition() + offset, this.getAimPos(), arrowspeed, arrow_type, legolas);
 	}
 }
 
