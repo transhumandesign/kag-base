@@ -1195,7 +1195,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 		return;
 	}
 
-	if (canSend(this))
+	if (this.isAttached() && canSend(this))
 	{
 		archer.grappling = false;
 		SyncGrapple(this);
