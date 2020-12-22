@@ -83,7 +83,7 @@ void onRender(CSprite@ this)
 
 	CBlob@ blob = this.getBlob();
 	Vec2f dim = Vec2f(402, 64);
-	Vec2f ul(HUD_X - dim.x / 2.0f, HUD_Y - dim.y + 12);
+	Vec2f ul(getHUDX() - dim.x / 2.0f, getHUDY() - dim.y + 12);
 	Vec2f lr(ul.x + dim.x, ul.y + dim.y);
 	//GUI::DrawPane(ul, lr);
 	renderBackBar(ul, dim.x, 1.0f);

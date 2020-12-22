@@ -1,12 +1,23 @@
 //for use with DefaultActorHUD.as based HUDs
 
-const f32 HUD_X = getScreenWidth()/3;
-const f32 HUD_Y = getScreenHeight();
+f32 getHUDX()
+{
+	return getScreenWidth() / 3;
+}
+
+f32 getHUDY()
+{
+	return getScreenHeight();
+}
+
+// compatibility - prefer to use getHUDX() and getHUDY() as you are rendering, because resolution may dynamically change (from asu's staging build onwards)
+const f32 HUD_X = getHUDX();
+const f32 HUD_Y = getHUDY();
 
 Vec2f getActorHUDStartPosition(CBlob@ blob, const u8 bar_width_in_slots)
 {
 	f32 width = bar_width_in_slots * 40.0f;
-	return Vec2f(HUD_X + 180 + 50 + 8 - width, HUD_Y - 40);
+	return Vec2f(getHUDX() + 180 + 50 + 8 - width, getHUDY() - 40);
 }
 
 void DrawInventoryOnHUD(CBlob@ this, Vec2f tl)
