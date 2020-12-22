@@ -165,7 +165,7 @@ void DrawSnow(int id)
 			Maths::Cos(gt/197.0f) * 10;
 		float Y = gt % 255;
 		Matrix::MakeIdentity(trnsfm);
-		Matrix::SetTranslation(trnsfm, X, Y, -1000);
+		Matrix::SetTranslation(trnsfm, X, Y, -150);
 		Render::SetModelTransform(trnsfm);
 		Render::SetAlphaBlend(true);
 		Render::SetZBuffer(true, true);
