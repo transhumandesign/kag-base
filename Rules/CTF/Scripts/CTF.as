@@ -685,6 +685,11 @@ void Reset(CRules@ this)
 	this.set("core", @core);
 	this.set("start_gametime", getGameTime() + core.warmUpTime);
 	this.set_u32("game_end_time", getGameTime() + core.gameDuration); //for TimeToEnd.as
+
+	for (int team = 0; team < this.getTeamsCount(); team++)
+	{
+		this.set_s32("current_quarry_output_" + team, -1); // reset quarry output rate, actual values for output are set in Quarry.as
+	}
 }
 
 void onRestart(CRules@ this)
