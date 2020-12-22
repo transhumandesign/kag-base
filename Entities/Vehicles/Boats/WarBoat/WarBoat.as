@@ -210,9 +210,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (caller.getTeamNum() == this.getTeamNum())
 	{
-		CBitStream params;
-		params.write_u16(caller.getNetworkID());
-		CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(13, 4), this, SpawnCmd::buildMenu, getTranslatedString("Change class"), params);
+		caller.CreateGenericButton("$change_class$", Vec2f(13, 4), this, buildSpawnMenu, getTranslatedString("Change class"));
 	}
 }
 
