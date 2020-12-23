@@ -2,6 +2,7 @@
 //
 //TODO: re-apply new holiday sprites when holiday is active
 //		(check git history around xmas 2018 for holiday versions)
+#include "TreeCommon"
 
 const int present_interval = 30 * 60 * 10; // 10 minutes
 
@@ -26,7 +27,7 @@ void onInit(CRules@ this)
 void onRestart(CRules@ this)
 {
 	_snow_ready = false;
-	this.set_s16("present timer", present_interval);
+	this.set_s32("present timer", present_interval);
 	frameTime = 0;
 }
 
@@ -53,8 +54,8 @@ void onTick(CRules@ this)
 		}
 	}
 	
-
-	if (isServer() || this.isWarmup() || !(this.gamemode_name == "CTF" || this.gamemode_name == "TTH" || this.gamemode_name == "SmallCTF"))
+	
+	if (!isServer() || this.isWarmup() || !(this.gamemode_name == "CTF" || this.gamemode_name == "TTH" || this.gamemode_name == "SmallCTF"))
 		return;
 
 	if (!this.exists("present timer"))
@@ -78,7 +79,13 @@ void onTick(CRules@ this)
 
 			for (uint i = 0; i < trees.length; i++)
 			{
-				if (trees[i].get_u8("height") >= 5)
+				TreeVars@ vars;
+				trees[i].get("TreeVars", @vars);
+
+				if (vars is null)
+					continue;
+
+				if (vars.height >= 5)
 				{
 					// sort trees based on position..
 					if (trees[i].getPosition().x < mapCenter)
