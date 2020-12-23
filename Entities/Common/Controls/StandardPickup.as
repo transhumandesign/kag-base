@@ -627,6 +627,8 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 			}
 		}
 
+	} else {
+		canRayCast = true;
 	}
 
 	return (((pos2 - pos).getLength() <= maxDist)
