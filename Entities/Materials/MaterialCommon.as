@@ -52,6 +52,7 @@ namespace Material
 		if (sum <= this.maxQuantity)
 		{
 			this.server_SetQuantity(sum);
+			blob.Tag("merge_killed");
 			blob.server_Die();
 		}
 		else

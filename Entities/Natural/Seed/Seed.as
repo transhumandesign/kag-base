@@ -1,6 +1,7 @@
 // Flowers logic
 
 #include "canGrow.as";
+#include "MakeSeed.as";
 
 //sprites to load by index
 const string[] seed_sprites =
@@ -158,4 +159,38 @@ void onTick(CBlob@ this)
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return blob.getShape().isStatic() && blob.isCollidable();
+}
+
+void onDie (CBlob@ blob) {
+    if (isServer()) {
+        if (!blob.hasTag("done_growing")) {
+            
+            // NOTE(hobey): blob fell in the void; resummon the blob at the top of the map
+            
+            CMap@ map = getMap();
+            
+            Vec2f pos = blob.getPosition();
+            
+            float min_x = 16;
+            float max_x = (map.tilemapwidth * map.tilesize - 16);
+            if (pos.x < min_x) pos.x = min_x;
+            if (pos.x > max_x) pos.x = max_x;
+            
+            pos.y = 0;
+            bool do_summon = true;
+            while (true) {
+                if (!map.isTileSolid(pos)) break;
+                pos.y += 8;
+                if (pos.y > (map.tilemapheight * map.tilesize)) {
+                    do_summon = false; // NOTE(hobey): if the blob fell into the void, and there's a colomn of blocks from top to bottom of the map, delete the blob for good
+                    break;
+                }
+            }
+            
+            if (do_summon) {
+                // CBlob@ new_blob = server_MakeSeed(pos, blob.get_string("seed_grow_blobname"), blob.get_u16("growtime"), blob.get_u8("spriteIndex"), blob.get_u8("created_blob_radius"));
+                CBlob@ new_blob = server_MakeSeed(pos, blob.get_string("seed_grow_blobname"));
+            }
+        }
+    }
 }
