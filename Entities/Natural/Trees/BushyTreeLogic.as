@@ -36,6 +36,10 @@ void onInit(CBlob@ this)
 	this.SetFacingLeft(vars.r.NextRanged(300) > 150);
 	InitTree(this, vars);
 	this.set("TreeVars", vars);
+	
+	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
+	this.SetMinimapVars("GUI/Minimap/TreesIcons.png", 0, Vec2f(6, 24));
+	this.SetMinimapRenderAlways(true);
 }
 
 void GrowSprite(CSprite@ this, TreeVars@ vars)
