@@ -29,7 +29,7 @@ void onTick(CBlob@ this)
 	f32 tilesize = map.tilesize;
 
 	//absorb water
-	if (absorbed < ABSORB_COUNT)
+	if (absorbed < ABSORB_COUNT && !this.isInInventory())
 	{
 		Vec2f[] vectors = {	pos,
 		                    pos + Vec2f(0, -tilesize),
