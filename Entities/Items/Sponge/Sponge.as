@@ -19,6 +19,7 @@ void onInit(CBlob@ this)
 	this.set_u8(ABSORBED_PROP, 0);
 
 	this.Tag("pushedByDoor");
+	this.getCurrentScript().runFlags |= Script::tick_not_ininventory;
 }
 
 void onTick(CBlob@ this)
