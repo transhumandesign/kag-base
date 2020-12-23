@@ -19,6 +19,7 @@ void onInit(CBlob@ this)
 	this.set_u8(ABSORBED_PROP, 0);
 
 	this.Tag("pushedByDoor");
+	this.getCurrentScript().runFlags |= Script::tick_not_ininventory;
 }
 
 void onTick(CBlob@ this)
@@ -29,7 +30,7 @@ void onTick(CBlob@ this)
 	f32 tilesize = map.tilesize;
 
 	//absorb water
-	if (absorbed < ABSORB_COUNT && !this.isInInventory())
+	if (absorbed < ABSORB_COUNT)
 	{
 		Vec2f[] vectors = {	pos,
 		                    pos + Vec2f(0, -tilesize),
