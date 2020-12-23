@@ -38,7 +38,7 @@ void onInit(CBlob@ this)
 	this.set("TreeVars", vars);
 	
 	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
-	this.SetMinimapVars("GUI/Minimap/TreesIcons.png", 0, Vec2f(6, 24));
+	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 8, Vec2f(8, 32));
 	this.SetMinimapRenderAlways(true);
 }
 

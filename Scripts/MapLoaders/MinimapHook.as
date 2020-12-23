@@ -6,12 +6,12 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
 	int Y = offset / map.tilemapwidth;
 
 	Vec2f pos = Vec2f(X, Y);
-	
+
 	float ts = map.tilesize;
 	Tile ctile = map.getTile(pos * ts);
-	
+
 	bool show_gold = getRules().get_bool("show_gold");
-	
+
 	///Colours
 	const SColor color_minimap_open         (0xffA5BDC8);
 	const SColor color_minimap_ground       (0xff844715);
@@ -22,52 +22,59 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
 	const SColor color_minimap_bedrock      (0xff2D342D);
 	const SColor color_minimap_wood         (0xffC48715);
 	const SColor color_minimap_castle       (0xff637160);
-	
+
 	const SColor color_minimap_castle_back  (0xff313412);
 	const SColor color_minimap_wood_back    (0xff552A11);
-	
+
 	const SColor color_minimap_water        (0xff2cafde);
 	const SColor color_minimap_fire         (0xffd5543f);
 	
-	// bool isTileInFire(int xTilespace, int yTilespace)
-	// bool isTileSolid(uint16 tile)
-	// bool isTileSolid(const Tile&in tile)
-	// bool isTileSolid(Vec2f posWorldspace)
-	// bool isTileCollapsing(uint offset)
-	// bool isTileCollapsing(Vec2f posWorldspace)
-	// bool isTileLadder(const Tile&in tile)
-	// bool isTileBackground(const Tile&in tile)
-	// bool isTileBackgroundNonEmpty(const Tile&in tile)
-	// bool isTileGroundBack(uint16 tile)
-	// bool isTileGold(uint16 tile)
-	// bool isTileGrass(uint16 tile)
-	// bool isTileWood(uint16 tile)
-	// bool isTileCastle(uint16 tile)
-	// bool isTileSand(uint16 tile)
-	// bool isTileGroundStuff(uint16 tile)
-	// bool isTilePlatform(const Tile&in tile)
-	
-	if (show_gold && map.isTileGold(tile))  { col = color_minimap_gold;
-	} else if (map.isTileGround(tile))      { col = color_minimap_ground;
-	} else if (map.isTileThickStone(tile))  { col = color_minimap_thickstone;
-	} else if (map.isTileStone(tile))       { col = color_minimap_stone;
-	} else if (map.isTileBedrock(tile))     { col = color_minimap_bedrock;
-	} else if (map.isTileWood(tile))        { col = color_minimap_wood;
-	} else if (map.isTileCastle(tile))      { col = color_minimap_castle;
-	
-	// } else if(map.isTileBackground(ctile) && !map.isTileGrass(tile))
-	} else if(map.isTileBackgroundNonEmpty(ctile) && !map.isTileGrass(tile)) {
+	if (show_gold && map.isTileGold(tile))  { 
+		col = color_minimap_gold;
+	} 
+	else if (map.isTileGround(tile))
+	{
+		col = color_minimap_ground;
+	}
+	else if (map.isTileThickStone(tile))
+	{
+		col = color_minimap_thickstone;
+	}
+	else if (map.isTileStone(tile))
+	{
+		col = color_minimap_stone;
+	}
+	else if (map.isTileBedrock(tile))
+	{
+		col = color_minimap_bedrock;
+	}
+	else if (map.isTileWood(tile)) 
+	{ 
+		col = color_minimap_wood;
+	} 
+	else if (map.isTileCastle(tile))      
+	{ 
+		col = color_minimap_castle;
+	} 
+	else if (map.isTileBackgroundNonEmpty(ctile) && !map.isTileGrass(tile)) {
 		
 		// TODO(hobey): maybe check if there's a door/platform on this backwall and make a custom color for them?
-		if        (tile == CMap::tile_castle_back) {
-			col =       color_minimap_castle_back;
-		} else if (tile == CMap::tile_wood_back)   {
-			col =       color_minimap_wood_back;
-		} else {
+		if (tile == CMap::tile_castle_back) 
+		{ 
+			col = color_minimap_castle_back;
+		} 
+		else if (tile == CMap::tile_wood_back)   
+		{ 
+			col = color_minimap_wood_back;
+		} 
+		else                                     
+		{ 
 			col = color_minimap_back;
 		}
 		
-	} else {
+	} 
+	else 
+	{
 		col = color_minimap_open;
 	}
 	
