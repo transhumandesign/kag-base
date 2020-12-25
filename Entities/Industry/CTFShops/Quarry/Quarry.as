@@ -11,7 +11,7 @@ const string rare_ore = "mat_gold";
 const int input = 100;					// input cost in fuel
 const int initial_output = 80;			// output amount in ore
 const int min_output = 30;				// minimal possible output in ore
-const int output_decrease = 3;			// by how much output decreases every time ore is dropped
+const int output_decrease = 2;			// by how much output decreases every time ore is dropped
 const bool enable_rare = false;			// enable/disable
 const int rare_chance = 10;				// one-in
 const int rare_output = 20;				// output for rare ore
@@ -204,8 +204,13 @@ void spawnOre(CBlob@ this)
 	_ore.server_SetQuantity(!rare ? amountToSpawn : rare_output);
 
 	this.set_s16(fuel_prop, blobCount - actual_input); //burn wood
+	const string current_output = "current_quarry_output_" + this.getTeamNum();
+	
 	// reduce output if it's higher than minimal output
-	getRules().set_s32("current_quarry_output_" + this.getTeamNum(), Maths::Max(getRules().get_s32("current_quarry_output_" + this.getTeamNum()) - output_decrease, min_output));
+	if (sv_gamemode == "CTF" || sv_gamemode == "SmallCTF")
+	{
+		getRules().set_s32(current_output, Maths::Max(getRules().get_s32(current_output) - output_decrease, min_output));
+	}
 }
 
 void updateWoodLayer(CSprite@ this)
