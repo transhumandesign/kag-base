@@ -66,6 +66,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 			(blob.hasTag("player") || blob.hasTag("vehicle") || blob.hasTag("migrant")))
 		{
 			OpenDoor(this, blob);
+			break;
 		}
 	}
 }
@@ -117,6 +118,7 @@ void onTick(CBlob@ this)
 		if (canOpenDoor(this, blob) && !isOpen(this))
 		{
 			OpenDoor(this, blob);
+			break;
 		}
 	}
 	// close it
