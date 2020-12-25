@@ -207,7 +207,7 @@ void spawnOre(CBlob@ this)
 	const string current_output = "current_quarry_output_" + this.getTeamNum();
 	
 	// reduce output if it's higher than minimal output
-	if (sv_gamemode == "CTF" || sv_gamemode == "SmallCTF")
+	if (getRules().hasScript("ResetQuarry.as"))
 	{
 		getRules().set_s32(current_output, Maths::Max(getRules().get_s32(current_output) - output_decrease, min_output));
 	}
