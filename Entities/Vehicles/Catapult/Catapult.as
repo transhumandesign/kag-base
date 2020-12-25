@@ -13,8 +13,6 @@ const u8 charge_contrib = 35;
 const u8 cooldown_time = 45;
 const u8 startStone = 100;
 
-bool hadAttached = false;
-
 void onInit(CBlob@ this)
 {
 	Vehicle_Setup(this,
@@ -55,6 +53,8 @@ void onInit(CBlob@ this)
 
 	this.set_string("autograb blob", "mat_stone");
 
+	this.set_bool("had_attached", false);
+
 	// auto-load on creation
 	if (getNet().isServer())
 	{
@@ -75,6 +75,7 @@ void onTick(CBlob@ this)
 {
 	const int time = this.getTickSinceCreated();
 	const bool hasAttached = this.hasAttached();
+	const bool hadAttached = this.get_bool("had_attached");
 
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v))
@@ -136,7 +137,7 @@ void onTick(CBlob@ this)
 	else if (time % 30 == 0)
 		Vehicle_StandardControls(this, v); //just make sure it's updated
 
-	hadAttached = hasAttached;
+	this.set_bool("had_attached", hasAttached);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
