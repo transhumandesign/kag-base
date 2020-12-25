@@ -1,10 +1,12 @@
 // WakeOnHit.as
 
+#include "KnockedCommon.as"
+
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
 	if (this.getHealth() < oldHealth)
 	{
-		CBlob@ bed = this.getAttachments().getAttachedBlob("BED");
+		CBlob@ bed = this.getAttachments().getAttachmentPointByName("BED").getOccupied();
 		if (bed !is null)
 		{
 			this.getSprite().PlaySound("WilhelmShort.ogg");
@@ -12,9 +14,9 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 			{
 				this.server_DetachFrom(bed);
 			}
-			if (this.exists("knocked"))
+			if (isKnockable(this))
 			{
-				this.set_u8("knocked", 30);
+				setKnocked(this, 30, true);
 			}
 		}
 	}

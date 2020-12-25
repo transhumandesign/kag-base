@@ -2,7 +2,8 @@
 // apply "travel tunnel" tag to use
 
 #include "TunnelCommon.as";
-#include "Knocked.as";
+#include "KnockedCommon.as";
+#include "GenericButtonCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -23,12 +24,14 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (this.isOverlapping(caller) &&
 	        this.hasTag("travel tunnel") &&
 	        (!this.hasTag("teamlocked tunnel") || this.getTeamNum() == caller.getTeamNum()) &&
 	        !this.hasTag("under raid") &&
 	        //CANNOT travel when stunned
-			!(isKnockable(caller) && caller.get_u8("knocked") > 0)
+			!(isKnockable(caller) && isKnocked(caller))
 		)
 	{
 		MakeTravelButton(this, caller, this.get_Vec2f("travel button pos"), "Travel", "Travel (requires Transport Tunnels)");
@@ -133,28 +136,17 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 	{
 		//(this should prevent travel when stunned, but actually
 		// causes issues on net)
-		//if(isKnockable(caller) && caller.get_u8("knocked") > 0)
+		//if (isKnockable(caller) && caller.get_u8("knocked") > 0)
 		//	return;
 
-		if (caller.isAttached())   // attached - like sitting in cata? move whole cata
-		{
-			const int count = caller.getAttachmentPointCount();
-			for (int i = 0; i < count; i++)
-			{
-				AttachmentPoint @ap = caller.getAttachmentPoint(i);
-				CBlob@ occBlob = ap.getOccupied();
-				if (occBlob !is null)
-				{
-					occBlob.setPosition(tunnel.getPosition());
-					occBlob.setVelocity(Vec2f_zero);
-					occBlob.getShape().PutOnGround();
-				}
-			}
-		}
+		//dont travel if caller is attached to something (e.g. siege)
+		if (caller.isAttached())
+			return;
+
 		// move caller
 		caller.setPosition(tunnel.getPosition());
 		caller.setVelocity(Vec2f_zero);
-		caller.getShape().PutOnGround();
+		//caller.getShape().PutOnGround();
 
 		if (caller.isMyPlayer())
 		{
@@ -168,14 +160,14 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 
 		//stunned on going through tunnel
 		//(prevents tunnel spam and ensures traps get you)
-		if(isKnockable(caller))
+		if (isKnockable(caller))
 		{
 			//if you travel, you lose invincible
 			caller.Untag("invincible");
 			caller.Sync("invincible", true);
 
 			//actually do the knocking
-			SetKnocked(caller, 30, true);
+			setKnocked(caller, 30, true);
 		}
 	}
 }
@@ -220,7 +212,7 @@ void onTunnelCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 		else if (caller !is null && caller.isMyPlayer())
-			Sound::Play("NoAmmo.ogg");
+			caller.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 	}
 	else if (cmd == this.getCommandID("server travel to"))
 	{

@@ -1,4 +1,5 @@
 #include "Hitters.as"
+#include "GenericButtonCommon.as"
 
 const u32 VANISH_BODY_SECS = 45;
 const f32 CARRIED_BLOB_VEL_SCALE = 1.0;
@@ -96,12 +97,12 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		this.getShape().SetGravityScale(1.0f);
 		//set velocity to blob in hand
         CBlob@ carried = this.getCarriedBlob();
-        if(carried !is null)
+        if (carried !is null)
         {
             Vec2f current_vel = this.getVelocity() * CARRIED_BLOB_VEL_SCALE;
-            if(carried.hasTag("medium weight"))
+            if (carried.hasTag("medium weight"))
                 current_vel = current_vel * MEDIUM_CARRIED_BLOB_VEL_SCALE;
-            else if(carried.hasTag("heavy weight"))
+            else if (carried.hasTag("heavy weight"))
                 current_vel = current_vel * HEAVY_CARRIED_BLOB_VEL_SCALE;
             //the item is detatched from the player before setting the velocity
             //otherwise it wont go anywhere
@@ -119,6 +120,13 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 
 	return damage;
+}
+
+
+bool canBePutInInventory( CBlob@ this, CBlob@ inventoryBlob )
+{
+	// can't be put in player inventory.
+	return inventoryBlob.getPlayer() is null;
 }
 
 void onTick(CBlob@ this)
@@ -140,7 +148,7 @@ void onTick(CBlob@ this)
 // reset vanish counter on pickup
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if(this.hasTag("dead"))
+	if (this.hasTag("dead"))
 	{
 		this.set_u32("death time", getGameTime());
 	}
@@ -148,7 +156,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
-	return (this.hasTag("dead") && this.getInventory().getItemsCount() > 0);
+	return (this.hasTag("dead") && this.getInventory().getItemsCount() > 0 && canSeeButtons(this, forBlob));
 }
 
 void StuffFallsOut(CBlob@ this)

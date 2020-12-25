@@ -8,6 +8,7 @@
 #include "Requirements.as"
 #include "AddTilesBySector.as"
 #include "Costs.as"
+#include "GenericButtonCommon.as"
 
 const Vec2f upgradeButtonPos(-36.0f, 10.0f);
 const Vec2f classButtonPos(-76, 10);
@@ -421,6 +422,8 @@ bool canUseWorkbench(CBlob@ this, CBlob @caller)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	CBitStream params;
 	params.write_u16(caller.getNetworkID());
 

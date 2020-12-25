@@ -5,7 +5,7 @@
 #include "Requirements.as"
 #include "RunnerAnimCommon.as"
 #include "RunnerCommon.as"
-#include "Knocked.as"
+#include "KnockedCommon.as"
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
 #include "Accolades.as"
@@ -18,6 +18,8 @@ void onInit(CSprite@ this)
 	LoadSprites(this);
 
 	this.getCurrentScript().runFlags |= Script::tick_not_infire;
+
+	this.getBlob().set_string("prev_attack_anim", "strike");
 }
 
 void onPlayerInfoChanged(CSprite@ this)
@@ -30,7 +32,7 @@ void LoadSprites(CSprite@ this)
 	int armour = PLAYER_ARMOUR_STANDARD;
 
 	CPlayer@ p = this.getBlob().getPlayer();
-	if(p !is null)
+	if (p !is null)
 	{
 		armour = p.getArmourSet();
 		if (armour == PLAYER_ARMOUR_STANDARD)
@@ -43,7 +45,7 @@ void LoadSprites(CSprite@ this)
 		}
 	}
 
-	switch(armour)
+	switch (armour)
 	{
 	case PLAYER_ARMOUR_STANDARD:
 		ensureCorrectRunnerTexture(this, "builder", "Builder");
@@ -84,9 +86,16 @@ void onTick(CSprite@ this)
 	}
 	// animations
 
-	const u8 knocked = getKnocked(blob);
+	bool knocked = isKnocked(blob);
 	const bool action2 = blob.isKeyPressed(key_action2);
 	const bool action1 = blob.isKeyPressed(key_action1);
+
+	// set attack animation back to default
+	if (blob.isKeyJustReleased(key_action2))
+	{
+		blob.set_string("prev_attack_anim", "strike");
+
+	}
 
 	if (!blob.hasTag(burning_tag)) //give way to burning anim
 	{
@@ -103,7 +112,7 @@ void onTick(CSprite@ this)
 			return;
 		}
 
-		if (knocked > 0)
+		if (knocked)
 		{
 			if (inair)
 			{
@@ -118,9 +127,64 @@ void onTick(CSprite@ this)
 		{
 			this.SetAnimation("crouch");
 		}
-		else if (action2 || (this.isAnimation("strike") && !this.isAnimationEnded()))
+		else if (action2 || ((this.isAnimation("strike") || this.isAnimation("chop")) && !this.isAnimationEnded()))
 		{
-			this.SetAnimation("strike");
+			string attack_anim = blob.get_string("prev_attack_anim");
+			HitData@ hitdata;
+			if (blob.get("hitdata", @hitdata))
+			{
+				bool hitting_wood = false;
+				bool hitting_stone = false;
+				if (hitdata.tilepos != Vec2f_zero)
+				{
+					CMap@ map = getMap();
+					Tile t = map.getTile(hitdata.tilepos);
+					// 207 is damaged wood tile back
+					if (map.isTileWood(t.type) || map.isTileGrass(t.type) || t.type == CMap::tile_wood_back || t.type == 207)
+					{
+						hitting_wood = true;
+					}
+					else if(t.type != CMap::tile_empty)
+					{
+						hitting_stone = true;
+					}
+				}
+				else if(hitdata.blobID != 0)
+				{
+					CBlob@ attacked = getBlobByNetworkID(hitdata.blobID);
+					if (attacked !is null)
+					{
+						string attacked_name = attacked.getName();
+						if ((attacked.hasTag("wooden") || attacked_name.toLower().find("tree") != -1 || attacked.hasTag("scenary"))
+							&& attacked_name != "mine" && attacked_name != "drill")
+						{
+							hitting_wood = true;
+						}
+						else
+						{
+							hitting_stone = true;
+						}
+
+					}
+				}
+
+				if (hitting_wood)
+				{
+					attack_anim = "chop";
+				}
+				else if(hitting_stone)
+				{
+					attack_anim = "strike";
+				}
+
+				this.SetAnimation(attack_anim);
+				blob.set_string("prev_attack_anim", attack_anim);
+			}
+			else
+			{
+				this.SetAnimation(attack_anim);
+			}
+
 		}
 		else if (action1  || (this.isAnimation("build") && !this.isAnimationEnded()))
 		{
@@ -191,7 +255,7 @@ void onTick(CSprite@ this)
 
 	//set the attack head
 
-	if (knocked > 0)
+	if (knocked)
 	{
 		blob.Tag("dead head");
 	}
@@ -233,7 +297,7 @@ void onRender(CSprite@ this)
 
 	// draw tile cursor
 
-	if (blob.isKeyPressed(key_action1) || this.isAnimation("strike"))
+	if (blob.isKeyPressed(key_action1) || this.isAnimation("strike") || this.isAnimation("chop"))
 	{
 
 		HitData@ hitdata;
@@ -245,6 +309,14 @@ void onRender(CSprite@ this)
 			if (!hitBlob.hasTag("flesh"))
 			{
 				hitBlob.RenderForHUD(RenderStyle::outline);
+
+				// hacky fix for shitty z-buffer issue
+				// the sprite layers go out of order while hitting with this fix,
+				// but its better than the entire blob glowing brighter than the sun
+				if (v_postprocess)
+				{
+					hitBlob.RenderForHUD(RenderStyle::normal);
+				}
 			}
 		}
 		else// map hit

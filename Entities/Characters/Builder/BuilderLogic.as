@@ -1,7 +1,6 @@
 // Builder logic
 
 #include "Hitters.as";
-#include "Knocked.as";
 #include "BuilderCommon.as";
 #include "ThrowCommon.as";
 #include "RunnerCommon.as";
@@ -28,6 +27,7 @@ void onInit(CBlob@ this)
 	this.set("hitdata", hitdata);
 
 	this.addCommandID("pickaxe");
+	this.addCommandID("hitdata sync");
 
 	CShape@ shape = this.getShape();
 	shape.SetRotationsAllowed(false);
@@ -43,7 +43,7 @@ void onInit(CBlob@ this)
 
 void onSetPlayer(CBlob@ this, CPlayer@ player)
 {
-	if(player !is null)
+	if (player !is null)
 	{
 		player.SetScoreboardVars("ScoreboardIcons.png", 1, Vec2f(16, 16));
 	}
@@ -51,25 +51,25 @@ void onSetPlayer(CBlob@ this, CPlayer@ player)
 
 void onTick(CBlob@ this)
 {
-	if(this.isInInventory())
+	if (this.isInInventory())
 		return;
 
 	const bool ismyplayer = this.isMyPlayer();
 
-	if(ismyplayer && getHUD().hasMenus())
+	if (ismyplayer && getHUD().hasMenus())
 	{
 		return;
 	}
 
 	// activate/throw
-	if(ismyplayer)
+	if (ismyplayer)
 	{
 		Pickaxe(this);
 
-		if(this.isKeyJustPressed(key_action3))
+		if (this.isKeyJustPressed(key_action3))
 		{
 			CBlob@ carried = this.getCarriedBlob();
-			if(carried is null || !carried.hasTag("temp blob"))
+			if (carried is null || !carried.hasTag("temp blob"))
 			{
 				client_SendThrowOrActivateCommand(this);
 			}
@@ -77,10 +77,10 @@ void onTick(CBlob@ this)
 	}
 
 	// slow down walking
-	if(this.isKeyPressed(key_action2))
+	if (this.isKeyPressed(key_action2))
 	{
 		RunnerMoveVars@ moveVars;
-		if(this.get("moveVars", @moveVars))
+		if (this.get("moveVars", @moveVars))
 		{
 			moveVars.walkFactor = 0.5f;
 			moveVars.jumpFactor = 0.5f;
@@ -88,7 +88,7 @@ void onTick(CBlob@ this)
 		this.Tag("prevent crouch");
 	}
 
-	if(ismyplayer && this.isKeyPressed(key_action1) && !this.isKeyPressed(key_inventory)) //Don't let the builder place blocks if he/she is selecting which one to place
+	if (ismyplayer && this.isKeyPressed(key_action1) && !this.isKeyPressed(key_inventory)) //Don't let the builder place blocks if he/she is selecting which one to place
 	{
 		BlockCursor @bc;
 		this.get("blockCursor", @bc);
@@ -100,13 +100,13 @@ void onTick(CBlob@ this)
 	}
 
 	// get rid of the built item
-	if(this.isKeyJustPressed(key_inventory) || this.isKeyJustPressed(key_pickup))
+	if (this.isKeyJustPressed(key_inventory) || this.isKeyJustPressed(key_pickup))
 	{
 		this.set_u8("buildblob", 255);
 		this.set_TileType("buildtile", 0);
 
 		CBlob@ blob = this.getCarriedBlob();
-		if(blob !is null && blob.hasTag("temp blob"))
+		if (blob !is null && blob.hasTag("temp blob"))
 		{
 			blob.Untag("temp blob");
 			blob.server_Die();
@@ -131,21 +131,21 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 	Vec2f tilepos, attackVel;
 	f32 attack_power;
 
-	if(!params.saferead_netid(blobID))
+	if (!params.saferead_netid(blobID))
 		return false;
-	if(!params.saferead_Vec2f(tilepos))
+	if (!params.saferead_Vec2f(tilepos))
 		return false;
-	if(!params.saferead_Vec2f(attackVel))
+	if (!params.saferead_Vec2f(attackVel))
 		return false;
-	if(!params.saferead_f32(attack_power))
+	if (!params.saferead_f32(attack_power))
 		return false;
 
-	if(blobID == 0)
+	if (blobID == 0)
 	{
 		CMap@ map = getMap();
-		if(map !is null)
+		if (map !is null)
 		{
-			if(map.getSectorAtPosition(tilepos, "no build") is null)
+			if (map.getSectorAtPosition(tilepos, "no build") is null)
 			{
 				uint16 type = map.getTile(tilepos).type;
 
@@ -170,11 +170,11 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 	else
 	{
 		CBlob@ blob = getBlobByNetworkID(blobID);
-		if(blob !is null)
+		if (blob !is null)
 		{
 			bool isdead = blob.hasTag("dead");
 
-			if(isdead) //double damage to corpses
+			if (isdead) //double damage to corpses
 			{
 				attack_power *= 2.0f;
 			}
@@ -197,11 +197,20 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("pickaxe"))
 	{
-		if(!RecdHitCommand(this, params))
+		if (!RecdHitCommand(this, params))
 		{
 			warn("error when recieving pickaxe command");
 		}
 	}
+	else if (cmd == this.getCommandID("hitdata sync") && !this.isMyPlayer())
+	{
+		HitData@ hitdata;
+		this.get("hitdata", @hitdata);
+
+		hitdata.tilepos = params.read_Vec2f();
+		hitdata.blobID = params.read_netid();
+	}
+	
 }
 
 //helper class to reduce function definition cancer
@@ -222,9 +231,9 @@ void Pickaxe(CBlob@ this)
 {
 	HitData@ hitdata;
 	CSprite @sprite = this.getSprite();
-	bool strikeAnim = sprite.isAnimation("strike");
+	bool strikeAnim = sprite.isAnimation("strike") || sprite.isAnimation("chop");
 
-	if(!strikeAnim)
+	if (!strikeAnim)
 	{
 		this.get("hitdata", @hitdata);
 		hitdata.blobID = 0;
@@ -240,7 +249,7 @@ void Pickaxe(CBlob@ this)
 
 	this.get("hitdata", @hitdata);
 
-	if(hitdata is null) return;
+	if (hitdata is null) return;
 
 	Vec2f blobPos = this.getPosition();
 	Vec2f aimPos = this.getAimPos();
@@ -258,7 +267,12 @@ void Pickaxe(CBlob@ this)
 		{
 			if (hitdata.blobID == 0)
 			{
-				SendHitCommand(this, null, hitdata.tilepos, attackVel, hit_damage);
+				TileType t = getMap().getTile(hitdata.tilepos).type;
+				if (t != CMap::tile_empty && t != CMap::tile_ground_back)
+				{
+					SendHitCommand(this, null, hitdata.tilepos, attackVel, hit_damage);
+				}
+
 			}
 			else
 			{
@@ -388,6 +402,12 @@ void Pickaxe(CBlob@ this)
 	{
 		hitdata.tilepos = tilepos;
 	}
+
+	CBitStream cbs;
+	cbs.write_Vec2f(hitdata.tilepos);
+	cbs.write_netid(hitdata.blobID);
+
+	this.SendCommand(this.getCommandID("hitdata sync"), cbs);
 }
 
 void SortHits(CBlob@ this, HitInfo@[]@ hitInfos, f32 damage, SortHitsParams@ p)
@@ -472,54 +492,51 @@ bool neverHitAmbiguous(CBlob@ b)
 
 bool canHit(CBlob@ this, CBlob@ b, Vec2f tpos, bool extra = true)
 {
-	if(extra && !ExtraQualifiers(this, b, tpos))
+	if (extra && !ExtraQualifiers(this, b, tpos))
 	{
 		return false;
 	}
 
-	if(b.hasTag("invincible"))
+	if (b.hasTag("invincible"))
 	{
 		return false;
 	}
 
-	if(b.getTeamNum() == this.getTeamNum())
+	if (b.getTeamNum() == this.getTeamNum())
 	{
 		//no hitting friendly carried stuff
-		if(b.isAttached())
+		if (b.isAttached())
 			return false;
 
-		//yes hitting corpses
-		if(b.hasTag("dead"))
+		if (BuilderAlwaysHit(b) || b.hasTag("dead") || b.hasTag("vehicle"))
 			return true;
 
-		//no hitting friendly mines (grif)
-		if(b.getName() == "mine")
-			return false;
+		if (b.getName() == "saw" || b.getName() == "trampoline")
+			return true;
 
-		//no hitting friendly living stuff
-		if(b.hasTag("flesh") || b.hasTag("player"))
-			return false;
+		return false;
+
 	}
 	//no hitting stuff in hands
-	else if(b.isAttached() && !b.hasTag("player"))
+	else if (b.isAttached() && !b.hasTag("player"))
 	{
 		return false;
 	}
 
 	//static/background stuff
 	CShape@ b_shape = b.getShape();
-	if(!b.isCollidable() || (b_shape !is null && b_shape.isStatic()))
+	if (!b.isCollidable() || (b_shape !is null && b_shape.isStatic()))
 	{
 		//maybe we shouldn't hit this..
 		//check if we should always hit
-		if(BuilderAlwaysHit(b))
+		if (BuilderAlwaysHit(b))
 		{
-			if(!b.isCollidable() && !isUrgent(this, b))
+			if (!b.isCollidable() && !isUrgent(this, b))
 			{
 				//TODO: use a better overlap check here
 				//this causes issues with quarters and
 				//any other case where you "stop overlapping"
-				if(!this.isOverlapping(b))
+				if (!this.isOverlapping(b))
 					return false;
 			}
 			return true;
@@ -535,7 +552,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
 	// ignore collision for built blob
 	BuildBlock[][]@ blocks;
-	if(!this.get("blocks", @blocks))
+	if (!this.get("blocks", @blocks))
 	{
 		return;
 	}
@@ -544,7 +561,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	for(u8 i = 0; i < blocks[PAGE].length; i++)
 	{
 		BuildBlock@ block = blocks[PAGE][i];
-		if(block !is null && block.name == detached.getName())
+		if (block !is null && block.name == detached.getName())
 		{
 			this.IgnoreCollisionWhileOverlapped(null);
 			detached.IgnoreCollisionWhileOverlapped(null);
@@ -554,19 +571,19 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	// BUILD BLOB
 	// take requirements from blob that is built and play sound
 	// put out another one of the same
-	if(detached.hasTag("temp blob"))
+	if (detached.hasTag("temp blob"))
 	{
-		if(!detached.hasTag("temp blob placed"))
+		if (!detached.hasTag("temp blob placed"))
 		{
 			detached.server_Die();
 			return;
 		}
 
 		uint i = this.get_u8("buildblob");
-		if(i >= 0 && i < blocks[PAGE].length)
+		if (i >= 0 && i < blocks[PAGE].length)
 		{
 			BuildBlock@ b = blocks[PAGE][i];
-			if(b.name == detached.getName())
+			if (b.name == detached.getName())
 			{
 				this.set_u8("buildblob", 255);
 				this.set_TileType("buildtile", 0);
@@ -574,7 +591,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 				CInventory@ inv = this.getInventory();
 
 				CBitStream missing;
-				if(hasRequirements(inv, b.reqs, missing, not b.buildOnGround))
+				if (hasRequirements(inv, b.reqs, missing, not b.buildOnGround))
 				{
 					server_TakeRequirements(inv, b.reqs);
 				}
@@ -583,12 +600,12 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 			}
 		}
 	}
-	else if(detached.getName() == "seed")
+	else if (detached.getName() == "seed")
 	{
 		if (not detached.hasTag('temp blob placed')) return;
 
 		CBlob@ anotherBlob = this.getInventory().getItem(detached.getName());
-		if(anotherBlob !is null)
+		if (anotherBlob !is null)
 		{
 			this.server_Pickup(anotherBlob);
 		}
@@ -598,13 +615,13 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 void onAddToInventory(CBlob@ this, CBlob@ blob)
 {
 	// destroy built blob if somehow they got into inventory
-	if(blob.hasTag("temp blob"))
+	if (blob.hasTag("temp blob"))
 	{
 		blob.server_Die();
 		blob.Untag("temp blob");
 	}
 
-	if(this.isMyPlayer() && blob.hasTag("material"))
+	if (this.isMyPlayer() && blob.hasTag("material"))
 	{
 		SetHelp(this, "help inventory", "builder", "$Help_Block1$$Swap$$Help_Block2$           $KEY_HOLD$$KEY_F$", "", 3);
 	}

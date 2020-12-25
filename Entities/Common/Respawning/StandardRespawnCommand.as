@@ -10,6 +10,7 @@
 // Tag: "change class store inventory" - if you want players to store previous items in this respawn blob
 
 #include "ClassSelectMenu.as"
+#include "KnockedCommon.as"
 
 void InitRespawnCommand(CBlob@ this)
 {
@@ -18,7 +19,7 @@ void InitRespawnCommand(CBlob@ this)
 
 bool canChangeClass(CBlob@ this, CBlob@ blob)
 {
-    if(blob.hasTag("switch class")) return false;
+    if (blob.hasTag("switch class")) return false;
 
 	Vec2f tl, br, _tl, _br;
 	this.getShape().getBoundingRect(tl, br);
@@ -57,18 +58,22 @@ void BuildRespawnMenuFor(CBlob@ this, CBlob @caller)
 	}
 }
 
+void buildSpawnMenu(CBlob@ this, CBlob@ caller)
+{
+	BuildRespawnMenuFor(this, caller);
+}
+
 void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 
 	switch (cmd)
 	{
-		case SpawnCmd::buildMenu:
+		// Legacy, we now use func callback
+		case SpawnCmd::buildMenu: 
 		{
 			{
-				// build menu for them
 				CBlob@ caller = getBlobByNetworkID(params.read_u16());
 				BuildRespawnMenuFor(this, caller);
-				this.set_bool("quick switch class", false);
 			}
 		}
 		break;
@@ -131,10 +136,9 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 						}
 
 						//copy stun
-						if (caller.exists("knocked"))
+						if (isKnockable(caller))
 						{
-							newBlob.set_u8("knocked", caller.get_u8("knocked"));
-							newBlob.Sync("knocked", true);
+							setKnocked(newBlob, getKnockedRemaining(caller));
 						}
 
 						// plug the soul

@@ -17,7 +17,7 @@ void onTick(CBlob@ this)
 				f32 oldHealth = b.getHealth();
 				b.server_Heal(1.0f);
 				b.add_f32("heal amount", b.getHealth() - oldHealth);
-				b.getSprite().PlaySound("/Heart.ogg");
+				b.getSprite().PlaySound("/Heart.ogg", 0.5);
 			}
 		}
 	}

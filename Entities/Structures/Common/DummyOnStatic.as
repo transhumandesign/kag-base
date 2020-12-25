@@ -6,14 +6,14 @@
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(this.exists(Dummy::TILE))
+	if (this.exists(Dummy::TILE))
 	{
 		const Vec2f POSITION = this.getPosition();
 
 		CMap@ map = getMap();
-		if(map !is null)
+		if (map !is null)
 		{
-			if(isStatic)
+			if (isStatic)
 			{
 				map.server_SetTile(POSITION, this.get_TileType(Dummy::TILE));
 				server_setDummyGridNetworkID(map.getTileOffset(POSITION), this.getNetworkID());

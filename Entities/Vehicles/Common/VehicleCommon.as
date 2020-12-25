@@ -1,6 +1,6 @@
 #include "SeatsCommon.as"
 #include "VehicleAttachmentCommon.as"
-#include "Knocked.as"
+#include "KnockedCommon.as"
 
 // HOOKS THAT YOU MUST IMPLEMENT WHEN INCLUDING THIS FILE
 // void Vehicle_onFire( CBlob@ this, CBlob@ bullet, const u8 charge )
@@ -124,7 +124,7 @@ void Vehicle_SetupWeapon(CBlob@ this, VehicleInfo@ v, int fireDelay, int fireAmo
 	v.fire_style = fireStyle;
 	v.wep_angle = 0.0f;
 
-	if (getRules().exists("singleplayer"))
+	if (getRules().hasTag("singleplayer"))
 	{
 		v.infinite_ammo = true;
 	}
@@ -233,7 +233,9 @@ AttachmentPoint@ getMagAttachmentPoint(CBlob@ this)
 
 CBlob@ getMagBlob(CBlob@ this)
 {
-	return this.getAttachments().getAttachedBlob("MAG");
+	AttachmentPoint@ a = getMagAttachmentPoint(this);
+	if (a is null) return null;
+	return a.getOccupied();
 }
 
 bool isMagEmpty(CBlob@ this)
@@ -648,7 +650,7 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 					}
 				}  // driver
 
-				if (blob.isMyPlayer() && ap.name == "GUNNER" && !isKnocked(blob))
+				if (ap.name == "GUNNER" && !isKnocked(blob))
 				{
 					// set facing
 					blob.SetFacingLeft(this.isFacingLeft());
@@ -662,7 +664,7 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 							if (ap.isKeyPressed(key_action1))
 							{
 								v.firing = true;
-								if (canFire(this, v))
+								if (canFire(this, v) && blob.isMyPlayer())
 								{
 									CBitStream fireParams;
 									fireParams.write_u16(blob.getNetworkID());
@@ -683,7 +685,7 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 								v.charge = 0;
 								v.cooldown_time = Maths::Max(v.cooldown_time, 15);
 							}
-							else if (Vehicle_canFire(this, v, ap.isKeyPressed(key_action1), ap.wasKeyPressed(key_action1), charge) && canFire(this, v))
+							else if (Vehicle_canFire(this, v, ap.isKeyPressed(key_action1), ap.wasKeyPressed(key_action1), charge) && canFire(this, v) && blob.isMyPlayer())
 							{
 								CBitStream fireParams;
 								fireParams.write_u16(blob.getNetworkID());

@@ -1,6 +1,7 @@
 // scroll script that makes enemies insta gib within some radius
 
 #include "Hitters.as";
+#include "GenericButtonCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -9,6 +10,8 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	CBitStream params;
 	params.write_u16(caller.getNetworkID());
 	caller.CreateGenericButton(11, Vec2f_zero, this, this.getCommandID("sudden gib"), getTranslatedString("Use this to make all visible enemies instantly turn into a pile of gibs."), params);

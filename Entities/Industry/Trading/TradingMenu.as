@@ -4,6 +4,7 @@
 #include "MakeSeed.as"
 #include "Requirements.as"
 #include "TradingCommon.as"
+#include "GenericButtonCommon.as"
 
 const int DROP_SECS = 8;
 
@@ -50,6 +51,8 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (!this.hasTag("dead"))
 	{
 		CBitStream params;
@@ -301,6 +304,7 @@ TradeItem@ AddItemToShip(CBlob@ this, CBlob@ caller, const uint itemIndex, const
 		CBlob@ blob = MakeBlobFromItem(item);
 		if (blob !is null)
 		{
+			blob.set_u16("buyer", caller.getPlayer().getNetworkID());
 			blob.server_setTeamNum(caller.getTeamNum());
 			if (!item.buyIntoInventory || !caller.server_PutInInventory(blob))
 			{
@@ -403,6 +407,8 @@ void RecursiveCrate(CBlob@ this, uint[]@ shipment, uint index, CBlob@ itemThatDi
 
 CBlob@ MakeBlobFromItem(TradeItem@ item)
 {
+	if (!isServer()) return null;
+
 	if (item.configFilename == "scroll")
 	{
 		return server_MakePredefinedScroll(Vec2f_zero, item.scrollName);

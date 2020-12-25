@@ -119,6 +119,7 @@ class PNGLoader
 			case map_colors::alpha_spikes:          autotile(offset); spawnBlob(map, "spikes",          getTeamFromChannel(alpha), position,                             true); break;
 			case map_colors::alpha_stone_door:      autotile(offset); spawnBlob(map, "stone_door",      getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_trap_block:      autotile(offset); spawnBlob(map, "trap_block",      getTeamFromChannel(alpha), position,                             true); break;
+			case map_colors::alpha_bridge:          autotile(offset); spawnBlob(map, "bridge",      getTeamFromChannel(alpha), position,                             true); break;
 			case map_colors::alpha_wooden_door:     autotile(offset); spawnBlob(map, "wooden_door",     getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_wooden_platform: autotile(offset); spawnBlob(map, "wooden_platform", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 
@@ -325,6 +326,11 @@ class PNGLoader
 			case map_colors::trapblock_red:    autotile(offset); spawnBlob(map, "trap_block", offset,   1, true); break;
 			case map_colors::trapblock_noteam: autotile(offset); spawnBlob(map, "trap_block", offset, 255, true); break;
 
+			// Trap Bridges
+			case map_colors::bridge_blue:   autotile(offset); spawnBlob(map, "bridge", offset,   0, true); break;
+			case map_colors::bridge_red:    autotile(offset); spawnBlob(map, "bridge", offset,   1, true); break;
+			case map_colors::bridge_noteam: autotile(offset); spawnBlob(map, "bridge", offset, 255, true); break;
+
 			// Spikes
 			case map_colors::spikes:  offsets[spike_offset].push_back(offset); break;
 			case map_colors::spikes_ground: offsets[spike_offset].push_back(offset); map.SetTile(offset, CMap::tile_ground_back); break;
@@ -419,7 +425,7 @@ class PNGLoader
 			// load trees only at the ground
 			if(!map.isTileSolid(map.getTile(offset + map.tilemapwidth))) return;
 
-			CBlob@ tree = server_CreateBlobNoInit( map_random.NextRanged(35) < 21 ? "tree_pine" : "tree_bushy" );
+			CBlob@ tree = server_CreateBlobNoInit( "tree_pine" );
 			if(tree !is null)
 			{
 				tree.Tag("startbig");
@@ -786,6 +792,11 @@ void getInfoFromBlob(CBlob@ this, SColor &out color, Vec2f &out offset)
 		else if(name == "trap_block")
 		{
 			color = map_colors::alpha_trap_block;
+			color.setAlpha(getChannelFromTeam(this.getTeamNum()));
+		}
+		else if(name == "bridge")
+		{
+			color = map_colors::alpha_bridge;
 			color.setAlpha(getChannelFromTeam(this.getTeamNum()));
 		}
 		else if(name == "wooden_door")

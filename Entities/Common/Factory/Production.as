@@ -10,6 +10,7 @@
 #include "MakeFood.as";
 #include "MakeSeed.as";
 #include "FireParticle.as";
+#include "GenericButtonCommon.as";
 
 const uint OPT_TICK = 45;
 
@@ -428,7 +429,7 @@ bool hasLimitReached(CBlob@ this, ShopItem@ item)
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
-	return (this.hasTag("inventory access"));
+	return (this.hasTag("inventory access") && canSeeButtons(this, forBlob));
 }
 
 // kitchen related
@@ -451,6 +452,8 @@ void putInFood(CBlob@ this, CBlob@ item)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	string[] buttonsCreated;
 	ShopItem[]@ prod_items;
 	if (this.get(PRODUCTION_ARRAY, @prod_items))

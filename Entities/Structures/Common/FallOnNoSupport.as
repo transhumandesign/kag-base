@@ -11,7 +11,7 @@ void onInit(CBlob@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point)
 {
-	if (getNet().isServer() && solid && !this.getShape().isStatic() && !this.isAttached())
+	if (isServer() && solid && !this.getShape().isStatic() && !this.isAttached())
 	{
 		if (this.getOldVelocity().y < 1.0f && !this.hasTag("can settle"))
 		{
@@ -24,10 +24,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	}
 }
 
-// TODO: make this on an event
-void onTick(CBlob@ this)
+void onBlobCollapse(CBlob@ this)
 {
-	if (!getNet().isServer() || getGameTime() < 60 || this.hasTag("fallen")) return;
+	if (!isServer() || getGameTime() < 60 || this.hasTag("fallen")) return;
 
 	CShape@ shape = this.getShape();
 	if (shape.getCurrentSupport() < 0.001f)
@@ -62,7 +61,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			this.Tag("fallen");
 			this.server_SetTimeToDie(3.0f);
             ShapeVars@ vars = this.getShape().getVars();
-            if(vars.isladder)
+            if (vars.isladder)
             {
                 vars.isladder = false;
 

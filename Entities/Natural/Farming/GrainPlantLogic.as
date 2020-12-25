@@ -16,6 +16,8 @@ void onInit(CBlob@ this)
 	{
 		GrowGrain(this);
 	}
+
+	this.Tag("scenary");
 }
 
 

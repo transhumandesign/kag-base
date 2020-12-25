@@ -65,6 +65,7 @@ void onInit(CBlob@ this)
 	}
 
 	this.Tag("place norotate");
+	this.Tag("pushedByDoor");
 
 	this.getCurrentScript().tickFrequency = OPT_TICK;
 }
@@ -130,10 +131,31 @@ void onTick(CBlob@ this)
 		{
 			float rad = f32(this.get_u8("created_blob_radius")) - this.getRadius();
 			CBlob@ b = server_CreateBlob(this.get_string("seed_grow_blobname"), -1, this.getPosition() + Vec2f(0, rad));
-			/*if(b !is null) //not needed, pushes out of the ground unecessarily
+			/*if (b !is null) //not needed, pushes out of the ground unecessarily
 			{
 			    b.getShape().PutOnGround();
 			}*/
 		}
 	}
+
+	if (isServer())
+	{
+		CMap@ map = getMap();
+		const f32 tilesize = map.tilesize;
+
+		Vec2f tpos = this.getPosition() + Vec2f(0, tilesize);
+		if (!map.isTileGround(map.getTile(tpos).type))
+		{
+			// drop down when not supported
+			CShape@ shape = this.getShape();
+			shape.server_SetActive(true);
+
+			shape.SetStatic(false);
+		}
+	}
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	return blob.getShape().isStatic() && blob.isCollidable();
 }

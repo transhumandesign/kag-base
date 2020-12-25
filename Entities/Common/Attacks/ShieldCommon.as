@@ -99,6 +99,15 @@ bool canRaiseShield(CBlob@ this)
 	return !vars.forcedDown;
 }
 
+bool isShieldEnabled(CBlob@ this)
+{
+	ShieldVars@ vars = getShieldVars(this);
+
+	if (vars is null) { return false; }
+
+	return vars.enabled;
+}
+
 bool blockAttack(CBlob@ this, Vec2f direction, f32 damage)
 {
 	if (this.hasTag("dead")) return false;
@@ -136,4 +145,3 @@ bool exceedsShieldBreakForce(CBlob@ this, f32 damage)
 	//print("dmg " + damage + "break " + vars.breakingForce);
 	return damage >= vars.breakingForce;
 }
-

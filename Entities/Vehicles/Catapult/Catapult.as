@@ -1,7 +1,8 @@
 #include "VehicleCommon.as"
-#include "Knocked.as";
+#include "KnockedCommon.as";
 #include "MakeCrate.as";
 #include "MiniIconsInc.as";
+#include "GenericButtonCommon.as";
 
 // Catapult logic
 
@@ -134,6 +135,8 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	CBlob@ occupiedBlob = this.getAttachments().getAttachmentPointByName("MAG").getOccupied();
 	if (
 		!Vehicle_AddFlipButton(this, caller) &&
@@ -229,7 +232,7 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 
 		if (isKnockable(bullet))
 		{
-			SetKnocked(bullet, 30);
+			setKnocked(bullet, 30);
 		}
 
 		if (bullet.getName() == "boulder") // rock n' roll baby

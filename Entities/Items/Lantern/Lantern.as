@@ -13,6 +13,7 @@ void onInit(CBlob@ this)
 	this.Tag("dont deactivate");
 	this.Tag("fire source");
 	this.Tag("ignore_arrow");
+	this.Tag("ignore fall");
 
 	this.getCurrentScript().runFlags |= Script::tick_inwater;
 	this.getCurrentScript().tickFrequency = 24;
@@ -48,4 +49,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		Light(this, !this.isLight());
 	}
 
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+    return blob.getShape().isStatic();
 }

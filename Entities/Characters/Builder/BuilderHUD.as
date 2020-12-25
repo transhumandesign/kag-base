@@ -36,13 +36,13 @@ void ManageCursors(CBlob@ this)
 
 void onRender(CSprite@ this)
 {
+	CBlob@ blob = this.getBlob();
+	ManageCursors(blob);
+
 	if (g_videorecording)
 		return;
 
-	CBlob@ blob = this.getBlob();
 	CPlayer@ player = blob.getPlayer();
-
-	ManageCursors(blob);
 
 	// draw inventory
 

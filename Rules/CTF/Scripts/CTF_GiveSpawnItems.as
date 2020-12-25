@@ -15,12 +15,11 @@ bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity)
 {
 	CInventory@ inv = blob.getInventory();
 
-	//already got them?
-	if (inv.isInInventory(name, quantity))
-		return false;
-
-	//otherwise...
-	inv.server_RemoveItems(name, quantity); //shred any old ones
+	//avoid over-stacking arrows
+	if (name == "mat_arrows")
+	{
+		inv.server_RemoveItems(name, quantity);
+	}
 
 	CBlob@ mat = server_CreateBlobNoInit(name);
 
@@ -126,8 +125,7 @@ bool canGetSpawnmats(CRules@ this, CPlayer@ p, RulesCore@ core)
 
 	CTFPlayerInfo@ info = cast < CTFPlayerInfo@ > (core.getInfoFromPlayer(p));
 
-	if (gametime > next_items ||		//timer expired
-	        gametime < next_items - materials_wait * getTicksASecond() * 4) //residual prop
+	if (gametime > next_items)		// timer expired
 	{
 		info.items_collected = 0; //reset available class items
 		return true;
@@ -201,7 +199,7 @@ void Reset(CRules@ this)
 {
 	//restart everyone's timers
 	for (uint i = 0; i < getPlayersCount(); ++i)
-		SetCTFTimer(this, getPlayer(i), materials_wait_warmup);//this used to be set to 0, but now its not
+		SetCTFTimer(this, getPlayer(i), 0);
 }
 
 void onRestart(CRules@ this)
@@ -221,7 +219,7 @@ void onTick(CRules@ this)
 
 	s32 gametime = getGameTime();
 
-	if ((gametime % 31) != 5)
+	if ((gametime % 15) != 5)
 		return;
 
 
@@ -267,6 +265,9 @@ void onTick(CRules@ this)
 // render gui for the player
 void onRender(CRules@ this)
 {
+	if (g_videorecording || this.isGameOver())
+		return;
+
 	CPlayer@ p = getLocalPlayer();
 	if (p is null || !p.isMyPlayer()) { return; }
 
@@ -275,11 +276,7 @@ void onRender(CRules@ this)
 	if (b !is null && this.exists(propname))
 	{
 		s32 next_items = this.get_s32(propname);
-		if (getGameTime() < next_items - materials_wait * getTicksASecond() * 2)
-		{
-			this.set_s32(propname, 0); //clear residue
-		}
-		else if (next_items > getGameTime())
+		if (next_items > getGameTime())
 		{
 			string action = (b.getName() == "builder" ? "Go Build" : "Go Fight");
 			if (this.isWarmup())

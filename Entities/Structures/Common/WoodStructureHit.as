@@ -29,20 +29,35 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			}
 			break;
 
-		case Hitters::bomb:
-			dmg *= 1.40f;
-			break;
-
 		case Hitters::burn:
 			dmg = 1.0f;
 			break;
 
+		case Hitters::bomb:
+			dmg *= 1.40f;
+			break;
+
 		case Hitters::explosion:
-			dmg *= 2.5f;
+			if (this.hasTag("bombResistant"))
+			{
+				dmg *= 1.4f;
+			}
+			else
+			{
+				dmg *= 2.5f;
+			}
 			break;
 
 		case Hitters::bomb_arrow:
-			dmg *= 8.0f;
+			if (this.hasTag("bombResistant"))
+			{
+				dmg *= 1.7f;
+			}
+			else
+			{
+				dmg *= 8.0f;
+			}
+
 			break;
 
 		case Hitters::cata_stones:

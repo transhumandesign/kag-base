@@ -7,30 +7,30 @@
 #include "Requirements_Tech.as"
 #include "MakeCrate.as"
 #include "CheckSpam.as"
+#include "GenericButtonCommon.as"
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("shop menu");
 	this.addCommandID("shop buy");
 	this.addCommandID("shop made item");
 
-	if(!this.exists("shop available"))
+	if (!this.exists("shop available"))
 		this.set_bool("shop available", true);
-	if(!this.exists("shop offset"))
+	if (!this.exists("shop offset"))
 		this.set_Vec2f("shop offset", Vec2f_zero);
-	if(!this.exists("shop menu size"))
+	if (!this.exists("shop menu size"))
 		this.set_Vec2f("shop menu size", Vec2f(7, 7));
-	if(!this.exists("shop description"))
+	if (!this.exists("shop description"))
 		this.set_string("shop description", "Workbench");
-	if(!this.exists("shop icon"))
+	if (!this.exists("shop icon"))
 		this.set_u8("shop icon", 15);
-	if(!this.exists("shop offset is buy offset"))
+	if (!this.exists("shop offset is buy offset"))
 		this.set_bool("shop offset is buy offset", false);
 
-	if(!this.exists("shop button radius"))
+	if (!this.exists("shop button radius"))
 	{
 		CShape@ shape = this.getShape();
-		if(shape !is null)
+		if (shape !is null)
 		{
 			this.set_u8("shop button radius", Maths::Max(this.getRadius(), (shape.getWidth() + shape.getHeight()) / 2));
 		}
@@ -43,27 +43,35 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller) || caller.isAttachedTo(this)) return;
+
 	ShopItem[]@ shop_items;
-	if(!this.get(SHOP_ARRAY, @shop_items))
+	if (!this.get(SHOP_ARRAY, @shop_items))
 	{
 		return;
 	}
 
-	if(shop_items.length > 0 && this.get_bool("shop available") && !this.hasTag("shop disabled"))
+	if (shop_items.length > 0 && this.get_bool("shop available") && !this.hasTag("shop disabled"))
 	{
-		CBitStream params;
-		params.write_u16(caller.getNetworkID());
-
 		CButton@ button = caller.CreateGenericButton(
-		this.get_u8("shop icon"),                   // icon token
-		this.get_Vec2f("shop offset"),              // button offset
-		this,                                       // button attachment
-		this.getCommandID("shop menu"),             // command id
-		getTranslatedString(this.get_string("shop description")),        // description
-		params);                                    // bit stream
+			this.get_u8("shop icon"),                                // icon token
+			this.get_Vec2f("shop offset"),                           // button offset
+			this,                                                    // shop blob
+			createMenu,                                              // func callback
+			getTranslatedString(this.get_string("shop description")) // description
+		);
 
 		button.enableRadius = this.get_u8("shop button radius");
 	}
+}
+
+
+void createMenu(CBlob@ this, CBlob@ caller)
+{
+	if (this.hasTag("shop disabled"))
+		return;
+
+	BuildShopMenu(this, caller, this.get_string("shop description"), Vec2f(0, 0), this.get_Vec2f("shop menu size"));
 }
 
 bool isInRadius(CBlob@ this, CBlob @caller)
@@ -80,16 +88,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	bool isServer = getNet().isServer();
 
-	if (cmd == this.getCommandID("shop menu"))
-	{
-		if (this.hasTag("shop disabled"))
-			return;
-
-		// build menu for them
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		BuildShopMenu(this, caller, this.get_string("shop description"), Vec2f(0, 0), this.get_Vec2f("shop menu size"));
-	}
-	else if (cmd == this.getCommandID("shop buy"))
+	if (cmd == this.getCommandID("shop buy"))
 	{
 		if (this.hasTag("shop disabled"))
 			return;
@@ -286,6 +285,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 					if (newlyMade !is null)
 					{
+						newlyMade.set_u16("buyer", caller.getPlayer().getNetworkID());
+
 						CBitStream params;
 						params.write_netid(caller.getNetworkID());
 						params.write_netid(newlyMade.getNetworkID());

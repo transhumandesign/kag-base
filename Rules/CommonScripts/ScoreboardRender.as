@@ -14,6 +14,10 @@ bool draw_tier = false;
 float scoreboardMargin = 52.0f;
 float scrollOffset = 0.0f;
 float scrollSpeed = 4.0f;
+float maxMenuWidth = 700;
+float screenMidX = getScreenWidth()/2;
+
+bool mouseWasPressed2 = false;
 
 string[] age_description = {
 	"New Player - Welcome them to the game!",
@@ -57,12 +61,15 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 {
 	if (players.size() <= 0 || team is null)
 		return topleft.y;
+
+
+	CRules@ rules = getRules();
 	Vec2f orig = topleft; //save for later
 
 	f32 lineheight = 16;
 	f32 padheight = 6;
 	f32 stepheight = lineheight + padheight;
-	Vec2f bottomright(getScreenWidth() - 100, topleft.y + (players.length + 5.5) * stepheight);
+	Vec2f bottomright(Maths::Min(getScreenWidth() - 100, screenMidX+maxMenuWidth), topleft.y + (players.length + 5.5) * stepheight);
 	GUI::DrawPane(topleft, bottomright, team.color);
 
 	//offset border
@@ -78,7 +85,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 	topleft.y += stepheight * 2;
 
-	const int accolades_start = 740;
+	const int accolades_start = 770;
 	const int age_start = accolades_start + 80;
 
 	draw_age = false;
@@ -131,10 +138,25 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 		bool playerHover = mousePos.y > topleft.y && mousePos.y < topleft.y + 15;
 
-		if (playerHover && controls.mousePressed1)
+		if (playerHover)
 		{
-			setSpectatePlayer(p.getUsername());
+			if (controls.mousePressed1)
+			{
+				setSpectatePlayer(p.getUsername());
+			}
 
+			if (controls.mousePressed2 && !mouseWasPressed2)
+			{
+				// reason for this is because this is called multiple per click (since its onRender, and clicking is updated per tick)
+				// we don't want to spam anybody using a clipboard history program
+				if (getFromClipboard() != p.getUsername())
+				{
+					CopyToClipboard(p.getUsername());
+					rules.set_u16("client_copy_time", getGameTime());
+					rules.set_string("client_copy_name", p.getUsername());
+					rules.set_Vec2f("client_copy_pos", mousePos + Vec2f(0, -10));
+				}
+			}
 		}
 
 		Vec2f lineoffset = Vec2f(0, -2);
@@ -472,6 +494,15 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 		GUI::DrawText("" + formatFloat(getKDR(p), "", 0, 2), Vec2f(bottomright.x - 50, topleft.y), SColor(0xffffffff));
 	}
 
+	// username copied text, goes at bottom to overlay above everything else
+	uint durationLeft = rules.get_u16("client_copy_time");
+
+	if ((durationLeft + 64) > getGameTime())
+	{
+		durationLeft = getGameTime() - durationLeft;
+		DrawFancyCopiedText(rules.get_string("client_copy_name"), rules.get_Vec2f("client_copy_pos"), durationLeft);
+	}
+
 	return topleft.y;
 
 }
@@ -540,7 +571,7 @@ void onRenderScoreboard(CRules@ this)
 
 	@hoveredPlayer = null;
 
-	Vec2f topleft(100, 150);
+	Vec2f topleft(Maths::Max( 100, screenMidX-maxMenuWidth), 150);
 	drawServerInfo(40);
 
 	// start the scoreboard lower or higher.
@@ -571,7 +602,7 @@ void onRenderScoreboard(CRules@ this)
 	{
 		//draw spectators
 		f32 stepheight = 16;
-		Vec2f bottomright(getScreenWidth() - 100, topleft.y + stepheight * 2);
+		Vec2f bottomright(Maths::Min(getScreenWidth() - 100, screenMidX+maxMenuWidth), topleft.y + stepheight * 2);
 		f32 specy = topleft.y + stepheight * 0.5;
 		GUI::DrawPane(topleft, bottomright, SColor(0xffc0c0c0));
 
@@ -607,9 +638,9 @@ void onRenderScoreboard(CRules@ this)
 
 	float scoreboardHeight = topleft.y + scrollOffset;
 	float screenHeight = getScreenHeight();
+	CControls@ controls = getControls();
 
 	if(scoreboardHeight > screenHeight) {
-		CControls@ controls = getControls();
 		Vec2f mousePos = controls.getMouseScreenPos();
 
 		float fullOffset = (scoreboardHeight + scoreboardMargin) - screenHeight;
@@ -628,6 +659,7 @@ void onRenderScoreboard(CRules@ this)
 
 	drawHoverExplanation(hovered_accolade, hovered_age, hovered_tier, Vec2f(getScreenWidth() * 0.5, topleft.y));
 
+	mouseWasPressed2 = controls.mousePressed2; 
 }
 
 void drawHoverExplanation(int hovered_accolade, int hovered_age, int hovered_tier, Vec2f centre_top)
@@ -668,7 +700,7 @@ void drawHoverExplanation(int hovered_accolade, int hovered_age, int hovered_tie
 
 void onTick(CRules@ this)
 {
-	if(getNet().isServer() && this.getCurrentState() == GAME)
+	if(isServer() && this.getCurrentState() == GAME)
 	{
 		this.set_u32("match_time", this.get_u32("match_time")+1);
 		this.Sync("match_time", true);
@@ -677,18 +709,38 @@ void onTick(CRules@ this)
 
 void onInit(CRules@ this)
 {
-	if(getNet().isServer())
-	{
-		this.set_u32("match_time", 0);
-		this.Sync("match_time", true);
-	}
+	onRestart(this);
 }
 
 void onRestart(CRules@ this)
 {
-	if(getNet().isServer())
+	if(isServer())
 	{
 		this.set_u32("match_time", 0);
 		this.Sync("match_time", true);
+		getMapName(this);
 	}
+}
+
+void getMapName(CRules@ this)
+{
+	CMap@ map = getMap();
+	if(map !is null)
+	{
+		string[] name = map.getMapName().split('/');	 //Official server maps seem to show up as
+		string mapName = name[name.length() - 1];		 //``Maps/CTF/MapNameHere.png`` while using this instead of just the .png
+		mapName = mapName.substr(0,mapName.length() - 4);//Sub by 4 so .cfg OR .png are removed when loading the map
+
+		this.set_string("map_name",mapName);
+		this.Sync("map_name",true);
+	}
+}
+
+void DrawFancyCopiedText(string username, Vec2f mousePos, uint duration)
+{
+	string text = "Username copied: " + username;
+	Vec2f pos = mousePos - Vec2f(0, duration);
+	int col = (255 - duration * 3);
+
+	GUI::DrawTextCentered(text, pos, SColor((255 - duration * 4), col, col, col));
 }

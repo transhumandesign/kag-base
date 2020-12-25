@@ -1,6 +1,6 @@
 #include "RunnerCommon.as";
 #include "Hitters.as";
-#include "Knocked.as"
+#include "KnockedCommon.as"
 #include "FireCommon.as"
 #include "Help.as"
 
@@ -22,7 +22,7 @@ void onInit(CBlob@ this)
 	this.SetChatBubbleFont("hud");
 	this.maxChatBubbleLines = 4;
 
-	setKnockable(this);
+	InitKnockable(this);
 }
 
 void onTick(CBlob@ this)
@@ -42,6 +42,8 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	this.getSprite().PlaySound("/Pickup.ogg");
+
+	this.ClearButtons();
 
 	if (getNet().isClient())
 	{

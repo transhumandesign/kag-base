@@ -6,7 +6,7 @@
 #include "BombCommon.as";
 #include "SplashWater.as";
 #include "TeamStructureNear.as";
-#include "Knocked.as"
+#include "KnockedCommon.as"
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
@@ -51,7 +51,7 @@ void onInit(CBlob@ this)
 		this.set_u8("custom_hitter", Hitters::bomb_arrow);
 	}
 
-	if(arrowType == ArrowType::water)
+	if (arrowType == ArrowType::water)
 	{
 		this.Tag("splash ray cast");
 	}
@@ -143,9 +143,14 @@ void onTick(CBlob@ this)
 		if (shape.vellen > 0.0001f)
 		{
 			if (shape.vellen > 13.5f)
+			{
 				shape.SetGravityScale(0.1f);
+			}
 			else
+			{
 				shape.SetGravityScale(Maths::Min(1.0f, 1.0f / (shape.vellen * 0.1f)));
+			}
+
 
 			processSticking = false;
 		}
@@ -242,7 +247,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		}
 
 		f32 dmg = 0.0f;
-		if (blob.getTeamNum() != this.getTeamNum())
+		if (blob.getTeamNum() != this.getTeamNum() || blob.getName() == "bridge")
 		{
 			dmg = getArrowDamage(this, vellen);
 		}
@@ -264,7 +269,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			//  we use between old and new position because old has not been interfered with
 			//  but might be too far behind (and we move back by velocity anyway)
 			CShape@ shape = blob.getShape();
-			if(shape !is null && !shape.isStatic())
+			if (shape !is null && !shape.isStatic())
 			{
 				Vec2f velnorm = this.getVelocity();
 				float vellen = Maths::Min(this.getRadius(), velnorm.Normalize() * (1.0f / 30.0f));
@@ -307,7 +312,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	//don't collide with other projectiles
-	if(blob.hasTag("projectile"))
+	if (blob.hasTag("projectile"))
 	{
 		return false;
 	}
@@ -325,7 +330,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	}
 
 	//definitely collide with non-team blobs
-	bool check = this.getTeamNum() != blob.getTeamNum();
+	bool check = this.getTeamNum() != blob.getTeamNum() || blob.getName() == "bridge";
 	//maybe collide with team structures
 	if (!check)
 	{
@@ -432,7 +437,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 		if (this.hasTag("collided")) return 0.0f;
 
 		// check if invincible + special -> add force here
-		if(specialArrowHit(hitBlob))
+		if (specialArrowHit(hitBlob))
 		{
 			const f32 scale = SPECIAL_HIT_SCALE;
 			f32 force = (ARROW_PUSH_FORCE * 0.125f) * Maths::Sqrt(hitBlob.getMass() + 1) * scale;
@@ -595,7 +600,7 @@ void FireUp(CBlob@ this)
 	head.RotateBy(angle);
 	Vec2f burnpos = pos + head;
 
-	if(this.exists("override fire pos"))
+	if (this.exists("override fire pos"))
 	{
 		MakeFireCross(this, this.get_Vec2f("override fire pos"));
 	}
@@ -647,7 +652,7 @@ void MakeFireCross(CBlob@ this, Vec2f burnpos)
 		//set blob on fire
 		CBlob@ b = map.getBlobAtPosition(pos);
 		//skip self or nothing there
-		if(b is null || b is this) continue;
+		if (b is null || b is this) continue;
 
 		//only hit static blobs
 		CShape@ s = b.getShape();
@@ -797,7 +802,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 				speed > ArcherParams::shoot_max_vel * 0.845f &&
 				hitBlob.hasTag("player")
 			) {
-				SetKnocked(hitBlob, 20);
+				setKnocked(hitBlob, 20, true);
 				Sound::Play("/Stun", hitBlob.getPosition(), 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 			}
 		}

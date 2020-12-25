@@ -1,6 +1,7 @@
 #include "VehicleCommon.as"
 #include "ClassSelectMenu.as";
 #include "StandardRespawnCommand.as";
+#include "GenericButtonCommon.as";
 //#include "Requirements_Tech.as";
 
 // Boat logic
@@ -205,11 +206,11 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (caller.getTeamNum() == this.getTeamNum())
 	{
-		CBitStream params;
-		params.write_u16(caller.getNetworkID());
-		CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(13, 4), this, SpawnCmd::buildMenu, getTranslatedString("Change class"), params);
+		caller.CreateGenericButton("$change_class$", Vec2f(13, 4), this, buildSpawnMenu, getTranslatedString("Change class"));
 	}
 }
 

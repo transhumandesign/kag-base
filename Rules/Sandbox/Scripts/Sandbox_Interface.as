@@ -6,6 +6,9 @@ void onInit(CRules@ this)
 
 void onRender(CRules@ this)
 {
+	if (g_videorecording)
+		return;
+
 	CPlayer@ p = getLocalPlayer();
 
 	if (p is null || !p.isMyPlayer()) { return; }

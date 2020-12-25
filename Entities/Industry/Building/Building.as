@@ -5,6 +5,8 @@
 #include "Descriptions.as"
 #include "Costs.as"
 #include "CheckSpam.as"
+#include "GenericButtonCommon.as"
+#include "TeamIconToken.as"
 
 //are builders the only ones that can finish construction?
 const bool builder_only = false;
@@ -28,39 +30,41 @@ void onInit(CBlob@ this)
 	this.set_u8("shop icon", 12);
 	this.Tag(SHOP_AUTOCLOSE);
 
+	int team_num = this.getTeamNum();
+
 	{
-		ShopItem@ s = addShopItem(this, "Builder Shop", "$buildershop$", "buildershop", Descriptions::buildershop);
+		ShopItem@ s = addShopItem(this, "Builder Shop", getTeamIcon("buildershop", "BuilderShop.png", team_num, Vec2f(40, 24)), "buildershop", Descriptions::buildershop);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::buildershop_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Quarters", "$quarters$", "quarters", Descriptions::quarters);
+		ShopItem@ s = addShopItem(this, "Quarters", getTeamIcon("quarters", "Quarters.png", team_num, Vec2f(40, 24), 2), "quarters", Descriptions::quarters);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::quarters_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Knight Shop", "$knightshop$", "knightshop", Descriptions::knightshop);
+		ShopItem@ s = addShopItem(this, "Knight Shop", getTeamIcon("knightshop", "KnightShop.png", team_num, Vec2f(40, 24)), "knightshop", Descriptions::knightshop);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::knightshop_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Archer Shop", "$archershop$", "archershop", Descriptions::archershop);
+		ShopItem@ s = addShopItem(this, "Archer Shop", getTeamIcon("archershop", "ArcherShop.png", team_num, Vec2f(40, 24)), "archershop", Descriptions::archershop);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::archershop_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Boat Shop", "$boatshop$", "boatshop", Descriptions::boatshop);
+		ShopItem@ s = addShopItem(this, "Boat Shop", getTeamIcon("boatshop", "BoatShop.png", team_num, Vec2f(40, 24)), "boatshop", Descriptions::boatshop);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::boatshop_wood);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::boatshop_gold);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Vehicle Shop", "$vehicleshop$", "vehicleshop", Descriptions::vehicleshop);
+		ShopItem@ s = addShopItem(this, "Vehicle Shop", getTeamIcon("vehicleshop", "VehicleShop.png", team_num, Vec2f(40, 24)), "vehicleshop", Descriptions::vehicleshop);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::vehicleshop_wood);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::vehicleshop_gold);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Storage Cache", "$storage$", "storage", Descriptions::storagecache);
+		ShopItem@ s = addShopItem(this, "Storage Cache", getTeamIcon("storage", "Storage.png", team_num, Vec2f(40, 24)), "storage", Descriptions::storagecache);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::storage_stone);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::storage_wood);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Transport Tunnel", "$tunnel$", "tunnel", Descriptions::tunnel);
+		ShopItem@ s = addShopItem(this, "Transport Tunnel", getTeamIcon("tunnel", "Tunnel.png", team_num, Vec2f(40, 24)), "tunnel", Descriptions::tunnel);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::tunnel_stone);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::tunnel_wood);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::tunnel_gold);
@@ -70,11 +74,14 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Stone Quarry", "$stonequarry$", "quarry", Descriptions::quarry);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::quarry_stone);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::quarry_gold);
+		AddRequirement(s.requirements, "no more", "quarry", "Stone Quarry", CTFCosts::quarry_count);
 	}
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (this.isOverlapping(caller))
 		this.set_bool("shop available", !builder_only || caller.getName() == "builder");
 	else

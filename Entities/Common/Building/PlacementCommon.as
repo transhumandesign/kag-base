@@ -76,7 +76,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		return false;
 	}
 
-	if(map.isTileCollapsing(offset))
+	if (map.isTileCollapsing(offset))
 	{
 		return false;
 	}
@@ -107,16 +107,13 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		}
 	}
 
-//printf("c");
-	bool canPlaceOnBackground = ((blob is null) || (blob.getShape().getConsts().support > 0));   // if this is a blob it has to do support - so spikes cant be placed on back
-
 	if (
-		(!canPlaceOnBackground || !map.isTileBackgroundNonEmpty(backtile)) &&      // can put against background
+		!map.isTileBackgroundNonEmpty(backtile) &&      // can put against background
 		!(                                              // can put sticking next to something
-			canPlaceNextTo(map, left) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(left))  ||
-			canPlaceNextTo(map, right) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(right)) ||
-			canPlaceNextTo(map, up)   || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(up))    ||
-			canPlaceNextTo(map, down) || (canPlaceOnBackground && map.isTileBackgroundNonEmpty(down))
+			canPlaceNextTo(map, left) ||
+			canPlaceNextTo(map, right) ||
+			canPlaceNextTo(map, up) ||
+			canPlaceNextTo(map, down)
 		)
 	)
 	{
@@ -128,16 +125,21 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 	{
 		bool isLadder = false;
 		bool isSpikes = false;
+		bool isDoor = false;
+		bool isSeed = false;
 		if (blob !is null)
 		{
 			const string bname = blob.getName();
 			isLadder = bname == "ladder";
 			isSpikes = bname == "spikes";
+			isDoor = bname == "wooden_door" || bname == "stone_door" || bname == "bridge";
+			isSeed = bname == "seed";
+
 		}
 
 		Vec2f middle = p;
 
-		if (!isLadder && (buildSolid || isSpikes) && map.getSectorAtPosition(middle, "no build") !is null)
+		if (!isSeed && !isLadder && (buildSolid || isSpikes || isDoor) && map.getSectorAtPosition(middle, "no build") !is null)
 		{
 			return false;
 		}
@@ -160,16 +162,17 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 
 						Vec2f bpos = b.getPosition();
 
-						const string bname = b.getName();
-
 						bool cantBuild = isBlocking(b);
+						bool buildingOnTeam = isDoor && (b.getTeamNum() == this.getTeamNum() || b.getTeamNum() == 255) && !b.getShape().isStatic() && this !is b;
+						bool ladderBuild = isLadder && !b.getShape().isStatic();
 
 						// cant place on any other blob
-						if (cantBuild &&
+						if (!ladderBuild &&
+							!buildingOnTeam &&
+							cantBuild &&
 							!b.hasTag("dead") &&
 							!b.hasTag("material") &&
-							!b.hasTag("projectile") &&
-							bname != "bush")
+							!b.hasTag("projectile"))
 						{
 							f32 angle_decomp = Maths::FMod(Maths::Abs(b.getAngleDegrees()), 180.0f);
 							bool rotated = angle_decomp > 45.0f && angle_decomp < 135.0f;
@@ -185,6 +188,14 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 				}
 			}
 		}
+
+
+		if (isSeed)
+		{
+			// from canGrow.as
+			return (map.isTileGround(map.getTile(p + Vec2f(0, 8)).type));
+
+		}
 	}
 
 	return true;
@@ -192,11 +203,30 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 
 bool isBlocking(CBlob@ blob)
 {
-	string name = blob.getName();
-	if (name == "heart" || name == "log" || name == "food" || name == "fishy" || name == "steak" || name == "grain")
+	if (blob.hasTag("pushedByDoor") || blob.hasTag("scenary") || blob.hasTag("projectile"))
 		return false;
 
 	return blob.isCollidable() || blob.getShape().isStatic();
+}
+
+void DestroyScenary(Vec2f tl, Vec2f br)
+{
+	if (getNet().isServer())
+	{
+		CMap@ map = getMap();
+
+		CBlob@[] overlapping;
+		map.getBlobsInBox(tl, br, @overlapping);
+		for (uint i = 0; i < overlapping.length; i++)
+		{
+			CBlob@ blob = overlapping[i];
+			if (blob !is null && blob.hasTag("scenary"))
+			{
+				blob.server_Die();
+			}
+
+		}
+	}
 }
 
 void SetTileAimpos(CBlob@ this, BlockCursor@ bc)
@@ -266,4 +296,3 @@ bool isBuildRayBlocked(Vec2f pos, Vec2f target, Vec2f &out point)
 		   map.rayCastSolid(pos + Vec2f(0, -halfsize), target, point) &&
 		   map.rayCastSolid(pos + Vec2f(-halfsize, 0), target, point);
 }
-

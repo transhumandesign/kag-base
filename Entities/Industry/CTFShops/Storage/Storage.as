@@ -1,5 +1,7 @@
 ﻿// Storage.as
 
+#include "GenericButtonCommon.as"
+
 void onInit(CSprite@ this)
 {
 	// Building
@@ -111,12 +113,14 @@ void PickupOverlap(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if(caller.getTeamNum() == this.getTeamNum() && caller.isOverlapping(this))
+	if (!canSeeButtons(this, caller)) return;
+
+	if (caller.getTeamNum() == this.getTeamNum() && caller.isOverlapping(this))
 	{
 		CInventory @inv = caller.getInventory();
-		if(inv is null) return;
+		if (inv is null) return;
 
-		if(inv.getItemsCount() > 0)
+		if (inv.getItemsCount() > 0)
 		{
 			CBitStream params;
 			params.write_u16(caller.getNetworkID());
@@ -324,5 +328,5 @@ bool checkName(string blobName)
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
-	return (forBlob.getTeamNum() == this.getTeamNum() && forBlob.isOverlapping(this));
+	return (forBlob.getTeamNum() == this.getTeamNum() && forBlob.isOverlapping(this) && canSeeButtons(this, forBlob));
 }

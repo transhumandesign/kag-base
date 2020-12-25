@@ -1,5 +1,7 @@
 // requires VEHICLE attachment point
 
+#include "GenericButtonCommon.as"
+
 void onInit(CBlob@ this)
 {
 	this.addCommandID("detach vehicle");
@@ -10,7 +12,7 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (caller.getTeamNum() != this.getTeamNum())
+	if (!canSeeButtons(this, caller) || caller.getTeamNum() != this.getTeamNum())
 		return;
 
 	AttachmentPoint@[] aps;

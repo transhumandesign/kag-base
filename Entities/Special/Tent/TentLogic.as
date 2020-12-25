@@ -2,6 +2,7 @@
 
 #include "StandardRespawnCommand.as"
 #include "StandardControlsCommon.as"
+#include "GenericButtonCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -24,7 +25,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if(enable_quickswap)
+	if (enable_quickswap)
 	{
 		//quick switch class
 		CBlob@ blob = getLocalPlayerBlob();
@@ -45,13 +46,13 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	// button for runner
 	// create menu for class change
 	if (canChangeClass(this, caller) && caller.getTeamNum() == this.getTeamNum())
 	{
-		CBitStream params;
-		params.write_u16(caller.getNetworkID());
-		caller.CreateGenericButton("$change_class$", Vec2f(0, 0), this, SpawnCmd::buildMenu, getTranslatedString("Swap Class"), params);
+		caller.CreateGenericButton("$change_class$", Vec2f(0, 0), this, buildSpawnMenu, getTranslatedString("Swap Class"));
 	}
 }
 

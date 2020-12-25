@@ -26,6 +26,9 @@ void onTick(CRules@ this)
 
 void onRender(CRules@ this)
 {
+	if (g_videorecording)
+		return;
+
 	Game::Timer@[]@ timers;
 	this.get("timers", @timers);
 	if (timers !is null)

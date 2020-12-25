@@ -1,11 +1,6 @@
 #include "Hitters.as";
 #include "SplashWater.as";
-
-//config
-
-//note: if you change this, change in runnerknock water stun as well
-const int ABSORB_COUNT = 100;
-const string ABSORBED_PROP = "absorbed";
+#include "SpongeCommon.as";
 
 const int DRY_COOLDOWN = 8;
 int cooldown_time = 0;
@@ -22,6 +17,9 @@ void onInit(CBlob@ this)
 
 	this.getSprite().ReloadSprites(0, 0);
 	this.set_u8(ABSORBED_PROP, 0);
+
+	this.Tag("pushedByDoor");
+	this.getCurrentScript().runFlags |= Script::tick_not_ininventory;
 }
 
 void onTick(CBlob@ this)
@@ -51,11 +49,7 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-	else if (!this.isAttached() && this.getTicksToDie() <= 0) //auto destroy
-	{
-		this.server_SetTimeToDie(5.0f);
-	}
-
+	
 	//dry out sponge
 	if (absorbed > 0)
 	{
@@ -85,13 +79,7 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-
-	//cancel auto destroy
-	if ((this.isAttached() || absorbed < ABSORB_COUNT) && this.getTicksToDie() > 0)
-	{
-		this.server_SetTimeToDie(0.0f);
-	}
-
+	
 	//reduce cooldown time
 	if (cooldown_time > 0)
 	{
@@ -109,7 +97,7 @@ void onInit(CSprite@ this)
 void onTick(CSprite@ this)
 {
 	u8 absorbed = this.getBlob().get_u8(ABSORBED_PROP);
-	this.animation.setFrameFromRatio(f32(absorbed) / ABSORB_COUNT);
+	spongeUpdateSprite(this, absorbed);
 }
 
 u8 adjustAbsorbedAmount(CBlob@ this, f32 amount)
@@ -119,4 +107,30 @@ u8 adjustAbsorbedAmount(CBlob@ this, f32 amount)
 	this.set_u8(ABSORBED_PROP, absorbed);
 	this.Sync(ABSORBED_PROP, true);
 	return absorbed;
+}
+
+
+// custom gibs
+f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
+{
+	if (damage > 0.05f) //sound for all damage
+	{
+		f32 angle = (this.getPosition() - worldPoint).getAngle();
+		if (hitterBlob !is this)			
+		{
+			this.getSprite().PlayRandomSound("/Wetfall2", Maths::Min(1.25f, Maths::Max(0.5f, damage)));
+		} 
+		else 
+		{
+			angle = 90.0f; // self-hit. spawn gibs upwards
+		}
+
+		makeGibParticle("Entities/Items/Sponge/SpongeGibs.png", 
+			worldPoint, getRandomVelocity(angle, 1.0f + damage, 90.0f) + Vec2f(0.0f, -2.0f),
+	                0, 4 + XORRandom(4), 
+	                Vec2f(8, 8), 2.0f, 0, "", 0);
+
+	}
+
+	return damage;
 }

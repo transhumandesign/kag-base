@@ -16,11 +16,11 @@ class Junction : Component
 
 	u8 Special(MapPowerGrid@ _grid, u8 _old, u8 _new)
 	{
-		if(_old == 0 && _new > 0)
+		if (_old == 0 && _new > 0)
 		{
 			packet_AddChangeFrame(_grid.packet, id, 1);
 		}
-		else if(_old > 0 && _new == 0)
+		else if (_old > 0 && _new == 0)
 		{
 			packet_AddChangeFrame(_grid.packet, id, 0);
 		}
@@ -49,17 +49,17 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic || this.exists("component")) return;
+	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f position = this.getPosition() / 8;
 
 	Junction component(position, this.getNetworkID());
 	this.set("component", component);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		grid.setAll(
 		component.x,                        // x
@@ -72,7 +72,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite is null) return;
+	if (sprite is null) return;
 
 	sprite.SetZ(-60);
 	sprite.SetFacingLeft(false);

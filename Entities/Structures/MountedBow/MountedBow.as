@@ -1,4 +1,5 @@
 #include "VehicleCommon.as"
+#include "GenericButtonCommon.as"
 
 // Mounted Bow logic
 
@@ -166,6 +167,8 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (!Vehicle_AddFlipButton(this, caller))
 	{
 		Vehicle_AddLoadAmmoButton(this, caller);

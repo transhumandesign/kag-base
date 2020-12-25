@@ -9,7 +9,7 @@
 // to ensure a minimum alpha of 128.
 
 // The second to last bit (64) is always false
-// so loadMap() can recognize when to branch 
+// so loadMap() can recognize when to branch
 // to alpha functionality.
 
 // The first six bits are free to be used for
@@ -84,12 +84,13 @@ namespace map_colors
 		alpha_spawn            = 0xFFE010E0, // ARGB(255, 224,  16, 224);
 
 		// ALPHA BLOCKS
-		alpha_ladder           = 0xFFD000D0, // ARGB(255, 208,   0, 208);
-		alpha_spikes           = 0xFFD010D0, // ARGB(255, 208,  16, 208);
-		alpha_stone_door       = 0xFFD020D0, // ARGB(255, 208,  32, 208);
-		alpha_trap_block       = 0xFFD030D0, // ARGB(255, 208,  48, 208);
-		alpha_wooden_door      = 0xFFD040D0, // ARGB(255, 208,  64, 208);
-		alpha_wooden_platform  = 0xFFD050D0, // ARGB(255, 208,  80, 208);
+		alpha_ladder           = 0xFFD000D0, // ARGB(255, 208,    0, 208);
+		alpha_spikes           = 0xFFD010D0, // ARGB(255, 208,   16, 208);
+		alpha_stone_door       = 0xFFD020D0, // ARGB(255, 208,   32, 208);
+		alpha_trap_block       = 0xFFD030D0, // ARGB(255, 208,   48, 208);
+		alpha_bridge           = 0xFFD0DED0, // ARGB(255, 208,  222, 208);
+		alpha_wooden_door      = 0xFFD040D0, // ARGB(255, 208,   64, 208);
+		alpha_wooden_platform  = 0xFFD050D0, // ARGB(255, 208,   80, 208);
 
 		// ALPHA NATURAL
 		alpha_stalagmite       = 0xFFC000C0, // ARGB(255, 192,   0, 192);
@@ -146,6 +147,9 @@ namespace map_colors
 		trapblock_blue         = 0xFF384C8E, // ARGB(255,  56,  76, 142);
 		trapblock_red          = 0xFF8E3844, // ARGB(255, 142,  56,  68);
 		trapblock_noteam       = 0xFF646464, // ARGB(255, 100, 100, 100);
+		bridge_blue            = 0xFF384CDE, // ARGB(255,  56,  76, 222);
+		bridge_red             = 0xFFDE3844, // ARGB(255, 222,  56,  68);
+		bridge_noteam          = 0xFFDEDEDE, // ARGB(255, 222, 222, 222);
 		spikes                 = 0xFFB42A11, // ARGB(255, 180,  42,  17);
 		spikes_ground          = 0xFFB46111, // ARGB(255, 180,  97,  17);
 		spikes_castle          = 0xFFB42A5E, // ARGB(255, 180,  42,  94);

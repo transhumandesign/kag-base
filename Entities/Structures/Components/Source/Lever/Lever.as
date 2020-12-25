@@ -1,6 +1,7 @@
 // Lever.as
 
 #include "MechanismsCommon.as";
+#include "GenericButtonCommon.as";
 
 class Lever : Component
 {
@@ -33,7 +34,7 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic || this.exists("component")) return;
+	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f position = this.getPosition() / 8;
 
@@ -42,10 +43,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.set_u8("state", 0);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		grid.setAll(
 		component.x,                        // x
@@ -58,7 +59,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite is null) return;
+	if (sprite is null) return;
 
 	sprite.SetFacingLeft(false);
 	sprite.SetZ(-50);
@@ -71,7 +72,9 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if(!this.isOverlapping(caller) || !this.getShape().isStatic()) return;
+	if (!canSeeButtons(this, caller)) return;
+
+	if (!this.isOverlapping(caller) || !this.getShape().isStatic()) return;
 
 	u8 state = this.get_u8("state");
 	string description = (state > 0)? "Deactivate" : "Activate";
@@ -89,15 +92,15 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if(cmd == this.getCommandID("toggle"))
+	if (cmd == this.getCommandID("toggle"))
 	{
-		if(getNet().isServer())
+		if (getNet().isServer())
 		{
 			Component@ component = null;
-			if(!this.get("component", @component)) return;
+			if (!this.get("component", @component)) return;
 
 			MapPowerGrid@ grid;
-			if(!getRules().get("power grid", @grid)) return;
+			if (!getRules().get("power grid", @grid)) return;
 
 			u8 state = this.get_u8("state") == 0? 1 : 0;
 			u8 info = state == 0? INFO_SOURCE : INFO_SOURCE | INFO_ACTIVE;
@@ -112,7 +115,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 
 		CSprite@ sprite = this.getSprite();
-		if(sprite is null) return;
+		if (sprite is null) return;
 
 		sprite.SetFrameIndex(this.get_u8("state"));
 		sprite.PlaySound("LeverToggle.ogg");
