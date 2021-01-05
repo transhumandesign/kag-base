@@ -85,7 +85,7 @@ void onTick(CRules@ this)
 			CBlob @b = blobsInBox[i];
 
 			if (!b.getShape().isStatic() && 
-				(b.getTeamNum() < 200 || b.hasTag("no barrier pass") || 
+				(b.getTeamNum() < 100 || b.hasTag("no barrier pass") || 
 				 b.hasTag("material") || b.getName() == "spikes"))
 			{
 				PushBlob(b, middle);
@@ -241,7 +241,6 @@ void SyncToPlayer(CRules@ this, CPlayer@ player)
 // We only send this if we know that the cfg has been edited
 void SyncVarsToPlayer(CRules@ this, CPlayer@ player)
 {
-	print("syncing vars!");
 	// Only send pushback as its the only one client needs
 	CBitStream stream = CBitStream();
 	stream.write_f32(VEL_PUSHBACK);
