@@ -18,7 +18,8 @@ const int coinsOnKillSiege = 20;
 
 const int coinsOnCapFlag = 100;
 
-const int coinsOnBuild = 4;
+const int coinsOnBuildStoneBlock = 3;
+const int coinsOnBuildStoneDoor = 5;
 const int coinsOnBuildWood = 1;
 const int coinsOnBuildWorkshop = 10;
 
@@ -176,7 +177,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 					u16 tile = g.params.read_u16();
 					if (tile == CMap::tile_castle)
 					{
-						coins = coinsOnBuild;
+						coins = coinsOnBuildStoneBlock;
 					}
 					else if (tile == CMap::tile_wood)
 					{
@@ -192,15 +193,19 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 					g.params.ResetBitIndex();
 					string name = g.params.read_string();
 
-					if (name == "stone_door" ||
-					        name == "trap_block" ||
-					        name == "spikes")
+					if (name == "trap_block" ||
+					    name == "spikes")
 					{
-						coins = coinsOnBuild;
+						coins = coinsOnBuildStoneBlock;
+					}
+					else if (name == "stone_door")
+					{
+						coins = coinsOnBuildStoneDoor;
 					}
 					else if (name == "wooden_platform" ||
-								name == "wooden_door" ||
-								name == "bridge")
+							name == "wooden_door" ||
+							name == "bridge" ||
+							name == "ladder")
 					{
 						coins = coinsOnBuildWood;
 					}

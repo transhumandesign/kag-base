@@ -1231,6 +1231,8 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 					continue;
 				}
 
+				f32 temp_damage = damage;
+
 				knight_add_actor_limit(this, b);
 				if (!dontHitMore && (b.getName() != "log" || !dontHitMoreLogs))
 				{
@@ -1238,12 +1240,12 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 
 					if (b.getName() == "log")
 					{
-						damage /= 3;
+						temp_damage /= 3;
 						dontHitMoreLogs = true;
 						CBlob@ wood = server_CreateBlobNoInit("mat_wood");
 						if (wood !is null)
 						{
-							int quantity = Maths::Ceil(float(damage) * 20.0f);
+							int quantity = Maths::Ceil(float(temp_damage) * 20.0f);
 							int max_quantity = b.getHealth() / 0.024f; // initial log health / max mats
 							
 							quantity = Maths::Max(
@@ -1259,7 +1261,7 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 
 					}
 
-					this.server_Hit(b, hi.hitpos, velocity, damage, type, true);  // server_Hit() is server-side only
+					this.server_Hit(b, hi.hitpos, velocity, temp_damage, type, true);  // server_Hit() is server-side only
 
 					// end hitting if we hit something solid, don't if its flesh
 					if (large)

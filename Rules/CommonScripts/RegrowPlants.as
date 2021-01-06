@@ -9,7 +9,7 @@ const bool moss_stone = false;
 const f32 grass_grow_chance = 0.015f;
 const f32 bush_grow_chance = 0.003f;
 const f32 flower_grow_chance = 0.0005f;
-const f32 grain_grow_chance = 0.0005f;
+const f32 grain_grow_chance = flower_grow_chance + 0.0005f; //add flower chance to prevent them from overriding each other
 
 const f32 moss_stone_chance = 0.002f;
 
@@ -25,7 +25,7 @@ const string[] plants_stuff = {"bush", "flowers", "grain_plant"};
 const u16 min_random_time = 200; // minimal time between growth checks
 const u16 max_random_inc = 60; // maximum random increase to time between growth checks
 
-u16 random_time = min_random_time;
+u32 next_check_time = min_random_time;
 
 TileInfo@[] dirt_tiles;
 TileInfo@[] castle_tiles;
@@ -50,6 +50,39 @@ class TileInfo
 		return (getGameTime() - place_time > moss_time); // has enough time passed since this tile was placed?
 	}
 
+	bool hasMossAdjacent()
+	{
+		CMap@ map = getMap();
+
+		Vec2f[] adjacentTilePos = {
+			Vec2f(map.tilesize, 0),   // left
+			Vec2f(-map.tilesize, 0),  // right
+			Vec2f(0, map.tilesize),   // up
+			Vec2f(0, -map.tilesize)   // down
+		};
+
+		for (u8 i = 0; i < adjacentTilePos.size(); i++)
+		{
+			Tile tile = map.getTile(coords - adjacentTilePos[i]);
+			u32 index = findTileByCoords(castle_tiles, coords - adjacentTilePos[i]);
+
+			bool mossyCastle = castle_moss_stuff.find(tile.type) != -1;
+
+			// to ignore min time restriction if tile is close to moss, otherwise you can prevent moss from spreading very very easily
+			if (mossyCastle)
+			{
+				TileInfo tinfo = castle_tiles[index];
+
+				if (tinfo.place_time != 0) // prevent moss that was on the map since the beginning from spreading
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	f32 grassLuck()
 	{
 		f32 luck = 0;
@@ -59,12 +92,12 @@ class TileInfo
 		Tile tile_right = map.getTile(coords - Vec2f(-map.tilesize, map.tilesize));
 
 		// increase chance that grass will grow on this tile if there's grass around it
-		if (tile_left.type == CMap::tile_grass)
+		if (map.isTileGrass(tile_left.type))
 		{
 			luck += 0.15f;
 		}
 
-		if (tile_right.type == CMap::tile_grass)
+		if (map.isTileGrass(tile_left.type))
 		{
 			luck += 0.15f;
 		}
@@ -192,12 +225,7 @@ u32 findTileByCoords(TileInfo@[] tiles, Vec2f coords)
 
 void onTick(CRules@ this)
 {	
-	if (random_time < min_random_time)
-	{
-		random_time = min_random_time;
-	}
-	
-	if (getGameTime() % random_time == 0)
+	if (getGameTime() >= next_check_time)
 	{
 		CMap@ map = getMap();
 		float tilesize = map.tilesize;
@@ -222,8 +250,8 @@ void onTick(CRules@ this)
 				s16 plant = -1;
 
 				if (random_grow <= bush_grow_chance) plant = 0;
-				if (random_grow <= flower_grow_chance) plant = 1;
 				if (random_grow <= grain_grow_chance) plant = 2;
+				if (random_grow <= flower_grow_chance) plant = 1; // do checks out of order so flower overrides grain growth
 
 				if (plant != -1)
 				{
@@ -255,22 +283,25 @@ void onTick(CRules@ this)
 			}
 		}
 
-		for (int i = 1; i < castle_tiles.size(); i++)
+		if (moss_stone)
 		{
-			TileInfo tinfo = castle_tiles[i];
-			f32 random_grow = XORRandom(10000) * 0.0001f;
-			u32 ttype = castle_stuff.find(tinfo.tile.type);
-			f32 luck = tinfo.mossLuck();
-			
-			if (ttype != -1 && moss_stone)
+			for (int i = 1; i < castle_tiles.size(); i++)
 			{
-				if (luck > 0 && random_grow - luck <= moss_stone_chance && tinfo.mossTime()) //  check for luck being non-zero so stone structures get mossified starting from ground level
+				TileInfo tinfo = castle_tiles[i];
+				f32 random_grow = XORRandom(10000) * 0.0001f;
+				u32 ttype = castle_stuff.find(tinfo.tile.type);
+				f32 luck = tinfo.mossLuck();
+				
+				if (ttype != -1)
 				{
-					map.server_SetTile(tinfo.coords, castle_moss_stuff[ttype]);
+					if (luck > 0 && random_grow - luck <= moss_stone_chance && (tinfo.mossTime() || tinfo.hasMossAdjacent())) //  check for luck being non-zero so stone structures get mossified starting from ground level
+					{
+						map.server_SetTile(tinfo.coords, castle_moss_stuff[ttype]);
+					}
 				}
 			}
 		}
 
-		random_time = min_random_time + XORRandom(max_random_inc); // make timing for growth checks semi-random so they're not too monotonous
+		next_check_time = getGameTime() + min_random_time + XORRandom(max_random_inc); // make timing for growth checks semi-random so they're not too monotonous
 	}
 }

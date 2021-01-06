@@ -242,9 +242,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		if (!isAnotherRespawnClose(this) && !isFlipped(this))
 		{
-			CBitStream params;
-			params.write_u16(caller.getNetworkID());
-			CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(0, -4), this, SpawnCmd::buildMenu, getTranslatedString("Change class"), params);
+			caller.CreateGenericButton("$change_class$", Vec2f(0, -4), this, buildSpawnMenu, getTranslatedString("Change class"));
 		}
 
 		if (!Vehicle_AddFlipButton(this, caller) && caller.getTeamNum() == this.getTeamNum())
@@ -256,7 +254,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == SpawnCmd::buildMenu || cmd == SpawnCmd::changeClass)
+	if (cmd == SpawnCmd::changeClass)
 	{
 		onRespawnCommand(this, cmd, params);
 	}

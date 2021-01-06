@@ -484,7 +484,20 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		}
 		else if (charge_state == ArcherParams::charging)
 		{
-			charge_time++;
+			if(!hasarrow)
+			{
+				charge_state = ArcherParams::no_arrows;
+				charge_time = 0;
+				
+				if (ismyplayer)   // playing annoying no ammo sound
+				{
+					this.getSprite().PlaySound("Entities/Characters/Sounds/NoAmmo.ogg", 0.5);
+				}
+			}
+			else
+			{
+				charge_time++;
+			}
 
 			if (charge_time >= ArcherParams::legolas_period)
 			{
@@ -797,7 +810,8 @@ void ClientFire(CBlob@ this, const s8 charge_time, const bool hasarrow, const u8
 			arrowspeed = ArcherParams::shoot_max_vel;
 		}
 
-		ShootArrow(this, this.getPosition() + Vec2f(0.0f, -2.0f), this.getAimPos() + Vec2f(0.0f, -2.0f), arrowspeed, arrow_type, legolas);
+		Vec2f offset(this.isFacingLeft() ? 2 : -2, -2);
+		ShootArrow(this, this.getPosition() + offset, this.getAimPos(), arrowspeed, arrow_type, legolas);
 	}
 }
 
@@ -1171,4 +1185,19 @@ void fletchArrow(CBlob@ this)
 		}
 	}
 	this.getSprite().PlaySound("Entities/Items/Projectiles/Sounds/ArrowHitGround.ogg");
+}
+
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
+{
+	ArcherInfo@ archer;
+	if (!this.get("archerInfo", @archer))
+	{
+		return;
+	}
+
+	if (this.isAttached() && canSend(this))
+	{
+		archer.grappling = false;
+		SyncGrapple(this);
+	}
 }

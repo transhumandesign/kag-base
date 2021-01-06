@@ -53,6 +53,12 @@ namespace Emotes
 		pickup,
 		raised,
 		clap,
+		idea,
+		mine,
+		sorry,
+		rat,
+		dismayed,  //50
+
 
 		emotes_total,
 		off
@@ -105,7 +111,12 @@ namespace Emotes
 		"kiss",
 		"pickup",
 		"raised",
-		"clap"
+		"clap",
+		"idea",
+		"mine",
+		"sorry",
+		"rat",
+		"dismayed"
 	};
 }
 
