@@ -6,7 +6,10 @@ f32 VEL_PUSHBACK = 1.35;
 
 // Var to know if the barrier is currently up 
 // (used for clearing the barrier once when its game time)
-bool SERVER_BARRIER_SET = false; 
+// 
+// Defaults to true because we want clients to remove the barrier
+// if they join and its no longer warm up (fixes some rare bug)
+bool IS_BARRIER_SET = true; 
 
 // Gets toggled to true when we know the 
 // config has different values
@@ -25,7 +28,10 @@ void onInit(CRules@ this)
 void onRestart(CRules@ this)
 {
 	if (!isServer())
+	{
+		IS_BARRIER_SET = true;
 		return;
+	}
 
 	LoadConfigVars();
 
@@ -61,7 +67,7 @@ void onTick(CRules@ this)
 {
 	if (!shouldBarrier(this))
 	{
-		if (SERVER_BARRIER_SET)
+		if (IS_BARRIER_SET)
 			RemoveBarrier(this);
 
 		return;
@@ -172,7 +178,7 @@ void LoadConfigVars()
 // Only used server side, client doesnt normally have info required
 void SetBarrierPosition(CRules@ this)
 {
-	SERVER_BARRIER_SET = true;
+	IS_BARRIER_SET = true;
 
 	Vec2f[] barrierPositions;
 	CMap@ map = getMap();
@@ -204,8 +210,8 @@ void SetBarrierPosition(CRules@ this)
 }
 
 void RemoveBarrier(CRules@ this)
-{
-	SERVER_BARRIER_SET = false;
+{	
+	IS_BARRIER_SET = false;
 
 	CMap@ map = getMap();
 	u16 x1 = this.get_u16("barrier_x1");
