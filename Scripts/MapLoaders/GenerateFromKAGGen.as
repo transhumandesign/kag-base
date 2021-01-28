@@ -510,7 +510,7 @@ CBlob@ SpawnBush(CMap@ map, Vec2f pos)
 
 CBlob@ SpawnTree(CMap@ map, Vec2f pos, bool high_altitude)
 {
-	CBlob@ tree = server_CreateBlobNoInit("tree_pine");
+	CBlob@ tree = server_CreateBlobNoInit(high_altitude ? "tree_pine" : "tree_bushy");
 	if (tree !is null)
 	{
 		tree.Tag("startbig");
