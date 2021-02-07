@@ -53,6 +53,8 @@ void onInit(CBlob@ this)
 
 	this.set_string("autograb blob", "mat_stone");
 
+	this.set_bool("had_attached", false);
+
 	// auto-load on creation
 	if (getNet().isServer())
 	{
@@ -72,6 +74,8 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	const int time = this.getTickSinceCreated();
+	const bool hasAttached = this.hasAttached();
+	const bool hadAttached = this.get_bool("had_attached");
 
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v))
@@ -80,7 +84,8 @@ void onTick(CBlob@ this)
 	const u16 delay = float(v.fire_delay);
 	const f32 time_til_fire = Maths::Max(0, Maths::Min(v.fire_time - getGameTime(), delay));
 
-	if (this.hasAttached() || time < 30 || time_til_fire > 0) //driver, seat or gunner, or just created
+	// hadAttached is here so it sets the arm angle the tick after the last player detaches
+	if (hasAttached || hadAttached || time < 30 || time_til_fire > 0) //driver, seat or gunner, or just created
 	{
 		// load new item if present in inventory
 		Vehicle_StandardControls(this, v);
@@ -131,6 +136,8 @@ void onTick(CBlob@ this)
 	}
 	else if (time % 30 == 0)
 		Vehicle_StandardControls(this, v); //just make sure it's updated
+
+	this.set_bool("had_attached", hasAttached);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
