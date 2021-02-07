@@ -1,0 +1,107 @@
+
+	== KING ARTHUR'S GOLD SERVER SETUP INFO ==
+
+# Basic Overview:
+
+If you want to host your own server just run the following
+script from your KAG directory:
+
+- dedicatedserver.bat on Windows
+- dedicatedserver.sh on Linux
+
+## On Windows:
+
+- Double click dedicatedserver.bat and a launcher should start which looks like your normal launcher,
+but you got a cmd on the back.
+
+- Start game, press Play and the server starts and gets all the required files..
+
+- Use connect in the multiplayer tab
+and you use your LOCAL IP to connect which is 127.0.0.1 (from your computer)
+
+- The default port on which the server works is 50301.
+Be sure to forward this port on your firewall and router if need be.
+
+--(Optional,if you cannot portforward)
+Get logmein hamachi.
+Create a local network.
+Give the login and pass to your friends(They need hamachi too)
+connect by using your hamachi ipv4 which you can do by right clicking on your long ip or on the server.
+
+- Make your friends connect to your game via the master server 
+(Edit dedicatedserver.cfg file to change the name)
+
+## On Linux:
+
+- Set executable permissions:
+
+	$ chmod +x KAG
+	$ chmod +x dedicatedserver.sh
+
+- If the executable updates, you might need to rename the
+updated file and set executable permissions again. Like this:
+
+	$ mv KAG.tmp KAG
+	$ chmod +x KAG
+
+- The default port on which the server works is 50301.
+Be sure to forward this port on your firewall and router if need be.
+
+# More Detail:
+
+The community has a hosting guide here: https://wiki.kag2d.com/wiki/Server
+
+# Configuring your server:
+
+CONFIG FILE: `autoconfig.cfg` (in the game folder)
+
+If you mess something up you can regenerate this file by renaming it
+(so you have a backup) and running KAG fresh, it will be generated upon
+closing the game.
+
+Parameter effects are described alongside each parameter in the file.
+
+Some parameters worth considering:
+
+- General Server: `sv_port`, `sv_name`, `sv_info`, `sv_password`, `sv_rconpassword`
+- Map Generation: `m_width`, `m_height`, `m_seed`
+- Game Config: `sv_maxplayers`, `sv_gamemode`, `sv_mapcycle`
+
+AUTOSTART SCRIPT: `Base/Scripts/server_autostart.as`
+
+This allows you to run custom code when starting up your server.
+
+# Remote Administration
+
+Make sure you set the rcon password in your config - the parameter is sv_rconpassword.
+
+Open the client, join your server and open the console (HOME key).
+
+Type `\rcon \login <password>`. If you login succesfully, you can now use the console
+as if you are on the machine, using the prefix `\rcon`. Example: `\rcon \loadmap autosave`.
+
+# Basic console commands:
+
+	\list - list all commands and variables
+	\rcon \login [password]       - authenticate with rcon
+	\restartmap                   - restarts the current map
+	\loadmap [name]               - loads a new map
+	\savemap [name]               - saves the current state of the map to the maps folder
+	\msg [text]                   - sends a message to everyone on the server (appears in the chat window)
+	\players                      - lists the players
+	\swapid [player id]           - swaps a player's team
+	\kick [playername] [minutes]  - kick a player out of the game
+	\unban [name]                 - unban a player
+	\ban [name] [minutes]         - ban a player
+	\sv_test [1/0]                - enables or disables "testing mode" which allows the use of some commands through the chat system ingame
+
+# Command line:
+
+You may start server with specific ip,port,slots eg.
+
+	./KAG ip 123.124.125.126 port 50213 slots 32 nolauncher
+
+These options override various config set options, which allows server hosting companies greater control over their hosted servers.
+
+These options cannot be modified at runtime, but are normally most easily set in the config - the command line just takes precedence.
+
