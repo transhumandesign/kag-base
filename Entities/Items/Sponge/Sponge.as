@@ -2,8 +2,7 @@
 #include "SplashWater.as";
 #include "SpongeCommon.as";
 
-const int DRY_COOLDOWN = 8;
-int cooldown_time = 0;
+const u8 DRY_COOLDOWN = 8;
 
 //logic
 void onInit(CBlob@ this)
@@ -17,6 +16,7 @@ void onInit(CBlob@ this)
 
 	this.getSprite().ReloadSprites(0, 0);
 	this.set_u8(ABSORBED_PROP, 0);
+	this.set_u8("cooldown_time", 0);
 
 	this.Tag("pushedByDoor");
 	this.getCurrentScript().runFlags |= Script::tick_not_ininventory;
@@ -57,7 +57,7 @@ void onTick(CBlob@ this)
 		{
 			absorbed = adjustAbsorbedAmount(this, -1);
 		}
-		else if (cooldown_time == 0) //near fireplace
+		else if (this.get_u8("cooldown_time") == 0) //near fireplace
 		{
 			CBlob@[] blobsInRadius;
 			if (map.getBlobsInRadius(pos, 8.0f, @blobsInRadius))
@@ -71,7 +71,7 @@ void onTick(CBlob@ this)
 						if (sprite !is null && sprite.isAnimation("fire"))
 						{
 							absorbed = adjustAbsorbedAmount(this, -1);
-							cooldown_time = DRY_COOLDOWN;
+							this.set_u8("cooldown_time", DRY_COOLDOWN);
 							break;
 						}
 					}
@@ -81,9 +81,9 @@ void onTick(CBlob@ this)
 	}
 	
 	//reduce cooldown time
-	if (cooldown_time > 0)
+	if (this.get_u8("cooldown_time") > 0)
 	{
-		cooldown_time--;
+		this.add_u8("cooldown_time", -1);
 	}
 }
 
