@@ -472,6 +472,7 @@ void DrawBow(CSprite@ this, CBlob@ blob, ArcherInfo@ archer, f32 armangle, const
 	}
 
 	frontarm.SetRelativeZ(1.5f);
+	arrow.SetRelativeZ(1.4f);
 	setArmValues(this.getSpriteLayer("backarm"), true, armangle, -0.1f, "default", Vec2f(-4.0f * sign, 0.0f), armOffset);
 
 	// fire arrow particles
