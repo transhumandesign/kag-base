@@ -183,7 +183,9 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.getControls() is null || this.isInInventory())
+	CControls@ controls = this.getControls();
+
+	if (controls is null || this.isInInventory())
 	{
 		return;
 	}
@@ -355,8 +357,10 @@ void onTick(CBlob@ this)
 
 			if (this.isKeyJustPressed(key_action3))
 			{
+				s8 rotateDir = controls.ActionKeyPressed(AK_BUILD_MODIFIER) ? -1 : 1;
+
 				CBitStream params;
-				params.write_u16((this.get_u16("build_angle") + 90) % 360);
+				params.write_u16((360 + this.get_u16("build_angle") + 90 * rotateDir) % 360);
 				this.SendCommand(this.getCommandID("rotateBlob"), params);
 			}
 		}
