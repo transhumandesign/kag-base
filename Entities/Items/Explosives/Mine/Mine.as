@@ -226,7 +226,7 @@ void onRender(CSprite@ this)
 
 	//hover over primed mine to check if its my mine
 	CBlob@ blob = this.getBlob();
-	if (blob.getDamageOwnerPlayer() is getLocalPlayer() && blob.get_u8(MINE_STATE) == PRIMED)
+	if (blob.getDamageOwnerPlayer() is getLocalPlayer())
 	{
 		Vec2f mouseWorldPos = getControls().getMouseWorldPos();
 		Vec2f minePos = blob.getPosition();
