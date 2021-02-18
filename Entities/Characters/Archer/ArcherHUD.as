@@ -56,5 +56,5 @@ void onRender(CSprite@ this)
 	DrawCoinsOnHUD(blob, coins, tl, slotsSize - 2);
 
 	// class weapon icon
-	GUI::DrawIcon(iconsFilename, arrow_frame, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -16), 1.0f);
+	GUI::DrawIcon(iconsFilename, arrow_frame, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -16), 1.0f, player.getTeamNum());
 }
