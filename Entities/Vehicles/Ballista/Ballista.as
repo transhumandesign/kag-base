@@ -3,6 +3,7 @@
 #include "StandardRespawnCommand.as";
 #include "Requirements_Tech.as";
 #include "GenericButtonCommon.as";
+#include "Costs.as";
 
 //todo: move to include
 bool hasTech(CBlob@ this, const string &in name)
@@ -42,6 +43,9 @@ void onInit(CBlob@ this)
 	InitRespawnCommand(this);
 	InitClasses(this);
 	this.Tag("change class drop inventory");
+
+	InitCosts();
+	this.set_s32("gold building amount", CTFCosts::ballista_gold);
 
 	Vehicle_Setup(this,
 	              30.0f, // move speed
