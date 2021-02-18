@@ -36,6 +36,7 @@ void onInit(CBlob@ this)
 	{
 		ShopItem@ s = addShopItem(this, "War Boat", "$warboat$", "warboat", "$warboat$\n\n\n" + Descriptions::warboat, false, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::warboat);
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::warboat_gold);
 		s.crate_icon = 2;
 	}
 }
