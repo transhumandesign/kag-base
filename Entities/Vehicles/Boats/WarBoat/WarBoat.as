@@ -50,6 +50,9 @@ void onInit(CBlob@ this)
 	InitClasses(this);
 	this.Tag("change class store inventory");
 
+	InitCosts();
+    this.set_s32("gold building amount", CTFCosts::warboat_gold);
+
 	// additional shapes
 
 	//top bit
