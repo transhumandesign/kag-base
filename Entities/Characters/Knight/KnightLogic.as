@@ -1338,37 +1338,30 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 									// Note: 0.1f damage doesn't harvest anything I guess
 									// This puts it in inventory - include MaterialCommon
 									//Material::fromTile(this, hi.tile, 1.f);
-
 									CBlob@ ore = server_CreateBlobNoInit("mat_gold");
 									if (ore !is null)
 									{
 										ore.Tag('custom quantity');
-	     								ore.Init();
-	     								ore.setPosition(hi.hitpos);
-	     								ore.server_SetQuantity(4);
-	     							}
-								}
-								else if (dirt_thick_stone)
-								{
-									CBlob@ ore = server_CreateBlobNoInit("mat_stone");
-									if (ore !is null)
-									{
-										ore.Tag('custom quantity');
-	     								ore.Init();
-	     								ore.setPosition(hi.hitpos);
-	     								ore.server_SetQuantity(6);
-	     							}
+										ore.Init();
+										ore.setPosition(hi.hitpos);
+										ore.server_SetQuantity(4);
+									}
 								}
 								else if (dirt_stone)
 								{
+									int quantity = 4;
+									if(dirt_thick_stone)
+									{
+										quantity = 6;
+									}
 									CBlob@ ore = server_CreateBlobNoInit("mat_stone");
 									if (ore !is null)
 									{
 										ore.Tag('custom quantity');
-	     								ore.Init();
-	     								ore.setPosition(hi.hitpos);
-	     								ore.server_SetQuantity(4);
-	     							}
+										ore.Init();
+										ore.setPosition(hi.hitpos);
+										ore.server_SetQuantity(quantity);
+									}
 								}
 							}
 						}
