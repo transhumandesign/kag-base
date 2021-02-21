@@ -1288,6 +1288,7 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 				{
 					bool ground = map.isTileGround(hi.tile);
 					bool dirt_stone = map.isTileStone(hi.tile);
+					bool dirt_thick_stone = map.isTileThickStone(hi.tile);
 					bool gold = map.isTileGold(hi.tile);
 					bool wood = map.isTileWood(hi.tile);
 					if (ground || wood || dirt_stone || gold)
@@ -1337,15 +1338,30 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 									// Note: 0.1f damage doesn't harvest anything I guess
 									// This puts it in inventory - include MaterialCommon
 									//Material::fromTile(this, hi.tile, 1.f);
-
 									CBlob@ ore = server_CreateBlobNoInit("mat_gold");
 									if (ore !is null)
 									{
 										ore.Tag('custom quantity');
-	     								ore.Init();
-	     								ore.setPosition(hi.hitpos);
-	     								ore.server_SetQuantity(4);
-	     							}
+										ore.Init();
+										ore.setPosition(hi.hitpos);
+										ore.server_SetQuantity(4);
+									}
+								}
+								else if (dirt_stone)
+								{
+									int quantity = 4;
+									if(dirt_thick_stone)
+									{
+										quantity = 6;
+									}
+									CBlob@ ore = server_CreateBlobNoInit("mat_stone");
+									if (ore !is null)
+									{
+										ore.Tag('custom quantity');
+										ore.Init();
+										ore.setPosition(hi.hitpos);
+										ore.server_SetQuantity(quantity);
+									}
 								}
 							}
 						}
