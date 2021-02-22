@@ -503,8 +503,6 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 		DrawFancyCopiedText(rules.get_string("client_copy_name"), rules.get_Vec2f("client_copy_pos"), durationLeft);
 	}
 
-	mouseWasPressed2 = controls.mousePressed2;
-
 	return topleft.y;
 
 }
@@ -640,9 +638,9 @@ void onRenderScoreboard(CRules@ this)
 
 	float scoreboardHeight = topleft.y + scrollOffset;
 	float screenHeight = getScreenHeight();
+	CControls@ controls = getControls();
 
 	if(scoreboardHeight > screenHeight) {
-		CControls@ controls = getControls();
 		Vec2f mousePos = controls.getMouseScreenPos();
 
 		float fullOffset = (scoreboardHeight + scoreboardMargin) - screenHeight;
@@ -661,6 +659,7 @@ void onRenderScoreboard(CRules@ this)
 
 	drawHoverExplanation(hovered_accolade, hovered_age, hovered_tier, Vec2f(getScreenWidth() * 0.5, topleft.y));
 
+	mouseWasPressed2 = controls.mousePressed2; 
 }
 
 void drawHoverExplanation(int hovered_accolade, int hovered_age, int hovered_tier, Vec2f centre_top)
@@ -703,7 +702,7 @@ void onTick(CRules@ this)
 {
 	if(isServer() && this.getCurrentState() == GAME)
 	{
-		this.set_u32("match_time", this.get_u32("match_time")+1);
+		this.add_u32("match_time", 1);
 		this.Sync("match_time", true);
 	}
 }
@@ -730,9 +729,9 @@ void getMapName(CRules@ this)
 	{
 		string[] name = map.getMapName().split('/');	 //Official server maps seem to show up as
 		string mapName = name[name.length() - 1];		 //``Maps/CTF/MapNameHere.png`` while using this instead of just the .png
-		mapName = mapName.substr(0,mapName.length() - 4);//Sub by 4 so .cfg OR .png are removed when loading the map
+		mapName = getFilenameWithoutExtension(mapName);  // Remove extension from the filename if it exists
 
-		this.set_string("map_name",mapName);
+		this.set_string("map_name", mapName);
 		this.Sync("map_name",true);
 	}
 }

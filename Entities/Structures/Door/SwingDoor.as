@@ -54,6 +54,21 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	if (!isStatic) return;
 
 	this.getSprite().PlaySound("/build_door.ogg");
+	
+	int touchingBlobs = this.getTouchingCount();
+	for (int a = 0; a < touchingBlobs; a++)
+	{
+		CBlob@ blob = this.getTouchingByIndex(a);
+		if (blob is null)
+			continue;
+
+		if (this.getTeamNum() == blob.getTeamNum() && 
+			(blob.hasTag("player") || blob.hasTag("vehicle") || blob.hasTag("migrant")))
+		{
+			OpenDoor(this, blob);
+			break;
+		}
+	}
 }
 
 //TODO: fix flags sync and hitting
@@ -102,11 +117,8 @@ void onTick(CBlob@ this)
 
 		if (canOpenDoor(this, blob) && !isOpen(this))
 		{
-			Vec2f pos = this.getPosition();
-			Vec2f other_pos = blob.getPosition();
-			Vec2f direction = Vec2f(1, 0);
-			direction.RotateBy(this.getAngleDegrees());
-			setOpen(this, true, ((pos - other_pos) * direction) < 0.0f);
+			OpenDoor(this, blob);
+			break;
 		}
 	}
 	// close it
@@ -185,10 +197,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 		if (destruction_anim !is null)
 		{
-			if (this.getHealth() < this.getInitialHealth())
+			if ((this.getHealth() - damage) < this.getInitialHealth())
 			{
 				f32 ratio = (this.getHealth() - damage * getRules().attackdamage_modifier) / this.getInitialHealth();
-
 
 				if (ratio <= 0.0f)
 				{
@@ -222,12 +233,18 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 	if (canOpenDoor(this, blob))
 	{
-		Vec2f pos = this.getPosition();
-		Vec2f other_pos = blob.getPosition();
-		Vec2f direction = Vec2f(1, 0);
-		direction.RotateBy(this.getAngleDegrees());
-		setOpen(this, true, ((pos - other_pos) * direction) < 0.0f);
+		OpenDoor(this, blob);
 		return false;
 	}
+
 	return true;
+}
+
+void OpenDoor(CBlob@ this, CBlob@ blob, bool open = true)
+{
+	Vec2f pos = this.getPosition();
+	Vec2f other_pos = blob.getPosition();
+	Vec2f direction = Vec2f(1, 0);
+	direction.RotateBy(this.getAngleDegrees());
+	setOpen(this, open, ((pos - other_pos) * direction) < 0.0f);
 }

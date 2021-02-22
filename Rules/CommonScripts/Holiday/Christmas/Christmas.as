@@ -2,22 +2,24 @@
 //
 //TODO: re-apply new holiday sprites when holiday is active
 //		(check git history around xmas 2018 for holiday versions)
+#include "TreeCommon"
 
-const int present_interval = 30 * 60 * 5; // 5 minutes
+const int present_interval = 30 * 60 * 10; // 10 minutes
 
 // Snow stuff
 bool _snow_ready = false;
 Vertex[] Verts;
 SColor snow_col(0xffffffff);
+f64 frameTime = 0;
 
 void onInit(CRules@ this)
 {
-	this.addCommandID("xmas sound");
-
-	if(isClient() && !v_fastrender)
+	if (isClient())
 	{
-		Render::addScript(Render::layer_background, "Christmas.as", "DrawSnow", 0);
+		this.set_s16("snow_render_id", 0);
 	}
+
+	this.addCommandID("xmas sound");
 
 	onRestart(this);
 }
@@ -26,11 +28,34 @@ void onRestart(CRules@ this)
 {
 	_snow_ready = false;
 	this.set_s32("present timer", present_interval);
+	frameTime = 0;
 }
 
 void onTick(CRules@ this)
 {
-	if (!getNet().isServer() || this.isWarmup() || !(this.gamemode_name == "CTF" || this.gamemode_name == "TTH"))
+	if (isClient())
+	{
+		s16 renderId = this.get_s16("snow_render_id");
+		// Have we just disabled fast render
+		if (renderId == 0 && !v_fastrender)
+		{
+			// TEMP
+#ifdef STAGING
+			this.set_s16("snow_render_id", Render::addScript(Render::layer_floodlayers, "Christmas.as", "DrawSnow", 0));
+#endif
+#ifndef STAGING
+			this.set_s16("snow_render_id", Render::addScript(Render::layer_background, "Christmas.as", "DrawSnow", 0));
+#endif
+		} 
+		else if (renderId != 0 && v_fastrender || this.get_string("holiday") != "Christmas") // Have we just enabled fast render OR is holiday over
+		{
+			Render::RemoveScript(renderId);
+			this.set_s16("snow_render_id", 0);
+		}
+	}
+	
+	
+	if (!isServer() || this.isWarmup() || !(this.gamemode_name == "CTF" || this.gamemode_name == "TTH" || this.gamemode_name == "SmallCTF"))
 		return;
 
 	if (!this.exists("present timer"))
@@ -54,7 +79,13 @@ void onTick(CRules@ this)
 
 			for (uint i = 0; i < trees.length; i++)
 			{
-				if (trees[i].get_u8("height") >= 5)
+				TreeVars@ vars;
+				trees[i].get("TreeVars", @vars);
+
+				if (vars is null)
+					continue;
+
+				if (vars.height >= 5)
 				{
 					// sort trees based on position..
 					if (trees[i].getPosition().x < mapCenter)
@@ -135,26 +166,29 @@ void InitSnow()
 void DrawSnow(int id)
 {
 	InitSnow();
-
-	//disable if holiday has ended
-	if (getRules().get_string("holiday") != "Christmas")
-	{
-		Render::RemoveScript(id);
-		return;
-	}
-
+	frameTime += getRenderApproximateCorrectionFactor();
+	
 	float[] trnsfm;
 	for(int i = 0; i < 3; i++)
 	{
-		float gt = getGameTime() * (1.0f + (0.031f * i)) + (997 * i);
+		float gt = frameTime * (1.0f + (0.031f * i)) + (997 * i);
 		float X = Maths::Cos(gt/49.0f)*20 +
 			Maths::Cos(gt/31.0f) * 5 +
 			Maths::Cos(gt/197.0f) * 10;
 		float Y = gt % 255;
 		Matrix::MakeIdentity(trnsfm);
+
+		// TEMP PREPROCESSING
+#ifdef STAGING
+		Matrix::SetTranslation(trnsfm, X, Y, -500);
+		Render::SetZBuffer(true, false);
+#endif
+#ifndef STAGING
 		Matrix::SetTranslation(trnsfm, X, Y, 0);
-		Render::SetModelTransform(trnsfm);
+#endif
+
 		Render::SetAlphaBlend(true);
+		Render::SetModelTransform(trnsfm);
 		Render::RawQuads("Snow.png", Verts);
 	}
 }

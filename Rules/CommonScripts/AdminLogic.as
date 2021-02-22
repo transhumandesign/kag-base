@@ -5,7 +5,7 @@
 
 u8 nonSpecTeam = 0;	//Sandbox' default team.
 
-void commandRecieve(CRules@ this, u8 cmd, CBitStream @params)
+void commandReceive(CRules@ this, u8 cmd, CBitStream @params)
 {
 	//Forcing spectator team for admins.
 	if(getNet().isServer() && this.getCommandID("mod_team") == cmd)

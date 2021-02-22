@@ -2,6 +2,7 @@
 #include "ClassSelectMenu.as";
 #include "StandardRespawnCommand.as";
 #include "GenericButtonCommon.as";
+#include "Costs.as";
 //#include "Requirements_Tech.as";
 
 // Boat logic
@@ -49,6 +50,9 @@ void onInit(CBlob@ this)
 	InitRespawnCommand(this);
 	InitClasses(this);
 	this.Tag("change class store inventory");
+
+	InitCosts();
+	this.set_s32("gold building amount", CTFCosts::warboat_gold);
 
 	// additional shapes
 
@@ -210,9 +214,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (caller.getTeamNum() == this.getTeamNum())
 	{
-		CBitStream params;
-		params.write_u16(caller.getNetworkID());
-		CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(13, 4), this, SpawnCmd::buildMenu, getTranslatedString("Change class"), params);
+		caller.CreateGenericButton("$change_class$", Vec2f(13, 4), this, buildSpawnMenu, getTranslatedString("Change class"));
 	}
 }
 

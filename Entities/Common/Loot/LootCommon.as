@@ -15,7 +15,6 @@ enum                Index
 	MAT_BOMBARROWS,
 	MAT_WOOD,
 	MAT_STONE,
-	MAT_GOLD,
 	DRILL,
 	MAT_BOMBS,
 	MAT_WATERBOMBS,
@@ -33,7 +32,6 @@ const string[]      NAME =
 	"mat_bombarrows",
 	"mat_wood",
 	"mat_stone",
-	"mat_gold",
 	"drill",
 	"mat_bombs",
 	"mat_waterbombs",
@@ -51,7 +49,6 @@ const u8[]          WEIGHT =
 	20,                     // mat_bombarrows
 	40,                     // mat_wood
 	25,                     // mat_stone
-	10,                     // mat_gold
 	25,                     // drill
 	55,                     // mat_bombs
 	25,                     // mat_waterbombs
@@ -75,7 +72,6 @@ const u8[]          INDEX_BUILDER =
 {
 	MAT_WOOD,
 	MAT_STONE,
-	MAT_GOLD,
 	DRILL
 };
 
@@ -97,7 +93,6 @@ const u8[]          INDEX_CTF =
 	MAT_BOMBARROWS,
 	MAT_WOOD,
 	MAT_STONE,
-	MAT_GOLD,
 	DRILL,
 	MAT_BOMBS,
 	MAT_WATERBOMBS,

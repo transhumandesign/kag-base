@@ -18,6 +18,7 @@ const f32 SPECIAL_HIT_SCALE = 1.0f; //special hit on food items to shoot to team
 
 const s32 FIRE_IGNITE_TIME = 5;
 
+const u32 STUCK_ARROW_DECAY_SECS = 30;
 
 //Arrow logic
 
@@ -381,7 +382,8 @@ void Pierce(CBlob @this, CBlob@ blob = null)
 
 void AddArrowLayer(CBlob@ this, CBlob@ hitBlob, CSprite@ sprite, Vec2f worldPoint, Vec2f velocity)
 {
-	CSpriteLayer@ arrow = sprite.addSpriteLayer("arrow", "Entities/Items/Projectiles/Arrow.png", 16, 8, this.getTeamNum(), this.getSkinNum());
+	uint index = hitBlob.get_u32("stuck_arrow_index");
+	CSpriteLayer@ arrow = sprite.addSpriteLayer("arrow" + index, "Entities/Items/Projectiles/Arrow.png", 16, 8, this.getTeamNum(), this.getSkinNum());
 
 	if (arrow !is null)
 	{
@@ -426,6 +428,31 @@ void AddArrowLayer(CBlob@ this, CBlob@ hitBlob, CSprite@ sprite, Vec2f worldPoin
 
 		f32 angle = velocity.Angle();
 		arrow.RotateBy(-angle - hitBlob.getAngleDegrees(), Vec2f(0, 0));
+
+		//track time until arrow is destroyed
+
+		//initialize arrays
+		if (!hitBlob.exists("stuck_arrow_names"))
+		{
+			string[] names;
+			hitBlob.set("stuck_arrow_names", names);
+
+			uint[] times;
+			hitBlob.set("stuck_arrow_times", times);
+		}
+
+		//save details of arrow so it can decay
+		hitBlob.push("stuck_arrow_names", arrow.name);
+		hitBlob.push("stuck_arrow_times", getGameTime() + getTicksASecond() * STUCK_ARROW_DECAY_SECS);
+
+		//attach decay script
+		if (!hitBlob.hasScript("DecayStuckArrows.as"))
+		{
+			hitBlob.AddScript("DecayStuckArrows.as");
+		}
+
+		//increment arrow index
+		hitBlob.add_u32("stuck_arrow_index", 1);
 	}
 }
 
@@ -507,13 +534,12 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 			//die otherwise
 			else
 			{
-				//add arrow layer disabled
-				/*
+				//add arrow layer
 				CSprite@ sprite = hitBlob.getSprite();
-				if (sprite !is null && !hitShield && arrowType != ArrowType::bomb)
+				if (sprite !is null && !hitShield && arrowType != ArrowType::bomb && isClient() && !v_fastrender)
 				{
 					AddArrowLayer(this, hitBlob, sprite, worldPoint, velocity);
-				}*/
+				}
 				this.server_Die();
 			}
 		}

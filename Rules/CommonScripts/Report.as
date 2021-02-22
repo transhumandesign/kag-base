@@ -16,7 +16,7 @@ void onInit(CRules@ this)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
-	commandRecieve(this, cmd, params);
+	commandReceive(this, cmd, params);
 	if (isClient() && this.getCommandID("report") == cmd)
 	{
 		string p_name = params.read_string();

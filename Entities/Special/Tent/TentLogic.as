@@ -52,9 +52,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	// create menu for class change
 	if (canChangeClass(this, caller) && caller.getTeamNum() == this.getTeamNum())
 	{
-		CBitStream params;
-		params.write_u16(caller.getNetworkID());
-		caller.CreateGenericButton("$change_class$", Vec2f(0, 0), this, SpawnCmd::buildMenu, getTranslatedString("Swap Class"), params);
+		caller.CreateGenericButton("$change_class$", Vec2f(0, 0), this, buildSpawnMenu, getTranslatedString("Swap Class"));
 	}
 }
 

@@ -139,21 +139,10 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 		//if (isKnockable(caller) && caller.get_u8("knocked") > 0)
 		//	return;
 
-		if (caller.isAttached())   // attached - like sitting in cata? move whole cata
-		{
-			const int count = caller.getAttachmentPointCount();
-			for (int i = 0; i < count; i++)
-			{
-				AttachmentPoint @ap = caller.getAttachmentPoint(i);
-				CBlob@ occBlob = ap.getOccupied();
-				if (occBlob !is null)
-				{
-					occBlob.setPosition(tunnel.getPosition());
-					occBlob.setVelocity(Vec2f_zero);
-					//occBlob.getShape().PutOnGround();
-				}
-			}
-		}
+		//dont travel if caller is attached to something (e.g. siege)
+		if (caller.isAttached())
+			return;
+
 		// move caller
 		caller.setPosition(tunnel.getPosition());
 		caller.setVelocity(Vec2f_zero);

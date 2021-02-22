@@ -157,7 +157,7 @@ void onTick(CBlob@ this)
 				}
 			}
 		}
-		else if (carryBlob !is null && !carryBlob.hasTag("custom drop") && (!carryBlob.hasTag("temp blob") || carryBlob.getName() == "ladder"))
+		else if (carryBlob !is null && !carryBlob.hasTag("custom drop") && (!carryBlob.hasTag("temp blob")))
 		{
 			ClearPickupBlobs(this);
 			client_SendThrowCommand(this);
@@ -627,6 +627,8 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 			}
 		}
 
+	} else {
+		canRayCast = true;
 	}
 
 	return (((pos2 - pos).getLength() <= maxDist)
