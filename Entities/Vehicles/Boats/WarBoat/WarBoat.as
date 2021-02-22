@@ -2,6 +2,7 @@
 #include "ClassSelectMenu.as";
 #include "StandardRespawnCommand.as";
 #include "GenericButtonCommon.as";
+#include "Costs.as";
 //#include "Requirements_Tech.as";
 
 // Boat logic
