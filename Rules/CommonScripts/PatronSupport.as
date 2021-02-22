@@ -1,5 +1,4 @@
 #define SERVER_ONLY
-
 //implementation of patron-related rules-side extra functionality
 
 //extra patron slots handling

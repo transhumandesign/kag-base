@@ -1,4 +1,5 @@
 // SHOW KILL MESSAGES ON CLIENT
+#define CLIENT_ONLY
 
 #include "Hitters.as";
 #include "TeamColour.as";

@@ -1,3 +1,5 @@
+#define CLIENT_ONLY
+
 void onStateChange( CRules@ this, const u8 oldState )
 {
 	if (this.isGameOver() && this.getTeamWon() >= 0)
