@@ -59,6 +59,12 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().tickIfTag = MINE_PRIMING;
 }
 
+void onInit(CSprite@ this)
+{
+	this.getCurrentScript().runFlags |= Script::tick_not_attached | Script::tick_not_ininventory;
+
+}
+
 void onTick(CBlob@ this)
 {
 	if (getNet().isServer())
