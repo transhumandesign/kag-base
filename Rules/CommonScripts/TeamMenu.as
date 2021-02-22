@@ -1,11 +1,12 @@
 // show menu that only allows to join spectator
 
+#include "SwitchFromSpec.as"
+
 const int BUTTON_SIZE = 4;
 
 void onInit(CRules@ this)
 {
 	this.addCommandID("pick teams");
-	this.addCommandID("pick spectator");
 	this.addCommandID("pick none");
 
 	AddIconToken("$BLUE_TEAM$", "GUI/TeamIcons.png", Vec2f(96, 96), 0);
@@ -50,7 +51,7 @@ void ShowTeamMenu(CRules@ this)
 					CBitStream params;
 					params.write_u16(getLocalPlayer().getNetworkID());
 					params.write_u8(this.getSpectatorTeamNum());
-					CGridButton@ button2 = menu.AddButton("$SPECTATOR$", getTranslatedString("Spectator"), this.getCommandID("pick spectator"), Vec2f(BUTTON_SIZE / 2, BUTTON_SIZE), params);
+					CGridButton@ button2 = menu.AddButton("$SPECTATOR$", getTranslatedString("Spectator"), this.getCommandID("pick teams"), Vec2f(BUTTON_SIZE / 2, BUTTON_SIZE), params);
 				}
 				icon = "$RED_TEAM$";
 				name = "Red Team";
@@ -75,19 +76,27 @@ void ReadChangeTeam(CRules@ this, CBitStream @params)
 
 	if (player is getLocalPlayer())
 	{
-		player.client_ChangeTeam(team);
-		// player.client_RequestSpawn(0);
-		getHUD().ClearMenus();
+		if (CanSwitchFromSpec(this, player, team))
+		{
+			ChangeTeam(player, team);
+		}
+		else
+		{
+			client_AddToChat("Game is currently full. Please wait for a new slot before switching teams.", ConsoleColour::GAME);
+			Sound::Play("NoAmmo.ogg");
+		}
 	}
+}
+
+void ChangeTeam(CPlayer@ player, u8 team)
+{
+	player.client_ChangeTeam(team);
+	getHUD().ClearMenus();
 }
 
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("pick teams"))
-	{
-		ReadChangeTeam(this, params);
-	}
-	else if (cmd == this.getCommandID("pick spectator"))
 	{
 		ReadChangeTeam(this, params);
 	}
