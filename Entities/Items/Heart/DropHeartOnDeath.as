@@ -31,6 +31,7 @@ void dropHeart(CBlob@ this)
 			{
 				Vec2f vel(XORRandom(2) == 0 ? -2.0 : 2.0f, -5.0f);
 				heart.setVelocity(vel);
+				heart.set_u16("healer", killer.getNetworkID());
 			}
 		}
 	}
