@@ -14,7 +14,7 @@ void onRender(CRules@ this)
 	if (player.isMod() && player.getTeamNum() == this.getSpectatorTeamNum() && controls.isKeyPressed(KEY_LCONTROL))
 	{
 		CBlob@[] targets;
-		f32 radius = 16.0f;
+		f32 radius = 32.0f;
 
 		if (map.getBlobsInRadius(mouse_pos, radius, @targets))
 		{
