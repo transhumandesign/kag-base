@@ -1,6 +1,8 @@
 // This script works with an external program that propagates bans to other connected servers
 // This ensures banned players get banned on all other connected servers
 
+#define SERVER_ONLY
+
 void onBan(const string username, const int minutes, const string reason)
 {
 	tcpr("BAN " + username + " " + minutes + " " + reason);
