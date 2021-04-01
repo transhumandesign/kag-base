@@ -249,6 +249,9 @@ void onInit(CRules@ this)
 {
 	Reset(this);
 
+	this.addCommandID("killstreak message");
+	this.addCommandID("interrupt message");
+
 	AddIconToken("$killfeed_fall$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 1);
 	AddIconToken("$killfeed_water$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 2);
 	AddIconToken("$killfeed_fire$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 3);
@@ -296,11 +299,48 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
 			CBlob@ victimblob = victim.getBlob();
 			CPlayer@ helper = getAssistPlayer(victim, killer);
 
-			bool kill = killerblob !is null && victimblob !is null && killerblob.isMyPlayer() && killerblob !is victimblob;
+			bool kill = killerblob !is null && victimblob !is null && killerblob !is victimblob;
 			bool assist = helper !is null && helper.isMyPlayer();
+
 			if (kill)
 			{
-				add_message(KillSpreeMessage(victim));
+				if (isServer())
+				{
+					if (killerblob.getTeamNum() != victimblob.getTeamNum())
+					{
+						killer.set_u32("kill time", getGameTime());
+						
+						if(!killer.exists("killstreak"))
+						{
+							killer.set_u8("killstreak", 1);
+						}
+						else
+						{
+							killer.add_u8("killstreak", 1);
+						}
+					}
+
+					if (victim.get_u8("killstreak") > 4)
+					{
+
+						uint16 victim_netid = victim.getNetworkID();
+						uint16 killer_netid = killer.getNetworkID();
+						uint8 kill_count = victim.get_u8("killstreak");
+
+						CBitStream bs;
+						bs.write_u16(victim_netid);
+						bs.write_u16(killer_netid);
+						bs.write_u8(kill_count);
+						this.SendCommand(this.getCommandID("interrupt message"), bs);
+
+						victim.set_u8("killstreak", 0);
+					}
+				}
+				
+				if (killerblob.isMyPlayer())
+				{
+					add_message(KillSpreeMessage(victim));
+				}
 			}
 			else if (assist)
 			{
@@ -318,6 +358,41 @@ void onTick(CRules@ this)
 	{
 		feed.Update();
 	}
+
+	if(isServer())
+	{
+		for(int a = 0; a < getPlayerCount(); a++) 
+		{ 
+			CPlayer@ player = getPlayer(a);
+
+			if (player !is null && player.exists("killstreak"))
+			{
+				if (getGameTime() < player.get_u32("kill time"))
+				{
+					player.set_u8("killstreak", 0);
+				}
+
+				if (getGameTime() - player.get_u32("kill time") > (6 * getTicksASecond()) && player.get_u8("killstreak") > 4)
+				{
+					string multiKill;
+
+					uint16 player_netid = player.getNetworkID();
+					uint16 kill_count = player.get_u8("killstreak");
+
+					CBitStream bs;
+					bs.write_u16(player_netid);
+					bs.write_u8(kill_count);
+					this.SendCommand(this.getCommandID("killstreak message"), bs);
+				
+					player.set_u8("killstreak", 0);
+				}
+				else if (getGameTime() - player.get_u32("kill time") > (6 * 30))
+				{
+					player.set_u8("killstreak", 0);
+				}
+			}
+		} 
+	}
 }
 
 void onRender(CRules@ this)
@@ -330,5 +405,100 @@ void onRender(CRules@ this)
 	if (this.get("KillFeed", @feed) && feed !is null)
 	{
 		feed.Render();
+	}
+}
+
+void onCommand(CRules@ this, u8 cmd, CBitStream @params)
+{
+	if (isClient())
+	{
+		if (cmd == this.getCommandID("killstreak message"))
+		{
+			u16 player_netid;
+			u8 kill_count;
+
+			if (!params.saferead_u16(player_netid)
+			 || !params.saferead_u8(kill_count))
+			{
+				print("failed to parse killstreak message payload");
+				return;
+			}
+
+			CPlayer@ player = getPlayerByNetworkId(player_netid);
+
+			if (player is null)
+			{
+				return;
+			}
+
+			string multiKill;
+
+			switch (kill_count)
+			{
+				case 5: multiKill = "a Pentakill";
+					break;
+				case 6: multiKill = "a Hexakill";
+					break;
+				case 7: multiKill = "a Septakill";
+					break;
+				case 8: multiKill = "an Octakill";
+					break;
+				case 9: multiKill = "a Nonakill";
+					break;
+				case 10: multiKill = "a Decakill";
+					break;
+				case 11:
+				case 18: multiKill = "an " + kill_count + " kill multikill";
+					break;
+				default: multiKill = "a " + kill_count + " kill multikill";
+					break;
+			}
+
+			client_AddToChat(player.getCharacterName() + " got " + multiKill + "!", SColor(255, 180, 24, 94));
+		}
+
+		if (cmd == this.getCommandID("interrupt message"))
+		{
+			u16 victim_netid, killer_netid;
+			u8 kill_count;
+
+			if (!params.saferead_u16(victim_netid)
+			 || !params.saferead_u16(killer_netid)
+			 || !params.saferead_u8(kill_count))
+			{
+				print("failed to parse killstreak message payload");
+				return;
+			}
+
+			CPlayer@ killer = getPlayerByNetworkId(killer_netid);
+			CPlayer@ victim = getPlayerByNetworkId(victim_netid);
+
+			if (killer is null || victim is null)
+			{
+				return;
+			}
+
+			string multiKill;
+
+			switch (kill_count)
+			{
+				case 5: multiKill = "Pentakill";
+					break;
+				case 6: multiKill = "Hexakill";
+					break;
+				case 7: multiKill = "Septakill";
+					break;
+				case 8: multiKill = "Octakill";
+					break;
+				case 9: multiKill = "Nonakill";
+					break;
+				case 10: multiKill = "Decakill";
+					break;
+				default: multiKill = kill_count + " kill multikill";
+					break;
+			}
+
+			client_AddToChat(killer.getCharacterName() + " has interrupted " + victim.getCharacterName() + "'s " + multiKill + "!", SColor(255, 180, 24, 94));
+		}
 	}
 }
