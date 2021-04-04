@@ -2,6 +2,7 @@
 #include "ClassSelectMenu.as";
 #include "StandardRespawnCommand.as";
 #include "GenericButtonCommon.as";
+#include "Costs.as";
 //#include "Requirements_Tech.as";
 
 // Boat logic
@@ -49,6 +50,9 @@ void onInit(CBlob@ this)
 	InitRespawnCommand(this);
 	InitClasses(this);
 	this.Tag("change class store inventory");
+
+	InitCosts();
+	this.set_s32("gold building amount", CTFCosts::warboat_gold);
 
 	// additional shapes
 

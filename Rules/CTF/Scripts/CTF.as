@@ -573,7 +573,7 @@ shared class CTFCore : RulesCore
 					CPlayer@ player = players[i].getPlayer();
 					if (player !is null && players[i].getTeamNum() == winteamIndex)
 					{
-						player.server_setCoins(player.getCoins() + 10);
+						player.server_setCoins(player.getCoins() + 150);
 					}
 				}
 			}

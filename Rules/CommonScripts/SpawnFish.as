@@ -24,6 +24,11 @@ void onTick(CRules@ this)
 			CBlob@ first_fish = fish[first];
 			CBlob@ second_fish = fish[second];
 
+			if (first_fish.isInInventory() || second_fish.isInInventory() || first_fish.isAttached() || second_fish.isAttached())
+			{
+				return;
+			}
+
 			if (first != second && //not the same fish
 			        first_fish.getDistanceTo(second_fish) < 32 && //close
 			        !first_fish.hasTag("dead") && //both parents alive

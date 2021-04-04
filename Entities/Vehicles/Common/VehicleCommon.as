@@ -972,14 +972,10 @@ void Vehicle_onDetach(CBlob@ this, VehicleInfo@ v, CBlob@ detached, AttachmentPo
 
 	if (detached.hasTag("player") && attachedPoint.socket)
 	{
-
-		// Fires on detach. Blame Fuzzle.
-		if (attachedPoint.name == "GUNNER" && v.charge > 0)
+		// reset charge if gunner leaves while charging
+		if (attachedPoint.name == "GUNNER")
 		{
-			CBitStream params;
-			params.write_u16(detached.getNetworkID());
-			params.write_u8(v.charge);
-			this.SendCommand(this.getCommandID("fire"), params);
+			v.charge = 0;
 		}
 
 		detached.setPosition(detached.getPosition() + Vec2f(0.0f, -4.0f));

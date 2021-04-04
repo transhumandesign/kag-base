@@ -1132,15 +1132,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			count++;
 			if (type >= bombTypeNames.length)
 				type = 0;
-			if (this.getBlobCount(bombTypeNames[type]) > 0)
+			if (hasBombs(this, type))
 			{
-				this.set_u8("bomb type", type);
-				if (this.isMyPlayer())
-				{
-					Sound::Play("/CycleInventory.ogg");
-				}
+				CycleToBombType(this, type);
 				break;
 			}
+		}
+	}
+	else if (cmd == this.getCommandID("switch"))
+	{
+		u8 type;
+		if (params.saferead_u8(type) && hasBombs(this, type))
+		{
+			CycleToBombType(this, type);
 		}
 	}
 	else if (cmd == this.getCommandID("activate/throw"))
@@ -1157,6 +1161,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				break;
 			}
 		}
+	}
+}
+
+void CycleToBombType(CBlob@ this, u8 bombType)
+{
+	this.set_u8("bomb type", bombType);
+	if (this.isMyPlayer())
+	{
+		Sound::Play("/CycleInventory.ogg");
 	}
 }
 
@@ -1275,6 +1288,7 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 				{
 					bool ground = map.isTileGround(hi.tile);
 					bool dirt_stone = map.isTileStone(hi.tile);
+					bool dirt_thick_stone = map.isTileThickStone(hi.tile);
 					bool gold = map.isTileGold(hi.tile);
 					bool wood = map.isTileWood(hi.tile);
 					if (ground || wood || dirt_stone || gold)
@@ -1324,15 +1338,30 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 									// Note: 0.1f damage doesn't harvest anything I guess
 									// This puts it in inventory - include MaterialCommon
 									//Material::fromTile(this, hi.tile, 1.f);
-
 									CBlob@ ore = server_CreateBlobNoInit("mat_gold");
 									if (ore !is null)
 									{
 										ore.Tag('custom quantity');
-	     								ore.Init();
-	     								ore.setPosition(hi.hitpos);
-	     								ore.server_SetQuantity(4);
-	     							}
+										ore.Init();
+										ore.setPosition(hi.hitpos);
+										ore.server_SetQuantity(4);
+									}
+								}
+								else if (dirt_stone)
+								{
+									int quantity = 4;
+									if(dirt_thick_stone)
+									{
+										quantity = 6;
+									}
+									CBlob@ ore = server_CreateBlobNoInit("mat_stone");
+									if (ore !is null)
+									{
+										ore.Tag('custom quantity');
+										ore.Init();
+										ore.setPosition(hi.hitpos);
+										ore.server_SetQuantity(quantity);
+									}
 								}
 							}
 						}
@@ -1551,7 +1580,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 
 			if (button !is null)
 			{
-				bool enabled = this.getBlobCount(bombTypeNames[i]) > 0;
+				bool enabled = hasBombs(this, i);
 				button.SetEnabled(enabled);
 				button.selectOneOnClick = true;
 				if (weaponSel == i)
@@ -1620,13 +1649,14 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 void SetFirstAvailableBomb(CBlob@ this)
 {
 	u8 type = 255;
+	u8 nowType = 255;
 	if (this.exists("bomb type"))
-		type = this.get_u8("bomb type");
+		nowType = this.get_u8("bomb type");
 
 	CInventory@ inv = this.getInventory();
 
-	bool typeReal = (uint(type) < bombTypeNames.length);
-	if (typeReal && inv.getItem(bombTypeNames[type]) !is null)
+	bool typeReal = (uint(nowType) < bombTypeNames.length);
+	if (typeReal && inv.getItem(bombTypeNames[nowType]) !is null)
 		return;
 
 	for (int i = 0; i < inv.getItemsCount(); i++)
@@ -1673,4 +1703,23 @@ bool canHit(CBlob@ this, CBlob@ b)
 
 	return b.getTeamNum() != this.getTeamNum();
 
+}
+
+void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
+{
+	CheckSelectedBombRemovedFromInventory(this, blob);
+}
+
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+{
+	CheckSelectedBombRemovedFromInventory(this, detached);
+}
+
+void CheckSelectedBombRemovedFromInventory(CBlob@ this, CBlob@ blob)
+{
+	string name = blob.getName();
+	if (bombTypeNames.find(name) > -1 && this.getBlobCount(name) == 0)
+	{
+		SetFirstAvailableBomb(this);
+	}
 }

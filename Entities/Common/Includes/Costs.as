@@ -11,7 +11,7 @@ namespace CTFCosts
 {
 	//Building.as
 	s32 buildershop_wood, quarters_wood, knightshop_wood, archershop_wood,
-		boatshop_wood, boatshop_gold, vehicleshop_wood, vehicleshop_gold,
+		boatshop_wood, vehicleshop_wood, vehicleshop_gold,
 		storage_stone, storage_wood, tunnel_stone, tunnel_wood, tunnel_gold,
 		quarry_stone, quarry_gold, quarry_count;
 
@@ -27,10 +27,10 @@ namespace CTFCosts
 		crate_wood, crate;
 
 	//BoatShop.as
-	s32 dinghy, dinghy_wood, longboat, longboat_wood, warboat;
+	s32 dinghy, dinghy_wood, longboat, longboat_wood, warboat, warboat_gold;
 
 	//VehicleShop.as
-	s32 catapult, ballista, ballista_ammo, ballista_ammo_upgrade_gold;
+	s32 catapult, ballista, ballista_gold, ballista_ammo, ballista_ammo_upgrade_gold;
 
 	//Quarters.as
 	s32 beer, meal, egg, burger;
@@ -88,7 +88,6 @@ void InitCosts()
 	CTFCosts::knightshop_wood =             ReadCost(cfg, "cost_knightshop_wood"    , 50);
 	CTFCosts::archershop_wood =             ReadCost(cfg, "cost_archershop_wood"    , 50);
 	CTFCosts::boatshop_wood =               ReadCost(cfg, "cost_boatshop_wood"      , 100);
-	CTFCosts::boatshop_gold =               ReadCost(cfg, "cost_boatshop_gold"      , 50);
 	CTFCosts::vehicleshop_wood =            ReadCost(cfg, "cost_vehicleshop_wood"   , 100);
 	CTFCosts::vehicleshop_gold =            ReadCost(cfg, "cost_vehicleshop_gold"   , 50);
 	CTFCosts::storage_stone =               ReadCost(cfg, "cost_storage_stone"      , 50);
@@ -132,10 +131,12 @@ void InitCosts()
 	CTFCosts::longboat =                    ReadCost(cfg, "cost_longboat"           , 50);
 	CTFCosts::longboat_wood =               ReadCost(cfg, "cost_longboat_wood"      , 200);
 	CTFCosts::warboat =                     ReadCost(cfg, "cost_warboat"            , 250);
+	CTFCosts::warboat_gold =                ReadCost(cfg, "cost_warboat_gold"       , 50);
 
 	//VehicleShop.as
 	CTFCosts::catapult =                    ReadCost(cfg, "cost_catapult"                   , 80);
 	CTFCosts::ballista =                    ReadCost(cfg, "cost_ballista"                   , 200);
+	CTFCosts::ballista_gold =               ReadCost(cfg, "cost_ballista_gold"              , 50);
 	CTFCosts::ballista_ammo =               ReadCost(cfg, "cost_ballista_ammo"              , 100);
 	CTFCosts::ballista_ammo_upgrade_gold =  ReadCost(cfg, "cost_ballista_ammo_upgrade_gold" , 100);
 
