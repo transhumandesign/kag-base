@@ -3,7 +3,7 @@
 #include "Rules/CommonScripts/BaseTeamInfo.as";
 #include "Rules/CommonScripts/PlayerInfo.as";
 
-namespace ItemFlag
+namespace ItemFlag // NOTE(hobey): unused enum; leaving it here to reduce the probability of mods breaking
 {
 
 	const u32 Builder = 0x01;
@@ -72,7 +72,7 @@ shared class CTFPlayerInfo : PlayerInfo
 
 	u32 spawn_point;
 
-	u32 items_collected;
+	u32 items_collected; // NOTE(hobey): unused variable; leaving it here to reduce the probability of mods breaking
 
 	CTFPlayerInfo() { Setup("", 0, ""); }
 	CTFPlayerInfo(string _name, u8 _team, string _default_config) { Setup(_name, _team, _default_config); }
