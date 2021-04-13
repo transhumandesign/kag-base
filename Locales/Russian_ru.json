@@ -44,7 +44,7 @@
 	"\n  Server: {SERVERNAME}\n":"\n  Сервер: {SERVERNAME}\n",
 	//"CTF":"CTF", //already exists in GAMEMODE INFO
 	//"TTH":"TTH", //Already exists in GAMEMODE INFO
-	"TDM":"TDM",
+	//"TDM":"TDM", //Already exists in GAMEMODE INFO
 
 //BuilderInventory.as
 	"Stop building\n": "Прекратить строительство\n",
@@ -111,7 +111,7 @@
 	"Pick tunnel to travel":"Выберите тоннель для перемещения",
 	"Return to base":"Вернуться на базу", //OLD
 	"Travel right":"Переместиться вправо",
-	"Travel left":"Переместиться влево",
+	"Travel ":"Переместиться влево",
 	"You are here":"Вы находитесь здесь",
 
 //ResearchGUI.as
@@ -1308,5 +1308,11 @@
 	//sound
 	"MigrantSayHello": "MigrantSayPrivet",
 	"MigrantSayNo": "MigrantSayNyet",
-	"MigrantSayFriend": "MigrantSayDryg"
+	"MigrantSayFriend": "MigrantSayDryg",
+	
+	//main menu
+	"Leaderboard": "Список лидеров",
+	"Finish Account Linking" : "Закончить привязку аккаунта",
+	"Server Rules" : "Правила сервера",
+	"You do not own this pack of heads..." : "У вас нет данного набора голов..."
 }
