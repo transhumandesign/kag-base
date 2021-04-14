@@ -144,7 +144,7 @@ void InitCosts()
 	CTFCosts::beer =                        ReadCost(cfg, "cost_beer"               , 5);
 	CTFCosts::meal =                        ReadCost(cfg, "cost_meal"               , 10);
 	CTFCosts::egg =                         ReadCost(cfg, "cost_egg"                , 30);
-	CTFCosts::burger =                      ReadCost(cfg, "cost_burger"             , 20);
+	CTFCosts::burger =                      ReadCost(cfg, "cost_burger"             , 30);
 
 	//CommonBuilderBlocks.as
 	CTFCosts::workshop_wood =               ReadCost(cfg, "cost_workshop_wood"      , 150);
