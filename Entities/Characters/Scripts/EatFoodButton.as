@@ -12,7 +12,6 @@ void onTick(CBlob@ this)
 {
 	if (isServer() &&
 		this.isKeyJustPressed(key_eat) &&
-		!isKnocked(this) &&
 		this.getHealth() < this.getInitialHealth()
 	) {
 		CBlob @carried = this.getCarriedBlob();
