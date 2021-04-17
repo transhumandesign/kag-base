@@ -576,7 +576,8 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			{
 				charge_time--;
 
-				if (charge_time <= 0)
+				// when no arrows, ignore charge timer
+				if (charge_time <= 0 || !hasarrow)
 				{
 					charge_state = ArcherParams::not_aiming;
 					charge_time = 0;
@@ -1045,6 +1046,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				break;
 			}
 		}
+		if (archer.charge_state == ArcherParams::no_arrows)
+		{
+			archer.charge_state = ArcherParams::not_aiming;
+		}
+
 	}
 	else if (cmd == this.getCommandID("switch"))
 	{
