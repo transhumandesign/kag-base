@@ -253,11 +253,9 @@ shared class CTFSpawns : RespawnSystem
 		if (info.team < CTF_core.teams.length)
 		{
 			CTFTeamInfo@ team = cast < CTFTeamInfo@ > (CTF_core.teams[info.team]);
+
 			info.can_spawn_time = ((old_spawn_time > 30) ? old_spawn_time : tickspawndelay);
-			float normalSpawnTimeInSecs = CTF_core.spawnTime / getTicksASecond();
-			float timeAdjustedForTeamNums = Maths::Floor(normalSpawnTimeInSecs - (normalSpawnTimeInSecs - team.players_count) / 2.0);
-			float respawnTimeSecs = Maths::Clamp(timeAdjustedForTeamNums, normalSpawnTimeInSecs/5.0*3.0, normalSpawnTimeInSecs);
-			info.can_spawn_time = respawnTimeSecs * getTicksASecond();
+
 			info.spawn_point = player.getSpawnPoint();
 			team.spawns.push_back(info);
 		}
