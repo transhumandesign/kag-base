@@ -17,20 +17,40 @@ void onTick(CBlob@ this)
 	{
 		string name = this.getName();
 
-		int lanternCount = 0;
+		int blobCount = 0;
+		float lowestHealth = this.getInitialHealth();
+		CBlob@ lowestBlob;
+
 		Vec2f pos = this.getPosition();
 		for (uint i = 0; i < blobsInRadius.length; i++)
 		{
-			CBlob @b = blobsInRadius[(i * 997) % blobsInRadius.length];
-			if (b !is this && b.getName() == name)
+			CBlob@ b = blobsInRadius[i];
+			if (b.getName() != name || 
+			    b.isAttached() ||
+			    b.isInInventory())
+				continue;
+
+			blobCount++;
+
+			float blobHealth = b.getHealth();
+			if (blobHealth < lowestHealth)
 			{
-				lanternCount++;
-				if (lanternCount > 4)
-				{
-					SelfDamage(this);
-					break;
-				}
+				@lowestBlob = @b;
+				lowestHealth = blobHealth;
+			}
+
+
+		}
+
+		if (blobCount > 4)
+		{
+			// if no lowest blob is found, damage self
+			// so other blobs will select this blob as lowest
+			if (lowestBlob is null || lowestBlob is this)
+			{
+				SelfDamage(this);
 			}
 		}
+
 	}
 }

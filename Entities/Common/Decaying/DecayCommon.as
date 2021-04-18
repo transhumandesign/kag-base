@@ -15,5 +15,5 @@ void SelfDamage(CBlob@ this, f32 dmg)
 
 void SelfDamage(CBlob@ this)
 {
-	SelfDamage(this, this.getInitialHealth() * 0.33f);
+	SelfDamage(this, this.getInitialHealth() * 0.5f);
 }
