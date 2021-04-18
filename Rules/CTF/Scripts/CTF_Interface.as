@@ -182,7 +182,9 @@ void onRender(CRules@ this)
 			string spawn_message = getTranslatedString("Respawning in: {SEC}").replace("{SEC}", ((spawn > 250) ? getTranslatedString("approximatively never") : ("" + spawn)));
 
 			GUI::SetFont("hud");
-			GUI::DrawText(spawn_message , Vec2f(getScreenWidth() / 2 - 70, getScreenHeight() / 3 + Maths::Sin(getGameTime() / 3.0f) * 5.0f), SColor(255, 255, 255, 55));
+			// Apply offset if change team menu is also opened.
+			u8 offset = (getGridMenuByName("Change team") !is null) ? 20.0f : 0.0f;
+			GUI::DrawText(spawn_message , Vec2f(getScreenWidth() / 2 - 70, getScreenHeight() / 3 + Maths::Sin(getGameTime() / 3.0f) * 5.0f - offset), SColor(255, 255, 255, 55));
 		}
 	}
 }

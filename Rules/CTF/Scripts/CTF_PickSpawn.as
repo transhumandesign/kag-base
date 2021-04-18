@@ -118,25 +118,7 @@ void onTick(CRules@ this)
 			}
 		}
 	}*/
-
-	CPlayer@ p = getLocalPlayer();
-
-	if (p is null || !p.isMyPlayer()) { return; }
-
-    string propname = "ctf spawn time " + p.getUsername();
-    if(this.exists(propname))
-    {
-        u8 spawn = this.get_u8(propname);
-        if(spawn < 2)
-        {
-            getHUD().ClearMenus(true);
-            return;
-
-        }
-
-    }
-
-}
+} 
 
 //hook after the change has been decided
 void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
