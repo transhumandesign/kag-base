@@ -1074,6 +1074,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("get bomb"))
 	{
+		if (this.getCarriedBlob() !is null)
+			return;
+
 		const u8 bombType = params.read_u8();
 		if (bombType >= bombTypeNames.length)
 			return;
