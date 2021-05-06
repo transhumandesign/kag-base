@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
 
-	this.addCommandID("custom pickup");
+	this.addCommandID("pickup item");
 
 	AddIconToken("$filled_bucket$", "Bucket.png", Vec2f(16, 16), 1);
 
@@ -264,7 +264,7 @@ void onTick(CBlob@ this)
 				params.write_Vec2f(this.getAimPos() - this.getPosition());
 				params.write_Vec2f(this.getVelocity());
 
-				this.SendCommand(this.getCommandID("custom pickup"), params);
+				this.SendCommand(this.getCommandID("pickup item"), params);
 			}
 
 			ClearPickupBlobs(this);
@@ -276,7 +276,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (!isServer()) return;
 
-	if (cmd == this.getCommandID("custom pickup"))
+	if (cmd == this.getCommandID("pickup item"))
 	{
 		CBlob@ carried = this.getCarriedBlob();
 
