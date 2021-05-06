@@ -9,15 +9,13 @@ void server_Pickup(CBlob@ this, CBlob@ picker, CBlob@ pickBlob)
 	this.SendCommand(this.getCommandID("pickup"), params);
 }
 
-void server_PutIn(CBlob@ this, CBlob@ picker, CBlob@ pickBlob)
+void server_PutInHeld(CBlob@ this, CBlob@ picker)
 {
-	CInventory@ inv = this.getInventory();
-	if (pickBlob is null || picker is null || !inv.canPutItem(pickBlob))
+	if (picker is null)
 		return;
 	CBitStream params;
 	params.write_netid(picker.getNetworkID());
-	params.write_netid(pickBlob.getNetworkID());
-	this.SendCommand(this.getCommandID("putin"), params);
+	this.SendCommand(this.getCommandID("putinheld"), params);
 }
 
 void Tap(CBlob@ this)
