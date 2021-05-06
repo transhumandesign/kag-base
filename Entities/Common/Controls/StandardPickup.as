@@ -300,7 +300,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 				DoThrow(owner, carried, pos, vector, vel);
 			}
 		}
-		else if (pickBlob !is null)
+		else if (pickBlob !is null && !pickBlob.isInInventory())
 		{
 			this.server_Pickup(pickBlob);
 		}
