@@ -78,24 +78,31 @@ void ShowEmotesMenu(CPlayer@ player)
 		menu.AddKeyCommand(KEY_ESCAPE, rules.getCommandID(EMOTE_CMD), params);
 		menu.SetDefaultCommand(rules.getCommandID(EMOTE_CMD), params);
 
-		dictionary emotes;
-		rules.get("emotes", emotes);
-		string[] tokens = emotes.getKeys();
+		dictionary packs;
+		rules.get("emote packs", packs);
+		string[] tokens = packs.getKeys();
 
 		//display emote grid
 		for (int i = 0; i < tokens.size(); i++)
 		{
-			Emote@ emote;
-			if (!emotes.get(tokens[i], @emote) || EXCLUDED_EMOTES.find(emote.token) > -1)
-			{
-				continue;
-			}
+			EmotePack@ pack;
+			packs.get(tokens[i], @pack);
 
-			CBitStream params;
-			params.write_u8(BIND_EMOTE);
-			params.write_string(player.getUsername());
-			params.write_string(emote.token);
-			CGridButton@ button = menu.AddButton(getIconName(emote.token), description, rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
+			for (int j = 0; j < pack.emotes.size(); j++)
+			{
+				Emote@ emote = pack.emotes[j];
+
+				if (EXCLUDED_EMOTES.find(emote.token) > -1)
+				{
+					continue;
+				}
+
+				CBitStream params;
+				params.write_u8(BIND_EMOTE);
+				params.write_string(player.getUsername());
+				params.write_string(emote.token);
+				CGridButton@ button = menu.AddButton(getIconName(emote.token), description, rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
+			}
 		}
 
 		//fill in extra slots in emote grid
