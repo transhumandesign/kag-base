@@ -9,6 +9,8 @@ void onInit(CRules@ rules)
 	dictionary emotes = LoadEmotes(cfg);
 	Emote@[] wheelEmotes = getWheelEmotes(cfg, emotes);
 
+	rules.set("emotes", emotes);
+
 	WheelMenu@ menu = get_wheel_menu("emotes");
 	menu.option_notice = getTranslatedString("Select emote");
 
@@ -46,7 +48,7 @@ void onTick(CRules@ rules)
 	else if (blob.isKeyJustReleased(key_bubbles) && get_active_wheel_menu() is menu)
 	{
 		WheelMenuEntry@ selected = menu.get_selected();
-		set_emote(blob, (selected !is null ? Emotes::names.find(selected.name) : Emotes::off));
+		set_emote(blob, (selected !is null ? selected.name : ""));
 		set_active_wheel_menu(null);
 	}
 }

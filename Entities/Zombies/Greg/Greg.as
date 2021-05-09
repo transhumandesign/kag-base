@@ -379,7 +379,7 @@ void onTick(CBlob@ this)
                 {
                     CMap@ map = this.getMap();
                     f32 distToGround = map.getLandYAtX(gregPos.x/8.0f)*8.0f - gregPos.y;
-                    if (distToGround > 240.0f && !is_emote(this, Emotes::troll) && !this.hasTag("doneparis"))
+                    if (distToGround > 240.0f && !is_emote(this) && !this.hasTag("doneparis"))
                     {
                         if (this.hasTag("paris"))
                         {
@@ -390,7 +390,7 @@ void onTick(CBlob@ this)
                         pickedPlayerBlob.Untag("picked");
                         pickedPlayerBlob.Sync("picked", true);
 
-                        set_emote(this, Emotes::troll);
+                        set_emote(this, "troll");
 
                     }
 
@@ -412,7 +412,7 @@ void onTick(CBlob@ this)
             //drop the player
             CMap@ map = this.getMap();
             f32 distToGround = map.getLandYAtX(gregPos.x/8.0f)*8.0f - gregPos.y;
-            if (distToGround > 240.0f && !is_emote(this, Emotes::troll) && !this.hasTag("doneparis"))
+            if (distToGround > 240.0f && !is_emote(this) && !this.hasTag("doneparis"))
             {
                 if (this.hasTag("paris"))
                 {
@@ -423,7 +423,7 @@ void onTick(CBlob@ this)
                 pickedPlayerBlob.Untag("picked");
                 pickedPlayerBlob.Sync("picked", true);
 
-                set_emote(this, Emotes::troll);
+                set_emote(this, "troll");
 
             }
 
@@ -509,7 +509,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
             {
                 this.server_Hit(blob, blob.getPosition(), Vec2f(1, 1), 500.0f, 0);
                 if (gregRand.Next()%3 == 0)
-                    set_emote(this, Emotes::troll);
+                    set_emote(this, "troll");
 
             }
 
@@ -554,13 +554,13 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
     {
         this.server_DetachAll();
         this.set_bool("no target", true);
-        set_emote(this, Emotes::mad);
+        set_emote(this, "mad");
 
     }*/
 
     if (cmd == this.getCommandID("dropstatue") && getNet().isClient())
     {
-        set_emote(this, Emotes::mad);
+        set_emote(this, "mad");
         this.Tag("statue");
         //this.setVelocity(Vec2f_zero);
 

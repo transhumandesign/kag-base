@@ -224,33 +224,40 @@ ConfigFile@ loadEmoteConfig()
 	return null;
 }
 
-void set_emote(CBlob@ this, u8 emote, int time)
+Emote@ getEmote(string token)
 {
-	if (emote >= Emotes::emotes_total)
+	if (token != "")
 	{
-		emote = Emotes::off;
-	}
-
-	// server side ignore
-	if (isServer()) 
-	{
-		CPlayer@ player = this.getPlayer();
-		if (player !is null && getSecurity().isPlayerIgnored(player))
+		dictionary emotes;
+		if (getRules().get("emotes", emotes))
 		{
-			// muted emote
-			print("Ignored emote from " + player.getUsername());
-			return;
+			Emote@ emote;
+			if (emotes.get(token, @emote))
+			{
+				return emote;
+			}
 		}
 	}
 
-	this.set_u8("emote", emote);
+	return null;
+}
+
+void set_emote(CBlob@ this, string token, int time)
+{
+	Emote@ emote = getEmote(token);
+	if (emote is null)
+	{
+		token = "";
+	}
+
+	this.set_string("emote", token);
 	this.set_u32("emotetime", getGameTime() + time);
 	bool client = this.getPlayer() !is null && this.isMyPlayer();
 	this.Sync("emote", !client);
 	this.Sync("emotetime", !client);
 }
 
-void set_emote(CBlob@ this, u8 emote)
+void set_emote(CBlob@ this, string token)
 {
 	if (this.isInInventory())
 	{
@@ -259,7 +266,7 @@ void set_emote(CBlob@ this, u8 emote)
 			&& inventoryblob.exists("emote"))
 		{
 			CBitStream params;
-			params.write_u8(emote);
+			params.write_string(token);
 			params.write_u32(getGameTime() + 90);
 			inventoryblob.SendCommand(inventoryblob.getCommandID("emote"), params);
 			this.SendCommand(this.getCommandID("emote"), params);
@@ -267,19 +274,16 @@ void set_emote(CBlob@ this, u8 emote)
 	}
 	else
 	{
-		set_emote(this, emote, 90);
+		set_emote(this, token, 90);
 	}
 }
 
-bool is_emote(CBlob@ this, u8 emote = 255, bool checkBlank = false)
+bool is_emote(CBlob@ this, bool checkBlank = false)
 {
-	u8 index = emote;
-	if (index == 255)
-		index = this.get_u8("emote");
-
+	string token = this.get_string("emote");
 	u32 time = this.get_u32("emotetime");
 
-	return time > getGameTime() && index != Emotes::off && (!checkBlank || (index != Emotes::dots));
+	return time > getGameTime() && token != "" && (!checkBlank || (token != "dots"));
 }
 
 ConfigFile@ openEmoteBindingsConfig()
@@ -314,8 +318,10 @@ ConfigFile@ openEmoteBindingsConfig()
 }
 
 //helper - allow integer entries as well as name entries
-u8 read_emote(ConfigFile@ cfg, string name, u8 default_value)
+string read_emote(ConfigFile@ cfg, dictionary emotes, string name, string default_value)
 {
+	Emote@ emote;
+
 	string attempt = cfg.read_string(name, "");
 	if (attempt != "")
 	{
@@ -341,18 +347,11 @@ u8 read_emote(ConfigFile@ cfg, string name, u8 default_value)
 				}
 			}
 		}
-		//match
-		for(int i = 0; i < Emotes::names.length; i++)
-		{
-			if (attempt == Emotes::names[i])
-			{
-				return i;
-			}
-		}
 
-		//fallback to u8 read
-		u8 read_val = cfg.read_u8(name, default_value);
-		return read_val;
+		if (emotes.get(attempt, @emote))
+		{
+			return emote.token;
+		}
 	}
 	return default_value;
 }

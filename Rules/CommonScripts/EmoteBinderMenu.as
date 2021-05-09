@@ -3,9 +3,9 @@
 
 #include "EmotesCommon.as";
 
-const array<u8> EXCLUDED_EMOTES = {
-	Emotes::dots,
-	Emotes::pickup
+const array<string> EXCLUDED_EMOTES = {
+	"dots",
+	"pickup"
 };
 const u8 MENU_WIDTH = 9;
 const u8 MENU_HEIGHT = Maths::Ceil((Emotes::emotes_total - EXCLUDED_EMOTES.length - 1) / MENU_WIDTH) + 4;
@@ -24,10 +24,17 @@ void onInit(CRules@ this)
 	this.addCommandID(EMOTE_CMD);
 	this.addCommandID("display taunt");
 
+	dictionary emotes;
+	this.get("emotes", emotes);
+	string[] tokens = emotes.getKeys();
+
 	//load emote icons
-	for (u16 i = 0; i < Emotes::emotes_total; i++)
+	for (u16 i = 0; i < tokens.size(); i++)
 	{
-		AddIconToken(getIconName(i), "Emoticons.png", Vec2f(32, 32), i);
+		Emote@ emote;
+		emotes.get(tokens[i], @emote);
+
+		AddIconToken(getIconName(emote.token), emote.pack.filePath, Vec2f(32, 32), emote.index);
 	}
 }
 
@@ -69,10 +76,15 @@ void ShowEmotesMenu(CPlayer@ player)
 		menu.AddKeyCommand(KEY_ESCAPE, rules.getCommandID(EMOTE_CMD), params);
 		menu.SetDefaultCommand(rules.getCommandID(EMOTE_CMD), params);
 
+		dictionary emotes;
+		rules.get("emotes", emotes);
+		string[] tokens = emotes.getKeys();
+
 		//display emote grid
-		for (int i = 0; i < Emotes::emotes_total; i++)
+		for (int i = 0; i < tokens.size(); i++)
 		{
-			if (EXCLUDED_EMOTES.find(i) > -1)
+			Emote@ emote;
+			if (!emotes.get(tokens[i], @emote) || EXCLUDED_EMOTES.find(emote.token) > -1)
 			{
 				continue;
 			}
@@ -80,8 +92,8 @@ void ShowEmotesMenu(CPlayer@ player)
 			CBitStream params;
 			params.write_u8(BIND_EMOTE);
 			params.write_string(player.getUsername());
-			params.write_u8(i);
-			CGridButton@ button = menu.AddButton(getIconName(i), description, rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
+			params.write_string(emote.token);
+			CGridButton@ button = menu.AddButton(getIconName(emote.token), description, rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
 		}
 
 		//fill in extra slots in emote grid
@@ -98,32 +110,32 @@ void ShowEmotesMenu(CPlayer@ player)
 		//get current emote keybinds
 		ConfigFile@ cfg = openEmoteBindingsConfig();
 
-		array<u8> emoteBinds = {
-			read_emote(cfg, "emote_1", Emotes::attn),
-			read_emote(cfg, "emote_2", Emotes::smile),
-			read_emote(cfg, "emote_3", Emotes::frown),
-			read_emote(cfg, "emote_4", Emotes::mad),
-			read_emote(cfg, "emote_5", Emotes::laugh),
-			read_emote(cfg, "emote_6", Emotes::wat),
-			read_emote(cfg, "emote_7", Emotes::troll),
-			read_emote(cfg, "emote_8", Emotes::disappoint),
-			read_emote(cfg, "emote_9", Emotes::ladder),
-			read_emote(cfg, "emote_10", Emotes::flex),
-			read_emote(cfg, "emote_11", Emotes::down),
-			read_emote(cfg, "emote_12", Emotes::smug),
-			read_emote(cfg, "emote_13", Emotes::left),
-			read_emote(cfg, "emote_14", Emotes::okhand),
-			read_emote(cfg, "emote_15", Emotes::right),
-			read_emote(cfg, "emote_16", Emotes::thumbsup),
-			read_emote(cfg, "emote_17", Emotes::up),
-			read_emote(cfg, "emote_18", Emotes::thumbsdown)
+		array<string> emoteBinds = {
+			read_emote(cfg, emotes, "emote_1", "attn"),
+			read_emote(cfg, emotes, "emote_2", "smile"),
+			read_emote(cfg, emotes, "emote_3", "frown"),
+			read_emote(cfg, emotes, "emote_4", "mad"),
+			read_emote(cfg, emotes, "emote_5", "laugh"),
+			read_emote(cfg, emotes, "emote_6", "wat"),
+			read_emote(cfg, emotes, "emote_7", "troll"),
+			read_emote(cfg, emotes, "emote_8", "disappoint"),
+			read_emote(cfg, emotes, "emote_9", "ladder"),
+			read_emote(cfg, emotes, "emote_10", "flex"),
+			read_emote(cfg, emotes, "emote_11", "down"),
+			read_emote(cfg, emotes, "emote_12", "smug"),
+			read_emote(cfg, emotes, "emote_13", "left"),
+			read_emote(cfg, emotes, "emote_14", "okhand"),
+			read_emote(cfg, emotes, "emote_15", "right"),
+			read_emote(cfg, emotes, "emote_16", "thumbsup"),
+			read_emote(cfg, emotes, "emote_17", "up"),
+			read_emote(cfg, emotes, "emote_18", "thumbsdown")
 		};
 
 		string propname = SELECTED_PROP + player.getUsername();
 		u8 selected = rules.get_u8(propname);
 
 		//display row of current emote keybinds
-		for (int i = 0; i < 18; i++)
+		for (int i = 0; i < emoteBinds.size(); i++)
 		{
 			CBitStream params;
 			params.write_u8(SELECT_KEYBIND);
@@ -171,8 +183,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 				return;
 			}
 
-			u8 emote;
-			if(!params.saferead_u8(emote)) return;
+			string token;
+			if(!params.saferead_string(token)) return;
 
 			string key = "emote_" + (selected + 1);
 
@@ -180,7 +192,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 			ConfigFile@ cfg = openEmoteBindingsConfig();
 
 			//bind emote
-			cfg.add_string(key, "" + emote);
+			cfg.add_string(key, token);
 			cfg.saveFile("EmoteBindings.cfg");
 
 			//update keybinds in menu
@@ -209,7 +221,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 	
 }
 
-string getIconName(u8 emoteIndex)
+string getIconName(string token)
 {
-	return "$EMOTE" + (emoteIndex + 1) + "$";
+	return "$EMOTE" + token + "$";
 }
