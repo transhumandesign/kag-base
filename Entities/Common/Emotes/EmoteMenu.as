@@ -6,14 +6,12 @@
 void onInit(CRules@ rules)
 {
 	ConfigFile@ cfg = loadEmoteConfig();
-	dictionary emotes = LoadEmotes(cfg);
-	Emote@[] wheelEmotes = getWheelEmotes(cfg, emotes);
-
-	rules.set("emotes", emotes);
+	LoadEmotes(rules, cfg);
 
 	WheelMenu@ menu = get_wheel_menu("emotes");
 	menu.option_notice = getTranslatedString("Select emote");
 
+	Emote@[] wheelEmotes = getWheelEmotes(rules, cfg);
 	for (uint i = 0; i < wheelEmotes.size(); i++)
 	{
 		Emote@ emote = wheelEmotes[i];
