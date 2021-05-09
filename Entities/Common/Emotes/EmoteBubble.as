@@ -45,7 +45,7 @@ void onInit(CBlob@ blob)
 void onTick(CBlob@ blob)
 {
 	blob.getCurrentScript().tickFrequency = 6;
-	// if (blob.exists("emote"))	 will show skull if none existant
+
 	if (!blob.getShape().isStatic())
 	{
 		dictionary packs;
@@ -59,13 +59,16 @@ void onTick(CBlob@ blob)
 			EmotePack@ pack;
 			packs.get(tokens[i], @pack);
 
-			CSprite@ sprite = blob.getSprite();
-			CSpriteLayer@ layer = sprite.getSpriteLayer("bubble" + pack.token);
+			CSpriteLayer@ layer = blob.getSprite().getSpriteLayer("bubble" + pack.token);
 			if (layer is null) continue;
 
 			bool visible = false;
 
-			if (emote !is null && emote.pack.token == pack.token && is_emote(blob) && !blob.hasTag("dead") && !blob.isInInventory())
+			bool correctPack = emote !is null && emote.pack.token == pack.token;
+			bool shouldDisplay = is_emote(blob);
+			bool canDisplay = !blob.hasTag("dead") && !blob.isInInventory();
+
+			if (correctPack && shouldDisplay && canDisplay)
 			{
 				blob.getCurrentScript().tickFrequency = 1;
 

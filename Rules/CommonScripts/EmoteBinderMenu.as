@@ -8,7 +8,7 @@ const array<string> EXCLUDED_EMOTES = {
 	"pickup"
 };
 const u8 MENU_WIDTH = 9;
-const u8 MENU_HEIGHT = Maths::Ceil((Emotes::emotes_total - EXCLUDED_EMOTES.length - 1) / MENU_WIDTH) + 4;
+u8 MENU_HEIGHT;
 const string SELECTED_PROP = "selected emote: ";
 
 const string EMOTE_CMD = "emote command";
@@ -27,6 +27,8 @@ void onInit(CRules@ this)
 	dictionary emotes;
 	this.get("emotes", emotes);
 	string[] tokens = emotes.getKeys();
+
+	MENU_HEIGHT = Maths::Ceil((tokens.size() - EXCLUDED_EMOTES.length - 1) / MENU_WIDTH) + 4;
 
 	//load emote icons
 	for (u16 i = 0; i < tokens.size(); i++)
