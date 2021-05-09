@@ -125,6 +125,7 @@ class EmotePack
 	string name;
 	string token;
 	string filePath;
+	Emote@[] emotes;
 
 	EmotePack(string name, string token, string filePath)
 	{
@@ -150,9 +151,10 @@ class Emote
 	}
 }
 
-dictionary LoadEmotes(ConfigFile@ cfg)
+void LoadEmotes(CRules@ this, ConfigFile@ cfg)
 {
-	dictionary dict;
+	dictionary emotesDict;
+	dictionary packsDict;
 
 	string[] packs;
 	cfg.readIntoArray_string(packs, "PACKS");
@@ -160,7 +162,7 @@ dictionary LoadEmotes(ConfigFile@ cfg)
 	if (packs.size() % 3 != 0)
 	{
 		error("EmoteEntries.cfg PACKS is not in the form of visible_name; token; file_path;");
-		return dict;
+		return;
 	}
 
 	for (uint i = 0; i < packs.size(); i += 3)
@@ -179,16 +181,23 @@ dictionary LoadEmotes(ConfigFile@ cfg)
 		for (uint j = 0; j < emotes.size(); j += 2)
 		{
 			Emote emote(emotes[j], emotes[j + 1], j / 2, pack);
-			dict.set(emote.token, emote);
+			pack.emotes.push_back(emote);
+			emotesDict.set(emote.token, emote);
 		}
+
+		packsDict.set(pack.token, pack);
 	}
 
-	return dict;
+	this.set("emote packs", packsDict);
+	this.set("emotes", emotesDict);
 }
 
-Emote@[] getWheelEmotes(ConfigFile@ cfg, dictionary emotes)
+Emote@[] getWheelEmotes(CRules@ this, ConfigFile@ cfg)
 {
 	Emote@[] wheelEmotes;
+
+	dictionary emotes;
+	this.get("emotes", emotes);
 
 	string[] data;
 	cfg.readIntoArray_string(data, "WHEEL");

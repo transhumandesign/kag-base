@@ -9,29 +9,36 @@ void onInit(CBlob@ blob)
 	CSprite@ sprite = blob.getSprite();
 	blob.set_string("emote", "");
 	blob.set_u32("emotetime", 0);
-	//init emote layer
-	CSpriteLayer@ layer = sprite.addSpriteLayer("bubble", "Entities/Common/Emotes/Emoticons.png", 32, 32, 0, 0);
-	layer.SetIgnoreParentFacing(true);
-	layer.SetFacingLeft(false);
 
-	if (layer !is null)
+	dictionary packs;
+	if (!getRules().get("emote packs", packs)) return;
+	string[] tokens = packs.getKeys();
+
+	for (uint i = 0; i < tokens.size(); i++)
 	{
-		layer.SetOffset(Vec2f(0, -sprite.getBlob().getRadius() * 1.5f - 16));
-		layer.SetRelativeZ(100.0f);
-		{
-			Animation@ anim = layer.addAnimation("default", 0, true);
+		EmotePack@ pack;
+		packs.get(tokens[i], @pack);
 
-			dictionary emotes;
-			if (getRules().get("emotes", emotes))
+		//init emote layer
+		CSpriteLayer@ layer = sprite.addSpriteLayer("bubble" + pack.token, pack.filePath, 32, 32, 0, 0);
+		layer.SetIgnoreParentFacing(true);
+		layer.SetFacingLeft(false);
+
+		if (layer !is null)
+		{
+			layer.SetOffset(Vec2f(0, -sprite.getBlob().getRadius() * 1.5f - 16));
+			layer.SetRelativeZ(100.0f);
 			{
-				for (int i = 0; i < emotes.getSize(); i++)
+				Animation@ anim = layer.addAnimation("default", 0, true);
+
+				for (int i = 0; i < pack.emotes.size(); i++)
 				{
 					anim.AddFrame(i);
 				}
 			}
+			layer.SetVisible(false);
+			layer.SetHUD(true);
 		}
-		layer.SetVisible(false);
-		layer.SetHUD(true);
 	}
 }
 
@@ -41,16 +48,28 @@ void onTick(CBlob@ blob)
 	// if (blob.exists("emote"))	 will show skull if none existant
 	if (!blob.getShape().isStatic())
 	{
-		CSprite@ sprite = blob.getSprite();
-		CSpriteLayer@ layer = sprite.getSpriteLayer("bubble");
+		dictionary packs;
+		if (!getRules().get("emote packs", packs)) return;
+		string[] tokens = packs.getKeys();
 
 		Emote@ emote = getEmote(blob.get_string("emote"));
-		if (emote !is null && is_emote(blob) && !blob.hasTag("dead") && !blob.isInInventory())
+
+		for (uint i = 0; i < tokens.size(); i++)
 		{
-			blob.getCurrentScript().tickFrequency = 1;
-			if (layer !is null)
+			EmotePack@ pack;
+			packs.get(tokens[i], @pack);
+
+			CSprite@ sprite = blob.getSprite();
+			CSpriteLayer@ layer = sprite.getSpriteLayer("bubble" + pack.token);
+			if (layer is null) continue;
+
+			bool visible = false;
+
+			if (emote !is null && emote.pack.token == pack.token && is_emote(blob) && !blob.hasTag("dead") && !blob.isInInventory())
 			{
-				layer.SetVisible(!isMouseOverEmote(layer));
+				blob.getCurrentScript().tickFrequency = 1;
+
+				visible = !isMouseOverEmote(layer);
 				layer.animation.frame = emote.index;
 
 				layer.ResetTransform();
@@ -62,10 +81,8 @@ void onTick(CBlob@ blob)
 					layer.RotateBy(-angle, Vec2f(0, 20));
 				}
 			}
-		}
-		else
-		{
-			layer.SetVisible(false);
+
+			layer.SetVisible(visible);
 		}
 	}
 }
