@@ -120,6 +120,89 @@ namespace Emotes
 	};
 }
 
+class EmojiPack
+{
+	string name;
+	string token;
+	string filePath;
+
+	EmojiPack(string name, string token, string filePath)
+	{
+		this.name = name;
+		this.token = token;
+		this.filePath = filePath;
+	}
+}
+
+class Emoji
+{
+	string name;
+	string token;
+	EmojiPack@ pack;
+
+	Emoji(string name, string token, EmojiPack@ pack)
+	{
+		this.name = name;
+		this.token = token;
+		@this.pack = pack;
+	}
+}
+
+dictionary LoadEmojis(ConfigFile@ cfg)
+{
+	dictionary dict;
+
+	string[] packs;
+	cfg.readIntoArray_string(packs, "PACKS");
+
+	if (packs.size() % 3 != 0)
+	{
+		error("EmoteEntries.cfg PACKS is not in the form of visible_name; token; file_path;");
+		return dict;
+	}
+
+	for (uint i = 0; i < packs.size(); i += 3)
+	{
+		EmojiPack pack(packs[i], packs[i + 1], packs[i + 2]);
+
+		string[] emojis;
+		cfg.readIntoArray_string(emojis, pack.token);
+
+		if (emojis.size() % 2 != 0)
+		{
+			error("EmoteEntries.cfg emojis are not in the form of visible_name; token;");
+			continue;
+		}
+
+		for (uint j = 0; j < emojis.size(); j += 2)
+		{
+			Emoji emoji(emojis[j], emojis[j + 1], pack);
+			dict.set(emoji.token, emoji);
+		}
+	}
+
+	return dict;
+}
+
+ConfigFile@ loadEmoteConfig()
+{
+	string filename = "EmoteEntries.cfg";
+	string cachefilename = "../Cache/" + filename;
+	ConfigFile cfg;
+
+	//attempt to load from cache first
+	if (CFileMatcher(cachefilename).getFirst() == cachefilename && cfg.loadFile(cachefilename))
+	{
+		return cfg;
+	}
+	else if (cfg.loadFile(filename))
+	{
+		return cfg;
+	}
+
+	return null;
+}
+
 void set_emote(CBlob@ this, u8 emote, int time)
 {
 	if (emote >= Emotes::emotes_total)
