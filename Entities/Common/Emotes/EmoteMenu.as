@@ -6,20 +6,20 @@
 void onInit(CRules@ rules)
 {
 	ConfigFile@ cfg = loadEmoteConfig();
-	dictionary emojis = LoadEmojis(cfg);
-	Emoji@[] wheelEmojis = getWheelEmojis(cfg, emojis);
+	dictionary emotes = LoadEmotes(cfg);
+	Emote@[] wheelEmotes = getWheelEmotes(cfg, emotes);
 
 	WheelMenu@ menu = get_wheel_menu("emotes");
 	menu.option_notice = getTranslatedString("Select emote");
 
-	for (uint i = 0; i < wheelEmojis.size(); i++)
+	for (uint i = 0; i < wheelEmotes.size(); i++)
 	{
-		Emoji@ emoji = wheelEmojis[i];
+		Emote@ emote = wheelEmotes[i];
 
-		IconWheelMenuEntry entry(emoji.token);
-		entry.visible_name = getTranslatedString(emoji.name);
-		entry.texture_name = emoji.pack.filePath;
-		entry.frame = emoji.index;
+		IconWheelMenuEntry entry(emote.token);
+		entry.visible_name = getTranslatedString(emote.name);
+		entry.texture_name = emote.pack.filePath;
+		entry.frame = emote.index;
 		entry.frame_size = Vec2f(32.0f, 32.0f);
 		entry.scale = 1.0f;
 		entry.offset = Vec2f(0.0f, -3.0f);

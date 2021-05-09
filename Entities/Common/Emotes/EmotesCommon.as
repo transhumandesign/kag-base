@@ -120,13 +120,13 @@ namespace Emotes
 	};
 }
 
-class EmojiPack
+class EmotePack
 {
 	string name;
 	string token;
 	string filePath;
 
-	EmojiPack(string name, string token, string filePath)
+	EmotePack(string name, string token, string filePath)
 	{
 		this.name = name;
 		this.token = token;
@@ -134,14 +134,14 @@ class EmojiPack
 	}
 }
 
-class Emoji
+class Emote
 {
 	string name;
 	string token;
 	u8 index;
-	EmojiPack@ pack;
+	EmotePack@ pack;
 
-	Emoji(string name, string token, u8 index, EmojiPack@ pack)
+	Emote(string name, string token, u8 index, EmotePack@ pack)
 	{
 		this.name = name;
 		this.token = token;
@@ -150,7 +150,7 @@ class Emoji
 	}
 }
 
-dictionary LoadEmojis(ConfigFile@ cfg)
+dictionary LoadEmotes(ConfigFile@ cfg)
 {
 	dictionary dict;
 
@@ -165,44 +165,44 @@ dictionary LoadEmojis(ConfigFile@ cfg)
 
 	for (uint i = 0; i < packs.size(); i += 3)
 	{
-		EmojiPack pack(packs[i], packs[i + 1], packs[i + 2]);
+		EmotePack pack(packs[i], packs[i + 1], packs[i + 2]);
 
-		string[] emojis;
-		cfg.readIntoArray_string(emojis, pack.token);
+		string[] emotes;
+		cfg.readIntoArray_string(emotes, pack.token);
 
-		if (emojis.size() % 2 != 0)
+		if (emotes.size() % 2 != 0)
 		{
-			error("EmoteEntries.cfg emojis are not in the form of visible_name; token;");
+			error("EmoteEntries.cfg emotes are not in the form of visible_name; token;");
 			continue;
 		}
 
-		for (uint j = 0; j < emojis.size(); j += 2)
+		for (uint j = 0; j < emotes.size(); j += 2)
 		{
-			Emoji emoji(emojis[j], emojis[j + 1], j / 2, pack);
-			dict.set(emoji.token, emoji);
+			Emote emote(emotes[j], emotes[j + 1], j / 2, pack);
+			dict.set(emote.token, emote);
 		}
 	}
 
 	return dict;
 }
 
-Emoji@[] getWheelEmojis(ConfigFile@ cfg, dictionary emojis)
+Emote@[] getWheelEmotes(ConfigFile@ cfg, dictionary emotes)
 {
-	Emoji@[] wheelEmojis;
+	Emote@[] wheelEmotes;
 
 	string[] data;
 	cfg.readIntoArray_string(data, "WHEEL");
 
 	for (uint i = 0; i < data.size(); i++)
 	{
-		Emoji@ emoji;
-		if (emojis.get(data[i], @emoji))
+		Emote@ emote;
+		if (emotes.get(data[i], @emote))
 		{
-			wheelEmojis.push_back(emoji);
+			wheelEmotes.push_back(emote);
 		}
 	}
 
-	return wheelEmojis;
+	return wheelEmotes;
 }
 
 ConfigFile@ loadEmoteConfig()
