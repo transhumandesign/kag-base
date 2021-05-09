@@ -11,7 +11,8 @@ void onInit(CBlob@ this)
 
 	this.addCommandID("prevent emotes");
 
-	emoteBinds = readEmoteBindings();
+	CPlayer@ me = getLocalPlayer();
+	emoteBinds = readEmoteBindings(me);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

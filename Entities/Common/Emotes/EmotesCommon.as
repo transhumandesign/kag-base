@@ -205,7 +205,7 @@ ConfigFile@ openEmoteBindingsConfig()
 }
 
 //helper - allow integer entries as well as name entries
-string read_emote(ConfigFile@ cfg, dictionary emotes, string name, string default_value)
+string read_emote(ConfigFile@ cfg, dictionary emotes, CPlayer@ player, string name, string default_value)
 {
 	Emote@ emote;
 
@@ -235,7 +235,7 @@ string read_emote(ConfigFile@ cfg, dictionary emotes, string name, string defaul
 			}
 		}
 
-		if (emotes.get(attempt, @emote))
+		if (emotes.get(attempt, @emote) && canUseEmote(player, emote))
 		{
 			return emote.token;
 		}
@@ -258,7 +258,7 @@ bool isMouseOverEmote(CSpriteLayer@ emote)
 	);
 }
 
-string[] readEmoteBindings()
+string[] readEmoteBindings(CPlayer@ player)
 {
 	ConfigFile@ cfg = openEmoteBindingsConfig();
 
@@ -266,25 +266,57 @@ string[] readEmoteBindings()
 	getRules().get("emotes", emotes);
 
 	string[] emoteBinds = {
-		read_emote(cfg, emotes, "emote_1", "attn"),
-		read_emote(cfg, emotes, "emote_2", "smile"),
-		read_emote(cfg, emotes, "emote_3", "frown"),
-		read_emote(cfg, emotes, "emote_4", "mad"),
-		read_emote(cfg, emotes, "emote_5", "laugh"),
-		read_emote(cfg, emotes, "emote_6", "wat"),
-		read_emote(cfg, emotes, "emote_7", "troll"),
-		read_emote(cfg, emotes, "emote_8", "disappoint"),
-		read_emote(cfg, emotes, "emote_9", "ladder"),
-		read_emote(cfg, emotes, "emote_10", "flex"),
-		read_emote(cfg, emotes, "emote_11", "down"),
-		read_emote(cfg, emotes, "emote_12", "smug"),
-		read_emote(cfg, emotes, "emote_13", "left"),
-		read_emote(cfg, emotes, "emote_14", "okhand"),
-		read_emote(cfg, emotes, "emote_15", "right"),
-		read_emote(cfg, emotes, "emote_16", "thumbsup"),
-		read_emote(cfg, emotes, "emote_17", "up"),
-		read_emote(cfg, emotes, "emote_18", "thumbsdown")
+		read_emote(cfg, emotes, player, "emote_1", "attn"),
+		read_emote(cfg, emotes, player, "emote_2", "smile"),
+		read_emote(cfg, emotes, player, "emote_3", "frown"),
+		read_emote(cfg, emotes, player, "emote_4", "mad"),
+		read_emote(cfg, emotes, player, "emote_5", "laugh"),
+		read_emote(cfg, emotes, player, "emote_6", "wat"),
+		read_emote(cfg, emotes, player, "emote_7", "troll"),
+		read_emote(cfg, emotes, player, "emote_8", "disappoint"),
+		read_emote(cfg, emotes, player, "emote_9", "ladder"),
+		read_emote(cfg, emotes, player, "emote_10", "flex"),
+		read_emote(cfg, emotes, player, "emote_11", "down"),
+		read_emote(cfg, emotes, player, "emote_12", "smug"),
+		read_emote(cfg, emotes, player, "emote_13", "left"),
+		read_emote(cfg, emotes, player, "emote_14", "okhand"),
+		read_emote(cfg, emotes, player, "emote_15", "right"),
+		read_emote(cfg, emotes, player, "emote_16", "thumbsup"),
+		read_emote(cfg, emotes, player, "emote_17", "up"),
+		read_emote(cfg, emotes, player, "emote_18", "thumbsdown")
 	};
 
 	return emoteBinds;
+}
+
+bool canUseEmote(CPlayer@ player, Emote@ emote)
+{
+	string[] excluded = {
+		"dots",
+		"pickup"
+	};
+
+	return excluded.find(emote.token) == -1;
+}
+
+Emote@[] getUsableEmotes(CPlayer@ player)
+{
+	Emote@[] usableEmotes;
+
+	dictionary emotes;
+	getRules().get("emotes", emotes);
+	string[] tokens = emotes.getKeys();
+
+	for (uint i = 0; i < tokens.size(); i++)
+	{
+		Emote@ emote;
+		emotes.get(tokens[i], @emote);
+
+		if (canUseEmote(player, emote))
+		{
+			usableEmotes.push_back(emote);
+		}
+	}
+
+	return usableEmotes;
 }

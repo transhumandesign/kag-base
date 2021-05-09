@@ -3,12 +3,7 @@
 
 #include "EmotesCommon.as";
 
-const array<string> EXCLUDED_EMOTES = {
-	"dots",
-	"pickup"
-};
 const u8 MENU_WIDTH = 9;
-u8 MENU_HEIGHT;
 const string SELECTED_PROP = "selected emote: ";
 
 const string EMOTE_CMD = "emote command";
@@ -27,8 +22,6 @@ void onInit(CRules@ this)
 	dictionary emotes;
 	this.get("emotes", emotes);
 	string[] tokens = emotes.getKeys();
-
-	MENU_HEIGHT = Maths::Ceil((tokens.size() - EXCLUDED_EMOTES.length - 1) / MENU_WIDTH) + 4;
 
 	//load emote icons
 	for (u16 i = 0; i < tokens.size(); i++)
@@ -63,8 +56,10 @@ void ShowEmotesMenu(CPlayer@ player)
 	Vec2f center = getDriver().getScreenCenterPos();
 	string description = getTranslatedString("Emote Hotkey Binder");
 
+	u8 menuWidth = Maths::Ceil((getUsableEmotes(player).size() - 1) / MENU_WIDTH) + 4;
+
 	//display main grid menu
-	CGridMenu@ menu = CreateGridMenu(center, null, Vec2f(MENU_WIDTH, MENU_HEIGHT), description);
+	CGridMenu@ menu = CreateGridMenu(center, null, Vec2f(MENU_WIDTH, menuWidth), description);
 	if (menu !is null)
 	{
 		menu.deleteAfterClick = false;
@@ -92,7 +87,7 @@ void ShowEmotesMenu(CPlayer@ player)
 			{
 				Emote@ emote = pack.emotes[j];
 
-				if (EXCLUDED_EMOTES.find(emote.token) > -1)
+				if (!canUseEmote(player, emote))
 				{
 					continue;
 				}
@@ -116,7 +111,7 @@ void ShowEmotesMenu(CPlayer@ player)
 		separator.clickable = false;
 		separator.SetEnabled(false);
 
-		string[] emoteBinds = readEmoteBindings();
+		string[] emoteBinds = readEmoteBindings(player);
 
 		string propname = SELECTED_PROP + player.getUsername();
 		u8 selected = rules.get_u8(propname);
