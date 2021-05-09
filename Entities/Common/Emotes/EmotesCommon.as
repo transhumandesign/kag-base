@@ -257,3 +257,34 @@ bool isMouseOverEmote(CSpriteLayer@ emote)
 		mousePos.x < br.x && mousePos.y < br.y
 	);
 }
+
+string[] readEmoteBindings()
+{
+	ConfigFile@ cfg = openEmoteBindingsConfig();
+
+	dictionary emotes;
+	getRules().get("emotes", emotes);
+
+	string[] emoteBinds = {
+		read_emote(cfg, emotes, "emote_1", "attn"),
+		read_emote(cfg, emotes, "emote_2", "smile"),
+		read_emote(cfg, emotes, "emote_3", "frown"),
+		read_emote(cfg, emotes, "emote_4", "mad"),
+		read_emote(cfg, emotes, "emote_5", "laugh"),
+		read_emote(cfg, emotes, "emote_6", "wat"),
+		read_emote(cfg, emotes, "emote_7", "troll"),
+		read_emote(cfg, emotes, "emote_8", "disappoint"),
+		read_emote(cfg, emotes, "emote_9", "ladder"),
+		read_emote(cfg, emotes, "emote_10", "flex"),
+		read_emote(cfg, emotes, "emote_11", "down"),
+		read_emote(cfg, emotes, "emote_12", "smug"),
+		read_emote(cfg, emotes, "emote_13", "left"),
+		read_emote(cfg, emotes, "emote_14", "okhand"),
+		read_emote(cfg, emotes, "emote_15", "right"),
+		read_emote(cfg, emotes, "emote_16", "thumbsup"),
+		read_emote(cfg, emotes, "emote_17", "up"),
+		read_emote(cfg, emotes, "emote_18", "thumbsdown")
+	};
+
+	return emoteBinds;
+}
