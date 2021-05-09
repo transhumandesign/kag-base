@@ -184,6 +184,25 @@ dictionary LoadEmojis(ConfigFile@ cfg)
 	return dict;
 }
 
+Emoji@[] getWheelEmojis(ConfigFile@ cfg, dictionary emojis)
+{
+	Emoji@[] wheelEmojis;
+
+	string[] data;
+	cfg.readIntoArray_string(data, "WHEEL");
+
+	for (uint i = 0; i < data.size(); i++)
+	{
+		Emoji@ emoji;
+		if (emojis.get(data[i], @emoji))
+		{
+			wheelEmojis.push_back(emoji);
+		}
+	}
+
+	return wheelEmojis;
+}
+
 ConfigFile@ loadEmoteConfig()
 {
 	string filename = "EmoteEntries.cfg";
