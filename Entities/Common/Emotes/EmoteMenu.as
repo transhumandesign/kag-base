@@ -5,6 +5,9 @@
 
 void onInit(CRules@ rules)
 {
+	dictionary emojis = LoadEmojis(loadEmoteConfig());
+	print(""+emojis.getSize());
+
 	string filename = "EmoteEntries.cfg";
 	string cachefilename = "../Cache/" + filename;
 	ConfigFile cfg;
