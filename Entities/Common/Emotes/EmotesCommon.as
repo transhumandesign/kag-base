@@ -138,12 +138,14 @@ class Emoji
 {
 	string name;
 	string token;
+	u8 index;
 	EmojiPack@ pack;
 
-	Emoji(string name, string token, EmojiPack@ pack)
+	Emoji(string name, string token, u8 index, EmojiPack@ pack)
 	{
 		this.name = name;
 		this.token = token;
+		this.index = index;
 		@this.pack = pack;
 	}
 }
@@ -176,7 +178,7 @@ dictionary LoadEmojis(ConfigFile@ cfg)
 
 		for (uint j = 0; j < emojis.size(); j += 2)
 		{
-			Emoji emoji(emojis[j], emojis[j + 1], pack);
+			Emoji emoji(emojis[j], emojis[j + 1], j / 2, pack);
 			dict.set(emoji.token, emoji);
 		}
 	}
