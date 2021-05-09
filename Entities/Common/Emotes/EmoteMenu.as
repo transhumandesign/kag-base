@@ -5,51 +5,58 @@
 
 void onInit(CRules@ rules)
 {
-	dictionary emojis = LoadEmojis(loadEmoteConfig());
-	print(""+emojis.getSize());
-
-	string filename = "EmoteEntries.cfg";
-	string cachefilename = "../Cache/" + filename;
-	ConfigFile cfg;
-
-	//attempt to load from cache first
-	bool loaded = false;
-	if (CFileMatcher(cachefilename).getFirst() == cachefilename && cfg.loadFile(cachefilename))
 	{
-		loaded = true;
-	}
-	else if (cfg.loadFile(filename))
-	{
-		loaded = true;
+		ConfigFile@ cfg = loadEmoteConfig();
+		dictionary emojis = LoadEmojis(cfg);
+
+		Emoji@[] wheelEmojis = getWheelEmojis(cfg, emojis);
+		print(""+wheelEmojis.size());
 	}
 
-	if (!loaded)
 	{
-		return;
-	}
+		string filename = "EmoteEntries.cfg";
+		string cachefilename = "../Cache/" + filename;
+		ConfigFile cfg;
 
-	WheelMenu@ menu = get_wheel_menu("emotes");
-	menu.option_notice = getTranslatedString("Select emote");
+		//attempt to load from cache first
+		bool loaded = false;
+		if (CFileMatcher(cachefilename).getFirst() == cachefilename && cfg.loadFile(cachefilename))
+		{
+			loaded = true;
+		}
+		else if (cfg.loadFile(filename))
+		{
+			loaded = true;
+		}
 
-	string[] names;
-	cfg.readIntoArray_string(names, "emotes");
+		if (!loaded)
+		{
+			return;
+		}
 
-	if (names.length % 2 != 0)
-	{
-		error("EmoteEntries.cfg is not in the form of visible_name; token;");
-		return;
-	}
+		WheelMenu@ menu = get_wheel_menu("emotes");
+		menu.option_notice = getTranslatedString("Select emote");
 
-	for (uint i = 0; i < names.length; i += 2)
-	{
-		IconWheelMenuEntry entry(names[i+1]);
-		entry.visible_name = getTranslatedString(names[i]);
-		entry.texture_name = "Emoticons.png";
-		entry.frame = Emotes::names.find(names[i+1]);
-		entry.frame_size = Vec2f(32.0f, 32.0f);
-		entry.scale = 1.0f;
-		entry.offset = Vec2f(0.0f, -3.0f);
-		menu.entries.push_back(@entry);
+		string[] names;
+		cfg.readIntoArray_string(names, "emotes");
+
+		if (names.length % 2 != 0)
+		{
+			error("EmoteEntries.cfg is not in the form of visible_name; token;");
+			return;
+		}
+
+		for (uint i = 0; i < names.length; i += 2)
+		{
+			IconWheelMenuEntry entry(names[i+1]);
+			entry.visible_name = getTranslatedString(names[i]);
+			entry.texture_name = "Emoticons.png";
+			entry.frame = Emotes::names.find(names[i+1]);
+			entry.frame_size = Vec2f(32.0f, 32.0f);
+			entry.scale = 1.0f;
+			entry.offset = Vec2f(0.0f, -3.0f);
+			menu.entries.push_back(@entry);
+		}
 	}
 }
 
