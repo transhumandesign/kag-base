@@ -80,9 +80,3 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.set_u32("emotetime", emotetime);
 	}
 }
-
-void onClickedBubble(CBlob@ this, int index)
-{
-	print(""+index);
-	// set_emote(this, index);
-}
