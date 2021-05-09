@@ -170,7 +170,7 @@ void DefaultChaseBlob(CBlob@ blob, CBlob @target)
 
 			case CBrain::searching:
 				//if (sv_test)
-				//	set_emote( blob, Emotes::dots );
+				//	set_emote( blob, "dots" );
 				break;
 
 			case CBrain::stuck:
@@ -243,7 +243,7 @@ void onChangeTarget(CBlob@ blob, CBlob@ target, CBlob@ oldTarget)
 	// !!!
 	if (oldTarget is null)
 	{
-		set_emote(blob, Emotes::attn, 1);
+		set_emote(blob, "attn", 1);
 	}
 }
 

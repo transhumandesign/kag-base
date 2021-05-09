@@ -319,7 +319,7 @@ void onTick(CBlob@ this)
 
 void onDie(CBlob@ this)
 {
-	set_emote(this, Emotes::off);
+	set_emote(this, "");
 }
 
 // CAMERA

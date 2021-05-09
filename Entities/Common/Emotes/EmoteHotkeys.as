@@ -2,25 +2,25 @@
 #include "EmotesCommon.as";
 
 // set these so they default correctly even if we don't find the file.
-u8 emote_1 = Emotes::attn;
-u8 emote_2 = Emotes::smile;
-u8 emote_3 = Emotes::frown;
-u8 emote_4 = Emotes::mad;
-u8 emote_5 = Emotes::laugh;
-u8 emote_6 = Emotes::wat;
-u8 emote_7 = Emotes::troll;
-u8 emote_8 = Emotes::disappoint;
-u8 emote_9 = Emotes::ladder;
+string emote_1 = "attn";
+string emote_2 = "smile";
+string emote_3 = "frown";
+string emote_4 = "mad";
+string emote_5 = "laugh";
+string emote_6 = "wat";
+string emote_7 = "troll";
+string emote_8 = "disappoint";
+string emote_9 = "ladder";
 
-u8 emote_10 = Emotes::flex;
-u8 emote_11 = Emotes::down;
-u8 emote_12 = Emotes::smug;
-u8 emote_13 = Emotes::left;
-u8 emote_14 = Emotes::okhand;
-u8 emote_15 = Emotes::right;
-u8 emote_16 = Emotes::thumbsup;
-u8 emote_17 = Emotes::up;
-u8 emote_18 = Emotes::thumbsdown;
+string emote_10 = "flex";
+string emote_11 = "down";
+string emote_12 = "smug";
+string emote_13 = "left";
+string emote_14 = "okhand";
+string emote_15 = "right";
+string emote_16 = "thumbsup";
+string emote_17 = "up";
+string emote_18 = "thumbsdown";
 
 const string emote_config_file = "EmoteBindings.cfg";
 
@@ -34,25 +34,28 @@ void onInit(CBlob@ this)
 	//attempt to load from cache first
 	ConfigFile@ cfg = openEmoteBindingsConfig();
 
-	emote_1 = read_emote(cfg, "emote_1", Emotes::attn);
-	emote_2 = read_emote(cfg, "emote_2", Emotes::smile);
-	emote_3 = read_emote(cfg, "emote_3", Emotes::frown);
-	emote_4 = read_emote(cfg, "emote_4", Emotes::mad);
-	emote_5 = read_emote(cfg, "emote_5", Emotes::laugh);
-	emote_6 = read_emote(cfg, "emote_6", Emotes::wat);
-	emote_7 = read_emote(cfg, "emote_7", Emotes::troll);
-	emote_8 = read_emote(cfg, "emote_8", Emotes::disappoint);
-	emote_9 = read_emote(cfg, "emote_9", Emotes::ladder);
+	dictionary emotes;
+	getRules().get("emotes", emotes);
 
-	emote_10 = read_emote(cfg, "emote_10", Emotes::flex);
-	emote_11 = read_emote(cfg, "emote_11", Emotes::down);
-	emote_12 = read_emote(cfg, "emote_12", Emotes::smug);
-	emote_13 = read_emote(cfg, "emote_13", Emotes::left);
-	emote_14 = read_emote(cfg, "emote_14", Emotes::okhand);
-	emote_15 = read_emote(cfg, "emote_15", Emotes::right);
-	emote_16 = read_emote(cfg, "emote_16", Emotes::thumbsup);
-	emote_17 = read_emote(cfg, "emote_17", Emotes::up);
-	emote_18 = read_emote(cfg, "emote_18", Emotes::thumbsdown);
+	emote_1 = read_emote(cfg, emotes, "emote_1", "attn");
+	emote_2 = read_emote(cfg, emotes, "emote_2", "smile");
+	emote_3 = read_emote(cfg, emotes, "emote_3", "frown");
+	emote_4 = read_emote(cfg, emotes, "emote_4", "mad");
+	emote_5 = read_emote(cfg, emotes, "emote_5", "laugh");
+	emote_6 = read_emote(cfg, emotes, "emote_6", "wat");
+	emote_7 = read_emote(cfg, emotes, "emote_7", "troll");
+	emote_8 = read_emote(cfg, emotes, "emote_8", "disappoint");
+	emote_9 = read_emote(cfg, emotes, "emote_9", "ladder");
+
+	emote_10 = read_emote(cfg, emotes, "emote_10", "flex");
+	emote_11 = read_emote(cfg, emotes, "emote_11", "down");
+	emote_12 = read_emote(cfg, emotes, "emote_12", "smug");
+	emote_13 = read_emote(cfg, emotes, "emote_13", "left");
+	emote_14 = read_emote(cfg, emotes, "emote_14", "okhand");
+	emote_15 = read_emote(cfg, emotes, "emote_15", "right");
+	emote_16 = read_emote(cfg, emotes, "emote_16", "thumbsup");
+	emote_17 = read_emote(cfg, emotes, "emote_17", "up");
+	emote_18 = read_emote(cfg, emotes, "emote_18", "thumbsdown");
 
 }
 
@@ -60,7 +63,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("prevent emotes"))
 	{
-		set_emote(this, Emotes::off);
+		set_emote(this, "");
 	}
 }
 
