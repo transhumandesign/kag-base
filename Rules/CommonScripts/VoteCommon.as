@@ -14,7 +14,11 @@ class VoteFunctor
 class VoteCheckFunctor
 {
 	VoteCheckFunctor() {}
-	bool PlayerCanVote(CPlayer@ player) { return true; }
+	bool PlayerCanVote(CPlayer@ player)
+	{
+		//prevent duplicate players from voting
+		return player.getUsername().find("~") > -1;
+	}
 };
 
 //shared
