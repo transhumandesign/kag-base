@@ -119,11 +119,14 @@ void ShowEmotesMenu(CPlayer@ player)
 		//display row of current emote keybinds
 		for (int i = 0; i < emoteBinds.size(); i++)
 		{
+			string text = i < 9 ? "Select key {KEY_NUM}" : "Select numpad key {KEY_NUM}";
+			u8 keyNum = (i < 9 ? i : i - 9) + 1;
+
 			CBitStream params;
 			params.write_u8(SELECT_KEYBIND);
 			params.write_string(player.getUsername());
 			params.write_u8(i);
-			CGridButton@ button = menu.AddButton(getIconName(emoteBinds[i]), getTranslatedString("Select key {KEY_NUM}").replace("{KEY_NUM}", (i + 1) + ""), rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
+			CGridButton@ button = menu.AddButton(getIconName(emoteBinds[i]), getTranslatedString(text).replace("{KEY_NUM}", keyNum + ""), rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
 			button.selectOneOnClick = true;
 			// button.hoverText = "     Key " + (i + 1) + "\n";
 
