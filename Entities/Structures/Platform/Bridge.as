@@ -177,7 +177,7 @@ bool canOpen(CBlob@ this, CBlob@ blob)
 {
 	if (this.getTeamNum() != blob.getTeamNum()
 		&& blob.getShape().getConsts().collidable
-		&& (blob.hasTag("player") || blob.hasTag("vehicle")))
+		&& (blob.hasTag("player") || blob.hasTag("dead") || blob.hasTag("vehicle")))
 	{
 		return true;
 
