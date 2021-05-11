@@ -296,12 +296,16 @@ bool canUseEmote(CPlayer@ player, Emote@ emote)
 		"pickup"
 	};
 
+	//emote excluded
+	if (excluded.find(emote.token) > -1) return false;
+
+	//thd privilege >:)
+	if (player.isDev()) return true;
+
 	bool patreonEmote = emote.pack.token == "patreon";
 	bool patron = player.getSupportTier() != SUPPORT_TIER_NONE;
 
 	return (
-		//emote not excluded
-		excluded.find(emote.token) == -1 &&
 		//show patreon emote to patron
 		(!patreonEmote || patron)
 	);
