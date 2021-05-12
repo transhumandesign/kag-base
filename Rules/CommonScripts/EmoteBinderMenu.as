@@ -56,10 +56,14 @@ void ShowEmotesMenu(CPlayer@ player)
 	Vec2f center = getDriver().getScreenCenterPos();
 	string description = getTranslatedString("Emote Hotkey Binder");
 
-	u8 menuWidth = Maths::Ceil((getUsableEmotes(player).size() - 1) / MENU_WIDTH) + 4;
+	string[] emoteBinds = readEmoteBindings(player);
+
+	uint emotesHeight = Maths::Ceil(getUsableEmotes(player).size() / float(MENU_WIDTH));
+	uint bindsHeight = Maths::Ceil(emoteBinds.size() / float(MENU_WIDTH));
+	uint menuHeight = emotesHeight + bindsHeight + 1;
 
 	//display main grid menu
-	CGridMenu@ menu = CreateGridMenu(center, null, Vec2f(MENU_WIDTH, menuWidth), description);
+	CGridMenu@ menu = CreateGridMenu(center, null, Vec2f(MENU_WIDTH, menuHeight), description);
 	if (menu !is null)
 	{
 		menu.deleteAfterClick = false;
@@ -108,10 +112,7 @@ void ShowEmotesMenu(CPlayer@ player)
 
 		//separator with info
 		CGridButton@ separator = menu.AddTextButton(getTranslatedString("Select a keybind below, then select the emote you want"), Vec2f(MENU_WIDTH, 1));
-		separator.clickable = false;
 		separator.SetEnabled(false);
-
-		string[] emoteBinds = readEmoteBindings(player);
 
 		string propname = SELECTED_PROP + player.getUsername();
 		u8 selected = rules.get_u8(propname);
