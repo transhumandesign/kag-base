@@ -100,7 +100,7 @@ void ShowEmotesMenu(CPlayer@ player)
 				params.write_u8(BIND_EMOTE);
 				params.write_string(player.getUsername());
 				params.write_string(emote.token);
-				CGridButton@ button = menu.AddButton(getIconName(emote.token), description, rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
+				CGridButton@ button = menu.AddButton(getIconName(emote.token), getTranslatedString(emote.name), rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
 			}
 		}
 
