@@ -17,7 +17,7 @@ class VoteCheckFunctor
 	bool PlayerCanVote(CPlayer@ player)
 	{
 		//prevent duplicate players from voting
-		return player.getUsername().find("~") > -1;
+		return !isDuplicatePlayer(player);
 	}
 };
 
@@ -245,4 +245,9 @@ void CalculateVoteThresholds(VoteObject@ vote)
 			vote.maximum_votes++;
 		}
 	}
+}
+
+bool isDuplicatePlayer(CPlayer@ player)
+{
+	return player.getUsername().find("~") > -1;
 }

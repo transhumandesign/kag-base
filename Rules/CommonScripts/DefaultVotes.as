@@ -463,7 +463,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 
 	bool can_skip_wait = getSecurity().checkAccess_Feature(me, "skip_votewait");
 
-	bool duplicatePlayer = me.getUsername().find("~") > -1;
+	bool duplicatePlayer = isDuplicatePlayer(me);
 
 	//kick menu
 	if (getSecurity().checkAccess_Feature(me, "mark_player"))
