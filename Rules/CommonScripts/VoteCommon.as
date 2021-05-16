@@ -14,7 +14,11 @@ class VoteFunctor
 class VoteCheckFunctor
 {
 	VoteCheckFunctor() {}
-	bool PlayerCanVote(CPlayer@ player) { return true; }
+	bool PlayerCanVote(CPlayer@ player)
+	{
+		//prevent duplicate players from voting
+		return !isDuplicatePlayer(player);
+	}
 };
 
 //shared
@@ -241,4 +245,9 @@ void CalculateVoteThresholds(VoteObject@ vote)
 			vote.maximum_votes++;
 		}
 	}
+}
+
+bool isDuplicatePlayer(CPlayer@ player)
+{
+	return player.getUsername().find("~") > -1;
 }
