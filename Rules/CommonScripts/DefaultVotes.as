@@ -476,7 +476,9 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 				getTranslatedString(
 					"Voting to kick a player\n" +
 					"is not allowed when playing\n" +
-					"with a duplicate instance of KAG"
+					"with a duplicate instance of KAG.\n\n" +
+					"Try rejoining the server\n" +
+					"if this was unintentional."
 				)
 			);
 		}
@@ -608,7 +610,9 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 				getTranslatedString(
 					"Voting for next map\n" +
 					"is not allowed when playing\n" +
-					"with a duplicate instance of KAG"
+					"with a duplicate instance of KAG.\n\n" +
+					"Try rejoining the server\n" +
+					"if this was unintentional."
 				)
 			);
 		}
@@ -667,8 +671,10 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			getTranslatedString(
 				"Voting for surrender\n" +
 				"is not allowed when playing\n" +
-				"with a duplicate instance of KAG"
-			)
+				"with a duplicate instance of KAG.\n\n" +
+				"Try rejoining the server\n" +
+				"if this was unintentional."
+		)
 		);
 	}
 	else if (me.getTeamNum() == rules.getSpectatorTeamNum())
@@ -737,7 +743,9 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			getTranslatedString(
 				"Voting for team scramble\n" +
 				"is not allowed when playing\n" +
-				"with a duplicate instance of KAG"
+				"with a duplicate instance of KAG.\n\n" +
+				"Try rejoining the server\n" +
+				"if this was unintentional."
 			)
 		);
 	}
