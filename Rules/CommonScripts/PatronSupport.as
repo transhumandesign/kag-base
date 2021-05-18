@@ -34,9 +34,12 @@ int onProcessFullJoin(CRules@ this, APIPlayer@ user)
 	return -1;
 }
 
-
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
+
+	if (!isClient())
+		return;
+
 	u16 tier = this.get_u16("supportTier " + player.getUsername());
 	if (tier >= SUPPORT_TIER_ROYALGUARD && // if we are high enough in the tier list
 		this.getSpectatorTeamNum() == player.getTeamNum() && // and we are a spectator
@@ -50,9 +53,42 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 		CBitStream stream = CBitStream();
 		stream.write_u8(CAN_SEND_HEAD);
 
-		this.SendCommand(this.addCommandID("SendCustomHead"), stream, player);
+		this.SendCommand(this.getCommandID("SendCustomHead"), stream, player);
 	}
 
+	// Check to see if there are any custom head's currently in game
+	// if so, send it to our player
+	for (int a = 0; a < getPlayerCount(); a++)
+	{
+		CPlayer@ p = getPlayer(a);
+		if (p is null)
+			continue;
+
+		if (this.exists("head-bitstream-"+player.getUsername()))
+		{
+			CBitStream@ stream;
+
+			this.get_CBitStream("head-bitstream-"+player.getUsername(), stream);
+			this.SendCommand(this.getCommandID("SendCustomHead"), stream, player);
+		}
+	}
+
+
+}
+
+void onPlayerLeave(CRules@ this, CPlayer@ player)
+{
+	if (isServer())
+	{
+		if (this.exists("head-bitstream-"+player.getUsername()))
+			this.set_CBitStream("head-bitstream-"+player.getUsername(), CBitStream());
+	}
+
+	if (isClient())
+	{
+		if (Texture::exists("CustomHead-"+player.getUsername()))
+			Texture::destroy("CustomHead-"+player.getUsername());
+	}
 }
 
 // TEMP
@@ -95,7 +131,6 @@ ImageData@ DeseralizeHead(CBitStream@ params)
 {
 	ImageData head(64, 16);
 
-	
 	for (int h = 0; h < 16; h++)
 	{
 		for (int w = 0; w < 48; w++)
@@ -132,7 +167,7 @@ void client_SendCustomHead(CRules@ this)
 
     if (data.height() != 16 || data.width() != 64)
     {
-        print("Could not send " + PNG_FILENAME + ", ensure the width is 64 pixels, and height is 16");
+        error("Could not send " + PNG_FILENAME + ", ensure the width is 64 pixels, and height is 16");
         return;
     }
 
