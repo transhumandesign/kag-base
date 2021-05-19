@@ -380,6 +380,12 @@ void LinearExplosion(CBlob@ this, Vec2f _direction, f32 length, const f32 width,
 						if (!justhurt)
 							damaged = true;
 
+						if (map.isTileGold(t))
+						{
+							Material::fromTile(this, t, 1.0f); // drops gold at bombs position
+						}
+
+
 						justhurt = justhurt || !canExplosionDestroy(map, tpos, t);
 						map.server_DestroyTile(tpos, justhurt ? 5.0f : 100.0f, this);
 					}
