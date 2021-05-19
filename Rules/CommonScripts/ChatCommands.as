@@ -7,8 +7,17 @@
 #include "MakeCrate.as";
 #include "MakeScroll.as";
 
-const bool ChatCommandCoolDown = false; // enable if you want cooldown on your server
-const uint ChatCommandDelay = 3 * 30; // Cooldown in seconds
+const bool chatCommandCooldown = false; // enable if you want cooldown on your server
+const uint chatCommandDelay = 3 * 30; // Cooldown in seconds
+const string[] blacklistedItems = {
+	"hall",         // grief
+	"shark",        // grief spam
+	"bison",        // grief spam
+	"necromancer",  // annoying/grief
+	"greg",         // annoying/grief
+	"ctf_flag",     // sound spam
+	"flag_base"     // sound spam + bedrock grief
+};
 
 void onInit(CRules@ this)
 {
@@ -64,14 +73,13 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 	string errorMessage = ""; // so errors can be printed out of wasCommandSuccessful is false
 	SColor errorColor = SColor(255,255,0,0); // ^
 
-	if (!isMod && gamemode == "Sandbox" || ChatCommandCoolDown) // chat command cooldown timer
+	if (!isMod && this.hasScript("Sandbox_Rules.as") || chatCommandCooldown) // chat command cooldown timer
 	{
 		uint lastChatTime = 0;
-		uint gameTime = getGameTime();
 		if (blob.exists("chat_last_sent"))
 		{
 			lastChatTime = blob.get_u16("chat_last_sent");
-			if (gameTime < lastChatTime)
+			if (getGameTime() < lastChatTime)
 			{
 				return true;
 			}
@@ -263,9 +271,19 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				//(see above for crate parsing example)
 				if (tokens[0] == "!crate")
 				{
-					int frame = tokens[1] == "catapult" ? 1 : 0;
-					string description = tokens.length > 2 ? tokens[2] : tokens[1];
-					server_MakeCrate(tokens[1], description, frame, -1, Vec2f(pos.x, pos.y));
+					string item = tokens[1];
+
+					if (!isMod && isBlacklisted(item))
+					{
+						wasCommandSuccessful = false;
+						errorMessage = "blob is currently blacklisted";
+					}
+					else
+					{
+						int frame = item == "catapult" ? 1 : 0;
+						string description = tokens.length > 2 ? tokens[2] : item;
+						server_MakeCrate(item, description, frame, -1, Vec2f(pos.x, pos.y));
+					}
 				}
 				// eg. !team 2
 				else if (tokens[0] == "!team")
@@ -293,14 +311,14 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			else
 			{
 				string name = text_in.substr(1, text_in.size());
-				if (!isMod && IsBlacklisted(name))
+				if (!isMod && isBlacklisted(name))
 				{
 					wasCommandSuccessful = false;
 					errorMessage = "blob is currently blacklisted";
 				}
 				else
 				{
-					CBlob@ newBlob = server_CreateBlob(name, team, pos); // currently any blob made will come back with a valid pointer
+					CBlob@ newBlob = server_CreateBlob(name, team, Vec2f(0, -5) + pos); // currently any blob made will come back with a valid pointer
 
 					if (newBlob !is null)
 					{
@@ -317,7 +335,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 	if (wasCommandSuccessful)
 	{
-		blob.set_u16("chat_last_sent", getGameTime() + ChatCommandDelay);
+		blob.set_u16("chat_last_sent", getGameTime() + chatCommandDelay);
 	}
 	else if(errorMessage != "") // send error message to client
 	{
@@ -367,7 +385,6 @@ bool onClientProcessChat(CRules@ this, const string& in text_in, string& out tex
 	return true;
 }
 
-
 void onCommand(CRules@ this, u8 cmd, CBitStream @para)
 {
 	if (cmd == this.getCommandID("SendChatMessage"))
@@ -378,13 +395,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @para)
 	}
 }
 
-bool IsBlacklisted(string name)
+bool isBlacklisted(string name)
 {
-	return  name=="hall" || // used to dig hole to bottom of the map, spawns lots of migrants
-			name=="shark" || // greif
-			name=="bison" ||
-			name=="necromancer" || // annoying / grief
-			name=="greg" || // annoying / grief
-			name=="ctf_flag" || // sound spam
-			name=="flag_base";// sound spam / grief
+	return blacklistedItems.find(name) != -1;
 }

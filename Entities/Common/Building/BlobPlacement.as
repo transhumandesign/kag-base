@@ -13,6 +13,12 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 {
 	if (blob !is null)
 	{
+		if (!serverBlobCheck(this, blob, cursorPos))
+			return;
+
+		u32 delay = this.get_u32("build delay");
+		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
+
 		CShape@ shape = blob.getShape();
 		shape.server_SetActive(true);
 
@@ -21,6 +27,7 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 		{
 			blob.SetDamageOwnerPlayer(this.getPlayer());
 		}
+
 		if (this.server_DetachFrom(blob))
 		{
 			blob.setPosition(cursorPos);
@@ -29,8 +36,51 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 				shape.SetStatic(true);
 			}
 		}
+
+		DestroyScenary(cursorPos, cursorPos);
 	}
 }
+
+// Returns true if pos is valid
+bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
+{
+	// Pos check of about 8 tiles, accounts for people with lag
+	Vec2f pos = (blob.getPosition() - cursorPos) / 2;
+
+	if (pos.Length() > 30)
+		return false;
+    
+	// Are we still on cooldown?
+	if (isBuildDelayed(blob)) 
+		return true;
+
+	// Are we trying to place in a bad pos?
+	CMap@ map = getMap();
+	Tile backtile = map.getTile(cursorPos);
+
+	if (map.isTileBedrock(backtile.type) || map.isTileSolid(backtile.type) && map.isTileGroundStuff(backtile.type)) 
+		return false;
+
+	// Make sure we actually have support at our cursor pos
+	if (!(blobToPlace.getShape().getConsts().support > 0 ? map.hasSupportAtPos(cursorPos) : true)) 
+		return false;
+
+	// Is the pos currently collapsing?
+	if (map.isTileCollapsing(cursorPos))
+		return false;
+
+	// Is our blob not a ladder and are we trying to place it into a no build area
+	if (blobToPlace.getName() != "ladder")
+	{
+		pos = cursorPos + Vec2f(map.tilesize * 0.2f, map.tilesize * 0.2f);
+
+		if (map.getSectorAtPosition(pos, "no build") !is null)
+			return false;
+	}
+
+
+	return true;
+} 
 
 Vec2f getBottomOfCursor(Vec2f cursorPos, CBlob@ carryBlob)
 {
@@ -133,7 +183,9 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.getControls() is null || this.isInInventory())
+	CControls@ controls = this.getControls();
+
+	if (controls is null || this.isInInventory())
 	{
 		return;
 	}
@@ -220,10 +272,10 @@ void onTick(CBlob@ this)
 
 		carryBlob.SetVisible(!carryBlob.hasTag("temp blob"));
 
-		bool onetile = false;
+		bool isLadder = false;
 		if (carryBlob.getName() == "ladder")
 		{
-			onetile = true;
+			isLadder = true;
 		}
 
 		if (snap) // activate help line
@@ -244,7 +296,7 @@ void onTick(CBlob@ this)
 
 				bool overlapped;
 
-				if (onetile)
+				if (isLadder)
 				{
 					Vec2f ontilepos = halftileoffset + bc.tileAimPos;
 
@@ -260,7 +312,10 @@ void onTick(CBlob@ this)
 							CBlob@ blob = b[nearblob_step];
 
 							string bname = blob.getName();
-							if (blob is carryBlob || blob.hasTag("player") || bname == "bush" || bname == "flowers" || bname == "log") continue;
+							if (blob is carryBlob || blob.hasTag("player") || !isBlocking(blob) || !blob.getShape().isStatic())
+							{
+								continue;
+							}
 
 							overlapped = (blob.getPosition() - ontilepos).LengthSquared() < tsqr;
 						}
@@ -302,8 +357,10 @@ void onTick(CBlob@ this)
 
 			if (this.isKeyJustPressed(key_action3))
 			{
+				s8 rotateDir = controls.ActionKeyPressed(AK_BUILD_MODIFIER) ? -1 : 1;
+
 				CBitStream params;
-				params.write_u16((this.get_u16("build_angle") + 90) % 360);
+				params.write_u16((360 + this.get_u16("build_angle") + 90 * rotateDir) % 360);
 				this.SendCommand(this.getCommandID("rotateBlob"), params);
 			}
 		}

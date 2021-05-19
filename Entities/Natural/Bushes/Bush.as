@@ -7,6 +7,7 @@ void onInit(CBlob@ this)
 	this.set_bool("grown", true);
 	this.getCurrentScript().runFlags |= Script::remove_after_this;
 	this.Tag("builder always hit");
+	this.Tag("scenary");
 }
 
 //void onDie( CBlob@ this )
@@ -26,4 +27,3 @@ void onInit(CSprite@ this)
 	//this.getCurrentScript().runFlags |= Script::remove_after_this;	// wont be sent on network
 	this.SetZ(10.0f);
 }
-

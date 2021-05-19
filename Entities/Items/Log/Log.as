@@ -21,6 +21,8 @@ void onInit(CBlob@ this)
 		harvest.set('mat_wood', 20);
 		this.set('harvest', harvest);
 	}
+
+	this.Tag("pushedByDoor");
 }
 
 //collide with vehicles and structures	- hit stuff if thrown

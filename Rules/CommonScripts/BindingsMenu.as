@@ -1,3 +1,5 @@
+#define CLIENT_ONLY
+
 void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 {
 	CContextMenu@ bindingsMenu = Menu::addContextMenu(menu, getTranslatedString("Bindings"));

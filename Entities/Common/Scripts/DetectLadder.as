@@ -1,5 +1,7 @@
 // set ladder if we're on it, otherwise set false
 
+#include "ArcherCommon.as"
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
@@ -13,6 +15,16 @@ void onTick(CBlob@ this)
 
 	ShapeVars@ vars = this.getShape().getVars();
 	vars.onladder = false;
+
+	// don't interact with tree if grappling is pulling you
+	ArcherInfo@ archer;
+	if (this.get("archerInfo", @archer))
+	{
+		if (archer.grappling && archer.grapple_id != 0xffff)
+		{
+			return;
+		}
+	}
 
 	//check overlapping objects
 

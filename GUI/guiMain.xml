@@ -106,7 +106,7 @@
 			<attributes>
 				<int name="Id" value="12010" />
 				<string name="Caption" value="Solo" />
-				<rect name="Rect" value="1000, 250, 1260, 320" />
+				<rect name="Rect" value="480, 220, 800, 300" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
 				<enum name="LeftAlign" value="scale" />
@@ -134,7 +134,7 @@
 			<attributes>
 				<int name="Id" value="12011" />
 				<string name="Caption" value="Multiplayer" />
-				<rect name="Rect" value="1000, 340, 1260, 410" />
+				<rect name="Rect" value="480, 310, 800, 390" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
 				<enum name="LeftAlign" value="scale" />
@@ -162,7 +162,7 @@
 			<attributes>
 				<int name="Id" value="12012" />
 				<string name="Caption" value="Settings" />
-				<rect name="Rect" value="1000, 430, 1260, 500" />
+				<rect name="Rect" value="480, 400, 800, 480" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
 				<enum name="LeftAlign" value="scale" />
@@ -190,7 +190,7 @@
 			<attributes>
 				<int name="Id" value="12013" />
 				<string name="Caption" value="Quit" />
-				<rect name="Rect" value="1000, 630, 1260, 700" />
+				<rect name="Rect" value="480, 490, 800, 570" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
 				<enum name="LeftAlign" value="scale" />
@@ -244,7 +244,7 @@
 			<attributes>
 				<int name="Id" value="12017" />
 				<string name="Caption" value="Finish Account Linking" />
-				<rect name="Rect" value="20, 470, 290, 500" />
+				<rect name="Rect" value="195, 560, 435, 610" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
 				<enum name="LeftAlign" value="scale" />
@@ -268,7 +268,7 @@
 			<attributes>
 				<int name="Id" value="12019" />
 				<string name="Caption" value="News" />
-				<rect name="Rect" value="20, 510, 150, 540" />
+				<rect name="Rect" value="195, 620, 305, 680" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
 				<enum name="LeftAlign" value="scale" />
@@ -292,7 +292,7 @@
 			<attributes>
 				<int name="Id" value="12018" />
 				<string name="Caption" value="Discord" />
-				<rect name="Rect" value="160, 510, 290, 540" />
+				<rect name="Rect" value="325, 620, 435, 680" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
 				<enum name="LeftAlign" value="scale" />
@@ -316,7 +316,7 @@
 			<attributes>
 				<int name="Id" value="12016" />
 				<string name="Caption" value="Patreon" />
-				<rect name="Rect" value="20, 550, 150, 580" />
+				<rect name="Rect" value="455, 620, 565, 680" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
 				<enum name="LeftAlign" value="scale" />
@@ -340,7 +340,7 @@
 			<attributes>
 				<int name="Id" value="12022" />
 				<string name="Caption" value="Github" />
-				<rect name="Rect" value="160, 550, 290, 580" />
+				<rect name="Rect" value="585, 620, 695, 680" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
 				<enum name="LeftAlign" value="scale" />
@@ -364,31 +364,7 @@
 			<attributes>
 				<int name="Id" value="12020" />
 				<string name="Caption" value="Forum" />
-				<rect name="Rect" value="20, 590, 150, 620" />
-				<position name="MinSize" value="1, 1" />
-				<position name="MaxSize" value="0, 0" />
-				<enum name="LeftAlign" value="scale" />
-				<enum name="RightAlign" value="scale" />
-				<enum name="TopAlign" value="scale" />
-				<enum name="BottomAlign" value="scale" />
-				<bool name="Visible" value="true" />
-				<bool name="Enabled" value="true" />
-				<bool name="TabStop" value="true" />
-				<bool name="TabGroup" value="false" />
-				<int name="TabOrder" value="6" />
-				<bool name="NoClip" value="true" />
-				<bool name="PushButton" value="false" />
-				<bool name="UseAlphaChannel" value="true" />
-				<bool name="Border" value="true" />
-				<bool name="ScaleImage" value="true" />
-			</attributes>
-		</element>
-
-		<element type="button">
-			<attributes>
-				<int name="Id" value="12014" />
-				<string name="Caption" value="Wiki" />
-				<rect name="Rect" value="160, 590, 290, 620" />
+				<rect name="Rect" value="715, 620, 825, 680" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
 				<enum name="LeftAlign" value="scale" />
@@ -412,7 +388,7 @@
 			<attributes>
 				<int name="Id" value="12023" />
 				<string name="Caption" value="Leaderboards" />
-				<rect name="Rect" value="20, 630, 290, 660" />
+				<rect name="Rect" value="845, 620, 955, 680" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
 				<enum name="LeftAlign" value="scale" />
@@ -435,8 +411,8 @@
 		<element type="button">
 			<attributes>
 				<int name="Id" value="12021" />
-				<string name="Caption" value="Official Server Rules" />
-				<rect name="Rect" value="20, 670, 290, 700" />
+				<string name="Caption" value="Server Rules" />
+				<rect name="Rect" value="975, 620, 1085, 680" />
 				<position name="MinSize" value="1, 1" />
 				<position name="MaxSize" value="0, 0" />
 				<enum name="LeftAlign" value="scale" />

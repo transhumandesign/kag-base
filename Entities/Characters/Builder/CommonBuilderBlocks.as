@@ -31,11 +31,12 @@
 #include "BuildBlock.as"
 #include "Requirements.as"
 #include "Costs.as"
+#include "TeamIconToken.as"
 
 const string blocks_property = "blocks";
 const string inventory_offset = "inventory offset";
 
-void addCommonBuilderBlocks(BuildBlock[][]@ blocks, const string&in gamemode_override = "")
+void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const string&in gamemode_override = "")
 {
 	InitCosts();
 	CRules@ rules = getRules();
@@ -65,7 +66,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, const string&in gamemode_ove
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "stone_door", "$stone_door$", "Stone Door\nPlace next to walls");
+		BuildBlock b(0, "stone_door", getTeamIcon("stone_door", "1x1StoneDoor.png", team_num, Vec2f(16, 8)), "Stone Door\nPlace next to walls");
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::stone_door);
 		blocks[0].push_back(b);
 	}
@@ -80,13 +81,18 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, const string&in gamemode_ove
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "wooden_door", "$wooden_door$", "Wooden Door\nPlace next to walls");
+		BuildBlock b(0, "wooden_door", getTeamIcon("wooden_door", "1x1WoodDoor.png", team_num, Vec2f(16, 8)), "Wooden Door\nPlace next to walls");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::wooden_door);
 		blocks[0].push_back(b);
 	}
-	{
-		BuildBlock b(0, "trap_block", "$trap_block$", "Trap Block\nOnly enemies can pass");
+	/*{
+		BuildBlock b(0, "trap_block", getTeamIcon("trap_block", "TrapBlock.png", team_num), "Trap Block\nOnly enemies can pass");
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::trap_block);
+		blocks[0].push_back(b);
+	}*/
+	{
+		BuildBlock b(0, "bridge", getTeamIcon("bridge", "Bridge.png", team_num), "Trap Bridge\nOnly your team can stand on it");
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::bridge);
 		blocks[0].push_back(b);
 	}
 	{

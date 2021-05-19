@@ -139,10 +139,15 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 					{
 						if (knight.state != KnightStates::sword_drawn && knight.state != KnightStates::resheathing_cut && knight.state != KnightStates::resheathing_slash)
 						{
-							knight.state = net_state;
-							serverState.StateEntered(this, knight, serverState.getStateValue());
-							this.set_s32("currentKnightState", serverStateIndex);
-							currentStateIndex = serverStateIndex;
+							if ((getGameTime() - serverState.stateEnteredTime) > 20)
+							{
+								knight.state = net_state;
+								serverState.stateEnteredTime = getGameTime();
+								serverState.StateEntered(this, knight, serverState.getStateValue());
+								this.set_s32("currentKnightState", serverStateIndex);
+								currentStateIndex = serverStateIndex;
+							}
+
 						}
 
 					}
@@ -150,6 +155,7 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 				else
 				{
 					knight.state = net_state;
+					serverState.stateEnteredTime = getGameTime();
 					serverState.StateEntered(this, knight, serverState.getStateValue());
 					this.set_s32("currentKnightState", serverStateIndex);
 					currentStateIndex = serverStateIndex;
@@ -176,6 +182,8 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 				s32 nextStateIndex = i;
 				KnightState@ nextState = states[nextStateIndex];
 				currentState.StateExited(this, knight, nextState.getStateValue());
+
+				nextState.stateEnteredTime = getGameTime();
 				nextState.StateEntered(this, knight, currentState.getStateValue());
 				this.set_s32("currentKnightState", nextStateIndex);
 				if (getNet().isServer() && knight.state >= KnightStates::sword_drawn && knight.state <= KnightStates::sword_power_super)
@@ -444,6 +452,8 @@ class NormalState : KnightState
 	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
 	{
 		knight.swordTimer = 0;
+		this.set_u8("swordSheathPlayed", 0);
+		this.set_u8("animeSwordPlayed", 0);
 	}
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
@@ -750,6 +760,8 @@ class SwordDrawnState : KnightState
 	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
 	{
 		knight.swordTimer = 0;
+		this.set_u8("swordSheathPlayed", 0);
+		this.set_u8("animeSwordPlayed", 0);
 	}
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
@@ -769,10 +781,13 @@ class SwordDrawnState : KnightState
 			if (knight.swordTimer == KnightVars::slash_charge_level2)
 			{
 				Sound::Play("AnimeSword.ogg", pos, myplayer ? 1.3f : 0.7f);
+				this.set_u8("animeSwordPlayed", 1);
+
 			}
 			else if (knight.swordTimer == KnightVars::slash_charge)
 			{
 				Sound::Play("SwordSheath.ogg", pos, myplayer ? 1.3f : 0.7f);
+				this.set_u8("swordSheathPlayed",  1);
 			}
 		}
 
@@ -911,6 +926,24 @@ class SlashState : KnightState
 
 		}
 
+		if (getNet().isClient())
+		{
+			const bool myplayer = this.isMyPlayer();
+			Vec2f pos = this.getPosition();
+			if (knight.state == KnightStates::sword_power_super && this.get_u8("animeSwordPlayed") == 0)
+			{
+				Sound::Play("AnimeSword.ogg", pos, myplayer ? 1.3f : 0.7f);
+				this.set_u8("animeSwordPlayed", 1);
+				this.set_u8("swordSheathPlayed", 1);
+
+			}
+			else if (knight.state == KnightStates::sword_power && this.get_u8("swordSheathPlayed") == 0)
+			{
+				Sound::Play("SwordSheath.ogg", pos, myplayer ? 1.3f : 0.7f);
+				this.set_u8("swordSheathPlayed",  1);
+			}
+		}
+
 		this.Tag("prevent crouch");
 
 		AttackMovement(this, knight, moveVars);
@@ -975,6 +1008,8 @@ class ResheathState : KnightState
 	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state)
 	{
 		knight.swordTimer = 0;
+		this.set_u8("swordSheathPlayed", 0);
+		this.set_u8("animeSwordPlayed", 0);
 	}
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
@@ -1097,15 +1132,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			count++;
 			if (type >= bombTypeNames.length)
 				type = 0;
-			if (this.getBlobCount(bombTypeNames[type]) > 0)
+			if (hasBombs(this, type))
 			{
-				this.set_u8("bomb type", type);
-				if (this.isMyPlayer())
-				{
-					Sound::Play("/CycleInventory.ogg");
-				}
+				CycleToBombType(this, type);
 				break;
 			}
+		}
+	}
+	else if (cmd == this.getCommandID("switch"))
+	{
+		u8 type;
+		if (params.saferead_u8(type) && hasBombs(this, type))
+		{
+			CycleToBombType(this, type);
 		}
 	}
 	else if (cmd == this.getCommandID("activate/throw"))
@@ -1122,6 +1161,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				break;
 			}
 		}
+	}
+}
+
+void CycleToBombType(CBlob@ this, u8 bombType)
+{
+	this.set_u8("bomb type", bombType);
+	if (this.isMyPlayer())
+	{
+		Sound::Play("/CycleInventory.ogg");
 	}
 }
 
@@ -1158,6 +1206,7 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 	bool dontHitMore = false;
 	bool dontHitMoreMap = false;
 	const bool jab = isJab(damage);
+	bool dontHitMoreLogs = false;
 
 	//get the actual aim angle
 	f32 exact_aimangle = (this.getAimPos() - blobPos).Angle();
@@ -1195,11 +1244,37 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 					continue;
 				}
 
+				f32 temp_damage = damage;
+
 				knight_add_actor_limit(this, b);
-				if (!dontHitMore)
+				if (!dontHitMore && (b.getName() != "log" || !dontHitMoreLogs))
 				{
 					Vec2f velocity = b.getPosition() - pos;
-					this.server_Hit(b, hi.hitpos, velocity, damage, type, true);  // server_Hit() is server-side only
+
+					if (b.getName() == "log")
+					{
+						temp_damage /= 3;
+						dontHitMoreLogs = true;
+						CBlob@ wood = server_CreateBlobNoInit("mat_wood");
+						if (wood !is null)
+						{
+							int quantity = Maths::Ceil(float(temp_damage) * 20.0f);
+							int max_quantity = b.getHealth() / 0.024f; // initial log health / max mats
+							
+							quantity = Maths::Max(
+								Maths::Min(quantity, max_quantity),
+								0
+							);
+
+							wood.Tag('custom quantity');
+							wood.Init();
+							wood.setPosition(hi.hitpos);
+							wood.server_SetQuantity(quantity);
+						}
+
+					}
+
+					this.server_Hit(b, hi.hitpos, velocity, temp_damage, type, true);  // server_Hit() is server-side only
 
 					// end hitting if we hit something solid, don't if its flesh
 					if (large)
@@ -1213,6 +1288,7 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 				{
 					bool ground = map.isTileGround(hi.tile);
 					bool dirt_stone = map.isTileStone(hi.tile);
+					bool dirt_thick_stone = map.isTileThickStone(hi.tile);
 					bool gold = map.isTileGold(hi.tile);
 					bool wood = map.isTileWood(hi.tile);
 					if (ground || wood || dirt_stone || gold)
@@ -1262,15 +1338,30 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 									// Note: 0.1f damage doesn't harvest anything I guess
 									// This puts it in inventory - include MaterialCommon
 									//Material::fromTile(this, hi.tile, 1.f);
-
 									CBlob@ ore = server_CreateBlobNoInit("mat_gold");
 									if (ore !is null)
 									{
 										ore.Tag('custom quantity');
-	     								ore.Init();
-	     								ore.setPosition(pos);
-	     								ore.server_SetQuantity(4);
-	     							}
+										ore.Init();
+										ore.setPosition(hi.hitpos);
+										ore.server_SetQuantity(4);
+									}
+								}
+								else if (dirt_stone)
+								{
+									int quantity = 4;
+									if(dirt_thick_stone)
+									{
+										quantity = 6;
+									}
+									CBlob@ ore = server_CreateBlobNoInit("mat_stone");
+									if (ore !is null)
+									{
+										ore.Tag('custom quantity');
+										ore.Init();
+										ore.setPosition(hi.hitpos);
+										ore.server_SetQuantity(quantity);
+									}
 								}
 							}
 						}
@@ -1489,7 +1580,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 
 			if (button !is null)
 			{
-				bool enabled = this.getBlobCount(bombTypeNames[i]) > 0;
+				bool enabled = hasBombs(this, i);
 				button.SetEnabled(enabled);
 				button.selectOneOnClick = true;
 				if (weaponSel == i)
@@ -1523,6 +1614,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @ap)
 		knight.state = KnightStates::normal; //cancel any attacks or shielding
 		knight.swordTimer = 0;
 		knight.doubleslash = false;
+		this.set_s32("currentKnightState", 0);
 	}
 }
 
@@ -1557,13 +1649,14 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 void SetFirstAvailableBomb(CBlob@ this)
 {
 	u8 type = 255;
+	u8 nowType = 255;
 	if (this.exists("bomb type"))
-		type = this.get_u8("bomb type");
+		nowType = this.get_u8("bomb type");
 
 	CInventory@ inv = this.getInventory();
 
-	bool typeReal = (uint(type) < bombTypeNames.length);
-	if (typeReal && inv.getItem(bombTypeNames[type]) !is null)
+	bool typeReal = (uint(nowType) < bombTypeNames.length);
+	if (typeReal && inv.getItem(bombTypeNames[nowType]) !is null)
 		return;
 
 	for (int i = 0; i < inv.getItemsCount(); i++)
@@ -1610,4 +1703,23 @@ bool canHit(CBlob@ this, CBlob@ b)
 
 	return b.getTeamNum() != this.getTeamNum();
 
+}
+
+void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
+{
+	CheckSelectedBombRemovedFromInventory(this, blob);
+}
+
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+{
+	CheckSelectedBombRemovedFromInventory(this, detached);
+}
+
+void CheckSelectedBombRemovedFromInventory(CBlob@ this, CBlob@ blob)
+{
+	string name = blob.getName();
+	if (bombTypeNames.find(name) > -1 && this.getBlobCount(name) == 0)
+	{
+		SetFirstAvailableBomb(this);
+	}
 }

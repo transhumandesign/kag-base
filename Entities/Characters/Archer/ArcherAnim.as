@@ -10,7 +10,7 @@
 #include "Accolades.as"
 
 
-const f32 config_offset = -4.0f;
+const f32 config_offset = -6.0f;
 const string shiny_layer = "shiny bit";
 
 void onInit(CSprite@ this)
@@ -235,8 +235,10 @@ void onTick(CSprite@ this)
 	bool crouch = false;
 
 	bool knocked = isKnocked(blob);
-	Vec2f pos = blob.getPosition();
+	Vec2f pos = blob.getPosition() + Vec2f(0, -2);
 	Vec2f aimpos = blob.getAimPos();
+	pos.x += this.isFacingLeft() ? 2 : -2;
+
 	// get the angle of aiming with mouse
 	Vec2f vec = aimpos - pos;
 	f32 angle = vec.Angle();
@@ -255,6 +257,10 @@ void onTick(CSprite@ this)
 	else if (blob.hasTag("seated"))
 	{
 		this.SetAnimation("default");
+	}
+	else if(archer.charge_state == ArcherParams::stabbing)
+	{
+		this.SetAnimation("stab");
 	}
 	else if (firing || legolas)
 	{
@@ -466,6 +472,7 @@ void DrawBow(CSprite@ this, CBlob@ blob, ArcherInfo@ archer, f32 armangle, const
 	}
 
 	frontarm.SetRelativeZ(1.5f);
+	arrow.SetRelativeZ(1.4f);
 	setArmValues(this.getSpriteLayer("backarm"), true, armangle, -0.1f, "default", Vec2f(-4.0f * sign, 0.0f), armOffset);
 
 	// fire arrow particles

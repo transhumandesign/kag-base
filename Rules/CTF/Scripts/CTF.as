@@ -573,15 +573,13 @@ shared class CTFCore : RulesCore
 					CPlayer@ player = players[i].getPlayer();
 					if (player !is null && players[i].getTeamNum() == winteamIndex)
 					{
-						player.server_setCoins(player.getCoins() + 10);
+						player.server_setCoins(player.getCoins() + 150);
 					}
 				}
 			}
 
 			rules.SetTeamWon(winteamIndex);   //game over!
 			rules.SetCurrentState(GAME_OVER);
-			rules.SetGlobalMessage("{WINNING_TEAM} wins the game!");
-			rules.AddGlobalMessageReplacement("WINNING_TEAM", winteam.name);
 		}
 	}
 
@@ -697,7 +695,7 @@ void onRestart(CRules@ this)
 void onInit(CRules@ this)
 {
 	Reset(this);
-	this.set_s32("restart_rules_after_game_time", 25 * 30);
+	this.set_s32("restart_rules_after_game_time", 30 * 30);
 }
 
 // had to add it here for tutorial cause something didnt work in the tutorial script

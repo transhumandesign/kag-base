@@ -183,7 +183,7 @@ void Land(CBlob@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	return !blob.hasTag("parachute");
+	return blob.getShape().isStatic() && !blob.hasTag("parachute");
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
@@ -346,10 +346,27 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 		CBlob @caller = getBlobByNetworkID( params.read_u16() );
 
-		if (caller !is null && this.getInventory() !is null) {
-			// We might have to make room
+		if (caller !is null && this.getInventory() !is null) 
+		{
 			CInventory@ inv = this.getInventory();
 			u8 itemcount = inv.getItemsCount();
+
+			// Boobytrap if crate has enemy mine
+			CBlob@ mine = null;
+			for (int i = 0; i < inv.getItemsCount(); i++)
+			{
+				CBlob@ item = inv.getItem(i);
+				if (item.getName() == "mine" && item.getTeamNum() != caller.getTeamNum())
+				{
+					CBitStream params;
+					params.write_u16(caller.getNetworkID());
+					params.write_u16(item.getNetworkID());
+					this.SendCommand(this.getCommandID("boobytrap"), params);
+					return;
+				}
+			}
+
+			// We might have to make room
 			while (!inv.canPutItem(caller) && itemcount > 0)
 			{
 				// pop out last items until we can put in player or there's nothing left
@@ -496,16 +513,12 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 		}
 		if (item.getName() == "mine" && item.getTeamNum() != forBlob.getTeamNum())
 		{
-			@mine = item;
+			CBitStream params;
+			params.write_u16(forBlob.getNetworkID());
+			params.write_u16(item.getNetworkID());
+			this.SendCommand(this.getCommandID("boobytrap"), params);
 			break;
 		}
-	}
-	if (mine !is null)
-	{
-		CBitStream params;
-		params.write_u16(forBlob.getNetworkID());
-		params.write_u16(mine.getNetworkID());
-		this.SendCommand(this.getCommandID("boobytrap"), params);
 	}
 }
 
@@ -723,7 +736,7 @@ CBlob@ getPlayerInside(CBlob@ this)
 	return null;
 }
 
-bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_player = true)
+bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_special = true)
 {
 	bool dumped_anything = false;
 	if (getNet().isClient())
@@ -738,21 +751,14 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 	{
 		Vec2f velocity = (init_velocity == Vec2f_zero) ? this.getOldVelocity() : init_velocity;
 		CInventory@ inv = this.getInventory();
-		//u8 target_items_left = dump_player ? 0 : 1;
 		u8 target_items_left = 0;
-		bool skipping_player = false;
+		u8 item_num = 0;
+
 		while (inv !is null && (inv.getItemsCount() > target_items_left))
 		{
-			CBlob@ item;
-			if (skipping_player)
-			{
-				@item = inv.getItem(1);
-			}
-			else
-			{
-				@item = inv.getItem(0);
-			}
-			if (!item.hasTag("player"))
+			CBlob@ item = inv.getItem(item_num);
+
+			if (!item.hasTag("player") && item.getName() != "mine")
 			{
 				dumped_anything = true;
 				this.server_PutOutInventory(item);
@@ -766,15 +772,14 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 					item.setVelocity(velocity + getRandomVelocity(90, magnitude, 45));
 				}
 			}
-			else if (dump_player)
+			else if (dump_special && (item.hasTag("player") || item.getName() == "mine"))
 			{
-				// Handled in onRemoveFromInventory
 				this.server_PutOutInventory(item);
 			}
-			else // Don't dump player
+			else // Don't dump player or mine
 			{
-				skipping_player = true;
 				target_items_left++;
+				item_num++;
 			}
 		}
 	}

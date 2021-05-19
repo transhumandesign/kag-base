@@ -65,6 +65,7 @@ void onInit(CBlob@ this)
 	}
 
 	this.Tag("place norotate");
+	this.Tag("pushedByDoor");
 
 	this.getCurrentScript().tickFrequency = OPT_TICK;
 }

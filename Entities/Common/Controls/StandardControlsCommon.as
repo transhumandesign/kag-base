@@ -11,7 +11,8 @@ void server_Pickup(CBlob@ this, CBlob@ picker, CBlob@ pickBlob)
 
 void server_PutIn(CBlob@ this, CBlob@ picker, CBlob@ pickBlob)
 {
-	if (pickBlob is null || picker is null)
+	CInventory@ inv = this.getInventory();
+	if (pickBlob is null || picker is null || !inv.canPutItem(pickBlob))
 		return;
 	CBitStream params;
 	params.write_netid(picker.getNetworkID());

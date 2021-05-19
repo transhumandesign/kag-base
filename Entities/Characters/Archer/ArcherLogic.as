@@ -12,8 +12,8 @@
 const int FLETCH_COOLDOWN = 45;
 const int PICKUP_COOLDOWN = 15;
 const int fletch_num_arrows = 1;
-const int STAB_DELAY = 10;
-const int STAB_TIME = 22;
+const int STAB_DELAY = 12;
+const int STAB_TIME = 20;
 
 void onInit(CBlob@ this)
 {
@@ -69,7 +69,42 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 	Vec2f pos = this.getPosition();
 
 	const bool right_click = this.isKeyJustPressed(key_action2);
-	if (right_click)
+
+	// fletch arrows from tree
+	if(this.isKeyPressed(key_action2)
+		&& charge_state != ArcherParams::stabbing
+		&& !archer.grappling
+		&& this.isOnGround()
+		&& !this.isKeyPressed(key_action1)
+		&& !this.wasKeyPressed(key_action1))
+	{
+		Vec2f aimpos = this.getAimPos();
+		CBlob@[] blobs;
+		if(getMap().getBlobsInRadius(aimpos, 8.0f, blobs))
+		{
+			for (int i = 0; i < blobs.size(); i++)
+			{
+				CBlob@ target = blobs[i];
+				string name = target.getName();
+
+				if (target !is null
+					&& (target.hasTag("tree") || name == "log" || name == "mat_wood")
+					&& Vec2f(target.getPosition() - pos).Length() <= 24.0f)
+				{
+					this.set_u16("stabHitID",  target.getNetworkID());
+					charge_state = ArcherParams::stabbing;
+					archer.charge_time = 0;
+					archer.stab_delay = 0;
+					sprite.SetEmitSoundPaused(true);
+					archer.charge_state = charge_state;
+					break;
+				}
+			}
+
+		}
+	}
+
+	if (right_click && charge_state != ArcherParams::stabbing)
 	{
 		// cancel charging
 		if (charge_state != ArcherParams::not_aiming &&
@@ -265,6 +300,7 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 		}
 
 	}
+
 }
 
 void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
@@ -309,7 +345,6 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			this.Sync("has_arrow", isServer());
 		}
 
-		archer.stab_delay = 0;
 	}
 
 	if (charge_state == ArcherParams::legolas_charging) // fast arrows
@@ -378,8 +413,8 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 		//	printf("charge_state " + charge_state );
 
-		if ((this.isKeyPressed(key_action1)|| (this.wasKeyPressed(key_action2) && !pressed_action2)) &&
-		        (charge_state == ArcherParams::not_aiming || charge_state == ArcherParams::fired))
+		if ((just_action1 || this.wasKeyPressed(key_action2) && !pressed_action2) &&
+		        (charge_state == ArcherParams::not_aiming || charge_state == ArcherParams::fired || charge_state == ArcherParams::stabbing))
 		{
 			charge_state = ArcherParams::readying;
 			hasarrow = hasArrows(this);
@@ -449,7 +484,20 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		}
 		else if (charge_state == ArcherParams::charging)
 		{
-			charge_time++;
+			if(!hasarrow)
+			{
+				charge_state = ArcherParams::no_arrows;
+				charge_time = 0;
+				
+				if (ismyplayer)   // playing annoying no ammo sound
+				{
+					this.getSprite().PlaySound("Entities/Characters/Sounds/NoAmmo.ogg", 0.5);
+				}
+			}
+			else
+			{
+				charge_time++;
+			}
 
 			if (charge_time >= ArcherParams::legolas_period)
 			{
@@ -487,6 +535,42 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 				charge_time = ArcherParams::fired_time;
 				charge_state = ArcherParams::fired;
+			}
+			else if(charge_state == ArcherParams::stabbing)
+			{
+				archer.stab_delay++;
+				if (archer.stab_delay == STAB_DELAY)
+				{
+					// hit tree and get an arrow
+					CBlob@ stabTarget = getBlobByNetworkID(this.get_u16("stabHitID"));
+					if (stabTarget !is null)
+					{
+						if (stabTarget.getName() == "mat_wood")
+						{
+							u16 quantity = stabTarget.getQuantity();
+							if (quantity > 4)
+							{
+								stabTarget.server_SetQuantity(quantity-4);
+							}
+							else
+							{
+								stabTarget.server_Die();
+
+							}
+							fletchArrow(this);
+						}
+						else
+						{
+							this.server_Hit(stabTarget, stabTarget.getPosition(), Vec2f_zero, 0.25f,  Hitters::stab);
+
+						}
+
+					}
+				}
+				else if(archer.stab_delay >= STAB_TIME)
+				{
+					charge_state = ArcherParams::not_aiming;
+				}
 			}
 			else //fired..
 			{
@@ -612,6 +696,8 @@ void onTick(CBlob@ this)
 
 	ManageGrapple(this, archer);
 
+	//print("state before: " + archer.charge_state);
+
 	RunnerMoveVars@ moveVars;
 	if (!this.get("moveVars", @moveVars))
 	{
@@ -619,6 +705,8 @@ void onTick(CBlob@ this)
 	}
 
 	ManageBow(this, archer, moveVars);
+
+	//print("state after: " + archer.charge_state);
 }
 
 bool checkGrappleStep(CBlob@ this, ArcherInfo@ archer, CMap@ map, const f32 dist)
@@ -722,7 +810,8 @@ void ClientFire(CBlob@ this, const s8 charge_time, const bool hasarrow, const u8
 			arrowspeed = ArcherParams::shoot_max_vel;
 		}
 
-		ShootArrow(this, this.getPosition() + Vec2f(0.0f, -2.0f), this.getAimPos() + Vec2f(0.0f, -2.0f), arrowspeed, arrow_type, legolas);
+		Vec2f offset(this.isFacingLeft() ? 2 : -2, -2);
+		ShootArrow(this, this.getPosition() + offset, this.getAimPos(), arrowspeed, arrow_type, legolas);
 	}
 }
 
@@ -950,15 +1039,26 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			{
 				type = 0;
 			}
-			if (this.getBlobCount(arrowTypeNames[type]) > 0)
+			if (hasArrows(this, type))
 			{
-				archer.arrow_type = type;
-				if (this.isMyPlayer())
-				{
-					Sound::Play("/CycleInventory.ogg");
-				}
+				CycleToArrowType(this, archer, type);
 				break;
 			}
+		}
+	}
+	else if (cmd == this.getCommandID("switch"))
+	{
+		// switch to arrow
+		ArcherInfo@ archer;
+		if (!this.get("archerInfo", @archer))
+		{
+			return;
+		}
+
+		u8 type;
+		if (params.saferead_u8(type) && hasArrows(this, type))
+		{
+			CycleToArrowType(this, archer, type);
 		}
 	}
 	else
@@ -979,9 +1079,23 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 }
 
+void CycleToArrowType(CBlob@ this, ArcherInfo@ archer, u8 arrowType)
+{
+	archer.arrow_type = arrowType;
+	if (this.isMyPlayer())
+	{
+		Sound::Play("/CycleInventory.ogg");
+	}
+}
+
 // arrow pick menu
 void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 {
+	AddIconToken("$Arrow$", "Entities/Characters/Archer/ArcherIcons.png", Vec2f(16, 32), 0, this.getTeamNum());
+	AddIconToken("$WaterArrow$", "Entities/Characters/Archer/ArcherIcons.png", Vec2f(16, 32), 1, this.getTeamNum());
+	AddIconToken("$FireArrow$", "Entities/Characters/Archer/ArcherIcons.png", Vec2f(16, 32), 2, this.getTeamNum());
+	AddIconToken("$BombArrow$", "Entities/Characters/Archer/ArcherIcons.png", Vec2f(16, 32), 3, this.getTeamNum());
+	
 	if (arrowTypeNames.length == 0)
 	{
 		return;
@@ -1010,7 +1124,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 
 			if (button !is null)
 			{
-				bool enabled = this.getBlobCount(arrowTypeNames[i]) > 0;
+				bool enabled = hasArrows(this, i);
 				button.SetEnabled(enabled);
 				button.selectOneOnClick = true;
 
@@ -1072,38 +1186,43 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 {
 	if (customData == Hitters::stab)
 	{
-		if (damage > 0.0f)
-		{
+		fletchArrow(this);
+	}
+}
 
-			// fletch arrow
-			if (hitBlob.hasTag("tree"))	// make arrow from tree
+void fletchArrow(CBlob@ this)
+{
+	// fletch arrow
+	if (getNet().isServer())
+	{
+		CBlob@ mat_arrows = server_CreateBlobNoInit("mat_arrows");
+		if (mat_arrows !is null)
+		{
+			mat_arrows.Tag("custom quantity");
+			mat_arrows.Init();
+
+			mat_arrows.server_SetQuantity(fletch_num_arrows);
+
+			if (!this.server_PutInInventory(mat_arrows))
 			{
-				if (getNet().isServer())
-				{
-					CBlob@ mat_arrows = server_CreateBlobNoInit('mat_arrows');
-					if (mat_arrows !is null)
-					{
-						mat_arrows.Tag('custom quantity');
-						mat_arrows.Init();
-
-						mat_arrows.server_SetQuantity(fletch_num_arrows);
-
-						if (not this.server_PutInInventory(mat_arrows))
-						{
-							mat_arrows.setPosition(this.getPosition());
-						}
-					}
-				}
-				this.getSprite().PlaySound("Entities/Items/Projectiles/Sounds/ArrowHitGround.ogg");
+				mat_arrows.setPosition(this.getPosition());
 			}
-			else
-				this.getSprite().PlaySound("KnifeStab.ogg");
 		}
+	}
+	this.getSprite().PlaySound("Entities/Items/Projectiles/Sounds/ArrowHitGround.ogg");
+}
 
-		if (blockAttack(hitBlob, velocity, 0.0f))
-		{
-			this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
-			setKnocked(this, 30);
-		}
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
+{
+	ArcherInfo@ archer;
+	if (!this.get("archerInfo", @archer))
+	{
+		return;
+	}
+
+	if (this.isAttached() && canSend(this))
+	{
+		archer.grappling = false;
+		SyncGrapple(this);
 	}
 }

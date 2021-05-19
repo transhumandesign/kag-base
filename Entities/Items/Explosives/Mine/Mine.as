@@ -59,6 +59,12 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().tickIfTag = MINE_PRIMING;
 }
 
+void onInit(CSprite@ this)
+{
+	this.getCurrentScript().runFlags |= Script::tick_not_attached | Script::tick_not_ininventory;
+
+}
+
 void onTick(CBlob@ this)
 {
 	if (getNet().isServer())
@@ -218,4 +224,25 @@ bool canBePickedUp(CBlob@ this, CBlob@ blob)
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	return customData == Hitters::builder? this.getInitialHealth() / 2 : damage;
+}
+
+void onRender(CSprite@ this)
+{
+	if (g_videorecording) return;
+
+	//hover over primed mine to check if its my mine
+	CBlob@ blob = this.getBlob();
+	if (blob.getDamageOwnerPlayer() is getLocalPlayer())
+	{
+		Vec2f mouseWorldPos = getControls().getMouseWorldPos();
+		Vec2f minePos = blob.getPosition();
+
+		float radius = 10.0f;
+		float distanceSq = (mouseWorldPos - minePos).LengthSquared();
+
+		if (distanceSq < radius * radius)
+		{
+			blob.RenderForHUD(Vec2f_zero, RenderStyle::outline_front);
+		}
+	}
 }

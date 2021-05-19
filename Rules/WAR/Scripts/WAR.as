@@ -758,8 +758,6 @@ shared class WarCore : RulesCore
 			BaseTeamInfo@ team = teams[team_won];
 			rules.SetTeamWon(team_won);
 			rules.SetCurrentState(GAME_OVER);
-			rules.SetGlobalMessage("{WINNING_TEAM} wins the game!");
-			rules.AddGlobalMessageReplacement("WINNING_TEAM", team.name);
 		}
 	}
 
@@ -1006,7 +1004,7 @@ void onRestart(CRules@ this)
 void onInit(CRules@ this)
 {
 	Reset(this);
-	this.set_s32("restart_rules_after_game_time", 25 * 30);
+	this.set_s32("restart_rules_after_game_time", 30 * 30);
 }
 
 void DoUpdateTeamsLost()

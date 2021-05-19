@@ -53,6 +53,12 @@ namespace Emotes
 		pickup,
 		raised,
 		clap,
+		idea,
+		mine,
+		sorry,
+		rat,
+		dismayed,  //50
+
 
 		emotes_total,
 		off
@@ -105,7 +111,12 @@ namespace Emotes
 		"kiss",
 		"pickup",
 		"raised",
-		"clap"
+		"clap",
+		"idea",
+		"mine",
+		"sorry",
+		"rat",
+		"dismayed"
 	};
 }
 
@@ -228,4 +239,19 @@ u8 read_emote(ConfigFile@ cfg, string name, u8 default_value)
 		return read_val;
 	}
 	return default_value;
+}
+
+bool isMouseOverEmote(CSpriteLayer@ emote)
+{
+	Vec2f mousePos = getControls().getMouseWorldPos();
+	Vec2f emotePos = emote.getWorldTranslation();
+
+	//approximate dimensions of most emotes
+	Vec2f tl = emotePos - Vec2f(8, 5);
+	Vec2f br = emotePos + Vec2f(8, 9);
+
+	return (
+		mousePos.x >= tl.x && mousePos.y >= tl.y &&
+		mousePos.x < br.x && mousePos.y < br.y
+	);
 }

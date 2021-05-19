@@ -6,7 +6,7 @@
 
 const int splash_width = 9;
 const int splash_height = 7;
-const int splashes = 3;
+const int splashes = 2;
 
 //logic
 void onInit(CBlob@ this)
@@ -23,7 +23,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("fill");
 
 	this.set_u8("filled", this.hasTag("_start_filled") ? splashes : 0);
-
+	this.Tag("ignore fall");
 	this.getCurrentScript().runFlags |= Script::tick_attached;
 }
 

@@ -1,3 +1,4 @@
+#define CLIENT_ONLY
 
 #include "Hitters.as"
 

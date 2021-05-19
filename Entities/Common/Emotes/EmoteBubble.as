@@ -46,7 +46,7 @@ void onTick(CBlob@ blob)
 			blob.getCurrentScript().tickFrequency = 1;
 			if (emote !is null)
 			{
-				emote.SetVisible(true);
+				emote.SetVisible(!isMouseOverEmote(emote));
 				emote.animation.frame = index;
 
 				emote.ResetTransform();

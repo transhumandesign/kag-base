@@ -20,6 +20,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("getout");
 	this.addCommandID("detach");
 	this.addCommandID("cycle");
+	this.addCommandID("switch");
 
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
@@ -106,7 +107,6 @@ bool ClickGridMenu(CBlob@ this, int button)
 	return false;
 }
 
-
 void ButtonOrMenuClick(CBlob@ this, Vec2f pos, bool clear, bool doClosestClick)
 {
 	if (!ClickGridMenu(this, 0))
@@ -138,6 +138,8 @@ void onTick(CBlob@ this)
 	}
 	ManageCamera(this);
 
+	CControls@ controls = getControls();
+
 	// use menu
 
 	if (this.isKeyJustPressed(key_use))
@@ -159,7 +161,7 @@ void onTick(CBlob@ this)
 	}
 
 	CBlob @carryBlob = this.getCarriedBlob();
-	
+
 
 	// bubble menu
 
@@ -217,7 +219,7 @@ void onTick(CBlob@ this)
 			// this.ClearMenus();
 
 			//  Vec2f center =  getDriver().getScreenCenterPos(); // center of screen
-			Vec2f center = getControls().getMouseScreenPos();
+			Vec2f center = controls.getMouseScreenPos();
 			if (this.exists("inventory offset"))
 			{
 				this.CreateInventoryMenu(center + this.get_Vec2f("inventory offset"));
@@ -227,13 +229,14 @@ void onTick(CBlob@ this)
 				this.CreateInventoryMenu(center);
 			}
 
-			//getControls().setMousePosition( center );
+			//controls.setMousePosition( center );
 		}
 		else if (this.isKeyJustReleased(key_inventory))
 		{
 			if (isTap(this, 7))     // tap - put thing in inventory
 			{
-				if (carryBlob !is null && !carryBlob.hasTag("temp blob"))
+				CInventory@ inv = this.getInventory();
+				if (carryBlob !is null && !carryBlob.hasTag("temp blob") && inv.canPutItem(carryBlob))
 				{
 					server_PutIn(this, this, carryBlob);
 				}
@@ -270,7 +273,7 @@ void onTick(CBlob@ this)
 
 	if (getHUD().hasButtons())
 	{
-		if ((this.isKeyJustPressed(key_action1) /*|| getControls().isKeyJustPressed(KEY_LBUTTON)*/) && !this.isKeyPressed(key_pickup))
+		if ((this.isKeyJustPressed(key_action1) /*|| controls.isKeyJustPressed(KEY_LBUTTON)*/) && !this.isKeyPressed(key_pickup))
 		{
 			ButtonOrMenuClick(this, this.getAimPos(), false, true);
 			this.set_bool("release click", false);
@@ -292,6 +295,24 @@ void onTick(CBlob@ this)
 	//  //server_DropCoins( this.getAimPos(), 100 );
 	//  CBlob@ mat = server_CreateBlob( "cata_rock", 0, this.getAimPos());
 	//}
+
+	// keybinds
+
+	if (controls.ActionKeyPressed(AK_BUILD_MODIFIER))
+	{
+		EKEY_CODE[] keybinds = { KEY_KEY_1, KEY_KEY_2, KEY_KEY_3, KEY_KEY_4, KEY_KEY_5, KEY_KEY_6, KEY_KEY_7, KEY_KEY_8, KEY_KEY_9, KEY_KEY_0 };
+
+		// loop backwards so leftmost keybinds have priority
+		for (int i = keybinds.size() - 1; i >= 0; i--)
+		{
+			if (controls.isKeyJustPressed(keybinds[i]))
+			{
+				CBitStream params;
+				params.write_u8(i);
+				this.SendCommand(this.getCommandID("switch"), params);
+			}
+		}
+	}
 }
 
 // show dots on chat
@@ -330,7 +351,7 @@ void AdjustCamera(CBlob@ this, bool is_in_render)
 	{
 		zoomSpeed *= getRenderApproximateCorrectionFactor();
 	}
-	
+
 	f32 minZoom = 0.5f; // TODO: make vars
 	f32 maxZoom = 2.0f;
 
@@ -377,7 +398,7 @@ void ManageCamera(CBlob@ this)
 		if (controls.isKeyJustPressed(controls.getActionKeyKey(AK_ZOOMOUT)))
 		{
 			zoomModifier = controls.isKeyPressed(KEY_LCONTROL);
-			
+
 			zoomModifierLevel = Maths::Max(0, zoomModifierLevel - 1);
 			zoomLevel = Maths::Max(0, zoomLevel - 1);
 
@@ -386,7 +407,7 @@ void ManageCamera(CBlob@ this)
 		else  if (controls.isKeyJustPressed(controls.getActionKeyKey(AK_ZOOMIN)))
 		{
 			zoomModifier = controls.isKeyPressed(KEY_LCONTROL);
-			
+
 			zoomModifierLevel = Maths::Min(6, zoomModifierLevel + 1);
 			zoomLevel = Maths::Min(2, zoomLevel + 1);
 
@@ -425,5 +446,3 @@ void ManageCamera(CBlob@ this)
 	// camera
 	camera.mouseFactor = 0.5f; // doesn't affect soldat cam
 }
-
-

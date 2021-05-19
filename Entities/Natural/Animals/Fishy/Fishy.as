@@ -69,6 +69,8 @@ void onInit(CBlob@ this)
 
 	if (!this.exists("age"))
 		this.set_u8("age", 0);
+
+	this.Tag("pushedByDoor");
 }
 
 void onTick(CBlob@ this)

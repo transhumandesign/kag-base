@@ -6,6 +6,7 @@
 #include "Costs.as"
 #include "CheckSpam.as"
 #include "GenericButtonCommon.as"
+#include "TeamIconToken.as"
 
 void onInit(CBlob@ this)
 {
@@ -27,6 +28,8 @@ void onInit(CBlob@ this)
 	this.set_Vec2f("class offset", Vec2f(-6, 0));
 	this.set_string("required class", "knight");
 
+	int team_num = this.getTeamNum();
+
 	{
 		ShopItem@ s = addShopItem(this, "Bomb", "$bomb$", "mat_bombs", Descriptions::bomb, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::bomb);
@@ -36,7 +39,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::waterbomb);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Mine", "$mine$", "mine", Descriptions::mine, false);
+		ShopItem@ s = addShopItem(this, "Mine", getTeamIcon("mine", "Mine.png", team_num, Vec2f(16, 16), 1), "mine", Descriptions::mine, false);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::mine);
 	}
 	{

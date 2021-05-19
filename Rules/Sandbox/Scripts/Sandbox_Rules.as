@@ -38,6 +38,9 @@ void Config(SandboxCore@ this)
 	//spawn after death time
 	this.spawnTime = (getTicksASecond() * cfg.read_s32("spawn_time", 15));
 
+
+	getRules().Tag('quick decay');
+
 }
 
 //Sandbox spawn system

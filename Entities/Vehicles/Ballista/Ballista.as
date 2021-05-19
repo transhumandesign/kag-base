@@ -3,6 +3,7 @@
 #include "StandardRespawnCommand.as";
 #include "Requirements_Tech.as";
 #include "GenericButtonCommon.as";
+#include "Costs.as";
 
 //todo: move to include
 bool hasTech(CBlob@ this, const string &in name)
@@ -42,6 +43,9 @@ void onInit(CBlob@ this)
 	InitRespawnCommand(this);
 	InitClasses(this);
 	this.Tag("change class drop inventory");
+
+	InitCosts();
+	this.set_s32("gold building amount", CTFCosts::ballista_gold);
 
 	Vehicle_Setup(this,
 	              30.0f, // move speed
@@ -242,9 +246,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		if (!isAnotherRespawnClose(this) && !isFlipped(this))
 		{
-			CBitStream params;
-			params.write_u16(caller.getNetworkID());
-			CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(0, -4), this, SpawnCmd::buildMenu, getTranslatedString("Change class"), params);
+			caller.CreateGenericButton("$change_class$", Vec2f(0, -4), this, buildSpawnMenu, getTranslatedString("Change class"));
 		}
 
 		if (!Vehicle_AddFlipButton(this, caller) && caller.getTeamNum() == this.getTeamNum())
@@ -256,7 +258,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == SpawnCmd::buildMenu || cmd == SpawnCmd::changeClass)
+	if (cmd == SpawnCmd::changeClass)
 	{
 		onRespawnCommand(this, cmd, params);
 	}

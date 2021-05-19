@@ -1,3 +1,5 @@
+#define SERVER_ONLY
+
 #include "KnockedCommon.as"
 #include "EatCommon.as";
 
@@ -8,8 +10,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (
-		getNet().isServer() &&
+	if (isServer() &&
 		this.isKeyJustPressed(key_eat) &&
 		!isKnocked(this) &&
 		this.getHealth() < this.getInitialHealth()

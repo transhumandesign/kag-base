@@ -382,7 +382,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		CBitStream params;
 		params.write_u16(caller.getNetworkID());
 
-		CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(12, 7), this, SpawnCmd::buildMenu, getTranslatedString("Change class"), params);
+		caller.CreateGenericButton("$change_class$", Vec2f(12, 7), this, buildSpawnMenu, getTranslatedString("Change class"));
 
 		if (caller.getName() == "builder")
 		{
@@ -506,7 +506,8 @@ void Capture(CBlob@ this, const int attackerTeam)
 				                                       b.getName() == "workbench" ||
 				                                       b.hasTag("migrant") ||
 				                                       b.getName() == "spikes" ||
-				                                       b.getName() == "trap_block"))
+				                                       b.getName() == "trap_block" ||
+													   b.getName() == "bridge"))
 				{
 					b.server_setTeamNum(attackerTeam);
 				}

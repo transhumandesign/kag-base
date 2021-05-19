@@ -1,4 +1,5 @@
 // SHOW KILL MESSAGES ON CLIENT
+#define CLIENT_ONLY
 
 #include "Hitters.as";
 #include "TeamColour.as";
@@ -194,7 +195,14 @@ class KillFeed
 			{
 				Vec2f dim(getScreenWidth() - max_username_size.x - max_clantag_size.x - (single_space_size.x*2) - 32, 0);
 				ul.Set(dim.x, ((message_step + yOffset + assists) * 16) - 8);
-				GUI::DrawIconByName(hitterIcon, ul);
+				if (message.attackerteam < 0 || message.attackerteam > 6)
+				{
+					GUI::DrawIconByName(hitterIcon, ul, 1, 1, 7, color_white);
+				}
+				else
+				{
+					GUI::DrawIconByName(hitterIcon, ul, 1, 1, message.attackerteam, color_white);
+				}
 			}
 
 			//draw victim name

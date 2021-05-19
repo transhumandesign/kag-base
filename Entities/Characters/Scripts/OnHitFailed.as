@@ -1,3 +1,4 @@
+#define CLIENT_ONLY
 
 //if we were unable to hit something, fleck some sparks off it and play a ding sound.
 
