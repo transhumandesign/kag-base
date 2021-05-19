@@ -148,7 +148,6 @@ ImageData@ deserializeHeadStream(CBitStream@ params)
 
 void Client_SendCustomHead(CRules@ this)
 {
-
 	if (!isClient() || !Texture::createFromFile("TempHead", PNG_FILENAME))
 		return;
 
@@ -191,6 +190,7 @@ void Client_SendCustomHead(CRules@ this)
 	
 	// Add head texture locally (Server does not send the stream back to us)
 	AddHeadTexture(getLocalPlayer(), data);
+	Texture::destroy("TempHead");
 }
 
 
