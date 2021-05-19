@@ -149,43 +149,43 @@ ImageData@ deserializeHeadStream(CBitStream@ params)
 void Client_SendCustomHead(CRules@ this)
 {
 
-    if (!isClient() || !Texture::createFromFile("TempHead", PNG_FILENAME))
-        return;
+	if (!isClient() || !Texture::createFromFile("TempHead", PNG_FILENAME))
+		return;
 
-    ImageData@ data = Texture::data("TempHead");
+	ImageData@ data = Texture::data("TempHead");
 
-    if (data.height() != 16 || data.width() != 64)
-    {
-        error("Could not send " + PNG_FILENAME + ", ensure the width is 64 pixels, and height is 16");
+	if (data.height() != 16 || data.width() != 64)
+	{
+		error("Could not send " + PNG_FILENAME + ", ensure the width is 64 pixels, and height is 16");
 		Texture::destroy("TempHead");
-        return;
-    }
+		return;
+	}
 
-    // Each frame is 16x16
-    // We send each frame instead of each 64x16
-    CBitStream stream = CBitStream();
+	// Each frame is 16x16
+	// We send each frame instead of each 64x16
+	CBitStream stream = CBitStream();
 	stream.write_u8(CustomCmdType::SENDING_HEAD);
 	stream.write_u16(getLocalPlayer().getNetworkID());
 
-    SColor color = color_white;
-    
-    for (int h = 0; h < 16; h++)
-    {
-        for (int w = 0; w < 48; w++)
-        {
-            color = data.get(w, h);
+	SColor color = color_white;
+	
+	for (int h = 0; h < 16; h++)
+	{
+		for (int w = 0; w < 48; w++)
+		{
+			color = data.get(w, h);
 
-            stream.write_u8(color.getAlpha());
+			stream.write_u8(color.getAlpha());
 
-            // Don't send colour if alpha is too low
-            if (color.getAlpha() > ALPHA_IGNORE_LIMIT)
-            {
-                stream.write_u8(color.getRed());
-                stream.write_u8(color.getGreen());
-                stream.write_u8(color.getBlue());
-            }
-        }
-    }
+			// Don't send colour if alpha is too low
+			if (color.getAlpha() > ALPHA_IGNORE_LIMIT)
+			{
+				stream.write_u8(color.getRed());
+				stream.write_u8(color.getGreen());
+				stream.write_u8(color.getBlue());
+			}
+		}
+	}
 
 	this.SendCommand(this.getCommandID("SendCustomHead"), stream);
 	
