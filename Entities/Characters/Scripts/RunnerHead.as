@@ -124,6 +124,9 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	int headsPackIndex = getHeadsPackIndex(headIndex);
 	HeadsPack@ pack = getHeadsPackByIndex(headsPackIndex);
 	string texture_file = pack.filename;
+	
+	// Custom head texture
+	CSpriteLayer@ head = null;
 
 	bool override_frame = false;
 
@@ -137,14 +140,23 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 		//accolade custom head handling
 		//todo: consider pulling other custom head stuff out to here
 		if (player !is null && !player.isBot())
-		{
-			Accolades@ acc = getPlayerAccolades(player.getUsername());
-			if (acc.hasCustomHead())
+		{	
+			// Can we load player's custom png
+			if (Texture::exists("CustomHead-"+player.getUsername()))
 			{
-				texture_file = acc.customHeadTexture;
-				headIndex = acc.customHeadIndex;
-				headsPackIndex = 0;
-				override_frame = true;
+				@head = this.addTexturedSpriteLayer("head", "CustomHead-"+player.getUsername(), 16, 16);
+			}
+			else
+			{
+				// Does player have a static head file inside
+				Accolades@ acc = getPlayerAccolades(player.getUsername());
+				if (acc.hasCustomHead())
+				{
+					texture_file = acc.customHeadTexture;
+					headIndex = acc.customHeadIndex;
+					headsPackIndex = 0;
+					override_frame = true;
+				}
 			}
 		}
 	}
@@ -156,10 +168,10 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	int team = doTeamColour(headsPackIndex) ? blob.getTeamNum() : 0;
 	int skin = doSkinColour(headsPackIndex) ? blob.getSkinNum() : 0;
 
-	//add new head
-	CSpriteLayer@ head = this.addSpriteLayer("head", texture_file, 16, 16, team, skin);
+	// add new head if custom head hasnt been set
+	if (head is null)
+		@head = this.addSpriteLayer("head", texture_file, 16, 16, team, skin);
 
-	//
 	headIndex = headIndex % 256; // wrap DLC heads into "pack space"
 
 	// figure out head frame
