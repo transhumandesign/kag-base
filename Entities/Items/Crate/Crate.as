@@ -183,7 +183,7 @@ void Land(CBlob@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	return blob.getShape().isStatic() && !blob.hasTag("parachute");
+	return (blob.getShape().isStatic() || blob.getPlayer() !is null || blob.hasTag("projectile")) && !blob.hasTag("parachute");
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
