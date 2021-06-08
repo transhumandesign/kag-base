@@ -20,7 +20,7 @@ void onInit(CBlob@ blob)
 		packs.get(tokens[i], @pack);
 
 		//init emote layer
-		CSpriteLayer@ layer = sprite.addSpriteLayer("bubble" + pack.token, pack.filePath, 32, 32, 0, 0);
+		CSpriteLayer@ layer = sprite.addSpriteLayer("bubble" + pack.token, pack.filePath, 32, 32, blob.getTeamNum(), 0);
 		layer.SetIgnoreParentFacing(true);
 		layer.SetFacingLeft(false);
 
