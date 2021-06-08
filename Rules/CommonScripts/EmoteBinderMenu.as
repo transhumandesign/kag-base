@@ -18,31 +18,35 @@ void onInit(CRules@ this)
 {
 	this.addCommandID(EMOTE_CMD);
 	this.addCommandID("display taunt");
-
-	dictionary emotes;
-	this.get("emotes", emotes);
-	string[] tokens = emotes.getKeys();
-
-	//load emote icons
-	for (u16 i = 0; i < tokens.size(); i++)
-	{
-		Emote@ emote;
-		emotes.get(tokens[i], @emote);
-
-		AddIconToken(getIconName(emote.token), emote.pack.filePath, Vec2f(32, 32), emote.index);
-	}
 }
 
 void NewEmotesMenu()
 {
+	CRules@ rules = getRules();
 	CPlayer@ player = getLocalPlayer();
 	if (player !is null && player.isMyPlayer())
 	{
 		//select first keybind to begin with
 		string propname = SELECTED_PROP + player.getUsername();
-		getRules().set_u8(propname, 0);
+		rules.set_u8(propname, 0);
 
+		LoadIcons(player);
 		ShowEmotesMenu(player);
+	}
+}
+
+void LoadIcons(CPlayer@ player)
+{
+	dictionary emotes;
+	getRules().get("emotes", emotes);
+	string[] tokens = emotes.getKeys();
+
+	for (u16 i = 0; i < tokens.size(); i++)
+	{
+		Emote@ emote;
+		emotes.get(tokens[i], @emote);
+
+		AddIconToken(getIconName(emote.token), emote.pack.filePath, Vec2f(32, 32), emote.index, player.getTeamNum());
 	}
 }
 
