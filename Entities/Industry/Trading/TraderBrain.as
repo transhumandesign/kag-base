@@ -35,7 +35,7 @@ void onTick(CBrain@ this)
 		if (this.getTarget() is null)
 			if (blob.hasTag("at post"))
 			{
-				set_emote(blob, Emotes::disappoint, 100);
+				set_emote(blob, "disappoint", 100);
 			}
 			else
 				this.getCurrentScript().tickFrequency = 1;
@@ -44,7 +44,7 @@ void onTick(CBrain@ this)
 	{
 		/*if (FindWantedPlayerTarget(this))
 		{
-			set_emote(blob, Emotes::attn, 100);
+			set_emote(blob, "attn", 100);
 			this.getCurrentScript().tickFrequency = 1;
 		}*/
 	}
@@ -65,7 +65,7 @@ void onTick(CBrain@ this)
 				blob.Untag("at post");
 				blob.Sync("at post", true);
 				this.SetTarget(null);
-				//blob.set_u8("emote", Emotes::disappoint);
+				//blob.set_string("emote", "disappoint");
 			}
 
 		}
