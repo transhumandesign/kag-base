@@ -52,8 +52,11 @@ void shatter(CBlob@ this, u16 rocks_amount, f32 min_vel, f32 max_vel_inc)
 			if (this.getDamageOwnerPlayer() !is null)
 				rock.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
 
-			Vec2f vel = Vec2f(-(XORRandom(max_vel_inc*10)/10+min_vel),0.0f);
-			f32 angle = XORRandom(3600)/10;
+			Vec2f vel = Vec2f(XORRandom(max_vel_inc*10)*0.1f+min_vel,0.0f);
+
+			f32 angle = XORRandom(3600)*0.1f;
+			if (i <= 5)
+				angle = (this.getOldVelocity().AngleDegrees()+XORRandom(900)*0.1f-45.0f);
 
 			vel.RotateBy(angle);
 			rock.setVelocity(vel);
@@ -70,9 +73,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	
 	if (solid && isServer())
 	{
-		if (this.hasTag("rock_n_roll") || (vellen > 7.5f && !shatter_from_cata_only))
+		if ((this.hasTag("rock_n_roll") || (vellen > 7.5f && !shatter_from_cata_only)) && !this.hasTag("shattered"))
 		{
-			shatter(this, 10, 4.0f, 4);
+			this.Tag("shattered"); //without this, it sometimes shatters 2-5 times for some reason
+			shatter(this, 12, 4.0f, 4.0f);
 		}
 	}
 
@@ -132,9 +136,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 		if (isServer())
 		{
-			if (this.hasTag("rock_n_roll") || (vellen > 7.5f && !shatter_from_cata_only))
+			if ((this.hasTag("rock_n_roll") || (vellen > 7.5f && !shatter_from_cata_only)) && !this.hasTag("shattered"))
 			{
-				shatter(this, 10, 4.0f, 4.0f);
+				this.Tag("shattered");
+				shatter(this, 12, 4.0f, 4.0f);
 			}
 		}
 
