@@ -11,10 +11,13 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	u8 absorbed = this.get_u8(ABSORBED_PROP);
-	absorbed = Maths::Max(0, absorbed - slow_frequency);
-	this.set_u8(ABSORBED_PROP, absorbed);
-	this.Sync(ABSORBED_PROP, true);
+    if (not this.isInWater())
+    {
+        u8 absorbed = this.get_u8(ABSORBED_PROP);
+        absorbed = Maths::Max(0, absorbed - slow_frequency);
+        this.set_u8(ABSORBED_PROP, absorbed);
+        this.Sync(ABSORBED_PROP, true);
+    }
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
