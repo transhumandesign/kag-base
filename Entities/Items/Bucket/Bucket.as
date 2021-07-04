@@ -51,14 +51,17 @@ void onTick(CBlob@ this)
 		{
 			this.set_u8("water_delay", water_delay - 1);
 		}
-		else if (point.getOccupied() !is null && 
-				 point.getOccupied().isMyPlayer() && 
-				 point.getOccupied().isKeyJustPressed(key_action1) && 
+		else{
+			CBlob@ occupiedBlob = point.getOccupied();
+			if (occupiedBlob !is null && 
+				 occupiedBlob.isMyPlayer() && 
+				 occupiedBlob.isKeyJustPressed(key_action1) && 
 				 !this.isInWater() &&
-				 !point.getOccupied().isKeyPressed(key_inventory)) // prevent splash when doing stuff with inventory
-		{
-			this.SendCommand(this.getCommandID("splash"));
-			this.set_u8("water_delay", 30);
+				 !occupiedBlob.isKeyPressed(key_inventory)) // prevent splash when doing stuff with inventory
+			{
+				this.SendCommand(this.getCommandID("splash"));
+				this.set_u8("water_delay", 30);
+			}
 		}
 	}
 }
