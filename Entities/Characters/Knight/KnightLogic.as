@@ -1446,14 +1446,18 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 					Vec2f force = Vec2f(shieldVars.direction.x * this.getMass(), -this.getMass()) * 3.0f;
 
-					vellen = Maths::Min(vellen, 8.0f);
+					// scale knockback with knight's velocity
+
+					vellen = Maths::Min(vellen, 8.0f); // cap on velocity so enemies don't get launched too much
 
 					if (vellen < 3.5f)
 					{
+						// roughly the same weak knockback at low velocity
 						force *= Maths::Pow(vellen, 1.0f / 3.0f) / 2;
 					}
 					else
 					{
+						// scale linearly at higher velocity
 						force *= (vellen - 3.5f) / 6 + 0.759f;
 					}
 
