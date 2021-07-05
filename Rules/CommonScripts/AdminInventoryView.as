@@ -1,6 +1,8 @@
 #define CLIENT_ONLY
 
-void onRender(CRules@ this)
+CBlob@ toDrawInventory = null;
+
+void onTick(CRules@ this) // pick which blob's inventory will be drawn_blobs only on game update
 {
 	CMap@ map = getMap();
 	if (map is null) return;
@@ -31,18 +33,32 @@ void onRender(CRules@ this)
 				CBlob@ blob = targets[i];
 				if (blob.getInventory() !is null)
 				{
-						DrawInventoryOfBlob(blob);
-						break;
+						@toDrawInventory = @blob;
+						return;
 				}
 			}
 		}	
+	}
+
+	@toDrawInventory = @null; // if we didn't get any blob, don't draw anything
+}
+
+void onRender(CRules@ this)
+{
+	if (toDrawInventory is null)
+	{
+		return;
+	}
+	else
+	{
+		DrawInventoryOfBlob(toDrawInventory);
 	}
 }
 
 void DrawInventoryOfBlob(CBlob@ this)
 {
 	CInventory@ inv = this.getInventory();
-	string[] drawn;
+	string[] drawn_blobs; // list of inventory blobs that we have already drawn
 	Vec2f tl = this.getInterpolatedScreenPos();
 	Vec2f offset (-40, -120);
 	u8 j = 0;
@@ -53,9 +69,9 @@ void DrawInventoryOfBlob(CBlob@ this)
 		CBlob@ item = inv.getItem(i);
 		const string name = item.getName();
 		
-		if (drawn.find(name) == -1)
+		if (drawn_blobs.find(name) == -1)
 		{
-			drawn.push_back(name);
+			drawn_blobs.push_back(name);
 
 			if (j % columns == 0 && j > 0)
 			{
