@@ -223,9 +223,11 @@ void RecountAmmo(CBlob@ this, VehicleInfo@ v)
 		AmmoInfo@ current_ammo = v.ammo_types[i];
 		int ammoStocked = current_ammo.loaded_ammo;
 		const string ammoName = current_ammo.ammo_name;
-		for (int i = 0; i < this.getInventory().getItemsCount(); i++)
+		CInventory@ inventory = this.getInventory();
+
+		for (int i = 0; i < inventory.getItemsCount(); i++)
 		{
-			CBlob@ invItem = this.getInventory().getItem(i);
+			CBlob@ invItem = inventory.getItem(i);
 			if (invItem.getName() == ammoName)
 			{
 				ammoStocked += invItem.getQuantity();
