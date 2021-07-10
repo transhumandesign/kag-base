@@ -1,5 +1,6 @@
 // set what it grabs with
-// this.set_string("autograb blob", "mat_bolts")
+// string[] autograb_blobs = {"mat_bolts", "mat_bomb_bolts"};
+// this.set("autograb blobs", autograb_blobs);
 
 void onInit(CBlob@ this)
 {
