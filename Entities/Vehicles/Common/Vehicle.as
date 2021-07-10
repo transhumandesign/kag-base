@@ -121,6 +121,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				eligible_ammo_names.push_back(ammo);
 			}
 
+			CBlob@ carryObject = caller.getCarriedBlob();
 			// if player has item in hand, we only put that item into vehicle's inventory
 			if (carryObject !is null && eligible_ammo_names.find(carryObject.getName()) != -1)
 			{
