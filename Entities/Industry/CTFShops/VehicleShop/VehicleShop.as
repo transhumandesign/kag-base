@@ -15,8 +15,6 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
-	AddIconToken("$vehicleshop_upgradebolts$", "BallistaBolt.png", Vec2f(32, 8), 1);
-
 	//INIT COSTS
 	InitCosts();
 
@@ -33,6 +31,7 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Catapult", cata_icon, "catapult", cata_icon + "\n\n\n" + Descriptions::catapult, false, true);
 		s.crate_icon = 4;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::catapult);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::catapult_wood);
 	}
 	{
 		string ballista_icon = getTeamIcon("ballista", "VehicleIcons.png", team_num, Vec2f(32, 32), 1);
@@ -50,13 +49,12 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista_ammo);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Bomb Bolt Upgrade", "$vehicleshop_upgradebolts$", "upgradebolts", Descriptions::ballista_ammo_upgrade_gold, false);
-		s.spawnNothing = true;
+		ShopItem@ s = addShopItem(this, "Ballista Shells", "$mat_bomb_bolts$", "mat_bomb_bolts", "$mat_bomb_bolts$\n\n\n" + Descriptions::ballista_bomb_ammo, false, false);
+		s.crate_icon = 5;
 		s.customButton = true;
 		s.buttonwidth = 2;
 		s.buttonheight = 1;
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::ballista_ammo_upgrade_gold);
-		AddRequirement(s.requirements, "not tech", "bomb ammo", "Bomb Bolt", 1);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista_bomb_ammo);
 	}
 }
 
