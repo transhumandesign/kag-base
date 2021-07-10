@@ -5,7 +5,7 @@ void onInit(CBlob@ this)
 {
 	this.getCurrentScript().tickFrequency = 89; // opt
 
-	string[] autograb_blob_names = {""};
+	string[] autograb_blob_names;
 
 	if (!this.exists("autograb blobs"))
 		this.set("autograb blobs", autograb_blob_names);
