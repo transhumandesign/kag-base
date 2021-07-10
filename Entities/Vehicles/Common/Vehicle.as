@@ -121,24 +121,26 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				eligible_ammo_names.push_back(ammo);
 			}
 
-			for (int i = 0; i < v.ammo_types.length(); ++i)
+			// if player has item in hand, we only put that item into vehicle's inventory
+			if (carryObject !is null && eligible_ammo_names.find(carryObject.getName()) != -1)
 			{
-				const string ammo = v.ammo_types[i].ammo_name;
+				ammos.push_back(carryObject);
+			}
+			else
+			{
+				CInventory@ inv = caller.getInventory();
 
-				CBlob@ carryObject = caller.getCarriedBlob();
-				// if player has item in hand, we only put that item into vehicle's inventory
-				if (carryObject !is null && eligible_ammo_names.find(carryObject.getName()) != -1)
+				for (int i = 0; i < v.ammo_types.length(); ++i)
 				{
-					ammos.push_back(carryObject);
-					break;
-				}
+					const string ammo = v.ammo_types[i].ammo_name;
 
-				for (int i = 0; i < caller.getInventory().getItemsCount(); i++)
-				{
-					CBlob@ invItem = caller.getInventory().getItem(i);
-					if (invItem.getName() == ammo)
+					for (int i = 0; i < inv.getItemsCount(); i++)
 					{
-						ammos.push_back(invItem);
+						CBlob@ invItem = inv.getItem(i);
+						if (invItem.getName() == ammo)
+						{
+							ammos.push_back(invItem);
+						}
 					}
 				}
 			}
