@@ -93,6 +93,8 @@ void drawAmmoCount(CBlob@ blob, VehicleInfo@ v)
 
 void drawName(CBlob@ blob, VehicleInfo@ v)
 {
+	if (g_videorecording) return;
+
 	GUI::SetFont("menu");
 	GUI::DrawTextCentered(getTranslatedString("Currently selected ammo: " + v.getCurrentAmmo().ammo_inventory_name + "\n\nTap the Inventory key to switch ammo type."),
 			              Vec2f(blob.getScreenPos() + Vec2f(0, 120)),
