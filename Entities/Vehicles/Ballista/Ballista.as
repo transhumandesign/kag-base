@@ -38,11 +38,7 @@ void onInit(CBlob@ this)
 	{
 		return;
 	}
-
-	//tech - bomb bolts
-	//bool hasBomb = hasTech(this, "bomb ammo");
-	//this.set_bool("bomb ammo", hasBomb);
-
+	
 	// bolt ammo
 	Vehicle_AddAmmo(this, v,
 	                    cooldown_time, // fire delay (ticks)
