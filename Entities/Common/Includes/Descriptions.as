@@ -24,7 +24,7 @@ namespace Descriptions
 	catapult                   = getTranslatedString("A stone throwing, ridable siege engine, requiring a crew of two."),
 	ballista                   = getTranslatedString("A bolt-firing pinpoint accurate siege engine, requiring a crew of two. Allows respawn and class change."),
 	ballista_ammo              = getTranslatedString("Piercing bolts for ballista."),
-	ballista_ammo_upgrade_gold = getTranslatedString("For Ballista\nTurns its piercing bolts into a shaped explosive charge."),
+	ballista_bomb_ammo         = getTranslatedString("Explosive bolts for ballista."),
 
 	stone                      = getTranslatedString("Raw stone material."),
 	wood                       = getTranslatedString("Raw wood material."),
