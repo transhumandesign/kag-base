@@ -31,7 +31,6 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Catapult", cata_icon, "catapult", cata_icon + "\n\n\n" + Descriptions::catapult, false, true);
 		s.crate_icon = 4;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::catapult);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::catapult_wood);
 	}
 	{
 		string ballista_icon = getTeamIcon("ballista", "VehicleIcons.png", team_num, Vec2f(32, 32), 1);
