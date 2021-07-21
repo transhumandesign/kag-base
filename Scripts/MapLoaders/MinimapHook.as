@@ -234,9 +234,9 @@ namespace MiniMap
 				 	cfg.add_string("color_water", "2cafde");
 					cfg.add_string("color_fire", "d5543f");
 					cfg.saveFile("MinimapColors.cfg");
-		        }
+				}
 
-	        	cfg.saveFile("MinimapColors.cfg");
+				cfg.saveFile("MinimapColors.cfg");
 			}
 
 			//write defaults for now
