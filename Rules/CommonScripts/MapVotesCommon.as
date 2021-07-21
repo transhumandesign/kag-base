@@ -571,7 +571,7 @@ void CreateGenTexture(string shortname)
 
 void CreateMapTexture(string shortname, string filename)
 {
-	print("creating minimap" + ", " + shortname + ", " + filename);
+	print("creating minimap, " + shortname + ", " + filename);
 	if (shortname == "test.kaggen")
 	{
 		CreateGenTexture(shortname);
@@ -580,7 +580,7 @@ void CreateMapTexture(string shortname, string filename)
 	
 	if(!Texture::createFromFile(shortname, filename))
 	{
-		warn("texture creation failed" + ", " + shortname + ", " + filename);
+		warn("texture creation failed, " + shortname + ", " + filename);
 	}
 	else
 	{
@@ -650,7 +650,7 @@ void CreateMapTexture(string shortname, string filename)
 
 			if(!Texture::update(shortname, edit))
 			{
-				warn("texture update failed" + ", " + shortname + ", " + filename);
+				warn("texture update failed, " + shortname + ", " + filename);
 				return;
 			}
 		}
