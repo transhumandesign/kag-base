@@ -576,7 +576,7 @@ void CreateMapTexture(string shortname, string filename)
 		CreateGenTexture(shortname);
 		return;
 	}
-	
+
 	if(!Texture::createFromFile(shortname, filename))
 	{
 		warn("texture creation failed, " + shortname + ", " + filename);
@@ -586,7 +586,7 @@ void CreateMapTexture(string shortname, string filename)
 		// a perfect minimap replication
 		bool show_gold = getRules().get_bool("show_gold");
 		ImageData@ edit = Texture::data(shortname);
-		
+
 		CFileImage image( CFileMatcher(filename).getFirst() );
 		if (image.isLoaded())
 		{
@@ -596,13 +596,13 @@ void CreateMapTexture(string shortname, string filename)
 			{
 				const int offset = image.getPixelOffset();
 				const Vec2f pixelpos = image.getPixelPosition();
-				
+
 				const SColor PixelCol = image.readPixel();
 				u8 tile = type(PixelCol, show_gold);
 				SColor editcol = PixelCol;
-				
+
 				show_gold = true;
-				
+
 				///Colors
 				const SColor color_minimap_open         (0xffA5BDC8);
 				const SColor color_minimap_ground       (0xff844715);
@@ -613,14 +613,14 @@ void CreateMapTexture(string shortname, string filename)
 				const SColor color_minimap_bedrock      (0xff2D342D);
 				const SColor color_minimap_wood         (0xffC48715);
 				const SColor color_minimap_castle       (0xff637160);
-				
+
 				const SColor color_minimap_castle_back  (0xff313412);
 				const SColor color_minimap_wood_back    (0xff552A11);
-				
+
 				const SColor color_minimap_water        (0xff2cafde);
 				const SColor color_minimap_fire         (0xffd5543f);
-				
-				
+
+
 				if        (PixelCol == SColor(map_colors::tile_ground))           { editcol = color_minimap_ground;
 				} else if (PixelCol == SColor(map_colors::tile_ground_back))      { editcol = color_minimap_back;
 				} else if (PixelCol == SColor(map_colors::tile_stone))            { editcol = color_minimap_stone;
@@ -643,7 +643,7 @@ void CreateMapTexture(string shortname, string filename)
 				} else if (PixelCol == SColor(map_colors::sky))                   { editcol = color_minimap_open;
 				} else {                                                            editcol = color_minimap_open;
 				}
-
+				
 				edit[offset] = editcol;
 			}
 
