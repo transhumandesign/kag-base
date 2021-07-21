@@ -47,23 +47,22 @@ void onTick(CBlob@ this)
 
 	if (point.isKeyPressed(key_action1))
 	{
+		// rotate in 45 degree steps
 		angle = Maths::Floor((angle + 22.5f) / 45) * 45;
 		this.setAngleDegrees(-angle);
 	}
 	else if (point.isKeyPressed(key_action2))
 	{
+		// set angle to what was on previous tick
 		angle = this.get_f32("old angle");
 		this.setAngleDegrees(angle);
-		return;
 	}
 	else
 	{
+		// follow cursor normally
 		this.setAngleDegrees(-angle + 90);
 	}
 	
-
-	this.setAngleDegrees(-angle + 90);
-
 	this.set_f32("old angle", this.getAngleDegrees());
 }
 
