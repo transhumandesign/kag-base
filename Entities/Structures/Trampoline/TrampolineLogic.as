@@ -43,19 +43,18 @@ void onTick(CBlob@ this)
 	ray.Normalize();
 	
 	f32 angle = ray.Angle();
-	CControls@ controls = holder.getControls();
 
-	if (point.isKeyPressed(key_action1))
-	{
-		// rotate in 45 degree steps
-		angle = Maths::Floor((angle + 22.5f) / 45) * 45;
-		this.setAngleDegrees(-angle);
-	}
-	else if (point.isKeyPressed(key_action2))
+	if (point.isKeyPressed(key_action2))
 	{
 		// set angle to what was on previous tick
 		angle = this.get_f32("old angle");
 		this.setAngleDegrees(angle);
+	}
+	else if (point.isKeyPressed(key_action1))
+	{
+		// rotate in 45 degree steps
+		angle = Maths::Floor((angle - 67.5f) / 45) * 45;
+		this.setAngleDegrees(-angle);
 	}
 	else
 	{
