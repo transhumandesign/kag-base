@@ -620,7 +620,7 @@ void CreateMapTexture(string shortname, string filename)
 				const SColor color_minimap_water        (0xff2cafde);
 				const SColor color_minimap_fire         (0xffd5543f);
 
-				switch(PixelCol.color)
+				switch (PixelCol.color)
 				{
 					case map_colors::tile_ground:            editcol = color_minimap_ground; break;
 					case map_colors::tile_ground_back:       editcol = color_minimap_back; break;
