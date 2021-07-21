@@ -620,30 +620,30 @@ void CreateMapTexture(string shortname, string filename)
 				const SColor color_minimap_water        (0xff2cafde);
 				const SColor color_minimap_fire         (0xffd5543f);
 
-
-				if        (PixelCol == SColor(map_colors::tile_ground))           { editcol = color_minimap_ground;
-				} else if (PixelCol == SColor(map_colors::tile_ground_back))      { editcol = color_minimap_back;
-				} else if (PixelCol == SColor(map_colors::tile_stone))            { editcol = color_minimap_stone;
-				} else if (PixelCol == SColor(map_colors::tile_thickstone))       { editcol = color_minimap_thickstone;
-				} else if (PixelCol == SColor(map_colors::tile_bedrock))          { editcol = color_minimap_bedrock;
-				} else if (PixelCol == SColor(map_colors::tile_gold))             { editcol = color_minimap_gold;
-				} else if (PixelCol == SColor(map_colors::tile_castle))           { editcol = color_minimap_castle;
-				} else if (PixelCol == SColor(map_colors::tile_castle_back))      { editcol = color_minimap_castle_back;
-				} else if (PixelCol == SColor(map_colors::tile_castle_moss))      { editcol = color_minimap_castle; // TODO(hobey): moss
-				} else if (PixelCol == SColor(map_colors::tile_castle_back_moss)) { editcol = color_minimap_castle_back; // TODO(hobey): moss
-				} else if (PixelCol == SColor(map_colors::tile_ladder))           { editcol = color_minimap_open;
-				} else if (PixelCol == SColor(map_colors::tile_ladder_ground))    { editcol = color_minimap_back;
-				} else if (PixelCol == SColor(map_colors::tile_ladder_castle))    { editcol = color_minimap_castle_back;
-				} else if (PixelCol == SColor(map_colors::tile_ladder_wood))      { editcol = color_minimap_wood_back;
-				} else if (PixelCol == SColor(map_colors::tile_grass))            { editcol = color_minimap_open;
-				} else if (PixelCol == SColor(map_colors::tile_wood))             { editcol = color_minimap_wood;
-				} else if (PixelCol == SColor(map_colors::tile_wood_back))        { editcol = color_minimap_wood_back;
-				} else if (PixelCol == SColor(map_colors::water_air))             { editcol = color_minimap_open; editcol = editcol.getInterpolated(color_minimap_water,0.5f);
-				} else if (PixelCol == SColor(map_colors::water_backdirt))        { editcol = color_minimap_back; editcol = editcol.getInterpolated(color_minimap_water,0.5f);
-				} else if (PixelCol == SColor(map_colors::sky))                   { editcol = color_minimap_open;
-				} else {                                                            editcol = color_minimap_open;
+				switch(PixelCol.color)
+				{
+					case map_colors::tile_ground:            editcol = color_minimap_ground; break;
+					case map_colors::tile_ground_back:       editcol = color_minimap_back; break;
+					case map_colors::tile_stone:             editcol = color_minimap_stone; break;
+					case map_colors::tile_thickstone:        editcol = color_minimap_thickstone; break;
+					case map_colors::tile_bedrock:           editcol = color_minimap_bedrock; break;
+					case map_colors::tile_gold:              editcol = color_minimap_gold; break;
+					case map_colors::tile_castle:            editcol = color_minimap_castle; break;
+					case map_colors::tile_castle_back:       editcol = color_minimap_castle_back; break;
+					case map_colors::tile_castle_moss:       editcol = color_minimap_castle; break; // TODO(hobey: moss
+					case map_colors::tile_castle_back_moss:  editcol = color_minimap_castle_back; break; // TODO(hobey: moss
+					case map_colors::tile_ladder:            editcol = color_minimap_open; break;
+					case map_colors::tile_ladder_ground:     editcol = color_minimap_back; break;
+					case map_colors::tile_ladder_castle:     editcol = color_minimap_castle_back; break;
+					case map_colors::tile_ladder_wood:       editcol = color_minimap_wood_back; break;
+					case map_colors::tile_grass:             editcol = color_minimap_open; break;
+					case map_colors::tile_wood:              editcol = color_minimap_wood; break;
+					case map_colors::tile_wood_back:         editcol = color_minimap_wood_back; break;
+					case map_colors::water_air:              editcol = color_minimap_open; editcol = editcol.getInterpolated(color_minimap_water,0.5f); break;
+					case map_colors::water_backdirt:         editcol = color_minimap_back; editcol = editcol.getInterpolated(color_minimap_water,0.5f); break;
+					case map_colors::sky:                    editcol = color_minimap_open; break;
 				}
-				
+
 				edit[offset] = editcol;
 			}
 
