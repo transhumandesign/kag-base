@@ -172,7 +172,7 @@ namespace MiniMap
 			ConfigFile cfg();
 			if (cfg.loadFile("../Cache/MinimapColors.cfg"))
 			{
-				if(rules.get_bool("custom_colors") == true)
+				if (rules.get_bool("custom_colors") == true)
 				{
 					color_sky.set(parseInt(cfg.read_string("color_sky"), 16));
 					color_sky.setAlpha(255);
