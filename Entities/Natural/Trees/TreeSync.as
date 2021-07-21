@@ -204,6 +204,7 @@ void DoGrow(CBlob@ this, TreeVars@ vars)
 
 	GrowSegments(this, vars);
 	GrowSprite(this.getSprite(), vars);
+	UpdateMinimapIcon(this, vars);
 	vars.grown_times++;
 	this.set_u8("grown_times", vars.grown_times);
 

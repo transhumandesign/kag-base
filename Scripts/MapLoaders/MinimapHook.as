@@ -1,11 +1,22 @@
 ///Minimap Code
-// Almost 100% accurately replicates the legacy minimap drawer
-// This is due to it being a port of the legacy code, provided by Geti
+SColor color_sky = SColor(0xffA5BDC8);
+SColor color_dirt = SColor(0xff844715);
+SColor color_dirt_backwall = SColor(0xff3B1406);
+SColor color_stone = SColor(0xff8B6849);
+SColor color_thickstone = SColor(0xff42484B);
+SColor color_gold = SColor(0xffFEA53D);
+SColor color_bedrock = SColor(0xff2D342D);
+SColor color_wood = SColor(0xffC48715);
+SColor color_wood_backwall = SColor(0xff552A11);
+SColor color_castle = SColor(0xff637160);
+SColor color_castle_backwall = SColor(0xff313412);
+SColor color_water = SColor(0xff2cafde);
+SColor color_fire = SColor(0xffd5543f);
 
 void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out col)
 {
 	int X = offset % map.tilemapwidth;
-	int Y = offset/map.tilemapwidth;
+	int Y = offset / map.tilemapwidth;
 
 	Vec2f pos = Vec2f(X, Y);
 
@@ -15,82 +26,72 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
 	bool show_gold = getRules().get_bool("show_gold");
 
 	///Colours
+	const SColor color_minimap_open         (color_sky);
+	const SColor color_minimap_ground       (color_dirt);
+	const SColor color_minimap_back         (color_dirt_backwall);
+	const SColor color_minimap_stone        (color_stone);
+	const SColor color_minimap_thickstone   (color_thickstone);
+	const SColor color_minimap_gold         (color_gold);
+	const SColor color_minimap_bedrock      (color_bedrock);
+	const SColor color_minimap_wood         (color_wood);
+	const SColor color_minimap_castle       (color_castle);
 
-	const SColor color_minimap_solid_edge   (0xff844715);
-	const SColor color_minimap_solid        (0xffc4873a);
-	const SColor color_minimap_back_edge    (0xffc4873a); //yep, same as above
-	const SColor color_minimap_back         (0xfff3ac5c);
-	const SColor color_minimap_open         (0x00edcca6);
-	const SColor color_minimap_gold         (0xffffbd34);
-	const SColor color_minimap_gold_edge    (0xffc56c22);
-	const SColor color_minimap_gold_exposed (0xfff0872c);
+	const SColor color_minimap_castle_back  (color_castle_backwall);
+	const SColor color_minimap_wood_back    (color_wood_backwall);
 
-	const SColor color_minimap_water        (0xff2cafde);
-	const SColor color_minimap_fire         (0xffd5543f);
-
-	//neighbours
-	Tile tile_l = map.getTile(MiniMap::clampInsideMap(pos * ts - Vec2f(ts, 0), map));
-	Tile tile_r = map.getTile(MiniMap::clampInsideMap(pos * ts + Vec2f(ts, 0), map));
-	Tile tile_u = map.getTile(MiniMap::clampInsideMap(pos * ts - Vec2f(0, ts), map));
-	Tile tile_d = map.getTile(MiniMap::clampInsideMap(pos * ts + Vec2f(0, ts), map));
-
-	///figure out the correct colour
-	if (
-		//always solid
-		map.isTileGround( tile ) || map.isTileStone( tile ) ||
-        map.isTileBedrock( tile ) || map.isTileThickStone( tile ) ||
-        map.isTileCastle( tile ) || map.isTileWood( tile ) ||
-        //only solid if we're not showing gold separately
-        (!show_gold && map.isTileGold( tile ))
-    ) {
-		//Foreground
-		col = color_minimap_solid;
-
-		//Edge
-		if( MiniMap::isForegroundOutlineTile(tile_u, map) || MiniMap::isForegroundOutlineTile(tile_d, map) ||
-		    MiniMap::isForegroundOutlineTile(tile_l, map) || MiniMap::isForegroundOutlineTile(tile_r, map) )
-		{
-			col = color_minimap_solid_edge;
-		}
-		else if(
-			show_gold && (
-				MiniMap::isGoldOutlineTile(tile_u, map, false) || MiniMap::isGoldOutlineTile(tile_d, map, false) ||
-			    MiniMap::isGoldOutlineTile(tile_l, map, false) || MiniMap::isGoldOutlineTile(tile_r, map, false)
-			)
-		) {
-			col = color_minimap_gold_edge;
-		}
-	}
-	else if(map.isTileBackground(ctile) && !map.isTileGrass(tile))
+	const SColor color_minimap_water        (color_water);
+	const SColor color_minimap_fire         (color_fire);
+	
+	if (map.isTileGold(tile))  
+	{ 
+		col = show_gold ? color_minimap_gold : color_minimap_ground;
+	} 
+	else if (map.isTileGround(tile))
 	{
-		//Background
-		col = color_minimap_back;
-
-		//Edge
-		if( MiniMap::isBackgroundOutlineTile(tile_u, map) || MiniMap::isBackgroundOutlineTile(tile_d, map) ||
-		    MiniMap::isBackgroundOutlineTile(tile_l, map) || MiniMap::isBackgroundOutlineTile(tile_r, map) )
-		{
-			col = color_minimap_back_edge;
-		}
+		col = color_minimap_ground;
 	}
-	else if(show_gold && map.isTileGold(tile))
+	else if (map.isTileThickStone(tile))
 	{
-		//Gold
-		col = color_minimap_gold;
-
-		//Edge
-		if( MiniMap::isGoldOutlineTile(tile_u, map, true) || MiniMap::isGoldOutlineTile(tile_d, map, true) ||
-		    MiniMap::isGoldOutlineTile(tile_l, map, true) || MiniMap::isGoldOutlineTile(tile_r, map, true) )
-		{
-			col = color_minimap_gold_exposed;
-		}
+		col = color_minimap_thickstone;
 	}
-	else
+	else if (map.isTileStone(tile))
 	{
-		//Sky
+		col = color_minimap_stone;
+	}
+	else if (map.isTileBedrock(tile))
+	{
+		col = color_minimap_bedrock;
+	}
+	else if (map.isTileWood(tile)) 
+	{ 
+		col = color_minimap_wood;
+	} 
+	else if (map.isTileCastle(tile))      
+	{ 
+		col = color_minimap_castle;
+	} 
+	else if (map.isTileBackgroundNonEmpty(ctile) && !map.isTileGrass(tile)) {
+		
+		// TODO(hobey): maybe check if there's a door/platform on this backwall and make a custom color for them?
+		if (tile == CMap::tile_castle_back) 
+		{ 
+			col = color_minimap_castle_back;
+		} 
+		else if (tile == CMap::tile_wood_back)   
+		{ 
+			col = color_minimap_wood_back;
+		} 
+		else                                     
+		{ 
+			col = color_minimap_back;
+		}
+		
+	} 
+	else 
+	{
 		col = color_minimap_open;
 	}
-
+	
 	///Tint the map based on Fire/Water State
 	if (map.isInWater( pos * ts ))
 	{
@@ -158,13 +159,86 @@ namespace MiniMap
 
 			map.legacyTileMinimap = cfg.read_bool("legacy_minimap", false);
 			bool show_gold = cfg.read_bool("show_gold", true);
+			bool custom_colors = cfg.read_bool("custom_colors", true);
 
 			//write out values for serialisation
 			rules.set_bool("legacy_minimap", map.legacyTileMinimap);
 			rules.set_bool("show_gold", show_gold);
+			rules.set_bool("custom_colors", custom_colors);
 		}
-		else
+		if (isClient())
 		{
+			// customizable colors for blocks
+			ConfigFile cfg();
+			if (cfg.loadFile("../Cache/MinimapColors.cfg"))
+			{
+				if(rules.get_bool("custom_colors") == true)
+				{
+					color_sky.set(parseInt(cfg.read_string("color_sky"), 16));
+					color_sky.setAlpha(255);
+
+					color_dirt.set(parseInt(cfg.read_string("color_dirt"), 16));
+					color_dirt.setAlpha(255);
+
+					color_dirt_backwall.set(parseInt(cfg.read_string("color_dirt_backwall"), 16));
+					color_dirt_backwall.setAlpha(255);
+
+					color_stone.set(parseInt(cfg.read_string("color_stone"), 16));
+					color_stone.setAlpha(255);
+
+					color_thickstone.set(parseInt(cfg.read_string("color_thickstone"), 16));
+					color_thickstone.setAlpha(255);
+
+					color_gold.set(parseInt(cfg.read_string("color_gold"), 16));
+					color_gold.setAlpha(255);
+
+					color_bedrock.set(parseInt(cfg.read_string("color_bedrock"), 16));
+					color_bedrock.setAlpha(255);
+
+					color_wood.set(parseInt(cfg.read_string("color_wood"), 16));
+					color_wood.setAlpha(255);
+
+					color_wood_backwall.set(parseInt(cfg.read_string("color_wood_backwall"), 16));
+					color_wood_backwall.setAlpha(255);
+
+					color_castle.set(parseInt(cfg.read_string("color_castle"), 16));
+					color_castle.setAlpha(255);
+
+					color_castle_backwall.set(parseInt(cfg.read_string("color_castle_backwall"), 16));
+					color_castle_backwall.setAlpha(255);
+
+					color_water.set(parseInt(cfg.read_string("color_water"), 16));
+					color_water.setAlpha(255);
+
+					color_fire.set(parseInt(cfg.read_string("color_fire"), 16));
+					color_fire.setAlpha(255);
+				}
+			}
+			else
+			{
+				// grab the one with defaults from base
+				if (!cfg.loadFile("MinimapColors.cfg"))
+				{
+					warn("missing default map colors");
+					cfg.add_string("color_sky", "A5BDC8");
+					cfg.add_string("color_dirt", "844715");
+					cfg.add_string("color_dirt_backwall", "3B1406");
+					cfg.add_string("color_stone", "8B6849");
+					cfg.add_string("color_thickstone", "42484B");
+					cfg.add_string("color_gold", "FEA53D");
+					cfg.add_string("color_bedrock", "D342D");
+					cfg.add_string("color_wood", "C48715");
+					cfg.add_string("color_wood_backwall", "552A11");
+					cfg.add_string("color_castle", "637160");
+					cfg.add_string("color_castle_backwall", "313412");
+				 	cfg.add_string("color_water", "2cafde");
+					cfg.add_string("color_fire", "d5543f");
+					cfg.saveFile("MinimapColors.cfg");
+		        }
+
+	        	cfg.saveFile("MinimapColors.cfg");
+			}
+
 			//write defaults for now
 			map.legacyTileMinimap = false;
 			rules.set_bool("show_gold", true);

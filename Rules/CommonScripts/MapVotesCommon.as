@@ -571,22 +571,23 @@ void CreateGenTexture(string shortname)
 
 void CreateMapTexture(string shortname, string filename)
 {
+	print("creating minimap" + ", " + shortname + ", " + filename);
 	if (shortname == "test.kaggen")
 	{
 		CreateGenTexture(shortname);
 		return;
 	}
-
+	
 	if(!Texture::createFromFile(shortname, filename))
 	{
-		warn("texture creation failed");
+		warn("texture creation failed" + ", " + shortname + ", " + filename);
 	}
 	else
 	{
 		// a perfect minimap replication
-		const bool show_gold = getRules().get_bool("show_gold");
+		bool show_gold = getRules().get_bool("show_gold");
 		ImageData@ edit = Texture::data(shortname);
-
+		
 		CFileImage image( CFileMatcher(filename).getFirst() );
 		if (image.isLoaded())
 		{
@@ -596,86 +597,52 @@ void CreateMapTexture(string shortname, string filename)
 			{
 				const int offset = image.getPixelOffset();
 				const Vec2f pixelpos = image.getPixelPosition();
-
+				
 				const SColor PixelCol = image.readPixel();
-				const SColor PixelCol_u = edit.get(pixelpos.x, Maths::Min(pixelpos.y-1, h));
-				const SColor PixelCol_d = edit.get(pixelpos.x, Maths::Max(pixelpos.y+1, 0));
-				const SColor PixelCol_r = edit.get(Maths::Min(pixelpos.x+1, w), pixelpos.y);
-				const SColor PixelCol_l = edit.get(Maths::Max(pixelpos.x-1, 0), pixelpos.y);
-
 				u8 tile = type(PixelCol, show_gold);
-				u8 tile_u = type(PixelCol_u, show_gold);
-				u8 tile_l = type(PixelCol_l, show_gold);
-				u8 tile_r = type(PixelCol_r, show_gold);
-				u8 tile_d = type(PixelCol_d, show_gold);
-
 				SColor editcol = PixelCol;
-
-				if (tile == ColTileType::Other)
-				{
-					SColor mostlike = getMostLikelyCol(PixelCol_u, PixelCol_d, PixelCol_l, PixelCol_r, show_gold);
-					tile = type(mostlike, show_gold);
-				}
-
-				if (tile == ColTileType::Solid)
-    			{
-    				//Foreground
-					editcol = colors::minimap_solid;
-
-					//Edge
-					if ( (tile_u != ColTileType::Solid && tile_u != ColTileType::Gold) || (tile_d != ColTileType::Solid && tile_d != ColTileType::Gold) ||
-						 (tile_l != ColTileType::Solid && tile_l != ColTileType::Gold) || (tile_r != ColTileType::Solid && tile_r != ColTileType::Gold) )
-					{
-						editcol = colors::minimap_solid_edge;
-					}
-					else if (tile_u == ColTileType::Gold || tile_d == ColTileType::Gold || tile_l == ColTileType::Gold || tile_r == ColTileType::Gold)
-					{
-						editcol = colors::minimap_gold_edge;
-					}
-				}
-				else if ( tile == ColTileType::Backwall && PixelCol != SColor(map_colors::tile_grass) )
-				{
-					//Background
-					editcol = colors::minimap_back;
-
-					//Edge
-					if ( tile_u == ColTileType::Sky || tile_d == ColTileType::Sky || tile_l == ColTileType::Sky || tile_r == ColTileType::Sky ||
-						 tile_u == ColTileType::Sky_Water || tile_d == ColTileType::Sky_Water || tile_l == ColTileType::Sky_Water || tile_r == ColTileType::Sky_Water )
-					{
-						editcol = colors::minimap_back_edge;
-					}
-				}
-				else if (tile == ColTileType::Gold)
-				{
-					//Gold
-					editcol = colors::minimap_gold;
-
-					//Edge
-					if ( (tile_u != ColTileType::Solid && tile_u != ColTileType::Gold) || (tile_d != ColTileType::Solid && tile_d != ColTileType::Gold) ||
-						 (tile_l != ColTileType::Solid && tile_l != ColTileType::Gold) || (tile_r != ColTileType::Solid && tile_r != ColTileType::Gold) )
-					{
-						editcol = colors::minimap_gold_exposed;
-					}
-				}
-				else if ( tile == ColTileType::Backwall_Water )
-				{
-					//Background
-					editcol = colors::interpolated_water_backwall;
-
-					//Edge
-					if ( tile_u == ColTileType::Sky || tile_d == ColTileType::Sky || tile_l == ColTileType::Sky || tile_r == ColTileType::Sky ||
-						 tile_u == ColTileType::Sky_Water || tile_d == ColTileType::Sky_Water || tile_l == ColTileType::Sky_Water || tile_r == ColTileType::Sky_Water )
-					{
-						editcol = colors::interpolated_water_backwall_edge;
-					}
-				}
-				else if (tile == ColTileType::Sky_Water)
-				{   //Sky
-					editcol = colors::interpolated_water_sky;
-				}
-				else
-				{   //Sky
-					editcol = colors::minimap_open;
+				
+				show_gold = true;
+				
+				///Colors
+				const SColor color_minimap_open         (0xffA5BDC8);
+				const SColor color_minimap_ground       (0xff844715);
+				const SColor color_minimap_back         (0xff3B1406);
+				const SColor color_minimap_stone        (0xff8B6849);
+				const SColor color_minimap_thickstone   (0xff42484B);
+				const SColor color_minimap_gold         (0xffFEA53D);
+				const SColor color_minimap_bedrock      (0xff2D342D);
+				const SColor color_minimap_wood         (0xffC48715);
+				const SColor color_minimap_castle       (0xff637160);
+				
+				const SColor color_minimap_castle_back  (0xff313412);
+				const SColor color_minimap_wood_back    (0xff552A11);
+				
+				const SColor color_minimap_water        (0xff2cafde);
+				const SColor color_minimap_fire         (0xffd5543f);
+				
+				
+				if        (PixelCol == SColor(map_colors::tile_ground))           { editcol = color_minimap_ground;
+				} else if (PixelCol == SColor(map_colors::tile_ground_back))      { editcol = color_minimap_back;
+				} else if (PixelCol == SColor(map_colors::tile_stone))            { editcol = color_minimap_stone;
+				} else if (PixelCol == SColor(map_colors::tile_thickstone))       { editcol = color_minimap_thickstone;
+				} else if (PixelCol == SColor(map_colors::tile_bedrock))          { editcol = color_minimap_bedrock;
+				} else if (PixelCol == SColor(map_colors::tile_gold))             { editcol = color_minimap_gold;
+				} else if (PixelCol == SColor(map_colors::tile_castle))           { editcol = color_minimap_castle;
+				} else if (PixelCol == SColor(map_colors::tile_castle_back))      { editcol = color_minimap_castle_back;
+				} else if (PixelCol == SColor(map_colors::tile_castle_moss))      { editcol = color_minimap_castle; // TODO(hobey): moss
+				} else if (PixelCol == SColor(map_colors::tile_castle_back_moss)) { editcol = color_minimap_castle_back; // TODO(hobey): moss
+				} else if (PixelCol == SColor(map_colors::tile_ladder))           { editcol = color_minimap_open;
+				} else if (PixelCol == SColor(map_colors::tile_ladder_ground))    { editcol = color_minimap_back;
+				} else if (PixelCol == SColor(map_colors::tile_ladder_castle))    { editcol = color_minimap_castle_back;
+				} else if (PixelCol == SColor(map_colors::tile_ladder_wood))      { editcol = color_minimap_wood_back;
+				} else if (PixelCol == SColor(map_colors::tile_grass))            { editcol = color_minimap_open;
+				} else if (PixelCol == SColor(map_colors::tile_wood))             { editcol = color_minimap_wood;
+				} else if (PixelCol == SColor(map_colors::tile_wood_back))        { editcol = color_minimap_wood_back;
+				} else if (PixelCol == SColor(map_colors::water_air))             { editcol = color_minimap_open; editcol = editcol.getInterpolated(color_minimap_water,0.5f);
+				} else if (PixelCol == SColor(map_colors::water_backdirt))        { editcol = color_minimap_back; editcol = editcol.getInterpolated(color_minimap_water,0.5f);
+				} else if (PixelCol == SColor(map_colors::sky))                   { editcol = color_minimap_open;
+				} else {                                                            editcol = color_minimap_open;
 				}
 
 				edit[offset] = editcol;
@@ -683,7 +650,7 @@ void CreateMapTexture(string shortname, string filename)
 
 			if(!Texture::update(shortname, edit))
 			{
-				warn("texture update failed");
+				warn("texture update failed" + ", " + shortname + ", " + filename);
 				return;
 			}
 		}

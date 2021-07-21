@@ -51,6 +51,7 @@ void onTick(CRules@ this)
 			bt.write_bool(true);
 			bt.write_bool(this.get_bool("legacy_minimap"));
 			bt.write_bool(this.get_bool("show_gold"));
+			bt.write_bool(this.get_bool("custom_colors"));
 		}
 		else if (isClient())
 		{
@@ -101,11 +102,13 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ bt)
 			//recv minimap props
 			bool legacy_minimap = false;
 			bool show_gold = true;
+			bool custom_colors = true;
 			u8 old_last_synced_i = last_synced_i;
 
 			//note: error printed only; we want to write defaults still
 			if(!bt.saferead_bool(legacy_minimap)) error("MiniMap Sync: failed to read legacy_minimap");
 			if(!bt.saferead_bool(show_gold))      error("MiniMap Sync: failed to read show_gold");
+			if(!bt.saferead_bool(custom_colors))      error("MiniMap Sync: failed to read custom_colors");
 			if(!bt.saferead_u8(last_synced_i))    error("MiniMap Sync: failed to read sync i");
 
 			//write values
@@ -114,6 +117,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ bt)
 			//write props
 			this.set_bool("legacy_minimap", legacy_minimap);
 			this.set_bool("show_gold", show_gold);
+			this.set_bool("custom_colors", custom_colors);
 
 			//re-build the minimap
 			//(prevents re-rebuilding)
