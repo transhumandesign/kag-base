@@ -41,12 +41,30 @@ void onTick(CBlob@ this)
 
 	Vec2f ray = holder.getAimPos() - this.getPosition();
 	ray.Normalize();
-
+	
 	f32 angle = ray.Angle();
-	angle = angle > 135 || angle < 45? (holder.isFacingLeft()? 135 : 45) : 90;
-	angle -= 90;
+	CControls@ controls = holder.getControls();
 
-	this.setAngleDegrees(-angle);
+	if (point.isKeyPressed(key_action1))
+	{
+		angle = Maths::Floor((angle + 22.5f) / 45) * 45;
+		this.setAngleDegrees(-angle);
+	}
+	else if (point.isKeyPressed(key_action2))
+	{
+		angle = this.get_f32("old angle");
+		this.setAngleDegrees(angle);
+		return;
+	}
+	else
+	{
+		this.setAngleDegrees(-angle + 90);
+	}
+	
+
+	this.setAngleDegrees(-angle + 90);
+
+	this.set_f32("old angle", this.getAngleDegrees());
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1, Vec2f point2)
