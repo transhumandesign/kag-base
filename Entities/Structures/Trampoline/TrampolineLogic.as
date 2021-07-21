@@ -48,7 +48,7 @@ void onTick(CBlob@ this)
 	if (point.isKeyPressed(key_action1))
 	{
 		// rotate in 45 degree steps
-		angle = Maths::Floor((angle + 22.5f) / 45) * 45;
+		angle = Maths::Floor((angle - 67.5f) / 45) * 45;
 		this.setAngleDegrees(-angle);
 	}
 	else if (point.isKeyPressed(key_action2))
