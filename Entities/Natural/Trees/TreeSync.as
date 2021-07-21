@@ -63,7 +63,7 @@ void InitTree(CBlob@ this, TreeVars@ vars)
 
 		for (int a = vars.grown_times; a < grown_times; a++)
 		{
-			DoGrow(this, var);
+			DoGrow(this, vars);
 		}
 
 		if (this.exists("last_grew_time"))
