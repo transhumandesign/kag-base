@@ -519,9 +519,9 @@ class MapVoteButton
 
 void CreateGenTexture(string shortname)
 {
-	if(!Texture::exists(shortname))
+	if (!Texture::exists(shortname))
 	{
-		if(!Texture::createBySize(shortname, 150,100))
+		if (!Texture::createBySize(shortname, 150,100))
 		{
 			warn("texture creation failed");
 		}
@@ -560,7 +560,7 @@ void CreateGenTexture(string shortname)
 				}
 			}
 
-			if(!Texture::update(shortname, edit))
+			if (!Texture::update(shortname, edit))
 			{
 				warn("texture update failed");
 				return;
@@ -577,7 +577,7 @@ void CreateMapTexture(string shortname, string filename)
 		return;
 	}
 
-	if(!Texture::createFromFile(shortname, filename))
+	if (!Texture::createFromFile(shortname, filename))
 	{
 		warn("texture creation failed, " + shortname + ", " + filename);
 	}
@@ -647,7 +647,7 @@ void CreateMapTexture(string shortname, string filename)
 				edit[offset] = editcol;
 			}
 
-			if(!Texture::update(shortname, edit))
+			if (!Texture::update(shortname, edit))
 			{
 				warn("texture update failed, " + shortname + ", " + filename);
 				return;
