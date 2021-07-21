@@ -571,7 +571,6 @@ void CreateGenTexture(string shortname)
 
 void CreateMapTexture(string shortname, string filename)
 {
-	print("creating minimap, " + shortname + ", " + filename);
 	if (shortname == "test.kaggen")
 	{
 		CreateGenTexture(shortname);
