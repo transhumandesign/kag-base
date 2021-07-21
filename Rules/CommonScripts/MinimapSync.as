@@ -108,7 +108,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ bt)
 			//note: error printed only; we want to write defaults still
 			if(!bt.saferead_bool(legacy_minimap)) error("MiniMap Sync: failed to read legacy_minimap");
 			if(!bt.saferead_bool(show_gold))      error("MiniMap Sync: failed to read show_gold");
-			if(!bt.saferead_bool(custom_colors))      error("MiniMap Sync: failed to read custom_colors");
+			if(!bt.saferead_bool(custom_colors))  error("MiniMap Sync: failed to read custom_colors");
 			if(!bt.saferead_u8(last_synced_i))    error("MiniMap Sync: failed to read sync i");
 
 			//write values
