@@ -181,6 +181,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		v.current_ammo_index = params.read_u8();
 	}
+	else if (!isServer && cmd == this.getCommandID("sync_last_fired"))
+	{
+		VehicleInfo@ v;
+		if (!this.get("VehicleInfo", @v))
+		{
+			return;
+		}
+
+		v.last_fired_index = params.read_u8();
+	}
 	/// PUT IN MAG
 	else if (isServer && cmd == this.getCommandID("putin_mag"))
 	{

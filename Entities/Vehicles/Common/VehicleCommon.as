@@ -101,6 +101,7 @@ void Vehicle_Setup(CBlob@ this,
 	this.addCommandID("ammo_menu");
 	this.addCommandID("swap_ammo");
 	this.addCommandID("sync_ammo");
+	this.addCommandID("sync_last_fired");
 	this.addCommandID("putin_mag");
 	this.addCommandID("vehicle getout");
 	this.addCommandID("reload");
@@ -506,6 +507,9 @@ void Fire(CBlob@ this, VehicleInfo@ v, CBlob@ caller, const u8 charge)
 				SetOccupied(mag, 0);
 
 				v.last_fired_index = v.current_ammo_index;
+				CBitStream params;
+				params.write_u8(v.last_fired_index);
+				this.SendCommand(this.getCommandID("sync_last_fired"), params);
 			}
 		}
 
