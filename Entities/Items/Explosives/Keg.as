@@ -14,6 +14,7 @@ void onInit(CBlob@ this)
 	this.set_bool("map_damage_raycast", true);
 	this.set_f32("keg_time", 180.0f);  // 180.0f
 	this.Tag("medium weight");
+	this.Tag("slash_while_in_hand"); // allows knights to hit kegs off enemies' backs
 
 	this.set_u16("_keg_carrier_id", 0xffff);
 

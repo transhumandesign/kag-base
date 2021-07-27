@@ -1224,6 +1224,14 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 			{
 				if (b.hasTag("ignore sword")) continue;
 
+				CAttachment@ att = b.getAttachments();
+				if (att !is null)
+				{
+					AttachmentPoint@ point = att.getAttachmentPointByName("PICKUP");
+					if (point !is null && !point.socket &&
+						b.isAttachedToPoint("PICKUP") && !b.hasTag("slash_while_in_hand")) continue;
+				}
+
 				//big things block attacks
 				const bool large = b.hasTag("blocks sword") && !b.isAttached() && b.isCollidable();
 
