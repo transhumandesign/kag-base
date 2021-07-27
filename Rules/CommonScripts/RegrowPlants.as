@@ -97,7 +97,7 @@ class TileInfo
 			luck += 0.15f;
 		}
 
-		if (map.isTileGrass(tile_left.type))
+		if (map.isTileGrass(tile_right.type))
 		{
 			luck += 0.15f;
 		}
