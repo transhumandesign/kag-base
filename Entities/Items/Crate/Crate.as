@@ -465,6 +465,7 @@ void Unpack(CBlob@ this)
 		blob.SetFacingLeft(this.isFacingLeft());
 	}
 
+	this.Tag("dont_drop_gold"); // prevents ballista crates from dropping gold if they were unpacked
 	this.server_SetHealth(-1.0f); // TODO: wont gib on client
 	this.server_Die();
 }

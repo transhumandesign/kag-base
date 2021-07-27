@@ -5,6 +5,8 @@ const string custom_amount_prop = "gold building amount";
 
 void onDie(CBlob@ this)
 {
+	if (this.hasTag("dont_drop_gold")) return;
+	
 	CBlob@ blob = server_CreateBlobNoInit('mat_gold');
 
 	if (blob !is null)
