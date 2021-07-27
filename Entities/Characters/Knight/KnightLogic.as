@@ -1223,7 +1223,8 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 			if (b !is null && !dontHitMore) // blob
 			{
 				if (b.hasTag("ignore sword")) continue;
-
+				
+				// don't hit picked up items
 				CAttachment@ att = b.getAttachments();
 				if (att !is null)
 				{
