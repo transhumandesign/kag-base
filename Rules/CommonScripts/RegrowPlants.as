@@ -175,6 +175,7 @@ void onInit(CRules@ this)
 
 void onRestart(CRules@ this)
 {
+	next_check_time = 0;
 	// refill TileInfo arrays with info for the newly loaded map
 	dirt_tiles.clear();
 	castle_tiles.clear();
