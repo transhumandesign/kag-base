@@ -306,8 +306,6 @@ bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool was
 
 void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge)
 {
-	u16 delay = cooldown_time;
-
 	if (bullet !is null)
 	{
 		u8 charge_prop = _charge;
@@ -323,7 +321,6 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 
 		if (bomb_bolts_selected)
 		{
-			delay = cooldown_time_bomb;
 			bullet.Tag("bomb ammo");
 			bullet.Sync("bomb ammo", true);
 		}
@@ -331,7 +328,7 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 
 	v.last_charge = _charge;
 	v.charge = 0;
-	v.cooldown_time = delay;
+	v.cooldown_time = v.getCurrentAmmo().fire_delay;
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
