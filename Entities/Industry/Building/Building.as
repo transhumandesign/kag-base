@@ -14,6 +14,7 @@ const bool builder_only = false;
 void onInit(CBlob@ this)
 {
 	AddIconToken("$stonequarry$", "../Mods/Entities/Industry/CTFShops/Quarry/Quarry.png", Vec2f(40, 24), 4);
+    AddIconToken("$put_stone_backwalls$", "Sprites/world.png", Vec2f(8, 8), 64);
 	this.set_TileType("background tile", CMap::tile_wood_back);
 	//this.getSprite().getConsts().accurateLighting = true;
 
@@ -75,6 +76,18 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::quarry_gold);
 		AddRequirement(s.requirements, "no more", "quarry", "Stone Quarry", CTFCosts::quarry_count);
 	}
+	
+	{
+		ShopItem@ s = addShopItem(this, "Put stone backwalls inside", "$put_stone_backwalls$", "backwalls_inside_shop", Descriptions::backkwalls_inside_shop);
+		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::backwalls_inside_shop_stone);
+		s.spawnNothing = true;
+}
+
+	{
+		ShopItem@ s = addShopItem(this, "Put stone backwalls around", "$put_stone_backwalls$", "backwalls_around_shop", Descriptions::backkwalls_around_shop);
+		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::backwalls_around_shop_stone);
+		s.spawnNothing = true;
+	}
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -92,12 +105,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	bool isServer = getNet().isServer();
 	if (cmd == this.getCommandID("shop made item"))
 	{
-		this.Tag("shop disabled"); //no double-builds
-
 		CBlob@ caller = getBlobByNetworkID(params.read_netid());
 		CBlob@ item = getBlobByNetworkID(params.read_netid());
 		if (item !is null && caller !is null)
 		{
+			this.Tag("shop disabled"); //no double-builds
+
 			this.getSprite().PlaySound("/Construct.ogg");
 			this.getSprite().getVars().gibbed = true;
 			this.server_Die();
@@ -109,6 +122,102 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				CBitStream factoryParams;
 				factoryParams.write_netid(caller.getNetworkID());
 				item.SendCommand(item.getCommandID("upgrade factory menu"), factoryParams);
+			}
+		}
+		else if (caller !is null && isServer)
+		{
+			string name = "";
+			if (params.saferead_string(name))
+			{
+				Vec2f[] offsets = {};
+				if (name == "backwalls_inside_shop")
+				{
+					// bottom row
+					offsets.push_back(Vec2f( 2, -1) * 8.f);
+					offsets.push_back(Vec2f( 1, -1) * 8.f);
+					offsets.push_back(Vec2f( 0, -1) * 8.f);
+					offsets.push_back(Vec2f(-1, -1) * 8.f);
+					offsets.push_back(Vec2f(-2, -1) * 8.f);
+
+					// middle row
+					offsets.push_back(Vec2f( 2,  0) * 8.f);
+					offsets.push_back(Vec2f( 1,  0) * 8.f);
+					offsets.push_back(Vec2f( 0,  0) * 8.f); // note that this backwall will get destroyed when the shop is constructed
+					offsets.push_back(Vec2f(-1,  0) * 8.f);
+					offsets.push_back(Vec2f(-2,  0) * 8.f);
+					
+					// top row
+					offsets.push_back(Vec2f( 2,  1) * 8.f);
+					offsets.push_back(Vec2f( 1,  1) * 8.f);
+					offsets.push_back(Vec2f( 0,  1) * 8.f);
+					offsets.push_back(Vec2f(-1,  1) * 8.f);
+					offsets.push_back(Vec2f(-2,  1) * 8.f);
+				}
+				else if (name == "backwalls_around_shop")
+			{
+					// bottom row
+					offsets.push_back(Vec2f( 2, -2) * 8.f);
+					offsets.push_back(Vec2f( 1, -2) * 8.f);
+					offsets.push_back(Vec2f( 0, -2) * 8.f);
+					offsets.push_back(Vec2f(-1, -2) * 8.f);
+					offsets.push_back(Vec2f(-2, -2) * 8.f);
+						
+						// left colomn
+					offsets.push_back(Vec2f(-3,  2) * 8.f);
+					offsets.push_back(Vec2f(-3,  1) * 8.f);
+					offsets.push_back(Vec2f(-3,  0) * 8.f);
+					offsets.push_back(Vec2f(-3, -1) * 8.f);
+					offsets.push_back(Vec2f(-3, -2) * 8.f);
+					
+					// right colomn
+					offsets.push_back(Vec2f( 3,  2) * 8.f);
+					offsets.push_back(Vec2f( 3,  1) * 8.f);
+					offsets.push_back(Vec2f( 3,  0) * 8.f);
+					offsets.push_back(Vec2f( 3, -1) * 8.f);
+					offsets.push_back(Vec2f( 3, -2) * 8.f);
+					
+					// top row
+					offsets.push_back(Vec2f( 2,  2) * 8.f);
+					offsets.push_back(Vec2f( 1,  2) * 8.f);
+					offsets.push_back(Vec2f( 0,  2) * 8.f);
+					offsets.push_back(Vec2f(-1,  2) * 8.f);
+					offsets.push_back(Vec2f(-2,  2) * 8.f);
+			}
+				else
+				{
+					return;
+		}
+
+				CMap@ map = getMap();
+				Vec2f center = this.getPosition();
+				int unplaced_tile_count = offsets.length;
+				CMap::TileEnum new_tile = CMap::tile_castle_back;
+				
+				for (int i = 0; i < offsets.length; i++) 
+				{
+					Vec2f pos_worldspace = center + offsets[i];
+					Tile tile = map.getTile(pos_worldspace);
+					
+					if (!map.isTileSolid(tile) && (tile.type != new_tile))
+					{
+						unplaced_tile_count -= 1;
+						map.server_SetTile(pos_worldspace, new_tile);
+	}
+}
+				
+				if (unplaced_tile_count > 0)
+				{
+					// give back stone for each backwall that wasn't placed
+					// TODO(hobey): could refactor this to instead modify requirement logic in [shop.as -> "shop buy" command] to use less mats, depending on unplaced_tile_count
+
+					CBlob@ stone_blob = server_CreateBlob("mat_stone");
+					if (stone_blob !is null)
+					{
+						stone_blob.server_SetQuantity(unplaced_tile_count * 2); // NOTE(hobey): BuilderCosts::back_stone_block is 0 for some reason; hardcoded for now
+						if (!caller.server_PutInInventory(stone_blob))
+							stone_blob.server_Die();
+					}
+				}
 			}
 		}
 	}

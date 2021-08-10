@@ -37,6 +37,8 @@ namespace CTFCosts
 
 	//CommonBuilderBlocks.as
 	s32 workshop_wood;
+	
+	s32 backwalls_inside_shop_stone, backwalls_around_shop_stone;
 }
 
 //// TTH COSTS ////
@@ -149,6 +151,9 @@ void InitCosts()
 	//CommonBuilderBlocks.as
 	CTFCosts::workshop_wood =               ReadCost(cfg, "cost_workshop_wood"      , 150);
 
+	CTFCosts::backwalls_inside_shop_stone = ReadCost(cfg, "cost_backwalls_inside_shop_stone", 30);
+	CTFCosts::backwalls_around_shop_stone = ReadCost(cfg, "cost_backwalls_around_shop_stone", 40);
+	
 	// war costs ///////////////////////////////////////////////////////////////
 
 	//load config

@@ -90,5 +90,8 @@ namespace Descriptions
 
 	//Magic Scrolls
 	scroll_carnage             = getTranslatedString("This magic scroll when cast will turn all nearby enemies into a pile of bloody gibs."),
-	scroll_drought             = getTranslatedString("This magic scroll will evaporate all water in a large surrounding orb.");
+	scroll_drought             = getTranslatedString("This magic scroll will evaporate all water in a large surrounding orb."),
+
+	backkwalls_inside_shop     = getTranslatedString("Place up to 15 stone backwalls INSIDE the 5x3 area of the shop."),
+	backkwalls_around_shop     = getTranslatedString("Place up to 20 stone backwalls AROUND the 5x3 area of the shop, leaving solid blocks as they are.");
 }
