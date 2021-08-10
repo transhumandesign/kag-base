@@ -50,6 +50,12 @@ void DrawInventoryOnHUD(CBlob@ this, Vec2f tl)
 	}
 }
 
+class Coin_Info
+{
+    int count, delta;
+	int changed_time;
+};
+
 void DrawCoinsOnHUD(CBlob@ this, const int coins, Vec2f tl, const int slot)
 {
 	if (coins > 0)
@@ -57,5 +63,45 @@ void DrawCoinsOnHUD(CBlob@ this, const int coins, Vec2f tl, const int slot)
 		GUI::DrawIconByName("$COIN$", tl + Vec2f(0 + slot * 40, 0));
 		GUI::SetFont("menu");
 		GUI::DrawText("" + coins, tl + Vec2f(4 + slot * 40 , 24), color_white);
+	}
+
+	if (this !is null)
+	{
+		CPlayer@ player = this.getPlayer();
+		if (player !is null)
+		{
+			Coin_Info@ info;
+			if (!player.exists("coin_info"))
+			{
+				Coin_Info coin_info;
+				coin_info.count = 0;
+				coin_info.delta = 0;
+				coin_info.changed_time = 0;
+				@info = @coin_info;
+				player.set("coin_info", @info);
+			}
+			else
+				player.get("coin_info", @info);
+			if (info is null) return; // should never happen to be null
+
+			if (info.count != coins)
+			{
+				if (info.delta != coins - info.count) // NOTE(hobey): coins just changed
+				{
+					info.changed_time = getGameTime();
+					info.delta = coins - info.count;
+				}
+				else if (info.changed_time + 30 < getGameTime()) // NOTE(hobey): after a while, stop displaying the HUD
+				{
+					info.count = coins;
+					info.delta = 0;
+					return;
+				}
+
+				GUI::DrawIconByName("$COIN$", tl + Vec2f(0 + slot * 40, -48-24));
+				GUI::SetFont("menu");
+				GUI::DrawText((info.delta > 0 ? "+" : "") + info.delta, tl + Vec2f(4 + slot * 40 , -48), (info.delta > 0) ? SColor(255, 0, 255, 0) : SColor(255, 255, 0, 0));
+			}
+		}
 	}
 }
