@@ -58,7 +58,7 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 	CMap@ map = getMap();
 	Tile backtile = map.getTile(cursorPos);
 
-	if (map.isTileBedrock(backtile.type) || map.isTileSolid(backtile.type) && map.isTileGroundStuff(backtile.type)) 
+	if (map.isTileBedrock(backtile.type) || map.isTileSolid(backtile.type))
 		return false;
 
 	// Make sure we actually have support at our cursor pos
@@ -78,6 +78,17 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 			return false;
 	}
 
+	CBlob @blobAtPos = map.getBlobAtPosition(cursorPos + Vec2f(1, 1));
+
+	// Are we trying to place a blob on a door/ladder/platform/bridge (usually due to lag)?
+	if (blobAtPos !is null && (
+		blobAtPos.hasTag("door") || 
+		blobAtPos.getName() == "wooden_platform" || 
+		blobAtPos.getName() == "ladder" || 
+		blobAtPos.getName() == "bridge"))
+	{
+		return false;
+	}
 
 	return true;
 } 
