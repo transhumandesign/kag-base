@@ -1215,71 +1215,86 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 	HitInfo@[] hitInfos;
 	if (map.getHitInfosFromArc(pos, aimangle, arcdegrees, radius + attack_distance, this, @hitInfos))
 	{
-		//HitInfo objects are sorted, first come closest hits
-		for (uint i = 0; i < hitInfos.length; i++)
+		// HitInfo objects are sorted, first come closest hits
+		// start from furthest ones to avoid doing too many redundant raycasts
+		for (int i = hitInfos.size() - 1; i >= 0; i--)
 		{
 			HitInfo@ hi = hitInfos[i];
 			CBlob@ b = hi.blob;
-			if (b !is null && !dontHitMore) // blob
+
+			if (b !is null)
 			{
 				if (b.hasTag("ignore sword")) continue;
+				if (!canHit(this, b)) continue;
+				if (knight_has_hit_actor(this, b)) continue;
 
-				//big things block attacks
-				const bool large = b.hasTag("blocks sword") && !b.isAttached() && b.isCollidable();
+				Vec2f hitvec = hi.hitpos - pos;
 
-				if (!canHit(this, b))
+				// we do a raycast to given blob and hit everything hittable between knight and that blob
+				// raycast is stopped if it runs into a "large" blob (typically a door)
+				// raycast length is slightly higher than hitvec to make sure it reaches the blob it's directed at
+				HitInfo@[] rayInfos;
+				map.getHitInfosFromRay(pos, -(hitvec).getAngleDegrees(), hitvec.Length() + 2.0f, this, rayInfos);
+
+				for (int j = 0; j < rayInfos.size(); j++)
 				{
-					// no TK
-					if (large)
-						dontHitMore = true;
+					CBlob@ rayb = rayInfos[j].blob;
+					
+					if (rayb is null) break; // means we ran into a tile, don't need blobs after it if there are any
+					if (b.hasTag("ignore sword")) continue;
+					if (!canHit(this, rayb)) continue;
 
-					continue;
-				}
-
-				if (knight_has_hit_actor(this, b))
-				{
-					if (large)
-						dontHitMore = true;
-
-					continue;
-				}
-
-				f32 temp_damage = damage;
-
-				knight_add_actor_limit(this, b);
-				if (!dontHitMore && (b.getName() != "log" || !dontHitMoreLogs))
-				{
-					Vec2f velocity = b.getPosition() - pos;
-
-					if (b.getName() == "log")
+					bool large = rayb.hasTag("blocks sword") && !rayb.isAttached() && rayb.isCollidable(); // usually doors, but can also be boats/some mechanisms
+					if (knight_has_hit_actor(this, rayb)) 
 					{
-						temp_damage /= 3;
-						dontHitMoreLogs = true;
-						CBlob@ wood = server_CreateBlobNoInit("mat_wood");
-						if (wood !is null)
+						// check if we hit any of these on previous ticks of slash
+						if (large) break;
+						if (rayb.getName() == "log")
 						{
-							int quantity = Maths::Ceil(float(temp_damage) * 20.0f);
-							int max_quantity = b.getHealth() / 0.024f; // initial log health / max mats
-							
-							quantity = Maths::Max(
-								Maths::Min(quantity, max_quantity),
-								0
-							);
-
-							wood.Tag('custom quantity');
-							wood.Init();
-							wood.setPosition(hi.hitpos);
-							wood.server_SetQuantity(quantity);
+							dontHitMoreLogs = true;
 						}
-
+						continue;
 					}
 
-					this.server_Hit(b, hi.hitpos, velocity, temp_damage, type, true);  // server_Hit() is server-side only
+					f32 temp_damage = damage;
+					
+					if (rayb.getName() == "log")
+					{
+						if (!dontHitMoreLogs)
+						{
+							temp_damage /= 3;
+							dontHitMoreLogs = true; // set this here to prevent from hitting more logs on the same tick
+							CBlob@ wood = server_CreateBlobNoInit("mat_wood");
+							if (wood !is null)
+							{
+								int quantity = Maths::Ceil(float(temp_damage) * 20.0f);
+								int max_quantity = rayb.getHealth() / 0.024f; // initial log health / max mats
+								
+								quantity = Maths::Max(
+									Maths::Min(quantity, max_quantity),
+									0
+								);
 
-					// end hitting if we hit something solid, don't if its flesh
+								wood.Tag('custom quantity');
+								wood.Init();
+								wood.setPosition(rayInfos[j].hitpos);
+								wood.server_SetQuantity(quantity);
+							}
+						}
+						else 
+						{
+							// print("passed a log on " + getGameTime());
+							continue; // don't hit the log
+						}
+					}
+					
+					Vec2f velocity = Vec2f(12.0f, 0.0f).RotateByDegrees(aimangle); // knockback stuff in the direction knight is aiming at
+					knight_add_actor_limit(this, rayb);
+					this.server_Hit(rayb, rayInfos[j].hitpos, velocity, temp_damage, type, true);
+
 					if (large)
 					{
-						dontHitMore = true;
+						break; // don't raycast past the door after we do damage to it
 					}
 				}
 			}
