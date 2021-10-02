@@ -1288,8 +1288,13 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 						}
 					}
 					
-					Vec2f velocity = Vec2f(12.0f, 0.0f).RotateByDegrees(aimangle); // knockback stuff in the direction knight is aiming at
 					knight_add_actor_limit(this, rayb);
+
+					
+					Vec2f velocity = rayb.getPosition() - pos;
+					velocity.Normalize();
+					velocity *= 12; // knockback force is same regardless of distance
+
 					this.server_Hit(rayb, rayInfos[j].hitpos, velocity, temp_damage, type, true);
 
 					if (large)
