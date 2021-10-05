@@ -216,7 +216,9 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (blob.hasTag("ignore_saw"))
+	if (blob.hasTag("ignore_saw") ||
+		   (blob.getName() == "bomb" && 
+			blob.getTeamNum() == this.getTeamNum()))
 	{
 		return false;
 	}
@@ -229,7 +231,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (blob is null || !getNet().isServer() ||
 	        this.isAttached() || blob.isAttached() ||
-	        !getSawOn(this))
+	        !getSawOn(this) ||
+	        (blob.getName() == "bomb" && blob.getTeamNum() == this.getTeamNum()))
 	{
 		return;
 	}
@@ -240,33 +243,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		Vec2f bpos = blob.getPosition();
 		this.Tag("sawed");
 		this.server_Hit(blob, bpos, bpos - pos, 0.0f, Hitters::saw);
-
-		if (blob.getName() == "bomb")
-		{
-			if (this.get_u8("bombs_exploded") == 0)
-			{
-				this.set_u32("bomb_time", getGameTime());
-			}
-
-			this.add_u8("bombs_exploded", 1);
-		}
-	}
-}
-
-void onTick(CBlob@ this)
-{
-	if (this.get_u32("bomb_time") == 0) return;
-
-	if (getGameTime() - this.get_u32("bomb_time") > 8)
-	{
-		this.set_u32("bomb_time", 0);
-
-		if (this.get_u8("bombs_exploded") >= 3)
-		{
-			this.server_Hit(this, this.getPosition(), this.getPosition(), 100.0f, Hitters::crush);
-		}
-
-		this.set_u8("bombs_exploded", 0);
 	}
 }
 
