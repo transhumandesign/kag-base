@@ -101,7 +101,7 @@ void InitCosts()
 
 	//ArcherShop.as
 	CTFCosts::arrows =                      ReadCost(cfg, "cost_arrows"             , 15);
-	CTFCosts::waterarrows =                 ReadCost(cfg, "cost_waterarrows"        , 20);
+	CTFCosts::waterarrows =                 ReadCost(cfg, "cost_waterarrows"        , 25);
 	CTFCosts::firearrows =                  ReadCost(cfg, "cost_firearrows"         , 30);
 	CTFCosts::bombarrows =                  ReadCost(cfg, "cost_bombarrows"         , 50);
 
