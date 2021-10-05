@@ -27,7 +27,7 @@ void onRender(CSprite@ this)
 	AttachmentPoint@ gunner = blob.getAttachments().getAttachmentPointByName("GUNNER");
 	if (gunner !is null	&& gunner.getOccupied() is localBlob)
 	{
-		if (!v.infinite_ammo)
+		if (!v.getCurrentAmmo().infinite_ammo)
 			drawAmmoCount(blob, v);
 
 		if (blob.getName() != "mounted_bow")
@@ -35,6 +35,11 @@ void onRender(CSprite@ this)
 			drawChargeBar(blob, v);
 			drawCooldownBar(blob, v);
 			drawLastFireCharge(blob, v);
+		}
+
+		if (v.ammo_types.length() > 1)
+		{
+			drawName(blob, v);
 		}
 
 		// no one feels the angle count is necessary, so im taking it out to reduce GUI clutter
@@ -72,7 +77,7 @@ void drawAmmoCount(CBlob@ blob, VehicleInfo@ v)
 
 	//GUI::DrawRectangle(upperleft - Vec2f(0,20), lowerright , SColor(255,0,0,255));
 
-	u16 ammo = v.ammo_stocked;
+	u16 ammo = v.getCurrentAmmo().ammo_stocked;
 
 	string reqsText = "" + ammo;
 
@@ -86,13 +91,23 @@ void drawAmmoCount(CBlob@ blob, VehicleInfo@ v)
 	GUI::DrawText(reqsText, upperleft + Vec2f(2, 1), color_white);
 }
 
+void drawName(CBlob@ blob, VehicleInfo@ v)
+{
+	if (g_videorecording) return;
+
+	GUI::SetFont("menu");
+	GUI::DrawTextCentered(getTranslatedString("Currently selected ammo: " + v.getCurrentAmmo().ammo_inventory_name + "\n\nTap the Inventory key to switch ammo type."),
+			              Vec2f(blob.getScreenPos() + Vec2f(0, 120)),
+			              color_white);
+}
+
 void drawChargeBar(CBlob@ blob, VehicleInfo@ v)
 {
 	Vec2f pos2d = blob.getScreenPos() - Vec2f(0, 60);
 	Vec2f dim = Vec2f(20, 8);
 	const f32 y = blob.getHeight() * 2.4f;
-	f32 last_charge_percent = v.last_charge / float(v.max_charge_time);
-	f32 charge_percent = v.charge / float(v.max_charge_time);
+	f32 last_charge_percent = v.last_charge / float(v.getCurrentAmmo().max_charge_time);
+	f32 charge_percent = v.charge / float(v.getCurrentAmmo().max_charge_time);
 
 	Vec2f ul = Vec2f(pos2d.x - dim.x, pos2d.y + y);
 	Vec2f lr = Vec2f(pos2d.x - dim.x + charge_percent * 2.0f * dim.x, pos2d.y + y + dim.y);
@@ -126,8 +141,10 @@ void drawCooldownBar(CBlob@ blob, VehicleInfo@ v)
 		Vec2f dim = Vec2f(20, 8);
 		const f32 y = blob.getHeight() * 2.4f;
 
-		f32 modified_last_charge_percent = Maths::Min(1.0f, float(v.last_charge) / float(v.max_charge_time));
-		f32 modified_cooldown_time_percent = modified_last_charge_percent * (v.cooldown_time / float(v.max_cooldown_time));
+		AmmoInfo@ a = v.ammo_types[v.last_fired_index];
+
+		f32 modified_last_charge_percent = Maths::Min(1.0f, float(v.last_charge) / float(a.max_charge_time));
+		f32 modified_cooldown_time_percent = modified_last_charge_percent * (v.cooldown_time / float(a.fire_delay));
 
 		Vec2f ul = Vec2f(pos2d.x - dim.x, pos2d.y + y);
 		Vec2f lr = Vec2f(pos2d.x - dim.x + (modified_cooldown_time_percent) * 2.0f * dim.x, pos2d.y + y + dim.y);
@@ -154,8 +171,10 @@ void drawLastFireCharge(CBlob@ blob, VehicleInfo@ v)
 	Vec2f dim = Vec2f(24, 8);
 	const f32 y = blob.getHeight() * 2.4f;
 
-	f32 last_charge_percent = v.last_charge / float(v.max_charge_time);
-	f32 charge_percent = v.charge / float(v.max_charge_time);
+	AmmoInfo@ a = v.ammo_types[v.last_fired_index];
+
+	f32 last_charge_percent = v.last_charge / float(a.max_charge_time);
+	f32 charge_percent = v.charge / float(a.max_charge_time);
 
 	Vec2f ul = Vec2f(pos2d.x - dim.x, pos2d.y + y);
 	Vec2f lr = Vec2f(pos2d.x - dim.x + last_charge_percent * 2.0f * dim.x, pos2d.y + y + dim.y);
@@ -178,7 +197,7 @@ void drawLastFireCharge(CBlob@ blob, VehicleInfo@ v)
 
 	GUI::DrawIconByName("$last_charge_slider$", blob.isFacingLeft() ? (ul - Vec2f(0, 2)) : Vec2f(lr.x, ul.y - 2));
 
-	f32 range = (3 / float(v.max_charge_time));
+	f32 range = (3 / float(a.max_charge_time));
 
 	if (charge_percent > last_charge_percent - range && charge_percent < last_charge_percent + range)
 		GUI::DrawIconByName("$red_last_charge_slider$", blob.isFacingLeft() ? (ul - Vec2f(0, 4)) : Vec2f(lr.x, ul.y - 4));

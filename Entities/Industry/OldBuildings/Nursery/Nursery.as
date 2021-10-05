@@ -32,7 +32,10 @@ void onInit( CBlob@ this )
 	this.getShape().getConsts().mapCollisions = false;
 	
 	this.Tag("inventory access");
-	this.set_string("autograb blob", "seed");
+	
+	string[] autograb_blobs = {"seed"};
+	this.set("autograb blobs", autograb_blobs);
+
 	this.inventoryButtonPos = Vec2f(0.0f, -24.0f);
 }
 
