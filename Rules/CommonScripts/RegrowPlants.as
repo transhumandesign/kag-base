@@ -230,6 +230,10 @@ void onTick(CRules@ this)
 		CMap@ map = getMap();
 		float tilesize = map.tilesize;
 
+		CBlob@[] chicken_list;
+		getBlobsByName("chicken", chicken_list);
+		u16 chicken_count = chicken_list.size();
+
 		for (int i = 1; i < dirt_tiles.size(); i++)
 		{
 			TileInfo tinfo = dirt_tiles[i];
@@ -279,6 +283,14 @@ void onTick(CRules@ this)
 					{
 						server_CreateBlob(plants_stuff[plant], -1, tinfo.coords - Vec2f(0,tilesize));
 					}
+				}
+
+				random_grow = XORRandom(10000) * 0.0001f;
+
+				if (random_grow <= chicken_grow_chance && chicken_count < chicken_limit)
+				{
+					server_CreateBlob("chicken", -1, tinfo.coords - Vec2f(0,tilesize));
+					chicken_count++;
 				}
 			}
 		}
