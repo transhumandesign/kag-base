@@ -1408,7 +1408,8 @@ bool isSliding(KnightInfo@ knight)
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
 	// return if we collided with map, solid (door/platform), or something non-fleshy (like a boulder)
-	if (blob is null || !solid || !blob.hasTag("flesh") || this.getTeamNum() == blob.getTeamNum())
+	// allow shieldbashing enemy bombs so knights can "deflect" them
+	if (blob is null || !solid || (!blob.hasTag("flesh") && blob.getName() != "bomb") || this.getTeamNum() == blob.getTeamNum())
 	{
 		return;
 	}
