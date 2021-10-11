@@ -56,6 +56,7 @@ void onInit(CSprite@ this)
 	{
 		wood.SetOffset(Vec2f(8.0f, -1.0f));
 		wood.SetVisible(false);
+		wood.SetRelativeZ(1);
 	}
 
 	this.SetEmitSound("/Quarry.ogg");
