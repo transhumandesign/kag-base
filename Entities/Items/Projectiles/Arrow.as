@@ -253,17 +253,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			dmg = getArrowDamage(this, vellen);
 		}
 
-		if (arrowType == ArrowType::water)
+		if (arrowType == ArrowType::water || arrowType == ArrowType::bomb)
 		{
-			blob.Tag("force_knock"); //stun on collide
-			this.server_Die();
-			return;
-		}
-		else if (arrowType == ArrowType::bomb)
-		{
-			//apply a hard hit
-			dmg = 1.5f;
-
 			//move backwards a smidge for non-static bodies
 			//  we use the velocity instead of the normal because we
 			//  _might_ be past the middle of the object if we're going fast enough
@@ -277,6 +268,18 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				Vec2f betweenpos = (this.getPosition() + this.getOldPosition()) * 0.5;
 				this.setPosition(betweenpos - (velnorm * vellen));
 			}
+		}
+
+		if (arrowType == ArrowType::water)
+		{
+			blob.Tag("force_knock"); //stun on collide
+			this.server_Die();
+			return;
+		}
+		else if (arrowType == ArrowType::bomb)
+		{
+			//apply a hard hit
+			dmg = 1.5f;
 		}
 		else
 		{
@@ -515,14 +518,22 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 
 		if (arrowType == ArrowType::fire)
 		{
-			this.server_SetTimeToDie(0.5f);
-
 			if (hitBlob.getName() == "keg" && !hitBlob.hasTag("exploding"))
 			{
 				hitBlob.SendCommand(hitBlob.getCommandID("activate"));
 			}
 
-			this.set_Vec2f("override fire pos", hitBlob.getPosition());
+			if (hitShield)
+			{
+				// don't set anything on fire if we hit a shield
+				this.Tag("no_fire");
+				this.server_Die();
+			}
+			else
+			{
+				this.server_SetTimeToDie(0.5f);
+				this.set_Vec2f("override fire pos", hitBlob.getPosition());
+			}
 		}
 		else
 		{
@@ -729,7 +740,7 @@ void onDie(CBlob@ this)
 
 	const u8 arrowType = this.get_u8("arrow type");
 
-	if (arrowType == ArrowType::fire && isServer())
+	if (arrowType == ArrowType::fire && isServer() && !this.hasTag("no_fire"))
 	{
 		FireUp(this);
 	}
