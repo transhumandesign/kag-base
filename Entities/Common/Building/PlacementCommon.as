@@ -95,11 +95,11 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		//cant build wood on stone background
 		return false;
 	}
-	else if (map.isTileSolid(backtile) || map.hasTileSolidBlobs(backtile))
+	else if (map.isTileSolid(backtile))
 	{
-		if (!buildSolid && !map.hasTileSolidBlobsNoPlatform(backtile) && !map.isTileSolid(backtile))
+		if (!buildSolid && !map.isTileSolid(backtile))
 		{
-			//skip onwards, platforms don't block backwall
+			//skip onwards, platforms and doors don't block backwall
 		}
 		else
 		{
