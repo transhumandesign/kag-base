@@ -36,6 +36,13 @@ void onInit(CBlob@ this)
 	this.SetFacingLeft(vars.r.NextRanged(300) > 150);
 	InitTree(this, vars);
 	this.set("TreeVars", vars);
+
+	u8 icon_frame = 8;
+	if (this.hasTag("startbig")) icon_frame = 12;
+
+	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
+	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", icon_frame, Vec2f(8, 32));
+	this.SetMinimapRenderAlways(true);
 }
 
 void GrowSprite(CSprite@ this, TreeVars@ vars)
@@ -290,5 +297,21 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 				}
 			}
 		}
+	}
+}
+
+void UpdateMinimapIcon(CBlob@ this, TreeVars@ vars)
+{
+	if (vars.grown_times < 5)
+	{
+		this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 8, Vec2f(8, 32));
+	}
+	else if (vars.grown_times < 10)
+	{
+		this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 10, Vec2f(8, 32));
+	}
+	else
+	{
+		this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 12, Vec2f(8, 32));
 	}
 }
