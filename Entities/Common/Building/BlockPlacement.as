@@ -29,15 +29,6 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 	bool hasReqs = hasRequirements(inv, bc.reqs, missing);
 	bool passesChecks = serverTileCheck(this, index, cursorPos);
 
-	if (!validTile)
-		warn(name + " tried to place an invalid tile");
-
-	if (!hasReqs)
-		warn(name + " tried to place a tile without having correct resoruces");
-
-	if (!passesChecks)
-		warn(name + " tried to place tile in an invalid way");
-
 	if (validTile && hasReqs && passesChecks)
 	{
 		DestroyScenary(cursorPos, cursorPos);
@@ -86,6 +77,19 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 
 		if (map.getSectorAtPosition(pos, "no build") !is null)
 			return false;
+	}
+
+	BuildBlock @blockToPlace = getBlockByIndex(blob, tileIndex);
+	// Are we trying to place a tile on the same tile (usually due to lag)?
+	if (backtile.type == blockToPlace.tile)
+	{
+		return false;
+	}
+
+	// Are we trying to place a solid tile on a door/ladder/platform/bridge (usually due to lag)?
+	if (fakeHasTileSolidBlobs(cursorPos) && map.isTileSolid(blockToPlace.tile))
+	{
+		return false;
 	}
 
 	return true;
