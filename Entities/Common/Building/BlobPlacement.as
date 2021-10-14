@@ -78,14 +78,8 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 			return false;
 	}
 
-	CBlob @blobAtPos = map.getBlobAtPosition(cursorPos + Vec2f(1, 1));
-
 	// Are we trying to place a blob on a door/ladder/platform/bridge (usually due to lag)?
-	if (blobAtPos !is null && (
-		blobAtPos.hasTag("door") || 
-		blobAtPos.getName() == "wooden_platform" || 
-		blobAtPos.getName() == "ladder" || 
-		blobAtPos.getName() == "bridge"))
+	if (fakeHasTileSolidBlobs(cursorPos))
 	{
 		return false;
 	}

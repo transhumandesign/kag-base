@@ -86,14 +86,8 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 		return false;
 	}
 
-	CBlob @blobAtPos = map.getBlobAtPosition(cursorPos + Vec2f(1, 1));
-
 	// Are we trying to place a solid tile on a door/ladder/platform/bridge (usually due to lag)?
-	if (blobAtPos !is null && map.isTileSolid(blockToPlace.tile) && (
-		blobAtPos.hasTag("door") || 
-		blobAtPos.getName() == "wooden_platform" || 
-		blobAtPos.getName() == "ladder" || 
-		blobAtPos.getName() == "bridge"))
+	if (fakeHasTileSolidBlobs(cursorPos) && map.isTileSolid(blockToPlace.tile))
 	{
 		return false;
 	}
