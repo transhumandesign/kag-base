@@ -79,6 +79,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			{
 				GiveFakeTech(getRules(), "bomb ammo", this.getTeamNum());
 			}
+			else if (name == "ballista")
+			{
+				// makes crate still drop gold if it breaks before it's unpacked
+				// Crate.as prevents gold from dropping if it dies after unpack
+				CBlob@ box = getBlobByNetworkID(item);
+				if (box !is null) box.set_s32("gold building amount", CTFCosts::ballista_gold);
+			}
 		}
 	}
 }
