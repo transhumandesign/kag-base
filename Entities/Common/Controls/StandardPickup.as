@@ -365,7 +365,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 		factor_resource_critical = 0.3f;
 
 	// Generic scale factor constants
-	const float factor_very_boring = 1.0f,
+	const float factor_very_boring = 10.0f,
 		factor_common = 0.9f,
 		factor_boring = 0.8f,
 		factor_important = 0.025f,
@@ -521,7 +521,7 @@ CBlob@ getClosestAimedBlob(CBlob@ this, CBlob@[] available)
 		float cursorDistance = (this.getAimPos() - current.getPosition()).Length();
 
 		float radius = current.getRadius();
-		if (radius > 3.0f && cursorDistance > current.getRadius() * 1.5f)
+		if (radius > 3.0f && cursorDistance > current.getRadius() * (current.hasTag("dead") ? 0.5f : 1.5f)) // corpses don't count unless you really try to aim at one
 		{
 			continue;
 		}
@@ -563,6 +563,9 @@ CBlob@ getClosestBlob(CBlob@ this)
 		{
 			CBlob @b = available[i];
 			Vec2f bpos = b.getPosition();
+			// consider corpse center to be lower than it actually is because otherwise centers of player and corpse will be on same level,
+			// which makes corpse priority skyrocket if player standing too close 
+			if (b.hasTag("dead")) bpos += Vec2f(0, 6.0f);
 
 			float maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
 
