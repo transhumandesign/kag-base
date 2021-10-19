@@ -563,8 +563,8 @@ CBlob@ getClosestBlob(CBlob@ this)
 		{
 			CBlob @b = available[i];
 			Vec2f bpos = b.getPosition();
-			// consider corpse center to be lower than it actually is because otherwise centers of player and corpse will be on same level,
-			// which makes corpse priority skyrocket if player standing too close 
+			// consider corpse center to be lower than it actually is because otherwise centers of player and corpse are on the same level,
+			// which makes corpse priority skyrocket if player is standing too close 
 			if (b.hasTag("dead")) bpos += Vec2f(0, 6.0f);
 
 			float maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
