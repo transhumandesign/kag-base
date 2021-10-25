@@ -63,24 +63,21 @@ shared class Accolades
 					map_contributor = true;
 				} else if (s1 == "moderation") {
 					moderation_contributor = true;
+				} else if (s1 == "gold") {
+					gold += 1;
+				} else if (s1 == "silver") {
+					silver += 1;
+				} else if (s1 == "bronze") {
+					bronze += 1;
+				} else if (s1 == "participation") {
+					participation += 1;
 				}
 
-				//2-part accolades
+				//2-part accolades (none currently)
 				if (chunks.length == 0) continue;
 
 				string s2 = chunks[0];
 				chunks.removeAt(0);
-
-				//(medals)
-				if (s1 == "gold") {
-					gold = parseInt(s2);
-				} else if (s1 == "silver") {
-					silver = parseInt(s2);
-				} else if (s1 == "bronze") {
-					bronze = parseInt(s2);
-				} else if (s1 == "participation") {
-					participation = parseInt(s2);
-				}
 
 				//3-part accolades
 				if (chunks.length == 0) continue;
