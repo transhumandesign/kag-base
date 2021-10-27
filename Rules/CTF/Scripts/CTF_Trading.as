@@ -6,6 +6,7 @@
 const int coinsOnDamageAdd = 5;
 const int coinsOnAssistAdd = 7;
 const int coinsOnKillAdd = 10;
+const f32 killstreakFactor = 1.2f;
 
 const int coinsOnDeathLosePercent = 20;
 const int coinsOnTKLose = 50;
@@ -94,7 +95,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 		{
 			if (killer !is victim && killer.getTeamNum() != victim.getTeamNum())
 			{
-				killer.server_setCoins(killer.getCoins() + coinsOnKillAdd);
+				killer.server_setCoins(killer.getCoins() + coinsOnKillAdd * Maths::Pow(killstreakFactor, killer.get_u8("killstreak")));
 			}
 			else if (killer !is victim && killer.getTeamNum() == victim.getTeamNum())
 			{

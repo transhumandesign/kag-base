@@ -26,6 +26,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("boobytrap");
 
 	this.set_u32("boobytrap_cooldown_time", 0);
+	this.set_s32("gold building amount", 0);
 
 	u8 frame = 0;
 	if (this.exists("frame"))
@@ -183,7 +184,7 @@ void Land(CBlob@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	return blob.getShape().isStatic() && !blob.hasTag("parachute");
+	return (blob.getShape().isStatic() || blob.getPlayer() !is null || blob.hasTag("projectile")) && !blob.hasTag("parachute");
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
@@ -465,6 +466,7 @@ void Unpack(CBlob@ this)
 		blob.SetFacingLeft(this.isFacingLeft());
 	}
 
+	this.set_s32("gold building amount", 0); // prevents ballista crates from dropping gold if they were unpacked
 	this.server_SetHealth(-1.0f); // TODO: wont gib on client
 	this.server_Die();
 }
