@@ -1,5 +1,6 @@
 
 //Does the good old "red screen flash" when hit - put just before your script that actually does the hitting
+//onHit temporarily not working here
 /*
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )
 {
