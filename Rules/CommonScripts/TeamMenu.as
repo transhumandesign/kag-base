@@ -74,7 +74,8 @@ void ReadChangeTeam(CRules@ this, CBitStream @params)
 	CPlayer@ player = getPlayerByNetworkId(params.read_u16());
 	u8 team = params.read_u8();
 
-	if (player is getLocalPlayer())
+	// doesn't work yet
+	/*if (player is getLocalPlayer())
 	{
 		if (CanSwitchFromSpec(this, player, team))
 		{
@@ -85,6 +86,11 @@ void ReadChangeTeam(CRules@ this, CBitStream @params)
 			client_AddToChat("Game is currently full. Please wait for a new slot before switching teams.", ConsoleColour::GAME);
 			Sound::Play("NoAmmo.ogg");
 		}
+	}*/
+
+	if (player is getLocalPlayer())
+	{
+		ChangeTeam(player, team);
 	}
 }
 
