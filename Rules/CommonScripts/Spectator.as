@@ -21,11 +21,6 @@ void SetTargetPlayer(CPlayer@ p)
 
 void Spectator(CRules@ this)
 {
-	if (this.isGameOver() && this.hasScript("PostGameMapVotes"))
-	{
-		return; //prevent camera movement while map voting
-	}
-
 	CCamera@ camera = getCamera();
 	CControls@ controls = getControls();
 
