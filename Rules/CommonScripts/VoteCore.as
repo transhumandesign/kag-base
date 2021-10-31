@@ -17,6 +17,9 @@ void onRender(CRules@ this)
 	if (g_videorecording)
 		return;
 
+	if (hide_vote_menu)
+		return;
+	
 	if (!Rules_AlreadyHasVote(this)) return;
 
 	VoteObject@ vote = Rules_getVote(this);
@@ -27,7 +30,7 @@ void onRender(CRules@ this)
 	                             getSecurity().checkAccess_Command(me, vote.forcePassFeature));
 	const bool can_cancel = getSecurity().checkAccess_Feature(me, "vote_cancel");
 
-	if ((!CanPlayerVote(vote, me) && !can_force_pass && !can_cancel) || g_have_voted) return;
+	if ((!CanPlayerVote(vote, me) && !can_force_pass && !can_cancel)) return;
 
 	Vec2f tl = getTopLeft();
 	Vec2f br = tl + dim;
@@ -72,12 +75,14 @@ void onRender(CRules@ this)
 }
 
 bool g_have_voted = false;
+bool hide_vote_menu = false;
 
 void onTick(CRules@ this)
 {
 	if (!Rules_AlreadyHasVote(this))
 	{
 		g_have_voted = false;
+		hide_vote_menu = false;
 		return;
 	}
 
@@ -94,7 +99,7 @@ void onTick(CRules@ this)
 
 	//--------------------------------- CLIENT ---------------------------------
 	CPlayer@ me = getLocalPlayer();
-	if (!getNet().isClient() || !CanPlayerVote(vote, me) || g_have_voted) return;
+	if (!getNet().isClient() || !CanPlayerVote(vote, me) || hide_vote_menu) return;
 
 	CControls@ controls = getControls();
 	if (controls is null) return;
@@ -112,7 +117,7 @@ void onTick(CRules@ this)
 		if (mousepos.x > tl.x && mousepos.y > tl.y - 6 &&
 		        mousepos.x < br.x && mousepos.y < br.y + 6)
 		{
-			g_have_voted = true;
+			hide_vote_menu = true;
 		}
 	}
 
@@ -128,9 +133,11 @@ void onTick(CRules@ this)
 			g_have_voted = true;
 			return;
 		}
-
-		voted = true;
-		favour = true;
+		if (!g_have_voted)
+		{
+			voted = true;
+			favour = true;
+		}
 	}
 	else if (controls.isKeyPressed(KEY_KEY_P))
 	{
@@ -143,9 +150,11 @@ void onTick(CRules@ this)
 			g_have_voted = true;
 			return;
 		}
-
-		voted = true;
-		favour = false;
+		if (!g_have_voted)
+		{
+			voted = true;
+			favour = false;
+		}
 	}
 
 	if (voted)
@@ -153,6 +162,8 @@ void onTick(CRules@ this)
 		CBitStream params;
 		params.write_u16(id);
 		rules.SendCommand(rules.getCommandID(favour ? vote_yes_id : vote_no_id), params);
+
+		g_have_voted = true;
 	}
 }
 

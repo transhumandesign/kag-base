@@ -223,10 +223,15 @@ void Vote(VoteObject@ vote, CPlayer@ p, bool favour)
 		}
 
 		CPlayer@ player = getLocalPlayer();
-		bool is_admin = player.isDev() || player.isGuard() || isAdmin(player) || getSecurity().checkAccess_Feature(player, "admin_color") || player.isRCON();
-		string text = getTranslatedString("--- {USER} Voted {DECISION} ---").replace("{USER}", p.getUsername()).replace("{DECISION}", getTranslatedString(favour ? "In Favour" : "Against")), vote_message_colour();
-		print(text);
-		if (is_admin) // only let admins see what everyone votes
+		bool should_show_votes = (player.isDev() || player.isGuard() || getNet().isServer()
+			|| getSecurity().checkAccess_Feature(player, "admin_color") || player.isRCON());
+		
+		string text = getTranslatedString("--- {USER} Voted {DECISION} ---")
+						.replace("{USER}", p.getUsername())
+						.replace("{DECISION}", getTranslatedString(favour ? "In Favour" : "Against")),
+					vote_message_colour();
+		
+		if (should_show_votes) // only let admins see what everyone votes for
 			client_AddToChat(text);
 	}
 }
