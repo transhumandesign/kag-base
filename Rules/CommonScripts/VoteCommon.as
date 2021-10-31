@@ -221,10 +221,18 @@ void Vote(VoteObject@ vote, CPlayer@ p, bool favour)
 		{
 			vote.current_no++;
 		}
-
+		
+		bool should_show_votes;
 		CPlayer@ player = getLocalPlayer();
-		bool should_show_votes = (player.isDev() || player.isGuard() || getNet().isServer()
+		if (player is null)
+		{
+			should_show_votes = getNet().isServer();
+		}
+		else
+		{
+			should_show_votes = (player.isDev() || player.isGuard() || getNet().isServer()
 			|| getSecurity().checkAccess_Feature(player, "admin_color") || player.isRCON());
+		}
 		
 		string text = getTranslatedString("--- {USER} Voted {DECISION} ---")
 						.replace("{USER}", p.getUsername())
