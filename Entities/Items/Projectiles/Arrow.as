@@ -365,7 +365,7 @@ bool specialArrowHit(CBlob@ blob)
 {
 	string bname = blob.getName();
 	return (bname == "fishy" && blob.hasTag("dead") || bname == "food"
-		|| bname == "steak" || bname == "grain"/* || bname == "heart"*/); //no egg because logic
+		|| bname == "steak" || bname == "grain" || bname == "heart"); //no egg because logic
 }
 
 void Pierce(CBlob @this, CBlob@ blob = null)
