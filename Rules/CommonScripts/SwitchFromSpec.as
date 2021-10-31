@@ -10,7 +10,7 @@ bool CanSwitchFromSpec(CRules@ this, CPlayer@ player, u8 toTeam)
     
     if (canSwitch || player.getTeamNum() != specTeamNum  || 
         toTeam == specTeamNum || player.isMod() ||
-        patreon_player && playerCountNotSpec < maxPlayers + reservedSlots)
+        (patreon_player && playerCountNotSpec < maxPlayers + reservedSlots))
     {
         return true;
     }
