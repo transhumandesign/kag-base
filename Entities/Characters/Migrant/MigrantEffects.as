@@ -39,7 +39,7 @@ void onTick(CBlob@ this)
 		const int t2 = this.getTickSinceCreated();
 		if (t2 > t && t2 <= t * 2 && this.isOverlapping("hall"))
 		{
-			this.getSprite().PlaySound("/MigrantSayHello");
+			this.getSprite().PlaySound("/" + getTranslatedString("MigrantSayHello"));
 		}
 	}
 }
@@ -54,12 +54,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			{
 				if (XORRandom(5) == 0 && !blob.hasTag("migrant"))
 				{
-					this.getSprite().PlaySound("/MigrantSayFriend");
+					this.getSprite().PlaySound("/" + getTranslatedString("MigrantSayFriend"));
 				}
 			}
 			else if (this.getTeamNum() < 10)
 			{
-				this.getSprite().PlaySound("/MigrantSayNo");
+				this.getSprite().PlaySound("/" + getTranslatedString("MigrantSayNo"));
 			}
 		}
 	}

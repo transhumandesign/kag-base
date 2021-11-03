@@ -6,13 +6,13 @@
 
 // To add a new page;
 
-// 1) initialize a new BuildBlock array, 
+// 1) initialize a new BuildBlock array,
 // example:
 // BuildBlock[] my_page;
 // blocks.push_back(my_page);
 
-// 2) 
-// Add a new string to PAGE_NAME in 
+// 2)
+// Add a new string to PAGE_NAME in
 // BuilderInventory.as
 // this will be what you see in the caption
 // box below the menu
@@ -31,17 +31,27 @@
 #include "BuildBlock.as"
 #include "Requirements.as"
 #include "Costs.as"
+#include "TeamIconToken.as"
 
 const string blocks_property = "blocks";
 const string inventory_offset = "inventory offset";
 
-void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
+void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const string&in gamemode_override = "")
 {
 	InitCosts();
 	CRules@ rules = getRules();
-	const bool CTF = rules.gamemode_name == "CTF";
-	const bool TTH = rules.gamemode_name == "TTH";
-	const bool SBX = rules.gamemode_name == "Sandbox";
+
+	string gamemode = rules.gamemode_name;
+	if (gamemode_override != "")
+	{
+		gamemode = gamemode_override;
+
+	}
+
+	const bool CTF = gamemode == "CTF";
+	const bool SCTF = gamemode == "SmallCTF";
+	const bool TTH = gamemode == "TTH";
+	const bool SBX = gamemode == "Sandbox";
 
 	BuildBlock[] page_0;
 	blocks.push_back(page_0);
@@ -56,7 +66,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "stone_door", "$stone_door$", "Stone Door\nPlace next to walls");
+		BuildBlock b(0, "stone_door", getTeamIcon("stone_door", "1x1StoneDoor.png", team_num, Vec2f(16, 8)), "Stone Door\nPlace next to walls");
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::stone_door);
 		blocks[0].push_back(b);
 	}
@@ -71,13 +81,18 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "wooden_door", "$wooden_door$", "Wooden Door\nPlace next to walls");
+		BuildBlock b(0, "wooden_door", getTeamIcon("wooden_door", "1x1WoodDoor.png", team_num, Vec2f(16, 8)), "Wooden Door\nPlace next to walls");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::wooden_door);
 		blocks[0].push_back(b);
 	}
-	{
-		BuildBlock b(0, "trap_block", "$trap_block$", "Trap Block\nOnly enemies can pass");
+	/*{
+		BuildBlock b(0, "trap_block", getTeamIcon("trap_block", "TrapBlock.png", team_num), "Trap Block\nOnly enemies can pass");
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::trap_block);
+		blocks[0].push_back(b);
+	}*/
+	{
+		BuildBlock b(0, "bridge", getTeamIcon("bridge", "Bridge.png", team_num), "Trap Bridge\nOnly your team can stand on it");
+		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::bridge);
 		blocks[0].push_back(b);
 	}
 	{
@@ -96,7 +111,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 		blocks[0].push_back(b);
 	}
 
-	if(CTF)
+	if (CTF || SCTF)
 	{
 		BuildBlock b(0, "building", "$building$", "Workshop\nStand in an open space\nand tap this button.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", CTFCosts::workshop_wood);
@@ -104,7 +119,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 		b.size.Set(40, 24);
 		blocks[0].insertAt(9, b);
 	}
-	else if(TTH)
+	else if (TTH)
 	{
 		{
 			BuildBlock b(0, "factory", "$building$", "Factory\nAn item-producing factory\nRequires migrant");
@@ -121,7 +136,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 			blocks[0].push_back(b);
 		}
 	}
-	else if(SBX)
+	else if (SBX)
 	{
 		{
 			BuildBlock b(0, "building", "$building$", "Workshop\nStand in an open space\nand tap this button.");
@@ -267,4 +282,23 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks)
 			blocks[3].push_back(b);
 		}
 	}
+}
+
+ConfigFile@ openBlockBindingsConfig()
+{
+	ConfigFile cfg = ConfigFile();
+	if (!cfg.loadFile("../Cache/BlockBindings.cfg"))
+	{
+		// write EmoteBinding.cfg to Cache
+		cfg.saveFile("BlockBindings.cfg");
+
+	}
+
+	return cfg;
+}
+
+u8 read_block(ConfigFile@ cfg, string name, u8 default_value)
+{
+	u8 read_val = cfg.read_u8(name, default_value);
+	return read_val;
 }

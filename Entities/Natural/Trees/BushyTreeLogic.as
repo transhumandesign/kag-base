@@ -5,17 +5,43 @@
 void onInit(CBlob@ this)
 {
 	InitVars(this);
+
+	s32 seed = 0;
+
+	if (this.exists("tree_rand"))
+	{
+		seed = this.get_s32("tree_rand");
+	}
+	else
+	{
+		seed = this.getNetworkID() * 139 + getGameTime() * 7;
+		if (getNet().isServer())
+		{
+			this.set_s32("tree_rand", seed);
+			this.Sync("tree_rand", true);
+
+		}
+
+	}
+
 	this.server_setTeamNum(-1);
 	TreeVars vars;
-	vars.seed = XORRandom(30000);
-	vars.growth_time = 250 + XORRandom(30);
+	vars.r.Reset(seed);
+	vars.growth_time = 250 + vars.r.NextRanged(30);
 	vars.height = 0;
-	vars.max_height = 3 + XORRandom(3);
+	vars.max_height = 3 + vars.r.NextRanged(3);
 	vars.grown_times = 0;
 	vars.max_grow_times = 50;
 	vars.last_grew_time = getGameTime() - 1; //pretend we started a frame ago ;)
+	this.SetFacingLeft(vars.r.NextRanged(300) > 150);
 	InitTree(this, vars);
 	this.set("TreeVars", vars);
+
+	u8 icon_frame = 8;
+	if (this.hasTag("startbig")) icon_frame = 12;
+
+	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", icon_frame, Vec2f(8, 32));
+	this.SetMinimapRenderAlways(true);
 }
 
 void GrowSprite(CSprite@ this, TreeVars@ vars)
@@ -60,7 +86,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 						animGrow.AddFrame(1);
 						animGrow.AddFrame(9);
 
-						if (XORRandom(2) == 0)
+						if (segment.r.NextRanged(2) == 0)
 						{
 							animGrow.AddFrame(49);
 						}
@@ -114,7 +140,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 						Animation@ animGrow = newsegment.addAnimation("grow", 0, false);
 						float z = -550.0f - (vars.height / 100.0f);
 
-						if ((i < 2 && XORRandom(2) == 0) || spriteindex != 2)
+						if ((i < 2 && segment.r.NextRanged(2) == 0) || spriteindex != 2)
 						{
 							animGrow.AddFrame(11);
 						}
@@ -151,7 +177,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 				if (newsegment !is null)
 				{
 					Animation@ animGrow = newsegment.addAnimation("grow", 0, false);
-					animGrow.AddFrame(4 + (XORRandom(2) == 0 ? 8 : 0));
+					animGrow.AddFrame(4 + (segment.r.NextRanged(2) == 0 ? 8 : 0));
 
 					newsegment.ResetTransform();
 					newsegment.SetRelativeZ(-80.0f);
@@ -181,7 +207,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 			else if (segment.grown_times == 5 && i == vars.max_height - 1) //top of the tree
 			{
 				f32 scalex = 1.0f;
-				if (XORRandom(2) == 0)
+				if (segment.r.NextRanged(2) == 0)
 				{
 					scalex = -1.0f;
 				}
@@ -270,5 +296,21 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 				}
 			}
 		}
+	}
+}
+
+void UpdateMinimapIcon(CBlob@ this, TreeVars@ vars)
+{
+	if (vars.grown_times < 5)
+	{
+		this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 8, Vec2f(8, 32));
+	}
+	else if (vars.grown_times < 10)
+	{
+		this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 10, Vec2f(8, 32));
+	}
+	else
+	{
+		this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 12, Vec2f(8, 32));
 	}
 }

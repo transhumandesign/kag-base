@@ -20,14 +20,14 @@ void onTick(CBlob@ this)
 	if (this.getShape().isStatic())
 		return;
 
-	if (getNet().isServer())
+	Vec2f pos = this.getPosition();
+	const bool inwater = this.isInWater() && this.getMap().isInWater(pos + Vec2f(0.0f, -this.getRadius() * 0.66f));
+
+	u8 aircount = this.get_u8("air_count");
+	this.getCurrentScript().tickFrequency = FREQ;
+
+	if (isServer())
 	{
-		Vec2f pos = this.getPosition();
-		const bool inwater = this.isInWater() && this.getMap().isInWater(pos + Vec2f(0.0f, -this.getRadius() * 0.66f));
-
-		u8 aircount = this.get_u8("air_count");
-
-		this.getCurrentScript().tickFrequency = FREQ;
 
 		if (inwater)
 		{
@@ -40,7 +40,6 @@ void onTick(CBlob@ this)
 			if (aircount < FREQ)
 			{
 				this.server_Hit(this, pos, Vec2f(0, 0), 0.5f, Hitters::drown, true);
-				Sound::Play("Gurgle", pos, 2.0f);
 				aircount += 30;
 			}
 		}
@@ -48,7 +47,6 @@ void onTick(CBlob@ this)
 		{
 			if (aircount < default_aircount/2)
 			{
-				Sound::Play("Sounds/gasp.ogg", pos, 3.0f);
 				aircount = default_aircount/2;
 			}
 			else if (aircount < default_aircount)
@@ -68,8 +66,37 @@ void onTick(CBlob@ this)
 			}
 		}
 
-		this.set_u8("air_count", aircount);
-		this.Sync("air_count", true);
+		if (aircount != this.get_u8("air_count"))
+		{
+			this.set_u8("air_count", aircount);
+			this.Sync("air_count", true);
+		}
+	}
+
+	if (isClient()) // sound control
+	{
+		aircount -= 6; // -6 since the lowest value we every get from the server is 6 (which means no sound plays)
+		
+		if (inwater)
+		{
+			if (this.hasTag("gasping"))
+			{
+				this.Untag("gasping");
+			}
+
+			if (aircount < FREQ)
+			{
+				Sound::Play("Gurgle", pos, 2.0f);
+			}
+		}
+		else
+		{
+			if(aircount < default_aircount/2 && !this.hasTag("gasping"))
+			{
+				this.Tag("gasping");
+				Sound::Play("Sounds/gasp.ogg", pos, 3.0f);
+			}
+		}
 	}
 }
 

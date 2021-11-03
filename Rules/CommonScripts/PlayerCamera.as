@@ -52,6 +52,7 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 
 	if (camera !is null && newteam == this.getSpectatorTeamNum() && getLocalPlayer() is player)
 	{
+		resetHelpText();
 		spectatorTeam = true;
 		camera.setTarget(null);
 		if (playerBlob !is null)
@@ -70,6 +71,14 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 
 }
 
+void resetHelpText()
+{
+	if (u_showtutorial)
+	{
+		helptime = getGameTime();
+	}
+}
+
 //Change to spectator cam on death
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
 {
@@ -80,6 +89,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 	//Player died to someone
 	if (camera !is null && victim is getLocalPlayer())
 	{
+		resetHelpText();
 		//Player killed themselves
 		if (victim is attacker || attacker is null)
 		{
@@ -160,14 +170,12 @@ void onRender(CRules@ this)
 		);
 	}
 
-	int time = getGameTime();
-	if (!spectatorTeam || !u_showtutorial)
+	if (getLocalPlayerBlob() !is null)
 	{
-		//reset help so it shows upon joining spec
-		//or re-enabling help
-		helptime = time;
 		return;
 	}
+
+	int time = getGameTime();
 
 	GUI::SetFont("menu");
 
@@ -185,7 +193,7 @@ void onRender(CRules@ this)
 		text = "If you click on a player the camera will follow them.\nSimply press the movement keys or click again to stop following a player.";
 	}
 
-	if (text != "")
+	if (text != "" && u_showtutorial)
 	{
 		//translate
 		text = getTranslatedString(text);

@@ -5,9 +5,22 @@
 
 void onInit(CRules@ rules)
 {
+	string filename = "EmoteEntries.cfg";
+	string cachefilename = "../Cache/" + filename;
 	ConfigFile cfg;
-	if (!cfg.loadFile("../Cache/EmoteEntries.cfg")
-	 && !cfg.loadFile("EmoteEntries.cfg"))
+
+	//attempt to load from cache first
+	bool loaded = false;
+	if (CFileMatcher(cachefilename).getFirst() == cachefilename && cfg.loadFile(cachefilename))
+	{
+		loaded = true;
+	}
+	else if (cfg.loadFile(filename))
+	{
+		loaded = true;
+	}
+
+	if (!loaded)
 	{
 		return;
 	}

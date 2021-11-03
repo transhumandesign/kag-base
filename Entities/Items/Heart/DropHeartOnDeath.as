@@ -3,23 +3,23 @@
 
 #define SERVER_ONLY
 
+const u32 NEW_AGE = 14;
+
 const f32 probability = 1.0f; //between 0 and 1
 
 void dropHeart(CBlob@ this)
 {
-	// newb handicap - dont drop hearts from newbs
-	if (this.getPlayer() != null)
-	{
-		if (Time_DaysSince(this.getPlayer().getRegistrationTime()) <= 14)
-			return;
-	}
-
 	if (!this.hasTag("dropped heart")) //double check
 	{
 		CPlayer@ killer = this.getPlayerOfRecentDamage();
 		CPlayer@ myplayer = this.getDamageOwnerPlayer();
 
-		if (killer is null || ((myplayer !is null) && killer.getUsername() == myplayer.getUsername())) { return; }
+		if (killer is null || myplayer is null || killer.getUsername() == myplayer.getUsername()) { return; }
+
+		// newb handicap - dont drop hearts from newbs
+		bool newVictim = Time_DaysSince(myplayer.getRegistrationTime()) <= NEW_AGE;
+		bool newKiller = Time_DaysSince(killer.getRegistrationTime()) <= NEW_AGE;
+		if (newVictim && !newKiller) { return; }
 
 		this.Tag("dropped heart");
 
@@ -31,6 +31,7 @@ void dropHeart(CBlob@ this)
 			{
 				Vec2f vel(XORRandom(2) == 0 ? -2.0 : 2.0f, -5.0f);
 				heart.setVelocity(vel);
+				heart.set_u16("healer", killer.getNetworkID());
 			}
 		}
 	}

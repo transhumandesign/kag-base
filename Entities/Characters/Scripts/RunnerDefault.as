@@ -1,6 +1,6 @@
 #include "RunnerCommon.as";
 #include "Hitters.as";
-#include "Knocked.as"
+#include "KnockedCommon.as"
 #include "FireCommon.as"
 #include "Help.as"
 
@@ -16,12 +16,13 @@ void onInit(CBlob@ this)
 	}
 
 	this.set_s16(burn_duration , 130);
+	this.set_f32("heal amount", 0.0f);
 
 	//fix for tiny chat font
 	this.SetChatBubbleFont("hud");
 	this.maxChatBubbleLines = 4;
 
-	setKnockable(this);
+	InitKnockable(this);
 }
 
 void onTick(CBlob@ this)
@@ -41,6 +42,8 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	this.getSprite().PlaySound("/Pickup.ogg");
+
+	this.ClearButtons();
 
 	if (getNet().isClient())
 	{

@@ -4,17 +4,17 @@
 #include "FireParticle.as"
 #include "RunnerAnimCommon.as";
 #include "RunnerCommon.as";
-#include "Knocked.as";
+#include "KnockedCommon.as";
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
+#include "Accolades.as"
 
-const f32 config_offset = -4.0f;
+
+const f32 config_offset = -6.0f;
 const string shiny_layer = "shiny bit";
 
 void onInit(CSprite@ this)
 {
-	RunnerTextures@ runner_tex = addRunnerTextures(this, "archer", "Archer");
-
 	LoadSprites(this);
 }
 
@@ -25,7 +25,35 @@ void onPlayerInfoChanged(CSprite@ this)
 
 void LoadSprites(CSprite@ this)
 {
-	ensureCorrectRunnerTexture(this, "archer", "Archer");
+	int armour = PLAYER_ARMOUR_STANDARD;
+
+	CPlayer@ p = this.getBlob().getPlayer();
+	if (p !is null)
+	{
+		armour = p.getArmourSet();
+		if (armour == PLAYER_ARMOUR_STANDARD)
+		{
+			Accolades@ acc = getPlayerAccolades(p.getUsername());
+			if (acc.hasCape())
+			{
+				armour = PLAYER_ARMOUR_CAPE;
+			}
+		}
+	}
+
+	switch (armour)
+	{
+	case PLAYER_ARMOUR_STANDARD:
+		ensureCorrectRunnerTexture(this, "archer", "Archer");
+		break;
+	case PLAYER_ARMOUR_CAPE:
+		ensureCorrectRunnerTexture(this, "archer_cape", "ArcherCape");
+		break;
+	case PLAYER_ARMOUR_GOLD:
+		ensureCorrectRunnerTexture(this, "archer_gold",  "ArcherGold");
+		break;
+	}
+
 
 	string texname = getRunnerTextureName(this);
 
@@ -206,14 +234,16 @@ void onTick(CSprite@ this)
 	needs_shiny = false;
 	bool crouch = false;
 
-	const u8 knocked = getKnocked(blob);
-	Vec2f pos = blob.getPosition();
+	bool knocked = isKnocked(blob);
+	Vec2f pos = blob.getPosition() + Vec2f(0, -2);
 	Vec2f aimpos = blob.getAimPos();
+	pos.x += this.isFacingLeft() ? 2 : -2;
+
 	// get the angle of aiming with mouse
 	Vec2f vec = aimpos - pos;
 	f32 angle = vec.Angle();
 
-	if (knocked > 0)
+	if (knocked)
 	{
 		if (inair)
 		{
@@ -227,6 +257,10 @@ void onTick(CSprite@ this)
 	else if (blob.hasTag("seated"))
 	{
 		this.SetAnimation("default");
+	}
+	else if(archer.charge_state == ArcherParams::stabbing)
+	{
+		this.SetAnimation("stab");
 	}
 	else if (firing || legolas)
 	{
@@ -355,7 +389,7 @@ void onTick(CSprite@ this)
 	DrawBowEffects(this, blob, archer, arrowType);
 
 	//set the head anim
-	if (knocked > 0 || crouch)
+	if (knocked || crouch)
 	{
 		blob.Tag("dead head");
 	}
@@ -438,6 +472,7 @@ void DrawBow(CSprite@ this, CBlob@ blob, ArcherInfo@ archer, f32 armangle, const
 	}
 
 	frontarm.SetRelativeZ(1.5f);
+	arrow.SetRelativeZ(1.4f);
 	setArmValues(this.getSpriteLayer("backarm"), true, armangle, -0.1f, "default", Vec2f(-4.0f * sign, 0.0f), armOffset);
 
 	// fire arrow particles

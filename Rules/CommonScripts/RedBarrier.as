@@ -1,11 +1,16 @@
 // red barrier before match starts
 
 const f32 BARRIER_PERCENT = 0.175f;
+//extra area of no build around the barrier
+//(unpopular)
+const float noBuildExtra = 0.0f;
 //if the barrier has been set
 bool barrier_set = false;
 //
 int barrier_wait = 30;
 int barrier_timer = 0;
+//if the barrier has been cached
+bool done_sync = false;
 
 bool shouldBarrier(CRules@ this)
 {
@@ -14,7 +19,25 @@ bool shouldBarrier(CRules@ this)
 
 void onTick(CRules@ this)
 {
-	if(!HandleSync(this)) return;
+	
+	if(!done_sync)
+	{
+		if(isServer())
+		{
+			//do not move to onRestart, script is not init and cmd will not run
+			f32 x1, x2, y1, y2;
+			CBitStream cbs;
+			getBarrierPositions(x1, x2, y1, y2);
+
+			cbs.write_f32(x1);
+			cbs.write_f32(x2);
+			cbs.write_f32(y1);
+			cbs.write_f32(y2);
+
+			this.SendCommand(this.getCommandID("set_barrier_pos"), cbs, true);
+		}
+		return;
+	}
 
 	if (shouldBarrier(this))
 	{
@@ -97,57 +120,17 @@ void onTick(CRules@ this)
 	}
 }
 
-//if the barrier has been cached
-bool done_sync = false;
-bool HandleSync(CRules@ this)
+void onInit(CRules@ this)
 {
-	if(!done_sync)
-	{
-		if (isServer())
-		{
-			f32 x1, x2, y1, y2;
-			getBarrierPositions(x1, x2, y1, y2);
-			this.set_f32("barrier_x1", x1);
-			this.Sync("barrier_x1", true);
-			this.set_f32("barrier_x2", x2);
-			this.Sync("barrier_x2", true);
-			this.set_f32("barrier_y1", y1);
-			this.Sync("barrier_y1", true);
-			this.set_f32("barrier_y2", y2);
-			this.Sync("barrier_y2", true);
-			done_sync = true;
-		}
-		if(isClient())
-		{
-			if (this.get_f32("barrier_x1") != -1.0f)
-			{
-				done_sync = true;
-			}
-		}
-	}
-	return done_sync;
+	this.addCommandID("set_barrier_pos");
+	onRestart(this);
 }
 
 void onRestart(CRules@ this)
 {
 	barrier_set = false;
-	barrier_timer = 0;
-
-    if (isServer())
-	{
-	    //dummy these out
-		this.set_f32("barrier_x1", -1.0f);
-		this.set_f32("barrier_x2", -1.0f);
-		this.set_f32("barrier_y1", -1.0f);
-		this.set_f32("barrier_y2", -1.0f);
-	}
-
 	done_sync = false;
-}
-
-void onInit(CRules@ this)
-{
-	onRestart(this);
+	barrier_timer = 0;
 }
 
 void onRender(CRules@ this)
@@ -167,9 +150,6 @@ void onRender(CRules@ this)
 	}
 }
 
-//extra area of no build around the barrier
-//(unpopular)
-const float noBuildExtra = 0.0f;
 
 void getBarrierPositions(f32 &out x1, f32 &out x2, f32 &out y1, f32 &out y2)
 {
@@ -268,4 +248,44 @@ void removeBarrier()
 
 	map.RemoveSectorsAtPosition(mid, "barrier");
 	map.RemoveSectorsAtPosition(mid, "no build");
+}
+
+void onCommand(CRules@ this, u8 cmd, CBitStream @params)
+{
+	if(cmd == this.getCommandID("set_barrier_pos"))
+	{
+		f32 x1, x2, y1, y2;
+
+		//grab
+		x1 = params.read_f32();
+		x2 = params.read_f32();
+		y1 = params.read_f32();
+		y2 = params.read_f32();
+		//save for later
+		this.set_f32("barrier_x1", x1);
+		this.set_f32("barrier_x2", x2);
+		this.set_f32("barrier_y1", y1);
+		this.set_f32("barrier_y2", y2);
+		done_sync = true;
+	}
+}
+
+void onNewPlayerJoin( CRules@ this, CPlayer@ player )
+{
+	if(isServer())
+	{
+		if(!this.isWarmup()) return;
+		
+		f32 x1, x2, y1, y2;
+		CBitStream cbs;
+		getBarrierPositions(x1, x2, y1, y2);
+
+		cbs.write_f32(x1);
+		cbs.write_f32(x2);
+		cbs.write_f32(y1);
+		cbs.write_f32(y2);
+
+		this.SendCommand(this.getCommandID("set_barrier_pos"), cbs, player);
+
+	}
 }

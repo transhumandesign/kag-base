@@ -21,6 +21,25 @@ void onInit(CBlob@ this)
 	consts.mapCollisions = false;
 
 	this.SetFacingLeft((this.getNetworkID() * 31) % 2 == 1);  //for ladders on map
+	
+	if (this.getName() == "ladder")
+	{
+		
+		if (getNet().isServer())
+		{
+			dictionary harvest;
+			harvest.set('mat_wood', 6);
+			this.set('harvest', harvest);
+		}
+	}
+
+	if (this.hasTag("cheated")) // spawned in using chat commands
+	{
+		shape.SetStatic(true); // stop from falling
+		shape.SetGravityScale(0.0f);
+		this.set_u16("timePlaced",0);
+		this.Tag("fallen");
+	}
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -44,3 +63,4 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return false;
 }
+

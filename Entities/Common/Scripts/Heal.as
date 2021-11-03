@@ -14,8 +14,10 @@ void onTick(CBlob@ this)
 			CBlob @b = blobsInRadius[i];
 			if (this.getTeamNum() == teamNum && b.getHealth() < b.getInitialHealth() && b.hasTag("flesh") && !b.hasTag("dead"))
 			{
+				f32 oldHealth = b.getHealth();
 				b.server_Heal(1.0f);
-				b.getSprite().PlaySound("/Heart.ogg");
+				b.add_f32("heal amount", b.getHealth() - oldHealth);
+				b.getSprite().PlaySound("/Heart.ogg", 0.5);
 			}
 		}
 	}

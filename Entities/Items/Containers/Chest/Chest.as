@@ -1,6 +1,7 @@
 // Chest.as
 
 #include "LootCommon.as";
+#include "GenericButtonCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -14,16 +15,16 @@ void onInit(CBlob@ this)
 	AddIconToken("$chest_open$", "InteractionIcons.png", Vec2f(32, 32), 20);
 	AddIconToken("$chest_close$", "InteractionIcons.png", Vec2f(32, 32), 13);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		// todo: loot based on gamemode
 		CRules@ rules = getRules();
 
-		if(rules.gamemode_name == TDM)
+		if (rules.gamemode_name == TDM)
 		{
 			addLoot(this, INDEX_TDM, 2, 0);
 		}
-		else if(rules.gamemode_name == CTF)
+		else if (rules.gamemode_name == CTF)
 		{
 			addLoot(this, INDEX_CTF, 2, 0);
 		}
@@ -31,7 +32,7 @@ void onInit(CBlob@ this)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite !is null)
+	if (sprite !is null)
 	{
 		u8 team_color = XORRandom(5);
 		this.set_u8("team_color", team_color);
@@ -39,7 +40,7 @@ void onInit(CBlob@ this)
 		sprite.SetZ(-10.0f);
 		sprite.ReloadSprites(team_color, 0);
 
-		if(this.hasTag("_chest_open"))
+		if (this.hasTag("_chest_open"))
 		{
 			sprite.SetAnimation("open");
 			sprite.PlaySound("ChestOpen.ogg", 3.0f);
@@ -49,10 +50,10 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if(this.exists(DROP)) return;
+	if (!canSeeButtons(this, caller) || this.exists(DROP)) return;
 
 	const f32 DISTANCE_MAX = this.getRadius() + caller.getRadius() + 8.0f;
-	if(this.getDistanceTo(caller) > DISTANCE_MAX || this.isAttached()) return;
+	if (this.getDistanceTo(caller) > DISTANCE_MAX || this.isAttached()) return;
 
 	CBitStream params;
 	params.write_u16(caller.getNetworkID());
@@ -71,29 +72,29 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if(cmd == this.getCommandID("activate"))
+	if (cmd == this.getCommandID("activate"))
 	{
 		this.AddForce(Vec2f(0, -800));
 
-		if(getNet().isServer())
+		if (getNet().isServer())
 		{
 			u16 id;
-			if(!params.saferead_u16(id)) return;
+			if (!params.saferead_u16(id)) return;
 
 			CBlob@ caller = getBlobByNetworkID(id);
-			if(caller is null) return;
+			if (caller is null) return;
 
 			// add guaranteed piece of loot from your class index
 			const string NAME = caller.getName();
-			if(NAME == "archer")
+			if (NAME == "archer")
 			{
 				addLoot(this, INDEX_ARCHER, 1, 0);
 			}
-			else if(NAME == "builder")
+			else if (NAME == "builder")
 			{
 				addLoot(this, INDEX_BUILDER, 1, 0);
 			}
-			else if(NAME == "knight")
+			else if (NAME == "knight")
 			{
 				addLoot(this, INDEX_KNIGHT, 1, 0);
 			}
@@ -104,7 +105,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.Tag("_chest_open");
 		this.Sync("_chest_open", true);
 		CSprite@ sprite = this.getSprite();
-		if(sprite !is null)
+		if (sprite !is null)
 		{
 			sprite.SetAnimation("open");
 			sprite.PlaySound("ChestOpen.ogg", 3.0f);
@@ -114,13 +115,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void onDie(CBlob@ this)
 {
-	if(getNet().isServer() && !this.exists(DROP))
+	if (getNet().isServer() && !this.exists(DROP))
 	{
 		addLoot(this, INDEX_TDM, 1, 0);
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite !is null)
+	if (sprite !is null)
 	{
 		sprite.Gib();
 

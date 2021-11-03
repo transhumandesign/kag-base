@@ -5,6 +5,22 @@ bool canEat(CBlob@ blob)
 	return blob.exists("eat sound");
 }
 
+// returns the healing amount of a certain food (in quarter hearts) or 0 for non-food
+u8 getHealingAmount(CBlob@ food)
+{
+	if (!canEat(food))
+	{
+		return 0;
+	}
+
+	if (food.getName() == "heart")	    // HACK
+	{
+		return 4; // 1 heart
+	}
+
+	return 255; // full healing
+}
+
 void Heal(CBlob@ this, CBlob@ food)
 {
 	bool exists = getBlobByNetworkID(food.getNetworkID()) !is null;
@@ -12,16 +28,7 @@ void Heal(CBlob@ this, CBlob@ food)
 	{
 		CBitStream params;
 		params.write_u16(this.getNetworkID());
-
-		u8 heal_amount = 255; //in quarter hearts, 255 means full hp
-
-		if (food.getName() == "heart")	    // HACK
-		{
-			heal_amount = 4;
-		}
-
-		params.write_u8(heal_amount);
-
+		params.write_u8(getHealingAmount(food));
 		food.SendCommand(food.getCommandID(heal_id), params);
 
 		food.Tag("healed");

@@ -4,6 +4,7 @@
 #include "MakeSeed.as"
 #include "Requirements.as"
 #include "TradingCommon.as"
+#include "GenericButtonCommon.as"
 
 const int DROP_SECS = 8;
 
@@ -50,6 +51,8 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (!this.hasTag("dead"))
 	{
 		CBitStream params;
@@ -71,6 +74,38 @@ void BuildTradingMenu(CBlob@ this, CBlob @caller)
 		{
 			addTradeItemsToMenu(this, menu, caller.getNetworkID());
 			menu.deleteAfterClick = false;
+
+			//keybinds
+			array<EKEY_CODE> numKeys = { KEY_KEY_1, KEY_KEY_2, KEY_KEY_3, KEY_KEY_4, KEY_KEY_5, KEY_KEY_6, KEY_KEY_7, KEY_KEY_8, KEY_KEY_9, KEY_KEY_0 };
+			uint keybindCount = Maths::Min(items.length(), numKeys.length());
+
+			u8 sepCount = 0;
+			u8 i = 0;
+			//add keybinds to items while skipping separators
+			while (i < keybindCount)
+			{
+				if (items[i + sepCount].isSeparator)
+				{
+					sepCount++;
+
+					//recalculate number of items excluding separators
+					keybindCount = Maths::Min(items.length() - sepCount, numKeys.length());
+				}
+				else
+				{
+					CBitStream params;
+					params.write_u16(caller.getNetworkID());
+					params.write_u8(i + sepCount);
+					const u16 goldCount = caller.getBlobCount("mat_gold");
+					params.write_u16(goldCount);
+					params.write_bool(true); //used hotkey?
+
+					menu.AddKeyCommand(numKeys[i], this.getCommandID("buy"), params);
+
+					//successful bind, so move onto next keybind
+					i++;
+				}
+			}
 		}
 	}
 }
@@ -103,6 +138,7 @@ void addTradeItemsToMenu(CBlob@ this, CGridMenu@ menu, u16 callerID)
 				params.write_u8(i);
 				const u16 goldCount = caller.getBlobCount("mat_gold");
 				params.write_u16(goldCount);
+				params.write_bool(false); //used hotkey?
 
 				CGridButton@ button = menu.AddButton(item.iconName, getTranslatedString(item.name), this.getCommandID("buy"), params);
 				if (button !is null)
@@ -153,10 +189,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		u16 callerid = params.read_u16();
 		u8 itemIndex = params.read_u8();
 		u16 goldCount = params.read_u16();
+		bool hotkey = params.read_bool();
 		CBlob@ caller = getBlobByNetworkID(callerid);
 
 		if (caller !is null)
 		{
+			if (hotkey)
+			{
+				caller.SendCommand(caller.getCommandID("prevent emotes"));
+			}
+
 			if (!isInRadius(this, caller))
 			{
 				caller.ClearMenus();
@@ -262,6 +304,7 @@ TradeItem@ AddItemToShip(CBlob@ this, CBlob@ caller, const uint itemIndex, const
 		CBlob@ blob = MakeBlobFromItem(item);
 		if (blob !is null)
 		{
+			blob.set_u16("buyer", caller.getPlayer().getNetworkID());
 			blob.server_setTeamNum(caller.getTeamNum());
 			if (!item.buyIntoInventory || !caller.server_PutInInventory(blob))
 			{
@@ -364,6 +407,8 @@ void RecursiveCrate(CBlob@ this, uint[]@ shipment, uint index, CBlob@ itemThatDi
 
 CBlob@ MakeBlobFromItem(TradeItem@ item)
 {
+	if (!isServer()) return null;
+
 	if (item.configFilename == "scroll")
 	{
 		return server_MakePredefinedScroll(Vec2f_zero, item.scrollName);

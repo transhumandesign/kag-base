@@ -14,6 +14,7 @@
 void Config(CTFCore@ this)
 {
 	string configstr = "Rules/CTF/ctf_vars.cfg";
+
 	if (getRules().exists("ctfconfig"))
 	{
 		configstr = getRules().get_string("ctfconfig");
@@ -125,7 +126,7 @@ shared class CTFSpawns : RespawnSystem
 			}
 
 			// tutorials hack
-			if (getRules().exists("singleplayer"))
+			if (getRules().hasTag("singleplayer"))
 			{
 				p_info.team = 0;
 			}
@@ -314,7 +315,7 @@ shared class CTFCore : RulesCore
 		gamestart = getGameTime();
 		@ctf_spawns = cast < CTFSpawns@ > (_respawns);
 		_rules.set_string("music - base name", base_name());
-		server_CreateBlob("Entities/Meta/WARMusic.cfg");
+		server_CreateBlob("ctf_music");
 		players_in_small_team = -1;
 	}
 
@@ -382,7 +383,7 @@ shared class CTFCore : RulesCore
 
 	void AddPlayer(CPlayer@ player, u8 team = 0, string default_config = "")
 	{
-		if (getRules().exists("singleplayer"))
+		if (getRules().hasTag("singleplayer"))
 		{
 			team = 0;
 		}
@@ -572,15 +573,13 @@ shared class CTFCore : RulesCore
 					CPlayer@ player = players[i].getPlayer();
 					if (player !is null && players[i].getTeamNum() == winteamIndex)
 					{
-						player.server_setCoins(player.getCoins() + 10);
+						player.server_setCoins(player.getCoins() + 150);
 					}
 				}
 			}
 
 			rules.SetTeamWon(winteamIndex);   //game over!
 			rules.SetCurrentState(GAME_OVER);
-			rules.SetGlobalMessage("{WINNING_TEAM} wins the game!");
-			rules.AddGlobalMessageReplacement("WINNING_TEAM", winteam.name);
 		}
 	}
 
@@ -603,7 +602,7 @@ shared class CTFCore : RulesCore
 		for (uint i = 0; i < flags.length; i++)
 		{
 			CBlob@ flag = flags[i];
-			CBlob@ holder = flag.getAttachments().getAttachedBlob("FLAG");
+			CBlob@ holder = flag.getAttachments().getAttachmentPointByName("FLAG").getOccupied();
 			//If any flag is held by an ally (ie the flag base), no stalemate
 			if (holder !is null && holder.getTeamNum() == flag.getTeamNum())
 			{
@@ -696,13 +695,13 @@ void onRestart(CRules@ this)
 void onInit(CRules@ this)
 {
 	Reset(this);
-	this.set_s32("restart_rules_after_game_time", 25 * 30);
+	this.set_s32("restart_rules_after_game_time", 30 * 30);
 }
 
 // had to add it here for tutorial cause something didnt work in the tutorial script
 void onBlobDie(CRules@ this, CBlob@ blob)
 {
-	if (this.exists("tutorial"))
+	if (this.hasTag("tutorial"))
 	{
 		const string name = blob.getName();
 		if ((name == "archer" || name == "knight" || name == "chicken") && !blob.hasTag("dropped coins"))

@@ -15,6 +15,9 @@ void onInit(CMap@ this)
 
 void onRender(CMap@ this)
 {
+	if (g_videorecording)
+		return;
+
 	const int time = getMap().getTimeSinceStart();
 	const int endTime1 = getTicksASecond() * 4;
 	const int endTime2 = getTicksASecond() * 15;

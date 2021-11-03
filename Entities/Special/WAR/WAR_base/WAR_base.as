@@ -8,6 +8,7 @@
 #include "Requirements.as"
 #include "AddTilesBySector.as"
 #include "Costs.as"
+#include "GenericButtonCommon.as"
 
 const Vec2f upgradeButtonPos(-36.0f, 10.0f);
 const Vec2f classButtonPos(-76, 10);
@@ -397,6 +398,11 @@ s16 woodTilUpgrade(CBlob@ this)
 	return upgradeAmount(this, upgrade_level) - wood_amount;
 }
 
+bool isInRadius(CBlob@ this, CBlob @caller)	
+{	
+	return ((this.getPosition() - caller.getPosition()).Length() < this.getRadius() * 2.0f + caller.getRadius());	
+}
+
 ////////////////////////////////////////////////////
 //Interactions
 ////////////////////////////////////////////////////
@@ -416,6 +422,8 @@ bool canUseWorkbench(CBlob@ this, CBlob @caller)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	CBitStream params;
 	params.write_u16(caller.getNetworkID());
 
@@ -931,7 +939,7 @@ void onRender(CSprite@ this)
 		int top = pos2d.y + zoom * blob.getHeight() + 160.0f;
 		const uint margin = 7;
 		Vec2f dim;
-		string label = "Level 10000";
+		string label = getTranslatedString("Level {LEVEL}").replace("{LEVEL}", "" + 10000);
 		GUI::SetFont("menu");
 		GUI::GetTextDimensions(label , dim);
 		dim.x += 2.0f * margin;
@@ -957,7 +965,7 @@ void onRender(CSprite@ this)
 		{
 			for (uint i = 0; i < 3; i++)
 			{
-				label = "Level " + (i + 1);
+				label = getTranslatedString("Level {LEVEL}").replace("{LEVEL}", "" + (i + 1));
 				Vec2f upperleft(pos2d.x - dim.x / 2 + leftX, top - 2 * dim.y);
 				Vec2f lowerright(pos2d.x + dim.x / 2 + leftX, top - dim.y);
 				bool isNextLevel = (i == level + 1);

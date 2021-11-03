@@ -38,18 +38,12 @@ void onTick(CBlob@ this)
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
-	if (detached.getName() == "catapult") // rock n' roll baby
-	{
-		this.getShape().getConsts().mapCollisions = false;
-		this.getShape().getConsts().collidable = false;
-		this.getCurrentScript().tickFrequency = 3;
-	}
 	this.set_u8("launch team", detached.getTeamNum());
 }
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if(attached.getPlayer() !is null)
+	if (attached.getPlayer() !is null)
 	{
 		this.SetDamageOwnerPlayer(attached.getPlayer());
 	}
@@ -58,7 +52,6 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	{
 		this.getShape().getConsts().mapCollisions = true;
 		this.getShape().getConsts().collidable = true;
-		this.getCurrentScript().tickFrequency = 1;
 	}
 	this.set_u8("launch team", attached.getTeamNum());
 }
@@ -73,7 +66,7 @@ void Slam(CBlob @this, f32 angle, Vec2f vel, f32 vellen)
 	HitInfo@[] hitInfos;
 	u8 team = this.get_u8("launch team");
 
-	if (map.getHitInfosFromArc(pos, -angle, 30, vellen, this, false, @hitInfos))
+	if (map.getHitInfosFromArc(pos, -angle, 30, vellen, this, true, @hitInfos))
 	{
 		for (uint i = 0; i < hitInfos.length; i++)
 		{
@@ -223,7 +216,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		f32 dmg = vellen > 8.0f ? 5.0f : (vellen > 4.0f ? 1.5f : 0.5f);
 
 		//bounce off if not gibbed
-		if(dmg < 4.0f)
+		if (dmg < 4.0f)
 		{
 			this.setVelocity(blob.getOldVelocity() + hitvec * -Maths::Min(dmg * 0.33f, 1.0f));
 		}

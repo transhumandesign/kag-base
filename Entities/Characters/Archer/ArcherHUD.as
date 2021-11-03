@@ -31,13 +31,13 @@ void ManageCursors(CBlob@ this)
 
 void onRender(CSprite@ this)
 {
+	CBlob@ blob = this.getBlob();
+	ManageCursors(blob);
+
 	if (g_videorecording)
 		return;
 
-	CBlob@ blob = this.getBlob();
 	CPlayer@ player = blob.getPlayer();
-
-	ManageCursors(blob);
 
 	// draw inventory
 	Vec2f tl = getActorHUDStartPosition(blob, slotsSize);
@@ -56,5 +56,5 @@ void onRender(CSprite@ this)
 	DrawCoinsOnHUD(blob, coins, tl, slotsSize - 2);
 
 	// class weapon icon
-	GUI::DrawIcon(iconsFilename, arrow_frame, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -16), 1.0f);
+	GUI::DrawIcon(iconsFilename, arrow_frame, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -16), 1.0f, player.getTeamNum());
 }

@@ -32,7 +32,7 @@ shared class OffsetCache
 
 		//in the case of missing image data
 		//just use a "neutral" pixel offset
-		if(data is null)
+		if (data is null)
 		{
 			array<Vec2f> fake = {
 				half_framesize
@@ -66,7 +66,7 @@ shared class OffsetCache
 						iters++;
 						Vec2f px = fpos + tpos;
 						SColor cur = data.get(int(px.x), int(px.y));
-						if(cur.getAlpha() != 0 &&
+						if (cur.getAlpha() != 0 &&
 							cur.getRed() == col.getRed() &&
 							cur.getGreen() == col.getGreen() &&
 							cur.getBlue() == col.getBlue())
@@ -83,7 +83,7 @@ shared class OffsetCache
 
 	array<Vec2f> getOffsets(int frame)
 	{
-		if(frame < 0 || frame >= offsets.length)
+		if (frame < 0 || frame >= offsets.length)
 		{
 			frame = 0;
 		}
@@ -126,7 +126,7 @@ shared class PixelOffsets
 	{
 		for(int i = 0; i < offsets.length; i++)
 		{
-			if(offsets[i].framesize == framesize && offsets[i].col == col)
+			if (offsets[i].framesize == framesize && offsets[i].col == col)
 			{
 				return @offsets[i];
 			}
@@ -137,7 +137,7 @@ shared class PixelOffsets
 	private OffsetCache@ _ensureCache(Vec2f framesize, SColor col)
 	{
 		OffsetCache@ cached = _getCache(framesize, col);
-		if(cached !is null)
+		if (cached !is null)
 		{
 			return cached;
 		}
@@ -178,7 +178,7 @@ shared class PixelOffsets
 	// at a specific frame, or the current frame by default.
 	array<Vec2f> getOffsets(CSprite@ sprite, SColor col, int frame = -1)
 	{
-		if(frame == -1)
+		if (frame == -1)
 		{
 			frame = sprite.getFrameIndex();
 		}
@@ -231,7 +231,7 @@ shared class PixelOffsetsCache {
 
 	void EnsureLoaded(ImageData@ image, Vec2f framesize, array<SColor> col)
 	{
-		if(cache !is null) return;
+		if (cache !is null) return;
 
 		_framesize = framesize;
 		@cache = getPixelOffsetsForData(image, _framesize, col);
@@ -239,7 +239,7 @@ shared class PixelOffsetsCache {
 
 	void EnsureLoaded(CSprite@ sprite, array<SColor> col)
 	{
-		if(cache !is null) return;
+		if (cache !is null) return;
 
 		_framesize = _sprite_to_framesize(sprite);
 		@cache = getPixelOffsetsForSprite(sprite, col);
@@ -247,7 +247,7 @@ shared class PixelOffsetsCache {
 
 	array<Vec2f> getOffsets(SColor col, int frame = 0)
 	{
-		if(cache is null) {
+		if (cache is null) {
 			//warn("warn: pixel offset cache used before ensured loaded");
 			return array<Vec2f>();
 		}
@@ -256,7 +256,7 @@ shared class PixelOffsetsCache {
 
 	array<Vec2f> getOffsets(CSprite@ sprite, SColor col, int frame = -1)
 	{
-		if(cache is null) {
+		if (cache is null) {
 			//warn("warn: pixel offset cache used before ensured loaded");
 			return array<Vec2f>();
 		}
@@ -272,8 +272,24 @@ shared bool createAndLoadPixelOffsets(CSprite@ sprite, array<SColor> col, PixelO
 
 shared bool createAndLoadPixelOffsets(string texname, string from_file, Vec2f framesize, array<SColor> col, PixelOffsetsCache@ into)
 {
-	if(!Texture::systemEnabled()) return false;
-	if(!Texture::createFromFile(texname, from_file)) return false;
-	into.EnsureLoaded(Texture::data(texname), framesize, col);
+	if (!Texture::systemEnabled()) return false;
+	if (!Texture::createFromFile(texname, from_file)) return false;
+
+	//get data
+	ImageData@ data = Texture::data(texname);
+	if (data is null) return false;
+	//remap
+	array<SColor> clean;
+	for(int i = 0; i < col.length; i++) {
+		SColor c = col[i];
+		c.setAlpha(1);
+		clean.push_back(c);
+	}
+	data.remap(col, clean, 1, true, false);
+	if (!Texture::update(texname, data)) {
+		warn("failed to update texture "+texname+" with clean pixel offsets");
+	}
+	//load
+	into.EnsureLoaded(data, framesize, col);
 	return true;
 }

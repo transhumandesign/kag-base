@@ -22,7 +22,7 @@ class Dispenser : Component
 	{
 		Vec2f position = this.getPosition();
 
-		if(getNet().isServer())
+		if (getNet().isServer())
 		{
 			CBlob@[] blobs;
 			getMap().getBlobsAtPosition((offset * -1) * 8 + position, @blobs);
@@ -30,14 +30,14 @@ class Dispenser : Component
 			for(uint i = 0; i < blobs.length; i++)
 			{
 				CBlob@ blob = blobs[i];
-				if(blob.getName() != "magazine" || !blob.getShape().isStatic()) continue;
+				if (blob.getName() != "magazine" || !blob.getShape().isStatic()) continue;
 
 				CBlob@ item = blob.getInventory().getItem(0);
-				if(item is null) break;
+				if (item is null) break;
 
 				// todo: check for spawnable position based on blob radius, offset by radius towards facing
 				// break if output is ray blocked
-				if(getMap().rayCastSolid(position + offset * 5, position + offset * 11)) break;
+				if (getMap().rayCastSolid(position + offset * 5, position + offset * 11)) break;
 
 				blob.server_PutOutInventory(item);
 
@@ -49,7 +49,7 @@ class Dispenser : Component
 		}
 
 		CSprite@ sprite = this.getSprite();
-		if(sprite is null) return;
+		if (sprite is null) return;
 
 		sprite.PlaySound("DispenserFire.ogg", 4.0f);
 
@@ -79,7 +79,7 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic || this.exists("component")) return;
+	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f position = this.getPosition() / 8;
 	const u16 angle = this.getAngleDegrees();
@@ -88,10 +88,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Dispenser component(position, this.getNetworkID(), angle, offset);
 	this.set("component", component);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		grid.setAll(
 		component.x,                        // x
@@ -104,7 +104,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite is null) return;
+	if (sprite is null) return;
 
 	sprite.SetFacingLeft(false);
 	sprite.SetZ(500);

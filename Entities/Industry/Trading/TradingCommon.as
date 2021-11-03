@@ -99,7 +99,7 @@ shared class TradeItem
 
 	string getDescription()
 	{
-		if(final_description != "")
+		if (final_description != "")
 		{
 			//cached already
 			return final_description;
@@ -107,7 +107,7 @@ shared class TradeItem
 
 		final_description = "";
 		int size = _description.length;
-		if(size > 0)
+		if (size > 0)
 		{
 			final_description = getTranslatedString(_description[0]);
 			for (int i = 1; i < size; i++)

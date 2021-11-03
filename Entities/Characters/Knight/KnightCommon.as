@@ -1,4 +1,6 @@
 //common knight header
+#include "RunnerCommon.as";
+
 namespace KnightStates
 {
 	enum States
@@ -13,13 +15,16 @@ namespace KnightStates
 		sword_cut_up,
 		sword_cut_down,
 		sword_power,
-		sword_power_super
+		sword_power_super,
+		resheathing_cut,
+		resheathing_slash
 	}
 }
 
 namespace KnightVars
 {
-	const ::s32 resheath_time = 2;
+	const ::s32 resheath_cut_time = 2;
+	const ::s32 resheath_slash_time = 2;
 
 	const ::s32 slash_charge = 15;
 	const ::s32 slash_charge_level2 = 38;
@@ -31,12 +36,16 @@ namespace KnightVars
 	const ::f32 slash_move_max_speed = 3.5f;
 
 	const u32 glide_down_time = 50;
+
+	//// OLD MOD COMPATIBILITY ////
+	// These have no purpose in the current code base other then
+	// to allow old mods to still run without needing manual fixing
+	const f32 resheath_time = 2.0f;
 }
 
 shared class KnightInfo
 {
 	u8 swordTimer;
-	u8 shieldTimer;
 	bool doubleslash;
 	u8 tileDestructionLimiter;
 	u32 slideTime;
@@ -44,7 +53,23 @@ shared class KnightInfo
 	u8 state;
 	Vec2f slash_direction;
 	s32 shield_down;
+
+	//// OLD MOD COMPATIBILITY ////
+	u8 shieldTimer;
 };
+
+shared class KnightState
+{
+	u32 stateEnteredTime = 0;
+
+	KnightState() {}
+	u8 getStateValue() { return 0; }
+	void StateEntered(CBlob@ this, KnightInfo@ knight, u8 previous_state) {}
+	// set knight.state to change states
+	// return true if we should tick the next state right away
+	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars) { return false; }
+	void StateExited(CBlob@ this, KnightInfo@ knight, u8 next_state) {}
+}
 
 
 namespace BombType
@@ -69,6 +94,10 @@ const string[] bombTypeNames = { "mat_bombs",
                                  "mat_waterbombs"
                                };
 
+bool hasBombs(CBlob@ this, u8 bombType)
+{
+	return bombType < BombType::count && this.getBlobCount(bombTypeNames[bombType]) > 0;
+}
 
 //checking state stuff
 
@@ -84,7 +113,7 @@ bool isSpecialShieldState(u8 state)
 
 bool isSwordState(u8 state)
 {
-	return (state >= KnightStates::sword_drawn && state <= KnightStates::sword_power_super);
+	return (state >= KnightStates::sword_drawn && state <= KnightStates::resheathing_slash);
 }
 
 bool inMiddleOfAttack(u8 state)

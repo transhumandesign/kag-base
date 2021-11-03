@@ -1,5 +1,5 @@
 #include "Hitters.as"
-#include "Knocked.as"
+#include "KnockedCommon.as"
 
 shared class TreeSegment
 {
@@ -15,6 +15,8 @@ shared class TreeSegment
 
 	bool gotsprites;
 
+	Random r;
+
 };
 
 shared class TreeVars
@@ -26,6 +28,8 @@ shared class TreeVars
 	u8 grown_times;
 	u8 max_grow_times;
 	s32 last_grew_time;
+
+	Random r;
 };
 
 TreeSegment@ getLastSegment(CBlob@ this)
@@ -140,7 +144,7 @@ bool CollapseToGround(CBlob@ this, f32 angle)
 					if (dist > 24.0f && angle > 20.0f)
 					{
 						hitsomething = true;
-						SetKnocked(hi.blob, 15, true);
+						setKnocked(hi.blob, 15);
 					}
 				}
 				else // map

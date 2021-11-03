@@ -2,10 +2,6 @@
 
 #define SERVER_ONLY
 
-// set this.set_TileType("background tile", CMap::tile_castle_back);
-
-//use back flag to indicate no background
-
 const string counter = "nobuild counter";
 const string back = "background tile";
 const string nobuild_extend = "nobuild extend";
@@ -38,8 +34,6 @@ void onTick(CBlob@ this)
 		}
 
 		this.getShape().getBoundingRect(ul, lr);
-		ul.x += 1.0f;
-		ul.y += 1.0f;
 
 		lr += extend;
 		this.getMap().server_AddSector(ul, lr, "no build", "", this.getNetworkID());
@@ -56,36 +50,35 @@ void onTick(CBlob@ this)
 
 		this.getCurrentScript().tickFrequency = CHECK_FREQ;
 	}
-	else // check for collapse
-		if (getNet().isServer())
+	// check for collapse
+	else if (getNet().isServer())
+	{
+		Vec2f ul, lr;
+		this.getShape().getBoundingRect(ul, lr);
+
+		CMap@ map = getMap();
+		const f32 tilesize = map.tilesize;
+
+		Vec2f tpos = ul;
+		bool hasEmpty = false;
+		while (tpos.x < lr.x)
 		{
-			Vec2f ul, lr;
-			this.getShape().getBoundingRect(ul, lr);
-			ul.x += 1.0f;
-			ul.y += 1.0f;
-			CMap@ map = getMap();
-			const f32 tilesize = map.tilesize;
-
-			Vec2f tpos = ul;
-			bool hasEmpty = false;
-			while (tpos.x < lr.x)
+			while (tpos.y < lr.y)
 			{
-				while (tpos.y < lr.y)
+				if (map.getTile(tpos).type != 0)
 				{
-					if (map.getTile(tpos).type != 0)
-					{
-						return;
+					return;
 
-					}
-					tpos.y += tilesize;
 				}
-				tpos.x += tilesize;
-				tpos.y = ul.y;
+				tpos.y += tilesize;
 			}
-
-			// die because there is no back
-
-			this.server_Hit(this, this.getPosition(), Vec2f_zero, this.getHealth() + 5.0f, 0, true);
+			tpos.x += tilesize;
+			tpos.y = ul.y;
 		}
+
+		// die because there is no back
+
+		this.server_Hit(this, this.getPosition(), Vec2f_zero, this.getHealth() + 5.0f, 0, true);
+	}
 }
 

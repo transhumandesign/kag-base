@@ -1,4 +1,5 @@
 #include "VehicleCommon.as"
+#include "GenericButtonCommon.as"
 
 // Mounted Bow logic
 
@@ -17,15 +18,18 @@ void onInit(CBlob@ this)
 	{
 		return;
 	}
-	Vehicle_SetupWeapon(this, v,
+
+	Vehicle_AddAmmo(this, v,
 	                    25, // fire delay (ticks)
 	                    1, // fire bullets amount
-	                    Vec2f(-6.0f, 2.0f), // fire position offset
+	                    1, // fire cost
 	                    "mat_arrows", // bullet ammo config name
+	                    "Arrows", // name for ammo selection
 	                    "arrow", // bullet config name
 	                    "BowFire", // fire sound
 	                    "EmptyFire" // empty fire sound
 	                   );
+
 	v.charge = 400;
 	// init arm + cage sprites
 	CSprite@ sprite = this.getSprite();
@@ -52,7 +56,9 @@ void onInit(CBlob@ this)
 	}
 
 	this.getShape().SetRotationsAllowed(false);
-	this.set_string("autograb blob", "mat_arrows");
+
+	string[] autograb_blobs = {"mat_arrows"};
+	this.set("autograb blobs", autograb_blobs);
 
 	sprite.SetZ(-10.0f);
 
@@ -128,7 +134,7 @@ void onTick(CBlob@ this)
 			bool facing_left = sprite.isFacingLeft();
 			f32 rotation = angle * (facing_left ? -1 : 1);
 
-			if (v.loaded_ammo > 0)
+			if (v.getCurrentAmmo().loaded_ammo > 0)
 			{
 				arm.animation.frame = 1;
 			}
@@ -166,6 +172,8 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (!Vehicle_AddFlipButton(this, caller))
 	{
 		Vehicle_AddLoadAmmoButton(this, caller);

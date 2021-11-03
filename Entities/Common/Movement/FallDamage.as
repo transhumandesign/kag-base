@@ -2,7 +2,7 @@
 // apply Rules "fall vel modifier" property to change the damage velocity base
 
 #include "Hitters.as";
-
+#include "KnockedCommon.as";
 #include "FallDamageCommon.as";
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
@@ -57,7 +57,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		// stun on fall
 		const u8 knockdown_time = 12;
 
-		if (doknockdown && this.exists("knocked") && this.get_u8("knocked") < knockdown_time)
+		if (doknockdown && setKnocked(this, knockdown_time))
 		{
 			if (damage < this.getHealth()) //not dead
 				Sound::Play("/BreakBone", this.getPosition());
@@ -65,8 +65,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			{
 				Sound::Play("/FallDeath.ogg", this.getPosition());
 			}
-
-			this.set_u8("knocked", knockdown_time);
 		}
 	}
 }

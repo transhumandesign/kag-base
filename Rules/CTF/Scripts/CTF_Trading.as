@@ -1,9 +1,12 @@
-//not server only so the client also gets the game event setup stuff
+#define SERVER_ONLY
 
 #include "GameplayEvents.as"
+#include "AssistCommon.as"
 
 const int coinsOnDamageAdd = 5;
+const int coinsOnAssistAdd = 7;
 const int coinsOnKillAdd = 10;
+const f32 killstreakFactor = 1.2f;
 
 const int coinsOnDeathLosePercent = 20;
 const int coinsOnTKLose = 50;
@@ -11,12 +14,13 @@ const int coinsOnTKLose = 50;
 const int coinsOnRestartAdd = 0;
 const bool keepCoinsOnRestart = false;
 
-const int coinsOnHitSiege = 5;
+const int coinsOnHitSiege = 5; //per heart of damage
 const int coinsOnKillSiege = 20;
 
 const int coinsOnCapFlag = 100;
 
-const int coinsOnBuild = 4;
+const int coinsOnBuildStoneBlock = 3;
+const int coinsOnBuildStoneDoor = 5;
 const int coinsOnBuildWood = 1;
 const int coinsOnBuildWorkshop = 10;
 
@@ -50,9 +54,6 @@ void GiveRestartCoinsIfNeeded(CPlayer@ player)
 //extra coins on start to prevent stagnant round start
 void Reset(CRules@ this)
 {
-	if (!getNet().isServer())
-		return;
-
 	names.clear();
 
 	uint count = getPlayerCount();
@@ -77,9 +78,6 @@ void onInit(CRules@ this)
 //also given when plugging player -> on first spawn
 void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 {
-	if (!getNet().isServer())
-		return;
-
 	if (player !is null)
 	{
 		GiveRestartCoinsIfNeeded(player);
@@ -91,31 +89,36 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 {
-	if (!getNet().isServer())
-		return;
-
 	if (victim !is null)
 	{
 		if (killer !is null)
 		{
 			if (killer !is victim && killer.getTeamNum() != victim.getTeamNum())
 			{
-				killer.server_setCoins(killer.getCoins() + coinsOnKillAdd);
+				killer.server_setCoins(killer.getCoins() + coinsOnKillAdd * Maths::Pow(killstreakFactor, killer.get_u8("killstreak")));
 			}
-			else if (killer.getTeamNum() == victim.getTeamNum())
+			else if (killer !is victim && killer.getTeamNum() == victim.getTeamNum())
 			{
 				killer.server_setCoins(killer.getCoins() - coinsOnTKLose);
 			}
+			
+			CPlayer@ helper = getAssistPlayer (victim, killer);
+			if (helper !is null) 
+			{ 
+				helper.server_setCoins(helper.getCoins() + coinsOnAssistAdd);
+			}
 		}
+		if (!this.isWarmup())	//only reduce coins if the round is on.
+		{
+			s32 lost = victim.getCoins() * (coinsOnDeathLosePercent * 0.01f);
 
-		s32 lost = victim.getCoins() * (coinsOnDeathLosePercent * 0.01f);
+			victim.server_setCoins(victim.getCoins() - lost);
 
-		victim.server_setCoins(victim.getCoins() - lost);
-
-		//drop coins
-		CBlob@ blob = victim.getBlob();
-		if (blob !is null)
-			server_DropCoins(blob.getPosition(), XORRandom(lost));
+			//drop coins
+			CBlob@ blob = victim.getBlob();
+			if (blob !is null)
+				server_DropCoins(blob.getPosition(), lost*0.75f + XORRandom(lost*0.25f));
+		}
 	}
 }
 
@@ -123,9 +126,6 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 
 f32 onPlayerTakeDamage(CRules@ this, CPlayer@ victim, CPlayer@ attacker, f32 DamageScale)
 {
-	if (!getNet().isServer())
-		return DamageScale;
-
 	if (attacker !is null && attacker !is victim && attacker.getTeamNum() != victim.getTeamNum())
 	{
         CBlob@ v = victim.getBlob();
@@ -144,10 +144,6 @@ f32 onPlayerTakeDamage(CRules@ this, CPlayer@ victim, CPlayer@ attacker, f32 Dam
 // coins for various game events
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
-	//only important on server
-	if (!getNet().isServer())
-		return;
-
 	if (cmd == getGameplayEventID(this))
 	{
 		GameplayEvent g(params);
@@ -166,7 +162,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 					u16 tile = g.params.read_u16();
 					if (tile == CMap::tile_castle)
 					{
-						coins = coinsOnBuild;
+						coins = coinsOnBuildStoneBlock;
 					}
 					else if (tile == CMap::tile_wood)
 					{
@@ -182,14 +178,19 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 					g.params.ResetBitIndex();
 					string name = g.params.read_string();
 
-					if (name == "stone_door" ||
-					        name == "trap_block" ||
-					        name == "spikes")
+					if (name == "trap_block" ||
+					    name == "spikes")
 					{
-						coins = coinsOnBuild;
+						coins = coinsOnBuildStoneBlock;
+					}
+					else if (name == "stone_door")
+					{
+						coins = coinsOnBuildStoneDoor;
 					}
 					else if (name == "wooden_platform" ||
-								name == "wooden_door")
+							name == "wooden_door" ||
+							name == "bridge" ||
+							name == "ladder")
 					{
 						coins = coinsOnBuildWood;
 					}
@@ -202,8 +203,14 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 				break;
 
 				case GE_hit_vehicle:
-					coins = coinsOnHitSiege;
-					break;
+
+				{
+					g.params.ResetBitIndex();
+					f32 damage = g.params.read_f32();
+					coins = coinsOnHitSiege * damage;
+				}
+
+				break;
 
 				case GE_kill_vehicle:
 					coins = coinsOnKillSiege;

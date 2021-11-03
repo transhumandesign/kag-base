@@ -87,6 +87,8 @@ void MakeTradeMenu(CBlob@ trader)
 	addItemForCoin(trader, "Water Bomb", cost_waterbombs, true, "$mat_waterbombs$", "mat_waterbombs", Descriptions::waterbomb);
 	addItemForCoin(trader, "Keg", cost_keg, true, "$keg$", "keg", Descriptions::keg);
 	addItemForCoin(trader, "Mine", cost_mine, true, "$mine$", "mine", Descriptions::mine);
+	//yummy stuff
+	addItemForCoin(trader, "Burger", cost_burger, true, "$food$", "food", Descriptions::food);
 	//archery stuff
 	addItemForCoin(trader, "Arrows", cost_arrows, true, "$mat_arrows$", "mat_arrows", Descriptions::arrows);
 	addItemForCoin(trader, "Water Arrows", cost_waterarrows, true, "$mat_waterarrows$", "mat_waterarrows", Descriptions::waterarrows);
@@ -97,7 +99,6 @@ void MakeTradeMenu(CBlob@ trader)
 	addItemForCoin(trader, "Mounted Bow", cost_mountedbow, true, "$mounted_bow$", "mounted_bow", Descriptions::mounted_bow);
 	addItemForCoin(trader, "Drill", cost_drill, true, "$drill$", "drill", Descriptions::drill);
 	addItemForCoin(trader, "Boulder", cost_boulder, true, "$boulder$", "boulder", Descriptions::boulder);
-	addItemForCoin(trader, "Burger", cost_burger, true, "$food$", "food", Descriptions::food);
 	//vehicles
 	addItemForCoin(trader, "Catapult", cost_catapult, true, "$catapult$", "catapult", Descriptions::catapult);
 	addItemForCoin(trader, "Ballista", cost_ballista, true, "$ballista$", "ballista", Descriptions::ballista);
@@ -135,8 +136,8 @@ void Reset(CRules@ this)
 		if (player is null) continue;
 
 		s32 coins = player.getCoins();
-		coins = Maths::Max(coins, min_coins);
-		coins = Maths::Min(coins, max_coins);
+		if (min_coins >= 0) coins = Maths::Max(coins, min_coins);
+		if (max_coins >= 0) coins = Maths::Min(coins, max_coins);
 		player.server_setCoins(coins);
 	}
 

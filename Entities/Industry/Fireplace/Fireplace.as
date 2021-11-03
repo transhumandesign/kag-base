@@ -8,8 +8,6 @@
 
 void onInit(CBlob@ this)
 {
-	// this.getShape().getConsts().mapCollisions = false;
-	this.getShape().getConsts().rotates = false;
 	this.getCurrentScript().tickFrequency = 9;
 	this.getSprite().SetEmitSound("CampfireSound.ogg");
 	this.getSprite().SetAnimation("fire");
@@ -67,7 +65,7 @@ void onInit(CSprite@ this)
 	if (fire !is null)
 	{
 		fire.SetRelativeZ(1);
-		fire.SetOffset(Vec2f(-2.0f, -4.0f));
+		fire.SetOffset(Vec2f(-2.0f, -6.0f));
 		{
 			Animation@ anim = fire.addAnimation("fire", 6, true);
 			anim.AddFrame(1);
@@ -101,6 +99,7 @@ void Extinguish(CBlob@ this)
 void Ignite(CBlob@ this)
 {
 	if (this.getSprite().isAnimation("fire")) return;
+
 	this.SetLight(true);
 	this.Tag("fire source");
 

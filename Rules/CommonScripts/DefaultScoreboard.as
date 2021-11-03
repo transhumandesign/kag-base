@@ -1,29 +1,43 @@
 
-// set kills and deaths
+// set kills, deaths and assists
+
+#include "AssistCommon.as";
 
 void onBlobDie(CRules@ this, CBlob@ blob)
 {
-	if (blob !is null)
+	if (!this.isGameOver() && !this.isWarmup())	//Only count kills, deaths and assists when the game is on
 	{
-		CPlayer@ killer = blob.getPlayerOfRecentDamage();
-		CPlayer@ victim = blob.getPlayer();
-
-		if (victim !is null)
+		if (blob !is null)
 		{
-			victim.setDeaths(victim.getDeaths() + 1);
-			// temporary until we have a proper score system
-			victim.setScore(100 * (f32(victim.getKills()) / f32(victim.getDeaths() + 1)));
+			CPlayer@ killer = blob.getPlayerOfRecentDamage();
+			CPlayer@ victim = blob.getPlayer();
+			CPlayer@ helper = getAssistPlayer(victim, killer);
 
-			if (killer !is null) //requires victim so that killing trees matters
+			if (helper !is null)
 			{
-				if (killer.getTeamNum() != blob.getTeamNum())
+				helper.setAssists(helper.getAssists() + 1);
+			}
+
+			if (victim !is null)
+			{
+				victim.setDeaths(victim.getDeaths() + 1);
+				// temporary until we have a proper score system
+				victim.setScore(100 * (f32(victim.getKills()) / f32(victim.getDeaths() + 1)));
+
+				if (killer !is null) //requires victim so that killing trees matters
 				{
-					killer.setKills(killer.getKills() + 1);
-					// temporary until we have a proper score system
-					killer.setScore(100 * (f32(killer.getKills()) / f32(killer.getDeaths() + 1)));
+					if (killer.getTeamNum() != blob.getTeamNum())
+					{
+						killer.setKills(killer.getKills() + 1);
+						// temporary until we have a proper score system
+						killer.setScore(100 * (f32(killer.getKills()) / f32(killer.getDeaths() + 1)));
+					}
 				}
+
 			}
 
 		}
+
 	}
+	
 }

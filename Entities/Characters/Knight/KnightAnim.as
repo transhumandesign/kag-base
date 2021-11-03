@@ -3,19 +3,60 @@
 #include "KnightCommon.as";
 #include "RunnerAnimCommon.as";
 #include "RunnerCommon.as";
-#include "Knocked.as";
+#include "KnockedCommon.as";
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
+#include "Accolades.as"
+#include "ShieldCommon.as"
 
 const string shiny_layer = "shiny bit";
 
 void onInit(CSprite@ this)
 {
-	addRunnerTextures(this, "knight", "Knight");
+	LoadSprites(this);
+}
+
+void onPlayerInfoChanged(CSprite@ this)
+{
+	LoadSprites(this);
+}
+
+void LoadSprites(CSprite@ this)
+{
+	int armour = PLAYER_ARMOUR_STANDARD;
+
+	CPlayer@ p = this.getBlob().getPlayer();
+	if (p !is null)
+	{
+		armour = p.getArmourSet();
+		if (armour == PLAYER_ARMOUR_STANDARD)
+		{
+			Accolades@ acc = getPlayerAccolades(p.getUsername());
+			if (acc.hasCape())
+			{
+				armour = PLAYER_ARMOUR_CAPE;
+			}
+		}
+	}
+
+	switch (armour)
+	{
+	case PLAYER_ARMOUR_STANDARD:
+		ensureCorrectRunnerTexture(this, "knight", "Knight");
+		break;
+	case PLAYER_ARMOUR_CAPE:
+		ensureCorrectRunnerTexture(this, "knight_cape", "KnightCape");
+		break;
+	case PLAYER_ARMOUR_GOLD:
+		ensureCorrectRunnerTexture(this, "knight_gold", "KnightGold");
+		break;
+	}
+
+	string texname = getRunnerTextureName(this);
 
 	// add blade
 	this.RemoveSpriteLayer("chop");
-	CSpriteLayer@ chop = this.addSpriteLayer("chop");
+	CSpriteLayer@ chop = this.addTexturedSpriteLayer("chop", this.getTextureName(), 32, 32);
 
 	if (chop !is null)
 	{
@@ -41,11 +82,6 @@ void onInit(CSprite@ this)
 	}
 }
 
-void onPlayerInfoChanged(CSprite@ this)
-{
-	ensureCorrectRunnerTexture(this, "knight", "Knight");
-}
-
 void onTick(CSprite@ this)
 {
 	// store some vars for ease and speed
@@ -59,7 +95,7 @@ void onTick(CSprite@ this)
 		return;
 	}
 
-	const u8 knocked = getKnocked(blob);
+	bool knocked = isKnocked(blob);
 
 	bool shieldState = isShieldState(knight.state);
 	bool specialShieldState = isSpecialShieldState(knight.state);
@@ -127,7 +163,7 @@ void onTick(CSprite@ this)
 
 	bool shinydot = false;
 
-	if (knocked > 0)
+	if (knocked)
 	{
 		if (inair)
 		{
@@ -142,149 +178,176 @@ void onTick(CSprite@ this)
 	{
 		this.SetAnimation("crouch");
 	}
-	else if (knight.state == KnightStates::shieldgliding)
+	else
 	{
-		this.SetAnimation("shield_glide");
-	}
-	else if (knight.state == KnightStates::shielddropping)
-	{
-		this.SetAnimation("shield_drop");
-	}
-	else if (knight.state == KnightStates::shielding)
-	{
-		if (walking)
+		switch(knight.state)
 		{
-			if (direction == 0)
-			{
-				this.SetAnimation("shield_run");
-			}
-			else if (direction == -1)
-			{
-				this.SetAnimation("shield_run_up");
-			}
-			else if (direction == 1)
-			{
-				this.SetAnimation("shield_run_down");
-			}
-		}
-		else
-		{
-			this.SetAnimation("shield_raised");
+			case KnightStates::shieldgliding:
+				this.SetAnimation("shield_glide");
+			break;
 
-			if (direction == 1)
+			case KnightStates::shielddropping:
+				this.SetAnimation("shield_drop");
+			break;
+
+			case KnightStates::resheathing_slash:
+				this.SetAnimation("resheath_slash");
+			break;
+
+			case KnightStates::resheathing_cut:
+				this.SetAnimation("draw_sword");
+			break;
+
+			case KnightStates::sword_cut_mid:
+				this.SetAnimation("strike_mid");
+			break;
+
+			case KnightStates::sword_cut_mid_down:
+				this.SetAnimation("strike_mid_down");
+			break;
+
+			case KnightStates::sword_cut_up:
+				this.SetAnimation("strike_up");
+			break;
+
+			case KnightStates::sword_cut_down:
+				this.SetAnimation("strike_down");
+			break;
+
+			case KnightStates::sword_power:
+			case KnightStates::sword_power_super:
 			{
-				this.animation.frame = 2;
-			}
-			else if (direction == -1)
-			{
-				if (vec.y > -0.97)
+				this.SetAnimation("strike_power");
+
+				if (knight.swordTimer <= 1)
+					this.animation.SetFrameIndex(0);
+
+				u8 mintime = 6;
+				u8 maxtime = 8;
+				if (knight.swordTimer >= mintime && knight.swordTimer <= maxtime)
 				{
+					wantsChopLayer = true;
+					chopframe = knight.swordTimer - mintime;
+					chopAngle = -vec.Angle();
+				}
+			}
+			break;
+
+			case KnightStates::sword_drawn:
+			{
+				if (knight.swordTimer < KnightVars::slash_charge)
+				{
+					this.SetAnimation("draw_sword");
+				}
+				else if (knight.swordTimer < KnightVars::slash_charge_level2)
+				{
+					this.SetAnimation("strike_power_ready");
+					this.animation.frame = 0;
+				}
+				else if (knight.swordTimer < KnightVars::slash_charge_limit)
+				{
+					this.SetAnimation("strike_power_ready");
 					this.animation.frame = 1;
+					shinydot = true;
 				}
 				else
 				{
-					this.animation.frame = 3;
+					this.SetAnimation("draw_sword");
 				}
 			}
-			else
-			{
-				this.animation.frame = 0;
-			}
-		}
-	}
-	else if (knight.state == KnightStates::sword_drawn)
-	{
-		if (knight.swordTimer < KnightVars::slash_charge)
-		{
-			this.SetAnimation("draw_sword");
-		}
-		else if (knight.swordTimer < KnightVars::slash_charge_level2)
-		{
-			this.SetAnimation("strike_power_ready");
-			this.animation.frame = 0;
-		}
-		else if (knight.swordTimer < KnightVars::slash_charge_limit)
-		{
-			this.SetAnimation("strike_power_ready");
-			this.animation.frame = 1;
-			shinydot = true;
-		}
-		else
-		{
-			this.SetAnimation("draw_sword");
-		}
-	}
-	else if (knight.state == KnightStates::sword_cut_mid)
-	{
-		this.SetAnimation("strike_mid");
-	}
-	else if (knight.state == KnightStates::sword_cut_mid_down)
-	{
-		this.SetAnimation("strike_mid_down");
-	}
-	else if (knight.state == KnightStates::sword_cut_up)
-	{
-		this.SetAnimation("strike_up");
-	}
-	else if (knight.state == KnightStates::sword_cut_down)
-	{
-		this.SetAnimation("strike_down");
-	}
-	else if (knight.state == KnightStates::sword_power || knight.state == KnightStates::sword_power_super)
-	{
-		this.SetAnimation("strike_power");
+			break;
 
-		if (knight.swordTimer <= 1)
-			this.animation.SetFrameIndex(0);
+			case KnightStates::shielding:
+			{
+				if (!isShieldEnabled(blob))
+					break;
 
-		u8 mintime = 6;
-		u8 maxtime = 8;
-		if (knight.swordTimer >= mintime && knight.swordTimer <= maxtime)
-		{
-			wantsChopLayer = true;
-			chopframe = knight.swordTimer - mintime;
-			chopAngle = -vec.Angle();
-		}
-	}
-	else if (inair)
-	{
-		RunnerMoveVars@ moveVars;
-		if (!blob.get("moveVars", @moveVars))
-		{
-			return;
-		}
-		f32 vy = vel.y;
-		if (vy < -0.0f && moveVars.walljumped)
-		{
-			this.SetAnimation("run");
-		}
-		else
-		{
-			this.SetAnimation("fall");
-			this.animation.timer = 0;
+				if (walking)
+				{
+					if (direction == 0)
+					{
+						this.SetAnimation("shield_run");
+					}
+					else if (direction == -1)
+					{
+						this.SetAnimation("shield_run_up");
+					}
+					else if (direction == 1)
+					{
+						this.SetAnimation("shield_run_down");
+					}
+				}
+				else
+				{
+					this.SetAnimation("shield_raised");
 
-			if (vy < -1.5)
-			{
-				this.animation.frame = 0;
+					if (direction == 1)
+					{
+						this.animation.frame = 2;
+					}
+					else if (direction == -1)
+					{
+						if (vec.y > -0.97)
+						{
+							this.animation.frame = 1;
+						}
+						else
+						{
+							this.animation.frame = 3;
+						}
+					}
+					else
+					{
+						this.animation.frame = 0;
+					}
+				}
 			}
-			else if (vy > 1.5)
+			break;
+
+			default:
 			{
-				this.animation.frame = 2;
-			}
-			else
-			{
-				this.animation.frame = 1;
+				if (inair)
+				{
+					RunnerMoveVars@ moveVars;
+					if (!blob.get("moveVars", @moveVars))
+					{
+						return;
+					}
+					f32 vy = vel.y;
+					if (vy < -0.0f && moveVars.walljumped)
+					{
+						this.SetAnimation("run");
+					}
+					else
+					{
+						this.SetAnimation("fall");
+						this.animation.timer = 0;
+
+						if (vy < -1.5)
+						{
+							this.animation.frame = 0;
+						}
+						else if (vy > 1.5)
+						{
+							this.animation.frame = 2;
+						}
+						else
+						{
+							this.animation.frame = 1;
+						}
+					}
+				}
+				else if (walking || 
+					(blob.isOnLadder() && (blob.isKeyPressed(key_up) || blob.isKeyPressed(key_down))))
+				{
+					this.SetAnimation("run");
+				}
+				else
+				{
+					defaultIdleAnim(this, blob, direction);
+				}
 			}
 		}
-	}
-	else if (walking ||
-	         (blob.isOnLadder() && (blob.isKeyPressed(key_up) || blob.isKeyPressed(key_down))))
-	{
-		this.SetAnimation("run");
-	}
-	else
-	{
-		defaultIdleAnim(this, blob, direction);
 	}
 
 	CSpriteLayer@ chop = this.getSpriteLayer("chop");
@@ -330,7 +393,7 @@ void onTick(CSprite@ this)
 	}
 
 	//set the head anim
-	if (knocked > 0)
+	if (knocked)
 	{
 		blob.Tag("dead head");
 	}

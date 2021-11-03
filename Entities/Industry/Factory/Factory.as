@@ -9,6 +9,7 @@
 #include "Costs.as"
 #include "Hitters.as"
 #include "HallCommon.as"
+#include "GenericButtonCommon.as"
 
 const string children_destructible_tag = "children destructible";
 const string children_destructible_label = "children destruct label";
@@ -67,6 +68,8 @@ int getWorkers(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	// add button for adding scroll if caller has it
 
 	CBitStream params;

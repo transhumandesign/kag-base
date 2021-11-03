@@ -1,6 +1,6 @@
 
 #include "/Entities/Common/Attacks/Hitters.as";
-#include "Knocked.as"
+#include "KnockedCommon.as"
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
@@ -15,7 +15,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 
 	//dead bodies dont stomp
-	if(this.hasTag("dead"))
+	if (this.hasTag("dead"))
 	{
 		return;
 	}
@@ -51,7 +51,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	if (customData == Hitters::stomp && damage > 0.0f && velocity.y > 0.0f && worldPoint.y < this.getPosition().y)
 	{
 		this.getSprite().PlaySound("Entities/Characters/Sounds/Stomp.ogg");
-		SetKnocked(this, 15);
+		setKnocked(this, 15, true);
 	}
 
 	return damage;

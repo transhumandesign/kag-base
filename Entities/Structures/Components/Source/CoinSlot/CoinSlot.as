@@ -2,6 +2,7 @@
 
 #include "MechanismsCommon.as";
 #include "LootCommon.as";
+#include "GenericButtonCommon.as";
 
 enum state
 {
@@ -35,7 +36,7 @@ void onInit(CBlob@ this)
 	// background, let water overlap
 	this.getShape().getConsts().waterPasses = true;
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		addCoin(this, COIN_COST / 3);
 	}
@@ -49,17 +50,17 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic || this.exists("component")) return;
+	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f POSITION = this.getPosition() / 8;
 
 	CoinSlot component(POSITION);
 	this.set("component", component);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		grid.setAll(
 		component.x,                        // x
@@ -72,7 +73,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite is null) return;
+	if (sprite is null) return;
 
 	sprite.SetFacingLeft(false);
 	sprite.SetZ(-50);
@@ -80,12 +81,14 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if(!this.isOverlapping(caller) || !this.getShape().isStatic()) return;
+	if (!canSeeButtons(this, caller)) return;
+
+	if (!this.isOverlapping(caller) || !this.getShape().isStatic()) return;
 
 	CPlayer@ player = caller.getPlayer();
-	if(player !is null && player.isMyPlayer() && player.getCoins() < COIN_COST)
+	if (player !is null && player.isMyPlayer() && player.getCoins() < COIN_COST)
 	{
-		Sound::Play("NoAmmo.ogg");
+		this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 		return;
 	}
 
@@ -106,13 +109,13 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onTick(CBlob@ this)
 {
-	if(!getNet().isServer() || this.get_u32("duration") > getGameTime()) return;
+	if (!getNet().isServer() || this.get_u32("duration") > getGameTime()) return;
 
 	Component@ component = null;
-	if(!this.get("component", @component)) return;
+	if (!this.get("component", @component)) return;
 
 	MapPowerGrid@ grid;
-	if(!getRules().get("power grid", @grid)) return;
+	if (!getRules().get("power grid", @grid)) return;
 
 	this.Untag("active");
 
@@ -126,21 +129,21 @@ void onTick(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if(cmd == this.getCommandID("activate"))
+	if (cmd == this.getCommandID("activate"))
 	{
-		if(getNet().isServer())
+		if (getNet().isServer())
 		{
 			Component@ component = null;
-			if(!this.get("component", @component)) return;
+			if (!this.get("component", @component)) return;
 
 			MapPowerGrid@ grid;
-			if(!getRules().get("power grid", @grid)) return;
+			if (!getRules().get("power grid", @grid)) return;
 
 			u16 id;
-			if(!params.saferead_u16(id)) return;
+			if (!params.saferead_u16(id)) return;
 
 			CPlayer@ player = getPlayerByNetworkId(id);
-			if(player !is null)
+			if (player !is null)
 			{
 				player.server_setCoins(Maths::Max(player.getCoins() - COIN_COST, 0));
 			}
@@ -159,7 +162,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 
 		CSprite@ sprite = this.getSprite();
-		if(sprite is null) return;
+		if (sprite is null) return;
 
 		sprite.SetAnimation("default");
 		sprite.SetAnimation("activate");
@@ -169,7 +172,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void onDie(CBlob@ this)
 {
-	if(getNet().isServer() && this.exists("component"))
+	if (getNet().isServer() && this.exists("component"))
 	{
 		server_CreateLoot(this, this.getPosition(), this.getTeamNum());
 	}

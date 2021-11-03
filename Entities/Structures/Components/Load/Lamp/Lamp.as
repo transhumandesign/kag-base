@@ -51,7 +51,7 @@ void onInit(CBlob@ this)
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
-	if(!isStatic || this.exists("component")) return;
+	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f POSITION = this.getPosition() / 8;
 	const u16 ANGLE = this.getAngleDegrees();
@@ -59,10 +59,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Lamp component(POSITION, this.getNetworkID());
 	this.set("component", component);
 
-	if(getNet().isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
-		if(!getRules().get("power grid", @grid)) return;
+		if (!getRules().get("power grid", @grid)) return;
 
 		grid.setAll(
 		component.x,                        // x
@@ -75,7 +75,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if(sprite !is null)
+	if (sprite !is null)
 	{
 		const bool FACING = ANGLE < 180? false : true;
 

@@ -17,6 +17,24 @@ void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
 
+	if (!blob.isInWater())
+	{
+		bool very_wet = (getGameTime() - blob.get_u32("last time in water")) < 20;
+		if (XORRandom(very_wet ? 4 : 15)==0)
+		{
+			float radius_x = 16.f;
+			float radius_y = 3.f;
+			getMap().SplashEffect(blob.getPosition()+Vec2f(-radius_x + XORRandom((radius_x*2+1)*100)*0.01f,
+														   -radius_y + XORRandom((radius_y*2+1)*100)*0.01f), 
+								  Vec2f(0, 2), 
+								  (very_wet ? 8.f : 3.f) + XORRandom(2));
+		}
+	}
+	else
+	{
+		blob.set_u32("last time in water", getGameTime());
+	}
+	
 	if (!blob.hasTag("dead"))
 	{
 		//scary chomping
@@ -143,14 +161,14 @@ void onTick(CBlob@ this)
 	vel.y *= -0.5f;
 
 	f32 angle = 0.0f;
-	if(significantvel)
+	if (significantvel)
 	{
 		angle = -vel.Angle();
 	}
 
-	if(Maths::Abs(oldangle - angle) > 180.0f)
+	if (Maths::Abs(oldangle - angle) > 180.0f)
 	{
-		if(angle > oldangle)
+		if (angle > oldangle)
 			angle -= 360.0f;
 		else
 			oldangle -= 360.0f;
@@ -158,7 +176,7 @@ void onTick(CBlob@ this)
 	f32 change = oldangle - angle;
 
 	f32 dif = (left?1:-1)*(Maths::Min(Maths::Abs(change) * 0.1f,10.0f));
-	if(change > 0)
+	if (change > 0)
 		oldangle += dif;
 	else
 		oldangle -= dif;

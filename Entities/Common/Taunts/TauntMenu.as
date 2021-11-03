@@ -6,6 +6,8 @@
 const int GLOBAL_COOLDOWN = 120;
 const int TEAM_COOLDOWN = 60;
 const bool CAN_REPEAT_TAUNT = true;
+const bool CLICK_CATEGORY = false;
+const bool SHOW_IN_CHAT = true;
 
 string menu_selected = "CATEGORIES";
 string last_taunt;
@@ -13,9 +15,25 @@ int cooldown_time = 0;
 
 void onInit(CRules@ rules)
 {
+	//You should never do this in a client only script, moved to EmoteBinderMenu.as
+	//rules.addCommandID("display taunt");
+
+	string filename = "TauntEntries.cfg";
+	string cachefilename = "../Cache/" + filename;
 	ConfigFile cfg;
-	if (!cfg.loadFile("../Cache/TauntEntries.cfg")
-	 && !cfg.loadFile("TauntEntries.cfg"))
+
+	//attempt to load from cache first
+	bool loaded = false;
+	if (CFileMatcher(cachefilename).getFirst() == cachefilename && cfg.loadFile(cachefilename))
+	{
+		loaded = true;
+	}
+	else if (cfg.loadFile(filename))
+	{
+		loaded = true;
+	}
+
+	if (!loaded)
 	{
 		return;
 	}
@@ -97,9 +115,21 @@ void onTick(CRules@ rules)
 				if (CAN_REPEAT_TAUNT || selected.visible_name != last_taunt)
 				{
 					bool globalTaunt = isGlobalTauntCategory(menu_selected);
-					client_SendChat(selected.visible_name, globalTaunt ? 0 : 1);
 					last_taunt = selected.visible_name;
 					cooldown_time = globalTaunt ? GLOBAL_COOLDOWN : TEAM_COOLDOWN;
+
+					if (SHOW_IN_CHAT)
+					{
+						client_SendChat(selected.visible_name, globalTaunt ? 0 : 1);
+					}
+					else
+					{
+						CBitStream params;
+						params.write_u16(blob.getNetworkID());
+						params.write_string(selected.visible_name);
+						params.write_bool(globalTaunt);
+						rules.SendCommand(rules.getCommandID("display taunt"), params, true);
+					}
 				}
 				else
 				{
@@ -111,14 +141,38 @@ void onTick(CRules@ rules)
 		menu_selected = "CATEGORIES";
 		set_active_wheel_menu(null);
 	}
-	else if (get_active_wheel_menu() is menu && menu_selected == "CATEGORIES") //category selected
-	{
+	else if ( //select category
+		get_active_wheel_menu() is menu && menu_selected == "CATEGORIES" &&
+		(!CLICK_CATEGORY || blob.isKeyJustPressed(key_action1))
+	) {
 		WheelMenuEntry@ selected = menu.get_selected();
 		if (selected !is null)
 		{
 			menu_selected = selected.name;
 			WheelMenu@ submenu = get_wheel_menu(menu_selected);
 			set_active_wheel_menu(@submenu);
+		}
+	}
+}
+
+void onCommand(CRules@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("display taunt"))
+	{
+		CPlayer@ player = getLocalPlayer();
+		CBlob@ caller = getBlobByNetworkID(params.read_u16());
+		string taunt = params.read_string();
+		bool globalTaunt = params.read_bool();
+
+		if (caller is null || !cl_chatbubbles)
+		{
+			return;
+		}
+
+		//only show team taunts to teammates
+		if (globalTaunt || (player !is null && player.getTeamNum() == caller.getTeamNum()))
+		{
+			caller.Chat(taunt);
 		}
 	}
 }

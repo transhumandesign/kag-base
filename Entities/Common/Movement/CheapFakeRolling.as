@@ -5,6 +5,7 @@ void onInit(CBlob@ this)
 {
 	f32 angle = (this.getNetworkID() * 977) % 360;
 	this.set_f32("angle", angle);
+	this.set_f32("old_angle", angle);
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().runFlags |= Script::tick_moving;
@@ -13,13 +14,15 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	f32 angle = this.get_f32("angle");
+	this.set_f32("old_angle", angle);
+
 	Vec2f vel = this.getVelocity();
 	if (Maths::Abs(vel.x) > 0.1)
 	{
 		CSprite@ sprite = this.getSprite();
 		if (sprite !is null)
 		{
-			f32 angle = this.get_f32("angle");
 			angle += vel.x * this.getRadius();
 			if (angle > 360.0f)
 				angle -= 360.0f;

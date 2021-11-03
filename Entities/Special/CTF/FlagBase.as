@@ -51,6 +51,15 @@ void onTick(CBlob@ this)
 
 				map.server_AddSector(pos + Vec2f(-12, -32), pos + Vec2f(12, 16), "no build", "", this.getNetworkID());
 
+				//clear the no build zone so we dont get unbreakable blocks
+				for (int x = -12; x < 12; x += 8)
+				{
+					for (int y = -32; y < 8; y += 8)
+					{
+						map.server_SetTile(pos + Vec2f(x, y), CMap::tile_empty);
+					}
+				}
+
 				map.server_SetTile(pos + Vec2f(-8, 12), CMap::tile_bedrock);
 				map.server_SetTile(pos + Vec2f(0, 12), CMap::tile_bedrock);
 				map.server_SetTile(pos + Vec2f(8, 12), CMap::tile_bedrock);
@@ -66,7 +75,12 @@ void onTick(CBlob@ this)
 
 		if (!this.hasAttached())
 		{
-			this.Tag("flag missing");
+			if (!this.hasTag("flag missing"))
+			{
+				this.Tag("flag missing");
+				this.Sync("flag missing", true);
+			}
+			
 			u16 id = this.get_u16("flag id");
 			CBlob@ b = getBlobByNetworkID(id);
 			if (b !is null)
@@ -104,7 +118,11 @@ void onTick(CBlob@ this)
 		}
 		else
 		{
-			this.Untag("flag missing");
+			if (this.hasTag("flag missing"))
+			{
+				this.Untag("flag missing");
+				this.Sync("flag missing", true);
+			}
 		}
 	}
 }
@@ -161,16 +179,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			{
 				blob.server_AttachTo(b, "PICKUP"); //attach to player
 
-				CPlayer@ player = blob.getPlayer();
-
-				string name = "someone";
-				if (player !is null)
-				{
-					name = player.getUsername();
-				}
-
 				CBitStream params;
-				params.write_string(name);
+				params.write_u16(blob.getNetworkID());
 
 				b.SendCommand(b.getCommandID("pickup"), params);
 			}
@@ -187,16 +197,17 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			//smash the flag
 			this.server_Hit(b, b.getPosition(), Vec2f(), 5.0f, 0xfa, true);
 
-			CPlayer@ player = blob.getPlayer();
-
-			string name = "someone";
-			if (player !is null)
+			if (sv_tcpr)
 			{
-				name = player.getUsername();
+				if (blob !is null && blob.getPlayer() !is null)
+				{
+					tcpr("FlagCaptured {\"player\":\"" + blob.getPlayer().getUsername() + "\",\"ticks\":" + getGameTime() + "}");
+				}
+
 			}
 
 			CBitStream params;
-			params.write_string(name);
+			params.write_u16(blob.getNetworkID());
 			b.SendCommand(b.getCommandID("capture"), params);
 		}
 	}

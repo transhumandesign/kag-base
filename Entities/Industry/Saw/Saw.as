@@ -1,6 +1,7 @@
 // Saw logic
 
 #include "Hitters.as"
+#include "GenericButtonCommon.as"
 
 const string toggle_id = "toggle_power";
 const string sawteammate_id = "sawteammate";
@@ -8,6 +9,8 @@ const string sawteammate_id = "sawteammate";
 void onInit(CBlob@ this)
 {
 	this.Tag("saw");
+	this.set_u32("bomb_time", 0);
+	this.set_u8("bombs_exploded", 0);
 
 	this.addCommandID(toggle_id);
 	this.addCommandID(sawteammate_id);
@@ -29,6 +32,8 @@ bool getSawOn(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	if (caller.getTeamNum() != this.getTeamNum() || this.getDistanceTo(caller) > 16) return;
 
 	string desc = getTranslatedString("Turn Saw " + (getSawOn(this) ? "Off" : "On"));
@@ -105,9 +110,9 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 				blob.Tag('custom quantity');
 				blob.Init();
 
-				blob.setPosition(this.getPosition() + Vec2f(0, 12));
+				blob.setPosition(this.getPosition());
 				blob.setVelocity(Vec2f(0, -4.0f));
-				blob.server_SetQuantity(blobname == "crate"? 100 : 50);
+				blob.server_SetQuantity(50);
 			}
 		}
 
@@ -120,8 +125,11 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 
 	tobeblended.Tag("sawed");
 
-	// on saw player - disable the saw
-	if (tobeblended.getPlayer() !is null && tobeblended.getTeamNum() == this.getTeamNum())
+	// on saw player or dead body - disable the saw
+	if (
+		(tobeblended.getPlayer() !is null || //player
+		(tobeblended.hasTag("flesh") && tobeblended.hasTag("flesh"))) && //dead body
+		tobeblended.getTeamNum() == this.getTeamNum()) //same team as saw
 	{
 		CBitStream params;
 		params.write_netid(tobeblended.getNetworkID());
@@ -144,8 +152,6 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 
 bool canSaw(CBlob@ this, CBlob@ blob)
 {
-	if (blob.hasTag("saw")) return true; //destroy saws in close proximity
-
 	if (blob.getRadius() >= this.getRadius() * 0.99f || blob.getShape().isStatic() ||
 	        blob.hasTag("sawed") || blob.hasTag("invincible"))
 	{
@@ -159,13 +165,14 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 	    name == "wooden_door" ||
 	    name == "mat_wood" ||
 	    name == "tree_bushy" ||
-	    name == "tree_pine")
+	    name == "tree_pine" ||
+	    (name == "mine" && blob.getTeamNum() == this.getTeamNum()))
 	{
 		return false;
 	}
 
 	//flesh blobs have to be fed into the saw part
-	if (blob.hasTag("flesh"))
+	if (blob.hasTag("flesh") || (name=="mine"))
 	{
 		Vec2f pos = this.getPosition();
 		Vec2f bpos = blob.getPosition();
@@ -233,6 +240,33 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		Vec2f bpos = blob.getPosition();
 		this.Tag("sawed");
 		this.server_Hit(blob, bpos, bpos - pos, 0.0f, Hitters::saw);
+
+		if (blob.getName() == "bomb")
+		{
+			if (this.get_u8("bombs_exploded") == 0)
+			{
+				this.set_u32("bomb_time", getGameTime());
+			}
+
+			this.add_u8("bombs_exploded", 1);
+		}
+	}
+}
+
+void onTick(CBlob@ this)
+{
+	if (this.get_u32("bomb_time") == 0) return;
+
+	if (getGameTime() - this.get_u32("bomb_time") > 8)
+	{
+		this.set_u32("bomb_time", 0);
+
+		if (this.get_u8("bombs_exploded") >= 3)
+		{
+			this.server_Hit(this, this.getPosition(), this.getPosition(), 100.0f, Hitters::crush);
+		}
+
+		this.set_u8("bombs_exploded", 0);
 	}
 }
 

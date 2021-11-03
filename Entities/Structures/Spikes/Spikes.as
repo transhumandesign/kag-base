@@ -295,12 +295,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 	if (state == falling)
 	{
-		Vec2f vel = this.getVelocity();
-		if (vel.y < 4.0f) //slow, minimal dmg
+		float vellen = this.getVelocity().Length();
+		if (vellen < 4.0f) //slow, minimal dmg
 			this.server_Hit(blob, point, Vec2f(0, 1), 1.0f, Hitters::spikes, true);
-		else if (vel.y < 5.5f) //faster, kill archer
+		else if (vellen < 5.5f) //faster, kill archer
 			this.server_Hit(blob, point, Vec2f(0, 1), 2.0f, Hitters::spikes, true);
-		else if (vel.y < 7.0f) //faster, kill builder
+		else if (vellen < 7.0f) //faster, kill builder
 			this.server_Hit(blob, point, Vec2f(0, 1), 3.0f, Hitters::spikes, true);
 		else			//fast, instakill
 			this.server_Hit(blob, point, Vec2f(0, 1), 4.0f, Hitters::spikes, true);

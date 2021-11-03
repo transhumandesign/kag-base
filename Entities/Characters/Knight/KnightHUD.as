@@ -34,13 +34,13 @@ void ManageCursors(CBlob@ this)
 
 void onRender(CSprite@ this)
 {
+	CBlob@ blob = this.getBlob();
+	ManageCursors(blob);
+
 	if (g_videorecording)
 		return;
 
-	CBlob@ blob = this.getBlob();
 	CPlayer@ player = blob.getPlayer();
-
-	ManageCursors(blob);
 
 	// draw inventory
 
@@ -65,5 +65,5 @@ void onRender(CSprite@ this)
 
 	// draw class icon
 
-	GUI::DrawIcon(iconsFilename, frame, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -16), 1.0f);
+	GUI::DrawIcon(iconsFilename, frame, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -16), 1.0f, player.getTeamNum());
 }

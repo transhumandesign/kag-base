@@ -18,6 +18,13 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 		return false;
 	}
 
+	if (blob.isPlatform() && blob.getAngleDegrees() == 0
+		&& this.get_u8("crouch_through_platform") > 0
+		&& this.getTeamNum() == blob.getTeamNum())
+	{
+		return false;
+	}
+
 	bool colliding_block = (oShape.isStatic() && oShape.getConsts().collidable);
 
 	// when dead, collide only if its moving and some time has passed after death
@@ -77,4 +84,18 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	}
 
 	return true;
+}
+
+void onTick(CBlob@ this)
+{
+	if (hasJustCrouched(this))
+	{
+		const uint count = this.getTouchingCount();
+		for (uint step = 0; step < count; ++step)
+		{
+			CBlob@ blob = this.getTouchingByIndex(step);
+			if ((this.getPosition()-blob.getPosition()).y > 0) //prevents player from dropping through enemies they're stading on
+				blob.getShape().checkCollisionsAgain = true;
+		}
+	}
 }

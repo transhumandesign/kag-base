@@ -6,6 +6,8 @@
 #include "MiniIconsInc.as"
 #include "Help.as"
 #include "Hitters.as"
+#include "GenericButtonCommon.as"
+#include "KnockedCommon.as"
 
 //property name
 const string required_space = "required space";
@@ -24,6 +26,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("boobytrap");
 
 	this.set_u32("boobytrap_cooldown_time", 0);
+	this.set_s32("gold building amount", 0);
 
 	u8 frame = 0;
 	if (this.exists("frame"))
@@ -181,7 +184,8 @@ void Land(CBlob@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	return !blob.hasTag("parachute");
+	return (this.getName() == blob.getName())
+	    || ((blob.getShape().isStatic() || blob.hasTag("player") || blob.hasTag("projectile")) && !blob.hasTag("parachute"));
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
@@ -191,7 +195,7 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
-	if (this.hasTag("unpackall"))
+	if (this.hasTag("unpackall") || !canSeeButtons(this, forBlob))
 		return false;
 
 	if (!hasSomethingPacked(this)) // It's a normal crate
@@ -212,7 +216,7 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 			f32 dist = (this.getPosition() - forBlob.getPosition()).Length();
 			f32 rad = (this.getRadius() + forBlob.getRadius());
 
-			if(dist < rad * ally_allowed_distance)
+			if (dist < rad * ally_allowed_distance)
 			{
 				return true; // Allies can access from further away
 			}
@@ -233,6 +237,8 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
+	if (!canSeeButtons(this, caller)) return;
+
 	Vec2f buttonpos(0, 0);
 
 	bool putting = caller.getCarriedBlob() !is null && caller.getCarriedBlob() !is this;
@@ -342,10 +348,27 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 		CBlob @caller = getBlobByNetworkID( params.read_u16() );
 
-		if (caller !is null && this.getInventory() !is null) {
-			// We might have to make room
+		if (caller !is null && this.getInventory() !is null) 
+		{
 			CInventory@ inv = this.getInventory();
 			u8 itemcount = inv.getItemsCount();
+
+			// Boobytrap if crate has enemy mine
+			CBlob@ mine = null;
+			for (int i = 0; i < inv.getItemsCount(); i++)
+			{
+				CBlob@ item = inv.getItem(i);
+				if (item.getName() == "mine" && item.getTeamNum() != caller.getTeamNum())
+				{
+					CBitStream params;
+					params.write_u16(caller.getNetworkID());
+					params.write_u16(item.getNetworkID());
+					this.SendCommand(this.getCommandID("boobytrap"), params);
+					return;
+				}
+			}
+
+			// We might have to make room
 			while (!inv.canPutItem(caller) && itemcount > 0)
 			{
 				// pop out last items until we can put in player or there's nothing left
@@ -368,9 +391,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller !is null && sneaky_player !is null) {
 			if (caller.getTeamNum() != sneaky_player.getTeamNum())
 			{
-				if (caller.exists("knocked"))
+				if (isKnockable(caller))
 				{
-					caller.set_u8("knocked", 30);
+					setKnocked(caller, 30);
 				}
 			}
 			this.Tag("crate escaped");
@@ -400,7 +423,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("activate"))
 	{
-		CBlob@ carrier = this.getAttachments().getAttachedBlob("PICKUP", 0);
+		CBlob@ carrier = this.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();
 		if (carrier !is null)
 		{
 			DumpOutItems(this, 5.0f, carrier.getVelocity(), false);
@@ -410,7 +433,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void Unpack(CBlob@ this)
 {
-	if(!getNet().isServer()) return;
+	if (!getNet().isServer()) return;
 
 	CBlob@ blob = server_CreateBlob(this.get_string("packed"), this.getTeamNum(), Vec2f_zero);
 
@@ -444,6 +467,7 @@ void Unpack(CBlob@ this)
 		blob.SetFacingLeft(this.isFacingLeft());
 	}
 
+	this.set_s32("gold building amount", 0); // prevents ballista crates from dropping gold if they were unpacked
 	this.server_SetHealth(-1.0f); // TODO: wont gib on client
 	this.server_Die();
 }
@@ -492,16 +516,12 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 		}
 		if (item.getName() == "mine" && item.getTeamNum() != forBlob.getTeamNum())
 		{
-			@mine = item;
+			CBitStream params;
+			params.write_u16(forBlob.getNetworkID());
+			params.write_u16(item.getNetworkID());
+			this.SendCommand(this.getCommandID("boobytrap"), params);
 			break;
 		}
-	}
-	if (mine !is null)
-	{
-		CBitStream params;
-		params.write_u16(forBlob.getNetworkID());
-		params.write_u16(mine.getNetworkID());
-		this.SendCommand(this.getCommandID("boobytrap"), params);
 	}
 }
 
@@ -527,7 +547,7 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 	{
 		if (this.hasTag("crate exploded"))
 		{
-			this.getSprite().PlaySound("MigrantSayNo.ogg", 1.0f, blob.getSexNum() == 0 ? 1.0f : 1.5f);
+			this.getSprite().PlaySound(getTranslatedString("MigrantSayNo") + ".ogg", 1.0f, blob.getSexNum() == 0 ? 1.0f : 1.5f);
 			Vec2f velocity = this.getVelocity();
 			if (velocity.x > 0) // Blow them right
 			{
@@ -542,9 +562,9 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 				velocity = Vec2f(0, -1);
 			}
 			blob.setVelocity(velocity * 8);
-			if (blob.exists("knocked"))
+			if (isKnockable(blob))
 			{
-				blob.set_u8("knocked", 30);
+				setKnocked(blob, 30);
 			}
 		}
 		else if (this.hasTag("crate escaped"))
@@ -559,14 +579,14 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 			blob.setPosition(pos);
 			blob.setVelocity(velocity);
 
-			blob.getSprite().PlaySound("MigrantSayHello.ogg", 1.0f, blob.getSexNum() == 0 ? 1.0f : 1.25f);
+			blob.getSprite().PlaySound(getTranslatedString("MigrantSayHello") + ".ogg", 1.0f, blob.getSexNum() == 0 ? 1.0f : 1.25f);
 		}
 		else
 		{
 			blob.setVelocity(this.getOldVelocity());
-			if (blob.exists("knocked"))
+			if (isKnockable(blob))
 			{
-				blob.set_u8("knocked", 2);
+				setKnocked(blob, 2);
 			}
 		}
 	}
@@ -676,9 +696,9 @@ bool canUnpackHere(CBlob@ this)
 
 	string packed = this.get_string("packed");
 	//required vertical buffer for siege engines and boats
-	if(packed == "ballista" || packed == "catapult" || packed == "longboat" || packed == "warboat")
+	if (packed == "ballista" || packed == "catapult" || packed == "longboat" || packed == "warboat")
 	{
-		if(pos.y < 40)
+		if (pos.y < 40)
 		{
 			return false;
 		}
@@ -687,7 +707,7 @@ bool canUnpackHere(CBlob@ this)
 	bool water = packed == "longboat" || packed == "warboat";
 	if (this.isAttached())
 	{
-		CBlob@ parent = this.getAttachments().getAttachedBlob("PICKUP", 0);
+		CBlob@ parent = this.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();
 		if (parent !is null)
 		{
 			return ((!water && parent.isOnGround()) || (water && map.isInWater(parent.getPosition() + Vec2f(0.0f, 8.0f))));
@@ -719,7 +739,7 @@ CBlob@ getPlayerInside(CBlob@ this)
 	return null;
 }
 
-bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_player = true)
+bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_special = true)
 {
 	bool dumped_anything = false;
 	if (getNet().isClient())
@@ -734,21 +754,14 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 	{
 		Vec2f velocity = (init_velocity == Vec2f_zero) ? this.getOldVelocity() : init_velocity;
 		CInventory@ inv = this.getInventory();
-		//u8 target_items_left = dump_player ? 0 : 1;
 		u8 target_items_left = 0;
-		bool skipping_player = false;
+		u8 item_num = 0;
+
 		while (inv !is null && (inv.getItemsCount() > target_items_left))
 		{
-			CBlob@ item;
-			if (skipping_player)
-			{
-				@item = inv.getItem(1);
-			}
-			else
-			{
-				@item = inv.getItem(0);
-			}
-			if (!item.hasTag("player"))
+			CBlob@ item = inv.getItem(item_num);
+
+			if (!item.hasTag("player") && item.getName() != "mine")
 			{
 				dumped_anything = true;
 				this.server_PutOutInventory(item);
@@ -762,15 +775,14 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 					item.setVelocity(velocity + getRandomVelocity(90, magnitude, 45));
 				}
 			}
-			else if (dump_player)
+			else if (dump_special && (item.hasTag("player") || item.getName() == "mine"))
 			{
-				// Handled in onRemoveFromInventory
 				this.server_PutOutInventory(item);
 			}
-			else // Don't dump player
+			else // Don't dump player or mine
 			{
-				skipping_player = true;
 				target_items_left++;
+				item_num++;
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 #include "DecayCommon.as";
 #include "HallCommon.as"
 
-#include "Knocked.as";
+#include "KnockedCommon.as";
 
 const string pickable_tag = "pickable";
 
@@ -54,6 +54,3 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return (this.getTeamNum() == byBlob.getTeamNum() && !this.getShape().isStatic() && this.hasTag(pickable_tag));
 }
-
-
-

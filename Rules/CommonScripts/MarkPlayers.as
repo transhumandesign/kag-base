@@ -45,6 +45,9 @@ void onTick(CRules@ this)
 
 void onRender(CRules@ this)
 {
+	if (g_videorecording)
+		return;
+
 	if ((getGameTime() % (5 * 30)) == 0)
 	{
 		updateMarked();

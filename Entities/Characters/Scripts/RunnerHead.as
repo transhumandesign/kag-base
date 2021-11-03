@@ -15,8 +15,8 @@ const int FRAMES_WIDTH = 8 * NUM_HEADFRAMES;
 int getHeadsPackIndex(int headIndex)
 {
 	if (headIndex > 255) {
-		if ((headIndex % 256) > NUM_UNIQUEHEADS) {
-			return Maths::Min(getHeadsPackCount() - 1, Maths::Floor(headIndex / 255.0f));
+		if ((headIndex % 256) >= NUM_UNIQUEHEADS) {
+			return Maths::Min(getHeadsPackCount() - 1, Maths::Floor(headIndex / 256.0f));
 		}
 	}
 	return 0;
@@ -24,7 +24,7 @@ int getHeadsPackIndex(int headIndex)
 
 bool doTeamColour(int packIndex)
 {
-	switch(packIndex) {
+	switch (packIndex) {
 		case 1: //FOTW
 			return false;
 	}
@@ -34,7 +34,7 @@ bool doTeamColour(int packIndex)
 
 bool doSkinColour(int packIndex)
 {
-	switch(packIndex) {
+	switch (packIndex) {
 		case 1: //FOTW
 			return false;
 	}
@@ -44,25 +44,25 @@ bool doSkinColour(int packIndex)
 
 int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 {
-	if(headIndex < NUM_UNIQUEHEADS)
+	if (headIndex < NUM_UNIQUEHEADS)
 	{
 		return headIndex * NUM_HEADFRAMES;
 	}
 
 	//special heads logic for default heads pack
-	if(default_pack && (headIndex == 255 || headIndex == NUM_UNIQUEHEADS))
+	if (default_pack && (headIndex == 255 || headIndex < NUM_UNIQUEHEADS))
 	{
 		CRules@ rules = getRules();
 		bool holidayhead = false;
-		if(rules !is null && rules.exists("holiday"))
+		if (rules !is null && rules.exists("holiday"))
 		{
 			const string HOLIDAY = rules.get_string("holiday");
-			if(HOLIDAY == "Halloween")
+			if (HOLIDAY == "Halloween")
 			{
 				headIndex = NUM_UNIQUEHEADS + 43;
 				holidayhead = true;
 			}
-			else if(HOLIDAY == "Christmas")
+			else if (HOLIDAY == "Christmas")
 			{
 				headIndex = NUM_UNIQUEHEADS + 61;
 				holidayhead = true;
@@ -70,22 +70,22 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 		}
 
 		//if nothing special set
-		if(!holidayhead)
+		if (!holidayhead)
 		{
 			string config = blob.getConfig();
-			if(config == "builder")
+			if (config == "builder")
 			{
 				headIndex = NUM_UNIQUEHEADS;
 			}
-			else if(config == "knight")
+			else if (config == "knight")
 			{
 				headIndex = NUM_UNIQUEHEADS + 1;
 			}
-			else if(config == "archer")
+			else if (config == "archer")
 			{
 				headIndex = NUM_UNIQUEHEADS + 2;
 			}
-			else if(config == "migrant")
+			else if (config == "migrant")
 			{
 				Random _r(blob.getNetworkID());
 				headIndex = 69 + _r.NextRanged(2); //head scarf or old
@@ -115,6 +115,7 @@ void onPlayerInfoChanged(CSprite@ this)
 CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 {
 	CBlob@ blob = this.getBlob();
+	CPlayer@ player = blob.getPlayer();
 
 	// strip old head
 	this.RemoveSpriteLayer("head");
@@ -126,19 +127,21 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 
 	bool override_frame = false;
 
+	//get the head index relative to the pack index (without unique heads counting)
+	int headIndexInPack = (headIndex - NUM_UNIQUEHEADS) - (headsPackIndex * 256);
+
 	//(has default head set)
-	bool defaultHead = (headIndex == 255 || headIndex == NUM_UNIQUEHEADS);
-	if(defaultHead)
+	bool defaultHead = (headIndex == 255 || headIndexInPack < 0 || headIndexInPack >= pack.count);
+	if (defaultHead)
 	{
 		//accolade custom head handling
 		//todo: consider pulling other custom head stuff out to here
-		CPlayer@ p = blob.getPlayer();
-		if (p !is null && !p.isBot())
+		if (player !is null && !player.isBot())
 		{
-			Accolades@ acc = getPlayerAccolades(p.getUsername());
+			Accolades@ acc = getPlayerAccolades(player.getUsername());
 			if (acc.hasCustomHead())
 			{
-				texture_file = "Sprites/" + acc.customHeadTexture + ".png";
+				texture_file = acc.customHeadTexture;
 				headIndex = acc.customHeadIndex;
 				headsPackIndex = 0;
 				override_frame = true;
@@ -150,12 +153,11 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 		//not default head; do not use accolades data
 	}
 
+	int team = doTeamColour(headsPackIndex) ? blob.getTeamNum() : 0;
+	int skin = doSkinColour(headsPackIndex) ? blob.getSkinNum() : 0;
+
 	//add new head
-	CSpriteLayer@ head = this.addSpriteLayer(
-		"head", texture_file, 16, 16,
-		(doTeamColour(headsPackIndex) ? this.getBlob().getTeamNum() : 0),
-		(doSkinColour(headsPackIndex) ? this.getBlob().getSkinNum() : 0)
-	);
+	CSpriteLayer@ head = this.addSpriteLayer("head", texture_file, 16, 16, team, skin);
 
 	//
 	headIndex = headIndex % 256; // wrap DLC heads into "pack space"
@@ -179,6 +181,8 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	//setup gib properties
 	blob.set_s32("head index", headFrame);
 	blob.set_string("head texture", texture_file);
+	blob.set_s32("head team", team);
+	blob.set_s32("head skin", skin);
 
 	return head;
 }

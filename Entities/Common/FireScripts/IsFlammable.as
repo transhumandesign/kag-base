@@ -23,12 +23,12 @@ void onInit(CBlob@ this)
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if ((isIgniteHitter(customData) && damage > 0.0f) ||					 	   // Fire arrows
+	if (isIgniteHitter(customData) ||					 	   // Fire arrows
 	        (this.isOverlapping(hitterBlob) &&
 	         hitterBlob.isInFlames() && !this.isInFlames()))	   // Flaming enemy
 	{
 		server_setFireOn(this);
-		if(hitterBlob.getDamageOwnerPlayer() !is null){
+		if (hitterBlob.getDamageOwnerPlayer() !is null){
 			this.set_netid("burn starter player", hitterBlob.getDamageOwnerPlayer().getNetworkID());
 		}
 	}
@@ -77,7 +77,7 @@ void onTick(CBlob@ this)
 	}
 
 	//check if we're extinguished
-	if (burn_time == 0 || this.isInWater())
+	if (burn_time == 0 || this.isInWater() || map.isInWater(pos))
 	{
 		server_setFireOff(this);
 		this.set_netid("burn starter blob", 0);

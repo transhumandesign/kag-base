@@ -23,10 +23,13 @@
 //ScoreboardRender.as
 	"Players: {PLAYERCOUNT}":"Игроков: {PLAYERCOUNT}",
 	"Player"                :"Игрок",
+	"Tier"                  :"Ранг",
+	"Accolades"             :"Достижения",
 	"Username"              :"Имя",
 	"Ping"                  :"Пинг",
 	"Kills"                 :"Убийства",
 	"Deaths"                :"Смерти",
+	"Assists"               :"Содействия",
 	"KDR"                   :"У/С",
 	"Spectators:"           :"Зрители",
 	"and more ..."          :"и другие...",
@@ -916,6 +919,9 @@
 	"Heads Pack Available On Steam!":"Паки голов доступны в Steam!",
 	"Get exclusive cosmetic heads to increase your customisation options, and stand out on the battlefield!\n\nCurrently only available through steam as a DLC. If there's enough interest we can investigate non-steam options.\n\nProceeds go to continued development of King Arthur's Gold.":
 	"Получите эксклюзивные косметические головы, чтобы увеличить свой выбор и выделяться на поле боя!\n\nДоступно только в Steam в качестве DLC. Если будет проявлено достаточно интереса, то мы можем добавить вариант для игры без Steam.\n\nПолученные средства пойдут на разработку King Arthur's Gold.",
+	"Support KAG On Patreon!":"Поддержите KAG на Patreon!",
+	"Support the game with a monthly pledge, and choose from a variety of rewards at different tiers.\n\nRewards include access to heads packs, priority server access, discord rewards, fancy capes, and even custom heads!\n\nProceeds go to continued hosting and development of King Arthur's Gold.":
+	"Поддержите игру с помощью ежемесячного платежа. Вы можете выбрать размер платежа, получая различные награды в зависимости от выбранной суммы.\n\nНаграды включают в себя доступ к наборам голов, внеочередной доступ к серверам, награды в Discord, модные плащи и даже собственные головы!\n\nДеньги уходят на непрерывные хостинг и разработку King Arthur's Gold.",
 	"Find Out More!":"Узнать больше!",
 	"Close":"Закрыть",
 //guiLogin.xml
@@ -970,29 +976,37 @@
 	"Gender:"                   :"Пол:",
 	"Male"                      :"Мужской",
 	"Female"                    :"Женский",
-	"BUY {HEADS_PACK}"          :"КУПИТЬ {HEADS_PACK}",
-	"Standard"                  :"Стандартные",
-	"Flags of The World"        :"Флаги мира",
-	"Head packs:"               :"Паки голов:",
+	"Armour Set:"               :"Снаряжение:",
+	"Golden Tools"              :"Золотые инструменты",
+	"Standard"                  :"Стандартное",
 	"Head:"                     :"Голова:",
+	"Set Default Head"          :"По умолчанию",
+	"Head packs:"               :"Паки голов:",
+	"Classic Heads"             :"Классические головы",
+	"BUY {HEADS_PACK}"          :"КУПИТЬ {HEADS_PACK}",
+	"Flags of The World"        :"Флаги мира",
+	"High Fantasy"              :"Фэнтези",
 	"Change keys:"              :"Назначить клавиши:",
+	"(Unused keys, for mods)"   :"(Неиспользуемые клавиши, для модов)",
 	"Smooth shader"             :"Мягкий шейдер",
 	"Faster graphics"           :"Быстрая графика",
-	"Uncap framerate"           :"Неограниченный FPS",
+	"Cap framerate"             :"Ограничить FPS",
 	"VSync - Requires Restart"  :"VSync - требуется рестарт",
 	"Game music"                :"Игровая музыка",
-	"Sound Volume:"             :"Громкость звуков:",
-	"Music Volume:"             :"Громкость музыки:",
+	"Sound Volume:"             :"Звуковые эффекты:",
+	"Music Volume:"             :"Музыка:",
 	"Volume:"                   :"Громкость:",
-	"Menu music"                :"Музыка меню",
+	"Menu music"                :"Музыка в меню",
 	"Swap audio channels"       :"Поменять аудио каналы",
 	"Language (EXPERIMENTAL):"  :"Язык",
+//	"Experimental feature warning": "Внимание! Экспериментальная функция",
+//	"Language support is still a work in progress!\nThe translations might be incomplete or inaccurate.\nSome translations will need a restart to apply.": "",
 	"Fixed camera"              :"Фиксированная камера",
 	"Kids safe"                 :"Режим для детей",
 	"Chat Filter"               :"Фильтр чата",
-	"Show Team-Mates Names"     :"Показывать имена игроков",
-	"Show Minimap"              :"Показывать мини-карту",
-	"Show Chat Bubbles"         :"Показывать облака чата",
+	"Show Team-Mates Names"     :"Отображать имена игроков",
+	"Show Minimap"              :"Отображать мини-карту",
+	"Show Chat Bubbles"         :"Отображать облако чата",
 	"Snap Camera To Pixel"      :"Выравнивать камеру по пикселю",
 //guiSocial.xml
 	"KAG World":"KAG World",
@@ -1198,9 +1212,10 @@
 	"Save Map":				"Сохранить карту",
 	"Quit to Main Menu":			"Выйти в главное меню",
 
-// EmotesCommon.as
-	"Show emoticon":"Показать эмоцию",
-	"Point Right":"Показать вправо",
+// EmoteMenu.as and WheelMenuCommon.as
+	"Select emote":"Выберите эмоцию",
+	"(no selection)":"(ничего не выбрано)",
+	"Point right":"Показать вправо",
 	"Laughing":"Смех",
 	"Smiling":"Улыбка",
 	"Skull":"Череп",
@@ -1209,7 +1224,7 @@
 	"Smug":"Самодовольная ухмылка",
 	"Troll":"Затроллил",
 	"What":"Что?",
-	"Point Down":"Показать вниз",
+	"Point down":"Показать вниз",
 	"Derp":"Ой, неудачно получилось", //Неудачно получилось
 	"Mad":"Да, похоже, ты в бешенстве", //Злость
 	"Disappointed":"Разочарование",
@@ -1224,16 +1239,74 @@
 	"Kiss":"Поцелуй",
 	"Flex":"Мамин силач",
 	"Rude Gesture":"Грубый жест",
-	"Thumbs Down":"Палец вниз",
-	"Thumbs Up":"Палец вверх",
+	"Thumbs down":"Палец вниз",
+	"Thumbs up":"Палец вверх",
 	//"OK":"",
-	"Point Up":"Показать вверх",
+	"Point up":"Показать вверх",
 	"Thinking":"Размышление",
-	"Sweat Drop":"Пот",
+	"Sweat drop":"Пот",
 	//"Ladder":"",
 	"Attention":"Внимание",
 	"Question":"Вопрос",
 	"Fire":"Огонь",
 	"Wall":"Стена",
-	"Musical Note":"Музыкальная нота"
+	"Musical note":"Музыкальная нота",
+
+// EmoteBinderMenu.as
+	"Bindings":"Привязки",
+	"Bind Emotes":"Привязка эмоций",
+	"Emote Hotkey Binder":"Привязка клавиш для эмоций",
+	"Select a keybind below, then select the emote you want":"Выберите клавишу ниже, затем выберите эмоцию",
+	"Select key {KEY_NUM}":"Выбрать клавишу {KEY_NUM}",
+
+// Accolades
+	"support tier: {SUPPORT_TIER}":"уровень поддержки: {SUPPORT_TIER}",
+	"New Player - Welcome them to the game!":"Новый игрок - поприветствуйте его!",
+	"This player has 1 to 2 weeks of experience":"У этого игрока 1-2 недели опыта в игре",
+	"This player has 2 to 3 weeks of experience":"У этого игрока 2-3 недели опыта в игре",
+	"This player has 3 to 4 weeks of experience":"У этого игрока 3-4 недели опыта в игре",
+	"This player has 1 to 2 months of experience":"У этого игрока 1-2 месяца опыта в игре",
+	"This player has 2 to 3 months of experience":"У этого игрока 2-3 месяца опыта в игре",
+	"This player has 3 to 6 months of experience":"У этого игрока 3-6 месяцев опыта в игре",
+	"This player has 6 to 9 months of experience":"У этого игрока 6-9 месяцев опыта в игре",
+	"This player has 9 to 12 months of experience":"У этого игрока 9-12 месяцев опыта в игре",
+	"Cake Day - it's this player's KAG Birthday!":"День тортов - у этого игрока сегодня день рождения!",
+	"This player has 1 year of experience":"У этого игрока 1 год опыта в игре",
+	"This player has 2 years of experience":"У этого игрока 2 года опыта в игре",
+	"This player has 3 years of experience":"У этого игрока 3 года опыта в игре",
+	"This player has 4 years of experience":"У этого игрока 4 года опыта в игре",
+	"This player has 5 years of experience":"У этого игрока 5 лет опыта в игре",
+	"This player has 6 years of experience":"У этого игрока 6 лет опыта в игре",
+	"This player has 7 years of experience":"У этого игрока 7 лет опыта в игре",
+	"This player has 8 years of experience":"У этого игрока 8 лет опыта в игре",
+	"This player has 9 years of experience":"У этого игрока 9 лет опыта в игре",
+	"This player has over a decade of experience":"У этого игрока уже больше 10-ти лет опыта в игре",
+	//Patreon
+	"This player is a Squire Supporter":"У этого игрока ранг \"Сквайр\" на Patreon",
+	"This player is a Knight Supporter":"У этого игрока ранг \"Рыцарь\" на Patreon",
+	"This player is a Royal Guard Supporter":"У этого игрока ранг \"Королевская гвардия\" на Patreon",
+	"This player is a Round Table Supporter":"У этого игрока ранг \"Круглый стол\" на Patreon",
+	//tourney
+	"Gold Medal - for Placing 1st in a Suitable Community Tournament":
+	"Золотая медаль - за первое место в турнире",
+	"Silver Medal - for Placing 2nd in a Suitable Community Tournament":
+	"Серебряная медаль - за второе место в турнире",
+	"Bronze Medal - for Placing 3rd in a Suitable Community Tournament":
+	"Бронзовая медаль - за третье место в турнире",
+	"Participation Ribbon - for Participating in a Suitable Community Tournament":
+	"Лента за участие в турнире",
+	//misc
+	"Community Contributor - for significantly contributing to the KAG community in some way":
+	"Вклад в сообщество - за значительный вклад каким-либо образом в сообщество KAG",
+	"Github Contributor - for significantly contributing to an issue or pull request on the KAG GitHub":
+	"Вклад в разработку на Github - за значительный вклад в репозиторий KAG на GitHub",
+	"Map Contributor - for contributing to the official map cycle":
+	"Разработчик карт - за вклад в официальный цикл карт",
+	"Moderation Contributor - for contributing to moderating the game, forums, or discord":
+	"Вклад в модерацию - за вклад в модерирование игры, форумов или сервера Discord",
+
+	//sound
+	"MigrantSayHello": "MigrantSayPrivet",
+	"MigrantSayNo": "MigrantSayNyet",
+	"MigrantSayFriend": "MigrantSayDryg"
 }

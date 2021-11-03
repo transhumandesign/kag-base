@@ -1,19 +1,8 @@
+#define CLIENT_ONLY
 
-const string tagname = "played fanfare";
-
-void onInit(CRules@ this)
+void onStateChange( CRules@ this, const u8 oldState )
 {
-	onRestart(this);
-}
-
-void onRestart(CRules@ this)
-{
-	this.set_bool(tagname, false);
-}
-
-void onTick(CRules@ this)
-{
-	if (this.isGameOver() && this.getTeamWon() >= 0 && !this.get_bool(tagname))
+	if (this.isGameOver() && this.getTeamWon() >= 0)
 	{
 		// only play for winners
 		CPlayer@ localplayer = getLocalPlayer();
@@ -30,8 +19,5 @@ void onTick(CRules@ this)
 				Sound::Play("/FanfareLose.ogg");
 			}
 		}
-
-		this.set_bool(tagname, true);
-		// no sound played on spectator or tie
 	}
 }
