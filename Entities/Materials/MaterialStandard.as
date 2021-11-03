@@ -30,6 +30,7 @@ void onInit(CBlob@ this)
 
   this.Tag('material');
   this.Tag("pushedByDoor");
+  this.Tag("ignore_arrow");
 
   this.getShape().getVars().waterDragScale = 12.f;
 
