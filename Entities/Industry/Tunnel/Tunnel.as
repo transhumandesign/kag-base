@@ -9,6 +9,7 @@ void onInit(CBlob@ this)
 {
 	this.set_TileType("background tile", CMap::tile_castle_back);
 	
+	InitCosts();
 	this.set_s32("gold building amount", CTFCosts::tunnel_gold);
 }
 
