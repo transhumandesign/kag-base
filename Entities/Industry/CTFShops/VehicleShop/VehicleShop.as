@@ -17,7 +17,7 @@ void onInit(CBlob@ this)
 
 	//INIT COSTS
 	InitCosts();
-	this.set_s32("gold building amount", 50);
+	this.set_s32("gold building amount", CTFCosts::vehicleshop_gold);
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);

@@ -1,6 +1,7 @@
 ﻿// Tunnel.as
 
 #include "TunnelCommon.as"
+#include "Costs.as";
 
 const bool CASUAL_MODE = false;
 
@@ -8,7 +9,7 @@ void onInit(CBlob@ this)
 {
 	this.set_TileType("background tile", CMap::tile_castle_back);
 	
-	this.set_s32("gold building amount", 50);
+	this.set_s32("gold building amount", CTFCosts::tunnel_gold);
 }
 
 // destroy tunnel after enemly uses it
