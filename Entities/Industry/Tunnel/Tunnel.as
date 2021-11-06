@@ -7,6 +7,8 @@ const bool CASUAL_MODE = false;
 void onInit(CBlob@ this)
 {
 	this.set_TileType("background tile", CMap::tile_castle_back);
+	
+	this.set_s32("gold building amount", 50);
 }
 
 // destroy tunnel after enemly uses it
