@@ -17,6 +17,7 @@ void onInit(CBlob@ this)
 
 	//INIT COSTS
 	InitCosts();
+	this.set_s32("gold building amount", 50);
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
