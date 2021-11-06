@@ -72,6 +72,7 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().mapCollisions = false;
 
 	//gold building properties
+	InitCosts();
 	this.set_s32("gold building amount", CTFCosts::quarry_gold);
 
 	//quarry properties
