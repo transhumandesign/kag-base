@@ -80,10 +80,12 @@ void onInit(CBlob@ this)
 
 	//commands
 	this.addCommandID("add fuel");
+	string current_output = "current_quarry_output_" + this.getTeamNum();
+	CRules@ rules = getRules();
 
-	if (getRules().get_s32("current_quarry_output_" + this.getTeamNum()) == -1)
+	if (!rules.exists(current_output) || rules.get_s32(current_output) == -1)
 	{
-		getRules().set_s32("current_quarry_output_" + this.getTeamNum(), initial_output);
+		rules.set_s32("current_quarry_output_" + this.getTeamNum(), initial_output);
 	}
 }
 
