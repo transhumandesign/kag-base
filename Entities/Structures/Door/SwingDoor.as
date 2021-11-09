@@ -167,7 +167,6 @@ void onEndCollision(CBlob@ this, CBlob@ blob)
 	}
 }
 
-
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return false;
@@ -179,13 +178,30 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	if (customData == Hitters::boulder)
 		return 0;
 
-	//print("custom data: "+customData+" builder: "+Hitters::builder);
-	if (customData == Hitters::builder)
-		damage *= 2;
-	if (customData == Hitters::drill)                //Hitters::saw is the drill hitter.... why //fixed
-		damage *= 2;
-	if (customData == Hitters::bomb)
-		damage *= 1.3f;
+	switch (customData)
+	{
+		case Hitters::builder:
+			damage *= 2.0f;
+			break;
+		case Hitters::sword:
+			damage *= 1.5f;
+			break;
+		case Hitters::bomb:
+			damage *= 1.4f;
+			if (hitterBlob.getTeamNum() == this.getTeamNum())
+				damage *= 0.65f;
+			break;
+		case Hitters::drill:
+			damage *= 2.0f;
+			break;
+		default:
+			break;
+	}
+
+	if (this.hasTag("will_soon_collapse"))
+	{
+		damage *= 1.25f;
+	}
 
 	CSprite @sprite = this.getSprite();
 
