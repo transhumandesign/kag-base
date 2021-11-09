@@ -10,6 +10,8 @@ void onDie(CBlob@ this)
 			50;
 	if (drop_amount == 0) return;
 
+	if (getRules().gamemode_name == "TTH") return; // ballistas and warboats should not drop gold in TTH because they're produced in factories there
+
 	CBlob@ blob = server_CreateBlobNoInit('mat_gold');
 
 	if (blob !is null)
