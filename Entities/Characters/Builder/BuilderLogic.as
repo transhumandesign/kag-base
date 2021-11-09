@@ -142,20 +142,19 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 
 	if (blobID == 0)
 	{
-		// block
 		CMap@ map = getMap();
 		if (map !is null)
 		{
 			uint16 type = map.getTile(tilepos).type;
 			if (!inNoBuildZone(map, tilepos, type))
 			{
+
 				CBlob@[] blobs_here;
 				map.getBlobsAtPosition(tilepos + Vec2f(1, 1), blobs_here);
 
 				bool no_dmg = false;
 
-				// dont dmg backwall if it's behind a blob-block
-				// hack: fixes the issue where with specific timing you can damage backwall behind blob-blocks right after placing it
+				// dont dmg backwall if there's a door here
 				for(int i=0; i < blobs_here.size(); ++i)
 				{
 					CBlob@ current_blob = blobs_here[i];
@@ -251,7 +250,7 @@ void Pickaxe(CBlob@ this)
 {
 	HitData@ hitdata;
 	CSprite @sprite = this.getSprite();
-	bool strikeAnim = sprite.isAnimation("strike") || sprite.isAnimation("chop");
+	bool strikeAnim = sprite.isAnimation("strike") || sprite.isAnimation("strike_fast") || sprite.isAnimation("chop") || sprite.isAnimation("chop_fast");
 
 	if (!strikeAnim)
 	{
