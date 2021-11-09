@@ -8,12 +8,11 @@
 #include "Requirements.as"
 #include "RunnerTextures.as"
 
-//server-only
-void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
+void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos, bool repairing=false, CBlob@ repairBlob=null)
 {
 	if (blob !is null)
 	{
-		if (!serverBlobCheck(this, blob, cursorPos))
+		if (!serverBlobCheck(this, blob, cursorPos, repairing))
 			return;
 
 		u32 delay = this.get_u32("build delay");
@@ -30,10 +29,19 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 
 		if (this.server_DetachFrom(blob))
 		{
-			blob.setPosition(cursorPos);
-			if (blob.isSnapToGrid())
+			if (repairing && repairBlob !is null)
 			{
-				shape.SetStatic(true);
+				repairBlob.server_SetHealth(repairBlob.getInitialHealth());
+				getMap().server_SetTile(repairBlob.getPosition(), blob.get_TileType("background tile"));
+				blob.server_Die();
+			}
+			else
+			{
+				blob.setPosition(cursorPos);
+				if (blob.isSnapToGrid())
+				{
+					shape.SetStatic(true);
+				}
 			}
 		}
 
@@ -42,7 +50,7 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 }
 
 // Returns true if pos is valid
-bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
+bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repairing=false)
 {
 	// Pos check of about 8 tiles, accounts for people with lag
 	Vec2f pos = (blob.getPosition() - cursorPos) / 2;
@@ -79,7 +87,7 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 	}
 
 	// Are we trying to place a blob on a door/ladder/platform/bridge (usually due to lag)?
-	if (fakeHasTileSolidBlobs(cursorPos, blobToPlace.getName() == "ladder"))
+	if (fakeHasTileSolidBlobs(cursorPos, blobToPlace.getName() == "ladder") && !repairing)
 	{
 		return false;
 	}
@@ -177,6 +185,7 @@ void onInit(CBlob@ this)
 	SetupBuildDelay(this);
 
 	this.addCommandID("placeBlob");
+	this.addCommandID("repairBlob");
 	this.addCommandID("settleLadder");
 	this.addCommandID("rotateBlob");
 
@@ -346,10 +355,23 @@ void onTick(CBlob@ this)
 			{
 				if (snap && bc.cursorClose && bc.hasReqs && bc.buildable && bc.supported)
 				{
-					CBitStream params;
-					params.write_u16(carryBlob.getNetworkID());
-					params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
-					this.SendCommand(this.getCommandID("placeBlob"), params);
+					CMap@ map = getMap();
+					CBlob@ blobAtPos = map.getBlobAtPosition(getBottomOfCursor(bc.tileAimPos, carryBlob));
+					if (blobAtPos !is null && carryBlob.getName() == blobAtPos.getName() && blobAtPos.getHealth() < blobAtPos.getInitialHealth() && blobAtPos.getName() != "ladder")
+					{
+						CBitStream params;
+						params.write_u16(carryBlob.getNetworkID());
+						params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
+						this.SendCommand(this.getCommandID("repairBlob"), params);
+					}
+					else
+					{
+						CBitStream params;
+						params.write_u16(carryBlob.getNetworkID());
+						params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
+						this.SendCommand(this.getCommandID("placeBlob"), params);
+					}
+
 					u32 delay = 2 * this.get_u32("build delay");
 					SetBuildDelay(this, delay);
 					bc.blobActive = false;
@@ -462,6 +484,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			Vec2f pos = params.read_Vec2f();
 			PlaceBlob(this, carryBlob, pos);
 			SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), carryBlob.getName()));
+		}
+	}
+	if (cmd == this.getCommandID("repairBlob"))
+	{
+		CBlob @carryBlob = getBlobByNetworkID(params.read_u16());
+		Vec2f pos = params.read_Vec2f();
+
+		CBlob @repairBlob = getMap().getBlobAtPosition(pos);
+
+		if (carryBlob !is null && repairBlob !is null)
+		{
+			PlaceBlob(this, carryBlob, pos, true, repairBlob);
+			SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), repairBlob.getName()));
 		}
 	}
 	else if (cmd == this.getCommandID("settleLadder"))

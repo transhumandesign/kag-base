@@ -149,6 +149,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	if (blob !is null)
 	{
 		this.getCurrentScript().tickFrequency = 3;
+		if (!isOpen(this) && canOpenDoor(this, blob)) 
+		{
+			OpenDoor(this, blob, true);
+		}
 	}
 }
 
@@ -173,7 +177,6 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 	return false;
 }
 
-// this is such a pain - can't edit animations at the moment, so have to just carefully add destruction frames to the close animation >_>
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	if (customData == Hitters::boulder)
@@ -187,44 +190,44 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	if (customData == Hitters::bomb)
 		damage *= 1.3f;
 
-	CSprite @sprite = this.getSprite();
-
-	if (sprite !is null)
-	{
-		u8 frame = 0;
-
-		Animation @destruction_anim = sprite.getAnimation("destruction");
-
-		if (destruction_anim !is null)
-		{
-			if ((this.getHealth() - damage) < this.getInitialHealth())
-			{
-				f32 ratio = (this.getHealth() - damage * getRules().attackdamage_modifier) / this.getInitialHealth();
-
-				if (ratio <= 0.0f)
-				{
-					frame = destruction_anim.getFramesCount() - 1;
-				}
-				else
-				{
-					frame = (1.0f - ratio) * (destruction_anim.getFramesCount());
-				}
-
-				frame = destruction_anim.getFrame(frame);
-			}
-		}
-
-		Animation @close_anim = sprite.getAnimation("close");
-		u8 lastframe = close_anim.getFrame(close_anim.getFramesCount() - 1);
-		if (lastframe < frame)
-		{
-			close_anim.AddFrame(frame);
-		}
-	}
-
 	return damage;
 }
 
+void onHealthChange(CBlob@ this, f32 oldHealth)
+{
+	f32 hp = this.getHealth();
+	bool repaired = hp > oldHealth ? true : false;
+	MakeDamageFrame(this, repaired);
+}
+
+void MakeDamageFrame(CBlob@ this, bool repaired=false)
+{
+	CSprite@ sprite = this.getSprite();
+	f32 hp = this.getHealth();
+	f32 full_hp = this.getInitialHealth();
+	Animation@ destruction_anim = sprite.getAnimation("destruction");
+
+	if (destruction_anim !is null)
+	{
+		int frame_count = destruction_anim.getFramesCount();
+		int frame = frame_count - hp / full_hp * frame_count;
+		destruction_anim.frame = frame;
+
+		Animation @close_anim = sprite.getAnimation("close");
+
+		if(close_anim !is null)
+		{
+			close_anim.RemoveFrame(close_anim.getFramesCount() - 1);
+			close_anim.AddFrame(destruction_anim.getFrame(frame));
+		}
+
+		if(repaired)
+		{
+			onInit(this);
+			sprite.PlaySound("/build_door.ogg");
+		}
+	}
+}
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
@@ -233,7 +236,6 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 	if (canOpenDoor(this, blob))
 	{
-		OpenDoor(this, blob);
 		return false;
 	}
 

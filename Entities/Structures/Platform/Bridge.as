@@ -36,16 +36,23 @@ void onInit(CBlob@ this)
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
-	MakeDamageFrame(this);
+	f32 hp = this.getHealth();
+	bool repaired = hp > oldHealth ? true : false;
+	MakeDamageFrame(this, repaired);
 }
 
-void MakeDamageFrame(CBlob@ this)
+void MakeDamageFrame(CBlob@ this, bool repaired=false)
 {
 	f32 hp = this.getHealth();
 	f32 full_hp = this.getInitialHealth();
 	int frame_count = this.getSprite().animation.getFramesCount();
 	int frame = frame_count - hp / full_hp * frame_count;
 	this.getSprite().animation.frame = frame;
+
+	if(repaired)
+	{
+		this.getSprite().PlaySound("/build_wood.ogg");
+	}
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
