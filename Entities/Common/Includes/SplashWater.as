@@ -95,7 +95,7 @@ Vec2f getBombForce(CBlob@ this, f32 radius, Vec2f hit_blob_pos, Vec2f pos, f32 h
 	Vec2f offset = hit_blob_pos - pos;
 	f32 distance = offset.Length();
 	//set the scale (2 step)
-	scale = (distance > (radius * 0.7)) ? 1.0f : 1.0f;
+	scale = (distance > (radius * 0.7)) ? 0.5f : 1.0f;
 	//the force, copy across
 	Vec2f bombforce = offset;
 	bombforce.Normalize();
