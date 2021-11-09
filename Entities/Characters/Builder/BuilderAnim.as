@@ -208,11 +208,11 @@ void onTick(CSprite@ this)
 				this.SetAnimation("fall");
 				this.animation.timer = 0;
 
-				if (vy < -1.5)
+				if (vy < -1.5 * (inwater ? 0.7 : 1))
 				{
 					this.animation.frame = 0;
 				}
-				else if (vy > 1.5)
+				else if (vy > 1.5 * (inwater ? 0.7 : 1))
 				{
 					this.animation.frame = 2;
 				}
