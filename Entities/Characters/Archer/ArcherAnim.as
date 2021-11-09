@@ -295,6 +295,7 @@ void onTick(CSprite@ this)
 		{
 			this.SetAnimation("fall");
 			this.animation.timer = 0;
+			bool inwater = blob.isInWater();
 
 			if (vy < -1.5 * (inwater ? 0.7 : 1))
 			{
