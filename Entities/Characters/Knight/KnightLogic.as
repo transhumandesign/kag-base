@@ -1702,20 +1702,16 @@ void SetFirstAvailableBomb(CBlob@ this)
 bool canHit(CBlob@ this, CBlob@ b)
 {
 
-	if (b.hasTag("invincible"))
+	if (b.hasTag("invincible") || b.hasTag("temp blob"))
 		return false;
 
-	// Don't hit temp blobs and items carried by teammates.
-	if (b.isAttached())
+	// don't hit picked up items
+	CAttachment@ att = b.getAttachments();
+	if (att !is null)
 	{
-
-		CBlob@ carrier = b.getCarriedBlob();
-
-		if (carrier !is null)
-			if (carrier.hasTag("player")
-			        && (this.getTeamNum() == carrier.getTeamNum() || b.hasTag("temp blob")))
-				return false;
-
+		AttachmentPoint@ point = att.getAttachmentPointByName("PICKUP");
+		if (point !is null && !point.socket &&
+			b.isAttachedToPoint("PICKUP") && !b.hasTag("slash_while_in_hand")) continue;
 	}
 
 	if (b.hasTag("dead"))
