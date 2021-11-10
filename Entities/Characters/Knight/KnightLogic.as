@@ -426,7 +426,7 @@ void onTick(CBlob@ this)
 		}
 	}
 
-	if (!swordState && getNet().isServer())
+	if (!swordState)
 	{
 		knight_clear_actor_limits(this);
 	}
@@ -1427,8 +1427,9 @@ bool isSliding(KnightInfo@ knight)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	//return if we didn't collide or if it's teamie
-	if (blob is null || !solid || this.getTeamNum() == blob.getTeamNum())
+	// return if we collided with map, solid (door/platform), or something non-fleshy (like a boulder)
+	// allow shieldbashing enemy bombs so knights can "deflect" them
+	if (blob is null || !solid || (!blob.hasTag("flesh") && blob.getName() != "bomb") || this.getTeamNum() == blob.getTeamNum())
 	{
 		return;
 	}
@@ -1450,6 +1451,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		{
 			Vec2f pos = this.getPosition();
 			Vec2f vel = this.getOldVelocity();
+			f32 vellen = vel.getLength();
 			vel.Normalize();
 
 			//printf("nor " + vel * normal );
@@ -1459,12 +1461,29 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				//printf("shi " + shieldVars.direction * normal );
 				if (shieldVars.direction * normal < 0.0f)
 				{
+					//print("" + vellen);
 					knight_add_actor_limit(this, blob);
 					this.server_Hit(blob, pos, vel, 0.0f, Hitters::shield);
 
 					Vec2f force = Vec2f(shieldVars.direction.x * this.getMass(), -this.getMass()) * 3.0f;
 
+					// scale knockback with knight's velocity
+
+					vellen = Maths::Min(vellen, 8.0f); // cap on velocity so enemies don't get launched too much
+
+					if (vellen < 3.5f)
+					{
+						// roughly the same weak knockback at low velocity
+						force *= Maths::Pow(vellen, 1.0f / 3.0f) / 2;
+					}
+					else
+					{
+						// scale linearly at higher velocity
+						force *= (vellen - 3.5f) / 6 + 0.759f;
+					}
+
 					blob.AddForce(force);
+					force *= 0.5f;
 					this.AddForce(Vec2f(-force.x, force.y));
 				}
 			}

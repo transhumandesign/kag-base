@@ -112,22 +112,37 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ caller = getBlobByNetworkID(params.read_u16());
 		if (caller !is null)
 		{
-			// take all ammo blobs from caller and try to put in vehicle
-			const string ammo = v.ammo_name;
 			array < CBlob@ > ammos;
+			array < string > eligible_ammo_names;
+
+			for (int i = 0; i < v.ammo_types.length(); ++i)
+			{
+				const string ammo = v.ammo_types[i].ammo_name;
+				eligible_ammo_names.push_back(ammo);
+			}
 
 			CBlob@ carryObject = caller.getCarriedBlob();
-			if (carryObject !is null && carryObject.getName() == ammo)
+			// if player has item in hand, we only put that item into vehicle's inventory
+			if (carryObject !is null && eligible_ammo_names.find(carryObject.getName()) != -1)
 			{
 				ammos.push_back(carryObject);
 			}
-
-			for (int i = 0; i < caller.getInventory().getItemsCount(); i++)
+			else
 			{
-				CBlob@ invItem = caller.getInventory().getItem(i);
-				if (invItem.getName() == ammo)
+				CInventory@ inv = caller.getInventory();
+
+				for (int i = 0; i < v.ammo_types.length(); ++i)
 				{
-					ammos.push_back(invItem);
+					const string ammo = v.ammo_types[i].ammo_name;
+
+					for (int i = 0; i < inv.getItemsCount(); i++)
+					{
+						CBlob@ invItem = inv.getItem(i);
+						if (invItem.getName() == ammo)
+						{
+							ammos.push_back(invItem);
+						}
+					}
 				}
 			}
 
@@ -141,6 +156,40 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 			RecountAmmo(this, v);
 		}
+	}
+	// SWAP AMMO
+	else if (cmd == this.getCommandID("swap_ammo"))
+	{
+		VehicleInfo@ v;
+		if (!this.get("VehicleInfo", @v))
+		{
+			return;
+		}
+
+		swapAmmo(this, v, v.current_ammo_index + 1);
+
+		if(isServer)
+			RecountAmmo(this, v);
+	}
+	else if (!isServer && cmd == this.getCommandID("sync_ammo"))
+	{
+		VehicleInfo@ v;
+		if (!this.get("VehicleInfo", @v))
+		{
+			return;
+		}
+
+		v.current_ammo_index = params.read_u8();
+	}
+	else if (!isServer && cmd == this.getCommandID("sync_last_fired"))
+	{
+		VehicleInfo@ v;
+		if (!this.get("VehicleInfo", @v))
+		{
+			return;
+		}
+
+		v.last_fired_index = params.read_u8();
 	}
 	/// PUT IN MAG
 	else if (isServer && cmd == this.getCommandID("putin_mag"))
@@ -217,7 +266,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		{
 			return;
 		}
-		v.loaded_ammo = loadedAmmo;
+		v.getCurrentAmmo().loaded_ammo = loadedAmmo;
 	}
 	else if (!isServer && cmd == this.getCommandID("recount ammo"))
 	{
@@ -226,7 +275,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		{
 			return;
 		}
-		v.ammo_stocked = params.read_u16();
+
+		u8 current_recounted = params.read_u8();
+		v.ammo_types[current_recounted].ammo_stocked = params.read_u16();
+		v.ammo_types[current_recounted].loaded_ammo = params.read_u8();
 	}
 }
 

@@ -21,6 +21,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 	{
 		string p_name = params.read_string();
 		string b_name = params.read_string();
+		string servername = params.read_string();
+		string serverip = params.read_string();
 		string reason = params.read_string();
 
 		if (getLocalPlayer().isMod())
@@ -29,7 +31,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 
 			if(baddie !is null)
 			{
-				client_AddToChat("Report has been made of: " + baddie.getCharacterName() + " (" + b_name + ")", reportMessageColor);
+				client_AddToChat("Report has been made of: " + baddie.getCharacterName() + " (" + b_name + "); Reason: "+ reason, reportMessageColor);
 				Sound::Play("ReportSound.ogg");
 			}
 		}
