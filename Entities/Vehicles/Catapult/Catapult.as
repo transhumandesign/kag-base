@@ -14,6 +14,9 @@ const u8 cooldown_time = 45;
 const u8 cooldown_time_player = 90;
 const u8 startStone = 100;
 
+const f32 player_launch_modifier = 0.75f;
+const f32 other_launch_modifier = 1.1f;
+
 void onInit(CBlob@ this)
 {
 	Vehicle_Setup(this,
@@ -233,10 +236,18 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 
 		Vec2f vel = Vec2f(sign, -0.5f) * charge * 0.3f;
 
+
 		vel += (Vec2f((_r.NextFloat() - 0.5f) * 128, (_r.NextFloat() - 0.5f) * 128) * 0.01f);
+
+
 		vel.RotateBy(angle);
 
-		bullet.setVelocity(vel);
+
+		if(bullet.hasTag("player"))
+		bullet.setVelocity(vel * player_launch_modifier);
+
+		else
+		bullet.setVelocity(vel * other_launch_modifier);
 
 		if (isKnockable(bullet))
 		{

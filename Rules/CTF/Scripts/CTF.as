@@ -131,6 +131,16 @@ shared class CTFSpawns : RespawnSystem
 				p_info.team = 0;
 			}
 
+			CBlob@ spawnBlob = getSpawnBlob(p_info);
+
+			if (spawnBlob !is null)
+			{
+				if (spawnBlob.exists("custom respawn immunity"))
+				{
+					p_info.customImmunityTime = spawnBlob.get_u8("custom respawn immunity");
+				}
+			}
+
 			CPlayer@ player = getPlayerByUsername(p_info.username); // is still connected?
 
 			if (player is null)
@@ -201,6 +211,36 @@ shared class CTFSpawns : RespawnSystem
 		}
 
 		return Vec2f(0, 0);
+	}
+
+	CBlob@ getSpawnBlob(PlayerInfo@ p_info)
+	{
+		CTFPlayerInfo@ c_info = cast < CTFPlayerInfo@ > (p_info);
+		if (c_info !is null)
+		{
+			CBlob@ pickSpawn = getBlobByNetworkID(c_info.spawn_point);
+			if (pickSpawn !is null &&
+			        pickSpawn.hasTag("respawn") && !isUnderRaid(pickSpawn) &&
+			        pickSpawn.getTeamNum() == p_info.team)
+			{
+				return pickSpawn;
+			}
+			else
+			{
+				CBlob@[] spawns;
+				PopulateSpawnList(spawns, p_info.team);
+
+				for (uint step = 0; step < spawns.length; ++step)
+				{
+					if (spawns[step].getTeamNum() == s32(p_info.team))
+					{
+						return spawns[step];
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 
 	void RemovePlayerFromSpawn(CPlayer@ player)
