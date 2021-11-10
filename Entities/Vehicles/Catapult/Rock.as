@@ -62,7 +62,7 @@ void onTick(CBlob@ this)
 				{
 					return;
 				}
-				map.server_DestroyTile(pos, 1.0f, this);
+				map.server_DestroyTile(pos, 2.0f, this);
 			}
 		}
 		else if (map.isTileSolid(tile))
@@ -131,7 +131,7 @@ void HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
 	{
 		if (map.getSectorAtPosition(tilepos, "no build") is null)
 		{
-			map.server_DestroyTile(tilepos, ricochet ? 1.0f : 10.0f, this);
+			map.server_DestroyTile(tilepos, ricochet ? 2.0f : 10.0f, this);
 		}
 	}
 }
