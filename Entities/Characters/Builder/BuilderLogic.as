@@ -145,10 +145,9 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 		CMap@ map = getMap();
 		if (map !is null)
 		{
-			if (map.getSectorAtPosition(tilepos, "no build") is null)
+			uint16 type = map.getTile(tilepos).type;
+			if (!inNoBuildZone(map, tilepos, type))
 			{
-				uint16 type = map.getTile(tilepos).type;
-
 				CBlob@[] blobs_here;
 				map.getBlobsAtPosition(tilepos + Vec2f(1, 1), blobs_here);
 
