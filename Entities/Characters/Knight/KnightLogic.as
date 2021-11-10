@@ -1711,7 +1711,7 @@ bool canHit(CBlob@ this, CBlob@ b)
 	{
 		AttachmentPoint@ point = att.getAttachmentPointByName("PICKUP");
 		if (point !is null && !point.socket &&
-			b.isAttachedToPoint("PICKUP") && !b.hasTag("slash_while_in_hand")) continue;
+			b.isAttachedToPoint("PICKUP") && !b.hasTag("slash_while_in_hand")) return false;
 	}
 
 	if (b.hasTag("dead"))
