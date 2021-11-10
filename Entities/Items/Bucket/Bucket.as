@@ -39,7 +39,7 @@ void onTick(CBlob@ this)
 	{
 		this.set_u8("filled", splashes);
 		this.set_u8("water_delay", 30);
-		this.getSprite().SetAnimation("full");
+		SetFrame(this, true);
 	}
 
 	if (filled != 0)
@@ -51,10 +51,17 @@ void onTick(CBlob@ this)
 		{
 			this.set_u8("water_delay", water_delay - 1);
 		}
-		else if (point.getOccupied() !is null && point.getOccupied().isMyPlayer() && point.getOccupied().isKeyJustPressed(key_action1) && !this.isInWater())
-		{
-			this.SendCommand(this.getCommandID("splash"));
-			this.set_u8("water_delay", 30);
+		else{
+			CBlob@ occupiedBlob = point.getOccupied();
+			if (occupiedBlob !is null && 
+				 occupiedBlob.isMyPlayer() && 
+				 occupiedBlob.isKeyJustPressed(key_action1) && 
+				 !this.isInWater() &&
+				 !occupiedBlob.isKeyPressed(key_inventory)) // prevent splash when doing stuff with inventory
+			{
+				this.SendCommand(this.getCommandID("splash"));
+				this.set_u8("water_delay", 30);
+			}
 		}
 	}
 }
@@ -123,7 +130,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.set_u8("water_delay", 5); // only slight delay
 		this.set_u8("filled", filled);
 				
-		this.getSprite().SetAnimation("full");
+		SetFrame(this, true);
 	}
 }
 
@@ -145,7 +152,7 @@ void TakeWaterCount(CBlob@ this)
 	if (filled == 0)
 	{
 		filled = 0;
-		this.getSprite().SetAnimation("empty");
+		SetFrame(this, false);
 	}
 	this.set_u8("filled", filled);
 }
@@ -168,9 +175,18 @@ void DoSplash(CBlob@ this)
 
 void onInit(CSprite@ this)
 {
-	this.SetAnimation("empty");
-	if (this.getBlob().get_u8("filled") > 0)
+	CBlob@ blob = this.getBlob();
+	bool filled = blob.get_u8("filled") > 0;
+	SetFrame(blob, filled);
+}
+
+void SetFrame(CBlob@ blob, bool filled)
+{
+	Animation@ animation = blob.getSprite().getAnimation("default");
+	if (animation !is null)
 	{
-		this.SetAnimation("full");
+		u8 index = filled ? 1 : 0;
+		animation.SetFrameIndex(index);
+		blob.inventoryIconFrame = index;
 	}
 }
