@@ -242,17 +242,19 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 		string headTexture = "playercardicons.png";
 		int headIndex = 3;
 		int teamIndex = p.getTeamNum();
-		Vec2f headOffset = Vec2f(23, -11);
+		Vec2f headOffset = Vec2f(30, 0);
+		float headScale = 0.5f;
 
 		if (b !is null)
 		{
 			headIndex = b.get_s32("head index");
 			headTexture = b.get_string("head texture");
 			teamIndex = b.get_s32("head team");
-			headOffset += Vec2f(-1, -1);
+			headOffset += Vec2f(-8, -12);
+			headScale = 1.0f;
 		}
 
-		GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + headOffset, 1.0f, teamIndex);
+		GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + headOffset, headScale, teamIndex);
 
 
 		//have to calc this from ticks
