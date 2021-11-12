@@ -20,24 +20,27 @@ void onDie(CBlob@ this)
 	for (uint i = 0; i < segments.length; i++)
 	{
 		TreeSegment@ segment = segments[i];
+		
+		pos = this.getPosition() + (segment.start_pos + segment.end_pos) / 2.0f;
+		pos.y -= 4.0f; // TODO: fix logs spawning in ground
 
 		if (getNet().isServer())
 		{
-			pos = this.getPosition() + (segment.start_pos + segment.end_pos) / 2.0f;
-			pos.y -= 4.0f; // TODO: fix logs spawning in ground
 			CBlob@ log = server_CreateBlob("log", this.getTeamNum(), pos);
 			if (log !is null)
-			{
 				log.setAngleDegrees(fall_angle);
-			}
 		}
+		
+		if (XORRandom(100) < 20)
+			return;
+
+		ParticleAnimated("Entities/Effects/Sprites/Leaves", pos + Vec2f(6-XORRandom(12), 0), Vec2f(0,-0.75f), 0.0f, 0.5f, 4, 0.1f, false);
 	}
 
-	//TODO LEAVES PARTICLES
-	//ParticleAnimated( "Entities/Effects/leaves", pos, Vec2f(0,-0.5f), 0.0f, 1.0f, 2+XORRandom(4), 0.2f, false );
-	//for (int i = 0; i < this.getSprite().getSpriteLayerCount(); i++) { // crashes
-	//    ParticlesFromSprite( this.getSprite().getSpriteLayer(i) );
-	//}
+	for (int i = 0; i < this.getSprite().getSpriteLayerCount(); i++) {
+	    ParticlesFromSprite(this.getSprite().getSpriteLayer(i));
+	}
+	
 	// effects
 	Sound::Play("Sounds/branches" + (XORRandom(2) + 1) + ".ogg", this.getPosition());
 }
