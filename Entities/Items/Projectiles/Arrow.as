@@ -158,11 +158,8 @@ void onTick(CBlob@ this)
 		
 		if (arrowType == ArrowType::bomb)
 		{
-			if (!this.exists("old velocity") || this.get_f32("old velocity") > shape.vellen)
-			{
-				this.set_f32("old velocity", shape.vellen);
+			if (this.getVelocity().y < 0)
 				return;
-			}
 
 			CSprite@ sprite = this.getSprite();
 

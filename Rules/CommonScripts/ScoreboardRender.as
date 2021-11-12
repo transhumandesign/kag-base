@@ -198,14 +198,12 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 			// knight is 3 but should be 0 for this texture
 			// fyi it's pure coincidence builder and archer are already a match
-			if (classIndex == 3) 
-			{ 
-				classIndex = 0;
-			}
+			classIndex %= 3;
 			
 			classIconSize = Vec2f(16, 16);
 
-			if (b is null) { // player dead
+			if (b is null) // player dead
+			{
 				classIndex += 16;
 				classIconSize = Vec2f(8, 8);
 				classIconOffset = Vec2f(4, 4);
