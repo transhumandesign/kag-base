@@ -531,7 +531,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 				this.Tag("no_fire");
 				this.server_Die();
 			}
-			if (hitKeg)
+			else if (hitKeg)
 			{
 				this.server_Die(); // so that it doesn't bounce off
 			}
