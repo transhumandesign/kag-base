@@ -10,6 +10,8 @@ const f32 grass_grow_chance = 0.015f;
 const f32 bush_grow_chance = 0.003f;
 const f32 flower_grow_chance = 0.0005f;
 const f32 grain_grow_chance = flower_grow_chance + 0.0005f; //add flower chance to prevent them from overriding each other
+const f32 chicken_grow_chance = 0.001f; // chickens are plants don't @ me
+const u8 chicken_limit = 10; 
 
 const f32 moss_stone_chance = 0.002f;
 
