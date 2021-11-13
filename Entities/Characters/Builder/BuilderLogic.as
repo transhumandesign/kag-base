@@ -200,7 +200,7 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 
 			const bool teamHurt = !blob.hasTag("flesh") || isdead;
 
-			if (getNet().isServer())
+			if (isServer())
 			{
 				this.server_Hit(blob, tilepos, attackVel, attack_power, Hitters::builder, teamHurt);
 
