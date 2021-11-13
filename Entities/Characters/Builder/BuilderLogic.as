@@ -155,7 +155,7 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 				bool no_dmg = false;
 
 				// dont dmg backwall if it's behind a blob-block
-				// this fixes the issue where with specific timing you can damage backwall behind blob-blocks right after placing it
+				// hack: fixes the issue where with specific timing you can damage backwall behind blob-blocks right after placing it
 				for(int i=0; i < blobs_here.size(); ++i)
 				{
 					CBlob@ current_blob = blobs_here[i];
