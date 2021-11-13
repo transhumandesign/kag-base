@@ -149,9 +149,9 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		CBlob@ blobAtPos = map.getBlobAtPosition(Vec2f(p.x, p.y));
 
 		// repairing blobs
-		if(blobAtPos !is null && blob !is null && (isDoor || isPlatform))
+		if (blobAtPos !is null && blob !is null && (isDoor || isPlatform))
 		{
-			if(blobAtPos.getName() == blob.getName() && 
+			if (blobAtPos.getName() == blob.getName() && 
 				blobAtPos.getTeamNum() == blob.getTeamNum() && 
 				blobAtPos.getHealth() != blobAtPos.getInitialHealth()) 
 			{	
