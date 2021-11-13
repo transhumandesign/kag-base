@@ -155,7 +155,7 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 				bool no_dmg = false;
 
 				// dont dmg backwall if there's a door here
-				for(int i=0; i < blobs_here.size(); ++i)
+				for (int i=0; i < blobs_here.size(); ++i)
 				{
 					CBlob@ current_blob = blobs_here[i];
 					if (current_blob !is null && (current_blob.hasTag("door") || current_blob.getName() == "bridge" || current_blob.getName() == "wooden_platform"))
@@ -578,7 +578,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	}
 
 	const u8 PAGE = this.get_u8("build page");
-	for(u8 i = 0; i < blocks[PAGE].length; i++)
+	for (u8 i = 0; i < blocks[PAGE].length; i++)
 	{
 		BuildBlock@ block = blocks[PAGE][i];
 		if (block !is null && block.name == detached.getName())
