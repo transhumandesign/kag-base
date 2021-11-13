@@ -49,7 +49,7 @@ void MakeDamageFrame(CBlob@ this, bool repaired = false)
 	int frame = frame_count - hp / full_hp * frame_count;
 	this.getSprite().animation.frame = frame;
 
-	if(repaired)
+	if (repaired)
 	{
 		this.getSprite().PlaySound("/build_wood.ogg");
 	}
