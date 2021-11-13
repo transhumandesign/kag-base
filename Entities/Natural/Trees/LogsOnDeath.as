@@ -31,14 +31,18 @@ void onDie(CBlob@ this)
 				log.setAngleDegrees(fall_angle);
 		}
 		
-		if (XORRandom(100) < 20)
+		if (XORRandom(5) == 0)
 			return;
 
 		ParticleAnimated("Entities/Effects/Sprites/Leaves", pos + Vec2f(6-XORRandom(12), 0), Vec2f(0,-0.75f), 0.0f, 0.5f, 4, 0.1f, false);
 	}
 
-	for (int i = 0; i < this.getSprite().getSpriteLayerCount(); i++) {
-	    ParticlesFromSprite(this.getSprite().getSpriteLayer(i));
+	CSprite@ sprite = this.getSprite();
+	int layer_count = sprite.getSpriteLayerCount();
+
+	for (int i = 0; i < layer_count; i++) 
+	{
+	    ParticlesFromSprite(sprite.getSpriteLayer(i));
 	}
 	
 	// effects
