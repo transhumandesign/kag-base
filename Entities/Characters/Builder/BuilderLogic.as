@@ -161,6 +161,7 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 					if (current_blob !is null && (current_blob.hasTag("door") || current_blob.getName() == "bridge" || current_blob.getName() == "wooden_platform"))
 					{
 						no_dmg = true;
+						break;
 					}
 				}
 
