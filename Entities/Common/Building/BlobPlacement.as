@@ -357,18 +357,17 @@ void onTick(CBlob@ this)
 				{
 					CMap@ map = getMap();
 					CBlob@ blobAtPos = map.getBlobAtPosition(getBottomOfCursor(bc.tileAimPos, carryBlob));
+
+					CBitStream params;
+					params.write_u16(carryBlob.getNetworkID());
+					params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
+
 					if (blobAtPos !is null && carryBlob.getName() == blobAtPos.getName() && blobAtPos.getHealth() < blobAtPos.getInitialHealth() && blobAtPos.getName() != "ladder")
 					{
-						CBitStream params;
-						params.write_u16(carryBlob.getNetworkID());
-						params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
 						this.SendCommand(this.getCommandID("repairBlob"), params);
 					}
 					else
 					{
-						CBitStream params;
-						params.write_u16(carryBlob.getNetworkID());
-						params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
 						this.SendCommand(this.getCommandID("placeBlob"), params);
 					}
 
