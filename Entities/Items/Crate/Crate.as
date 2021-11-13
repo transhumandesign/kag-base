@@ -755,7 +755,7 @@ CBlob@ getPlayerInside(CBlob@ this)
 	return null;
 }
 
-bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_player = true)
+bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity = Vec2f_zero, bool dump_special = true)
 {
 	bool dumped_anything = false;
 	if (getNet().isClient())
@@ -770,21 +770,14 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 	{
 		Vec2f velocity = (init_velocity == Vec2f_zero) ? this.getOldVelocity() : init_velocity;
 		CInventory@ inv = this.getInventory();
-		//u8 target_items_left = dump_player ? 0 : 1;
 		u8 target_items_left = 0;
-		bool skipping_player = false;
+		u8 item_num = 0;
+
 		while (inv !is null && (inv.getItemsCount() > target_items_left))
 		{
-			CBlob@ item;
-			if (skipping_player)
-			{
-				@item = inv.getItem(1);
-			}
-			else
-			{
-				@item = inv.getItem(0);
-			}
-			if (!item.hasTag("player"))
+			CBlob@ item = inv.getItem(item_num);
+
+			if (!item.hasTag("player") && item.getName() != "mine")
 			{
 				dumped_anything = true;
 				this.server_PutOutInventory(item);
@@ -798,15 +791,14 @@ bool DumpOutItems(CBlob@ this, float pop_out_speed = 5.0f, Vec2f init_velocity =
 					item.setVelocity(velocity + getRandomVelocity(90, magnitude, 45));
 				}
 			}
-			else if (dump_player)
+			else if (dump_special && (item.hasTag("player") || item.getName() == "mine"))
 			{
-				// Handled in onRemoveFromInventory
 				this.server_PutOutInventory(item);
 			}
-			else // Don't dump player
+			else // Don't dump player or mine
 			{
-				skipping_player = true;
 				target_items_left++;
+				item_num++;
 			}
 		}
 	}
