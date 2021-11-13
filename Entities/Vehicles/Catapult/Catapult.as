@@ -233,21 +233,18 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 	{
 		f32 angle = this.getAngleDegrees();
 		f32 sign = this.isFacingLeft() ? -1.0f : 1.0f;
-
 		Vec2f vel = Vec2f(sign, -0.5f) * charge * 0.3f;
-
-
 		vel += (Vec2f((_r.NextFloat() - 0.5f) * 128, (_r.NextFloat() - 0.5f) * 128) * 0.01f);
-
-
 		vel.RotateBy(angle);
 
-
 		if(bullet.hasTag("player"))
-		bullet.setVelocity(vel * player_launch_modifier);
-
+		{
+			bullet.setVelocity(vel * player_launch_modifier);
+		}
 		else
-		bullet.setVelocity(vel * other_launch_modifier);
+		{
+			bullet.setVelocity(vel * other_launch_modifier);
+		}
 
 		if (isKnockable(bullet))
 		{
