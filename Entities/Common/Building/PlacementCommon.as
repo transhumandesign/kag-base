@@ -146,16 +146,20 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		s32 y = Maths::Floor(p.y);
 		y /= map.tilesize;
 
-		CBlob@ blobAtPos = map.getBlobAtPosition(Vec2f(p.x, p.y));
+		CBlob@[] blobsAtPos;
 
 		// repairing blobs
-		if (blobAtPos !is null && blob !is null && (isDoor || isPlatform))
+		if (map.getBlobsAtPosition(Vec2f(p.x, p.y), @blobsAtPos) && blob !is null && (isDoor || isPlatform))
 		{
-			if (blobAtPos.getName() == blob.getName() && 
-				blobAtPos.getTeamNum() == blob.getTeamNum() && 
-				blobAtPos.getHealth() != blobAtPos.getInitialHealth()) 
-			{	
-				return true;
+			for (uint i = 0; i < blobsAtPos.length; i++)
+			{
+				CBlob@ blobAtPos = blobsAtPos[i];
+				if (blobAtPos.getName() == blob.getName() && 
+					blobAtPos.getTeamNum() == blob.getTeamNum() && 
+					blobAtPos.getHealth() != blobAtPos.getInitialHealth()) 
+				{	
+					return true;
+				}
 			}
 		}
 
