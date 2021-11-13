@@ -256,7 +256,7 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 			bullet.getShape().getConsts().mapCollisions = false;
 			bullet.getShape().getConsts().collidable = false;
 		}
-		if(bullet.hasTag("player"))
+		if (bullet.hasTag("player"))
 		{
 			shot_player = true;
 		}
@@ -269,7 +269,7 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 	v.charge = 0;
 
 	// mildly hacky, but this is probably the cleaniest way to do it with how the code currently works
-	if(shot_player)
+	if (shot_player)
 	{
 		delay = delay * (float(cooldown_time_player) / cooldown_time);
 	}
