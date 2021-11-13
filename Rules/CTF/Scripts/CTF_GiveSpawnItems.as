@@ -184,10 +184,10 @@ void onTick(CRules@ this)
 			CBlob@ blob = player.getBlob();
 			if (blob !is null) 
 			{
-			doGiveSpawnMats(this, player, blob);
+				doGiveSpawnMats(this, player, blob);
 			}
 		}
-	} 
+	}
 	else 
 	{
 		CBlob@[] spots;
