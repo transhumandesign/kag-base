@@ -232,7 +232,6 @@ void onRender(CRules@ this)
 		return;
 	
 	CPlayer@ p = getLocalPlayer();
-	if (p is null || !p.isMyPlayer()) return;
 	
 	CBlob@ b = p.getBlob();
 	if (b is null) return;
