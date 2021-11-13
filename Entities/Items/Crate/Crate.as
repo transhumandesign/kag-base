@@ -439,10 +439,6 @@ void Unpack(CBlob@ this)
 		}
 		else
 		{
-			if (blob.getName() == "outpost")
-			{
-				//pos -= Vec2f(0, map.tilesize);
-			}
 			adjusted_pos = pos;
 		}
 
