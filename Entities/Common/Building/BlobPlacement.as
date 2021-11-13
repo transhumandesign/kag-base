@@ -50,7 +50,7 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos, bool repairing=false, 
 }
 
 // Returns true if pos is valid
-bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repairing=false)
+bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repairing = false)
 {
 	// Pos check of about 8 tiles, accounts for people with lag
 	Vec2f pos = (blob.getPosition() - cursorPos) / 2;
