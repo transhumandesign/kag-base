@@ -5,7 +5,7 @@
 #include "StandardControlsCommon.as"
 #include "TunnelCommon.as"
 
-u8 respawn_immunity_time = 30 * 1; // 1 second
+const u8 respawn_immunity_time = 30 * 1; // 1 second
 
 void onInit(CBlob@ this)
 {
