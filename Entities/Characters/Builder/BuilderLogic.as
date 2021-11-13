@@ -166,14 +166,14 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 
 				if (!no_dmg)
 				{
-					if (getNet().isServer())
+					if (isServer())
 					{
 						map.server_DestroyTile(tilepos, 1.0f, this);
 
 						Material::fromTile(this, type, 1.0f);
 					}
 
-					if (getNet().isClient())
+					if (isClient())
 					{
 						if (map.isTileBedrock(type))
 						{
