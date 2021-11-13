@@ -260,6 +260,11 @@ void SetTileAimpos(CBlob@ this, BlockCursor@ bc)
 	bc.cursorClose = (mouseLen < getMaxBuildDistance(this));
 }
 
+u32 getCurrentBuildDelay(CBlob@ this)
+{
+	return (getRules().hasTag("faster building") ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
+}
+
 f32 getMaxBuildDistance(CBlob@ this)
 {
 	return (MAX_BUILD_LENGTH + 0.51f) * getMap().tilesize;

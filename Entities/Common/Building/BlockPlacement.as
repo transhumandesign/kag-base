@@ -44,7 +44,7 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 		server_TakeRequirements(inv, bc.reqs);
 		getMap().server_SetTile(cursorPos, bc.tile);
 
-		u32 delay = (getRules().hasTag("faster building") ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
+		u32 delay = getCurrentBuildDelay(this);
 		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
 
 		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), bc.tile));
@@ -174,7 +174,7 @@ void onTick(CBlob@ this)
 				params.write_u8(blockIndex);
 				params.write_Vec2f(bc.tileAimPos);
 				this.SendCommand(this.getCommandID("placeBlock"), params);
-				u32 delay = (getRules().hasTag("faster building") ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
+				u32 delay = getCurrentBuildDelay(this);
 				SetBuildDelay(this, block.tile < 255 ? delay : delay / 3);
 				bc.blockActive = false;
 			}

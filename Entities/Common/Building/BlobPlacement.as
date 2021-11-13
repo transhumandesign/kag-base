@@ -16,7 +16,7 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 		if (!serverBlobCheck(this, blob, cursorPos))
 			return;
 
-		u32 delay = (getRules().hasTag("faster building") ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
+		u32 delay = getCurrentBuildDelay(this);
 		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
 
 		CShape@ shape = blob.getShape();
@@ -345,7 +345,7 @@ void onTick(CBlob@ this)
 					params.write_u16(carryBlob.getNetworkID());
 					params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
 					this.SendCommand(this.getCommandID("placeBlob"), params);
-					u32 delay = 2 * (getRules().hasTag("faster building") ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
+					u32 delay = 2 * getCurrentBuildDelay(this);
 					SetBuildDelay(this, delay);
 					bc.blobActive = false;
 				}
