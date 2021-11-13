@@ -43,7 +43,7 @@ bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity)
 //when the player is set, give materials if possible
 void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 {
-	if (!getNet().isServer()) return;
+	if (!isServer()) return;
 	
 	if (blob is null) return;
 	if (player is null) return;
@@ -167,7 +167,7 @@ void onInit(CRules@ this)
 
 void onTick(CRules@ this)
 {
-	if (!getNet().isServer())
+	if (!isServer())
 		return;
 	
 	s32 gametime = getGameTime();
