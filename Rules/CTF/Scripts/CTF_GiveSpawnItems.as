@@ -150,6 +150,72 @@ void doGiveSpawnMats(CRules@ this, CPlayer@ p, CBlob@ b)
 	}
 }
 
+void displayResupply(CRules@ this, string player_class, string resupply_class, Vec2f offset, Vec2f offset_second, string propname)
+{
+	s32 next_items = this.get_s32(propname);
+
+	u32 secs = ((next_items - 1 - getGameTime()) / getTicksASecond()) + 1;
+	string units = ((secs != 1) ? " seconds" : " second");
+
+	SColor color = SColor(200, 135, 185, 45);
+
+	string resupply_available;
+	string resupply_unavailable;
+
+	if (resupply_class == "archer")
+	{
+		// TODO: maybe only draw the cooldown/helptext for archer if low on arrows?
+		resupply_available = getTranslatedString("Go to an archer shop or a respawn point to get a resupply of 30 arrows.");
+
+		resupply_unavailable = getTranslatedString("Next resupply of 30 arrows in {SEC}{TIMESUFFIX}.")
+			.replace("{SEC}", "" + secs)
+			.replace("{TIMESUFFIX}", getTranslatedString(units));
+	}
+	else // default: builder
+	{
+		int wood_amount = matchtime_wood_amount;
+		int stone_amount = matchtime_stone_amount;
+		if (this.isWarmup())
+		{
+			wood_amount = warmup_wood_amount;
+			stone_amount = warmup_stone_amount;
+		}
+
+		string need_to_switch_string = "";
+		if (player_class != "builder") need_to_switch_string = getTranslatedString("and switch to builder ");
+
+		resupply_available = getTranslatedString("Go to a builder shop or a respawn point {SWITCH}to get a resupply of {WOOD} wood and {STONE} stone.")
+			.replace("{SWITCH}", need_to_switch_string)
+			.replace("{WOOD}", "" + wood_amount)
+			.replace("{STONE}", "" + stone_amount);
+
+		resupply_unavailable = getTranslatedString("Next resupply of {WOOD} wood and {STONE} stone in {SEC}{TIMESUFFIX}.")
+			.replace("{SEC}", "" + secs)
+			.replace("{TIMESUFFIX}", getTranslatedString(units))
+			.replace("{WOOD}", "" + wood_amount)
+			.replace("{STONE}", "" + stone_amount);
+	}
+
+	// this is shown on upper center of screen
+	string text = resupply_available;
+
+	float x = getScreenWidth() / 3 + offset.x;
+	float y = getScreenHeight() - offset.y;
+		
+	// this is shown above inventory GUI
+	if (next_items > getGameTime())
+	{
+		color = SColor(255, 255, 55, 55);
+			
+		text = resupply_unavailable;
+
+		x = getScreenWidth() / 2;
+		y = getScreenHeight() / 3 - offset_second.y;
+	}
+	
+	GUI::DrawTextCentered(text, Vec2f(x, y), color);
+}
+
 // normal hooks
 
 void Reset(CRules@ this)
@@ -229,72 +295,6 @@ void onTick(CRules@ this)
 			}
 		}
 	}
-}
-
-void displayResupply(CRules@ this, string player_class, string resupply_class, Vec2f offset, Vec2f offset_second, string propname)
-{
-	s32 next_items = this.get_s32(propname);
-
-	u32 secs = ((next_items - 1 - getGameTime()) / getTicksASecond()) + 1;
-	string units = ((secs != 1) ? " seconds" : " second");
-
-	SColor color = SColor(200, 135, 185, 45);
-
-	string resupply_available;
-	string resupply_unavailable;
-
-	if (resupply_class == "archer")
-	{
-		// TODO: maybe only draw the cooldown/helptext for archer if low on arrows?
-		resupply_available = getTranslatedString("Go to an archer shop or a respawn point to get a resupply of 30 arrows.");
-
-		resupply_unavailable = getTranslatedString("Next resupply of 30 arrows in {SEC}{TIMESUFFIX}.")
-			.replace("{SEC}", "" + secs)
-			.replace("{TIMESUFFIX}", getTranslatedString(units));
-	}
-	else // default: builder
-	{
-		int wood_amount = matchtime_wood_amount;
-		int stone_amount = matchtime_stone_amount;
-		if (this.isWarmup())
-		{
-			wood_amount = warmup_wood_amount;
-			stone_amount = warmup_stone_amount;
-		}
-
-		string need_to_switch_string = "";
-		if (player_class != "builder") need_to_switch_string = getTranslatedString("and switch to builder ");
-
-		resupply_available = getTranslatedString("Go to a builder shop or a respawn point {SWITCH}to get a resupply of {WOOD} wood and {STONE} stone.")
-			.replace("{SWITCH}", need_to_switch_string)
-			.replace("{WOOD}", "" + wood_amount)
-			.replace("{STONE}", "" + stone_amount);
-
-		resupply_unavailable = getTranslatedString("Next resupply of {WOOD} wood and {STONE} stone in {SEC}{TIMESUFFIX}.")
-			.replace("{SEC}", "" + secs)
-			.replace("{TIMESUFFIX}", getTranslatedString(units))
-			.replace("{WOOD}", "" + wood_amount)
-			.replace("{STONE}", "" + stone_amount);
-	}
-
-	// this is shown on upper center of screen
-	string text = resupply_available;
-
-	float x = getScreenWidth() / 3 + offset.x;
-	float y = getScreenHeight() - offset.y;
-		
-	// this is shown above inventory GUI
-	if (next_items > getGameTime())
-	{
-		color = SColor(255, 255, 55, 55);
-			
-		text = resupply_unavailable;
-
-		x = getScreenWidth() / 2;
-		y = getScreenHeight() / 3 - offset_second.y;
-	}
-	
-	GUI::DrawTextCentered(text, Vec2f(x, y), color);
 }
 
 // render gui for the player
