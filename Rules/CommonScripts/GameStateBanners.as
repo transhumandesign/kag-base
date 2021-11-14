@@ -153,7 +153,7 @@ void DrawWinBanner(Vec2f center, int team)
 
 void DrawBuildBanner(Vec2f center)
 {
-	string text = "Build the base!";
+	string text = "Build defenses!";
 
 	Vec2f tl = center - Vec2f(160, 32);
 	Vec2f br = center + Vec2f(160, 32);
