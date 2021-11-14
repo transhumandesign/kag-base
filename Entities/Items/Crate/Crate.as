@@ -348,10 +348,24 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 		CBlob @caller = getBlobByNetworkID( params.read_u16() );
 
-		if (caller !is null && this.getInventory() !is null) {
-			// We might have to make room
+		if (caller !is null && this.getInventory() !is null) 
+		{
 			CInventory@ inv = this.getInventory();
 			u8 itemcount = inv.getItemsCount();
+			// Boobytrap if crate has enemy mine
+			CBlob@ mine = null;
+			for (int i = 0; i < inv.getItemsCount(); i++)
+			{
+				CBlob@ item = inv.getItem(i);
+				if (item.getName() == "mine" && item.getTeamNum() != caller.getTeamNum())
+				{
+					CBitStream params;
+					params.write_u16(caller.getNetworkID());
+					params.write_u16(item.getNetworkID());
+					this.SendCommand(this.getCommandID("boobytrap"), params);
+					return;
+				}
+			}
 			while (!inv.canPutItem(caller) && itemcount > 0)
 			{
 				// pop out last items until we can put in player or there's nothing left
