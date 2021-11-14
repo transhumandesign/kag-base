@@ -247,9 +247,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		f32 ratio = 1.0f - Maths::Min(ydiff/this.getHeight(), 1.0f);
 
 		this.getSprite().PlaySound("SwordCling");
-		printf("dif " + ydiff);
-		printf("h " + this.getHeight());
-		printf("ratio " + ratio);
 
 		blob.setVelocity(Vec2f_zero);
 		blob.AddForce(Vec2f(22-XORRandom(44), -Maths::Max(100.0f, 400.0f * ratio)));
