@@ -32,11 +32,11 @@ void onRestart(CRules@ this)
 	SetBanner(this);
 }
 
-void onTick(CRules@ this)
+void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
-	if (this.get_string("Animate Banner") != "none" && this.get_u32("Banner End") < getGameTime())
+	if (getLocalPlayer() !is null && getLocalPlayer().getUsername() == player.getUsername())
 	{
-		ResetBannerInfo(this);
+		SetBanner(this);
 	}
 }
 
@@ -44,6 +44,14 @@ void onStateChange(CRules@ this, const u8 oldState)
 {
 	ResetBannerInfo(this);
 	SetBanner(this);
+}
+
+void onTick(CRules@ this)
+{
+	if (this.get_string("Animate Banner") != "none" && this.get_u32("Banner End") < getGameTime())
+	{
+		ResetBannerInfo(this);
+	}
 }
 
 void onRender(CRules@ this)
@@ -81,14 +89,6 @@ void onRender(CRules@ this)
 				DrawGameBanner(bannerPos, team);
 			} 
 		}
-	}
-}
-
-void onNewPlayerJoin(CRules@ this, CPlayer@ player)
-{
-	if (getLocalPlayer() !is null && getLocalPlayer().getUsername() == player.getUsername())
-	{
-		SetBanner(this);
 	}
 }
 
