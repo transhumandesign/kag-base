@@ -532,16 +532,12 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 		}
 		if (item.getName() == "mine" && item.getTeamNum() != forBlob.getTeamNum())
 		{
-			@mine = item;
+			CBitStream params;
+			params.write_u16(forBlob.getNetworkID());
+			params.write_u16(item.getNetworkID());
+			this.SendCommand(this.getCommandID("boobytrap"), params);
 			break;
 		}
-	}
-	if (mine !is null)
-	{
-		CBitStream params;
-		params.write_u16(forBlob.getNetworkID());
-		params.write_u16(mine.getNetworkID());
-		this.SendCommand(this.getCommandID("boobytrap"), params);
 	}
 }
 
