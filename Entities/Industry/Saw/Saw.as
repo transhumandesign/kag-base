@@ -9,8 +9,6 @@ const string sawteammate_id = "sawteammate";
 void onInit(CBlob@ this)
 {
 	this.Tag("saw");
-	this.set_u32("bomb_time", 0);
-	this.set_u8("bombs_exploded", 0);
 
 	this.addCommandID(toggle_id);
 	this.addCommandID(sawteammate_id);
@@ -97,6 +95,11 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 		return;
 	}
 
+	tobeblended.Tag("sawed");
+
+	if ((tobeblended.getName() == "waterbomb" || tobeblended.getName() == "bomb") && tobeblended.hasTag("activated"))
+		return;
+
 	//make plankfrom wooden stuff
 	string blobname = tobeblended.getName();
 	if (blobname == "log" || blobname == "crate")
@@ -123,8 +126,6 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 		this.getSprite().PlaySound("SawOther.ogg");
 	}
 
-	tobeblended.Tag("sawed");
-
 	// on saw player or dead body - disable the saw
 	if (
 		(tobeblended.getPlayer() !is null || //player
@@ -135,8 +136,7 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 		params.write_netid(tobeblended.getNetworkID());
 		this.SendCommand(this.getCommandID(sawteammate_id), params);
 	}
-
-
+	
 	CSprite@ s = tobeblended.getSprite();
 	if (s !is null)
 	{
@@ -146,7 +146,6 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 	//give no fucks about teamkilling
 	tobeblended.server_SetHealth(-1.0f);
 	tobeblended.server_Die();
-
 }
 
 
@@ -216,9 +215,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (blob.hasTag("ignore_saw") ||
-		   (blob.getName() == "bomb" && 
-			blob.getTeamNum() == this.getTeamNum()))
+	if (blob.hasTag("ignore_saw"))
 	{
 		return false;
 	}
@@ -231,8 +228,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (blob is null || !getNet().isServer() ||
 	        this.isAttached() || blob.isAttached() ||
-	        !getSawOn(this) ||
-	        (blob.getName() == "bomb" && blob.getTeamNum() == this.getTeamNum()))
+	        !getSawOn(this))
 	{
 		return;
 	}
@@ -241,8 +237,22 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	{
 		Vec2f pos = this.getPosition();
 		Vec2f bpos = blob.getPosition();
-		this.Tag("sawed");
 		this.server_Hit(blob, bpos, bpos - pos, 0.0f, Hitters::saw);
+		this.Tag("sawed");
+	}
+
+	if ((blob.getName() == "waterbomb" || blob.getName() == "bomb") && blob.hasTag("activated"))
+	{
+		f32 ydiff = Maths::Max(this.getPosition().y - blob.getPosition().y + blob.getHeight(), 0.0f);
+		f32 ratio = 1.0f - Maths::Min(ydiff/this.getHeight(), 1.0f);
+
+		this.getSprite().PlaySound("SwordCling");
+		printf("dif " + ydiff);
+		printf("h " + this.getHeight());
+		printf("ratio " + ratio);
+
+		blob.setVelocity(Vec2f_zero);
+		blob.AddForce(Vec2f(22-XORRandom(44), -Maths::Max(100.0f, 400.0f * ratio)));
 	}
 }
 
