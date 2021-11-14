@@ -57,7 +57,7 @@ void onTick(CSprite@ this)
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if (this is hitterBlob)
+	if (hitterBlob.getName() != "saw")
 	{
 		this.set_s32("bomb_timer", 0);
 	}
@@ -92,7 +92,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 	string name = blob.getName();
 
-	if (name == "fishy" || name == "food" || name == "steak" || name == "grain" || name == "heart")
+	if (name == "fishy" || name == "food" || name == "steak" || name == "grain" || name == "heart" || name == "saw")
 	{
 		return false;
 	}
