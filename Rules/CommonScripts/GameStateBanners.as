@@ -66,11 +66,11 @@ void onRender(CRules@ this)
 				this.SetGlobalMessage("");
 			}
 			// todo: implement tth versions (alternatively remove TTH)
-			else if (this.get_string("Animate Banner") == "build" && (this.gamemode_name == "CTF" || this.gamemode_name == "SmallCTF")
+			else if (this.get_string("Animate Banner") == "build" && (this.gamemode_name == "CTF" || this.gamemode_name == "SmallCTF"))
 			{
 				DrawBuildBanner(bannerPos);
 			} 
-			else if (this.get_string("Animate Banner") == "game" && (this.gamemode_name == "CTF" || this.gamemode_name == "SmallCTF")
+			else if (this.get_string("Animate Banner") == "game" && (this.gamemode_name == "CTF" || this.gamemode_name == "SmallCTF"))
 			{
 				CPlayer@ p = getLocalPlayer();
 				int team = p is null ? 0 : p.getTeamNum();
