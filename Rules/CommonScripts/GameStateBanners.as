@@ -1,9 +1,9 @@
 #define CLIENT_ONLY
 
-Vec2f bannerStart = Vec2f_zero;
-Vec2f bannerPos = Vec2f_zero;
-Vec2f bannerDest = Vec2f_zero;
-f32 frameTime = 0;
+Vec2f bannerStart;
+Vec2f bannerPos;
+Vec2f bannerDest;
+f32 frameTime = 0.0f;
 const f32 maxTime = 0.6f;
 
 bool minimap = true;
@@ -11,6 +11,17 @@ bool minimap = true;
 const u32 winBannerDuration = 8 * getTicksASecond();
 const u32 buildBannerDuration = 5 * getTicksASecond();
 const u32 gameBannerDuration = 5 * getTicksASecond();
+
+namespace Banner
+{
+	enum State
+	{
+		none = 0,
+		build,
+		game,
+		win
+	};
+}
 
 void onInit(CRules@ this)
 {
@@ -34,7 +45,7 @@ void onRestart(CRules@ this)
 
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
-	if (getLocalPlayer() !is null && getLocalPlayer().getUsername() == player.getUsername())
+	if (player.isMyPlayer())
 	{
 		SetBanner(this);
 	}
@@ -48,7 +59,7 @@ void onStateChange(CRules@ this, const u8 oldState)
 
 void onTick(CRules@ this)
 {
-	if (this.get_string("Animate Banner") != "none" && this.get_u32("Banner End") < getGameTime())
+	if (this.get_u8("Animate Banner") != Banner::none && this.get_u32("Banner End") < getGameTime())
 	{
 		ResetBannerInfo(this);
 	}
@@ -56,7 +67,9 @@ void onTick(CRules@ this)
 
 void onRender(CRules@ this)
 {
-	if (this.get_string("Animate Banner") != "none")
+	u8 banner_type = this.get_u8("Animate Banner");
+
+	if (banner_type != Banner::none)
 	{
 		Driver@ driver = getDriver();
 		if (driver !is null)
@@ -68,17 +81,17 @@ void onRender(CRules@ this)
 				bannerPos = Vec2f_lerp(bannerStart, bannerDest, frameTime);
 			}
 
-			if (this.get_string("Animate Banner") == "win") 
+			if (banner_type == Banner::win) 
 			{
 				DrawWinBanner(bannerPos, this.getTeamWon());
 				this.SetGlobalMessage("");
 			}
 			// todo: implement tth versions (alternatively remove TTH)
-			else if (this.get_string("Animate Banner") == "build" && (this.gamemode_name == "CTF" || this.gamemode_name == "SmallCTF"))
+			else if (banner_type == Banner::build && (this.gamemode_name == "CTF" || this.gamemode_name == "SmallCTF"))
 			{
 				DrawBuildBanner(bannerPos);
 			} 
-			else if (this.get_string("Animate Banner") == "game" && (this.gamemode_name == "CTF" || this.gamemode_name == "SmallCTF"))
+			else if (banner_type == Banner::game && (this.gamemode_name == "CTF" || this.gamemode_name == "SmallCTF"))
 			{
 				CPlayer@ p = getLocalPlayer();
 				int team = p is null ? 0 : p.getTeamNum();
@@ -94,10 +107,10 @@ void onRender(CRules@ this)
 
 void ResetBannerInfo(CRules@ this)
 {
-	this.set_string("Animate Banner", "none");
+	this.set_u8("Animate Banner", Banner::none);
 	bannerPos = Vec2f_zero;
 	bannerDest = Vec2f_zero;
-	frameTime = 0;
+	frameTime = 0.0f;
 }
 
 void SetBanner(CRules@ this)
@@ -113,31 +126,26 @@ void SetBanner(CRules@ this)
 		if (this.isGameOver() && this.getTeamWon() >= 0)
 		{
 			this.set_u32("Banner End", getGameTime() + winBannerDuration);
-			this.set_string("Animate Banner", "win");
+			this.set_u8("Animate Banner", Banner::win);
 			this.minimap = false;
 		}
 		if (this.getCurrentState() == WARMUP || this.getCurrentState() == INTERMISSION) // cringe
 		{
 			this.set_u32("Banner End", getGameTime() + buildBannerDuration);
-			this.set_string("Animate Banner", "build");
+			this.set_u8("Animate Banner", Banner::build);
 		}
 		if (this.getCurrentState() == GAME)
 		{
 			this.set_u32("Banner End", getGameTime() + gameBannerDuration);
-			this.set_string("Animate Banner", "game");
+			this.set_u8("Animate Banner", Banner::game);
 		}
 	}
 }
 
 void DrawWinBanner(Vec2f center, int team)
 {
-	string teamName = "Blue";
-	Vec2f offset = Vec2f_zero;
-	if (team == 1)
-	{
-		teamName = "Red";
-		offset = Vec2f(-32, -16);
-	}
+	string teamName = (team == 0 ? "Blue" : "Red");
+	Vec2f offset = (team == 0 ? Vec2f_zero : Vec2f(-32, -16));
 
 	Vec2f tl = center - Vec2f(160, 32);
 	Vec2f br = center + Vec2f(160, 32);
@@ -154,6 +162,7 @@ void DrawWinBanner(Vec2f center, int team)
 void DrawBuildBanner(Vec2f center)
 {
 	string text = "Build defenses!";
+	string secondary_text = "Increased build speed and resupplies";
 
 	Vec2f tl = center - Vec2f(160, 32);
 	Vec2f br = center + Vec2f(160, 32);
@@ -168,10 +177,8 @@ void DrawBuildBanner(Vec2f center)
 	br = center + Vec2f(190, 16) + Vec2f(0, 40);
 	GUI::DrawRectangle(tl, br);
 
-	text = "Increased build speed and resupplies";
-
 	GUI::SetFont("menu");
-	GUI::DrawTextCentered(getTranslatedString(text), center + Vec2f(0, 40), SColor(255, 255, 255, 255));
+	GUI::DrawTextCentered(getTranslatedString(secondary_text), center + Vec2f(0, 40), SColor(255, 255, 255, 255));
 }
 
 void DrawGameBanner(Vec2f center, int team)
