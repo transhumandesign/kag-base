@@ -23,6 +23,51 @@ namespace Banner
 	};
 }
 
+shared class Icon
+{
+	string file_name;
+	Vec2f frame_size;
+	int frame;
+	Vec2f offset;
+	int teamcolor;
+
+	Icon(const string file_name, int frame, Vec2f frame_size, Vec2f offset, int teamcolor)
+	{
+		this.file_name = file_name;
+		this.frame = frame;
+		this.frame_size = frame_size;
+		this.offset = offset;
+		this.teamcolor = teamcolor;
+	}
+}
+
+shared class Banner
+{
+	u32 duration;
+	string main_text;
+	Icon left_icon;
+	Icon right_icon;
+
+	bool use_team_icon;
+	Icon team_icon;
+
+	bool use_two_boxes;
+	string secondary_text;
+};
+
+Icon getTeamIcon(int team)
+{
+	Icon icon;
+	icon.file_name = "TeamIcons.png";
+	icon.frame_size = Vec2f(96, 96);
+	icon.frame = team;
+	Vec2f offset = Vec2f(96, 192);
+	icon.offset = (team == 0 ? offset : offset + Vec2f(-32, -16));
+	icon.teamcolor = team;
+
+	return icon;
+}
+
 void onInit(CRules@ this)
 {
 	if (!GUI::isFontLoaded("AveriaSerif-Bold_32"))
@@ -65,46 +110,6 @@ void onTick(CRules@ this)
 	}
 }
 
-void onRender(CRules@ this)
-{
-	u8 banner_type = this.get_u8("Animate Banner");
-
-	if (banner_type != Banner::none)
-	{
-		Driver@ driver = getDriver();
-		if (driver !is null)
-		{
-			if (bannerPos != bannerDest)
-			{
-				frameTime = Maths::Min(frameTime + (getRenderDeltaTime() / maxTime), 1);
-
-				bannerPos = Vec2f_lerp(bannerStart, bannerDest, frameTime);
-			}
-
-			if (banner_type == Banner::win) 
-			{
-				DrawWinBanner(bannerPos, this.getTeamWon());
-				this.SetGlobalMessage("");
-			}
-			// todo: implement tth versions (alternatively remove TTH)
-			else if (banner_type == Banner::build && (this.gamemode_name == "CTF" || this.gamemode_name == "SmallCTF"))
-			{
-				DrawBuildBanner(bannerPos);
-			} 
-			else if (banner_type == Banner::game && (this.gamemode_name == "CTF" || this.gamemode_name == "SmallCTF"))
-			{
-				CPlayer@ p = getLocalPlayer();
-				int team = p is null ? 0 : p.getTeamNum();
-				// show flags of enemy team colour
-				if (team == 0) team = 1;
-				else team = 0;
-
-				DrawGameBanner(bannerPos, team);
-			} 
-		}
-	}
-}
-
 void ResetBannerInfo(CRules@ this)
 {
 	this.set_u8("Animate Banner", Banner::none);
@@ -121,18 +126,20 @@ void SetBanner(CRules@ this)
 		bannerStart.y = 0;
 		bannerPos = bannerStart;
 
-		if (this.getCurrentState() == GAME_OVER && this.getTeamWon() >= 0)
+		u8 state = this.getCurrentState();
+
+		if (state == GAME_OVER && this.getTeamWon() >= 0)
 		{
 			this.set_u32("Banner End", getGameTime() + winBannerDuration);
 			this.set_u8("Animate Banner", Banner::win);
 			this.minimap = false;
 		}
-		if (this.getCurrentState() == WARMUP || this.getCurrentState() == INTERMISSION) // cringe
+		if (state == WARMUP || state == INTERMISSION) // cringe
 		{
 			this.set_u32("Banner End", getGameTime() + buildBannerDuration);
 			this.set_u8("Animate Banner", Banner::build);
 		}
-		if (this.getCurrentState() == GAME)
+		if (state == GAME)
 		{
 			this.set_u32("Banner End", getGameTime() + gameBannerDuration);
 			this.set_u8("Animate Banner", Banner::game);
@@ -140,55 +147,29 @@ void SetBanner(CRules@ this)
 	}
 }
 
-void DrawWinBanner(Vec2f center, int team)
+void DrawBanner(Vec2f center, Banner@ banner)
 {
-	string teamName = (team == 0 ? "Blue" : "Red");
-	Vec2f offset = (team == 0 ? Vec2f_zero : Vec2f(-32, -16));
-
 	Vec2f tl = center - Vec2f(160, 32);
 	Vec2f br = center + Vec2f(160, 32);
 	GUI::DrawRectangle(tl, br);
-	GUI::DrawIcon("TeamIcons.png", team, Vec2f(96, 96), center - Vec2f(96, 192) + offset, 1.0f, team);
-	GUI::DrawIcon("MenuItems.png", 31, Vec2f(32, 32), center - Vec2f(192, 32), 1.0f, team);
-	GUI::DrawIcon("MenuItems.png", 31, Vec2f(32, 32), center + Vec2f(128, -32), 1.0f, team);
+	if (banner.use_team_icon)
+	{
+		GUI::DrawIcon(banner.team_icon.file_name, banner.team_icon.frame, banner.team_icon.frame_size, center - banner.team_icon.offset, 1.0f, banner.team_icon.teamcolor);
+	}
+	GUI::DrawIcon(banner.left_icon.file_name, banner.left_icon.frame, banner.left_icon.frame_size, center - banner.left_icon.offset, 1.0f, banner.left_icon.teamcolor);
+	GUI::DrawIcon(banner.right_icon.file_name, banner.right_icon.frame, banner.right_icon.frame_size, center + banner.right_icon.offset, 1.0f, banner.right_icon.teamcolor);
 
 	GUI::SetFont("AveriaSerif-Bold_32");
-	string text = teamName + " team wins";
-	GUI::DrawTextCentered(getTranslatedString(text), center, SColor(255, 255, 255, 255));
-}
+	GUI::DrawTextCentered(getTranslatedString(banner.main_text), center - Vec2f(0, 4), SColor(255, 255, 255, 255));
 
-void DrawBuildBanner(Vec2f center)
-{
-	string text = "Build defenses!";
-	string secondary_text = "Increased build speed and resupplies";
+	if (banner.use_two_boxes)
+	{
+		string secondary_text = banner.secondary_text;
+		tl = center - Vec2f(190, 16) + Vec2f(0, 40);
+		br = center + Vec2f(190, 16) + Vec2f(0, 40);
+		GUI::DrawRectangle(tl, br);
 
-	Vec2f tl = center - Vec2f(160, 32);
-	Vec2f br = center + Vec2f(160, 32);
-	GUI::DrawRectangle(tl, br);
-	GUI::DrawIcon("InteractionIcons.png", 21, Vec2f(32, 32), center - Vec2f(160, 32), 1.0f);
-	GUI::DrawIcon("InteractionIcons.png", 21, Vec2f(32, 32), center + Vec2f(96, -32), 1.0f);
-
-	GUI::SetFont("AveriaSerif-Bold_32");
-	GUI::DrawTextCentered(getTranslatedString(text), center - Vec2f(0, 4), SColor(255, 255, 255, 255));
-
-	tl = center - Vec2f(190, 16) + Vec2f(0, 40);
-	br = center + Vec2f(190, 16) + Vec2f(0, 40);
-	GUI::DrawRectangle(tl, br);
-
-	GUI::SetFont("menu");
-	GUI::DrawTextCentered(getTranslatedString(secondary_text), center + Vec2f(0, 40), SColor(255, 255, 255, 255));
-}
-
-void DrawGameBanner(Vec2f center, int team)
-{
-	string text = "Capture the flag!";
-
-	Vec2f tl = center - Vec2f(160, 32);
-	Vec2f br = center + Vec2f(160, 32);
-	GUI::DrawRectangle(tl, br);
-	GUI::DrawIcon("BannerIcons.png", 0, Vec2f(32, 32), center - Vec2f(184, 32), 1.0f, team);
-	GUI::DrawIcon("BannerIcons.png", 1, Vec2f(32, 32), center + Vec2f(120, -32), 1.0f, team);
-
-	GUI::SetFont("AveriaSerif-Bold_32");
-	GUI::DrawTextCentered(getTranslatedString(text), center, SColor(255, 255, 255, 255));
+		GUI::SetFont("menu");
+		GUI::DrawTextCentered(getTranslatedString(banner.secondary_text), center + Vec2f(0, 40), SColor(255, 255, 255, 255));
+	}
 }
