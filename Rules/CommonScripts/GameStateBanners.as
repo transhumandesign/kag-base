@@ -108,8 +108,6 @@ void onRender(CRules@ this)
 void ResetBannerInfo(CRules@ this)
 {
 	this.set_u8("Animate Banner", Banner::none);
-	bannerPos = Vec2f_zero;
-	bannerDest = Vec2f_zero;
 	frameTime = 0.0f;
 }
 
