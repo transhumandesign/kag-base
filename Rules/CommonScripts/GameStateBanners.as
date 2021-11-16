@@ -121,7 +121,7 @@ void SetBanner(CRules@ this)
 		bannerStart.y = 0;
 		bannerPos = bannerStart;
 
-		if (this.isGameOver() && this.getTeamWon() >= 0)
+		if (this.getCurrentState() == GAME_OVER && this.getTeamWon() >= 0)
 		{
 			this.set_u32("Banner End", getGameTime() + winBannerDuration);
 			this.set_u8("Animate Banner", Banner::win);
