@@ -2,8 +2,6 @@
 
 #include "GameStateBanners.as";
 
-Banner current_banner;
-
 Banner@ getBuildBanner()
 {
 	string text = "Build defenses!";
