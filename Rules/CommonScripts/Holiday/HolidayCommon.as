@@ -23,3 +23,7 @@ shared class Holiday
 		m_length = LENGTH;
 	}
 };
+
+const string holiday_proper = "holiday";
+const string holiday_head_prop = "holiday head num";
+const string holiday_head_texture_prop = "holiday head custom texture";

@@ -5,6 +5,7 @@
 #include "PixelOffsets.as"
 #include "RunnerTextures.as"
 #include "Accolades.as"
+#include "HolidayCommon.as"
 
 const s32 NUM_HEADFRAMES = 4;
 const s32 NUM_UNIQUEHEADS = 30;
@@ -52,54 +53,33 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 	//special heads logic for default heads pack
 	if (default_pack && (headIndex == 255 || headIndex < NUM_UNIQUEHEADS))
 	{
-		CRules@ rules = getRules();
-		bool holidayhead = false;
-		if (rules !is null && rules.exists("holiday"))
+		string config = blob.getConfig();
+		if (config == "builder")
 		{
-			const string HOLIDAY = rules.get_string("holiday");
-			if (HOLIDAY == "Halloween")
-			{
-				headIndex = NUM_UNIQUEHEADS + 43;
-				holidayhead = true;
-			}
-			else if (HOLIDAY == "Christmas")
-			{
-				headIndex = NUM_UNIQUEHEADS + 61;
-				holidayhead = true;
-			}
+			headIndex = NUM_UNIQUEHEADS;
 		}
-
-		//if nothing special set
-		if (!holidayhead)
+		else if (config == "knight")
 		{
-			string config = blob.getConfig();
-			if (config == "builder")
-			{
-				headIndex = NUM_UNIQUEHEADS;
-			}
-			else if (config == "knight")
-			{
-				headIndex = NUM_UNIQUEHEADS + 1;
-			}
-			else if (config == "archer")
-			{
-				headIndex = NUM_UNIQUEHEADS + 2;
-			}
-			else if (config == "migrant")
-			{
-				Random _r(blob.getNetworkID());
-				headIndex = 69 + _r.NextRanged(2); //head scarf or old
-			}
-			else
-			{
-				// default
-				headIndex = NUM_UNIQUEHEADS;
-			}
+			headIndex = NUM_UNIQUEHEADS + 1;
+		}
+		else if (config == "archer")
+		{
+			headIndex = NUM_UNIQUEHEADS + 2;
+		}
+		else if (config == "migrant")
+		{
+			Random _r(blob.getNetworkID());
+			headIndex = 69 + _r.NextRanged(2); //head scarf or old
+		}
+		else
+		{
+			// default
+			headIndex = NUM_UNIQUEHEADS;
 		}
 	}
 
 	return (((headIndex - NUM_UNIQUEHEADS / 2) * 2) +
-	        (blob.getSexNum() == 0 ? 0 : 1)) * NUM_HEADFRAMES;
+	        (blob.getSexNum() == 0 ? 0 : 1)) * NUM_HEADFRAMES; 
 }
 
 string getHeadTexture(int headIndex)
@@ -139,12 +119,30 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 		if (player !is null && !player.isBot())
 		{
 			Accolades@ acc = getPlayerAccolades(player.getUsername());
+			CRules@ rules = getRules();
+
 			if (acc.hasCustomHead())
 			{
 				texture_file = acc.customHeadTexture;
 				headIndex = acc.customHeadIndex;
 				headsPackIndex = 0;
 				override_frame = true;
+			}
+			else if (rules.exists(holiday_prop))
+			{
+				if (!rules.exists(holiday_head_prop))
+					return;
+
+				headIndex = rules.get_u8(holiday_head_prop);
+				headsPackIndex = 0;
+
+				if (rules.exists(holiday_head_texture_prop))
+				{
+					texture_file = rules.get_string(holiday_head_texture_prop);
+					override_frame = true;
+
+					headIndex += blob.getSexNum();
+				}
 			}
 		}
 	}

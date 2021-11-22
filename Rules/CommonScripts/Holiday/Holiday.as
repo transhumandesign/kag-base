@@ -44,7 +44,7 @@ void onRestart(CRules@ this)
 	{
 		print("Checking any holidays...");
 
-		holiday_cache = this.get_string("holiday");
+		holiday_cache = this.get_string(holiday_prop);
 		holiday = "";
 
 		u16 server_year = Time_Year();
@@ -139,7 +139,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 					holiday_cache = _holiday;
 				}
 			}
-			this.set_string("holiday", holiday);
+			this.set_string(holiday_prop, holiday);
 		}
 	}
 }

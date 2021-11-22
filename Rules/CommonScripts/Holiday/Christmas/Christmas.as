@@ -2,6 +2,8 @@
 //
 //TODO: re-apply new holiday sprites when holiday is active
 //		(check git history around xmas 2018 for holiday versions)
+#include "TreeCommon.as";
+#include "HolidayCommon.as";
 
 #include "TreeCommon.as";
 
@@ -17,9 +19,10 @@ f64 frameTime = 0;
 void onInit(CRules@ this)
 {
 	if (isClient())
-	{
 		this.set_s16("snow_render_id", 0);
-	}
+	
+	if (!this.exists(holiday_head_prop))
+		this.set_u8(holiday_head_prop, 91);
 
 	// no coin cap during christmas holidays
 	this.Tag("remove coincap");
