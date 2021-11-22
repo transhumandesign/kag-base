@@ -1,6 +1,16 @@
 // Birthday.as
 
-#include "BirthdayCommon.as"
+#include "BirthdayCommon.as";
+#include "HolidayCommon.as";
+
+void onInit(CRules@ this)
+{
+	if (!this.exists(holiday_head_prop))
+		this.set_u8(holiday_head_prop, 0);
+
+	if (!this.exists(holiday_head_texture_prop))
+		this.set_string(holiday_head_texture_prop, "BirthdayHeads.png");
+}
 
 void onBlobCreated(CRules@ this, CBlob@ blob)
 {
