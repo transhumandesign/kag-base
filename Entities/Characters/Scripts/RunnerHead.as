@@ -116,7 +116,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	{
 		//accolade custom head handling
 		//todo: consider pulling other custom head stuff out to here
-		if (player !is null && !player.isBot())
+		if (player !is null && !player.isBot() && headIndex >= NUM_UNIQUEHEADS)
 		{
 			Accolades@ acc = getPlayerAccolades(player.getUsername());
 			CRules@ rules = getRules();
