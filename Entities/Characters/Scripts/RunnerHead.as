@@ -130,18 +130,18 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 			}
 			else if (rules.exists(holiday_prop))
 			{
-				if (!rules.exists(holiday_head_prop))
-					return;
-
-				headIndex = rules.get_u8(holiday_head_prop);
-				headsPackIndex = 0;
-
-				if (rules.exists(holiday_head_texture_prop))
+				if (rules.exists(holiday_head_prop))
 				{
-					texture_file = rules.get_string(holiday_head_texture_prop);
-					override_frame = true;
+					headIndex = rules.get_u8(holiday_head_prop);
+					headsPackIndex = 0;
 
-					headIndex += blob.getSexNum();
+					if (rules.exists(holiday_head_texture_prop))
+					{
+						texture_file = rules.get_string(holiday_head_texture_prop);
+						override_frame = true;
+
+						headIndex += blob.getSexNum();
+					}
 				}
 			}
 		}
