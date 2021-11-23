@@ -10,6 +10,19 @@ void onInit(CRules@ this)
 
 	if (!this.exists(holiday_head_texture_prop))
 		this.set_string(holiday_head_texture_prop, "BirthdayHeads.png");
+
+	// Also add balloons to map-initiated blobs
+	CBlob@[] blobs;
+	for (u8 i = 0; i < holiday_blobs.length(); i++)
+	{
+		getBlobsByName(holiday_blobs[i], @blobs);
+	}
+
+	for (u8 i = 0; i < blobs.length(); i++)
+	{
+		CBlob@ b = blobs[i];
+		AddBalloons(b.getSprite(), b.getName());
+	}
 }
 
 void onBlobCreated(CRules@ this, CBlob@ blob)
@@ -19,9 +32,12 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 	if (holiday_blobs.find(name) == -1)
 		return;
 
-	CSprite@ sprite = blob.getSprite();
+	AddBalloons(blob.getSprite(), name);
+}
 
-	if (sprite is null)
+void AddBalloons(CSprite@ this, string name)
+{	
+	if (this is null)
 		return;
 
 	Vec2f offset = Vec2f_zero;
@@ -31,7 +47,7 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 		offset.y += 8.0f;
 	}
 
-	blob.set_Vec2f(offset_prop, offset);
+	this.getBlob().set_Vec2f(offset_prop, offset);
 
-	sprite.AddScript("BirthdayAddon.as");
+	this.AddScript("BirthdayAddon.as");
 }
