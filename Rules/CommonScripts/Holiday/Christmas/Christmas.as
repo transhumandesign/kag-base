@@ -55,7 +55,7 @@ void onTick(CRules@ this)
 			this.set_s16("snow_render_id", Render::addScript(Render::layer_background, "Christmas.as", "DrawSnow", 0));
 #endif
 		} 
-		else if (renderId != 0 && v_fastrender || this.get_string("holiday") != "Christmas") // Have we just enabled fast render OR is holiday over
+		else if (renderId != 0 && v_fastrender || this.get_string(holiday_prop) != "Christmas") // Have we just enabled fast render OR is holiday over
 		{
 			Render::RemoveScript(renderId);
 			this.set_s16("snow_render_id", 0);
