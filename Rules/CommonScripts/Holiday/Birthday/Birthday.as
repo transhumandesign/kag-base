@@ -41,11 +41,19 @@ void AddBalloons(CSprite@ this, string name)
 		return;
 
 	Vec2f offset = Vec2f_zero;
+	//// OFFSETS ////
+
 	if (name == "chicken")
 	{
 		offset.x += 2.0f;
 		offset.y += 8.0f;
 	}
+	else if (name == "tent")
+	{
+		offset.x -= 1.0f;
+	}
+
+	/////////////////
 
 	this.getBlob().set_Vec2f(offset_prop, offset);
 
