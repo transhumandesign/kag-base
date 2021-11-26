@@ -40,22 +40,9 @@ void AddBalloons(CSprite@ this, string name)
 	if (this is null)
 		return;
 
-	Vec2f offset = Vec2f_zero;
-	//// OFFSETS ////
-
-	if (name == "chicken")
-	{
-		offset.x += 2.0f;
-		offset.y += 9.0f;
-	}
-	else if (name == "tent")
-	{
-		offset.x -= 1.0f;
-	}
-
-	/////////////////
+	Vec2f offset = holiday_blob_offsets[holiday_blobs.find(name)];
 
 	this.getBlob().set_Vec2f(offset_prop, offset);
 
-	this.AddScript("BirthdayAddon.as");
+	this.AddScript("BirthdayBalloons.as");
 }

@@ -18,7 +18,7 @@ void onTick(CSprite@ this)
 	if (blob.exists(offset_prop))
 		offset += blob.get_Vec2f(offset_prop);
 
-	CSpriteLayer@ string_layer = this.addSpriteLayer("string", "Balloons.png", frame_size, frame_size);
+	CSpriteLayer@ string_layer = this.addSpriteLayer("string", "BirthdayBalloons.png", frame_size, frame_size);
 
 	if (string_layer !is null)
 	{
@@ -32,7 +32,7 @@ void onTick(CSprite@ this)
 
 	for (uint8 i = 0; i < 3; i++) // left, middle, right
 	{
-		CSpriteLayer@ balloon_layer = this.addSpriteLayer("balloon " + i, "Balloons.png", frame_size, frame_size);
+		CSpriteLayer@ balloon_layer = this.addSpriteLayer("balloon " + i, "BirthdayBalloons.png", frame_size, frame_size);
 
 		if (balloon_layer !is null)
 		{
