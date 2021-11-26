@@ -197,14 +197,13 @@ void onTick(CSprite@ this)
 
 					int framecount = anim.getFramesCount();
 
-					if (hitting_structure && framecount == 6)
+					if (hitting_structure && anim.getFrame(0) == anim.getFrame(framecount - 1)) 
 					{
-						anim.RemoveFrame(anim.getFrame(framecount - 1));
+						anim.RemoveFrame(anim.getFrame(framecount - 1)); // remove last anim (which is same as first)
 					}
-					else if (!hitting_structure && framecount != 6)
+					else if (!hitting_structure && anim.getFrame(0) != anim.getFrame(framecount - 1))
 					{
-						int add_back_frame = hitting_wood ? 37 : 21;
-						anim.AddFrame(add_back_frame);
+						anim.AddFrame(anim.getFrame(0)); // add it back
 					}
 				}
 
