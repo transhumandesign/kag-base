@@ -149,37 +149,38 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 			uint16 type = map.getTile(tilepos).type;
 			if (!inNoBuildZone(map, tilepos, type))
 			{
-				if (isServer())
+				CBlob@[] blobs_here;
+				map.getBlobsAtPosition(tilepos + Vec2f(1, 1), blobs_here);
+
+				bool no_dmg = false;
+
+				// dont dmg backwall if it's behind a blob-block
+				// hack: fixes the issue where with specific timing you can damage backwall behind blob-blocks right after placing it
+				for(int i=0; i < blobs_here.size(); ++i)
 				{
-					CBlob@[] blobs_here;
-					map.getBlobsAtPosition(tilepos + Vec2f(1, 1), blobs_here);
-
-					bool no_dmg = false;
-
-					// dont dmg backwall if it's behind a blob-block
-					// hack: fixes the issue where with specific timing you can damage backwall behind blob-blocks right after placing it
-					for(int i=0; i < blobs_here.size(); ++i)
+					CBlob@ current_blob = blobs_here[i];
+					if (current_blob !is null && (current_blob.hasTag("door") || current_blob.getName() == "bridge" || current_blob.getName() == "wooden_platform"))
 					{
-						CBlob@ current_blob = blobs_here[i];
-						if (current_blob !is null && (current_blob.hasTag("door") || current_blob.getName() == "bridge" || current_blob.getName() == "wooden_platform"))
-						{
-							no_dmg = true;
-						}
+						no_dmg = true;
 					}
+				}
 
-					if (!no_dmg)
+				if (!no_dmg)
+				{
+					if (getNet().isServer())
 					{
 						map.server_DestroyTile(tilepos, 1.0f, this);
 
 						Material::fromTile(this, type, 1.0f);
 					}
-				}
-				else
-				{
-					if (map.isTileBedrock(type))
+
+					if (getNet().isClient())
 					{
-						this.getSprite().PlaySound("/metal_stone.ogg");
-						sparks(tilepos, attackVel.Angle(), 1.0f);
+						if (map.isTileBedrock(type))
+						{
+							this.getSprite().PlaySound("/metal_stone.ogg");
+							sparks(tilepos, attackVel.Angle(), 1.0f);
+						}
 					}
 				}
 			}
