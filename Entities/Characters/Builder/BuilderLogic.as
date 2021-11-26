@@ -248,7 +248,7 @@ void Pickaxe(CBlob@ this)
 {
 	HitData@ hitdata;
 	CSprite @sprite = this.getSprite();
-	bool strikeAnim = sprite.isAnimation("strike") || sprite.isAnimation("strike_fast") || sprite.isAnimation("chop") || sprite.isAnimation("chop_fast");
+	bool strikeAnim = sprite.isAnimation("strike") || sprite.isAnimation("chop");
 
 	if (!strikeAnim)
 	{

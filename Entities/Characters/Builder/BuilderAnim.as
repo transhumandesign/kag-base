@@ -127,7 +127,7 @@ void onTick(CSprite@ this)
 		{
 			this.SetAnimation("crouch");
 		}
-		else if (action2 || ((this.isAnimation("strike") || this.isAnimation("strike_fast") || this.isAnimation("chop") || this.isAnimation("chop_fast")) && !this.isAnimationEnded()))
+		else if (action2 || ((this.isAnimation("strike") || this.isAnimation("chop")) && !this.isAnimationEnded()))
 		{
 			string attack_anim = blob.get_string("prev_attack_anim");
 			HitData@ hitdata;
@@ -135,9 +135,8 @@ void onTick(CSprite@ this)
 			{
 				bool hitting_wood = false;
 				bool hitting_stone = false;
+				bool hitting_structure = false; // hitting player-built blocks
 
-				// faster hitting against player-built blocks: tiles/backwall/doors, platforms, ladders and spikes
-				bool hitting_built = false;
 				if (hitdata.tilepos != Vec2f_zero)
 				{
 					CMap@ map = getMap();
@@ -158,7 +157,7 @@ void onTick(CSprite@ this)
 						(t.type >= CMap::tile_castle_back && t.type <= 79) || // castle backwall
 					 	t.type == CMap::tile_castle_back_moss) // castle mossbackwall
 					{
-						hitting_built = true;
+						hitting_structure = true;
 					}
 				}
 				else if(hitdata.blobID != 0)
@@ -184,19 +183,29 @@ void onTick(CSprite@ this)
 							attacked_name == "spikes"
 							)
 						{
-							hitting_built = true;
+							hitting_structure = true;
 						}
 
 					}
 				}
 
-				if (hitting_wood)
+				if (hitting_wood || hitting_stone)
 				{
-					attack_anim = hitting_built ? "chop_fast" : "chop";
-				}
-				else if(hitting_stone)
-				{
-					attack_anim = hitting_built ? "strike_fast" : "strike";
+					attack_anim = hitting_wood ? "chop" : "strike";
+
+					Animation @anim = this.getAnimation(attack_anim);
+
+					int framecount = anim.getFramesCount();
+
+					if (hitting_structure && framecount == 6)
+					{
+						anim.RemoveFrame(anim.getFrame(framecount - 1));
+					}
+					else if (!hitting_structure && framecount != 6)
+					{
+						int add_back_frame = hitting_wood ? 37 : 21;
+						anim.AddFrame(add_back_frame);
+					}
 				}
 
 				this.SetAnimation(attack_anim);
@@ -319,9 +328,8 @@ void onRender(CSprite@ this)
 
 	// draw tile cursor
 
-	if (blob.isKeyPressed(key_action1) || this.isAnimation("strike") || this.isAnimation("strike_fast") || this.isAnimation("chop") || this.isAnimation("chop_fast"))
+	if (blob.isKeyPressed(key_action1) || this.isAnimation("strike") || this.isAnimation("chop"))
 	{
-
 		HitData@ hitdata;
 		blob.get("hitdata", @hitdata);
 		CBlob@ hitBlob = hitdata.blobID > 0 ? getBlobByNetworkID(hitdata.blobID) : null;
