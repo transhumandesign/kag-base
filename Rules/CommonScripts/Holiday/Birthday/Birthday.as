@@ -46,7 +46,7 @@ void AddBalloons(CSprite@ this, string name)
 	if (name == "chicken")
 	{
 		offset.x += 2.0f;
-		offset.y += 8.0f;
+		offset.y += 9.0f;
 	}
 	else if (name == "tent")
 	{

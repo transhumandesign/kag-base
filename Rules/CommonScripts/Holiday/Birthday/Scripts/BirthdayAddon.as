@@ -1,32 +1,58 @@
 #include "BirthdayCommon.as";
 
+const Vec2f offset_left = Vec2f(4, 2);
+const Vec2f offset_middle = Vec2f_zero;
+const Vec2f offset_right = Vec2f(-4, 3);
+
+const uint8 frame_size = 8;
+
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
 
-	if (blob.exists("birthday activated"))
+	if (blob.exists(added_prop))
 		return;
 
-	Vec2f offset = Vec2f(blob.getWidth()/2 - 8, -blob.getHeight()/2 - 8);
+	Vec2f offset = Vec2f(blob.getWidth()/2 - frame_size/2, -blob.getHeight()/2 - frame_size/2);
 
 	if (blob.exists(offset_prop))
 		offset += blob.get_Vec2f(offset_prop);
 
-	for (uint i = 0; i < balloon_amount; i++)
+	CSpriteLayer@ string_layer = this.addSpriteLayer("string", "Balloons.png", frame_size, frame_size);
+
+	if (string_layer !is null)
 	{
-		CSpriteLayer@ balloon_layer = this.addSpriteLayer("balloon " + i, "Balloons.png", 16, 16);
+		Animation@ string_anim = string_layer.addAnimation("string", 0, false);
+
+		string_anim.AddFrame(9);
+
+		string_layer.SetAnimation(string_anim);
+		string_layer.SetOffset(offset);
+	}
+
+	for (uint8 i = 0; i < 3; i++) // left, middle, right
+	{
+		CSpriteLayer@ balloon_layer = this.addSpriteLayer("balloon " + i, "Balloons.png", frame_size, frame_size);
 
 		if (balloon_layer !is null)
 		{
-			Animation@ bAnim = balloon_layer.addAnimation("balloon", 0, false);
+			Animation@ balloon_anim = balloon_layer.addAnimation("balloon", 0, false);
 
-			bAnim.AddFrame(i * 2 + XORRandom(2));
+			balloon_anim.AddFrame(i * 3 + XORRandom(3));
+
+			Vec2f balloon_offset = offset;
+
+			if (i == 0) // left
+				balloon_offset += offset_left;
+			else if (i == 1) // middle
+				balloon_offset += offset_middle;
+			else // right
+				balloon_offset += offset_right;
 			
-			balloon_layer.SetAnimation(bAnim);
-			balloon_layer.SetRelativeZ(3);
-			balloon_layer.SetOffset(offset);
+			balloon_layer.SetAnimation(balloon_anim);
+			balloon_layer.SetOffset(balloon_offset - Vec2f(0, frame_size));
 		}
 	}
 
-	blob.set_bool("birthday activated", true);
+	blob.set_bool(added_prop, true);
 }
