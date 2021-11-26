@@ -333,9 +333,9 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 		return true;
 	}
 
-	bool check = this.getTeamNum() != blob.getTeamNum() || // collide with all enemy kegs
-				 blob.getName() == "bridge" ||
-				 (blob.getName() == "keg" && !blob.isAttached() && this.hasTag("fire source")); // fire arrows collide with team kegs that arent held
+	bool check =	this.getTeamNum() != blob.getTeamNum() || // collide with all enemy kegs
+					blob.getName() == "bridge" ||
+					(blob.getName() == "keg" && !blob.isAttached() && this.hasTag("fire source")); // fire arrows collide with team kegs that arent held
 
 	//maybe collide with team structures
 	if (!check)
