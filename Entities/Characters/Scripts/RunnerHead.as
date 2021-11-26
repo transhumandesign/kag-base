@@ -79,7 +79,7 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 	}
 
 	return (((headIndex - NUM_UNIQUEHEADS / 2) * 2) +
-	        (blob.getSexNum() == 0 ? 0 : 1)) * NUM_HEADFRAMES; 
+	        (blob.getSexNum() == 0 ? 0 : 1)) * NUM_HEADFRAMES;
 }
 
 string getHeadTexture(int headIndex)
