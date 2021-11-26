@@ -149,7 +149,13 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 			uint16 type = map.getTile(tilepos).type;
 			if (!inNoBuildZone(map, tilepos, type))
 			{
-				if (isServer())
+				if (isClient() && map.isTileBedrock(type))
+				{
+					this.getSprite().PlaySound("/metal_stone.ogg");
+					sparks(tilepos, attackVel.Angle(), 1.0f);
+				}
+
+				else if (isServer())
 				{
 					CBlob@[] blobs_here;
 					map.getBlobsAtPosition(tilepos + Vec2f(1, 1), blobs_here);
@@ -172,14 +178,6 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 						map.server_DestroyTile(tilepos, 1.0f, this);
 
 						Material::fromTile(this, type, 1.0f);
-					}
-				}
-				else
-				{
-					if (map.isTileBedrock(type))
-					{
-						this.getSprite().PlaySound("/metal_stone.ogg");
-						sparks(tilepos, attackVel.Angle(), 1.0f);
 					}
 				}
 			}
