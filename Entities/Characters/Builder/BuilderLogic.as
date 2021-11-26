@@ -142,45 +142,42 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 
 	if (blobID == 0)
 	{
+		// block
 		CMap@ map = getMap();
 		if (map !is null)
 		{
 			uint16 type = map.getTile(tilepos).type;
 			if (!inNoBuildZone(map, tilepos, type))
 			{
-
-				CBlob@[] blobs_here;
-				map.getBlobsAtPosition(tilepos + Vec2f(1, 1), blobs_here);
-
-				bool no_dmg = false;
-
-				// dont dmg backwall if there's a door here
-				for (int i=0; i < blobs_here.size(); ++i)
+				if (isClient() && map.isTileBedrock(type))
 				{
-					CBlob@ current_blob = blobs_here[i];
-					if (current_blob !is null && (current_blob.hasTag("door") || current_blob.getName() == "bridge" || current_blob.getName() == "wooden_platform"))
-					{
-						no_dmg = true;
-						break;
-					}
+					this.getSprite().PlaySound("/metal_stone.ogg");
+					sparks(tilepos, attackVel.Angle(), 1.0f);
 				}
 
-				if (!no_dmg)
+				else if (isServer())
 				{
-					if (isServer())
+					CBlob@[] blobs_here;
+					map.getBlobsAtPosition(tilepos + Vec2f(1, 1), blobs_here);
+
+					bool no_dmg = false;
+
+					// dont dmg backwall if it's behind a blob-block
+					// hack: fixes the issue where with specific timing you can damage backwall behind blob-blocks right after placing it
+					for(int i=0; i < blobs_here.size(); ++i)
+					{
+						CBlob@ current_blob = blobs_here[i];
+						if (current_blob !is null && (current_blob.hasTag("door") || current_blob.getName() == "bridge" || current_blob.getName() == "wooden_platform"))
+						{
+							no_dmg = true;
+						}
+					}
+
+					if (!no_dmg)
 					{
 						map.server_DestroyTile(tilepos, 1.0f, this);
 
 						Material::fromTile(this, type, 1.0f);
-					}
-
-					if (isClient())
-					{
-						if (map.isTileBedrock(type))
-						{
-							this.getSprite().PlaySound("/metal_stone.ogg");
-							sparks(tilepos, attackVel.Angle(), 1.0f);
-						}
 					}
 				}
 			}
