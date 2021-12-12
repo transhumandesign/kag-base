@@ -48,36 +48,84 @@ shared class Banner
 	Icon left_icon;
 	Icon right_icon;
 
+	int team;
 	bool use_team_icon;
 	Icon team_icon;
 
 	bool use_two_boxes;
 	string secondary_text;
+
+	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, int team=255, const bool use_team_icon=false, Icon@ team_icon=null, const bool use_two_boxes=false, string secondary_text="")
+	{
+		this.duration = duration;
+		this.main_text = main_text;
+		this.left_icon = left_icon;
+		this.right_icon = right_icon;
+
+		this.team = team;
+		this.use_team_icon = use_team_icon;
+		if (use_team_icon) this.team_icon = team_icon;
+
+		this.use_two_boxes = use_two_boxes;
+		if (use_two_boxes) this.secondary_text = secondary_text;
+	}
+
+	void draw(Vec2f center)
+	{
+		if (!GUI::isFontLoaded("AveriaSerif-Bold_32"))
+		{
+			string AveriaSerif = CFileMatcher("AveriaSerif-Bold.ttf").getFirst();
+			GUI::LoadFont("AveriaSerif-Bold_32", AveriaSerif, 32, true);
+		}
+
+		Vec2f tl = center - Vec2f(160, 32);
+		Vec2f br = center + Vec2f(160, 32);
+		GUI::DrawRectangle(tl, br);
+		if (this.use_team_icon)
+		{
+			GUI::DrawIcon(this.team_icon.file_name, this.team_icon.frame, this.team_icon.frame_size, center - this.team_icon.offset, 1.0f, this.team_icon.teamcolor);
+		}
+		GUI::DrawIcon(this.left_icon.file_name, this.left_icon.frame, this.left_icon.frame_size, center - this.left_icon.offset, 1.0f, this.left_icon.teamcolor);
+		GUI::DrawIcon(this.right_icon.file_name, this.right_icon.frame, this.right_icon.frame_size, center + this.right_icon.offset, 1.0f, this.right_icon.teamcolor);
+
+		GUI::SetFont("AveriaSerif-Bold_32");
+		GUI::DrawTextCentered(getTranslatedString(this.main_text), center - Vec2f(0, 4), SColor(255, 255, 255, 255));
+
+		if (this.use_two_boxes)
+		{
+			string secondary_text = this.secondary_text;
+			tl = center - Vec2f(190, 16) + Vec2f(0, 40);
+			br = center + Vec2f(190, 16) + Vec2f(0, 40);
+			GUI::DrawRectangle(tl, br);
+
+			GUI::SetFont("menu");
+			GUI::DrawTextCentered(getTranslatedString(this.secondary_text), center + Vec2f(0, 40), SColor(255, 255, 255, 255));
+		}
+	}
+
+	void setTeam(int team)
+	{
+		this.team = team;
+		this.left_icon.teamcolor = team;
+		this.right_icon.teamcolor = team;
+		if (this.use_team_icon)
+		{
+			this.team_icon = getTeamIcon(team);
+		}
+	}
 };
 
-Icon getTeamIcon(int team)
+shared Icon getTeamIcon(int team)
 {
 	Icon icon;
 	icon.file_name = "TeamIcons.png";
 	icon.frame_size = Vec2f(96, 96);
 	icon.frame = team;
 	Vec2f offset = Vec2f(96, 192);
-	icon.offset = (team == 0 ? offset : offset + Vec2f(-32, -16));
+	icon.offset = (team == 0 ? offset : offset + Vec2f(32, 16));
 	icon.teamcolor = team;
 
 	return icon;
-}
-
-void onInit(CRules@ this)
-{
-	if (!GUI::isFontLoaded("AveriaSerif-Bold_32"))
-	{
-		string AveriaSerif = CFileMatcher("AveriaSerif-Bold.ttf").getFirst();
-		GUI::LoadFont("AveriaSerif-Bold_32", AveriaSerif, 32, true);
-	}
-
-	minimap = this.minimap;
-	onRestart(this);
 }
 
 void onRestart(CRules@ this)
@@ -104,7 +152,7 @@ void onStateChange(CRules@ this, const u8 oldState)
 
 void onTick(CRules@ this)
 {
-	if (this.get_u8("Animate Banner") != Banner::none && this.get_u32("Banner End") < getGameTime())
+	if (this.get_u8("Animate Banner") != Banner::none && !this.get_bool("Draw Banner"))
 	{
 		ResetBannerInfo(this);
 	}
@@ -128,48 +176,22 @@ void SetBanner(CRules@ this)
 
 		u8 state = this.getCurrentState();
 
+		this.set_bool("Draw Banner", true);
+		this.set_u32("Banner Start", getGameTime());
+		this.set_bool("Banner Ready", false);
+
 		if (state == GAME_OVER && this.getTeamWon() >= 0)
 		{
-			this.set_u32("Banner End", getGameTime() + winBannerDuration);
 			this.set_u8("Animate Banner", Banner::win);
 			this.minimap = false;
 		}
 		if (state == WARMUP || state == INTERMISSION) // cringe
 		{
-			this.set_u32("Banner End", getGameTime() + buildBannerDuration);
 			this.set_u8("Animate Banner", Banner::build);
 		}
 		if (state == GAME)
 		{
-			this.set_u32("Banner End", getGameTime() + gameBannerDuration);
 			this.set_u8("Animate Banner", Banner::game);
 		}
-	}
-}
-
-void DrawBanner(Vec2f center, Banner@ banner)
-{
-	Vec2f tl = center - Vec2f(160, 32);
-	Vec2f br = center + Vec2f(160, 32);
-	GUI::DrawRectangle(tl, br);
-	if (banner.use_team_icon)
-	{
-		GUI::DrawIcon(banner.team_icon.file_name, banner.team_icon.frame, banner.team_icon.frame_size, center - banner.team_icon.offset, 1.0f, banner.team_icon.teamcolor);
-	}
-	GUI::DrawIcon(banner.left_icon.file_name, banner.left_icon.frame, banner.left_icon.frame_size, center - banner.left_icon.offset, 1.0f, banner.left_icon.teamcolor);
-	GUI::DrawIcon(banner.right_icon.file_name, banner.right_icon.frame, banner.right_icon.frame_size, center + banner.right_icon.offset, 1.0f, banner.right_icon.teamcolor);
-
-	GUI::SetFont("AveriaSerif-Bold_32");
-	GUI::DrawTextCentered(getTranslatedString(banner.main_text), center - Vec2f(0, 4), SColor(255, 255, 255, 255));
-
-	if (banner.use_two_boxes)
-	{
-		string secondary_text = banner.secondary_text;
-		tl = center - Vec2f(190, 16) + Vec2f(0, 40);
-		br = center + Vec2f(190, 16) + Vec2f(0, 40);
-		GUI::DrawRectangle(tl, br);
-
-		GUI::SetFont("menu");
-		GUI::DrawTextCentered(getTranslatedString(banner.secondary_text), center + Vec2f(0, 40), SColor(255, 255, 255, 255));
 	}
 }
