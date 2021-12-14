@@ -7,12 +7,11 @@ Banner@ getBuildBanner()
 	u32 duration = 5 * getTicksASecond();
 	string text = "Build defenses!";
 	string secondary_text = "Increased build speed and resupplies";
-	int team = 255; // not needed
 
 	Icon@ left_icon = Icon("InteractionIcons.png", 21, Vec2f(32, 32), Vec2f(160, 32), 0);
 	Icon@ right_icon = Icon("InteractionIcons.png", 21, Vec2f(32, 32), Vec2f(96, -32), 0);
 
-	Banner banner(duration, text, left_icon, right_icon, team, false, null, true, secondary_text);
+	Banner banner(duration, text, left_icon, right_icon, true, secondary_text);
 
 	return banner;
 }
@@ -48,18 +47,12 @@ Banner@ getWinBanner(int team=0)
 
 Banner@[] banners;
 
-enum BannerType
-{
-	WARMUP_START = 0,
-	GAME_START,
-	GAME_END
-};
 
 void onInit(CRules@ this)
 {
-	banners.insertAt(WARMUP_START, getBuildBanner());
-	banners.insertAt(GAME_START, getGameBanner());
-	banners.insertAt(GAME_END, getWinBanner());
+	banners.insertAt(BannerType::WARMUP_START, getBuildBanner());
+	banners.insertAt(BannerType::GAME_START, getGameBanner());
+	banners.insertAt(BannerType::GAME_END, getWinBanner());
 }
 
 void onReload(CRules@ this)
@@ -72,7 +65,7 @@ void onRender(CRules@ this)
 {
 	u8 banner_type = this.get_u8("Animate Banner");
 
-	if (banner_type != Banner::none && this.get_bool("Draw Banner"))
+	if (banner_type != BannerType::NONE && this.get_bool("Draw Banner"))
 	{
 		Driver@ driver = getDriver();
 		if (driver !is null)
@@ -86,10 +79,10 @@ void onRender(CRules@ this)
 
 			Banner@ banner;
 
-			if (banner_type == Banner::win) 
+			if (banner_type == BannerType::GAME_END) 
 			{
 				if (GAME_END >= banners.size()) return;
-				@banner = @banners[GAME_END];
+				@banner = @banners[BannerType::GAME_END];
 
 				if (!this.get_bool("Banner Ready"))
 				{
@@ -98,15 +91,15 @@ void onRender(CRules@ this)
 				}
 				this.SetGlobalMessage("");
 			}
-			else if (banner_type == Banner::build)
+			else if (banner_type == BannerType::WARMUP_START)
 			{
 				if (WARMUP_START >= banners.size()) return;
-				@banner = @banners[WARMUP_START];
+				@banner = @banners[BannerType::WARMUP_START];
 			} 
-			else if (banner_type == Banner::game)
+			else if (banner_type == BannerType::GAME_START)
 			{
 				if (GAME_START >= banners.size()) return;
-				@banner = @banners[GAME_START];
+				@banner = @banners[BannerType::GAME_START];
 				CPlayer@ p = getLocalPlayer();
 				int team = p is null ? 0 : p.getTeamNum();
 				// show flags of enemy team colour

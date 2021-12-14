@@ -23,6 +23,14 @@ namespace Banner
 	};
 }
 
+enum BannerType
+{
+	WARMUP_START = 0,
+	GAME_START,
+	GAME_END,
+	NONE
+};
+
 shared class Icon
 {
 	string file_name;
@@ -55,7 +63,7 @@ shared class Banner
 	bool use_two_boxes;
 	string secondary_text;
 
-	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, int team=255, const bool use_team_icon=false, Icon@ team_icon=null, const bool use_two_boxes=false, string secondary_text="")
+	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, int team, const bool use_team_icon, Icon@ team_icon, const bool use_two_boxes, string secondary_text)
 	{
 		this.duration = duration;
 		this.main_text = main_text;
@@ -69,6 +77,57 @@ shared class Banner
 		this.use_two_boxes = use_two_boxes;
 		if (use_two_boxes) this.secondary_text = secondary_text;
 	}
+
+	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon)
+	{
+		this.duration = duration;
+		this.main_text = main_text;
+		this.left_icon = left_icon;
+		this.right_icon = right_icon;
+
+		this.use_team_icon = false;
+		this.use_two_boxes = false;
+	}
+
+	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, int team)
+	{
+		this.duration = duration;
+		this.main_text = main_text;
+		this.left_icon = left_icon;
+		this.right_icon = right_icon;
+
+		this.team = team;
+		this.use_team_icon = false;
+		this.use_two_boxes = false;
+	}
+
+	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, int team, const bool use_team_icon, Icon@ team_icon)
+	{
+		this.duration = duration;
+		this.main_text = main_text;
+		this.left_icon = left_icon;
+		this.right_icon = right_icon;
+
+		this.team = team;
+		this.use_team_icon = use_team_icon;
+		if (use_team_icon) this.team_icon = team_icon;
+
+		this.use_two_boxes = false;
+	}
+
+	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, const bool use_two_boxes, string secondary_text)
+	{
+		this.duration = duration;
+		this.main_text = main_text;
+		this.left_icon = left_icon;
+		this.right_icon = right_icon;
+
+		this.use_team_icon = false;
+
+		this.use_two_boxes = use_two_boxes;
+		if (use_two_boxes) this.secondary_text = secondary_text;
+	}
+
 
 	void draw(Vec2f center)
 	{
@@ -152,7 +211,7 @@ void onStateChange(CRules@ this, const u8 oldState)
 
 void onTick(CRules@ this)
 {
-	if (this.get_u8("Animate Banner") != Banner::none && !this.get_bool("Draw Banner"))
+	if (this.get_u8("Animate Banner") != BannerType::NONE && !this.get_bool("Draw Banner"))
 	{
 		ResetBannerInfo(this);
 	}
@@ -160,7 +219,7 @@ void onTick(CRules@ this)
 
 void ResetBannerInfo(CRules@ this)
 {
-	this.set_u8("Animate Banner", Banner::none);
+	this.set_u8("Animate Banner", BannerType::NONE);
 	frameTime = 0.0f;
 }
 
@@ -182,16 +241,16 @@ void SetBanner(CRules@ this)
 
 		if (state == GAME_OVER && this.getTeamWon() >= 0)
 		{
-			this.set_u8("Animate Banner", Banner::win);
+			this.set_u8("Animate Banner", BannerType::GAME_END);
 			this.minimap = false;
 		}
 		if (state == WARMUP || state == INTERMISSION) // cringe
 		{
-			this.set_u8("Animate Banner", Banner::build);
+			this.set_u8("Animate Banner", BannerType::WARMUP_START);
 		}
 		if (state == GAME)
 		{
-			this.set_u8("Animate Banner", Banner::game);
+			this.set_u8("Animate Banner", BannerType::GAME_START);
 		}
 	}
 }
