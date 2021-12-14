@@ -466,7 +466,7 @@
 
 	  <attributes>
 		<int name="Id" value="" />
-		<string name="Caption" value="You can use these credentials to login on kag2d.com and kagforums.com" />
+		<string name="Caption" value="You can use these credentials to login on kag2d.com" />
 		<rect name="Rect" value="20, 30, 320, 60" />
 		<position name="MinSize" value="1, 1" />
 		<position name="MaxSize" value="0, 0" />

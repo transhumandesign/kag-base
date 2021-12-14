@@ -91,9 +91,8 @@ void InitSeatAttachment(AttachmentPoint@ ap)
 		}
 		else if (ap.name == "DRIVER" || ap.name == "ROWER" || ap.name == "FLYER" || ap.name == "GUNNER" || ap.name == "MAG")
 		{
-			ap.SetKeysToTake(key_left | key_right | key_up | key_down | key_action1 | key_action2 | key_action3);
+			ap.SetKeysToTake(key_left | key_right | key_up | key_down | key_action1 | key_action2 | key_action3 | key_inventory);
 			ap.SetMouseTaken(true);
-
 
 			if (ap.name == "DRIVER")
 			{

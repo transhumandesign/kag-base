@@ -17,6 +17,24 @@ void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
 
+	if (!blob.isInWater())
+	{
+		bool very_wet = (getGameTime() - blob.get_u32("last time in water")) < 20;
+		if (XORRandom(very_wet ? 4 : 15)==0)
+		{
+			float radius_x = 16.f;
+			float radius_y = 3.f;
+			getMap().SplashEffect(blob.getPosition()+Vec2f(-radius_x + XORRandom((radius_x*2+1)*100)*0.01f,
+														   -radius_y + XORRandom((radius_y*2+1)*100)*0.01f), 
+								  Vec2f(0, 2), 
+								  (very_wet ? 8.f : 3.f) + XORRandom(2));
+		}
+	}
+	else
+	{
+		blob.set_u32("last time in water", getGameTime());
+	}
+	
 	if (!blob.hasTag("dead"))
 	{
 		//scary chomping
