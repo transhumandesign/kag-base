@@ -68,7 +68,11 @@ void onRender(CRules@ this)
 {
 	u8 banner_type = this.get_u8("Animate Banner");
 
-	if (banner_type != BannerType::NONE && this.get_bool("Draw Banner") && banner_type <= banners.size())
+	if (banner_type != BannerType::NONE && !this.get_bool("Draw Banner"))
+	{
+		ResetBannerInfo(this);
+	}
+	else if (banner_type != BannerType::NONE && this.get_bool("Draw Banner") && banner_type <= banners.size())
 	{
 		Driver@ driver = getDriver();
 		if (driver !is null)

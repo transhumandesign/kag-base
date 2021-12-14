@@ -194,14 +194,6 @@ void onStateChange(CRules@ this, const u8 oldState)
 	SetBanner(this);
 }
 
-void onTick(CRules@ this)
-{
-	if (this.get_u8("Animate Banner") != BannerType::NONE && !this.get_bool("Draw Banner"))
-	{
-		ResetBannerInfo(this);
-	}
-}
-
 void ResetBannerInfo(CRules@ this)
 {
 	this.set_u8("Animate Banner", BannerType::NONE);
@@ -222,7 +214,6 @@ void SetBanner(CRules@ this)
 
 		this.set_bool("Draw Banner", true);
 		this.set_u32("Banner Start", getGameTime());
-		this.set_bool("Banner Ready", false);
 
 		if (state == GAME_OVER && this.getTeamWon() >= 0)
 		{
