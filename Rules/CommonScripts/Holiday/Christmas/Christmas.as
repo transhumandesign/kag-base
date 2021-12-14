@@ -83,6 +83,9 @@ void onTick(CRules@ this)
 				TreeVars@ vars;
 				trees[i].get("TreeVars", @vars);
 
+				if (vars is null)
+					continue;
+
 				if (vars.height >= 5)
 				{
 					// sort trees based on position..
