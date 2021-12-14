@@ -82,10 +82,10 @@ void onRender(CRules@ this)
 
 			Banner@ banner;
 
+			@banner = @banners[banner_type];
+
 			if (banner_type == BannerType::GAME_END) 
 			{
-				@banner = @banners[BannerType::GAME_END];
-
 				if (!this.get_bool("Banner Ready"))
 				{
 					banner.setTeam(this.getTeamWon());
@@ -95,11 +95,9 @@ void onRender(CRules@ this)
 			}
 			else if (banner_type == BannerType::WARMUP_START)
 			{
-				@banner = @banners[BannerType::WARMUP_START];
 			} 
 			else if (banner_type == BannerType::GAME_START)
 			{
-				@banner = @banners[BannerType::GAME_START];
 				CPlayer@ p = getLocalPlayer();
 				int team = p is null ? 0 : p.getTeamNum();
 				// show flags of enemy team colour
@@ -108,7 +106,7 @@ void onRender(CRules@ this)
 				banner.setTeam(team);
 			}
 
-			if (this.get_u32("Banner Start") + banner.duration < getGameTime())
+			if (this.get_u32("Banner Start") + banner.duration < getGameTime() || banner is null)
 			{
 				this.set_bool("Banner Ready", false);
 				this.set_bool("Draw Banner", false);
