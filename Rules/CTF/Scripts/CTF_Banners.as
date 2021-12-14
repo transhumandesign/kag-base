@@ -68,7 +68,7 @@ void onRender(CRules@ this)
 {
 	u8 banner_type = this.get_u8("Animate Banner");
 
-	if (banner_type != BannerType::NONE && this.get_bool("Draw Banner"))
+	if (banner_type != BannerType::NONE && this.get_bool("Draw Banner") && banner_type <= banners.size())
 	{
 		Driver@ driver = getDriver();
 		if (driver !is null)
@@ -86,11 +86,8 @@ void onRender(CRules@ this)
 
 			if (banner_type == BannerType::GAME_END) 
 			{
-				if (!this.get_bool("Banner Ready"))
-				{
-					banner.setTeam(this.getTeamWon());
-					banner.main_text = banner.main_text.replace("{TEAM}", (banner.team == 0 ? getTranslatedString("Blue") : getTranslatedString("Red")));
-				}
+				banner.setTeam(this.getTeamWon());
+				banner.main_text = banner.main_text.replace("{TEAM}", (banner.team == 0 ? getTranslatedString("Blue") : getTranslatedString("Red")));
 				this.SetGlobalMessage("");
 			}
 			else if (banner_type == BannerType::WARMUP_START)
@@ -108,18 +105,15 @@ void onRender(CRules@ this)
 
 			if (this.get_u32("Banner Start") + banner.duration < getGameTime() || banner is null)
 			{
-				this.set_bool("Banner Ready", false);
 				this.set_bool("Draw Banner", false);
 				return;
 			}
 
-			this.set_bool("Banner Ready", true);
 			banner.draw(bannerPos);
 		}
 	}
 	else
 	{
-		this.set_bool("Banner Ready", false);
 		onReload(this);
 	}
 }
