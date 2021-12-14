@@ -64,7 +64,7 @@ void onReload(CRules@ this)
 	onInit(this);
 }
 
-void onRender(CRules@ this)
+void onTick(CRules@ this)
 {
 	u8 banner_type = this.get_u8("Animate Banner");
 
@@ -73,6 +73,44 @@ void onRender(CRules@ this)
 		ResetBannerInfo(this);
 	}
 	else if (banner_type != BannerType::NONE && this.get_bool("Draw Banner") && banner_type <= banners.size())
+	{
+		Banner@ banner;
+
+		@banner = @banners[banner_type];
+
+		if (banner_type == BannerType::GAME_END) 
+		{
+			banner.setTeam(this.getTeamWon());
+			banner.main_text = banner.main_text.replace("{TEAM}", (banner.team == 0 ? getTranslatedString("Blue") : getTranslatedString("Red")));
+			this.SetGlobalMessage("");
+		}
+		else if (banner_type == BannerType::GAME_START)
+		{
+			CPlayer@ p = getLocalPlayer();
+			int team = p is null ? 0 : p.getTeamNum();
+			// show flags of enemy team colour
+			team ^= 1;
+
+			banner.setTeam(team);
+		}
+
+		if (this.get_u32("Banner Start") + banner.duration < getGameTime() || banner is null)
+		{
+			this.set_bool("Draw Banner", false);
+			return;
+		}
+	}
+	else
+	{
+		onReload(this);
+	}
+}
+
+void onRender(CRules@ this)
+{
+	u8 banner_type = this.get_u8("Animate Banner");
+
+	if (banner_type != BannerType::NONE && this.get_bool("Draw Banner") && banner_type <= banners.size())
 	{
 		Driver@ driver = getDriver();
 		if (driver !is null)
@@ -88,36 +126,10 @@ void onRender(CRules@ this)
 
 			@banner = @banners[banner_type];
 
-			if (banner_type == BannerType::GAME_END) 
+			if (banner !is null)
 			{
-				banner.setTeam(this.getTeamWon());
-				banner.main_text = banner.main_text.replace("{TEAM}", (banner.team == 0 ? getTranslatedString("Blue") : getTranslatedString("Red")));
-				this.SetGlobalMessage("");
+				banner.draw(bannerPos);
 			}
-			else if (banner_type == BannerType::WARMUP_START)
-			{
-			} 
-			else if (banner_type == BannerType::GAME_START)
-			{
-				CPlayer@ p = getLocalPlayer();
-				int team = p is null ? 0 : p.getTeamNum();
-				// show flags of enemy team colour
-				team ^= 1;
-
-				banner.setTeam(team);
-			}
-
-			if (this.get_u32("Banner Start") + banner.duration < getGameTime() || banner is null)
-			{
-				this.set_bool("Draw Banner", false);
-				return;
-			}
-
-			banner.draw(bannerPos);
 		}
-	}
-	else
-	{
-		onReload(this);
 	}
 }
