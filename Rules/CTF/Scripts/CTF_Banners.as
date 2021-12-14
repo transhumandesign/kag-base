@@ -47,7 +47,6 @@ Banner@ getWinBanner(int team=0)
 
 Banner@[] banners;
 
-
 void onInit(CRules@ this)
 {
 	banners.insertAt(BannerType::WARMUP_START, getBuildBanner());

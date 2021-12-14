@@ -12,17 +12,6 @@ const u32 winBannerDuration = 8 * getTicksASecond();
 const u32 buildBannerDuration = 5 * getTicksASecond();
 const u32 gameBannerDuration = 5 * getTicksASecond();
 
-namespace Banner
-{
-	enum State
-	{
-		none = 0,
-		build,
-		game,
-		win
-	};
-}
-
 enum BannerType
 {
 	WARMUP_START = 0,
