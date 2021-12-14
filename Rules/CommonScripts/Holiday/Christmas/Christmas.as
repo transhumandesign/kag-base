@@ -36,12 +36,18 @@ void onRestart(CRules@ this)
 void onTick(CRules@ this)
 {
 	if (isClient())
-	{
+	{ 
 		s16 renderId = this.get_s16("snow_render_id");
 		// Have we just disabled fast render
 		if (renderId == 0 && !v_fastrender)
 		{
+			// TEMP
+#ifdef STAGING
+			this.set_s16("snow_render_id", Render::addScript(Render::layer_floodlayers, "Christmas.as", "DrawSnow", 0));
+#endif
+#ifndef STAGING
 			this.set_s16("snow_render_id", Render::addScript(Render::layer_background, "Christmas.as", "DrawSnow", 0));
+#endif
 		} 
 		else if (renderId != 0 && v_fastrender || this.get_string("holiday") != "Christmas") // Have we just enabled fast render OR is holiday over
 		{
@@ -187,9 +193,18 @@ void DrawSnow(int id)
 			Maths::Cos(gt/197.0f) * 10;
 		float Y = gt % 255;
 		Matrix::MakeIdentity(trnsfm);
+
+		// TEMP PREPROCESSING
+#ifdef STAGING
+		Matrix::SetTranslation(trnsfm, X, Y, -500);
+		Render::SetZBuffer(true, false);
+#endif
+#ifndef STAGING
 		Matrix::SetTranslation(trnsfm, X, Y, 0);
-		Render::SetModelTransform(trnsfm);
+#endif
+
 		Render::SetAlphaBlend(true);
+		Render::SetModelTransform(trnsfm);
 		Render::RawQuads("Snow.png", Verts);
 	}
 }
