@@ -84,7 +84,6 @@ void onRender(CRules@ this)
 
 			if (banner_type == BannerType::GAME_END) 
 			{
-				if (GAME_END >= banners.size()) return;
 				@banner = @banners[BannerType::GAME_END];
 
 				if (!this.get_bool("Banner Ready"))
@@ -96,12 +95,10 @@ void onRender(CRules@ this)
 			}
 			else if (banner_type == BannerType::WARMUP_START)
 			{
-				if (WARMUP_START >= banners.size()) return;
 				@banner = @banners[BannerType::WARMUP_START];
 			} 
 			else if (banner_type == BannerType::GAME_START)
 			{
-				if (GAME_START >= banners.size()) return;
 				@banner = @banners[BannerType::GAME_START];
 				CPlayer@ p = getLocalPlayer();
 				int team = p is null ? 0 : p.getTeamNum();
