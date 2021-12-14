@@ -102,8 +102,7 @@ void onRender(CRules@ this)
 				CPlayer@ p = getLocalPlayer();
 				int team = p is null ? 0 : p.getTeamNum();
 				// show flags of enemy team colour
-				if (team == 0) team = 1;
-				else team = 0;
+				team ^= 1;
 
 				banner.setTeam(team);
 			}

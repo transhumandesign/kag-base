@@ -8,10 +8,6 @@ const f32 maxTime = 0.6f;
 
 bool minimap = true;
 
-const u32 winBannerDuration = 8 * getTicksASecond();
-const u32 buildBannerDuration = 5 * getTicksASecond();
-const u32 gameBannerDuration = 5 * getTicksASecond();
-
 enum BannerType
 {
 	WARMUP_START = 0,
