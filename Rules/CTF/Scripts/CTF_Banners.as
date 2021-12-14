@@ -53,9 +53,9 @@ Banner@[] banners;
 
 void onInit(CRules@ this)
 {
-	banners.insertAt(BannerType::WARMUP_START, getBuildBanner());
-	banners.insertAt(BannerType::GAME_START, getGameBanner());
-	banners.insertAt(BannerType::GAME_END, getWinBanner());
+	banners.push_back(getBuildBanner());
+	banners.push_back(getGameBanner());
+	banners.push_back(getWinBanner());
 }
 
 void onReload(CRules@ this)
