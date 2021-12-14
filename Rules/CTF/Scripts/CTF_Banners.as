@@ -2,9 +2,13 @@
 
 #include "GameStateBanners.as";
 
+const u32 buildBannerDuration = 5;
+const u32 gameBannerDuration = 5;
+const u32 winBannerDuration = 8;
+
 Banner@ getBuildBanner()
 {
-	u32 duration = 5 * getTicksASecond();
+	u32 duration = buildBannerDuration * getTicksASecond();
 	string text = "Build defenses!";
 	string secondary_text = "Increased build speed and resupplies";
 
@@ -18,7 +22,7 @@ Banner@ getBuildBanner()
 
 Banner@ getGameBanner(int team=0)
 {
-	u32 duration = 5 * getTicksASecond();
+	u32 duration = gameBannerDuration * getTicksASecond();
 	string text = "Capture the flag!";
 
 	Icon@ left_icon = Icon("BannerIcons.png", 0, Vec2f(32, 32), Vec2f(184, 32), team);
@@ -31,7 +35,7 @@ Banner@ getGameBanner(int team=0)
 
 Banner@ getWinBanner(int team=0)
 {
-	u32 duration = 8 * getTicksASecond();
+	u32 duration = winBannerDuration * getTicksASecond();
 	string text = "{TEAM} team wins";
 	string teamName = (team == 0 ? "Blue" : "Red");
 	string actual_text = teamName + " team wins";
