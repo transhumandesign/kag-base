@@ -3,7 +3,10 @@
 //TODO: re-apply new holiday sprites when holiday is active
 //		(check git history around xmas 2018 for holiday versions)
 
+#include "TreeCommon.as";
+
 const int present_interval = 30 * 60 * 10; // 10 minutes
+const int gifts_per_hoho = 3;
 
 // Snow stuff
 bool _snow_ready = false;
@@ -26,13 +29,12 @@ void onInit(CRules@ this)
 void onRestart(CRules@ this)
 {
 	_snow_ready = false;
-	this.set_s16("present timer", present_interval);
+	this.set_s32("present timer", present_interval);
 	frameTime = 0;
 }
 
 void onTick(CRules@ this)
 {
-	
 	if (isClient())
 	{
 		s16 renderId = this.get_s16("snow_render_id");
@@ -48,8 +50,7 @@ void onTick(CRules@ this)
 		}
 	}
 	
-
-	if (isServer() || this.isWarmup() || !(this.gamemode_name == "CTF" || this.gamemode_name == "TTH" || this.gamemode_name == "SmallCTF"))
+	if (!isClient() || this.isWarmup() || !(this.gamemode_name == "CTF" || this.gamemode_name == "TTH" || this.gamemode_name == "SmallCTF"))
 		return;
 
 	if (!this.exists("present timer"))
@@ -71,9 +72,12 @@ void onTick(CRules@ this)
 			CBlob@[] trees_blue;
 			CBlob@[] trees_red;
 
-			for (uint i = 0; i < trees.length; i++)
+			for (uint i = 0; i < trees.size(); i++)
 			{
-				if (trees[i].get_u8("height") >= 5)
+				TreeVars@ vars;
+				trees[i].get("TreeVars", @vars);
+
+				if (vars.height >= 5)
 				{
 					// sort trees based on position..
 					if (trees[i].getPosition().x < mapCenter)
@@ -89,15 +93,33 @@ void onTick(CRules@ this)
 
 			bool is_spawned = false;
 
-			if (trees_blue.length > 0)
+			for (uint i = 0; i < gifts_per_hoho; i++)
 			{
-				spawnPresent(trees_blue[XORRandom(trees_blue.length)].getPosition(), 0);
-				is_spawned = true;
-			}
-			if (trees_red.length > 0)
-			{
-				spawnPresent(trees_red[XORRandom(trees_red.length)].getPosition(), 1);
-				is_spawned = true;
+				if (trees_blue.length > 0)
+				{
+					int random = XORRandom(trees_blue.length);
+					spawnPresent(trees_blue[random].getPosition(), XORRandom(8));
+					trees_blue.removeAt(random);
+					is_spawned = true;
+				}
+				else
+				{
+					spawnPresent(Vec2f(XORRandom(map.tilemapwidth * map.tilesize / 2), 0), XORRandom(8)).Tag("parachute");
+					is_spawned = true;
+				}
+
+				if (trees_red.length > 0)
+				{
+					int random = XORRandom(trees_red.length);
+					spawnPresent(trees_red[random].getPosition(), XORRandom(8));
+					trees_red.removeAt(random);
+					is_spawned = true;
+				}
+				else
+				{
+					is_spawned = true;
+					spawnPresent(Vec2f(map.tilemapwidth * map.tilesize - XORRandom(map.tilemapwidth * map.tilesize / 2), 0), XORRandom(8)).Tag("parachute");
+				}
 			}
 
 			if (is_spawned)
@@ -113,9 +135,9 @@ void onTick(CRules@ this)
 	}
 }
 
-void spawnPresent(Vec2f spawnpos, u8 team)
+CBlob@ spawnPresent(Vec2f spawnpos, u8 team)
 {
-	server_CreateBlob("present", team, spawnpos);
+	return server_CreateBlob("present", team, spawnpos);
 }
 
 void onCommand( CRules@ this, u8 cmd, CBitStream @params )

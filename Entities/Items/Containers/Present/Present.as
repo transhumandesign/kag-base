@@ -11,6 +11,28 @@ void onInit(CBlob@ this)
 	AddIconToken("$chest_close$", "InteractionIcons.png", Vec2f(32, 32), 13);
 }
 
+void onTick(CBlob@ this)
+{
+	// parachute
+
+	if (this.hasTag("parachute"))
+	{
+		if (this.getSprite().getSpriteLayer("parachute") is null)
+		{
+			ShowParachute(this);
+		}
+
+		// para force + swing in wind
+		this.AddForce(Vec2f(Maths::Sin(getGameTime() * 0.03f) * 1.0f, -30.0f * this.getVelocity().y));
+
+		if (this.isOnGround() || this.isInWater() || this.isAttached())
+		{
+			this.Untag("parachute");
+			HideParachute(this);
+		}
+	}
+}
+
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller) || this.exists(DROP)) return;
@@ -81,4 +103,29 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return false;
+}
+
+void ShowParachute(CBlob@ this)
+{
+	CSprite@ sprite = this.getSprite();
+	CSpriteLayer@ parachute = sprite.addSpriteLayer("parachute",   32, 32);
+
+	if (parachute !is null)
+	{
+		Animation@ anim = parachute.addAnimation("default", 0, true);
+		anim.AddFrame(1);
+		parachute.SetOffset(Vec2f(0.0f, - 17.0f));
+	}
+}
+
+void HideParachute(CBlob@ this)
+{
+	CSprite@ sprite = this.getSprite();
+	CSpriteLayer@ parachute = sprite.getSpriteLayer("parachute");
+
+	if (parachute !is null && parachute.isVisible())
+	{
+		parachute.SetVisible(false);
+		ParticlesFromSprite(parachute);
+	}
 }
