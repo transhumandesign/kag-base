@@ -72,7 +72,7 @@ void onTick(CRules@ this)
 	{
 		ResetBannerInfo(this);
 	}
-	else if (banner_type != BannerType::NONE && this.get_bool("Draw Banner") && banner_type <= banners.size())
+	else if (this.get_bool("Draw Banner"))
 	{
 		Banner@ banner;
 
@@ -90,19 +90,15 @@ void onTick(CRules@ this)
 			int team = p is null ? 0 : p.getTeamNum();
 			// show flags of enemy team colour
 			team ^= 1;
-
 			banner.setTeam(team);
 		}
 
 		if (this.get_u32("Banner Start") + banner.duration < getGameTime() || banner is null)
 		{
 			this.set_bool("Draw Banner", false);
+			onReload(this);
 			return;
 		}
-	}
-	else
-	{
-		onReload(this);
 	}
 }
 
@@ -110,7 +106,7 @@ void onRender(CRules@ this)
 {
 	u8 banner_type = this.get_u8("Animate Banner");
 
-	if (banner_type != BannerType::NONE && this.get_bool("Draw Banner") && banner_type <= banners.size())
+	if (banner_type != BannerType::NONE && this.get_bool("Draw Banner"))
 	{
 		Driver@ driver = getDriver();
 		if (driver !is null)
