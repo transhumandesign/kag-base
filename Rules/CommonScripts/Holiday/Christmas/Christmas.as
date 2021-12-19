@@ -36,7 +36,7 @@ void onRestart(CRules@ this)
 void onTick(CRules@ this)
 {
 	if (isClient())
-	{ 
+	{
 		s16 renderId = this.get_s16("snow_render_id");
 		// Have we just disabled fast render
 		if (renderId == 0 && !v_fastrender)
@@ -56,7 +56,7 @@ void onTick(CRules@ this)
 		}
 	}
 	
-	if (!isClient() || this.isWarmup() || !(this.gamemode_name == "CTF" || this.gamemode_name == "TTH" || this.gamemode_name == "SmallCTF"))
+	if (isClient() || this.isWarmup() || !(this.gamemode_name == "CTF" || this.gamemode_name == "TTH" || this.gamemode_name == "SmallCTF"))
 		return;
 
 	if (!this.exists("present timer"))
@@ -100,8 +100,6 @@ void onTick(CRules@ this)
 				}
 			}
 
-			bool is_spawned = false;
-
 			for (uint i = 0; i < gifts_per_hoho; i++)
 			{
 				if (trees_blue.length > 0)
@@ -109,12 +107,10 @@ void onTick(CRules@ this)
 					int random = XORRandom(trees_blue.length);
 					spawnPresent(trees_blue[random].getPosition(), XORRandom(8));
 					trees_blue.removeAt(random);
-					is_spawned = true;
 				}
 				else
 				{
 					spawnPresent(Vec2f(XORRandom(map.tilemapwidth * map.tilesize / 2), 0), XORRandom(8)).Tag("parachute");
-					is_spawned = true;
 				}
 
 				if (trees_red.length > 0)
@@ -122,20 +118,15 @@ void onTick(CRules@ this)
 					int random = XORRandom(trees_red.length);
 					spawnPresent(trees_red[random].getPosition(), XORRandom(8));
 					trees_red.removeAt(random);
-					is_spawned = true;
 				}
 				else
 				{
-					is_spawned = true;
 					spawnPresent(Vec2f(map.tilemapwidth * map.tilesize - XORRandom(map.tilemapwidth * map.tilesize / 2), 0), XORRandom(8)).Tag("parachute");
 				}
 			}
 
-			if (is_spawned)
-			{
-				CBitStream bt;
-				this.SendCommand(this.getCommandID("xmas sound"), bt);
-			}
+			CBitStream bt;
+			this.SendCommand(this.getCommandID("xmas sound"), bt);
 		}
 	}
 	else
