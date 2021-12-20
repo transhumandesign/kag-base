@@ -47,7 +47,7 @@ void onTick(CSprite@ this)
 			fire.SetAnimation("smallfire");
 
 			//set the "on fire" animation if it exists (eg wave arms around)
-			if (this.getAnimation("on_fire") !is null)
+			if (this.getAnimation("on_fire") !is null && !blob.hasTag("dead"))
 			{
 				this.SetAnimation("on_fire");
 			}
