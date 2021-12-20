@@ -56,7 +56,7 @@ void onTick(CRules@ this)
 		}
 	}
 	
-	if (isClient() || this.isWarmup() || !(this.gamemode_name == "CTF" || this.gamemode_name == "TTH" || this.gamemode_name == "SmallCTF"))
+	if (!isServer() || this.isWarmup() || !(this.gamemode_name == "CTF" || this.gamemode_name == "TTH" || this.gamemode_name == "SmallCTF"))
 		return;
 
 	if (!this.exists("present timer"))
