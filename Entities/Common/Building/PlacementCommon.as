@@ -326,7 +326,7 @@ bool inNoBuildZone(CBlob@ blob, CMap@ map, Vec2f here, TileType buildTile)
 // This has to exist due to an engine issue where CMap.hasTileSolidBlobs() returns false if the blobtile was placed in the previous tick
 // and an engine issue where CMap.getBlobsFromTile() crashes the server 
 // wonderful game
-bool fakeHasTileSolidBlobs(Vec2f cursorPos)
+bool fakeHasTileSolidBlobs(Vec2f cursorPos, bool toPlaceIsLadder=false)
 {
 	CMap@ map = getMap();
 	CBlob@[] blobsAtPos;
@@ -340,7 +340,7 @@ bool fakeHasTileSolidBlobs(Vec2f cursorPos)
 		if (blobAtPos !is null && (
 		blobAtPos.hasTag("door") || 
 		blobAtPos.getName() == "wooden_platform" || 
-		blobAtPos.getName() == "ladder" || 
+		(blobAtPos.getName() == "ladder" && !toPlaceIsLadder) || 
 		blobAtPos.getName() == "bridge"))
 		{
 			return true;

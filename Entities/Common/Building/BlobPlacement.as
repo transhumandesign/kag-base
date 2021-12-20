@@ -79,7 +79,7 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 	}
 
 	// Are we trying to place a blob on a door/ladder/platform/bridge (usually due to lag)?
-	if (fakeHasTileSolidBlobs(cursorPos))
+	if (fakeHasTileSolidBlobs(cursorPos, blobToPlace.getName() == "ladder"))
 	{
 		return false;
 	}

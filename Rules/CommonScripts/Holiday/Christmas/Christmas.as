@@ -2,9 +2,11 @@
 //
 //TODO: re-apply new holiday sprites when holiday is active
 //		(check git history around xmas 2018 for holiday versions)
-#include "TreeCommon"
+
+#include "TreeCommon.as";
 
 const int present_interval = 30 * 60 * 10; // 10 minutes
+const int gifts_per_hoho = 3;
 
 // Snow stuff
 bool _snow_ready = false;
@@ -54,7 +56,6 @@ void onTick(CRules@ this)
 		}
 	}
 	
-	
 	if (!isServer() || this.isWarmup() || !(this.gamemode_name == "CTF" || this.gamemode_name == "TTH" || this.gamemode_name == "SmallCTF"))
 		return;
 
@@ -77,7 +78,7 @@ void onTick(CRules@ this)
 			CBlob@[] trees_blue;
 			CBlob@[] trees_red;
 
-			for (uint i = 0; i < trees.length; i++)
+			for (uint i = 0; i < trees.size(); i++)
 			{
 				TreeVars@ vars;
 				trees[i].get("TreeVars", @vars);
@@ -99,24 +100,33 @@ void onTick(CRules@ this)
 				}
 			}
 
-			bool is_spawned = false;
+			for (uint i = 0; i < gifts_per_hoho; i++)
+			{
+				if (trees_blue.length > 0)
+				{
+					int random = XORRandom(trees_blue.length);
+					spawnPresent(trees_blue[random].getPosition(), XORRandom(8));
+					trees_blue.removeAt(random);
+				}
+				else
+				{
+					spawnPresent(Vec2f(XORRandom(map.tilemapwidth * map.tilesize / 2), 0), XORRandom(8)).Tag("parachute");
+				}
 
-			if (trees_blue.length > 0)
-			{
-				spawnPresent(trees_blue[XORRandom(trees_blue.length)].getPosition(), 0);
-				is_spawned = true;
-			}
-			if (trees_red.length > 0)
-			{
-				spawnPresent(trees_red[XORRandom(trees_red.length)].getPosition(), 1);
-				is_spawned = true;
+				if (trees_red.length > 0)
+				{
+					int random = XORRandom(trees_red.length);
+					spawnPresent(trees_red[random].getPosition(), XORRandom(8));
+					trees_red.removeAt(random);
+				}
+				else
+				{
+					spawnPresent(Vec2f(map.tilemapwidth * map.tilesize - XORRandom(map.tilemapwidth * map.tilesize / 2), 0), XORRandom(8)).Tag("parachute");
+				}
 			}
 
-			if (is_spawned)
-			{
-				CBitStream bt;
-				this.SendCommand(this.getCommandID("xmas sound"), bt);
-			}
+			CBitStream bt;
+			this.SendCommand(this.getCommandID("xmas sound"), bt);
 		}
 	}
 	else
@@ -125,9 +135,9 @@ void onTick(CRules@ this)
 	}
 }
 
-void spawnPresent(Vec2f spawnpos, u8 team)
+CBlob@ spawnPresent(Vec2f spawnpos, u8 team)
 {
-	server_CreateBlob("present", team, spawnpos);
+	return server_CreateBlob("present", team, spawnpos);
 }
 
 void onCommand( CRules@ this, u8 cmd, CBitStream @params )

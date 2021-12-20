@@ -508,7 +508,7 @@ void onRender(CSprite@ this)
 							}
 						}
 					}
-					else
+					else if (blob.getCarriedBlob() is null || blob.getCarriedBlob().hasTag("temp blob")) // only display the red arrow while we are building
 					{
 						const f32 maxDist = getMaxBuildDistance(blob) + 8.0f;
 						Vec2f norm = aimPos2D - myPos;

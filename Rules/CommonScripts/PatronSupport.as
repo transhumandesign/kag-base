@@ -25,7 +25,7 @@ void onNewPlayerJoin( CRules@ this, CPlayer@ player )
 {
 	if (this.get_u16("supportTier " + player.getUsername()) >= SUPPORT_TIER_ROYALGUARD && // if we are high enough in the tier list
 		this.getSpectatorTeamNum() == player.getTeamNum() && // and we are a spectator
-		getPlayersCount_NotSpectator() + PATRON_EXTRA_SLOTS <= sv_maxplayers) // and there are still free slots for us
+		getPlayersCount_NotSpectator() < sv_maxplayers + PATRON_EXTRA_SLOTS) // and there are still free slots for us
 	{
 		player.server_setTeamNum(255); // server will auto balance them
 	}

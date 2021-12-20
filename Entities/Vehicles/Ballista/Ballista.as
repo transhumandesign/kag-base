@@ -245,7 +245,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		{
 			Vehicle_AddLoadAmmoButton(this, caller);
 		}
-		if (!isAnotherRespawnClose(this) && !isFlipped(this))
+		if (/*!isAnotherRespawnClose(this) &&*/ !isFlipped(this))
 		{
 			caller.CreateGenericButton("$change_class$", Vec2f(0, 1), this, buildSpawnMenu, getTranslatedString("Change class"));
 		}
