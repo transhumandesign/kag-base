@@ -124,10 +124,10 @@ void onTick(CRules@ this)
 					spawnPresent(Vec2f(map.tilemapwidth * map.tilesize - XORRandom(map.tilemapwidth * map.tilesize / 2), 0), XORRandom(8)).Tag("parachute");
 				}
 			}
-		}
 
-		CBitStream bt;
-		this.SendCommand(this.getCommandID("xmas sound"), bt);
+			CBitStream bt;
+			this.SendCommand(this.getCommandID("xmas sound"), bt);
+		}
 	}
 	else
 	{
