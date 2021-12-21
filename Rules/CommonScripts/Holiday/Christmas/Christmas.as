@@ -73,12 +73,14 @@ void onTick(CRules@ this)
 
 		CBlob@[] trees;
 
-		if (getBlobsByName("tree_pine", @trees))
-		{
-			CBlob@[] trees_blue;
-			CBlob@[] trees_red;
+		getBlobsByName("tree_pine", @trees);
 
-			for (uint i = 0; i < trees.size(); i++)
+		CBlob@[] trees_blue;
+		CBlob@[] trees_red;
+
+		if(trees.length > 0)
+		{
+			for (uint i = 0; i < trees.length; i++)
 			{
 				TreeVars@ vars;
 				trees[i].get("TreeVars", @vars);
@@ -99,30 +101,30 @@ void onTick(CRules@ this)
 					}
 				}
 			}
+		}
 
-			for (uint i = 0; i < gifts_per_hoho; i++)
+		for (uint i = 0; i < gifts_per_hoho; i++)
+		{
+			if (trees_blue.length > 0)
 			{
-				if (trees_blue.length > 0)
-				{
-					int random = XORRandom(trees_blue.length);
-					spawnPresent(trees_blue[random].getPosition(), XORRandom(8));
-					trees_blue.removeAt(random);
-				}
-				else
-				{
-					spawnPresent(Vec2f(XORRandom(map.tilemapwidth * map.tilesize / 2), 0), XORRandom(8)).Tag("parachute");
-				}
+				int random = XORRandom(trees_blue.length);
+				spawnPresent(trees_blue[random].getPosition(), XORRandom(8));
+				trees_blue.removeAt(random);
+			}
+			else
+			{
+				spawnPresent(Vec2f(XORRandom(map.tilemapwidth * map.tilesize / 2), 0), XORRandom(8)).Tag("parachute");
+			}
 
-				if (trees_red.length > 0)
-				{
-					int random = XORRandom(trees_red.length);
-					spawnPresent(trees_red[random].getPosition(), XORRandom(8));
-					trees_red.removeAt(random);
-				}
-				else
-				{
-					spawnPresent(Vec2f(map.tilemapwidth * map.tilesize - XORRandom(map.tilemapwidth * map.tilesize / 2), 0), XORRandom(8)).Tag("parachute");
-				}
+			if (trees_red.length > 0)
+			{
+				int random = XORRandom(trees_red.length);
+				spawnPresent(trees_red[random].getPosition(), XORRandom(8));
+				trees_red.removeAt(random);
+			}
+			else
+			{
+				spawnPresent(Vec2f(map.tilemapwidth * map.tilesize - XORRandom(map.tilemapwidth * map.tilesize / 2), 0), XORRandom(8)).Tag("parachute");
 			}
 		}
 
