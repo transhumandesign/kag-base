@@ -43,9 +43,18 @@ void onTick(CBlob@ blob)
 		const u8 index = blob.get_u8("emote");
 		if (is_emote(blob, index) && !blob.hasTag("dead") && !blob.isInInventory())
 		{
-			blob.getCurrentScript().tickFrequency = 1;
 			if (emote !is null)
 			{
+				CPlayer@ player = blob.getPlayer();
+				if (player !is null && getSecurity().isPlayerIgnored(player))
+				{
+					// muted emote
+					print("Ignored emote from " + player.getUsername());
+					return;
+				}
+
+				blob.getCurrentScript().tickFrequency = 1;
+
 				emote.SetVisible(!isMouseOverEmote(emote));
 				emote.animation.frame = index;
 
