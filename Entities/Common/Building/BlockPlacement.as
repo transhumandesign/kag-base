@@ -5,8 +5,10 @@
 #include "GameplayEvents.as"
 
 // Called server side
-void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
+void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 {
+	TileType buildtile = this.get_TileType("buildtile");
+	u8 index = getBlockIndexByTile(this, buildtile);
 	BuildBlock @bc = getBlockByIndex(this, index);
 
 	if (bc is null)
@@ -62,7 +64,7 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
     
 	// Are we still on cooldown?
 	if (isBuildDelayed(blob)) 
-		return true;
+		return false;
 
 	// Are we trying to place in a bad pos?
 	CMap@ map = getMap();
@@ -121,11 +123,6 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	if (isBuildDelayed(this))
-	{
-		return;
-	}
-
 	BlockCursor @bc;
 	this.get("blockCursor", @bc);
 	if (bc is null)
@@ -171,7 +168,6 @@ void onTick(CBlob@ this)
 			if (bc.cursorClose && bc.buildable && bc.supported)
 			{
 				CBitStream params;
-				params.write_u8(blockIndex);
 				params.write_Vec2f(bc.tileAimPos);
 				this.SendCommand(this.getCommandID("placeBlock"), params);
 				u32 delay = this.get_u32("build delay");
@@ -286,8 +282,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (getNet().isServer() && cmd == this.getCommandID("placeBlock"))
 	{
-		u8 index = params.read_u8();
 		Vec2f pos = params.read_Vec2f();
-		PlaceBlock(this, index, pos);
+		PlaceBlock(this, pos);
 	}
 }

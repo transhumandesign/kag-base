@@ -52,7 +52,7 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
     
 	// Are we still on cooldown?
 	if (isBuildDelayed(blob)) 
-		return true;
+		return false;
 
 	// Are we trying to place in a bad pos?
 	CMap@ map = getMap();
@@ -242,14 +242,10 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	if (isBuildDelayed(this))
+	if (isBuildDelayed(this) && carryBlob !is null)
 	{
 		// don't draw blob while waiting to build
-		if (carryBlob !is null)
-		{
-			carryBlob.SetVisible(false);
-		}
-		return;
+		carryBlob.SetVisible(false);
 	}
 
 	SetTileAimpos(this, bc);
@@ -333,39 +329,40 @@ void onTick(CBlob@ this)
 				//printf("bc.buildableAtPos " + bc.buildableAtPos + " bc.supported " + bc.supported );
 			}
 		}
+	}
+	
+	// actually placing the blob
 
-		// place blob with action1 key
-		if (!getHUD().hasButtons() && !carryBlob.hasTag("custom drop"))
+	if (getHUD().hasButtons()) return;
+
+	if (this.isKeyPressed(key_action1))
+	{
+		if (bc.cursorClose && bc.hasReqs && bc.buildable && bc.supported)
 		{
-			if (this.isKeyPressed(key_action1))
-			{
-				if (snap && bc.cursorClose && bc.hasReqs && bc.buildable && bc.supported)
-				{
-					CBitStream params;
-					params.write_u16(carryBlob.getNetworkID());
-					params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
-					this.SendCommand(this.getCommandID("placeBlob"), params);
-					u32 delay = 2 * this.get_u32("build delay");
-					SetBuildDelay(this, delay);
-					bc.blobActive = false;
-				}
-				else if (snap && this.isKeyJustPressed(key_action1))
-				{
-					this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
-				}
-			}
+			CBitStream params;
+			//params.write_u16(carryBlob.getNetworkID()); laws remove this line
+			//params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
+			params.write_Vec2f(bc.tileAimPos);
+			this.SendCommand(this.getCommandID("placeBlob"), params);
 
-			if (this.isKeyJustPressed(key_action3))
-			{
-				s8 rotateDir = controls.ActionKeyPressed(AK_BUILD_MODIFIER) ? -1 : 1;
-
-				CBitStream params;
-				params.write_u16((360 + this.get_u16("build_angle") + 90 * rotateDir) % 360);
-				this.SendCommand(this.getCommandID("rotateBlob"), params);
-			}
+			u32 delay = 2 * this.get_u32("build delay");
+			SetBuildDelay(this, delay);
+			bc.blobActive = false;
+		}
+		else if (this.isKeyJustPressed(key_action1))
+		{
+			this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 		}
 	}
 
+	if (this.isKeyJustPressed(key_action3))
+	{
+		s8 rotateDir = controls.ActionKeyPressed(AK_BUILD_MODIFIER) ? -1 : 1;
+
+		CBitStream params;
+		params.write_u16((360 + this.get_u16("build_angle") + 90 * rotateDir) % 360);
+		this.SendCommand(this.getCommandID("rotateBlob"), params);
+	}
 }
 
 void onInit(CSprite@ this)
@@ -451,13 +448,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 	if (cmd == this.getCommandID("placeBlob"))
 	{
-		CBlob @carryBlob = getBlobByNetworkID(params.read_u16());
-		if (carryBlob !is null)
-		{
-			Vec2f pos = params.read_Vec2f();
-			PlaceBlob(this, carryBlob, pos);
-			SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), carryBlob.getName()));
-		}
+		CBlob @carryBlob = this.getCarriedBlob();
+		if (carryBlob is null) return;
+		if (!carryBlob.isSnapToGrid()) return;
+
+		Vec2f mousePos = params.read_Vec2f();
+		Vec2f pos = getBottomOfCursor(mousePos, carryBlob);
+		PlaceBlob(this, carryBlob, pos);
+		SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), carryBlob.getName()));
 	}
 	else if (cmd == this.getCommandID("settleLadder"))
 	{
