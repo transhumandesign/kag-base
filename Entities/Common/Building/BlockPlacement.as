@@ -31,6 +31,8 @@ void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 	bool hasReqs = hasRequirements(inv, bc.reqs, missing);
 	bool passesChecks = serverTileCheck(this, index, cursorPos);
 
+	// don't need these warns since it's up to the server to validate, not client
+	/*
 	if (!validTile)
 		warn(name + " tried to place an invalid tile");
 
@@ -39,6 +41,7 @@ void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 
 	if (!passesChecks)
 		warn(name + " tried to place tile in an invalid way");
+	*/
 
 	if (validTile && hasReqs && passesChecks)
 	{
@@ -47,7 +50,7 @@ void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 		getMap().server_SetTile(cursorPos, bc.tile);
 
 		u32 delay = this.get_u32("build delay");
-		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
+		SetBuildDelay(this, delay);
 
 		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), bc.tile));
 	}
