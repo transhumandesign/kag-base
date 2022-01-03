@@ -340,8 +340,6 @@ void onTick(CBlob@ this)
 		if (bc.cursorClose && bc.hasReqs && bc.buildable && bc.supported)
 		{
 			CBitStream params;
-			//params.write_u16(carryBlob.getNetworkID()); laws remove this line
-			//params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
 			params.write_Vec2f(bc.tileAimPos);
 			this.SendCommand(this.getCommandID("placeBlob"), params);
 
