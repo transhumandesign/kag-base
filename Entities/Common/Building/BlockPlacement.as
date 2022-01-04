@@ -120,12 +120,6 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	CBlob @carryBlob = this.getCarriedBlob();
-	if (carryBlob !is null)
-	{
-		return;
-	}
-
 	BlockCursor @bc;
 	this.get("blockCursor", @bc);
 	if (bc is null)
@@ -134,19 +128,31 @@ void onTick(CBlob@ this)
 	}
 
 	SetTileAimpos(this, bc);
-	// check buildable
-	bc.buildable = false;
-	bc.supported = false;
-	bc.hasReqs = false;
-	TileType buildtile = this.get_TileType("buildtile");
 
-	if (buildtile > 0)
+	if (this.getCarriedBlob() is null)
+	{
+		bc.buildable = false;
+		bc.supported = false;
+		bc.hasReqs = false;
+	}
+
+	TileType buildtile = this.get_TileType("buildtile");
+	u8 blockIndex = getBlockIndexByTile(this, buildtile);
+	BuildBlock @block = getBlockByIndex(this, blockIndex);
+
+	if (buildtile <= 0)
+	{
+		bc.blockActive = false;
+		return;
+	}
+	
+	// check buildable
+	if (this.getCarriedBlob() is null)
 	{
 		bc.blockActive = true;
 		bc.blobActive = false;
 		CMap@ map = this.getMap();
-		u8 blockIndex = getBlockIndexByTile(this, buildtile);
-		BuildBlock @block = getBlockByIndex(this, blockIndex);
+
 		if (block !is null)
 		{
 			bc.missing.Clear();
@@ -163,30 +169,26 @@ void onTick(CBlob@ this)
 
 			bc.supported = map.hasSupportAtPos(bc.tileAimPos);
 		}
+	}
 
-		// place block
-
-		if (!getHUD().hasButtons() && this.isKeyPressed(key_action1))
+	// place block
+	if (!getHUD().hasButtons() && this.isKeyPressed(key_action1))
+	{
+		if (bc.cursorClose && bc.buildable && bc.supported)
 		{
-			if (bc.cursorClose && bc.buildable && bc.supported)
-			{
-				CBitStream params;
-				params.write_Vec2f(bc.tileAimPos);
-				this.SendCommand(this.getCommandID("placeBlock"), params);
-				u32 delay = this.get_u32("build delay");
-				SetBuildDelay(this, block.tile < 255 ? delay : delay / 3);
-				bc.blockActive = false;
-			}
-			else if (this.isKeyJustPressed(key_action1) && !bc.sameTileOnBack)
-			{
-				this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
-			}
+			CBitStream params;
+			params.write_Vec2f(bc.tileAimPos);
+			this.SendCommand(this.getCommandID("placeBlock"), params);
+			u32 delay = this.get_u32("build delay");
+			SetBuildDelay(this, block.tile < 255 ? delay : delay / 3);
+			bc.blockActive = false;
+		}
+		else if (this.isKeyJustPressed(key_action1) && !bc.sameTileOnBack)
+		{
+			this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 		}
 	}
-	else
-	{
-		bc.blockActive = false;
-	}
+
 }
 
 // render block placement
