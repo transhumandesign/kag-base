@@ -41,7 +41,7 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 	DestroyScenary(cursorPos, cursorPos);
 }
 
-// Returns true if pos is valid
+// Returns true if can place block at pos
 bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 {
 	// Pos check of about 8 tiles, accounts for people with lag
@@ -54,6 +54,13 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 	if (isBuildDelayed(blob)) 
 		return false;
 
+	// Do we have the required materials?
+	CBitStream missing;
+	u8 blockIndex = blob.get_u8("buildblob");
+	BuildBlock @block = getBlockByIndex(blob, blockIndex);
+	if (block !is null && !hasRequirements(blob.getInventory(), block.reqs, missing, not block.buildOnGround))
+		return false;
+	
 	// Are we trying to place in a bad pos?
 	CMap@ map = getMap();
 	Tile backtile = map.getTile(cursorPos);
