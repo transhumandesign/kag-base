@@ -143,7 +143,6 @@ void onTick(CBlob@ this)
 	if (buildtile <= 0)
 	{
 		bc.blockActive = false;
-		return;
 	}
 	
 	// check buildable
