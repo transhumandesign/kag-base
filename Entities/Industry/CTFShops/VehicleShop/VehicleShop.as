@@ -15,8 +15,6 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
-	AddIconToken("$vehicleshop_upgradebolts$", "BallistaBolt.png", Vec2f(32, 8), 1);
-
 	//INIT COSTS
 	InitCosts();
 
@@ -50,13 +48,12 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista_ammo);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Bomb Bolt Upgrade", "$vehicleshop_upgradebolts$", "upgradebolts", Descriptions::ballista_ammo_upgrade_gold, false);
-		s.spawnNothing = true;
+		ShopItem@ s = addShopItem(this, "Ballista Shells", "$mat_bomb_bolts$", "mat_bomb_bolts", "$mat_bomb_bolts$\n\n\n" + Descriptions::ballista_bomb_ammo, false, false);
+		s.crate_icon = 5;
 		s.customButton = true;
 		s.buttonwidth = 2;
 		s.buttonheight = 1;
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::ballista_ammo_upgrade_gold);
-		AddRequirement(s.requirements, "not tech", "bomb ammo", "Bomb Bolt", 1);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista_bomb_ammo);
 	}
 }
 
@@ -81,6 +78,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			if (name == "upgradebolts")
 			{
 				GiveFakeTech(getRules(), "bomb ammo", this.getTeamNum());
+			}
+			else if (name == "ballista")
+			{
+				// makes crate still drop gold if it breaks before it's unpacked
+				// Crate.as prevents gold from dropping if it dies after unpack
+				CBlob@ box = getBlobByNetworkID(item);
+				if (box !is null) box.set_s32("gold building amount", CTFCosts::ballista_gold);
 			}
 		}
 	}

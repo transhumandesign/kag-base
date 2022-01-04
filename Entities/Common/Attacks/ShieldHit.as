@@ -14,6 +14,7 @@ bool canBlockThisType(u8 type) // this function needs to use a tag on the hitter
 	       type == Hitters::arrow ||
 	       type == Hitters::bite ||
 	       type == Hitters::stab ||
+	       type == Hitters::cata_stones ||
 	       isExplosionHitter(type);
 }
 

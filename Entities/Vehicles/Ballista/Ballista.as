@@ -1,36 +1,13 @@
 #include "VehicleCommon.as"
 #include "ClassSelectMenu.as";
 #include "StandardRespawnCommand.as";
-#include "Requirements_Tech.as";
 #include "GenericButtonCommon.as";
 #include "Costs.as";
 
-//todo: move to include
-bool hasTech(CBlob@ this, const string &in name)
-{
-	CBitStream reqs, missing;
-	AddRequirement(reqs, "tech", "bomb ammo", "Bomb Ammo");
-
-	int thisteam = this.getTeamNum();
-
-	CPlayer@ player;
-	for (int i = 0; i < getPlayersCount(); i++)
-	{
-		@player = getPlayer(i);
-		if (player.getTeamNum() == thisteam && player.getBlob() !is null)
-			break;
-	}
-
-	if (player !is null && player.getBlob() !is null)
-	{
-		return hasRequirements_Tech(player.getBlob().getInventory(), reqs, missing);
-	}
-	return false;
-}
-
 // Ballista logic
 
-const u8 cooldown_time = 90;
+const u8 cooldown_time = 60;
+const u8 cooldown_time_bomb = 90;
 
 //naming here is kinda counter intuitive, but 0 == up, 90 == sideways
 const f32 high_angle = 20.0f;
@@ -47,6 +24,9 @@ void onInit(CBlob@ this)
 	InitCosts();
 	this.set_s32("gold building amount", CTFCosts::ballista_gold);
 
+	AddIconToken("$Normal_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 0);
+	AddIconToken("$Explosive_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 1);
+
 	Vehicle_Setup(this,
 	              30.0f, // move speed
 	              0.31f,  // turn speed
@@ -58,26 +38,37 @@ void onInit(CBlob@ this)
 	{
 		return;
 	}
-
-	v.max_charge_time = 80;
-	v.max_cooldown_time = cooldown_time;
-
-	//tech - bomb bolts
-	bool hasBomb = hasTech(this, "bomb ammo");
-	this.set_bool("bomb ammo", hasBomb);
-
-	Vehicle_SetupWeapon(this, v,
+	
+	// bolt ammo
+	Vehicle_AddAmmo(this, v,
 	                    cooldown_time, // fire delay (ticks)
 	                    1, // fire bullets amount
-	                    Vec2f(-6.0f, -8.0f), // fire position ffset
+	                    1, // fire cost
 	                    "mat_bolts", // bullet ammo config name
+	                    "Ballista Bolts", // name for ammo selection
 	                    "ballista_bolt", // bullet config name
 	                    "CatapultFire", // fire sound
 	                    "EmptyFire", // empty fire sound
-	                    Vehicle_Fire_Style::custom
+	                    Vehicle_Fire_Style::custom,
+	                    Vec2f(-6.0f, -8.0f), // fire position offset
+	                    80 // charge time
 	                   );
 
-	v.fire_cost_per_amount = hasBomb ? 2 : 1;
+	// explosive bolt ammo
+	Vehicle_AddAmmo(this, v,
+	                    cooldown_time_bomb, // fire delay (ticks)
+	                    1, // fire bullets amount
+	                    1, // fire cost
+	                    "mat_bomb_bolts", // bullet ammo config name
+	                    "Ballista Shells", // name for ammo selection
+	                    "ballista_bolt", // bullet config name
+	                    "CatapultFire", // fire sound
+	                    "EmptyFire", // empty fire sound
+	                    Vehicle_Fire_Style::custom,
+	                    Vec2f(-6.0f, -8.0f), // fire position offset
+	                    80 // charge time
+	                   );
+
 
 	Vehicle_SetupGroundSound(this, v, "WoodenWheelsRolling",  // movement sound
 	                         1.0f, // movement sound volume modifier   0.0f = no manipulation
@@ -91,7 +82,9 @@ void onInit(CBlob@ this)
 	this.getShape().SetOffset(Vec2f(0, 8));
 
 	Vehicle_SetWeaponAngle(this, low_angle, v);
-	this.set_string("autograb blob", "mat_bolts");
+
+	string[] autograb_blobs = {"mat_bolts", "mat_bomb_bolts"};
+	this.set("autograb blobs", autograb_blobs);
 
 	// auto-load on creation
 	if (getNet().isServer())
@@ -143,6 +136,10 @@ void onInit(CBlob@ this)
 		flag.SetRelativeZ(-0.8f);
 		flag.SetOffset(Vec2f(20.0f, -2.0f));
 	}
+
+	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
+	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 7, Vec2f(16, 16));
+	this.SetMinimapRenderAlways(false);
 }
 
 f32 getAngle(CBlob@ this, const u8 charge, VehicleInfo@ v)
@@ -244,14 +241,13 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (isOverlapping(this, caller) && !caller.isAttached())
 	{
-		if (!isAnotherRespawnClose(this) && !isFlipped(this))
-		{
-			caller.CreateGenericButton("$change_class$", Vec2f(0, -4), this, buildSpawnMenu, getTranslatedString("Change class"));
-		}
-
 		if (!Vehicle_AddFlipButton(this, caller) && caller.getTeamNum() == this.getTeamNum())
 		{
 			Vehicle_AddLoadAmmoButton(this, caller);
+		}
+		if (/*!isAnotherRespawnClose(this) &&*/ !isFlipped(this))
+		{
+			caller.CreateGenericButton("$change_class$", Vec2f(0, 1), this, buildSpawnMenu, getTranslatedString("Change class"));
 		}
 	}
 }
@@ -274,7 +270,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 		
 		// check for valid ammo
-		if (blob.getName() != v.bullet_name){
+		if (blob.getName() != v.getCurrentAmmo().bullet_name){
 			// output warning
 			warn("Attempted to launch invalid object!");
 			return;
@@ -288,17 +284,17 @@ bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool was
 {
 	v.firing = v.firing || isActionPressed;
 
-	bool hasammo = v.loaded_ammo > 0;
+	bool hasammo = v.getCurrentAmmo().loaded_ammo > 0;
 
 	u8 charge = v.charge;
 	if ((charge > 0 || isActionPressed) && hasammo)
 	{
-		if (charge < v.max_charge_time && isActionPressed)
+		if (charge < v.getCurrentAmmo().max_charge_time && isActionPressed)
 		{
 			charge++;
 			v.charge = charge;
 
-			u8 t = Maths::Round(float(v.max_charge_time) * 0.66f);
+			u8 t = Maths::Round(float(v.getCurrentAmmo().max_charge_time) * 0.66f);
 			if ((charge < t && charge % 10 == 0) || (charge >= t && charge % 5 == 0))
 				this.getSprite().PlaySound("/LoadingTick");
 
@@ -318,14 +314,16 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 	{
 		u8 charge_prop = _charge;
 
-		f32 charge = 5.0f + 15.0f * (float(charge_prop) / float(v.max_charge_time));
+		f32 charge = 5.0f + 15.0f * (float(charge_prop) / float(v.getCurrentAmmo().max_charge_time));
 
 		f32 angle = getAngle(this, _charge, v) + this.getAngleDegrees();
 		Vec2f vel = Vec2f(0.0f, -charge).RotateBy(angle);
 		bullet.setVelocity(vel);
 		bullet.setPosition(bullet.getPosition() + vel);
 
-		if (this.get_bool("bomb ammo"))
+		bool bomb_bolts_selected = v.getCurrentAmmo().ammo_name == "mat_bomb_bolts";
+
+		if (bomb_bolts_selected)
 		{
 			bullet.Tag("bomb ammo");
 			bullet.Sync("bomb ammo", true);
@@ -334,7 +332,7 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 
 	v.last_charge = _charge;
 	v.charge = 0;
-	v.cooldown_time = cooldown_time;
+	v.cooldown_time = v.getCurrentAmmo().fire_delay;
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
