@@ -172,18 +172,22 @@ void onTick(CBlob@ this)
 		}
 	}
 
+	if (getHUD().hasButtons())
+		return;
+	
 	// place block
-	if (!getHUD().hasButtons() && this.isKeyPressed(key_action1))
+	if (this.isKeyPressed(key_action1))
 	{
-		if (bc.cursorClose && bc.buildable && bc.supported)
+		if (bc.cursorClose && bc.hasReqs && bc.buildable && bc.supported)
 		{
 			// hack for making placement work on localhost
 			if (isBuildDelayed(this) && isServer() && isClient())
 				return;
-			
+
 			CBitStream params;
 			params.write_Vec2f(bc.tileAimPos);
 			this.SendCommand(this.getCommandID("placeBlock"), params);
+
 			u32 delay = this.get_u32("build delay");
 			SetBuildDelay(this, block.tile < 255 ? delay : delay / 3);
 			bc.blockActive = false;

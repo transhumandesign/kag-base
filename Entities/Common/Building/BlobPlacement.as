@@ -344,8 +344,13 @@ void onTick(CBlob@ this)
 			CBitStream params;
 			params.write_Vec2f(bc.tileAimPos);
 			this.SendCommand(this.getCommandID("placeBlob"), params);
-			u32 delay = this.get_u32("build delay");
-			SetBuildDelay(this, delay);
+
+			if (carryBlob !is null)
+			{
+				u32 delay = this.get_u32("build delay");
+				SetBuildDelay(this, delay);
+			}
+
 			bc.blobActive = false;
 		}
 		else if (this.isKeyJustPressed(key_action1))
