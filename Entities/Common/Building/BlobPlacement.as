@@ -247,38 +247,31 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	bc.blobActive = false;
-
-	if (carryBlob is null)
-	{
-		return;
-	}
-
-	if (isBuildDelayed(this) && carryBlob !is null)
-	{
-		// don't draw blob while waiting to build
-		carryBlob.SetVisible(false);
-	}
-
 	SetTileAimpos(this, bc);
-	// check buildable
-
-	bc.buildable = false;
-	bc.supported = false;
-	bc.hasReqs = true;
 
 	u8 blockIndex = this.get_u8("buildblob");
 	BuildBlock @block = getBlockByIndex(this, blockIndex);
-	if (block !is null) {
-		bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
-	}
 
 	if (carryBlob !is null)
-	{
-		CMap@ map = this.getMap();
-		bool snap = carryBlob.isSnapToGrid();
+	{	
+		bc.buildable = false;
+		bc.supported = false;
+		bc.hasReqs = false;
 
-		carryBlob.SetVisible(!carryBlob.hasTag("temp blob"));
+		bc.blobActive = true;
+		bc.blockActive = false;
+
+		CMap@ map = this.getMap();
+
+		// don't draw blob while waiting to build
+		if (isBuildDelayed(this) || carryBlob.hasTag("temp blob"))
+		{
+			carryBlob.SetVisible(false);
+		}
+
+		if (block !is null) {
+			bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
+		}
 
 		bool isLadder = false;
 		if (carryBlob.getName() == "ladder")
@@ -286,60 +279,53 @@ void onTick(CBlob@ this)
 			isLadder = true;
 		}
 
-		if (snap) // activate help line
-		{
-			bc.blobActive = true;
-			bc.blockActive = false;
-		}
-
+		// check buildable
 		if (bc.cursorClose)
 		{
-			if (snap) // if snaps to grid make cursor
+			Vec2f halftileoffset(map.tilesize * 0.5f, map.tilesize * 0.5f);
+
+			CMap@ map = this.getMap();
+			TileType buildtile = 256;   // something else than a tile
+			Vec2f bottomPos = getBottomOfCursor(bc.tileAimPos, carryBlob);
+
+			bool overlapped;
+
+			if (isLadder)
 			{
-				Vec2f halftileoffset(map.tilesize * 0.5f, map.tilesize * 0.5f);
+				Vec2f ontilepos = halftileoffset + bc.tileAimPos;
 
-				CMap@ map = this.getMap();
-				TileType buildtile = 256;   // something else than a tile
-				Vec2f bottomPos = getBottomOfCursor(bc.tileAimPos, carryBlob);
+				overlapped = false;
+				CBlob@[] b;
 
-				bool overlapped;
+				f32 tsqr = halftileoffset.LengthSquared() - 1.0f;
 
-				if (isLadder)
+				if (map.getBlobsInRadius(ontilepos, 0.5f, @b))
 				{
-					Vec2f ontilepos = halftileoffset + bc.tileAimPos;
-
-					overlapped = false;
-					CBlob@[] b;
-
-					f32 tsqr = halftileoffset.LengthSquared() - 1.0f;
-
-					if (map.getBlobsInRadius(ontilepos, 0.5f, @b))
+					for (uint nearblob_step = 0; nearblob_step < b.length && !overlapped; ++nearblob_step)
 					{
-						for (uint nearblob_step = 0; nearblob_step < b.length && !overlapped; ++nearblob_step)
+						CBlob@ blob = b[nearblob_step];
+
+						string bname = blob.getName();
+						if (blob is carryBlob || blob.hasTag("player") || !isBlocking(blob) || !blob.getShape().isStatic())
 						{
-							CBlob@ blob = b[nearblob_step];
-
-							string bname = blob.getName();
-							if (blob is carryBlob || blob.hasTag("player") || !isBlocking(blob) || !blob.getShape().isStatic())
-							{
-								continue;
-							}
-
-							overlapped = (blob.getPosition() - ontilepos).LengthSquared() < tsqr;
+							continue;
 						}
+
+						overlapped = (blob.getPosition() - ontilepos).LengthSquared() < tsqr;
 					}
 				}
-				else
-				{
-					overlapped = carryBlob.isOverlappedAtPosition(bottomPos, carryBlob.getAngleDegrees());
-				}
-
-				bc.buildableAtPos = isBuildableAtPos(this, bottomPos, buildtile, carryBlob, bc.sameTileOnBack) && !overlapped;
-				bc.rayBlocked = isBuildRayBlocked(this.getPosition(), bc.tileAimPos + halftileoffset, bc.rayBlockedPos);
-				bc.buildable = bc.buildableAtPos && !bc.rayBlocked;
-				bc.supported = carryBlob.getShape().getConsts().support > 0 ? map.hasSupportAtPos(bc.tileAimPos) : true;
-				//printf("bc.buildableAtPos " + bc.buildableAtPos + " bc.supported " + bc.supported );
 			}
+			else
+			{
+				overlapped = carryBlob.isOverlappedAtPosition(bottomPos, carryBlob.getAngleDegrees());
+			}
+
+			bc.buildableAtPos = isBuildableAtPos(this, bottomPos, buildtile, carryBlob, bc.sameTileOnBack) && !overlapped;
+			bc.rayBlocked = isBuildRayBlocked(this.getPosition(), bc.tileAimPos + halftileoffset, bc.rayBlockedPos);
+			bc.buildable = bc.buildableAtPos && !bc.rayBlocked;
+			bc.supported = carryBlob.getShape().getConsts().support > 0 ? map.hasSupportAtPos(bc.tileAimPos) : true;
+			//printf("bc.buildableAtPos " + bc.buildableAtPos + " bc.supported " + bc.supported );
+		
 		}
 	}
 	
