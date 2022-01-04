@@ -9,9 +9,9 @@ void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 {
 	TileType buildtile = this.get_TileType("buildtile");
 	u8 index = getBlockIndexByTile(this, buildtile);
-	BuildBlock @bc = getBlockByIndex(this, index);
+	BuildBlock @block = getBlockByIndex(this, index);
 
-	if (bc is null)
+	if (block is null)
 	{
 		warn("BuildBlock is null " + index);
 		return;
@@ -27,8 +27,8 @@ void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 
 	CInventory@ inv = this.getInventory();
 
-	bool validTile = bc.tile > 0;
-	bool hasReqs = hasRequirements(inv, bc.reqs, missing);
+	bool validTile = block.tile > 0;
+	bool hasReqs = hasRequirements(inv, block.reqs, missing);
 	bool passesChecks = serverTileCheck(this, index, cursorPos);
 
 	// don't need these warns since it's up to the server to validate, not client
@@ -46,13 +46,13 @@ void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 	if (validTile && hasReqs && passesChecks)
 	{
 		DestroyScenary(cursorPos, cursorPos);
-		server_TakeRequirements(inv, bc.reqs);
-		getMap().server_SetTile(cursorPos, bc.tile);
+		server_TakeRequirements(inv, block.reqs);
+		getMap().server_SetTile(cursorPos, block.tile);
 
 		u32 delay = this.get_u32("build delay");
 		SetBuildDelay(this, delay);
 
-		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), bc.tile));
+		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), block.tile));
 	}
 }
 
@@ -161,7 +161,7 @@ void onTick(CBlob@ this)
 			bc.rayBlocked = isBuildRayBlocked(this.getPosition(), bc.tileAimPos + halftileoffset, bc.rayBlockedPos);
 			bc.buildable = bc.buildableAtPos && !bc.rayBlocked;
 
-			bc.supported = bc.buildable && map.hasSupportAtPos(bc.tileAimPos);
+			bc.supported = map.hasSupportAtPos(bc.tileAimPos);
 		}
 
 		// place block
