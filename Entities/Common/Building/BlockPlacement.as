@@ -50,7 +50,7 @@ void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 		getMap().server_SetTile(cursorPos, block.tile);
 
 		u32 delay = this.get_u32("build delay");
-		SetBuildDelay(this, delay);
+		SetBuildDelay(this, block.tile < 255 ? delay : delay / 3);
 
 		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), block.tile));
 	}
@@ -175,6 +175,10 @@ void onTick(CBlob@ this)
 	{
 		if (bc.cursorClose && bc.buildable && bc.supported)
 		{
+			// hack for making placement work on localhost
+			if (isBuildDelayed(this) && isServer() && isClient())
+				return;
+			
 			CBitStream params;
 			params.write_Vec2f(bc.tileAimPos);
 			this.SendCommand(this.getCommandID("placeBlock"), params);

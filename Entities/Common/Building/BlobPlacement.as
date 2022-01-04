@@ -346,11 +346,14 @@ void onTick(CBlob@ this)
 	{
 		if (bc.cursorClose && bc.hasReqs && bc.buildable && bc.supported)
 		{
+			// hack for making placement work on localhost
+			if (isBuildDelayed(this) && isServer() && isClient())
+				return;
+			
 			CBitStream params;
 			params.write_Vec2f(bc.tileAimPos);
 			this.SendCommand(this.getCommandID("placeBlob"), params);
-
-			u32 delay = 2 * this.get_u32("build delay");
+			u32 delay = this.get_u32("build delay");
 			SetBuildDelay(this, delay);
 			bc.blobActive = false;
 		}
