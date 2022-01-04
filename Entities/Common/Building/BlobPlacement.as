@@ -11,34 +11,34 @@
 //server-only
 void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 {
-	if (blob !is null)
+	if (blob is null)
+		return;
+
+	if (!serverBlobCheck(this, blob, cursorPos))
+		return;
+
+	u32 delay = this.get_u32("build delay");
+	SetBuildDelay(this, delay);
+
+	CShape@ shape = blob.getShape();
+	shape.server_SetActive(true);
+
+	blob.Tag("temp blob placed");
+	if (blob.hasTag("has damage owner"))
 	{
-		if (!serverBlobCheck(this, blob, cursorPos))
-			return;
-
-		u32 delay = this.get_u32("build delay");
-		SetBuildDelay(this, delay);
-
-		CShape@ shape = blob.getShape();
-		shape.server_SetActive(true);
-
-		blob.Tag("temp blob placed");
-		if (blob.hasTag("has damage owner"))
-		{
-			blob.SetDamageOwnerPlayer(this.getPlayer());
-		}
-
-		if (this.server_DetachFrom(blob))
-		{
-			blob.setPosition(cursorPos);
-			if (blob.isSnapToGrid())
-			{
-				shape.SetStatic(true);
-			}
-		}
-
-		DestroyScenary(cursorPos, cursorPos);
+		blob.SetDamageOwnerPlayer(this.getPlayer());
 	}
+
+	if (this.server_DetachFrom(blob))
+	{
+		blob.setPosition(cursorPos);
+		if (blob.isSnapToGrid())
+		{
+			shape.SetStatic(true);
+		}
+	}
+
+	DestroyScenary(cursorPos, cursorPos);
 }
 
 // Returns true if pos is valid
