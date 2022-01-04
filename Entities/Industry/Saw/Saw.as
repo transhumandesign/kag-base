@@ -125,10 +125,11 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 
 	tobeblended.Tag("sawed");
 
-	// on saw player or dead body - disable the saw
+	// on saw player or dead body or team bomb - disable the saw
 	if (
 		(tobeblended.getPlayer() !is null || //player
-		(tobeblended.hasTag("flesh") && tobeblended.hasTag("flesh"))) && //dead body
+		(tobeblended.getName() == "bomb") || // bomb
+		(tobeblended.hasTag("flesh"))) && //dead body
 		tobeblended.getTeamNum() == this.getTeamNum()) //same team as saw
 	{
 		CBitStream params;
