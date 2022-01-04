@@ -240,7 +240,7 @@ void onTick(CBlob@ this)
 				{
 					server_PutIn(this, this, carryBlob);
 				}
-				else
+				else if (this.get_bool("release click")) // we haven't already clicked the menu
 				{
 					// send cycle command
 					CBitStream params;

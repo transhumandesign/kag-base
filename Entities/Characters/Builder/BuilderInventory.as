@@ -42,7 +42,7 @@ const u8 GRID_PADDING = 12;
 const Vec2f MENU_SIZE(3, 4);
 const u32 SHOW_NO_BUILD_TIME = 90;
 
-const bool QUICK_SWAP_ENABLED = false;
+const bool QUICK_SWAP_ENABLED = true;
 
 void onInit(CInventory@ this)
 {
