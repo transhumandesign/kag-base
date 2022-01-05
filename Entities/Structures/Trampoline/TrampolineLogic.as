@@ -135,7 +135,13 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			cooldowns.push_back(cooldown);
 
 			Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
-			velocity.RotateBy(angle);
+
+			// Keep the blob's perpendicular (to tramp angle) velocity
+			velocity_old.RotateBy(-1.0 * angle);
+			velocity.x = velocity_old.x;
+			// velocity_old.RotateBy(angle); // change velocity_old back?
+
+			velocity.RotateBy(angle); // Match tramp rotation
 
 			blob.setVelocity(velocity);
 
