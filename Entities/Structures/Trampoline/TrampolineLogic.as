@@ -7,6 +7,8 @@ namespace Trampoline
 	const u8 SCALAR = 10;
 	const bool SAFETY = true;
 	const int COOLDOWN_LIMIT = 8;
+	const bool PHYSICS = true; 				// Whether to use bounce factor
+	const float PERPENDICULAR_BOUNCE = 0.80f; // % of perpendicular velocity to keep
 }
 
 class TrampolineCooldown{
@@ -136,10 +138,13 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 			Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
 
-			// Keep the blob's perpendicular (to tramp angle) velocity
-			velocity_old.RotateBy(-1.0 * angle);
-			velocity.x = velocity_old.x;
-			// velocity_old.RotateBy(angle); // change velocity_old back?
+			if (Trampoline::PHYSICS)
+			{
+				// Keep the blob's perpendicular (to tramp angle) velocity
+				velocity_old.RotateBy(-1.0 * angle);
+				velocity.x = velocity_old.x * Trampoline::PERPENDICULAR_BOUNCE;
+				// velocity_old.RotateBy(angle); // change velocity_old back?
+			}
 
 			velocity.RotateBy(angle); // Match tramp rotation
 
