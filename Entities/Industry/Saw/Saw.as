@@ -2,6 +2,7 @@
 
 #include "Hitters.as"
 #include "GenericButtonCommon.as"
+#include "ParticleSparks.as"
 
 const string toggle_id = "toggle_power";
 const string sawteammate_id = "sawteammate";
@@ -243,13 +244,42 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 	if ((blob.getName() == "waterbomb" || blob.getName() == "bomb") && blob.hasTag("activated"))
 	{
-		f32 ydiff = Maths::Max(this.getPosition().y - blob.getPosition().y + blob.getHeight(), 0.0f);
-		f32 ratio = 1.0f - Maths::Min(ydiff/this.getHeight(), 1.0f);
+		Vec2f oldVelocity = blob.getVelocity();
 
-		this.getSprite().PlaySound("SwordCling");
+		// bombs very close to the top of the saw have a ratio of 0 and most of the rest has a ratio of 1 
+		// using the old bomb position is slightly more reliable when bombs fall from above
+		f32 ydiff = Maths::Max(this.getPosition().y - blob.getOldPosition().y + blob.getHeight(), 0.0f);
+		f32 ratio = Maths::Clamp01(3.0f * (1.0f - ydiff/this.getHeight()));
+		
+		// give a horizontal boost to the bombs coming from the top based on their original velocity
+		f32 xboost = 60.0f * Maths::Clamp(oldVelocity.x / 8.0f, -1.0f, 1.0f) * (1.0f - ratio);
+
+		// play a hit sound with a pitch depending on some parameters for some audio clues
+		const f32 typePitchBoost = ((blob.getName() == "waterbomb") ? 0.25f : 0.0f);
+		const f32 bottomHitPitchBoost = ratio * 0.06f;
+		this.getSprite().PlaySound("ShieldHit", 1.0f, 1.07f + bottomHitPitchBoost + typePitchBoost);
+
+		// bear in mind bombs have custom physics that cap velocity *eventually*
+		// this is hacky but gives enough of a nice short boost
+		Vec2f newVelocity(
+			// mostly random x position, but keep some horizontal momentum when coming from the top
+			70.0f * ((float(XORRandom(100)) / 100.0f) - 0.5f) + xboost,
+			// small vertical boost to bombs coming from the top, big boost with some randomness for the others
+			-(Maths::Max(80.0f + XORRandom(30), 500.0f * ratio - XORRandom(300)))
+		);
+		
+		// make some sparks that go towards the direction the bomb was headed towards
+		sparks(blob.getPosition(), 180.0f - oldVelocity.Angle(), 0.5f, 60.0f, 0.5f);
+		// make some sparks that go the opposite direction the bomb is going to go *horizontally*
+		// this gives the nice feel that sparks were emitted from the collision point
+		sparks(blob.getPosition(), newVelocity.Angle(), 2.0f, 20.0f, 3.0f);
 
 		blob.setVelocity(Vec2f_zero);
-		blob.AddForce(Vec2f(22-XORRandom(44), -Maths::Max(100.0f, 400.0f * ratio)));
+		blob.AddForce(newVelocity);
+
+		// shorten the fuse quite significantly by a semi-random amount
+		const int fuseTicksLeft = blob.get_s32("bomb_timer") - getGameTime();
+		blob.set_s32("bomb_timer", getGameTime() + Maths::Min(fuseTicksLeft / 3 + XORRandom(6), fuseTicksLeft));
 	}
 }
 
