@@ -136,6 +136,10 @@ void onInit(CBlob@ this)
 		flag.SetRelativeZ(-0.8f);
 		flag.SetOffset(Vec2f(20.0f, -2.0f));
 	}
+
+	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
+	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 7, Vec2f(16, 16));
+	this.SetMinimapRenderAlways(false);
 }
 
 f32 getAngle(CBlob@ this, const u8 charge, VehicleInfo@ v)
@@ -241,7 +245,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		{
 			Vehicle_AddLoadAmmoButton(this, caller);
 		}
-		if (!isAnotherRespawnClose(this) && !isFlipped(this))
+		if (/*!isAnotherRespawnClose(this) &&*/ !isFlipped(this))
 		{
 			caller.CreateGenericButton("$change_class$", Vec2f(0, 1), this, buildSpawnMenu, getTranslatedString("Change class"));
 		}

@@ -41,6 +41,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		case Hitters::arrow:
 			scale = 0.0f; break;
 
+		case Hitters::cata_stones:
+			scale = 0.25f; break;
+
 		default: break;
 	}
 
