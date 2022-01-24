@@ -58,7 +58,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::vehicleshop_gold);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Storage Cache", getTeamIcon("storage", "Storage.png", team_num, Vec2f(40, 24)), "storage", Descriptions::storagecache);
+		ShopItem@ s = addShopItem(this, "Storage Cache", getTeamIcon("storage", "Storage.png", team_num, Vec2f(40, 24), 3), "storage", Descriptions::storagecache);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::storage_stone);
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::storage_wood);
 	}
