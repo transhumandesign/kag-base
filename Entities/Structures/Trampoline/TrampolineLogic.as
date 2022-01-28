@@ -39,30 +39,16 @@ void onTick(CBlob@ this)
 	CBlob@ holder = point.getOccupied();
 	if (holder is null) return;
 
-	Vec2f ray = holder.getAimPos() - this.getPosition();
-	ray.Normalize();
-
-	f32 angle = ray.Angle();
-
-	if (point.isKeyPressed(key_action2))
+	f32 angle;
+	if (this.hasTag("activated") && this.exists("freeze_angle"))
 	{
-		// set angle to what was on previous tick
-		angle = this.get_f32("old angle");
-		this.setAngleDegrees(angle);
-	}
-	else if (point.isKeyPressed(key_action1))
-	{
-		// rotate in 45 degree steps
-		angle = Maths::Floor((angle - 67.5f) / 45) * 45;
-		this.setAngleDegrees(-angle);
+		angle = this.get_f32("freeze_angle");
 	}
 	else
 	{
-		// follow cursor normally
-		this.setAngleDegrees(-angle + 90);
+		angle = getHoldAngle(this, holder);
 	}
-	
-	this.set_f32("old angle", this.getAngleDegrees());
+	this.setAngleDegrees(angle);
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1, Vec2f point2)
@@ -150,6 +136,27 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	}
 }
 
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("activate"))
+	{
+		if (getNet().isServer())
+		{
+			AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
+			CBlob@ holder = point.getOccupied();
+			if (holder is null) return;
+
+			this.set_f32("freeze_angle", getHoldAngle(this, holder));
+			this.Sync("freeze_angle", true);
+		}
+	}
+}
+
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+{
+	this.Untag("activated");
+}
+
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return blob.getShape().isStatic();
@@ -158,4 +165,9 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return !this.hasTag("no pickup");
+}
+
+f32 getHoldAngle(CBlob@ this, CBlob@ holder)
+{
+	return -1.0f * (holder.getAimPos() - this.getPosition()).Angle() + 90;
 }
