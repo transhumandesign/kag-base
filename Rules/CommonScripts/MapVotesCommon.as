@@ -72,7 +72,7 @@ class MapVotesMenu
 		isSetup = false;
 
 		@button1 = MapVoteButton(false);
-		@button2 = MapVoteButton(true);
+		@button2 = MapVoteButton(false);
 		@button3 = MapVoteButton(false);
 
 		if (isServer())
@@ -124,15 +124,7 @@ class MapVotesMenu
 
 		for (uint i = 1; i <= 3; ++i)
 		{
-			if (i == 2)
-			{
-				button2.RefreshRandomButton(menuSize.x, ButtonSize);
-			}
-			else
-			{
-				getButton(i).RefreshButton(menuSize.x, ButtonSize);
-			}
-
+			getButton(i).RefreshButton(menuSize.x, ButtonSize);
 			menuSize.x += ButtonSize.x + 30;
 			menuSize.y = Maths::Max(ButtonSize.y + 128, menuSize.y);
 		}
@@ -197,6 +189,7 @@ class MapVotesMenu
 	void Randomize()
 	{
 		string map1name;
+		string map2name;
 		string map3name;
 		string mapcycle = sv_mapcycle;
 		if (mapcycle == "")
@@ -219,7 +212,7 @@ class MapVotesMenu
 			const int currentMapNum = map_names.find(currentMap);
 
 			int arrayleng = map_names.length();
-			if (arrayleng > 4)
+			if (arrayleng > 5)
 			{
 				//remove the current map first
 				if (currentMapNum != -1)
@@ -231,6 +224,12 @@ class MapVotesMenu
 					if (oldMap1Num != -1)
 						map_names.removeAt(oldMap1Num);
 				}
+				else if (map2name != currentMap)
+				{	// remove the old button 2
+					const int oldMap2Num = map_names.find(map2name);
+					if (oldMap2Num != -1)
+						map_names.removeAt(oldMap2Num);
+				}
 				else if (map3name != currentMap)
 				{	// remove the old button 3
 					const int oldMap3Num = map_names.find(map3name);
@@ -241,9 +240,11 @@ class MapVotesMenu
 				// random based on what's left
 				map1name = map_names[random.NextRanged(map_names.length())];
 				map_names.removeAt(map_names.find(map1name));
+				map2name = map_names[random.NextRanged(map_names.length())];
+				map_names.removeAt(map_names.find(map2name));
 				map3name = map_names[random.NextRanged(map_names.length())];
 			}
-			else if (arrayleng >= 3)
+			else if (arrayleng >= 4)
 			{
 				//remove the current map
 				if (currentMapNum != -1)
@@ -251,14 +252,17 @@ class MapVotesMenu
 				// random based on what's left
 				map1name = map_names[random.NextRanged(map_names.length())];
 				map_names.removeAt(map_names.find(map1name));
+				map2name = map_names[random.NextRanged(map_names.length())];
+				map_names.removeAt(map_names.find(map2name));
 				map3name = map_names[random.NextRanged(map_names.length())];
 			}
-			else if (arrayleng == 2)
+			else if (arrayleng == 3)
 			{
 				map1name = map_names[0];
-				map3name = map_names[1];
+				map2name = map_names[1];
+				map3name = map_names[2];
 			}
-			else //if (arrayleng <= 1)
+			else //if (arrayleng <= 2)
 			{
 				LoadNextMap(); // we don't care about voting, get me out
 			}
@@ -272,18 +276,27 @@ class MapVotesMenu
 				string mapName = name[name.length() - 1];
 				map1name = mapName.substr(0,mapName.length() - 1);
 			}
+			temptest = map2name.substr(map2name.length() - 1, map2name.length() - 1);
+			if (temptest == ")")
+			{
+				string[] name = map2name.split(' (');
+				string mapName = name[name.length() - 1];
+				map2name = mapName.substr(0,mapName.length() - 1);
+			}
 			temptest = map3name.substr(map3name.length() - 1, map3name.length() - 1);
 			if (temptest == ")")
 			{
-				string[] name = map1name.split(' (');
+				string[] name = map3name.split(' (');
 				string mapName = name[name.length() - 1];
 				map3name = mapName.substr(0,mapName.length() - 1);
 			}
 		}
 
 		button1.filename = map1name;
+		button2.filename = map2name;
 		button3.filename = map3name;
 		button1.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button1.filename));
+		button2.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button2.filename));
 		button3.shortname = getFilenameWithoutExtension(getFilenameWithoutPath(button3.filename));
 	}
 
@@ -293,8 +306,10 @@ class MapVotesMenu
 
 		CBitStream params;
 		params.write_string(button1.filename);
+		params.write_string(button2.filename);
 		params.write_string(button3.filename);
 		params.write_string(button1.shortname);
+		params.write_string(button2.shortname);
 		params.write_string(button3.shortname);
 		params.write_u8(mostVoted);
 
@@ -340,8 +355,9 @@ class MapVotesMenu
 			switch (mostVoted)
 			{
 				case 1: winner = button1.shortname; button1.State = ButtonStates::WonVote; break;
+				case 2: winner = button2.shortname; button2.State = ButtonStates::WonVote; break;
 				case 3:	winner = button3.shortname; button3.State = ButtonStates::WonVote; break;
-				default: winner = getTranslatedString("A Random Map"); button2.State = ButtonStates::WonVote; break;
+				default: winner = getTranslatedString("A Random Map"); break;
 			}
 			string text = getTranslatedString("Map Voting Has Ended.. Loading: {MAP}").replace("{MAP}", winner);
 		 	GUI::DrawText(text, topLeftCorner + Vec2f(22, 10), color_white);

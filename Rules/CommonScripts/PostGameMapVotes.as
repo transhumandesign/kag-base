@@ -186,8 +186,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	else if (getNet().isClient() && cmd == this.getCommandID(voteSyncTag))
 	{
 		mvm.button1.filename = params.read_string();
+		mvm.button2.filename = params.read_string();
 		mvm.button3.filename = params.read_string();
 		mvm.button1.shortname = params.read_string();
+		mvm.button2.shortname = params.read_string();
 		mvm.button3.shortname = params.read_string();
 		mvm.mostVoted = params.read_u8();
 
@@ -214,7 +216,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		{
 			CreateMapTexture(mvm.button1.shortname, mvm.button1.filename);
 		}
-
+		if (!Texture::exists(mvm.button2.shortname))
+		{
+			CreateMapTexture(mvm.button2.shortname, mvm.button2.filename);
+		}
 		if (!Texture::exists(mvm.button3.shortname))
 		{
 			CreateMapTexture(mvm.button3.shortname, mvm.button3.filename);
@@ -224,12 +229,15 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (getNet().isServer() && cmd == this.getCommandID(voteEndTag))
 	{
-		tcpr("(MapVotes) Map1: "+mvm.button1.shortname+" = "+mvm.votes1.length()+" Map2: "+mvm.button3.shortname+" = "+mvm.votes3.length()+" Random = "+mvm.votes2.length());
+		tcpr("(MapVotes) Map1: " + mvm.button1.shortname + " = " + mvm.votes1.length() +
+					   " Map2: " + mvm.button2.shortname + " = " + mvm.votes2.length() +
+					   " Map3: " + mvm.button3.shortname + " = " + mvm.votes3.length());
 
 		u8 mostVoted = params.read_u8();
 		switch (mostVoted)
 		{
 			case 1: LoadMap(mvm.button1.filename); break;
+			case 2: LoadMap(mvm.button2.filename); break;
 			case 3:	LoadMap(mvm.button3.filename); break;
 			default: LoadNextMap(); break;
 		}
