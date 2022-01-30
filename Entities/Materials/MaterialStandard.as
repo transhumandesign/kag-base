@@ -13,6 +13,8 @@
 
 void onInit(CBlob@ this)
 {
+  this.AddScript("OffscreenThrottle.as");
+
   if (getNet().isServer())
   {
     this.server_setTeamNum(-1);
