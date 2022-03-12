@@ -37,7 +37,7 @@ void onInit(CBlob@ this)
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
 	f32 hp = this.getHealth();
-	bool repaired = hp > oldHealth ? true : false;
+	bool repaired = (hp > oldHealth);
 	MakeDamageFrame(this, repaired);
 }
 
