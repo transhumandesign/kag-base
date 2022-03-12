@@ -196,7 +196,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
 	f32 hp = this.getHealth();
-	bool repaired = hp > oldHealth ? true : false;
+	bool repaired = (hp > oldHealth);
 	MakeDamageFrame(this, repaired);
 }
 
