@@ -12,6 +12,6 @@ void onTick(CRules@ this)
 	{
 		CPlayer@ p = getPlayer(a);
 		if(p is null) continue;
-	if(p.getCoins() > coin_cap) p.server_setCoins(coin_cap);
+		if(p.getCoins() > coin_cap) p.server_setCoins(coin_cap);
 	}
 }  
