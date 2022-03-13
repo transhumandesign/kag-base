@@ -21,6 +21,9 @@ void onInit(CRules@ this)
 		this.set_s16("snow_render_id", 0);
 	}
 
+	// no coin cap during christmas holidays
+	this.Tag("remove coincap");
+
 	this.addCommandID("xmas sound");
 
 	onRestart(this);
