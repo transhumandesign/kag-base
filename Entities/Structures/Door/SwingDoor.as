@@ -223,7 +223,6 @@ void MakeDamageFrame(CBlob@ this, bool repaired=false)
 
 		if(repaired)
 		{
-			onInit(this);
 			sprite.PlaySound("/build_door.ogg");
 		}
 	}
