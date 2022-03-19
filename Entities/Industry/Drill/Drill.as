@@ -307,7 +307,7 @@ void onTick(CBlob@ this)
 
 								if (isServer())
 								{
-									if (heat_max - int(heat) < high_damage_window) // are we at high heat? more damamge!
+									if (int(heat) >= heat_max - high_damage_window) // are we at high heat? more damage!
 									{
 										attack_dam += 0.5f;
 									}
