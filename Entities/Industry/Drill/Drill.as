@@ -14,6 +14,7 @@ const string buzz_prop = "drill timer";
 
 const string heat_prop = "drill heat";
 const u8 heat_max = 150;
+const u8 heat_drop = 140;
 const u8 high_damage_window = 40; // at how much heat before max drill deals increased damage
 
 const string last_drill_prop = "drill last active";
@@ -92,7 +93,7 @@ bool canBePutInInventory( CBlob@ this, CBlob@ inventoryBlob )
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
-	return (this.get_u8(heat_prop) < heat_max - heat_add * 1.5f);
+	return (this.get_u8(heat_prop) < heat_drop);
 }
 
 void onThisRemoveFromInventory( CBlob@ this, CBlob@ inventoryBlob )
@@ -198,7 +199,7 @@ void onTick(CBlob@ this)
 
 		AimAtMouse(this, holder); // aim at our mouse pos
 
-		if (int(heat) >= heat_max - (heat_add * 1.5))
+		if (int(heat) >= heat_drop)
 		{
 			makeSteamPuff(this, 1.5f, 3, false);
 			this.server_Hit(holder, holder.getPosition(), Vec2f(), 0.25f, Hitters::burn, true);
