@@ -196,12 +196,6 @@ void onTick(CBlob@ this)
 
 		AimAtMouse(this, holder); // aim at our mouse pos
 
-		// cool faster if holder is moving
-		if (heat > 0 && holder.getShape().vellen > 0.01f && getGameTime() % 4 == 0)
-		{
-			heat--;
-		}
-
 		if (int(heat) >= heat_max - (heat_add * 1.5))
 		{
 			makeSteamPuff(this, 1.5f, 3, false);
