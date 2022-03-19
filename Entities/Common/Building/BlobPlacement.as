@@ -92,6 +92,33 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repa
 		return false;
 	}
 
+	// Are we trying to repair something we aren't supposed to?
+	if (repairing)
+	{
+		CBlob@[] blobsAtPos;
+		map.getBlobsAtPosition(cursorPos + Vec2f(1, 1), blobsAtPos);
+
+		for (int i = 0; i < blobsAtPos.size(); i++)
+		{
+			CBlob@ blobAtPos = blobsAtPos[i];
+			
+			if (blobAtPos !is null && blobAtPos.getHealth() > 0)
+			{
+				// Are we trying to repair a different blob?
+				if (blobAtPos.getName() != blobToPlace.getName())
+				{
+					return false;
+				}
+
+				// Are we trying to repair something at full health?
+				if (blobAtPos.getHealth() == blobAtPos.getInitialHealth())
+				{
+					return false;
+				}
+			}
+		}
+	}
+
 	return true;
 } 
 
@@ -492,10 +519,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		CBlob @repairBlob = getMap().getBlobAtPosition(pos);
 
-		if (carryBlob !is null && repairBlob !is null)
+		if (carryBlob !is null)
 		{
-			PlaceBlob(this, carryBlob, pos, true, repairBlob);
-			SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), repairBlob.getName()));
+			// the getHealth() is here because apparently a blob isn't null for a tick (?) after being destroyed
+			bool repairing = (repairBlob !is null && repairBlob.getHealth() > 0);
+
+			if (repairing) // is there a blobtile here?
+			{
+				PlaceBlob(this, carryBlob, pos, true, repairBlob);
+				SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), repairBlob.getName()));
+			}
+			else // there's nothing here so we can place a new one
+			{
+				PlaceBlob(this, carryBlob, pos);
+				SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), carryBlob.getName()));
+			}
 		}
 	}
 	else if (cmd == this.getCommandID("settleLadder"))

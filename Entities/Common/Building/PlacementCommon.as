@@ -356,7 +356,9 @@ bool fakeHasTileSolidBlobs(Vec2f cursorPos, bool toPlaceIsLadder=false)
 	{
 		CBlob@ blobAtPos = blobsAtPos[i];
 		
-		if (blobAtPos !is null && (
+		// the getHealth() check is here because apparently a blob isn't null for a tick (?) after being destroyed
+		if (blobAtPos !is null && 
+		blobAtPos.getHealth() > 0 && (
 		blobAtPos.hasTag("door") || 
 		blobAtPos.getName() == "wooden_platform" || 
 		(blobAtPos.getName() == "ladder" && !toPlaceIsLadder) || 
