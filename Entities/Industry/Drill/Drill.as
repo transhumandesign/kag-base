@@ -23,6 +23,8 @@ const u8 heat_add_constructed = 2;
 const u8 heat_add_blob = 6;
 const u8 heat_cool_amount = 2;
 
+const f32 heat_reduction_water = 0.5f;
+
 const u8 heat_cooldown_time = 8;
 const u8 heat_cooldown_time_water = u8(heat_cooldown_time / 3);
 
@@ -44,7 +46,7 @@ void onInit(CSprite@ this)
 			anim.AddFrames(frames);
 		}
 		heat.SetAnimation(anim);
-		heat.SetRelativeZ(1.0f);
+		heat.SetRelativeZ(0.1f);
 		heat.SetVisible(false);
 		heat.setRenderStyle(RenderStyle::light);
 	}
@@ -438,7 +440,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	if (customData == Hitters::water)
 	{
-		s16 current_heat = this.get_u8(heat_prop) - heat_max * 0.5f;
+		s16 current_heat = this.get_u8(heat_prop) - heat_max * heat_reduction_water;
 		if (current_heat < 0) current_heat = 0;
 		this.set_u8(heat_prop, current_heat);
 		makeSteamPuff(this);
