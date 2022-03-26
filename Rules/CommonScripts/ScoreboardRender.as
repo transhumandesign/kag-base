@@ -195,6 +195,34 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 			GUI::DrawIcon(tex, frame, framesize, topleft, 0.5f, p.getTeamNum());
 		}
 
+		string countryCode = getCountryCode(p);
+		if (countryCode != "")
+		{
+			float flag_buffer = 26.0f;
+			float flag_width = 16.0f;
+			Vec2f flag_offset;
+
+			//special flags
+			if (countryCode == "CH")
+			{
+				flag_buffer += 2.0f;
+				flag_width = 11.0f;
+			}
+			else if (countryCode == "NP")
+			{
+				//outline has been manually added to flag sprite
+				flag_buffer += 3.0f;
+				flag_width = 0.0f;
+				flag_offset = Vec2f(-1, -1);
+			}
+
+			if (flag_width > 0)
+			{
+				GUI::DrawRectangle(topleft + Vec2f(flag_buffer - 1, 2), topleft + Vec2f(flag_buffer + flag_width + 1, 15), color_white);
+			}
+			GUI::DrawIcon("Flags/" + countryCode.toLower() + ".png", topleft + Vec2f(flag_buffer, 3) + flag_offset, 0.5f);
+		}
+
 		string username = p.getUsername();
 
 		string playername = p.getCharacterName();
@@ -245,34 +273,6 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 		//render the player + stats
 		SColor namecolour = getNameColour(p);
-
-		string countryCode = getCountryCode(p);
-		if (countryCode != "")
-		{
-			float flag_buffer = 26.0f;
-			float flag_width = 16.0f;
-			Vec2f flag_offset;
-
-			//special flags
-			if (countryCode == "CH")
-			{
-				flag_buffer += 2.0f;
-				flag_width = 11.0f;
-			}
-			else if (countryCode == "NP")
-			{
-				//outline has been manually added to flag sprite
-				flag_buffer += 3.0f;
-				flag_width = 0.0f;
-				flag_offset = Vec2f(-1, -1);
-			}
-
-			if (flag_width > 0)
-			{
-				GUI::DrawRectangle(topleft + Vec2f(flag_buffer - 1, 2), topleft + Vec2f(flag_buffer + flag_width + 1, 15), color_white);
-			}
-			GUI::DrawIcon("Flags/" + countryCode.toLower() + ".png", topleft + Vec2f(flag_buffer, 3) + flag_offset, 0.5f);
-		}
 
 		//right align clantag
 		if (clantag != "")
