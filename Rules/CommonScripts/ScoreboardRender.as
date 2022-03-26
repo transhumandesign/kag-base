@@ -1,6 +1,7 @@
 #include "ScoreboardCommon.as";
 #include "Accolades.as";
 #include "ColoredNameToggleCommon.as";
+#include "PlayerLocationCommon.as";
 
 CPlayer@ hoveredPlayer;
 Vec2f hoveredPos;
@@ -232,18 +233,27 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 		if (headTexture != "")
 		{
-			GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + Vec2f(22, -12), 1.0f, teamIndex);
+			GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + Vec2f(48, -12), 1.0f, teamIndex);
 		}
 
 		//have to calc this from ticks
 		s32 ping_in_ms = s32(p.getPing() * 1000.0f / 30.0f);
 
 		//how much room to leave for names and clantags
-		float name_buffer = 56.0f;
+		float name_buffer = 80.0f;
+		float flag_buffer = 26.0f;
 		Vec2f clantag_actualsize(0, 0);
 
 		//render the player + stats
 		SColor namecolour = getNameColour(p);
+
+		string countryCode = getCountryCode(p);
+		if (countryCode != "")
+		{
+			//TODO: correct outline for weirdly shaped flags (nepal and switzerland)
+			GUI::DrawRectangle(topleft + Vec2f(flag_buffer - 1, 2), topleft + Vec2f(flag_buffer + 17, 15), color_white);
+			GUI::DrawIcon("Flags/" + countryCode.toLower() + ".png", topleft + Vec2f(flag_buffer, 3), 0.5f);
+		}
 
 		//right align clantag
 		if (clantag != "")
