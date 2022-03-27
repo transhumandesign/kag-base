@@ -6,6 +6,7 @@ class CoinsCommand : ChatCommand
 	{
 		super("coins", "Give yourself coins");
 		AddAlias("money");
+		SetUsage("[amount]");
 		SetDebugOnly();
 	}
 

@@ -4,8 +4,8 @@ class StartCommand : ChatCommand
 {
 	StartCommand()
 	{
-		super("start", "Start the game");
-		AddAlias("startgame");
+		super("startgame", "Start the game");
+		AddAlias("start");
 		SetModOnly();
 	}
 

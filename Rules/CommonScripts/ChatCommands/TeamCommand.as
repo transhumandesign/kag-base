@@ -5,6 +5,7 @@ class TeamCommand : ChatCommand
 	TeamCommand()
 	{
 		super("team", "Change your team");
+		SetUsage("<team #>");
 		SetDebugOnly();
 	}
 

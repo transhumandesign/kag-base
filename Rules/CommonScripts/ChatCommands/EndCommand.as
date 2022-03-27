@@ -4,8 +4,8 @@ class EndCommand : ChatCommand
 {
 	EndCommand()
 	{
-		super("end", "End the game");
-		AddAlias("endgame");
+		super("endgame", "End the game");
+		AddAlias("end");
 		SetModOnly();
 	}
 

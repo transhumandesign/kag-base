@@ -4,6 +4,7 @@ class FallbackCommand : ChatCommand
 {
 	FallbackCommand()
 	{
+		super("<blob>", "Spawn a blob");
 		SetDebugOnly();
 	}
 

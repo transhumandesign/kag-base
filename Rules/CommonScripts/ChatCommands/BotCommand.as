@@ -7,6 +7,7 @@ class BotCommand : ChatCommand
 		super("bot", "Spawn a bot");
 		AddAlias("henry");
 		SetModOnly();
+		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

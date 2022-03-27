@@ -9,8 +9,6 @@ class PineTreeCommand : ChatCommand
 		AddAlias("pineseed");
 		AddAlias("tree");
 		AddAlias("seed");
-		AddAlias("ptree");
-		AddAlias("pseed");
 		SetDebugOnly();
 	}
 

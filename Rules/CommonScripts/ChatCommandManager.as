@@ -5,12 +5,7 @@
 class ChatCommandManager
 {
 	private ChatCommand@[] commands;
-	private ChatCommand@ fallbackCommand;
-
-	ChatCommandManager()
-	{
-		@fallbackCommand = FallbackCommand();
-	}
+	ChatCommand@ fallbackCommand = FallbackCommand();
 
 	void RegisterCommand(ChatCommand@ command)
 	{

@@ -7,6 +7,7 @@ class ChatCommand
 	string description;
 	bool modOnly = false;
 	bool debugOnly = false;
+	string usage = "";
 
 	ChatCommand(string name, string description)
 	{
@@ -27,6 +28,11 @@ class ChatCommand
 	void SetDebugOnly()
 	{
 		debugOnly = true;
+	}
+
+	void SetUsage(string usage)
+	{
+		this.usage = usage;
 	}
 
 	bool canPlayerExecute(CPlayer@ player)

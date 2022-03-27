@@ -1,4 +1,5 @@
 #include "ChatCommandManager.as"
+#include "HelpCommand.as"
 #include "BotCommand.as"
 #include "StartCommand.as"
 #include "EndCommand.as"
@@ -23,6 +24,8 @@
 
 void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 {
+    manager.RegisterCommand(HelpCommand());
+
     //game state
     manager.RegisterCommand(StartCommand());
     manager.RegisterCommand(EndCommand());
