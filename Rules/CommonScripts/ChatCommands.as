@@ -33,7 +33,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 	for (uint i = 0; i < commands.size(); i++)
 	{
 		ChatCommand@ command = commands[i];
-		Menu::addInfoBox(contextMenu, getTranslatedString("!" + command.aliases[0]), getTranslatedString(command.description));
+		Menu::addInfoBox(contextMenu, "!" + command.aliases[0], getTranslatedString(command.description));
 	}
 }
 
