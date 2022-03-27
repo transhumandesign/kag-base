@@ -11,14 +11,16 @@ class StartCommand : ChatCommand
 
 	void Execute(string name, string[] args, CPlayer@ player)
 	{
-		if (isServer())
+		if (!isServer()) return;
+
+		if (!getRules().isMatchRunning())
 		{
 			getRules().SetCurrentState(GAME);
+			server_AddToChat("Game started by an admin", ConsoleColour::GAME);
 		}
-
-		if (isClient())
+		else
 		{
-			client_AddToChat("Game started by a moderator", ConsoleColour::GAME);
+			server_AddToChat("Game is already in progress", ConsoleColour::ERROR, player);
 		}
 	}
 }

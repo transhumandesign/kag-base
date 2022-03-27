@@ -11,9 +11,10 @@ class AllMatsCommand : ChatCommand
 
 	void Execute(string name, string[] args, CPlayer@ player)
 	{
-		CBlob@ blob = player.getBlob();
+		if (!isServer()) return;
 
-		if (isServer() && blob !is null)
+		CBlob@ blob = player.getBlob();
+		if (blob !is null)
 		{
 			Vec2f pos = blob.getPosition();
 			CBlob@ wood = server_CreateBlob("mat_wood", -1, pos);
@@ -23,10 +24,9 @@ class AllMatsCommand : ChatCommand
 			CBlob@ gold = server_CreateBlob("mat_gold", -1, pos);
 			gold.server_SetQuantity(100);
 		}
-
-		if (player.isMyPlayer() && blob is null)
+		else
 		{
-			client_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR);
+			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
 		}
 	}
 }

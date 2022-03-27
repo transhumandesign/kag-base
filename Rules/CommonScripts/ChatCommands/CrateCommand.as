@@ -11,14 +11,12 @@ class CrateCommand : ChatCommand
 
 	void Execute(string name, string[] args, CPlayer@ player)
 	{
-		CBlob@ blob = player.getBlob();
+		if (!isServer()) return;
 
+		CBlob@ blob = player.getBlob();
 		if (blob is null)
 		{
-			if (player.isMyPlayer())
-			{
-				client_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR);
-			}
+			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
 			return;
 		}
 
@@ -27,10 +25,7 @@ class CrateCommand : ChatCommand
 
 		if (args.size() == 0)
 		{
-			if (isServer())
-			{
-				server_MakeCrate("", "", 0, team, pos);
-			}
+			server_MakeCrate("", "", 0, team, pos);
 			return;
 		}
 
@@ -42,17 +37,11 @@ class CrateCommand : ChatCommand
 
 		if (ChatCommands::isBlobBlacklisted(blobName))
 		{
-			if (player.isMyPlayer())
-			{
-				client_AddToChat("Crates cannot be spawned containing this blacklisted blob", ConsoleColour::ERROR);
-			}
+			server_AddToChat("Crates cannot be spawned containing this blacklisted blob", ConsoleColour::ERROR, player);
 			return;
 		}
 
-		if (isServer())
-		{
-			//TODO: show correct crate icon for siege
-			server_MakeCrate(blobName, description, 0, team, pos);
-		}
+		//TODO: show correct crate icon for siege
+		server_MakeCrate(blobName, description, 0, team, pos);
 	}
 }

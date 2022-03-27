@@ -34,8 +34,15 @@ namespace ChatCommands
 
 void server_AddToChat(string message, SColor color, CPlayer@ player = null)
 {
-	CBitStream bs;
-	bs.write_string(message);
-	bs.write_u32(color.color);
-	getRules().SendCommand(getRules().getCommandID("SendChatMessage"), bs, player);
+	if (player !is null && player.isMyPlayer())
+	{
+		client_AddToChat(message, color);
+	}
+	else
+	{
+		CBitStream bs;
+		bs.write_string(message);
+		bs.write_u32(color.color);
+		getRules().SendCommand(getRules().getCommandID("SendChatMessage"), bs, player);
+	}
 }

@@ -11,14 +11,16 @@ class EndCommand : ChatCommand
 
 	void Execute(string name, string[] args, CPlayer@ player)
 	{
-		if (isServer())
+		if (!isServer()) return;
+
+		if (!getRules().isGameOver())
 		{
 			getRules().SetCurrentState(GAME_OVER);
+			server_AddToChat("Game ended by an admin", ConsoleColour::GAME);
 		}
-
-		if (isClient())
+		else
 		{
-			client_AddToChat("Game ended by a moderator", ConsoleColour::GAME);
+			server_AddToChat("Game has already ended", ConsoleColour::ERROR, player);
 		}
 	}
 }

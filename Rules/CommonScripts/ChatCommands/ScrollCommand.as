@@ -11,31 +11,23 @@ class ScrollCommand : ChatCommand
 
 	void Execute(string name, string[] args, CPlayer@ player)
 	{
-		CBlob@ blob = player.getBlob();
+		if (!isServer()) return;
 
+		CBlob@ blob = player.getBlob();
 		if (blob is null)
 		{
-			if (player.isMyPlayer())
-			{
-				client_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR);
-			}
+			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
 			return;
 		}
 
 		if (args.size() == 0)
 		{
-			if (player.isMyPlayer())
-			{
-				client_AddToChat("Specify the name of a scroll to spawn", ConsoleColour::ERROR);
-			}
+			server_AddToChat("Specify the name of a scroll to spawn", ConsoleColour::ERROR, player);
 			return;
 		}
 
-		if (isServer())
-		{
-			Vec2f pos = blob.getPosition();
-			string name = join(args, " ");
-			server_MakePredefinedScroll(pos, name);
-		}
+		Vec2f pos = blob.getPosition();
+		string scrollName = join(args, " ");
+		server_MakePredefinedScroll(pos, scrollName);
 	}
 }

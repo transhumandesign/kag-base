@@ -12,17 +12,17 @@ class WaterCommand : ChatCommand
 
 	void Execute(string name, string[] args, CPlayer@ player)
 	{
-		CBlob@ blob = player.getBlob();
+		if (!isServer()) return;
 
-		if (isServer() && blob !is null)
+		CBlob@ blob = player.getBlob();
+		if (blob !is null)
 		{
 			Vec2f pos = blob.getPosition();
 			getMap().server_setFloodWaterWorldspace(pos, true);
 		}
-
-		if (player.isMyPlayer() && blob is null)
+		else
 		{
-			client_AddToChat("Water cannot be created while dead or spectating", ConsoleColour::ERROR);
+			server_AddToChat("Water cannot be created while dead or spectating", ConsoleColour::ERROR, player);
 		}
 	}
 }

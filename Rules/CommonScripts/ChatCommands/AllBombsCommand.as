@@ -10,9 +10,10 @@ class AllBombsCommand : ChatCommand
 
 	void Execute(string name, string[] args, CPlayer@ player)
 	{
-		CBlob@ blob = player.getBlob();
+		if (!isServer()) return;
 
-		if (isServer() && blob !is null)
+		CBlob@ blob = player.getBlob();
+		if (blob !is null)
 		{
 			Vec2f pos = blob.getPosition();
 			for (uint i = 0; i < 2; i++)
@@ -21,10 +22,9 @@ class AllBombsCommand : ChatCommand
 			}
 			server_CreateBlob("mat_waterbombs", -1, pos);
 		}
-
-		if (player.isMyPlayer() && blob is null)
+		else
 		{
-			client_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR);
+			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
 		}
 	}
 }

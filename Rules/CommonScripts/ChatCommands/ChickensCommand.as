@@ -4,16 +4,17 @@ class ChickensCommand : ChatCommand
 {
 	ChickensCommand()
 	{
-		super("chickens", "Spawn a flock of chicken.");
+		super("chickens", "Spawn a flock of chickens.");
 		AddAlias("chickenflock");
 		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)
 	{
-		CBlob@ blob = player.getBlob();
+		if (!isServer()) return;
 
-		if (isServer() && blob !is null)
+		CBlob@ blob = player.getBlob();
+		if (blob !is null)
 		{
 			Vec2f pos = blob.getPosition();
 			for (uint i = 0; i < 6; i++)
@@ -21,10 +22,9 @@ class ChickensCommand : ChatCommand
 				server_CreateBlob("chicken", -1, pos);
 			}
 		}
-
-		if (player.isMyPlayer() && blob is null)
+		else
 		{
-			client_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR);
+			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
 		}
 	}
 }
