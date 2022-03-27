@@ -5,6 +5,7 @@ ChatCommandManager@ manager;
 
 void onInit(CRules@ this)
 {
+	this.addCommandID("SendChatMessage");
 	getSecurity().reloadSecurity();
 	@manager = ChatCommands::getManager();
 	RegisterDefaultChatCommands(manager);
@@ -39,10 +40,11 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 bool onServerProcessChat(CRules@ this, const string &in textIn, string &out textOut, CPlayer@ player)
 {
 	ChatCommand@ command;
+	string name;
 	string[] args;
-	if (manager.processCommand(textIn, command, args) && command.canPlayerExecute(player))
+	if (manager.processCommand(textIn, command, name, args) && command.canPlayerExecute(player))
 	{
-		command.Execute(args, player);
+		command.Execute(name, args, player);
 	}
 	return true;
 }
@@ -50,14 +52,15 @@ bool onServerProcessChat(CRules@ this, const string &in textIn, string &out text
 bool onClientProcessChat(CRules@ this, const string& in textIn, string& out textOut, CPlayer@ player)
 {
 	ChatCommand@ command;
+	string name;
 	string[] args;
-	if (manager.processCommand(textIn, command, args))
+	if (manager.processCommand(textIn, command, name, args))
 	{
 		if (command.canPlayerExecute(player))
 		{
 			if (!isServer())
 			{
-				command.Execute(args, player);
+				command.Execute(name, args, player);
 			}
 		}
 		else if (player.isMyPlayer())
@@ -67,4 +70,19 @@ bool onClientProcessChat(CRules@ this, const string& in textIn, string& out text
 		return false;
 	}
 	return true;
+}
+
+void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
+{
+	if (cmd == this.getCommandID("SendChatMessage") && isClient())
+	{
+		string message;
+		if (!params.saferead_string(message)) return;
+
+		uint color;
+		if (!params.saferead_u32(color)) return;
+		SColor col(color);
+
+		client_AddToChat(message, col);
+	}
 }

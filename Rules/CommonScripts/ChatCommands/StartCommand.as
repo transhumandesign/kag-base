@@ -9,7 +9,7 @@ class StartCommand : ChatCommand
 		SetModOnly();
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void Execute(string name, string[] args, CPlayer@ player)
 	{
 		if (isServer())
 		{

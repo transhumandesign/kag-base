@@ -11,7 +11,7 @@ class FishiesCommand : ChatCommand
 		SetDebugOnly();
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void Execute(string name, string[] args, CPlayer@ player)
 	{
 		CBlob@ blob = player.getBlob();
 

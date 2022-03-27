@@ -9,7 +9,7 @@ class CrateCommand : ChatCommand
 		SetDebugOnly();
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void Execute(string name, string[] args, CPlayer@ player)
 	{
 		CBlob@ blob = player.getBlob();
 
@@ -23,7 +23,7 @@ class CrateCommand : ChatCommand
 		}
 
 		Vec2f pos = blob.getPosition();
-		u8 team = player.getTeamNum();
+		u8 team = blob.getTeamNum();
 
 		if (args.size() == 0)
 		{
@@ -44,7 +44,7 @@ class CrateCommand : ChatCommand
 		{
 			if (player.isMyPlayer())
 			{
-				client_AddToChat("Crates cannot be spawned containing this blob", ConsoleColour::ERROR);
+				client_AddToChat("Crates cannot be spawned containing this blacklisted blob", ConsoleColour::ERROR);
 			}
 			return;
 		}

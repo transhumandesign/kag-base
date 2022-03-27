@@ -7,10 +7,11 @@ class ChatCommand
 	string description;
 	bool modOnly = false;
 	bool debugOnly = false;
+	bool defaultCommand = false;
 
 	ChatCommand(string name, string description)
 	{
-		aliases.push_back(name);
+		aliases.push_back(name.toLower());
 		this.description = description;
 	}
 
@@ -29,6 +30,11 @@ class ChatCommand
 		debugOnly = true;
 	}
 
+	void SetDefaultCommand()
+	{
+		defaultCommand = true;
+	}
+
 	bool canPlayerExecute(CPlayer@ player)
 	{
 		return (
@@ -37,5 +43,5 @@ class ChatCommand
 		);
 	}
 
-	void Execute(string[] args, CPlayer@ player) {}
+	void Execute(string name, string[] args, CPlayer@ player) {}
 }

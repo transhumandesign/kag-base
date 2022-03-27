@@ -1,9 +1,16 @@
 #include "ChatCommandCommon.as"
 #include "ChatCommand.as"
+#include "FallbackCommand.as"
 
 class ChatCommandManager
 {
 	private ChatCommand@[] commands;
+	private ChatCommand@ fallbackCommand;
+
+	ChatCommandManager()
+	{
+		@fallbackCommand = FallbackCommand();
+	}
 
 	void RegisterCommand(ChatCommand@ command)
 	{
@@ -29,25 +36,33 @@ class ChatCommandManager
 		return executableCommands;
 	}
 
-	bool processCommand(string text, ChatCommand@ &out command, string[] &out args)
+	bool processCommand(string text, ChatCommand@ &out command, string &out name, string[] &out args)
 	{
 		text = removeExcessSpaces(text);
 
 		if (text.find("!") == 0)
 		{
 			args = text.split(" ");
-			string cmd = args[0].toLower().substr(1);
+			name = args[0].substr(1);
+
+			if (name == "")
+			{
+				return false;
+			}
 
 			args.removeAt(0);
 
 			for (uint i = 0; i < commands.size(); i++)
 			{
 				@command = commands[i];
-				if (command.aliases.find(cmd) != -1)
+				if (command.aliases.find(name.toLower()) != -1)
 				{
 					return true;
 				}
 			}
+
+			@command = fallbackCommand;
+			return true;
 		}
 
 		return false;
