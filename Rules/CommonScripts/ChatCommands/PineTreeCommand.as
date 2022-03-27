@@ -5,12 +5,12 @@ class PineTreeCommand : ChatCommand
 {
 	PineTreeCommand()
 	{
-		super("tree", "Spawn a pine tree seed.");
+		super("pinetree", "Spawn a pine tree seed.");
+		AddAlias("pineseed");
+		AddAlias("tree");
 		AddAlias("seed");
 		AddAlias("ptree");
 		AddAlias("pseed");
-		AddAlias("pinetree");
-		AddAlias("pineseed");
 		SetDebugOnly();
 	}
 

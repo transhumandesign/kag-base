@@ -18,7 +18,7 @@ class FallbackCommand : ChatCommand
 			return;
 		}
 
-		if (ChatCommands::isBlobBlacklisted(name))
+		if (isBlobBlacklisted(name))
 		{
 			server_AddToChat("This blacklisted blob cannot be spawned", ConsoleColour::ERROR, player);
 			return;

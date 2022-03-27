@@ -19,27 +19,41 @@
 #include "GoldCommand.as"
 #include "TeamCommand.as"
 #include "ScrollCommand.as"
+#include "QuitCommand.as"
 
 void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 {
-    manager.RegisterCommand(BotCommand());
+    //game state
     manager.RegisterCommand(StartCommand());
     manager.RegisterCommand(EndCommand());
-    manager.RegisterCommand(PineTreeCommand());
-    manager.RegisterCommand(BushyTreeCommand());
-    manager.RegisterCommand(ArrowsCommand());
-    manager.RegisterCommand(AllArrowsCommand());
-    manager.RegisterCommand(BombsCommand());
-    manager.RegisterCommand(AllBombsCommand());
-    manager.RegisterCommand(WaterCommand());
-    manager.RegisterCommand(CrateCommand());
+
+    //common
+    manager.RegisterCommand(TeamCommand());
     manager.RegisterCommand(CoinsCommand());
-    manager.RegisterCommand(FishiesCommand());
-    manager.RegisterCommand(ChickensCommand());
-    manager.RegisterCommand(AllMatsCommand());
+
+    //materials
     manager.RegisterCommand(WoodCommand());
     manager.RegisterCommand(StoneCommand());
     manager.RegisterCommand(GoldCommand());
-    manager.RegisterCommand(TeamCommand());
+    manager.RegisterCommand(AllMatsCommand());
+
+    //utilities
+    manager.RegisterCommand(BombsCommand());
+    manager.RegisterCommand(AllBombsCommand());
+    manager.RegisterCommand(ArrowsCommand());
+    manager.RegisterCommand(AllArrowsCommand());
+
+    //trees
+    manager.RegisterCommand(PineTreeCommand());
+    manager.RegisterCommand(BushyTreeCommand());
+
+    //animals
+    manager.RegisterCommand(FishiesCommand());
+    manager.RegisterCommand(ChickensCommand());
+
+    //misc
+    manager.RegisterCommand(WaterCommand());
+    manager.RegisterCommand(CrateCommand());
     manager.RegisterCommand(ScrollCommand());
+    manager.RegisterCommand(BotCommand());
 }

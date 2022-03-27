@@ -1,15 +1,15 @@
+string[] blacklistedBlobs = {
+	"hall",         // grief
+	"shark",        // grief spam
+	"bison",        // grief spam
+	"necromancer",  // annoying/grief
+	"greg",         // annoying/grief
+	"ctf_flag",     // sound spam
+	"flag_base"     // sound spam + bedrock grief
+};
+
 namespace ChatCommands
 {
-	string[] blacklistedBlobs = {
-		"hall",         // grief
-		"shark",        // grief spam
-		"bison",        // grief spam
-		"necromancer",  // annoying/grief
-		"greg",         // annoying/grief
-		"ctf_flag",     // sound spam
-		"flag_base"     // sound spam + bedrock grief
-	};
-
 	ChatCommandManager@ getManager()
 	{
 		ChatCommandManager@ manager;
@@ -25,11 +25,11 @@ namespace ChatCommands
 	{
 		ChatCommands::getManager().RegisterCommand(command);
 	}
+}
 
-	bool isBlobBlacklisted(string name)
-	{
-		return blacklistedBlobs.find(name) != -1;
-	}
+bool isBlobBlacklisted(string name)
+{
+	return blacklistedBlobs.find(name) != -1;
 }
 
 void server_AddToChat(string message, SColor color, CPlayer@ player = null)

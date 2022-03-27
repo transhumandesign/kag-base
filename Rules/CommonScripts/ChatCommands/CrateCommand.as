@@ -35,7 +35,7 @@ class CrateCommand : ChatCommand
 		//TODO: make description kids safe
 		string description = join(args, " ");
 
-		if (ChatCommands::isBlobBlacklisted(blobName))
+		if (isBlobBlacklisted(blobName))
 		{
 			server_AddToChat("Crates cannot be spawned containing this blacklisted blob", ConsoleColour::ERROR, player);
 			return;
