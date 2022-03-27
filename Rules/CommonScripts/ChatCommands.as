@@ -1,4 +1,5 @@
 #include "ChatCommandManager.as"
+#include "DefaultChatCommands.as"
 
 ChatCommandManager@ manager;
 
@@ -6,6 +7,7 @@ void onInit(CRules@ this)
 {
 	getSecurity().reloadSecurity();
 	@manager = ChatCommands::getManager();
+	RegisterDefaultChatCommands(manager);
 }
 
 void onTick(CRules@ this)
@@ -53,7 +55,10 @@ bool onClientProcessChat(CRules@ this, const string& in textIn, string& out text
 	{
 		if (command.canPlayerExecute(player))
 		{
-			command.Execute(args, player);
+			if (!isServer())
+			{
+				command.Execute(args, player);
+			}
 		}
 		else if (player.isMyPlayer())
 		{

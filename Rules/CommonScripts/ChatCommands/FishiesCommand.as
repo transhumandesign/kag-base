@@ -1,0 +1,32 @@
+#include "ChatCommand.as"
+
+class FishiesCommand : ChatCommand
+{
+	FishiesCommand()
+	{
+		super("fishies", "Spawn a school of fishies.");
+		AddAlias("fishyschool");
+		AddAlias("fishys");
+		AddAlias("fishes");
+		SetDebugOnly();
+	}
+
+	void Execute(string[] args, CPlayer@ player)
+	{
+		CBlob@ blob = player.getBlob();
+
+		if (isServer() && blob !is null)
+		{
+			Vec2f pos = blob.getPosition();
+			for (uint i = 0; i < 6; i++)
+			{
+				server_CreateBlob("fishy", -1, pos);
+			}
+		}
+
+		if (player.isMyPlayer() && blob is null)
+		{
+			client_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR);
+		}
+	}
+}
