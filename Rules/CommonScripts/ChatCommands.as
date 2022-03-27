@@ -4,25 +4,33 @@ ChatCommandManager@ manager;
 
 void onInit(CRules@ this)
 {
+	getSecurity().reloadSecurity();
 	@manager = ChatCommands::getManager();
+}
+
+void onTick(CRules@ this)
+{
+	if (isServer())
+	{
+		this.set_bool("sv_test", sv_test);
+		this.Sync("sv_test", true);
+	}
 }
 
 void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 {
-	ChatCommand@[] commands = manager.getCommands();
-	if (commands.size() > 0)
-	{
-		CContextMenu@ contextMenu = Menu::addContextMenu(menu, getTranslatedString("Chat Commands"));
-		CPlayer@ player = getLocalPlayer();
+	CPlayer@ player = getLocalPlayer();
+	if (player is null) return;
 
-		for (uint i = 0; i < commands.size(); i++)
-		{
-			ChatCommand@ command = commands[i];
-			if (command.canPlayerExecute(player))
-			{
-				Menu::addInfoBox(contextMenu, getTranslatedString("!" + command.aliases[0]), getTranslatedString(command.description));
-			}
-		}
+	ChatCommand@[] commands = manager.getExecutableCommands(player);
+	if (commands.size() == 0) return;
+
+	CContextMenu@ contextMenu = Menu::addContextMenu(menu, getTranslatedString("Chat Commands"));
+
+	for (uint i = 0; i < commands.size(); i++)
+	{
+		ChatCommand@ command = commands[i];
+		Menu::addInfoBox(contextMenu, getTranslatedString("!" + command.aliases[0]), getTranslatedString(command.description));
 	}
 }
 

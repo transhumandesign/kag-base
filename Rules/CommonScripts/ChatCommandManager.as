@@ -1,3 +1,4 @@
+#include "ChatCommandCommon.as"
 #include "ChatCommand.as"
 
 class ChatCommandManager
@@ -12,6 +13,20 @@ class ChatCommandManager
 	ChatCommand@[] getCommands()
 	{
 		return commands;
+	}
+
+	ChatCommand@[] getExecutableCommands(CPlayer@ player)
+	{
+		ChatCommand@[] executableCommands;
+		for (uint i = 0; i < commands.size(); i++)
+		{
+			ChatCommand@ command = commands[i];
+			if (command.canPlayerExecute(player))
+			{
+				executableCommands.push_back(command);
+			}
+		}
+		return executableCommands;
 	}
 
 	bool processCommand(string text, ChatCommand@ &out command, string[] &out args)
