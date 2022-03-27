@@ -79,10 +79,13 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		string message;
 		if (!params.saferead_string(message)) return;
 
-		uint color;
-		if (!params.saferead_u32(color)) return;
-		SColor col(color);
+		u8 r, g, b, a;
+		if (!params.saferead_u8(b)) return;
+		if (!params.saferead_u8(g)) return;
+		if (!params.saferead_u8(r)) return;
+		if (!params.saferead_u8(a)) return;
+		SColor color(a, r, g, b);
 
-		client_AddToChat(message, col);
+		client_AddToChat(message, color);
 	}
 }

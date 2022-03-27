@@ -42,7 +42,10 @@ void server_AddToChat(string message, SColor color, CPlayer@ player = null)
 	{
 		CBitStream bs;
 		bs.write_string(message);
-		bs.write_u32(color.color);
+		bs.write_u8(color.getBlue());
+		bs.write_u8(color.getGreen());
+		bs.write_u8(color.getRed());
+		bs.write_u8(color.getAlpha());
 		getRules().SendCommand(getRules().getCommandID("SendChatMessage"), bs, player);
 	}
 }
