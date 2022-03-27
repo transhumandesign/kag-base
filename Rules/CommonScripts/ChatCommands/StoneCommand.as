@@ -4,7 +4,7 @@ class StoneCommand : ChatCommand
 {
 	StoneCommand()
 	{
-		super("stone", "Spawn stone.");
+		super("stone", "Spawn stone");
 		AddAlias("stones");
 		SetDebugOnly();
 	}

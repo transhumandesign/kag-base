@@ -4,7 +4,7 @@ class CoinsCommand : ChatCommand
 {
 	CoinsCommand()
 	{
-		super("coins", "Give yourself coins.");
+		super("coins", "Give yourself coins");
 		AddAlias("money");
 		SetDebugOnly();
 	}

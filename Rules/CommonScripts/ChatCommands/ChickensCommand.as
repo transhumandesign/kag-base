@@ -4,7 +4,7 @@ class ChickensCommand : ChatCommand
 {
 	ChickensCommand()
 	{
-		super("chickens", "Spawn a flock of chickens.");
+		super("chickens", "Spawn a flock of chickens");
 		AddAlias("chickenflock");
 		SetDebugOnly();
 	}

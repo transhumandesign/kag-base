@@ -7,7 +7,6 @@ class ChatCommand
 	string description;
 	bool modOnly = false;
 	bool debugOnly = false;
-	bool defaultCommand = false;
 
 	ChatCommand(string name, string description)
 	{
@@ -28,11 +27,6 @@ class ChatCommand
 	void SetDebugOnly()
 	{
 		debugOnly = true;
-	}
-
-	void SetDefaultCommand()
-	{
-		defaultCommand = true;
 	}
 
 	bool canPlayerExecute(CPlayer@ player)

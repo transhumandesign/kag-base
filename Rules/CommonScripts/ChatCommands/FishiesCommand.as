@@ -4,7 +4,7 @@ class FishiesCommand : ChatCommand
 {
 	FishiesCommand()
 	{
-		super("fishies", "Spawn a school of fishies.");
+		super("fishies", "Spawn a school of fishies");
 		AddAlias("fishyschool");
 		AddAlias("fishys");
 		AddAlias("fishes");

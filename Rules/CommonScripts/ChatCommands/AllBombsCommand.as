@@ -4,7 +4,7 @@ class AllBombsCommand : ChatCommand
 {
 	AllBombsCommand()
 	{
-		super("allbombs", "Spawn all types of bombs.");
+		super("allbombs", "Spawn all types of bombs");
 		SetDebugOnly();
 	}
 

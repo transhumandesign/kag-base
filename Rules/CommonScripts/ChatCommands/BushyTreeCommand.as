@@ -5,7 +5,7 @@ class BushyTreeCommand : ChatCommand
 {
 	BushyTreeCommand()
 	{
-		super("bushytree", "Spawn a bushy tree seed.");
+		super("bushytree", "Spawn a bushy tree seed");
 		AddAlias("bushyseed");
 		AddAlias("btree");
 		AddAlias("bseed");

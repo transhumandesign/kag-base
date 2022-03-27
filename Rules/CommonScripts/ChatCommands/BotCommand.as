@@ -4,7 +4,7 @@ class BotCommand : ChatCommand
 {
 	BotCommand()
 	{
-		super("bot", "Spawn a bot.");
+		super("bot", "Spawn a bot");
 		AddAlias("henry");
 		SetModOnly();
 	}

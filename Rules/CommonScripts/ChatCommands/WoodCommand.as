@@ -4,7 +4,7 @@ class WoodCommand : ChatCommand
 {
 	WoodCommand()
 	{
-		super("wood", "Spawn wood.");
+		super("wood", "Spawn wood");
 		SetDebugOnly();
 	}
 

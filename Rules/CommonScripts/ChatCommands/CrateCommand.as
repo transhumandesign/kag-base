@@ -5,7 +5,7 @@ class CrateCommand : ChatCommand
 {
 	CrateCommand()
 	{
-		super("crate", "Spawn a crate with an optional blob inside.");
+		super("crate", "Spawn a crate with an optional blob inside");
 		SetDebugOnly();
 	}
 

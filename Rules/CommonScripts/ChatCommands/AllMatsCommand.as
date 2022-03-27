@@ -4,7 +4,7 @@ class AllMatsCommand : ChatCommand
 {
 	AllMatsCommand()
 	{
-		super("allmats", "Spawn all types of materials.");
+		super("allmats", "Spawn all types of materials");
 		AddAlias("allmaterials");
 		AddAlias("materials");
 		AddAlias("mats");

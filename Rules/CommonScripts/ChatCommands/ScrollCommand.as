@@ -5,7 +5,7 @@ class ScrollCommand : ChatCommand
 {
 	ScrollCommand()
 	{
-		super("scroll", "Spawn a scroll by name.");
+		super("scroll", "Spawn a scroll by name");
 		SetDebugOnly();
 	}
 

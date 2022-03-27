@@ -4,7 +4,7 @@ class BombsCommand : ChatCommand
 {
 	BombsCommand()
 	{
-		super("bombs", "Spawn bombs.");
+		super("bombs", "Spawn bombs");
 		SetDebugOnly();
 	}
 

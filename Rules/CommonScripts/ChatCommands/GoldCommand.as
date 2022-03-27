@@ -4,7 +4,7 @@ class GoldCommand : ChatCommand
 {
 	GoldCommand()
 	{
-		super("gold", "Spawn gold.");
+		super("gold", "Spawn gold");
 		SetDebugOnly();
 	}
 

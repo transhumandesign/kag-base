@@ -4,7 +4,7 @@ class AllArrowsCommand : ChatCommand
 {
 	AllArrowsCommand()
 	{
-		super("allarrows", "Spawn all types of arrows.");
+		super("allarrows", "Spawn all types of arrows");
 		SetDebugOnly();
 	}
 

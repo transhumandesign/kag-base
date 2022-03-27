@@ -4,7 +4,7 @@ class WaterCommand : ChatCommand
 {
 	WaterCommand()
 	{
-		super("water", "Create a water source.");
+		super("water", "Create a water source");
 		AddAlias("spawnwater");
 		SetModOnly();
 		SetDebugOnly();

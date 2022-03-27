@@ -4,7 +4,7 @@ class ArrowsCommand : ChatCommand
 {
 	ArrowsCommand()
 	{
-		super("arrows", "Spawn arrows.");
+		super("arrows", "Spawn arrows");
 		SetDebugOnly();
 	}
 
