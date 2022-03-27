@@ -38,8 +38,6 @@ class ChatCommandManager
 
 	bool processCommand(string text, ChatCommand@ &out command, string &out name, string[] &out args)
 	{
-		text = removeExcessSpaces(text);
-
 		if (text.find("!") == 0)
 		{
 			args = text.split(" ");
@@ -66,29 +64,5 @@ class ChatCommandManager
 		}
 
 		return false;
-	}
-
-	private string removeExcessSpaces(string text)
-	{
-		// Reduce all spaces down to one space
-		while (text.find("  ") != -1)
-		{
-			text = text.replace("  ", " ");
-		}
-
-		// Remove space at start
-		if (text.find(" ") == 0)
-		{
-			text = text.substr(1);
-		}
-
-		// Remove space at end
-		uint lastIndex = text.size() - 1;
-		if (text.findLast(" ") == lastIndex)
-		{
-			text = text.substr(0, lastIndex);
-		}
-
-		return text;
 	}
 }

@@ -39,10 +39,13 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 
 bool onServerProcessChat(CRules@ this, const string &in textIn, string &out textOut, CPlayer@ player)
 {
+	textOut = removeExcessSpaces(textIn);
+	if (textOut == "") return false;
+
 	ChatCommand@ command;
 	string name;
 	string[] args;
-	if (manager.processCommand(textIn, command, name, args) && command.canPlayerExecute(player))
+	if (manager.processCommand(textOut, command, name, args) && command.canPlayerExecute(player))
 	{
 		command.Execute(name, args, player);
 	}

@@ -27,6 +27,30 @@ namespace ChatCommands
 	}
 }
 
+string removeExcessSpaces(string text)
+{
+	// Reduce all spaces down to one space
+	while (text.find("  ") != -1)
+	{
+		text = text.replace("  ", " ");
+	}
+
+	// Remove space at start
+	if (text.find(" ") == 0)
+	{
+		text = text.substr(1);
+	}
+
+	// Remove space at end
+	uint lastIndex = text.size() - 1;
+	if (text.findLast(" ") == lastIndex)
+	{
+		text = text.substr(0, lastIndex);
+	}
+
+	return text;
+}
+
 bool isBlobBlacklisted(string name)
 {
 	return blacklistedBlobs.find(name) != -1;
