@@ -212,9 +212,17 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	if (caller.getTeamNum() == this.getTeamNum())
+	if (caller.getTeamNum() == this.getTeamNum() && canChangeClass(this, caller))
 	{
-		caller.CreateGenericButton("$change_class$", Vec2f(13, 4), this, buildSpawnMenu, getTranslatedString("Change class"));
+		if (!getRules().hasTag("class switching disabled"))
+		{
+			caller.CreateGenericButton("$change_class$", Vec2f(13, 4), this, buildSpawnMenu, getTranslatedString("Change Class"));	
+		}
+		else
+		{
+			CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(13, 4), this, 0, getTranslatedString("Class Switching Disabled"));
+			button.SetEnabled(false);	
+		}
 	}
 }
 

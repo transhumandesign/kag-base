@@ -30,7 +30,24 @@ shared class RespawnSystem
 
 		if (player !is null)
 		{
-			CBlob @newBlob = server_CreateBlob(p_info.blob_name, p_info.team, at);
+			string blob_name = p_info.blob_name;
+			CRules@ rules = getRules();
+
+			// if class switching disabled, respawn player as the default class
+			if (rules.hasTag("class switching disabled"))
+			{
+				if (rules.exists("default class"))
+				{
+					blob_name = rules.get_string("default class");
+				}
+				else
+				{
+					// if no default class set, switch to knight
+					blob_name = "knight";
+				}
+			}
+
+			CBlob @newBlob = server_CreateBlob(blob_name, p_info.team, at);
 			newBlob.server_SetPlayer(player);
 			player.server_setTeamNum(p_info.team);
 			return newBlob;

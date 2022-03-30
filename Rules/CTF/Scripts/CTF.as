@@ -26,6 +26,10 @@ void Config(CTFCore@ this)
 	s32 warmUpTimeSeconds = cfg.read_s32("warmup_time", 30);
 	this.warmUpTime = (getTicksASecond() * warmUpTimeSeconds);
 
+	// how long from end of warmup can people switch classes?
+	s32 classSwitchTimeSeconds = cfg.read_s32("warmup_class_switch_time", 20);
+	this.classSwitchTime = classSwitchTimeSeconds * getTicksASecond();
+
 	s32 stalemateTimeSeconds = cfg.read_s32("stalemate_time", 30);
 	this.stalemateTime = (getTicksASecond() * stalemateTimeSeconds);
 
@@ -286,6 +290,7 @@ shared class CTFSpawns : RespawnSystem
 shared class CTFCore : RulesCore
 {
 	s32 warmUpTime;
+	s32 classSwitchTime;
 	s32 gameDuration;
 	s32 spawnTime;
 	s32 stalemateTime;
@@ -319,21 +324,44 @@ shared class CTFCore : RulesCore
 		players_in_small_team = -1;
 	}
 
+	bool inForceBuildTime()
+	{
+		s32 ticksToStart = gamestart + warmUpTime - getGameTime();
+		s32 ticksToBuild = ticksToStart - classSwitchTime;
+		return ticksToBuild > 0;
+	}
+
 	void Update()
 	{
 		if (rules.isGameOver()) { return; }
 
-		s32 ticksToStart = gamestart + warmUpTime - getGameTime();
+		if (rules.hasTag("class switching disabled") && !inForceBuildTime())
+		{
+			rules.Untag("class switching disabled");
+		}
+
 		ctf_spawns.force = false;
 
+		s32 ticksToStart = gamestart + warmUpTime - getGameTime();
 		if (ticksToStart <= 0 && (rules.isWarmup()))
 		{
 			rules.SetCurrentState(GAME);
 		}
 		else if (ticksToStart > 0 && rules.isWarmup()) //is the start of the game, spawn everyone + give mats
 		{
-			rules.SetGlobalMessage("Match starts in {SEC}");
+			string message = "Match stats in {SEC}";
+			if (rules.hasTag("class switching disabled"))
+			{
+				message += " - Builder only until {SWITCHTIME}";
+			}
+			else
+			{
+				message += " - Class switching available!";
+			}
+
+			rules.SetGlobalMessage(message);
 			rules.AddGlobalMessageReplacement("SEC", "" + ((ticksToStart / 30) + 1));
+			rules.AddGlobalMessageReplacement("SWITCHTIME", "" + ((ticksToStart - classSwitchTime) / 30 + 1));
 			ctf_spawns.force = true;
 		}
 
@@ -685,6 +713,9 @@ void Reset(CRules@ this)
 	this.set("core", @core);
 	this.set("start_gametime", getGameTime() + core.warmUpTime);
 	this.set_u32("game_end_time", getGameTime() + core.gameDuration); //for TimeToEnd.as
+	// builder only for most of warmup time
+	this.Tag("class switching disabled");
+	this.set_string("default class", "builder");
 }
 
 void onRestart(CRules@ this)

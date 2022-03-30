@@ -978,6 +978,8 @@ void Reset(CRules@ this)
 
 	core.gametime = getGameTime() + core.warmUpTime;
 
+	this.set_string("default class", "builder");
+
 	this.set("start_gametime", core.gametime);//is this legacy?
 
 	this.set_u32("game_end_time", getGameTime() + core.gameDuration); //for TimeToEnd.as

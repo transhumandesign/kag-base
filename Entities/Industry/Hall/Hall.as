@@ -377,33 +377,45 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (!canSeeButtons(this, caller) || !caller.isOverlapping(this))
 		return;
 
-	if (this.getTeamNum() != 255)
+	if (!canChangeClass(this, caller))
+		return;
+	
+	if (this.getTeamNum() == 255)
+		return;
+	
+	CBitStream params;
+	params.write_u16(caller.getNetworkID());
+
+	if (!getRules().hasTag("class switching disabled"))
 	{
-		CBitStream params;
-		params.write_u16(caller.getNetworkID());
+		caller.CreateGenericButton("$change_class$", Vec2f(12, 7), this, buildSpawnMenu, getTranslatedString("Change Class"));
+	}
+	else
+	{
+		CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(12, 7), this, 0, getTranslatedString("Class Switching Disabled"));
+		button.SetEnabled(false);
+	}
 
-		caller.CreateGenericButton("$change_class$", Vec2f(12, 7), this, buildSpawnMenu, getTranslatedString("Change class"));
+	if (caller.getName() == "builder")
+	{
+		Vec2f buttonpos = this.hasTag("script added") ? Vec2f(0, -7) : Vec2f(-12, -7);
 
-		if (caller.getName() == "builder")
+		const u16 goldCount = caller.getBlobCount("mat_gold");
+		if (goldCount >= MIGRANT_COST)
 		{
-			Vec2f buttonpos = this.hasTag("script added") ? Vec2f(0, -7) : Vec2f(-12, -7);
-
-			const u16 goldCount = caller.getBlobCount("mat_gold");
-			if (goldCount >= MIGRANT_COST)
+			//buy migrant button
+			CButton@ button = caller.CreateGenericButton("$migrant$", buttonpos, this, this.getCommandID(buymigrantcmd), getTranslatedString("Buy a worker for {MIGRANT_COST} Gold").replace("{MIGRANT_COST}", "" + MIGRANT_COST), params);
+		}
+		else
+		{
+			CButton@ button = caller.CreateGenericButton("$migrant$", buttonpos, this, 0, getTranslatedString("Buy worker: Requires {MIGRANT_COST} Gold").replace("{MIGRANT_COST}", "" + MIGRANT_COST));
+			if (button !is null)
 			{
-				//buy migrant button
-				CButton@ button = caller.CreateGenericButton("$migrant$", buttonpos, this, this.getCommandID(buymigrantcmd), getTranslatedString("Buy a worker for {MIGRANT_COST} Gold").replace("{MIGRANT_COST}", "" + MIGRANT_COST), params);
-			}
-			else
-			{
-				CButton@ button = caller.CreateGenericButton("$migrant$", buttonpos, this, 0, getTranslatedString("Buy worker: Requires {MIGRANT_COST} Gold").replace("{MIGRANT_COST}", "" + MIGRANT_COST));
-				if (button !is null)
-				{
-					button.SetEnabled(false);
-				}
+				button.SetEnabled(false);
 			}
 		}
 	}
+
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

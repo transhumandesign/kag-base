@@ -47,16 +47,31 @@ void onTick(CBlob@ this)
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
+	if (caller.getTeamNum() != this.getTeamNum()) return;
 
 	// button for runner
 	// create menu for class change
-	if (canChangeClass(this, caller) && caller.getTeamNum() == this.getTeamNum())
+
+	if (canChangeClass(this, caller))
 	{
-		caller.CreateGenericButton("$change_class$", Vec2f(0, 0), this, buildSpawnMenu, getTranslatedString("Swap Class"));
+		if (!getRules().hasTag("class switching disabled"))
+		{
+			caller.CreateGenericButton("$change_class$", Vec2f(0, 0), this, buildSpawnMenu, getTranslatedString("Change Class"));
+		}
+		else
+		{
+			CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(0, 0), this, 0, getTranslatedString("Class Switching Disabled"));
+			button.SetEnabled(false);
+		}
 	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	onRespawnCommand(this, cmd, params);
+}
+
+void isTeamSwitchingBlocked(CBlob@ this)
+{
+
 }

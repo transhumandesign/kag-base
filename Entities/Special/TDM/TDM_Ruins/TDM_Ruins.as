@@ -69,7 +69,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (canChangeClass(this, caller))
 	{
-		if (isInRadius(this, caller))
+		if (false)//isInRadius(this, caller))
 		{
 			BuildRespawnMenuFor(this, caller);
 		}
@@ -77,7 +77,16 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		{
 			CBitStream params;
 			params.write_u16(caller.getNetworkID());
-			caller.CreateGenericButton("$change_class$", Vec2f(0, 6), this, this.getCommandID("class menu"), getTranslatedString("Change class"), params);
+			if (!getRules().hasTag("class switching disabled"))
+			{
+				caller.CreateGenericButton("$change_class$", Vec2f(0, 6), this, this.getCommandID("class menu"), getTranslatedString("Change Class"), params);
+			}
+			else
+			{
+				CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(0, 6), this, 0, getTranslatedString("Class Switching Disabled"), params);
+				button.SetEnabled(false);
+			}
+
 		}
 	}
 

@@ -245,9 +245,17 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		{
 			Vehicle_AddLoadAmmoButton(this, caller);
 		}
-		if (/*!isAnotherRespawnClose(this) &&*/ !isFlipped(this))
+		if (canChangeClass(this, caller) && !isFlipped(this))
 		{
-			caller.CreateGenericButton("$change_class$", Vec2f(0, 1), this, buildSpawnMenu, getTranslatedString("Change class"));
+			if (!getRules().hasTag("class switching disabled"))
+			{
+				caller.CreateGenericButton("$change_class$", Vec2f(0, 1), this, buildSpawnMenu, getTranslatedString("Change Class"));
+			}
+			else
+			{
+				CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(0, 1), this, 0, getTranslatedString("Class Switching Disabled"));
+				button.SetEnabled(false);
+			}
 		}
 	}
 }

@@ -35,15 +35,24 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		CBitStream params;
 		write_classchange(params, caller.getNetworkID(), cfg);
 
-		CButton@ button = caller.CreateGenericButton(
-		"$change_class$",                           // icon token
-		this.get_Vec2f("class offset"),             // button offset
-		this,                                       // button attachment
-		SpawnCmd::changeClass,                      // command id
-		getTranslatedString("Swap Class"),                               // description
-		params);                                    // bit stream
+		if (!getRules().hasTag("class switching disabled"))
+		{
+			CButton@ button = caller.CreateGenericButton(
+			"$change_class$",                           // icon token
+			this.get_Vec2f("class offset"),             // button offset
+			this,                                       // button attachment
+			SpawnCmd::changeClass,                      // command id
+			getTranslatedString("Change Class"),                               // description
+			params);                                    // bit stream
 
-		button.enableRadius = this.get_u8("class button radius");
+			button.enableRadius = this.get_u8("class button radius");
+		}
+		else
+		{
+			CButton@ button = caller.CreateGenericButton("$change_class$", this.get_Vec2f("class offset"), this, 0, getTranslatedString("Class Switching Disabled"), params);
+			button.SetEnabled(false);
+		}
+
 	}
 }
 
