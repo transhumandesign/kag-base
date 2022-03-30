@@ -65,28 +65,19 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	AddIconToken("$knight_class_icon$", "GUI/MenuItems.png", Vec2f(32, 32), 12, caller.getTeamNum());
 	AddIconToken("$archer_class_icon$", "GUI/MenuItems.png", Vec2f(32, 32), 16, caller.getTeamNum());
 	
-	if (!canSeeButtons(this, caller)) return;
-
-	if (canChangeClass(this, caller))
+	if (canSeeButtons(this, caller) && canChangeClass(this, caller))
 	{
-		if (false)//isInRadius(this, caller))
+		CBitStream params;
+		params.write_u16(caller.getNetworkID());
+
+		if (!getRules().hasTag("class switching disabled"))
 		{
-			BuildRespawnMenuFor(this, caller);
+			caller.CreateGenericButton("$change_class$", Vec2f(0, 6), this, this.getCommandID("class menu"), getTranslatedString("Change Class"), params);
 		}
 		else
 		{
-			CBitStream params;
-			params.write_u16(caller.getNetworkID());
-			if (!getRules().hasTag("class switching disabled"))
-			{
-				caller.CreateGenericButton("$change_class$", Vec2f(0, 6), this, this.getCommandID("class menu"), getTranslatedString("Change Class"), params);
-			}
-			else
-			{
-				CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(0, 6), this, 0, getTranslatedString("Class Switching Disabled"), params);
-				button.SetEnabled(false);
-			}
-
+			CButton@ button = caller.CreateGenericButton("$change_class$", Vec2f(0, 6), this, 0, getTranslatedString("Class Switching Disabled"), params);
+			button.SetEnabled(false);
 		}
 	}
 
