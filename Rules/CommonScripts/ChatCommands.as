@@ -15,6 +15,7 @@ void onTick(CRules@ this)
 {
 	if (isServer())
 	{
+		//sync to client so they know whether they can use debug commands
 		this.set_bool("sv_test", sv_test);
 		this.Sync("sv_test", true);
 	}
@@ -45,8 +46,14 @@ bool onServerProcessChat(CRules@ this, const string &in textIn, string &out text
 	ChatCommand@ command;
 	string name;
 	string[] args;
-	if (manager.processCommand(textOut, command, name, args) && command.canPlayerExecute(player))
+	if (manager.processCommand(textOut, command, name, args))
 	{
+		if (!command.canPlayerExecute(player))
+		{
+			server_AddToChat("You are unable to use this command", ConsoleColour::ERROR, player);
+			return false;
+		}
+
 		command.Execute(name, args, player);
 	}
 	return true;
@@ -59,16 +66,11 @@ bool onClientProcessChat(CRules@ this, const string& in textIn, string& out text
 	string[] args;
 	if (manager.processCommand(textIn, command, name, args))
 	{
-		if (command.canPlayerExecute(player))
+		//don't run command a second time on localhost
+		if (!isServer())
 		{
-			if (!isServer())
-			{
-				command.Execute(name, args, player);
-			}
-		}
-		else if (player.isMyPlayer())
-		{
-			client_AddToChat("You are unable to use this command", ConsoleColour::ERROR);
+			//assume command can be executed if server forwards it to clients
+			command.Execute(name, args, player);
 		}
 		return false;
 	}
