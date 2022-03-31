@@ -17,21 +17,21 @@ class HelpCommand : ChatCommand
 
 		for (uint i = 0; i < commands.size(); i++)
 		{
-			PrintCommand(commands[i]);
+			AddCommandToChat(commands[i]);
 		}
 
 		if (manager.fallbackCommand.canPlayerExecute(player))
 		{
-			PrintCommand(manager.fallbackCommand);
+			AddCommandToChat(manager.fallbackCommand);
 		}
 	}
 
-	private void PrintCommand(ChatCommand@ command)
+	private void AddCommandToChat(ChatCommand@ command)
 	{
 		string[] names;
-		for (uint j = 0; j < command.aliases.size(); j++)
+		for (uint i = 0; i < command.aliases.size(); i++)
 		{
-			string alias = command.aliases[j];
+			string alias = command.aliases[i];
 			string cmdName = "!" + alias;
 			if (command.usage != "")
 			{

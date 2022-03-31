@@ -33,31 +33,25 @@ class ChatCommandManager
 
 	bool processCommand(string text, ChatCommand@ &out command, string &out name, string[] &out args)
 	{
-		if (text.find("!") == 0)
+		if (text.find("!") != 0) return false;
+
+		args = text.split(" ");
+		name = args[0].substr(1);
+
+		if (name == "") return false;
+
+		args.removeAt(0);
+
+		for (uint i = 0; i < commands.size(); i++)
 		{
-			args = text.split(" ");
-			name = args[0].substr(1);
-
-			if (name == "")
+			@command = commands[i];
+			if (command.aliases.find(name.toLower()) != -1)
 			{
-				return false;
+				return true;
 			}
-
-			args.removeAt(0);
-
-			for (uint i = 0; i < commands.size(); i++)
-			{
-				@command = commands[i];
-				if (command.aliases.find(name.toLower()) != -1)
-				{
-					return true;
-				}
-			}
-
-			@command = fallbackCommand;
-			return true;
 		}
 
-		return false;
+		@command = fallbackCommand;
+		return true;
 	}
 }

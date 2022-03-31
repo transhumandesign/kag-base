@@ -20,43 +20,42 @@
 #include "GoldCommand.as"
 #include "TeamCommand.as"
 #include "ScrollCommand.as"
-#include "QuitCommand.as"
 
 void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 {
-    manager.RegisterCommand(HelpCommand());
+	manager.RegisterCommand(HelpCommand());
 
-    //game state
-    manager.RegisterCommand(StartCommand());
-    manager.RegisterCommand(EndCommand());
+	//game state
+	manager.RegisterCommand(StartCommand());
+	manager.RegisterCommand(EndCommand());
 
-    //common
-    manager.RegisterCommand(TeamCommand());
-    manager.RegisterCommand(CoinsCommand());
+	//common
+	manager.RegisterCommand(TeamCommand());
+	manager.RegisterCommand(CoinsCommand());
 
-    //materials
-    manager.RegisterCommand(WoodCommand());
-    manager.RegisterCommand(StoneCommand());
-    manager.RegisterCommand(GoldCommand());
-    manager.RegisterCommand(AllMatsCommand());
+	//materials
+	manager.RegisterCommand(WoodCommand());
+	manager.RegisterCommand(StoneCommand());
+	manager.RegisterCommand(GoldCommand());
+	manager.RegisterCommand(AllMatsCommand());
 
-    //utilities
-    manager.RegisterCommand(BombsCommand());
-    manager.RegisterCommand(AllBombsCommand());
-    manager.RegisterCommand(ArrowsCommand());
-    manager.RegisterCommand(AllArrowsCommand());
+	//utilities
+	manager.RegisterCommand(BombsCommand());
+	manager.RegisterCommand(AllBombsCommand());
+	manager.RegisterCommand(ArrowsCommand());
+	manager.RegisterCommand(AllArrowsCommand());
 
-    //trees
-    manager.RegisterCommand(PineTreeCommand());
-    manager.RegisterCommand(BushyTreeCommand());
+	//trees
+	manager.RegisterCommand(PineTreeCommand());
+	manager.RegisterCommand(BushyTreeCommand());
 
-    //animals
-    manager.RegisterCommand(FishiesCommand());
-    manager.RegisterCommand(ChickensCommand());
+	//animals
+	manager.RegisterCommand(FishiesCommand());
+	manager.RegisterCommand(ChickensCommand());
 
-    //misc
-    manager.RegisterCommand(WaterCommand());
-    manager.RegisterCommand(CrateCommand());
-    manager.RegisterCommand(ScrollCommand());
-    manager.RegisterCommand(BotCommand());
+	//misc
+	manager.RegisterCommand(WaterCommand());
+	manager.RegisterCommand(CrateCommand());
+	manager.RegisterCommand(ScrollCommand());
+	manager.RegisterCommand(BotCommand());
 }
