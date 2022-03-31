@@ -14,7 +14,7 @@ class TeamCommand : ChatCommand
 		if (!isServer()) return;
 
 		CBlob@ blob = player.getBlob();
-		if (blob !is null)
+		if (blob is null)
 		{
 			server_AddToChat("Team cannot be changed while dead or spectating", ConsoleColour::ERROR, player);
 			return;
