@@ -7,7 +7,6 @@ class CrateCommand : ChatCommand
 	{
 		super("crate", "Spawn a crate with an optional blob inside");
 		SetUsage("[blob] [description]");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

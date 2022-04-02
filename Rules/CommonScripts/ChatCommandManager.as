@@ -1,31 +1,18 @@
 #include "ChatCommandCommon.as"
 #include "ChatCommand.as"
 #include "FallbackCommand.as"
+#include "DefaultChatCommands.as"
 
 class ChatCommandManager
 {
 	private string configName = "ChatCommands.cfg";
 	private ChatCommand@[] allCommands;
-	private string[] enabledCommandNames;
 	ChatCommand@ fallbackCommand = FallbackCommand();
 
 	ChatCommandManager()
 	{
-		if (isServer())
-		{
-			ConfigFile cfg = getConfig();
-			cfg.readIntoArray_string(enabledCommandNames, "commands");
-
-			if (enabledCommandNames.size() > 0)
-			{
-				for (uint i = 0; i < enabledCommandNames.size(); i++)
-				{
-					enabledCommandNames[i] = enabledCommandNames[i].toLower();
-				}
-
-				print("Chat commands: !" + join(enabledCommandNames, ", !"));
-			}
-		}
+		RegisterDefaultChatCommands(this);
+		LoadConfig();
 	}
 
 	private ConfigFile getConfig()
@@ -33,6 +20,55 @@ class ChatCommandManager
 		ConfigFile cfg;
 		cfg.loadFile("../Cache/" + configName) || cfg.loadFile(configName);
 		return cfg;
+	}
+
+	private void LoadConfig()
+	{
+		if (!isServer()) return;
+
+		ConfigFile cfg = getConfig();
+
+		string[] configCommands;
+		getConfig().readIntoArray_string(configCommands, "commands");
+
+		if (configCommands.size() % 3 != 0)
+		{
+			warn("Chat commands config is malformed");
+			return;
+		}
+
+		if (configCommands.empty()) return;
+
+		string[] commandNames;
+
+		for (uint i = 0; i < configCommands.size(); i += 3)
+		{
+			string name = configCommands[i].toLower();
+			bool modOnly = configCommands[i + 1] == "1";
+			bool debugOnly = configCommands[i + 2] == "1";
+
+			for (uint j = 0; j < allCommands.size(); j++)
+			{
+				ChatCommand@ command = allCommands[j];
+				if (command.aliases[0] == name)
+				{
+					command.enabled = true;
+					command.modOnly = modOnly;
+					command.debugOnly = debugOnly;
+					commandNames.push_back(name);
+					break;
+				}
+			}
+		}
+
+		if (commandNames.size() > 0)
+		{
+			print("Loaded chat commands: !" + join(commandNames, ", !"), ConsoleColour::CRAZY);
+		}
+		else
+		{
+			print("No chat commands loaded", ConsoleColour::CRAZY);
+		}
 	}
 
 	void RegisterCommand(ChatCommand@ command)
@@ -51,17 +87,12 @@ class ChatCommandManager
 		for (uint i = 0; i < allCommands.size(); i++)
 		{
 			ChatCommand@ command = allCommands[i];
-			if (isCommandEnabled(command))
+			if (command.enabled)
 			{
 				enabledCommands.push_back(command);
 			}
 		}
 		return enabledCommands;
-	}
-
-	bool isCommandEnabled(ChatCommand@ command)
-	{
-		return enabledCommandNames.find(command.aliases[0]) != -1;
 	}
 
 	ChatCommand@[] getExecutableCommands(CPlayer@ player)

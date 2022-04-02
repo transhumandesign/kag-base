@@ -5,7 +5,6 @@ class AllBombsCommand : ChatCommand
 	AllBombsCommand()
 	{
 		super("allbombs", "Spawn all types of bombs");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

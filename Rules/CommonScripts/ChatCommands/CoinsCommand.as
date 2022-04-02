@@ -7,7 +7,6 @@ class CoinsCommand : ChatCommand
 		super("coins", "Give yourself coins");
 		AddAlias("money");
 		SetUsage("[amount]");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

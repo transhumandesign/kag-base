@@ -7,7 +7,6 @@ class ScrollCommand : ChatCommand
 	{
 		super("scroll", "Spawn a scroll by name");
 		SetUsage("<name>");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

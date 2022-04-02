@@ -7,7 +7,6 @@ class BushyTreeCommand : ChatCommand
 	{
 		super("bushytree", "Spawn a bushy tree seed");
 		AddAlias("bushyseed");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

@@ -6,7 +6,6 @@ class TeamCommand : ChatCommand
 	{
 		super("team", "Change your team");
 		SetUsage("<team #>");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

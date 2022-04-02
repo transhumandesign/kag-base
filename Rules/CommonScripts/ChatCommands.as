@@ -1,5 +1,4 @@
 #include "ChatCommandManager.as"
-#include "DefaultChatCommands.as"
 
 ChatCommandManager@ manager;
 
@@ -8,7 +7,6 @@ void onInit(CRules@ this)
 	this.addCommandID("SendChatMessage");
 	getSecurity().reloadSecurity();
 	@manager = ChatCommands::getManager();
-	RegisterDefaultChatCommands(manager);
 }
 
 bool onServerProcessChat(CRules@ this, const string &in textIn, string &out textOut, CPlayer@ player)

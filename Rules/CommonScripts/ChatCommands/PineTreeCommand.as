@@ -9,7 +9,6 @@ class PineTreeCommand : ChatCommand
 		AddAlias("pineseed");
 		AddAlias("tree");
 		AddAlias("seed");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

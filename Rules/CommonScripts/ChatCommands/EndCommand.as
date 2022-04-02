@@ -6,7 +6,6 @@ class EndCommand : ChatCommand
 	{
 		super("endgame", "End the game");
 		AddAlias("end");
-		SetModOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

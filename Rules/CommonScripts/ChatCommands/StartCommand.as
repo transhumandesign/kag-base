@@ -6,7 +6,6 @@ class StartCommand : ChatCommand
 	{
 		super("startgame", "Start the game");
 		AddAlias("start");
-		SetModOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

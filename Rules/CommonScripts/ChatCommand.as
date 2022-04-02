@@ -5,6 +5,7 @@ class ChatCommand
 {
 	string[] aliases;
 	string description;
+	bool enabled = false;
 	bool modOnly = false;
 	bool debugOnly = false;
 	string usage = "";
@@ -18,16 +19,6 @@ class ChatCommand
 	void AddAlias(string name)
 	{
 		aliases.push_back(name);
-	}
-
-	void SetModOnly()
-	{
-		modOnly = true;
-	}
-
-	void SetDebugOnly()
-	{
-		debugOnly = true;
 	}
 
 	void SetUsage(string usage)

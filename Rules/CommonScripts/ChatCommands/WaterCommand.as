@@ -6,8 +6,6 @@ class WaterCommand : ChatCommand
 	{
 		super("water", "Create a water source");
 		AddAlias("spawnwater");
-		SetModOnly();
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

@@ -6,7 +6,6 @@ class ChickensCommand : ChatCommand
 	{
 		super("chickens", "Spawn a flock of chickens");
 		AddAlias("chickenflock");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

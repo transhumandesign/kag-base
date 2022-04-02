@@ -8,7 +8,6 @@ class FishiesCommand : ChatCommand
 		AddAlias("fishyschool");
 		AddAlias("fishys");
 		AddAlias("fishes");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

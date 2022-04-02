@@ -5,7 +5,6 @@ class BombsCommand : ChatCommand
 	BombsCommand()
 	{
 		super("bombs", "Spawn bombs");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

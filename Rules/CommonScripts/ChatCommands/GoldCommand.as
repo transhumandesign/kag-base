@@ -5,7 +5,6 @@ class GoldCommand : ChatCommand
 	GoldCommand()
 	{
 		super("gold", "Spawn gold");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

@@ -5,7 +5,6 @@ class WoodCommand : ChatCommand
 	WoodCommand()
 	{
 		super("wood", "Spawn wood");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

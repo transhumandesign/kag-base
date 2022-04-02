@@ -8,7 +8,6 @@ class AllMatsCommand : ChatCommand
 		AddAlias("allmaterials");
 		AddAlias("materials");
 		AddAlias("mats");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)

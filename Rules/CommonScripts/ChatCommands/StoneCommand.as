@@ -6,7 +6,6 @@ class StoneCommand : ChatCommand
 	{
 		super("stone", "Spawn stone");
 		AddAlias("stones");
-		SetDebugOnly();
 	}
 
 	void Execute(string name, string[] args, CPlayer@ player)
