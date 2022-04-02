@@ -18,6 +18,7 @@ void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 	//common
 	manager.RegisterCommand(TeamCommand());
 	manager.RegisterCommand(CoinsCommand());
+	manager.RegisterCommand(HealCommand());
 
 	//classes
 	manager.RegisterCommand(KnightCommand());

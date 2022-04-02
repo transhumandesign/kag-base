@@ -143,3 +143,89 @@ class CoinsCommand : ChatCommand
 		}
 	}
 }
+
+class HealCommand : ChatCommand
+{
+	HealCommand()
+	{
+		super("heal", "Heal yourself");
+		AddAlias("health");
+		SetUsage("[amount]");
+	}
+
+	void Execute(string name, string[] args, CPlayer@ player)
+	{
+		CBlob@ blob = player.getBlob();
+		if (blob is null)
+		{
+			if (isServer())
+			{
+				server_AddToChat("Your class cannot be changed while dead or spectating", ConsoleColour::ERROR, player);
+			}
+			return;
+		}
+
+		//i hate this but it works
+		float health;
+		float healthClamped;
+
+		if (args.size() > 0)
+		{
+			health = healthClamped = parseFloat(args[0]);
+
+			if (blob.getHealth() * 2 + health < 0.5f)
+			{
+				healthClamped = 0.125f - blob.getHealth() * 2;
+			}
+
+			if (blob.getHealth() * 2 + health > blob.getInitialHealth() * 2)
+			{
+				healthClamped = (blob.getInitialHealth() - blob.getHealth()) * 2;
+			}
+		}
+		else
+		{
+			health = blob.getInitialHealth() * 2;
+			healthClamped = (blob.getInitialHealth() - blob.getHealth()) * 2;
+		}
+
+		if (isServer())
+		{
+			blob.server_Heal(healthClamped);
+		}
+
+		if (isClient())
+		{
+			if (healthClamped == 0)
+			{
+				if (health == 0)
+				{
+					client_AddToChat("Specify a valid amount to heal", ConsoleColour::ERROR);
+				}
+				else if (health > 0)
+				{
+					client_AddToChat("You are already at full health", ConsoleColour::ERROR);
+				}
+				else
+				{
+					client_AddToChat("You are already at the lowest health", ConsoleColour::ERROR);
+				}
+			}
+			else
+			{
+				CSprite@ sprite = blob.getSprite();
+				if (sprite !is null)
+				{
+					if (health > 0)
+					{
+						sprite.PlaySound("Heart.ogg");
+					}
+					else
+					{
+						sprite.PlaySound("ArgShort.ogg", 1.0f, blob.getSexNum() == 0 ? 1.0f : 1.5f);
+					}
+				}
+			}
+		}
+	}
+}
