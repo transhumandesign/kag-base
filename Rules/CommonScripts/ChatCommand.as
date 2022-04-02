@@ -39,7 +39,7 @@ class ChatCommand
 	{
 		return (
 			(!modOnly || player.isMod()) &&
-			(!debugOnly || getRules().get_bool("sv_test"))
+			(!debugOnly || sv_test)
 		);
 	}
 

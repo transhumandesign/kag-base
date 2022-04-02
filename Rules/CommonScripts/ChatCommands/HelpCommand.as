@@ -10,23 +10,23 @@ class HelpCommand : ChatCommand
 
 	void Execute(string name, string[] args, CPlayer@ player)
 	{
-		if (!isClient()) return;
+		if (!isServer()) return;
 
 		ChatCommandManager@ manager = ChatCommands::getManager();
 		ChatCommand@[] commands = manager.getExecutableCommands(player);
 
 		for (uint i = 0; i < commands.size(); i++)
 		{
-			AddCommandToChat(commands[i]);
+			AddCommandToChat(commands[i], player);
 		}
 
 		if (manager.fallbackCommand.canPlayerExecute(player))
 		{
-			AddCommandToChat(manager.fallbackCommand);
+			AddCommandToChat(manager.fallbackCommand, player);
 		}
 	}
 
-	private void AddCommandToChat(ChatCommand@ command)
+	private void AddCommandToChat(ChatCommand@ command, CPlayer@ player)
 	{
 		string[] names;
 		for (uint i = 0; i < command.aliases.size(); i++)
@@ -40,7 +40,7 @@ class HelpCommand : ChatCommand
 			names.push_back(cmdName);
 		}
 
-		client_AddToChat(join(names, ", "), ConsoleColour::CRAZY);
-		client_AddToChat("   ↳ " + getTranslatedString(command.description), ConsoleColour::INFO);
+		server_AddToChat(join(names, ", "), ConsoleColour::CRAZY, player);
+		server_AddToChat("   ↳ " + getTranslatedString(command.description), ConsoleColour::INFO, player);
 	}
 }

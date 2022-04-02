@@ -11,33 +11,6 @@ void onInit(CRules@ this)
 	RegisterDefaultChatCommands(manager);
 }
 
-void onTick(CRules@ this)
-{
-	if (isServer())
-	{
-		//sync to client so they know whether they can use debug commands
-		this.set_bool("sv_test", sv_test);
-		this.Sync("sv_test", true);
-	}
-}
-
-void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
-{
-	CPlayer@ player = getLocalPlayer();
-	if (player is null) return;
-
-	ChatCommand@[] commands = manager.getExecutableCommands(player);
-	if (commands.size() == 0) return;
-
-	CContextMenu@ contextMenu = Menu::addContextMenu(menu, getTranslatedString("Chat Commands"));
-
-	for (uint i = 0; i < commands.size(); i++)
-	{
-		ChatCommand@ command = commands[i];
-		Menu::addInfoBox(contextMenu, "!" + command.aliases[0] + " " + command.usage, getTranslatedString(command.description));
-	}
-}
-
 bool onServerProcessChat(CRules@ this, const string &in textIn, string &out textOut, CPlayer@ player)
 {
 	textOut = removeExcessSpaces(textIn);

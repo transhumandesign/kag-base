@@ -70,6 +70,14 @@ void server_AddToChat(string message, SColor color, CPlayer@ player = null)
 		bs.write_u8(color.getGreen());
 		bs.write_u8(color.getRed());
 		bs.write_u8(color.getAlpha());
-		getRules().SendCommand(getRules().getCommandID("SendChatMessage"), bs, player);
+
+		if (player !is null)
+		{
+			getRules().SendCommand(getRules().getCommandID("SendChatMessage"), bs, player);
+		}
+		else
+		{
+			getRules().SendCommand(getRules().getCommandID("SendChatMessage"), bs, true);
+		}
 	}
 }
