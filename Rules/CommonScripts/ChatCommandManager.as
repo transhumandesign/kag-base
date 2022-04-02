@@ -1,13 +1,12 @@
 #include "ChatCommandCommon.as"
 #include "ChatCommand.as"
-#include "FallbackCommand.as"
 #include "DefaultChatCommands.as"
 
 class ChatCommandManager
 {
 	private string configName = "ChatCommands.cfg";
 	private ChatCommand@[] allCommands;
-	ChatCommand@ fallbackCommand = FallbackCommand();
+	string[] blacklistedBlobs;
 
 	ChatCommandManager()
 	{
@@ -29,7 +28,8 @@ class ChatCommandManager
 		ConfigFile cfg = getConfig();
 
 		string[] configCommands;
-		getConfig().readIntoArray_string(configCommands, "commands");
+		cfg.readIntoArray_string(configCommands, "commands");
+		cfg.readIntoArray_string(blacklistedBlobs, "blacklisted_blobs");
 
 		if (configCommands.size() % 3 != 0)
 		{
@@ -131,7 +131,6 @@ class ChatCommandManager
 			}
 		}
 
-		@command = fallbackCommand;
-		return true;
+		return false;
 	}
 }

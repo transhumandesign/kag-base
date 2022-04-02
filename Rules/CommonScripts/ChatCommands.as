@@ -27,6 +27,12 @@ bool onServerProcessChat(CRules@ this, const string &in textIn, string &out text
 
 		command.Execute(name, args, player);
 	}
+	else if (command !is null)
+	{
+		server_AddToChat("'!" + name + "' is not a valid command", ConsoleColour::ERROR, player);
+		return false;
+	}
+
 	return true;
 }
 

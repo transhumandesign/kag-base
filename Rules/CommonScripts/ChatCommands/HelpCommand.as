@@ -17,30 +17,22 @@ class HelpCommand : ChatCommand
 
 		for (uint i = 0; i < commands.size(); i++)
 		{
-			AddCommandToChat(commands[i], player);
-		}
+			ChatCommand@ command = commands[i];
 
-		if (manager.fallbackCommand.canPlayerExecute(player))
-		{
-			AddCommandToChat(manager.fallbackCommand, player);
-		}
-	}
-
-	private void AddCommandToChat(ChatCommand@ command, CPlayer@ player)
-	{
-		string[] names;
-		for (uint i = 0; i < command.aliases.size(); i++)
-		{
-			string alias = command.aliases[i];
-			string cmdName = "!" + alias;
-			if (command.usage != "")
+			string[] names;
+			for (uint i = 0; i < command.aliases.size(); i++)
 			{
-				cmdName += " " + command.usage;
+				string alias = command.aliases[i];
+				string cmdName = "!" + alias;
+				if (command.usage != "")
+				{
+					cmdName += " " + command.usage;
+				}
+				names.push_back(cmdName);
 			}
-			names.push_back(cmdName);
-		}
 
-		server_AddToChat(join(names, ", "), ConsoleColour::CRAZY, player);
-		server_AddToChat("   ↳ " + getTranslatedString(command.description), ConsoleColour::INFO, player);
+			server_AddToChat(join(names, ", "), ConsoleColour::CRAZY, player);
+			server_AddToChat("   ↳ " + getTranslatedString(command.description), ConsoleColour::INFO, player);
+		}
 	}
 }
