@@ -1,29 +1,11 @@
 #include "ChatCommandManager.as"
-#include "HelpCommand.as"
-#include "BotCommand.as"
-#include "StartCommand.as"
-#include "EndCommand.as"
-#include "PineTreeCommand.as"
-#include "BushyTreeCommand.as"
-#include "ArrowsCommand.as"
-#include "AllArrowsCommand.as"
-#include "BombsCommand.as"
-#include "AllBombsCommand.as"
-#include "WaterCommand.as"
-#include "CrateCommand.as"
-#include "CoinsCommand.as"
-#include "FishiesCommand.as"
-#include "ChickensCommand.as"
-#include "AllMatsCommand.as"
-#include "WoodCommand.as"
-#include "StoneCommand.as"
-#include "GoldCommand.as"
-#include "TeamCommand.as"
-#include "ScrollCommand.as"
-#include "KnightCommand.as"
-#include "ArcherCommand.as"
-#include "BuilderCommand.as"
-#include "SpawnCommand.as"
+#include "AnimalCommands.as"
+#include "BlobCommands.as"
+#include "GameStateCommands.as"
+#include "MaterialCommands.as"
+#include "MiscCommands.as"
+#include "PlayerCommands.as"
+#include "UtilityCommands.as"
 
 void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 {
@@ -62,7 +44,7 @@ void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 	manager.RegisterCommand(FishiesCommand());
 	manager.RegisterCommand(ChickensCommand());
 
-	//misc
+	//other
 	manager.RegisterCommand(WaterCommand());
 	manager.RegisterCommand(CrateCommand());
 	manager.RegisterCommand(ScrollCommand());
