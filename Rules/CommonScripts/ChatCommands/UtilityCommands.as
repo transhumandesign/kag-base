@@ -7,7 +7,7 @@ class AllArrowsCommand : ChatCommand
 		super("allarrows", "Spawn all types of arrows");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
@@ -22,7 +22,7 @@ class AllArrowsCommand : ChatCommand
 		}
 		else
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 		}
 	}
 }
@@ -34,7 +34,7 @@ class AllBombsCommand : ChatCommand
 		super("allbombs", "Spawn all types of bombs");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
@@ -50,7 +50,7 @@ class AllBombsCommand : ChatCommand
 		}
 		else
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 		}
 	}
 }
@@ -62,7 +62,7 @@ class ArrowsCommand : ChatCommand
 		super("arrows", "Spawn arrows");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
@@ -77,7 +77,7 @@ class ArrowsCommand : ChatCommand
 		}
 		else
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 		}
 	}
 }
@@ -89,7 +89,7 @@ class BombsCommand : ChatCommand
 		super("bombs", "Spawn bombs");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
@@ -104,7 +104,7 @@ class BombsCommand : ChatCommand
 		}
 		else
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 		}
 	}
 }

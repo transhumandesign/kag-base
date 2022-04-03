@@ -34,5 +34,5 @@ class ChatCommand
 		);
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player) {}
+	void Execute(string[] args, CPlayer@ player) {}
 }

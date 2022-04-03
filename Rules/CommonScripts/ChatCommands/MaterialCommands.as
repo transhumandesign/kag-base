@@ -10,7 +10,7 @@ class AllMatsCommand : ChatCommand
 		AddAlias("mats");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
@@ -27,7 +27,7 @@ class AllMatsCommand : ChatCommand
 		}
 		else
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 		}
 	}
 }
@@ -39,7 +39,7 @@ class WoodCommand : ChatCommand
 		super("wood", "Spawn wood");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
@@ -52,7 +52,7 @@ class WoodCommand : ChatCommand
 		}
 		else
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 		}
 	}
 }
@@ -65,7 +65,7 @@ class StoneCommand : ChatCommand
 		AddAlias("stones");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
@@ -78,7 +78,7 @@ class StoneCommand : ChatCommand
 		}
 		else
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 		}
 	}
 }
@@ -90,7 +90,7 @@ class GoldCommand : ChatCommand
 		super("gold", "Spawn gold");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
@@ -103,7 +103,7 @@ class GoldCommand : ChatCommand
 		}
 		else
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 		}
 	}
 }

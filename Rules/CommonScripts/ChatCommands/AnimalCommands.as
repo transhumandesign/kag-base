@@ -8,7 +8,7 @@ class ChickensCommand : ChatCommand
 		AddAlias("chickenflock");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
@@ -23,7 +23,7 @@ class ChickensCommand : ChatCommand
 		}
 		else
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 		}
 	}
 }
@@ -38,7 +38,7 @@ class FishiesCommand : ChatCommand
 		AddAlias("fishes");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
@@ -53,7 +53,7 @@ class FishiesCommand : ChatCommand
 		}
 		else
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 		}
 	}
 }

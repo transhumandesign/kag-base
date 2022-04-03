@@ -7,20 +7,20 @@ class ArcherCommand : ChatCommand
 		super("archer", "Change class to Archer");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
 		CBlob@ blob = player.getBlob();
 		if (blob is null)
 		{
-			server_AddToChat("Your class cannot be changed while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Your class cannot be changed while dead or spectating"), ConsoleColour::ERROR, player);
 			return;
 		}
 
 		if (blob.getName() == "archer")
 		{
-			server_AddToChat("Your class is already Archer", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Your class is already {CLASS}").replace("{CLASS}", getTranslatedString("Archer")), ConsoleColour::ERROR, player);
 			return;
 		}
 
@@ -37,20 +37,20 @@ class BuilderCommand : ChatCommand
 		super("builder", "Change class to Builder");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
 		CBlob@ blob = player.getBlob();
 		if (blob is null)
 		{
-			server_AddToChat("Your class cannot be changed while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Your class cannot be changed while dead or spectating"), ConsoleColour::ERROR, player);
 			return;
 		}
 
 		if (blob.getName() == "builder")
 		{
-			server_AddToChat("Your class is already Builder", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Your class is already {CLASS}").replace("{CLASS}", getTranslatedString("Builder")), ConsoleColour::ERROR, player);
 			return;
 		}
 
@@ -67,20 +67,20 @@ class KnightCommand : ChatCommand
 		super("knight", "Change class to Knight");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
 		CBlob@ blob = player.getBlob();
 		if (blob is null)
 		{
-			server_AddToChat("Your class cannot be changed while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Your class cannot be changed while dead or spectating"), ConsoleColour::ERROR, player);
 			return;
 		}
 
 		if (blob.getName() == "knight")
 		{
-			server_AddToChat("Your class is already Knight", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Your class is already {CLASS}").replace("{CLASS}", getTranslatedString("Knight")), ConsoleColour::ERROR, player);
 			return;
 		}
 
@@ -98,20 +98,20 @@ class TeamCommand : ChatCommand
 		SetUsage("<team #>");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
 		CBlob@ blob = player.getBlob();
 		if (blob is null)
 		{
-			server_AddToChat("Team cannot be changed while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Team cannot be changed while dead or spectating"), ConsoleColour::ERROR, player);
 			return;
 		}
 
 		if (args.size() == 0)
 		{
-			server_AddToChat("Specify a team number to change to", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Specify a team number to change to"), ConsoleColour::ERROR, player);
 			return;
 		}
 
@@ -129,7 +129,7 @@ class CoinsCommand : ChatCommand
 		SetUsage("[amount]");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (isServer())
 		{
@@ -153,14 +153,14 @@ class HealCommand : ChatCommand
 		SetUsage("[amount]");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		CBlob@ blob = player.getBlob();
 		if (blob is null)
 		{
 			if (isServer())
 			{
-				server_AddToChat("Your class cannot be changed while dead or spectating", ConsoleColour::ERROR, player);
+				server_AddToChat(getTranslatedString("You cannot heal yourself while dead or spectating"), ConsoleColour::ERROR, player);
 			}
 			return;
 		}
@@ -194,21 +194,21 @@ class HealCommand : ChatCommand
 			blob.server_Heal(healthClamped);
 		}
 
-		if (isClient())
+		if (player.isMyPlayer())
 		{
 			if (healthClamped == 0)
 			{
 				if (health == 0)
 				{
-					client_AddToChat("Specify a valid amount to heal", ConsoleColour::ERROR);
+					client_AddToChat(getTranslatedString("Specify a valid amount to heal"), ConsoleColour::ERROR);
 				}
 				else if (health > 0)
 				{
-					client_AddToChat("You are already at full health", ConsoleColour::ERROR);
+					client_AddToChat(getTranslatedString("You are already at full health"), ConsoleColour::ERROR);
 				}
 				else
 				{
-					client_AddToChat("You are already at the lowest health", ConsoleColour::ERROR);
+					client_AddToChat(getTranslatedString("You are already at the lowest health"), ConsoleColour::ERROR);
 				}
 			}
 			else

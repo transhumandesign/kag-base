@@ -1,6 +1,5 @@
 #include "ChatCommandCommon.as"
 #include "ChatCommand.as"
-#include "DefaultChatCommands.as"
 
 class ChatCommandManager
 {
@@ -8,24 +7,12 @@ class ChatCommandManager
 	private ChatCommand@[] allCommands;
 	string[] blacklistedBlobs;
 
-	ChatCommandManager()
-	{
-		RegisterDefaultChatCommands(this);
-		LoadConfig();
-	}
-
-	private ConfigFile getConfig()
-	{
-		ConfigFile cfg;
-		cfg.loadFile("../Cache/" + configName) || cfg.loadFile(configName);
-		return cfg;
-	}
-
-	private void LoadConfig()
+	void LoadConfig()
 	{
 		if (!isServer()) return;
 
-		ConfigFile cfg = getConfig();
+		ConfigFile cfg;
+		cfg.loadFile("../Cache/" + configName) || cfg.loadFile(configName);
 
 		string[] configCommands;
 		cfg.readIntoArray_string(configCommands, "commands");
@@ -37,9 +24,8 @@ class ChatCommandManager
 			return;
 		}
 
-		if (configCommands.empty()) return;
-
 		string[] commandNames;
+		ChatCommand@[] sortedCommands;
 
 		for (uint i = 0; i < configCommands.size(); i += 3)
 		{
@@ -56,10 +42,14 @@ class ChatCommandManager
 					command.modOnly = modOnly;
 					command.debugOnly = debugOnly;
 					commandNames.push_back(name);
+					sortedCommands.push_back(command);
 					break;
 				}
 			}
 		}
+
+		//allCommands no longer contains all commands on server
+		allCommands = sortedCommands;
 
 		if (commandNames.size() > 0)
 		{
@@ -74,11 +64,6 @@ class ChatCommandManager
 	void RegisterCommand(ChatCommand@ command)
 	{
 		allCommands.push_back(command);
-	}
-
-	ChatCommand@[] getAllCommands()
-	{
-		return allCommands;
 	}
 
 	ChatCommand@[] getEnabledCommands()
@@ -110,24 +95,27 @@ class ChatCommandManager
 		return executableCommands;
 	}
 
-	bool processCommand(string text, ChatCommand@ &out command, string &out name, string[] &out args)
+	bool processCommand(string text, ChatCommand@ &out command, string[] &out args)
 	{
-		if (text.find("!") != 0) return false;
+		if (text.substr(0, 1) != "!") return false;
 
-		args = text.split(" ");
-		name = args[0].substr(1);
+		string name = text.substr(1, 1);
+		if (name == "" || name == " ") return false;
 
-		if (name == "") return false;
-
-		args.removeAt(0);
-
-		ChatCommand@[] commands = isServer() ? getEnabledCommands() : getAllCommands();
+		ChatCommand@[] commands = isServer() ? getEnabledCommands() : allCommands;
 		for (uint i = 0; i < commands.size(); i++)
 		{
 			@command = commands[i];
-			if (command.aliases.find(name.toLower()) != -1)
+
+			for (uint j = 0; j < command.aliases.size(); j++)
 			{
-				return true;
+				string alias = command.aliases[j];
+				string aliasCandidate = text.substr(1, alias.size() + 1).toLower();
+				if (aliasCandidate == alias || aliasCandidate == alias + " ")
+				{
+					args = aliasCandidate == alias ? array<string>() : text.substr(alias.size() + 2).split(" ");
+					return true;
+				}
 			}
 		}
 

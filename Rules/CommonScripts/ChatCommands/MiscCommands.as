@@ -8,12 +8,12 @@ class HelpCommand : ChatCommand
 		AddAlias("commands");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
 		ChatCommandManager@ manager = ChatCommands::getManager();
-		ChatCommand@[] commands = manager.getExecutableCommands(player);
+		ChatCommand@[]@ commands = manager.getExecutableCommands(player);
 
 		for (uint i = 0; i < commands.size(); i++)
 		{
@@ -45,7 +45,7 @@ class BotCommand : ChatCommand
 		AddAlias("henry");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (isServer())
 		{
@@ -62,7 +62,7 @@ class WaterCommand : ChatCommand
 		AddAlias("spawnwater");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
@@ -74,7 +74,7 @@ class WaterCommand : ChatCommand
 		}
 		else
 		{
-			server_AddToChat("Water cannot be created while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Water cannot be created while dead or spectating"), ConsoleColour::ERROR, player);
 		}
 	}
 }

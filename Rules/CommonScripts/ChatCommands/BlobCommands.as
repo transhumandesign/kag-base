@@ -13,7 +13,7 @@ class PineTreeCommand : ChatCommand
 		AddAlias("seed");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
@@ -25,7 +25,7 @@ class PineTreeCommand : ChatCommand
 		}
 		else
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 		}
 	}
 }
@@ -38,7 +38,7 @@ class BushyTreeCommand : ChatCommand
 		AddAlias("bushyseed");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
@@ -50,7 +50,7 @@ class BushyTreeCommand : ChatCommand
 		}
 		else
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 		}
 	}
 }
@@ -63,14 +63,14 @@ class CrateCommand : ChatCommand
 		SetUsage("[blob] [description]");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
 		CBlob@ blob = player.getBlob();
 		if (blob is null)
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 			return;
 		}
 
@@ -91,7 +91,7 @@ class CrateCommand : ChatCommand
 
 		if (isBlobBlacklisted(blobName))
 		{
-			server_AddToChat("Crates cannot be spawned containing this blacklisted blob", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Crates cannot be spawned containing this blacklisted blob"), ConsoleColour::ERROR, player);
 			return;
 		}
 
@@ -108,20 +108,20 @@ class ScrollCommand : ChatCommand
 		SetUsage("<name>");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
 		CBlob@ blob = player.getBlob();
 		if (blob is null)
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 			return;
 		}
 
 		if (args.size() == 0)
 		{
-			server_AddToChat("Specify the name of a scroll to spawn", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Specify the name of a scroll to spawn"), ConsoleColour::ERROR, player);
 			return;
 		}
 
@@ -140,20 +140,20 @@ class SpawnCommand : ChatCommand
 		SetUsage("<blob>");
 	}
 
-	void Execute(string name, string[] args, CPlayer@ player)
+	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;
 
 		CBlob@ blob = player.getBlob();
 		if (blob is null)
 		{
-			server_AddToChat("Blobs cannot be spawned while dead or spectating", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
 			return;
 		}
 
 		if (args.size() == 0)
 		{
-			server_AddToChat("Specify the name of a blob to spawn", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Specify the name of a blob to spawn"), ConsoleColour::ERROR, player);
 			return;
 		}
 
@@ -161,7 +161,7 @@ class SpawnCommand : ChatCommand
 
 		if (isBlobBlacklisted(blobName))
 		{
-			server_AddToChat("This blacklisted blob cannot be spawned", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("This blacklisted blob cannot be spawned"), ConsoleColour::ERROR, player);
 			return;
 		}
 
@@ -172,7 +172,7 @@ class SpawnCommand : ChatCommand
 		//invalid blobs will have 'broken' names
 		if (newBlob is null || newBlob.getName() != blobName)
 		{
-			server_AddToChat("Blob '" + blobName + "' not found", ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blob '{BLOB}' not found").replace("{BLOB}", blobName), ConsoleColour::ERROR, player);
 		}
 	}
 }
