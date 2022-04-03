@@ -34,15 +34,16 @@ void onInit(CBlob@ this)
 	{
 		u8 spriteIndex = this.get_u8("sprite index");
 
+		if (spriteIndex < seed_names.length)
+		{
+			this.setInventoryName(seed_names[spriteIndex]);
+		}
+
 		if (spriteIndex < seed_sprites.length)
 		{
 			LoadSprite(this, seed_sprites[spriteIndex], spriteIndex);
 		}
 
-		if (spriteIndex < seed_names.length)
-		{
-			this.setInventoryName(seed_names[spriteIndex]);
-		}
 	}
 	else
 	{
@@ -66,6 +67,7 @@ void onInit(CBlob@ this)
 
 	this.Tag("place norotate");
 	this.Tag("pushedByDoor");
+	this.Tag("use inventory icon");
 
 	this.getCurrentScript().tickFrequency = OPT_TICK;
 }
@@ -100,6 +102,13 @@ void LoadSprite(CBlob@ this, string filename, u8 spriteIndex)
 
 		sprite.SetAnimation(anim);
 		this.SetInventoryIcon(filename, anim.getFrame(0), Vec2f(frameWidth, frameHeight));
+		
+		// add icon to be used when loading into catapult
+		string iconName = "$" + this.getInventoryName() + "$";
+		if (!GUI::hasIconName(iconName))
+		{
+			AddIconToken(iconName, filename, Vec2f(frameWidth, frameHeight), anim.getFrame(0));
+		}
 	}
 }
 
