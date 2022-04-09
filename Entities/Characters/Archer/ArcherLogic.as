@@ -37,6 +37,7 @@ void onInit(CBlob@ this)
 	this.getSprite().SetEmitSound("Entities/Characters/Archer/BowPull.ogg");
 	this.addCommandID("shoot arrow");
 	this.addCommandID("pickup arrow");
+	this.addCommandID("has arrows");
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
 	this.addCommandID(grapple_sync_cmd);
@@ -342,7 +343,12 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		if (hasarrow != this.get_bool("has_arrow"))
 		{
 			this.set_bool("has_arrow", hasarrow);
-			this.Sync("has_arrow", isServer());
+			CBitStream params;
+			params.write_bool(hasarrow);
+			if(isServer())
+				this.SendCommand(this.getCommandID("has arrows"), params);
+			else
+				this.SendCommandOnlyServer(this.getCommandID("has arrows"), params);
 		}
 
 	}
@@ -429,7 +435,12 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			if (responsible)
 			{
 				this.set_bool("has_arrow", hasarrow);
-				this.Sync("has_arrow", isServer());
+				CBitStream params;
+				params.write_bool(hasarrow);
+				if(isServer())
+					this.SendCommand(this.getCommandID("has arrows"), params);
+				else
+					this.SendCommandOnlyServer(this.getCommandID("has arrows"), params);
 			}
 
 			charge_time = 0;
@@ -1059,6 +1070,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (params.saferead_u8(type) && hasArrows(this, type))
 		{
 			CycleToArrowType(this, archer, type);
+		}
+	}
+	else if (cmd == this.getCommandID("has arrows"))
+	{
+		bool hasarrow;
+		if(params.saferead_bool(hasarrow))
+		{
+			this.set_bool("has_arrow", hasarrow);
 		}
 	}
 	else
