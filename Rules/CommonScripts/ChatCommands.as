@@ -91,23 +91,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 	if (isMod)
 	{
-		if (text_in == "!bot")
-		{
-			AddBot("Henry");
-			return true;
-		}
-		else if (text_in == "!debug")
-		{
-			CBlob@[] all;
-			getBlobs(@all);
-
-			for (u32 i = 0; i < all.length; i++)
-			{
-				CBlob@ blob = all[i];
-				print("[" + blob.getName() + " " + blob.getNetworkID() + "] ");
-			}
-		}
-		else if (text_in == "!endgame")
+		if (text_in == "!endgame")
 		{
 			this.SetCurrentState(GAME_OVER); //go to map vote
 			return true;
@@ -126,7 +110,12 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 	if (sv_test)
 	{
-		if (text_in == "!tree") // pine tree (seed)
+		if (text_in == "!bot" && isMod)
+		{
+			AddBot("Henry");
+			return true;
+		}
+		else if (text_in == "!tree") // pine tree (seed)
 		{
 			server_MakeSeed(pos, "tree_pine", 600, 1, 16);
 		}
@@ -349,37 +338,6 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		params.write_u8(errorColor.getAlpha());
 
 		this.SendCommand(this.getCommandID("SendChatMessage"), params, player);
-	}
-
-	return true;
-}
-
-bool onClientProcessChat(CRules@ this, const string& in text_in, string& out text_out, CPlayer@ player)
-{
-	if (text_in == "!debug" && !getNet().isServer())
-	{
-		// print all blobs
-		CBlob@[] all;
-		getBlobs(@all);
-
-		for (u32 i = 0; i < all.length; i++)
-		{
-			CBlob@ blob = all[i];
-			print("[" + blob.getName() + " " + blob.getNetworkID() + "] ");
-
-			if (blob.getShape() !is null)
-			{
-				CBlob@[] overlapping;
-				if (blob.getOverlapping(@overlapping))
-				{
-					for (uint i = 0; i < overlapping.length; i++)
-					{
-						CBlob@ overlap = overlapping[i];
-						print("       " + overlap.getName() + " " + overlap.isLadder());
-					}
-				}
-			}
-		}
 	}
 
 	return true;
