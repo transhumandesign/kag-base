@@ -345,7 +345,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			this.set_bool("has_arrow", hasarrow);
 			CBitStream params;
 			params.write_bool(hasarrow);
-			if(isServer())
+			if (isServer())
 				this.SendCommand(this.getCommandID("has arrows"), params);
 			else
 				this.SendCommandOnlyServer(this.getCommandID("has arrows"), params);
@@ -437,7 +437,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 				this.set_bool("has_arrow", hasarrow);
 				CBitStream params;
 				params.write_bool(hasarrow);
-				if(isServer())
+				if (isServer())
 					this.SendCommand(this.getCommandID("has arrows"), params);
 				else
 					this.SendCommandOnlyServer(this.getCommandID("has arrows"), params);
