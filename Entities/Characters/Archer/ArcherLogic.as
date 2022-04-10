@@ -1075,7 +1075,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID("has arrows"))
 	{
 		bool hasarrow;
-		if(params.saferead_bool(hasarrow))
+		if (params.saferead_bool(hasarrow))
 		{
 			this.set_bool("has_arrow", hasarrow);
 		}
