@@ -150,11 +150,8 @@ void onTick(CBlob@ this)
 		this.ClearMenus();
 		this.ShowInteractButtons();
 		this.set_bool("release click", true);
-		//if(this.get_bool("shop prevent attack"))
-		//{
-			this.set_bool("shop prevent attack", false);
-			this.Sync("shop prevent attack", false);
-		//}
+		this.set_bool("shop prevent attack", false);
+		this.Sync("shop prevent attack", false);
 	}
 	else if (this.isKeyJustReleased(key_use))
 	{
