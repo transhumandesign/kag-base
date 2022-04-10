@@ -105,7 +105,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller is null) { return; }
 
 		if(this.hasTag(SHOP_AUTOCLOSE))
+		{
 			caller.set_bool("shop prevent attack", false);
+		}
 
 		if (this.hasTag("shop disabled"))
 			return;
