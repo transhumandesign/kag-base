@@ -13,6 +13,7 @@ void onInit(CBlob@ this)
 {
 	this.addCommandID("shop buy");
 	this.addCommandID("shop made item");
+	this.addCommandID("shop close");
 
 	if (!this.exists("shop available"))
 		this.set_bool("shop available", true);
@@ -90,9 +91,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 	if (cmd == this.getCommandID("shop buy"))
 	{
-		if (this.hasTag("shop disabled"))
-			return;
-
 		u16 callerID;
 		if (!params.saferead_u16(callerID))
 			return;
@@ -105,6 +103,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		CBlob@ caller = getBlobByNetworkID(callerID);
 		if (caller is null) { return; }
+
+		if(this.hasTag(SHOP_AUTOCLOSE))
+			caller.set_bool("shop prevent attack", false);
+
+		if (this.hasTag("shop disabled"))
+			return;
+
 		CInventory@ inv = caller.getInventory();
 
 		if (this.getHealth() <= 0)
@@ -297,6 +302,20 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 	}
+	if (cmd == this.getCommandID("shop close"))
+	{
+		u16 netid;
+		if(params.saferead_netid(netid))
+		{
+			CBlob@ caller = getBlobByNetworkID(netid);
+			if(caller !is null)
+			{
+				caller.set_bool("shop prevent attack", false);
+				caller.ClearButtons();
+				caller.ClearMenus();
+			}
+		}
+	}
 }
 
 //helper for building menus of shopitems
@@ -397,6 +416,8 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 
 	if (!this.get(SHOP_ARRAY, @shopitems)) { return; }
 
+	caller.set_bool("shop prevent attack", true);
+	caller.Sync("shop prevent attack", false);
 
 	CControls@ controls = caller.getControls();
 	CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + offset, this, Vec2f(slotsAdd.x, slotsAdd.y), getTranslatedString(description));
@@ -405,6 +426,10 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 	{
 		if (!this.hasTag(SHOP_AUTOCLOSE))
 			menu.deleteAfterClick = false;
+
+		CBitStream parameters;
+		parameters.write_netid(caller.getNetworkID());
+		menu.SetDefaultCommand(this.getCommandID("shop close"), parameters);
 		addShopItemsToMenu(this, menu, caller);
 
 		//keybinds

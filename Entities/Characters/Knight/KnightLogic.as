@@ -458,7 +458,7 @@ class NormalState : KnightState
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 	{
-		if (this.isKeyPressed(key_action1) && !moveVars.wallsliding)
+		if (this.isKeyPressed(key_action1) && !moveVars.wallsliding && !InShop(this))
 		{
 			knight.state = KnightStates::sword_drawn;
 			return true;
@@ -501,7 +501,7 @@ class ShieldingState : KnightState
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 	{
-		if (this.isKeyPressed(key_action1))
+		if (this.isKeyPressed(key_action1) && !InShop(this))
 		{
 			knight.state = KnightStates::sword_drawn;
 			return true;
@@ -548,7 +548,7 @@ class ShieldGlideState : KnightState
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 	{
-		if (this.isKeyPressed(key_action1))
+		if (this.isKeyPressed(key_action1) && !InShop(this))
 		{
 			knight.state = KnightStates::sword_drawn;
 			return true;
@@ -624,7 +624,7 @@ class ShieldSlideState : KnightState
 
 	bool TickState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 	{
-		if (this.isKeyPressed(key_action1))
+		if (this.isKeyPressed(key_action1) && !InShop(this))
 		{
 			knight.state = KnightStates::sword_drawn;
 			return true;
@@ -801,7 +801,7 @@ class SwordDrawnState : KnightState
 		AttackMovement(this, knight, moveVars);
 		s32 delta = getSwordTimerDelta(knight);
 
-		if (!this.isKeyPressed(key_action1))
+		if (!this.isKeyPressed(key_action1) || InShop(this))
 		{
 			if (delta < KnightVars::slash_charge)
 			{
@@ -1020,7 +1020,7 @@ class ResheathState : KnightState
 			return false;
 
 		}
-		else if (this.isKeyPressed(key_action1))
+		else if (this.isKeyPressed(key_action1) && !InShop(this))
 		{
 			knight.state = KnightStates::sword_drawn;
 			return true;
@@ -1744,4 +1744,9 @@ void CheckSelectedBombRemovedFromInventory(CBlob@ this, CBlob@ blob)
 	{
 		SetFirstAvailableBomb(this);
 	}
+}
+
+bool InShop(CBlob@ this)
+{
+	return this.get_bool("shop prevent attack");
 }
