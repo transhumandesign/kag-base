@@ -26,14 +26,14 @@ string removeExcessSpaces(string text)
 	}
 
 	// Remove space at start
-	if (text.find(" ") == 0)
+	if (text.substr(0, 1) == " ")
 	{
 		text = text.substr(1);
 	}
 
 	// Remove space at end
 	uint lastIndex = text.size() - 1;
-	if (text.findLast(" ") == lastIndex)
+	if (text.substr(lastIndex, 1) == " ")
 	{
 		text = text.substr(0, lastIndex);
 	}
