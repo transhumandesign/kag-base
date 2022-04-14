@@ -333,3 +333,15 @@ void onRender(CRules@ this)
 		displayResupply(this, name, resupply_class, offset, offset_second, propname);
 	}
 }
+
+// Reset timer in case player who joins has an outdated timer
+void onNewPlayerJoin(CRules@ this, CPlayer@ player)
+{
+	s32 next_add_time = getGameTime() + (this.isWarmup() ? materials_wait_warmup : materials_wait) * getTicksASecond();
+
+	if (next_add_time < getCTFTimerArcher(this, player) || next_add_time < getCTFTimerBuilder(this, player))
+	{
+		SetCTFTimerBuilder(this, player, getGameTime());
+		SetCTFTimerArcher(this, player, getGameTime());
+	}
+}
