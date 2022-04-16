@@ -5,7 +5,7 @@ class ClassCommand : ChatCommand
 	ClassCommand()
 	{
 		super("class", "Change your class");
-		SetUsage("<class>");
+		SetUsage("<name>");
 	}
 
 	void Execute(string[] args, CPlayer@ player)
@@ -21,7 +21,8 @@ class ClassCommand : ChatCommand
 
 		if (args.size() == 0)
 		{
-			server_AddToChat(getTranslatedString("Specify a class to change to"), ConsoleColour::ERROR, player);
+			string[] classes = ChatCommands::getManager().whitelistedClasses;
+			server_AddToChat(getTranslatedString("Specify a class to swap to: " + join(classes, ", ")), ConsoleColour::ERROR, player);
 			return;
 		}
 
