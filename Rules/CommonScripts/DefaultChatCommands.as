@@ -36,15 +36,12 @@ void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 	manager.RegisterCommand(ArrowsCommand());
 	manager.RegisterCommand(AllArrowsCommand());
 
-	//trees
-	manager.RegisterCommand(PineTreeCommand());
-	manager.RegisterCommand(BushyTreeCommand());
-
 	//animals
 	manager.RegisterCommand(FishiesCommand());
 	manager.RegisterCommand(ChickensCommand());
 
 	//other
+	manager.RegisterCommand(TreeCommand());
 	manager.RegisterCommand(WaterCommand());
 	manager.RegisterCommand(CrateCommand());
 	manager.RegisterCommand(ScrollCommand());

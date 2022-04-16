@@ -3,33 +3,34 @@
 #include "MakeCrate.as";
 #include "MakeScroll.as"
 
-class PineTreeCommand : BlobCommand
+class TreeCommand : BlobCommand
 {
-	PineTreeCommand()
+	string[] treeTypes = { "pine", "bushy" };
+
+	TreeCommand()
 	{
-		super("pinetree", "Spawn a pine tree seed");
-		AddAlias("pineseed");
-		AddAlias("tree");
+		super("tree", "Spawn a tree seed");
 		AddAlias("seed");
+		SetUsage("[type]");
 	}
 
 	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		server_MakeSeed(pos, "tree_pine", 600, 1, 16);
-	}
-}
+		string tree = "tree_" + treeTypes[0];
 
-class BushyTreeCommand : BlobCommand
-{
-	BushyTreeCommand()
-	{
-		super("bushytree", "Spawn a bushy tree seed");
-		AddAlias("bushyseed");
-	}
+		if (args.size() > 0)
+		{
+			string type = args[0].toLower();
+			if (treeTypes.find(type) == -1)
+			{
+				server_AddToChat(getTranslatedString("Specify a valid tree type: " + join(treeTypes, ", ")), ConsoleColour::ERROR, player);
+				return;
+			}
 
-	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
-	{
-		server_MakeSeed(pos, "tree_bushy", 400, 2, 16);
+			tree = "tree_" + type;
+		}
+
+		server_MakeSeed(pos, tree);
 	}
 }
 
