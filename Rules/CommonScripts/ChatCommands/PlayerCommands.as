@@ -27,7 +27,6 @@ class ClassCommand : ChatCommand
 
 		string className = args[0];
 
-		//TODO: fix any weird console messages when changing class
 		if (!isClassWhitelisted(className))
 		{
 			server_AddToChat(getTranslatedString("Class not found or cannot be swapped to"), ConsoleColour::ERROR, player);
@@ -41,7 +40,16 @@ class ClassCommand : ChatCommand
 		}
 
 		CBlob@ newBlob = server_CreateBlob(className, blob.getTeamNum(), blob.getPosition());
+		if (newBlob is null)
+		{
+			server_AddToChat(getTranslatedString("Unable to change class"), ConsoleColour::ERROR, player);
+			return;
+		}
+
+		//TODO: fix bad snapshot in console when changing class
 		newBlob.server_SetPlayer(player);
+		blob.Tag("switch class");
+		blob.server_SetPlayer(null);
 		blob.server_Die();
 	}
 }
