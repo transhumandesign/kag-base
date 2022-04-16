@@ -9,7 +9,7 @@ void onInit(CRules@ this)
 	getSecurity().reloadSecurity();
 	@manager = ChatCommands::getManager();
 	RegisterDefaultChatCommands(manager);
-	manager.LoadConfig();
+	manager.ProcessConfigCommands();
 }
 
 bool onServerProcessChat(CRules@ this, const string &in textIn, string &out textOut, CPlayer@ player)

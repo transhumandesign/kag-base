@@ -16,14 +16,13 @@ void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 	manager.RegisterCommand(EndCommand());
 
 	//common
+	if (manager.whitelistedClasses.size() > 0)
+	{
+		manager.RegisterCommand(ClassCommand());
+	}
 	manager.RegisterCommand(TeamCommand());
 	manager.RegisterCommand(CoinsCommand());
 	manager.RegisterCommand(HealCommand());
-
-	//classes
-	manager.RegisterCommand(KnightCommand());
-	manager.RegisterCommand(ArcherCommand());
-	manager.RegisterCommand(BuilderCommand());
 
 	//materials
 	manager.RegisterCommand(WoodCommand());

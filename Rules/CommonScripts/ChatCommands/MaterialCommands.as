@@ -1,6 +1,6 @@
-#include "ChatCommand.as"
+#include "AbstractCommands.as"
 
-class AllMatsCommand : ChatCommand
+class AllMatsCommand : BlobCommand
 {
 	AllMatsCommand()
 	{
@@ -10,54 +10,32 @@ class AllMatsCommand : ChatCommand
 		AddAlias("mats");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
-		{
-			Vec2f pos = blob.getPosition();
-			CBlob@ wood = server_CreateBlob("mat_wood", -1, pos);
-			wood.server_SetQuantity(500);
-			CBlob@ stone = server_CreateBlob("mat_stone", -1, pos);
-			stone.server_SetQuantity(500);
-			CBlob@ gold = server_CreateBlob("mat_gold", -1, pos);
-			gold.server_SetQuantity(100);
-		}
-		else
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
-		}
+		CBlob@ wood = server_CreateBlob("mat_wood", -1, pos);
+		wood.server_SetQuantity(500);
+		CBlob@ stone = server_CreateBlob("mat_stone", -1, pos);
+		stone.server_SetQuantity(500);
+		CBlob@ gold = server_CreateBlob("mat_gold", -1, pos);
+		gold.server_SetQuantity(100);
 	}
 }
 
-class WoodCommand : ChatCommand
+class WoodCommand : BlobCommand
 {
 	WoodCommand()
 	{
 		super("wood", "Spawn wood");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
-		{
-			Vec2f pos = blob.getPosition();
-			CBlob@ wood = server_CreateBlob("mat_wood", -1, pos);
-			wood.server_SetQuantity(500);
-		}
-		else
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
-		}
+		CBlob@ wood = server_CreateBlob("mat_wood", -1, pos);
+		wood.server_SetQuantity(500);
 	}
 }
 
-class StoneCommand : ChatCommand
+class StoneCommand : BlobCommand
 {
 	StoneCommand()
 	{
@@ -65,45 +43,23 @@ class StoneCommand : ChatCommand
 		AddAlias("stones");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
-		{
-			Vec2f pos = blob.getPosition();
-			CBlob@ stone = server_CreateBlob("mat_stone", -1, pos);
-			stone.server_SetQuantity(500);
-		}
-		else
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
-		}
+		CBlob@ stone = server_CreateBlob("mat_stone", -1, pos);
+		stone.server_SetQuantity(500);
 	}
 }
 
-class GoldCommand : ChatCommand
+class GoldCommand : BlobCommand
 {
 	GoldCommand()
 	{
 		super("gold", "Spawn gold");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
-		{
-			Vec2f pos = blob.getPosition();
-			CBlob@ gold = server_CreateBlob("mat_gold", -1, pos);
-			gold.server_SetQuantity(100);
-		}
-		else
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
-		}
+		CBlob@ gold = server_CreateBlob("mat_gold", -1, pos);
+		gold.server_SetQuantity(100);
 	}
 }

@@ -5,18 +5,26 @@ class ChatCommandManager
 {
 	private string configName = "ChatCommands.cfg";
 	private ChatCommand@[] allCommands;
+	private string[] configCommands;
 	string[] blacklistedBlobs;
+	string[] whitelistedClasses;
 
-	void LoadConfig()
+	ChatCommandManager()
+	{
+		if (isServer())
+		{
+			ConfigFile cfg;
+			cfg.loadFile("../Cache/" + configName) || cfg.loadFile(configName);
+
+			cfg.readIntoArray_string(configCommands, "commands");
+			cfg.readIntoArray_string(blacklistedBlobs, "blacklisted_blobs");
+			cfg.readIntoArray_string(whitelistedClasses, "whitelisted_classes");
+		}
+	}
+
+	void ProcessConfigCommands()
 	{
 		if (!isServer()) return;
-
-		ConfigFile cfg;
-		cfg.loadFile("../Cache/" + configName) || cfg.loadFile(configName);
-
-		string[] configCommands;
-		cfg.readIntoArray_string(configCommands, "commands");
-		cfg.readIntoArray_string(blacklistedBlobs, "blacklisted_blobs");
 
 		if (configCommands.size() % 3 != 0)
 		{

@@ -1,6 +1,6 @@
-#include "ChatCommand.as"
+#include "AbstractCommands.as"
 
-class ChickensCommand : ChatCommand
+class ChickensCommand : BlobCommand
 {
 	ChickensCommand()
 	{
@@ -8,27 +8,16 @@ class ChickensCommand : ChatCommand
 		AddAlias("chickenflock");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
+		for (uint i = 0; i < 6; i++)
 		{
-			Vec2f pos = blob.getPosition();
-			for (uint i = 0; i < 6; i++)
-			{
-				server_CreateBlob("chicken", -1, pos);
-			}
-		}
-		else
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
+			server_CreateBlob("chicken", -1, pos);
 		}
 	}
 }
 
-class FishiesCommand : ChatCommand
+class FishiesCommand : BlobCommand
 {
 	FishiesCommand()
 	{
@@ -38,22 +27,11 @@ class FishiesCommand : ChatCommand
 		AddAlias("fishes");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
+		for (uint i = 0; i < 6; i++)
 		{
-			Vec2f pos = blob.getPosition();
-			for (uint i = 0; i < 6; i++)
-			{
-				server_CreateBlob("fishy", -1, pos);
-			}
-		}
-		else
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
+			server_CreateBlob("fishy", -1, pos);
 		}
 	}
 }

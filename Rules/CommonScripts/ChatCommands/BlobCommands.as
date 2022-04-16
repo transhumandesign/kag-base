@@ -1,9 +1,9 @@
-#include "ChatCommand.as"
+#include "AbstractCommands.as"
 #include "MakeSeed.as";
 #include "MakeCrate.as";
 #include "MakeScroll.as"
 
-class PineTreeCommand : ChatCommand
+class PineTreeCommand : BlobCommand
 {
 	PineTreeCommand()
 	{
@@ -13,24 +13,13 @@ class PineTreeCommand : ChatCommand
 		AddAlias("seed");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
-		{
-			Vec2f pos = blob.getPosition();
-			server_MakeSeed(pos, "tree_pine", 600, 1, 16);
-		}
-		else
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
-		}
+		server_MakeSeed(pos, "tree_pine", 600, 1, 16);
 	}
 }
 
-class BushyTreeCommand : ChatCommand
+class BushyTreeCommand : BlobCommand
 {
 	BushyTreeCommand()
 	{
@@ -38,24 +27,13 @@ class BushyTreeCommand : ChatCommand
 		AddAlias("bushyseed");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
-		{
-			Vec2f pos = blob.getPosition();
-			server_MakeSeed(pos, "tree_bushy", 400, 2, 16);
-		}
-		else
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
-		}
+		server_MakeSeed(pos, "tree_bushy", 400, 2, 16);
 	}
 }
 
-class CrateCommand : ChatCommand
+class CrateCommand : BlobCommand
 {
 	CrateCommand()
 	{
@@ -63,19 +41,9 @@ class CrateCommand : ChatCommand
 		SetUsage("[blob] [description]");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob is null)
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
-			return;
-		}
-
-		Vec2f pos = blob.getPosition();
-		u8 team = blob.getTeamNum();
+		u8 team = player.getBlob().getTeamNum();
 
 		if (args.size() == 0)
 		{
@@ -100,7 +68,7 @@ class CrateCommand : ChatCommand
 	}
 }
 
-class ScrollCommand : ChatCommand
+class ScrollCommand : BlobCommand
 {
 	ScrollCommand()
 	{
@@ -108,30 +76,20 @@ class ScrollCommand : ChatCommand
 		SetUsage("<name>");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob is null)
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
-			return;
-		}
-
 		if (args.size() == 0)
 		{
 			server_AddToChat(getTranslatedString("Specify the name of a scroll to spawn"), ConsoleColour::ERROR, player);
 			return;
 		}
 
-		Vec2f pos = blob.getPosition();
 		string scrollName = join(args, " ");
 		server_MakePredefinedScroll(pos, scrollName);
 	}
 }
 
-class SpawnCommand : ChatCommand
+class SpawnCommand : BlobCommand
 {
 	SpawnCommand()
 	{
@@ -140,17 +98,8 @@ class SpawnCommand : ChatCommand
 		SetUsage("<blob>");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob is null)
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
-			return;
-		}
-
 		if (args.size() == 0)
 		{
 			server_AddToChat(getTranslatedString("Specify the name of a blob to spawn"), ConsoleColour::ERROR, player);
@@ -165,8 +114,7 @@ class SpawnCommand : ChatCommand
 			return;
 		}
 
-		Vec2f pos = blob.getPosition();
-		u8 team = blob.getTeamNum();
+		u8 team = player.getBlob().getTeamNum();
 		CBlob@ newBlob = server_CreateBlob(blobName, team, pos + Vec2f(0, -5));
 
 		//invalid blobs will have 'broken' names

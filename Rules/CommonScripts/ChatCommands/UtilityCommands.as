@@ -1,29 +1,18 @@
-#include "ChatCommand.as"
+#include "AbstractCommand.as"
 
-class AllArrowsCommand : ChatCommand
+class AllArrowsCommand : BlobCommand
 {
 	AllArrowsCommand()
 	{
 		super("allarrows", "Spawn all types of arrows");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
-		{
-			Vec2f pos = blob.getPosition();
-			server_CreateBlob("mat_arrows", -1, pos);
-			server_CreateBlob("mat_waterarrows", -1, pos);
-			server_CreateBlob("mat_firearrows", -1, pos);
-			server_CreateBlob("mat_bombarrows", -1, pos);
-		}
-		else
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
-		}
+		server_CreateBlob("mat_arrows", -1, pos);
+		server_CreateBlob("mat_waterarrows", -1, pos);
+		server_CreateBlob("mat_firearrows", -1, pos);
+		server_CreateBlob("mat_bombarrows", -1, pos);
 	}
 }
 
@@ -34,23 +23,11 @@ class AllBombsCommand : ChatCommand
 		super("allbombs", "Spawn all types of bombs");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
+		for (uint i = 0; i < 2; i++)
 		{
-			Vec2f pos = blob.getPosition();
-			for (uint i = 0; i < 2; i++)
-			{
-				server_CreateBlob("mat_bombs", -1, pos);
-			}
-			server_CreateBlob("mat_waterbombs", -1, pos);
-		}
-		else
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
+			server_CreateBlob("mat_bombs", -1, pos);
 		}
 	}
 }
@@ -62,22 +39,11 @@ class ArrowsCommand : ChatCommand
 		super("arrows", "Spawn arrows");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
+		for (uint i = 0; i < 3; i++)
 		{
-			Vec2f pos = blob.getPosition();
-			for (uint i = 0; i < 3; i++)
-			{
-				server_CreateBlob("mat_arrows", -1, pos);
-			}
-		}
-		else
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
+			server_CreateBlob("mat_arrows", -1, pos);
 		}
 	}
 }
@@ -89,22 +55,11 @@ class BombsCommand : ChatCommand
 		super("bombs", "Spawn bombs");
 	}
 
-	void Execute(string[] args, CPlayer@ player)
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob !is null)
+		for (uint i = 0; i < 3; i++)
 		{
-			Vec2f pos = blob.getPosition();
-			for (uint i = 0; i < 3; i++)
-			{
-				server_CreateBlob("mat_bombs", -1, pos);
-			}
-		}
-		else
-		{
-			server_AddToChat(getTranslatedString("Blobs cannot be spawned while dead or spectating"), ConsoleColour::ERROR, player);
+			server_CreateBlob("mat_bombs", -1, pos);
 		}
 	}
 }

@@ -1,10 +1,11 @@
 #include "ChatCommand.as"
 
-class ArcherCommand : ChatCommand
+class ClassCommand : ChatCommand
 {
-	ArcherCommand()
+	ClassCommand()
 	{
-		super("archer", "Change class to Archer");
+		super("class", "Change your class");
+		SetUsage("<class>");
 	}
 
 	void Execute(string[] args, CPlayer@ player)
@@ -18,74 +19,29 @@ class ArcherCommand : ChatCommand
 			return;
 		}
 
-		if (blob.getName() == "archer")
+		if (args.size() == 0)
 		{
-			server_AddToChat(getTranslatedString("Your class is already {CLASS}").replace("{CLASS}", getTranslatedString("Archer")), ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Specify a class to change to"), ConsoleColour::ERROR, player);
 			return;
 		}
 
-		CBlob@ archer = server_CreateBlob("archer", blob.getTeamNum(), blob.getPosition());
-		archer.server_SetPlayer(player);
-		blob.server_Die();
-	}
-}
+		string className = args[0];
 
-class BuilderCommand : ChatCommand
-{
-	BuilderCommand()
-	{
-		super("builder", "Change class to Builder");
-	}
-
-	void Execute(string[] args, CPlayer@ player)
-	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob is null)
+		//TODO: fix any weird console messages when changing class
+		if (!isClassWhitelisted(className))
 		{
-			server_AddToChat(getTranslatedString("Your class cannot be changed while dead or spectating"), ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Class not found or cannot be swapped to"), ConsoleColour::ERROR, player);
 			return;
 		}
 
-		if (blob.getName() == "builder")
+		if (blob.getName() == className)
 		{
-			server_AddToChat(getTranslatedString("Your class is already {CLASS}").replace("{CLASS}", getTranslatedString("Builder")), ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Your are already this class"), ConsoleColour::ERROR, player);
 			return;
 		}
 
-		CBlob@ builder = server_CreateBlob("builder", blob.getTeamNum(), blob.getPosition());
-		builder.server_SetPlayer(player);
-		blob.server_Die();
-	}
-}
-
-class KnightCommand : ChatCommand
-{
-	KnightCommand()
-	{
-		super("knight", "Change class to Knight");
-	}
-
-	void Execute(string[] args, CPlayer@ player)
-	{
-		if (!isServer()) return;
-
-		CBlob@ blob = player.getBlob();
-		if (blob is null)
-		{
-			server_AddToChat(getTranslatedString("Your class cannot be changed while dead or spectating"), ConsoleColour::ERROR, player);
-			return;
-		}
-
-		if (blob.getName() == "knight")
-		{
-			server_AddToChat(getTranslatedString("Your class is already {CLASS}").replace("{CLASS}", getTranslatedString("Knight")), ConsoleColour::ERROR, player);
-			return;
-		}
-
-		CBlob@ knight = server_CreateBlob("knight", blob.getTeamNum(), blob.getPosition());
-		knight.server_SetPlayer(player);
+		CBlob@ newBlob = server_CreateBlob(className, blob.getTeamNum(), blob.getPosition());
+		newBlob.server_SetPlayer(player);
 		blob.server_Die();
 	}
 }

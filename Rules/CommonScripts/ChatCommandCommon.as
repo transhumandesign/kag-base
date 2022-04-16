@@ -46,6 +46,11 @@ bool isBlobBlacklisted(string name)
 	return ChatCommands::getManager().blacklistedBlobs.find(name) != -1;
 }
 
+bool isClassWhitelisted(string name)
+{
+	return ChatCommands::getManager().whitelistedClasses.find(name) != -1;
+}
+
 void server_AddToChat(string message, SColor color, CPlayer@ player = null)
 {
 	if (player !is null && player.isMyPlayer())
