@@ -11,6 +11,7 @@ const u8 baseline_charge = 15;
 const u8 charge_contrib = 35;
 
 const u8 cooldown_time = 45;
+const u8 cooldown_time_player = 90;
 const u8 startStone = 100;
 
 void onInit(CBlob@ this)
@@ -27,20 +28,19 @@ void onInit(CBlob@ this)
 		return;
 	}
 
-	v.max_charge_time = 90;
-	v.max_cooldown_time = cooldown_time;
-
-	Vehicle_SetupWeapon(this, v,
+	Vehicle_AddAmmo(this, v,
 	                    cooldown_time, // fire delay (ticks)
 	                    5, // fire bullets amount
-	                    getMagAttachmentPoint(this).offset, // fire position offset
+	                    2, // fire cost
 	                    "mat_stone", // bullet ammo config name
+	                    "Catapult Rocks", // name for ammo selection
 	                    "cata_rock", // bullet config name
 	                    "CatapultFire", // fire sound
 	                    "CatapultFire", // empty fire sound
-	                    Vehicle_Fire_Style::custom
-	                   );
-	v.fire_cost_per_amount = 2;
+	                    Vehicle_Fire_Style::custom,
+	                    Vec2f(-6.0f, -8.0f), // fire position offset
+	                    90 // charge time
+	);
 
 	Vehicle_SetupGroundSound(this, v, "WoodenWheelsRolling",  // movement sound
 	                         1.0f, // movement sound volume modifier   0.0f = no manipulation
@@ -51,7 +51,8 @@ void onInit(CBlob@ this)
 
 	this.getShape().SetOffset(Vec2f(0, 6));
 
-	this.set_string("autograb blob", "mat_stone");
+	string[] autograb_blobs = {"mat_stone"};
+	this.set("autograb blobs", autograb_blobs);
 
 	// auto-load on creation
 	if (getNet().isServer())
@@ -72,15 +73,18 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	const int time = this.getTickSinceCreated();
+	const bool hasAttached = this.hasAttached();
+	const bool hadAttached = this.get_bool("had_attached");
 
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v))
 		return;
 
-	const u16 delay = float(v.fire_delay);
+	const u16 delay = float(v.getCurrentAmmo().fire_delay);
 	const f32 time_til_fire = Maths::Max(0, Maths::Min(v.fire_time - getGameTime(), delay));
 
-	if (this.hasAttached() || time < 30 || time_til_fire > 0) //driver, seat or gunner, or just created
+	// hadAttached is here so it sets the arm angle the tick after the last player detaches
+	if (hasAttached || hadAttached || time < 30 || time_til_fire > 0) //driver, seat or gunner, or just created
 	{
 		// load new item if present in inventory
 		Vehicle_StandardControls(this, v);
@@ -99,7 +103,7 @@ void onTick(CBlob@ this)
 
 			if (arm !is null)
 			{
-				f32 armAngle = 20 + (angle / 9) + (float(v.charge) / float(v.max_charge_time)) * 20;
+				f32 armAngle = 20 + (angle / 9) + (float(v.charge) / float(v.getCurrentAmmo().max_charge_time)) * 20;
 
 				f32 floattime = getGameTime();
 				f32 sign = this.isFacingLeft() ? -1.0f : 1.0f;
@@ -111,7 +115,7 @@ void onTick(CBlob@ this)
 				arm.SetRelativeZ(-10.5f);
 				arm.RotateBy(armAngle * -sign, Vec2f(0.0f, 13.0f));
 
-				if (getMagBlob(this) is null && v.loaded_ammo > 0)
+				if (getMagBlob(this) is null && v.getCurrentAmmo().loaded_ammo > 0)
 				{
 					arm.animation.frame = 1;
 				}
@@ -131,6 +135,8 @@ void onTick(CBlob@ this)
 	}
 	else if (time % 30 == 0)
 		Vehicle_StandardControls(this, v); //just make sure it's updated
+
+	this.set_bool("had_attached", hasAttached);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -161,12 +167,12 @@ bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool was
 	if (charge > 0 || isActionPressed)
 	{
 
-		if (charge < v.max_charge_time && isActionPressed)
+		if (charge < v.getCurrentAmmo().max_charge_time && isActionPressed)
 		{
 			charge++;
 			v.charge = charge;
 
-			u8 t = Maths::Round(float(v.max_charge_time) * 0.66f);
+			u8 t = Maths::Round(float(v.getCurrentAmmo().max_charge_time) * 0.66f);
 			if ((charge < t && charge % 10 == 0) || (charge >= t && charge % 5 == 0))
 				this.getSprite().PlaySound("/LoadingTick");
 
@@ -216,7 +222,9 @@ Random _r(0xca7a);
 
 void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge)
 {
-	f32 charge = baseline_charge + (float(_charge) / float(v.max_charge_time)) * charge_contrib;
+	f32 charge = baseline_charge + (float(_charge) / float(v.getCurrentAmmo().max_charge_time)) * charge_contrib;
+
+	bool shot_player = false;
 
 	if (bullet !is null)
 	{
@@ -240,15 +248,26 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 			bullet.getShape().getConsts().mapCollisions = false;
 			bullet.getShape().getConsts().collidable = false;
 		}
+		if(bullet.hasTag("player"))
+		{
+			shot_player = true;
+		}
 	}
 
 	// we override the default time because we want to base it on charge
 	int delay = 30 + (charge / (250 / 30));
-	v.fire_delay = delay;
 
 	v.last_charge = _charge;
 	v.charge = 0;
-	v.cooldown_time = cooldown_time;
+
+	// mildly hacky, but this is probably the cleaniest way to do it with how the code currently works
+	if(shot_player)
+	{
+		delay = delay * (float(cooldown_time_player) / cooldown_time);
+	}
+
+	v.getCurrentAmmo().fire_delay = delay;
+	v.cooldown_time = delay;
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)

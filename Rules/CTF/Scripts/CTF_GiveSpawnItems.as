@@ -219,7 +219,7 @@ void onTick(CRules@ this)
 
 	s32 gametime = getGameTime();
 
-	if ((gametime % 31) != 5)
+	if ((gametime % 15) != 5)
 		return;
 
 

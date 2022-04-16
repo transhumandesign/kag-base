@@ -53,7 +53,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 						bool sameTeam = healer.getTeamNum() == player.getTeamNum();
 						if (!healerHealed && sameTeam)
 						{
-							int coins = this.getName() == "heart" ? 5 : 10;
+							int coins = 10;
 							healer.server_setCoins(healer.getCoins() + coins);
 						}
 					}

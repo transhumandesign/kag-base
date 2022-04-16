@@ -484,7 +484,20 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		}
 		else if (charge_state == ArcherParams::charging)
 		{
-			charge_time++;
+			if(!hasarrow)
+			{
+				charge_state = ArcherParams::no_arrows;
+				charge_time = 0;
+				
+				if (ismyplayer)   // playing annoying no ammo sound
+				{
+					this.getSprite().PlaySound("Entities/Characters/Sounds/NoAmmo.ogg", 0.5);
+				}
+			}
+			else
+			{
+				charge_time++;
+			}
 
 			if (charge_time >= ArcherParams::legolas_period)
 			{
@@ -534,7 +547,16 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 					{
 						if (stabTarget.getName() == "mat_wood")
 						{
-							stabTarget.server_SetQuantity(stabTarget.getQuantity()-4);
+							u16 quantity = stabTarget.getQuantity();
+							if (quantity > 4)
+							{
+								stabTarget.server_SetQuantity(quantity-4);
+							}
+							else
+							{
+								stabTarget.server_Die();
+
+							}
 							fletchArrow(this);
 						}
 						else
@@ -788,7 +810,8 @@ void ClientFire(CBlob@ this, const s8 charge_time, const bool hasarrow, const u8
 			arrowspeed = ArcherParams::shoot_max_vel;
 		}
 
-		ShootArrow(this, this.getPosition() + Vec2f(0.0f, -2.0f), this.getAimPos() + Vec2f(0.0f, -2.0f), arrowspeed, arrow_type, legolas);
+		Vec2f offset(this.isFacingLeft() ? 2 : -2, -2);
+		ShootArrow(this, this.getPosition() + offset, this.getAimPos(), arrowspeed, arrow_type, legolas);
 	}
 }
 
@@ -1016,15 +1039,26 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			{
 				type = 0;
 			}
-			if (this.getBlobCount(arrowTypeNames[type]) > 0)
+			if (hasArrows(this, type))
 			{
-				archer.arrow_type = type;
-				if (this.isMyPlayer())
-				{
-					Sound::Play("/CycleInventory.ogg");
-				}
+				CycleToArrowType(this, archer, type);
 				break;
 			}
+		}
+	}
+	else if (cmd == this.getCommandID("switch"))
+	{
+		// switch to arrow
+		ArcherInfo@ archer;
+		if (!this.get("archerInfo", @archer))
+		{
+			return;
+		}
+
+		u8 type;
+		if (params.saferead_u8(type) && hasArrows(this, type))
+		{
+			CycleToArrowType(this, archer, type);
 		}
 	}
 	else
@@ -1045,9 +1079,23 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 }
 
+void CycleToArrowType(CBlob@ this, ArcherInfo@ archer, u8 arrowType)
+{
+	archer.arrow_type = arrowType;
+	if (this.isMyPlayer())
+	{
+		Sound::Play("/CycleInventory.ogg");
+	}
+}
+
 // arrow pick menu
 void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 {
+	AddIconToken("$Arrow$", "Entities/Characters/Archer/ArcherIcons.png", Vec2f(16, 32), 0, this.getTeamNum());
+	AddIconToken("$WaterArrow$", "Entities/Characters/Archer/ArcherIcons.png", Vec2f(16, 32), 1, this.getTeamNum());
+	AddIconToken("$FireArrow$", "Entities/Characters/Archer/ArcherIcons.png", Vec2f(16, 32), 2, this.getTeamNum());
+	AddIconToken("$BombArrow$", "Entities/Characters/Archer/ArcherIcons.png", Vec2f(16, 32), 3, this.getTeamNum());
+	
 	if (arrowTypeNames.length == 0)
 	{
 		return;
@@ -1076,7 +1124,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 
 			if (button !is null)
 			{
-				bool enabled = this.getBlobCount(arrowTypeNames[i]) > 0;
+				bool enabled = hasArrows(this, i);
 				button.SetEnabled(enabled);
 				button.selectOneOnClick = true;
 
@@ -1162,4 +1210,19 @@ void fletchArrow(CBlob@ this)
 		}
 	}
 	this.getSprite().PlaySound("Entities/Items/Projectiles/Sounds/ArrowHitGround.ogg");
+}
+
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
+{
+	ArcherInfo@ archer;
+	if (!this.get("archerInfo", @archer))
+	{
+		return;
+	}
+
+	if (this.isAttached() && canSend(this))
+	{
+		archer.grappling = false;
+		SyncGrapple(this);
+	}
 }

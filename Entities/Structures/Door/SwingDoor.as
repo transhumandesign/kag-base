@@ -8,6 +8,7 @@
 void onInit(CBlob@ this)
 {
 	this.getShape().SetRotationsAllowed(false);
+	this.getSprite().getConsts().accurateLighting = true;
 
 	this.set_s16(burn_duration , 300);
 	//transfer fire to underlying tiles
@@ -43,16 +44,9 @@ void onInit(CBlob@ this)
 			this.set('harvest', harvest);
 		}
 	}
-
-	this.set_string("close_anim", "close");
-	this.set_u8("just_opened", 0);
-
 	this.Tag("door");
 	this.Tag("blocks water");
 	this.Tag("explosion always teamkill"); // ignore 'no teamkill' for explosives
-
-	this.getShape().getConsts().collidable = false;
-
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -60,39 +54,28 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	if (!isStatic) return;
 
 	this.getSprite().PlaySound("/build_door.ogg");
-
-	// open if door is built into something else
-	CMap@ map = getMap();
-	if (map !is null)
+	
+	int touchingBlobs = this.getTouchingCount();
+	for (int a = 0; a < touchingBlobs; a++)
 	{
-		Vec2f pos = this.getPosition();
-		CBlob@[] overlapping;
-		map.getBlobsInBox(pos, pos, @overlapping);
-		for (uint i = 0; i < overlapping.length; i++)
+		CBlob@ blob = this.getTouchingByIndex(a);
+		if (blob is null)
+			continue;
+
+		if (this.getTeamNum() == blob.getTeamNum() && 
+			(blob.hasTag("player") || blob.hasTag("vehicle") || blob.hasTag("migrant")))
 		{
-			CBlob@ blob = overlapping[i];
-			string bname = blob.getName();
-			if (blob !is null
-				&& !blob.getShape().isStatic()
-				&& blob.isCollidable()
-				&& bname != "wooden_door" && bname != "stone_door"
-				&& this.getTeamNum() == blob.getTeamNum())
-			{
-				this.getShape().getConsts().collidable = true;
-				setOpen(this, true, true);
-				return;
-			}
-
+			OpenDoor(this, blob);
+			break;
 		}
-
 	}
-
-	CSprite@ sprite = this.getSprite();
-	sprite.SetAnimation("close");
-	sprite.animation.SetFrameIndex(2);
-
-	this.getShape().getConsts().collidable = true;
 }
+
+//TODO: fix flags sync and hitting
+/*void onDie(CBlob@ this)
+{
+    SetSolidFlag(this, false);
+}*/
 
 bool isOpen(CBlob@ this)
 {
@@ -101,18 +84,6 @@ bool isOpen(CBlob@ this)
 
 void setOpen(CBlob@ this, bool open, bool faceLeft = false)
 {
-	bool is_open = isOpen(this);
-	if (is_open == open)
-	{
-		return;
-	}
-
-	// prevents spam of the door opening and closing
-	if (!open && this.get_u8("just_opened") > 0)
-	{
-		return;
-	}
-
 	CSprite@ sprite = this.getSprite();
 	if (open)
 	{
@@ -122,48 +93,18 @@ void setOpen(CBlob@ this, bool open, bool faceLeft = false)
 		this.getCurrentScript().tickFrequency = 3;
 		sprite.SetFacingLeft(faceLeft);   // swing left or right
 		Sound::Play("/DoorOpen.ogg", this.getPosition());
-		this.set_u8("just_opened", 2);
 	}
 	else
 	{
 		sprite.SetZ(100.0f);
-		sprite.SetAnimation(this.get_string("close_anim"));
+		sprite.SetAnimation("close");
 		this.getShape().getConsts().collidable = true;
 		this.getCurrentScript().tickFrequency = 0;
 		Sound::Play("/DoorClose.ogg", this.getPosition());
-
-		faceLeft = sprite.isFacingLeft();
-		Vec2f pos = this.getPosition();
-		CBlob@[] blobs;
-		if (getMap().getBlobsInRadius(pos, 3, blobs))
-		{
-			f32 angle = this.getAngleDegrees();
-			for (int i = 0; i < blobs.size(); i++)
-			{
-				CBlob@ blob = blobs[i];
-				if (blob.hasTag("pushedByDoor"))
-				{
-					f32 power = 3.0f;
-					f32 mass = blob.getShape().getConsts().mass;
-					if (mass > 1)
-					{
-						power = 2.0f;
-					}
-
-					if (!faceLeft)
-					{
-						blob.setVelocity(Vec2f(1, 0) * power);
-					}
-					else
-					{
-						blob.setVelocity(Vec2f(-1, 0) * power);
-					}
-
-				}
-			}
-		}
 	}
 
+	//TODO: fix flags sync and hitting
+	//SetSolidFlag(this, !open);
 }
 
 void onTick(CBlob@ this)
@@ -176,67 +117,56 @@ void onTick(CBlob@ this)
 
 		if (canOpenDoor(this, blob) && !isOpen(this))
 		{
-			Vec2f pos = this.getPosition();
-			Vec2f other_pos = blob.getPosition();
-			Vec2f direction = Vec2f(1, 0);
-			direction.RotateBy(this.getAngleDegrees());
-			setOpen(this, true, ((pos - other_pos) * direction) < 0.0f);
+			OpenDoor(this, blob);
+			break;
 		}
 	}
 	// close it
-	if (isOpen(this))
+	if (isOpen(this) && canClose(this))
 	{
-		if (canClose(this))
-		{
-			setOpen(this, false);
-		}
-
-		u8 just_opened = this.get_u8("just_opened");
-		if (just_opened > 0)
-		{
-			this.set_u8("just_opened", just_opened-1);
-		}
+		setOpen(this, false);
 	}
-
 }
 
 
 bool canClose(CBlob@ this)
 {
 	const uint count = this.getTouchingCount();
+	uint collided = 0;
 	for (uint step = 0; step < count; ++step)
 	{
 		CBlob@ blob = this.getTouchingByIndex(step);
-		if (blob.isCollidable() && !blob.getShape().isStatic()  && !blob.hasTag("pushedByDoor"))
+		if (blob.isCollidable())
 		{
-			return false;
+			collided++;
 		}
 	}
-
-	Vec2f pos = this.getPosition();
-	CBlob@[] blobs;
-	if (getMap().getBlobsInRadius(pos, 4, blobs))
-	{
-		for (int i = 0; i < blobs.size(); i++)
-		{
-			CBlob@ blob = blobs[i];
-			if (blob.isCollidable() && !blob.getShape().isStatic() && !blob.hasTag("pushedByDoor"))
-			{
-				return false;
-			}
-		}
-	}
-
-	return true;
+	return collided == 0;
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-       if (blob !is null)
-       {
-               this.getCurrentScript().tickFrequency = 3;
-       }
+	if (blob !is null)
+	{
+		this.getCurrentScript().tickFrequency = 3;
+	}
 }
+
+void onEndCollision(CBlob@ this, CBlob@ blob)
+{
+	if (blob !is null)
+	{
+		if (canClose(this))
+		{
+			if (isOpen(this))
+			{
+				setOpen(this, false);
+			}
+			this.getCurrentScript().tickFrequency = 0;
+		}
+	}
+}
+
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
@@ -256,32 +186,49 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		damage *= 2;
 	if (customData == Hitters::bomb)
 		damage *= 1.3f;
-	if (customData == Hitters::sword)
-		damage *= 1.6f;
 
 	return damage;
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
-	SetCloseAnim(this);
+	CSprite @sprite = this.getSprite();
 
-	if (!isOpen(this))
+	if (sprite !is null)
 	{
-		CSprite@ sprite = this.getSprite();
-		sprite.SetAnimation(this.get_string("close_anim"));
-		sprite.animation.SetFrameIndex(2);
-	}
-}
+		u8 frame = 0;
 
-void SetCloseAnim(CBlob@ this)
-{
-	f32 hp = this.getHealth();
-	f32 full_hp = this.getInitialHealth() + 0.5f;
-	int anim_count = 4;
-	int anim_num = anim_count - hp / full_hp * anim_count;
-	string anim = "close_destruction_" + anim_num;
-	this.set_string("close_anim", anim);
+		Animation @destruction_anim = sprite.getAnimation("destruction");
+
+		if (destruction_anim !is null)
+		{
+			f32 newHealth = this.getHealth();
+
+			if (newHealth < this.getInitialHealth())
+			{
+				f32 ratio = newHealth / this.getInitialHealth();
+
+				if (ratio <= 0.0f)
+				{
+					frame = destruction_anim.getFramesCount() - 1;
+				}
+				else
+				{
+					frame = (1.0f - ratio) * (destruction_anim.getFramesCount());
+				}
+
+				frame = destruction_anim.getFrame(frame);
+			}
+		}
+
+		Animation @close_anim = sprite.getAnimation("close");
+		u8 lastframe = close_anim.getFrame(close_anim.getFramesCount() - 1);
+		if (lastframe < frame) // if our current final frame is less damaged than our door actually is
+		{
+			close_anim.RemoveFrame(lastframe);
+			close_anim.AddFrame(frame); // replace the final frame by a more damaged one
+		}
+	}
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
@@ -291,12 +238,18 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 	if (canOpenDoor(this, blob))
 	{
-		Vec2f pos = this.getPosition();
-		Vec2f other_pos = blob.getPosition();
-		Vec2f direction = Vec2f(1, 0);
-		direction.RotateBy(this.getAngleDegrees());
-		setOpen(this, true, ((pos - other_pos) * direction) < 0.0f);
+		OpenDoor(this, blob);
 		return false;
 	}
+
 	return true;
+}
+
+void OpenDoor(CBlob@ this, CBlob@ blob, bool open = true)
+{
+	Vec2f pos = this.getPosition();
+	Vec2f other_pos = blob.getPosition();
+	Vec2f direction = Vec2f(1, 0);
+	direction.RotateBy(this.getAngleDegrees());
+	setOpen(this, open, ((pos - other_pos) * direction) < 0.0f);
 }

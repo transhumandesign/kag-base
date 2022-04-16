@@ -39,9 +39,10 @@ void onInit(CBlob@ this)
 		s.crate_icon = 1;
 	}
 	{
-		string warboat_icon = getTeamIcon("warboat", "VehicleIcons.png", team_num, Vec2f(32, 32), 4);
+		string warboat_icon = getTeamIcon("warboat", "VehicleIcons.png", team_num, Vec2f(32, 32), 2);
 		ShopItem@ s = addShopItem(this, "War Boat", warboat_icon, "warboat", warboat_icon + "\n\n\n" + Descriptions::warboat, false, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::warboat);
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::warboat_gold);
 		s.crate_icon = 2;
 	}
 }

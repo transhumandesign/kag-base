@@ -22,22 +22,31 @@ void onRestart(CRules@ this)
 
 }
 
-void onBlobDie(CRules@ this, CBlob@ blob)
+void onPlayerDie( CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData )
 {
-	if(blob.hasTag("player"))
+	if (victim is null)
 	{
-		ParticleAnimated(
-		"spirit.png",                   // file
-		blob.getPosition(),             // position
-		Vec2f(0, -0.25),                // velocity
-		0,                              // angle
-		1.0f,                           // scale
-		8,                              // ticks per frame
-		0.0f,                           // gravity
-		true);                          // self lit
-
-		blob.getSprite().PlaySound("WraithSpawn.ogg");
+		return;
 	}
+
+    CBlob@ blob = victim.getBlob();
+
+	if (blob is null)
+	{
+		return;
+	}
+
+    ParticleAnimated(
+    "spirit.png",                   // file
+    blob.getPosition(),             // position
+    Vec2f(0, -0.25),                // velocity
+    0,                              // angle
+    1.0f,                           // scale
+    8,                              // ticks per frame
+    0.0f,                           // gravity
+    true);                          // self lit
+
+    blob.getSprite().PlaySound("WraithSpawn.ogg");
 }
 
 void onTick(CRules@ this)

@@ -13,8 +13,15 @@ void onInit(CBlob@ this)
 	this.addCommandID("server travel to");
 	this.Tag("travel tunnel");
 
-	AddIconToken("$TRAVEL_LEFT$", "GUI/MenuItems.png", Vec2f(32, 32), 23);
-	AddIconToken("$TRAVEL_RIGHT$", "GUI/MenuItems.png", Vec2f(32, 32), 22);
+	int team = this.getTeamNum();
+	AddIconToken("$TRAVEL_RIGHT_"+team+"$", "GUI/InteractionIcons.png.png", Vec2f(32, 32), 17, team);
+	AddIconToken("$TRAVEL_LEFT_"+team+"$", "GUI/InteractionIcons.png", Vec2f(32, 32), 18, team);
+	AddIconToken("$TRAVEL_RIGHT_UP_"+team+"$", "GUI/InteractionIcons.png", Vec2f(32, 32), 6, team);
+	AddIconToken("$TRAVEL_RIGHT_DOWN_"+team+"$", "GUI/InteractionIcons.png", Vec2f(32, 32), 7, team);
+	AddIconToken("$TRAVEL_LEFT_UP_"+team+"$", "GUI/InteractionIcons.png", Vec2f(32, 32), 5, team);
+	AddIconToken("$TRAVEL_LEFT_DOWN_"+team+"$", "GUI/InteractionIcons.png", Vec2f(32, 32), 4, team);
+	AddIconToken("$TRAVEL_UP_"+team+"$", "GUI/InteractionIcons.png", Vec2f(32, 32), 16, team);
+	AddIconToken("$TRAVEL_DOWN_"+team+"$", "GUI/InteractionIcons.png", Vec2f(32, 32), 19, team);
 
 	if (!this.exists("travel button pos"))
 	{
@@ -139,21 +146,10 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 		//if (isKnockable(caller) && caller.get_u8("knocked") > 0)
 		//	return;
 
-		if (caller.isAttached())   // attached - like sitting in cata? move whole cata
-		{
-			const int count = caller.getAttachmentPointCount();
-			for (int i = 0; i < count; i++)
-			{
-				AttachmentPoint @ap = caller.getAttachmentPoint(i);
-				CBlob@ occBlob = ap.getOccupied();
-				if (occBlob !is null)
-				{
-					occBlob.setPosition(tunnel.getPosition());
-					occBlob.setVelocity(Vec2f_zero);
-					//occBlob.getShape().PutOnGround();
-				}
-			}
-		}
+		//dont travel if caller is attached to something (e.g. siege)
+		if (caller.isAttached())
+			return;
+
 		// move caller
 		caller.setPosition(tunnel.getPosition());
 		caller.setVelocity(Vec2f_zero);
@@ -269,30 +265,65 @@ void BuildTunnelsMenu(CBlob@ this, const u16 callerID)
 				CBitStream params;
 				params.write_u16(callerID);
 				params.write_u16(tunnel.getNetworkID());
-				menu.AddButton(getTravelIcon(this, tunnel), getTranslatedString(getTravelDescription(this, tunnel)), this.getCommandID("travel to"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
+				int direction_index = getTravelDirectionIndex(this, tunnel);
+				menu.AddButton(getTravelIcon(this, tunnel, direction_index), getTranslatedString(getTravelDescription(this, tunnel, direction_index)), this.getCommandID("travel to"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
 			}
 		}
 	}
 }
 
-string getTravelIcon(CBlob@ this, CBlob@ tunnel)
+// returns index for 8 direction, starting from right, going counter-clockwise
+int getTravelDirectionIndex(CBlob@ this, CBlob@ tunnel) {
+	float angle = (tunnel.getPosition() - this.getPosition()).AngleRadians();
+	angle += Maths::Pi / 8; //offset for proper rounding
+	angle += 2 * Maths::Pi; //offset to ensure positiveness
+	int direction_index = angle / (Maths::Pi * 2 / 8);
+	direction_index = direction_index % 8; //ensure index is in bounds
+
+	return direction_index;
+}
+
+string getTravelIcon(CBlob@ this, CBlob@ tunnel, int direction_index)
 {
 	if (tunnel.getName() == "war_base")
 		return "$WAR_BASE$";
 
-	if (tunnel.getPosition().x > this.getPosition().x)
-		return "$TRAVEL_RIGHT$";
-
-	return "$TRAVEL_LEFT$";
+	int team = tunnel.getTeamNum();
+	string[] directions =
+	{
+		"$TRAVEL_RIGHT_"+team+"$",
+		"$TRAVEL_RIGHT_UP_"+team+"$",
+		"$TRAVEL_UP_"+team+"$",
+		"$TRAVEL_LEFT_UP_"+team+"$",
+		"$TRAVEL_LEFT_"+team+"$",
+		"$TRAVEL_LEFT_DOWN_"+team+"$",
+		"$TRAVEL_DOWN_"+team+"$",
+		"$TRAVEL_RIGHT_DOWN_"+team+"$"
+	};
+	if (direction_index >= 0 && direction_index < directions.length)
+		return directions[direction_index];
+	else
+		return "$CANCEL$"; // should never happen
 }
 
-string getTravelDescription(CBlob@ this, CBlob@ tunnel)
+string getTravelDescription(CBlob@ this, CBlob@ tunnel, int direction_index)
 {
 	if (tunnel.getName() == "war_base")
 		return "Return to base";
 
-	if (tunnel.getPosition().x > this.getPosition().x)
-		return "Travel right";
-
-	return "Travel left";
+	const string[] directions =
+	{
+		"Travel right",
+		"Travel right and up",
+		"Travel up",
+		"Travel left and up",
+		"Travel left",
+		"Travel left and down",
+		"Travel down",
+		"Travel right and down"
+	};
+	if (direction_index >= 0 && direction_index < directions.length)
+		return directions[direction_index];
+	else
+		return "Travel"; // should never happen
 }

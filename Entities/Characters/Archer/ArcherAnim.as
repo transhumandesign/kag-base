@@ -10,7 +10,7 @@
 #include "Accolades.as"
 
 
-const f32 config_offset = -4.0f;
+const f32 config_offset = -6.0f;
 const string shiny_layer = "shiny bit";
 
 void onInit(CSprite@ this)
@@ -235,8 +235,10 @@ void onTick(CSprite@ this)
 	bool crouch = false;
 
 	bool knocked = isKnocked(blob);
-	Vec2f pos = blob.getPosition();
+	Vec2f pos = blob.getPosition() + Vec2f(0, -2);
 	Vec2f aimpos = blob.getAimPos();
+	pos.x += this.isFacingLeft() ? 2 : -2;
+
 	// get the angle of aiming with mouse
 	Vec2f vec = aimpos - pos;
 	f32 angle = vec.Angle();
@@ -379,7 +381,7 @@ void onTick(CSprite@ this)
 		{
 			shiny.RotateBy(10, Vec2f());
 
-			shiny_offset.RotateBy(this.isFacingLeft() ?  shiny_angle : -shiny_angle);
+			shiny_offset.RotateBy(this.isFacingLeft() ?  shiny_angle : -shiny_angle, Vec2f(3, -2));
 			shiny.SetOffset(shiny_offset);
 		}
 	}
@@ -420,15 +422,18 @@ void DrawBow(CSprite@ this, CBlob@ blob, ArcherInfo@ archer, f32 armangle, const
 			animname = "fired";
 		}
 
-		u16 frontframe = 0;
-		f32 temp = Maths::Min(archer.charge_time, ArcherParams::ready_time);
-		f32 ready_tween = temp / ArcherParams::ready_time;
-		armangle = armangle * ready_tween;
-		armOffset = Vec2f(-1.0f, 4.0f + config_offset + 2.0f * (1.0f - ready_tween));
-		setArmValues(frontarm, true, armangle, 0.1f, animname, Vec2f(-4.0f * sign, 0.0f), armOffset);
-		frontarm.animation.frame = frontframe;
+		if (archer.charge_state != ArcherParams::legolas_charging)
+		{
+			u16 frontframe = 0;
+			f32 temp = Maths::Min(archer.charge_time, ArcherParams::ready_time);
+			f32 ready_tween = temp / ArcherParams::ready_time;
+			armangle = armangle * ready_tween;
+			armOffset = Vec2f(-1.0f, 4.0f + config_offset + 2.0f * (1.0f - ready_tween));
+			setArmValues(frontarm, true, armangle, 0.1f, animname, Vec2f(-4.0f * sign, 0.0f), armOffset);
+			frontarm.animation.frame = frontframe;
 
-		setArmValues(arrow, false, 0, 0, "default", Vec2f(), Vec2f());
+			setArmValues(arrow, false, 0, 0, "default", Vec2f(), Vec2f());
+		}
 	}
 	else if (archer.charge_state == ArcherParams::readying)
 	{
@@ -459,8 +464,8 @@ void DrawBow(CSprite@ this, CBlob@ blob, ArcherInfo@ archer, f32 armangle, const
 		if (archer.charge_state == ArcherParams::legolas_ready)
 		{
 			needs_shiny = true;
-			shiny_offset = Vec2f(-12.0f, 0.0f);   //TODO:
-			shiny_angle = armangle;
+			shiny_offset = Vec2f(-13.0f, -2.5f);
+			shiny_angle = arrowangle;
 		}
 	}
 	else
@@ -470,6 +475,7 @@ void DrawBow(CSprite@ this, CBlob@ blob, ArcherInfo@ archer, f32 armangle, const
 	}
 
 	frontarm.SetRelativeZ(1.5f);
+	arrow.SetRelativeZ(1.4f);
 	setArmValues(this.getSpriteLayer("backarm"), true, armangle, -0.1f, "default", Vec2f(-4.0f * sign, 0.0f), armOffset);
 
 	// fire arrow particles

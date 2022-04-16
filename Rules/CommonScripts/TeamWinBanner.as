@@ -10,7 +10,7 @@ bool minimap = true;
 
 void onInit(CRules@ this)
 {
-    if (!GUI::isFontLoaded("AveriaSerif-Bold_48"))
+    if (!GUI::isFontLoaded("AveriaSerif-Bold_32"))
     {
         string AveriaSerif = CFileMatcher("AveriaSerif-Bold.ttf").getFirst();
         GUI::LoadFont("AveriaSerif-Bold_32", AveriaSerif, 32, true);
@@ -91,5 +91,5 @@ void DrawBanner(Vec2f center, int team)
 
     GUI::SetFont("AveriaSerif-Bold_32");
     string text = teamName + " team wins";
-    GUI::DrawTranslatedTextCentered(text, center, SColor(255, 255, 255, 255));
+    GUI::DrawTextCentered(getTranslatedString(text), center, SColor(255, 255, 255, 255));
 }

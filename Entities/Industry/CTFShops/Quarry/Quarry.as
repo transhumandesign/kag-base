@@ -8,14 +8,16 @@ const string ore = "mat_stone";
 const string rare_ore = "mat_gold";
 
 //balance
-const int input = 100;					//input cost in fuel
-const int output = 75;					//output amount in ore
-const bool enable_rare = false;			//enable/disable
-const int rare_chance = 10;				//one-in
-const int rare_output = 20;				//output for rare ore
-const int conversion_frequency = 30;	//how often to convert, in seconds
+const int input = 100;					// input cost in fuel
+const int initial_output = 80;			// output amount in ore
+const int min_output = 30;				// minimal possible output in ore
+const int output_decrease = 2;			// by how much output decreases every time ore is dropped
+const bool enable_rare = false;			// enable/disable
+const int rare_chance = 10;				// one-in
+const int rare_output = 20;				// output for rare ore
+const int conversion_frequency = 30;	// how often to convert, in seconds
 
-const int min_input = Maths::Ceil(input/output);
+const int min_input = Maths::Ceil(input/initial_output);
 
 //fuel levels for animation
 const int max_fuel = 500;
@@ -54,6 +56,7 @@ void onInit(CSprite@ this)
 	{
 		wood.SetOffset(Vec2f(8.0f, -1.0f));
 		wood.SetVisible(false);
+		wood.SetRelativeZ(1);
 	}
 
 	this.SetEmitSound("/Quarry.ogg");
@@ -77,6 +80,13 @@ void onInit(CBlob@ this)
 
 	//commands
 	this.addCommandID("add fuel");
+	string current_output = "current_quarry_output_" + this.getTeamNum();
+	CRules@ rules = getRules();
+
+	if (!rules.exists(current_output) || rules.get_s32(current_output) == -1)
+	{
+		rules.set_s32("current_quarry_output_" + this.getTeamNum(), initial_output);
+	}
 }
 
 void onTick(CBlob@ this)
@@ -177,6 +187,8 @@ void spawnOre(CBlob@ this)
 	int actual_input = Maths::Min(input, blobCount);
 
 	int r = XORRandom(rare_chance);
+	int output = getRules().get_s32("current_quarry_output_" + this.getTeamNum());
+
 	//rare chance, but never rare if not a full batch of wood
 	bool rare = (enable_rare && r == 0 && blobCount >= input);
 
@@ -195,6 +207,13 @@ void spawnOre(CBlob@ this)
 	_ore.server_SetQuantity(!rare ? amountToSpawn : rare_output);
 
 	this.set_s16(fuel_prop, blobCount - actual_input); //burn wood
+	const string current_output = "current_quarry_output_" + this.getTeamNum();
+	
+	// reduce output if it's higher than minimal output
+	if (getRules().hasScript("ResetQuarry.as"))
+	{
+		getRules().set_s32(current_output, Maths::Max(getRules().get_s32(current_output) - output_decrease, min_output));
+	}
 }
 
 void updateWoodLayer(CSprite@ this)

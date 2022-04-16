@@ -519,7 +519,6 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
 		HitInfo@[] hitInfos;
 		if (map.getHitInfosFromRay(pos, -hitvec.getAngle(), hitvec.getLength(), this, @hitInfos))
 		{
-			bool blocked = false;
 			for (uint i = 0; i < hitInfos.length; i++)
 			{
 				HitInfo@ hi = hitInfos[i];
@@ -543,7 +542,13 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
                         }
 
                         // Does the platform block damage
-                        if(Maths::Abs(dir.AngleWith(hitvec)) < plat.angleLimit)
+                        Vec2f hitvec_dir = -hitvec;
+                        if (hit_blob.isPlatform())
+                        {
+                            hitvec_dir = hitvec;
+                        }
+
+                        if(Maths::Abs(dir.AngleWith(hitvec_dir)) < plat.angleLimit)
                         {
                             return false;
                         }
