@@ -19,8 +19,6 @@ void onInit(CBlob@ this)
 
 	CSprite@ sprite = this.getSprite();
 
-	sprite.SetZ(-10);
-
 	CSpriteLayer@ fuse = this.getSprite().addSpriteLayer("fuse", "Keg.png" , 16, 16, 0, 0);
 
 	if (fuse !is null)
@@ -31,6 +29,8 @@ void onInit(CBlob@ this)
 		fuse.SetOffset(Vec2f(3, -4));
 		fuse.SetRelativeZ(1);
 	}
+
+	this.set_f32("important-pickup", 30.0f);
 }
 
 //sprite update

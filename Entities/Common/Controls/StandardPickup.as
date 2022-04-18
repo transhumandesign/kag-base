@@ -536,6 +536,8 @@ CBlob@ getClosestAimedBlob(CBlob@ this, CBlob@[] available)
 	return closest;
 }
 
+
+
 CBlob@ getClosestBlob(CBlob@ this)
 {
 	CBlob@ closest;
@@ -563,26 +565,32 @@ CBlob@ getClosestBlob(CBlob@ this)
 		for (uint i = 0; i < available.length; ++i)
 		{
 			CBlob @b = available[i];
+
 			Vec2f bpos = b.getPosition();
 			// consider corpse center to be lower than it actually is because otherwise centers of player and corpse are on the same level,
 			// which makes corpse priority skyrocket if player is standing too close 
 			if (b.hasTag("dead")) bpos += Vec2f(0, 6.0f);
 
-			if (b.isPointInside(this.getAimPos())) 
+
+			Vec2f[]@ hoverShape;
+			bool pointInsidePolygon = false;
+			
+			if (b.get("hover-poly", @hoverShape))
 			{
-				// go through all layers. This is not perfect,
-				// as these don't always match the blob's CShape though.
-				CSprite @bs = this.getSprite();
-				for (int i = 0; i < bs.getSpriteLayerCount(); ++i)
+				pointInsidePolygon = PointInsidePolygon(this.getAimPos(),  hoverShape, bpos, b.isFacingLeft());
+			}
+			
+			if (pointInsidePolygon || b.isPointInside(this.getAimPos())) 
+			{
+				// Let's just get the draw order of the sprite
+				CSprite @bs = b.getSprite();
+				float draworder = bs.getDrawOrder();
+
+				if (draworder > drawOrderScore)
 				{
-					float draworder = bs.getSpriteLayer(i).getDrawOrder();
-					if (draworder > drawOrderScore )
-					{
-						drawOrderScore = draworder;
-						@target = @b;
-					}
-				}
-				
+					drawOrderScore = draworder;
+					@target = @b;
+				}			
 			}
 
 
@@ -670,6 +678,7 @@ void onInit(CSprite@ this)
 void onRender(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
+
 
 	// render item held when in inventory
 

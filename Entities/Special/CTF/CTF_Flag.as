@@ -52,6 +52,19 @@ void onInit(CBlob@ this)
 	AddIconToken("$fast_return_indicator$", "Entities/Special/CTF/FlagFastReturnIndicator.png", Vec2f(18, 10), 0);
 	AddIconToken("$return_indicator$", "Entities/Special/CTF/FlagTickIndicator.png", Vec2f(10, 10), 0);
 
+	// Pickup: custom hover area
+	Vec2f[] hoverPoly = 
+		{ Vec2f(-2.5f, -15.0f)
+		, Vec2f(-1.5f, -19.0f)
+		, Vec2f(1.5f, -19.0f)
+		, Vec2f(2.5f, -15.0f)
+		, Vec2f(2.5f, 7.0f)
+		, Vec2f(-2.5f, 7.0f)
+		, Vec2f(-2.5f, -15.0f)
+		};
+		
+
+	this.set("hover-poly", hoverPoly);
 }
 
 void onTick(CBlob@ this)
@@ -95,7 +108,6 @@ void onTick(CBlob@ this)
 
 void onInit(CSprite@ this)
 {
-	this.SetZ(-10.0f);
 	CSpriteLayer@ flag = this.addSpriteLayer("flag_layer", "/CTF_Flag.png", 32, 16, this.getBlob().getTeamNum(), this.getBlob().getSkinNum());
 
 	if (flag !is null)
