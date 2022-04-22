@@ -1,4 +1,4 @@
-﻿// Fireplace
+// Fireplace
 
 #include "ProductionCommon.as";
 #include "Requirements.as";
@@ -10,6 +10,7 @@ void onInit(CBlob@ this)
 {
 	this.getCurrentScript().tickFrequency = 9;
 	this.getSprite().SetEmitSound("CampfireSound.ogg");
+	this.getSprite().SetEmitSoundPaused(false);
 	this.getSprite().SetAnimation("fire");
 	this.getSprite().SetFacingLeft(XORRandom(2) == 0);
 
