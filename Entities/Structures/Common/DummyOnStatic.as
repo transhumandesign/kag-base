@@ -5,7 +5,7 @@
 #include "DummyCommon.as";
 
 void onSetStatic(CBlob@ this, const bool isStatic)
-{
+{	
 	if (this.exists(Dummy::TILE))
 	{
 		const Vec2f POSITION = this.getPosition();
@@ -19,9 +19,12 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 				server_setDummyGridNetworkID(map.getTileOffset(POSITION), this.getNetworkID());
 			}
 			else
-			{
-				map.server_SetTile(POSITION, CMap::tile_empty);
-				server_setDummyGridNetworkID(map.getTileOffset(POSITION), 0);
+			{	
+				if (this.getHealth()==0) //this check fixes Obstructor and Sensor breaking background
+				{ 
+					map.server_SetTile(POSITION, CMap::tile_empty);
+					server_setDummyGridNetworkID(map.getTileOffset(POSITION), 0);
+				}
 			}
 		}
 	}
