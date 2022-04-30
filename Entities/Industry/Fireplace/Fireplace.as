@@ -4,6 +4,7 @@
 #include "Requirements.as";
 #include "MakeFood.as";
 #include "FireParticle.as";
+#include "FireCommon.as";
 #include "Hitters.as";
 
 void onInit(CBlob@ this)
@@ -52,6 +53,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		{
 			food.setVelocity(blob.getVelocity().opMul(0.5f));
 		}
+	}
+	else if (blob !is null && blob.hasTag("fire source")) //fire arrow works
+	{
+		Ignite(this);
 	}
 }
 
@@ -116,9 +121,13 @@ void Ignite(CBlob@ this)
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if (customData == Hitters::water)
+	if (isWaterHitter(customData)) 
 	{
 		Extinguish(this);
+	}
+	if (isIgniteHitter(customData))
+	{
+		Ignite(this);
 	}
 	return damage;
 }
