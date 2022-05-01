@@ -16,7 +16,6 @@ void onInit(CBlob@ this)
 	this.Tag("ignore fall");
 
 	this.getCurrentScript().runFlags |= Script::tick_inwater;
-	this.getCurrentScript().tickFrequency = 1;
 }
 
 void onTick(CBlob@ this)
