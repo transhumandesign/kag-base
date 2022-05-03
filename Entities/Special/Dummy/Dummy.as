@@ -1,3 +1,4 @@
+
 void onInit(CBlob@ this)
 {
 	this.getSprite().SetZ(-20.0f);
@@ -34,12 +35,9 @@ void onGib(CSprite@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {	
-    if (blob.getName() == "arrow" && this.getTeamNum() != blob.getTeamNum())
-    {
-        return true;
-    }
-    return false;
+    return (blob.getName() == "arrow" && this.getTeamNum() != blob.getTeamNum());
 }
+
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
@@ -49,12 +47,10 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	
 		if (worldPoint.x > this.getPosition().x)
 		{
-			//this.setAngleDegrees(Maths::Max(this.getAngleDegrees() - 3 - XORRandom(10), -30));
 			sprite.RotateBy(-2 - XORRandom(7), Vec2f(0.0f, 12.0f));
 		}
 		else
 		{
-			//this.setAngleDegrees(Maths::Min(this.getAngleDegrees() + 3 + XORRandom(10), 30));
 			sprite.RotateBy(2 + XORRandom(7), Vec2f(0.0f, 12.0f));
 		}
 	}
