@@ -611,6 +611,7 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 	}
 
 	//kill any grain plants we shot the base of
+	//ignite fireplace when fire arrow hits the base
 	CBlob@[] blobsInRadius;
 	if (this.getMap().getBlobsInRadius(worldPoint, this.getRadius() * 1.3f, @blobsInRadius))
 	{
@@ -620,6 +621,22 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 			if (b.getName() == "grain_plant")
 			{
 				this.server_Hit(b, worldPoint, Vec2f(0, 0), velocity.Length() / 7.0f, Hitters::arrow);
+				break;
+			}
+			if (b.getName() == "fireplace" && !b.getSprite().isAnimation("fire") && (arrowType == ArrowType::fire))
+			{
+				b.SetLight(true);
+				b.Tag("fire source");
+
+				b.getSprite().SetAnimation("fire");
+				b.getSprite().SetEmitSoundPaused(false);
+				b.getSprite().PlaySound("/FireFwoosh.ogg");
+	
+				CSpriteLayer@ fire = b.getSprite().getSpriteLayer("fire_animation_large");
+				if (fire !is null)
+				{
+					fire.SetVisible(true);
+				}
 				break;
 			}
 		}
