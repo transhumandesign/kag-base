@@ -62,8 +62,6 @@ void onInit(CBlob@ this)
 
 	sprite.SetZ(-10.0f);
 
-	this.getCurrentScript().runFlags |= Script::tick_hasattached;
-
 	// auto-load on creation
 	if (getNet().isServer())
 	{
@@ -115,7 +113,7 @@ f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
 
 void onTick(CBlob@ this)
 {
-	if (this.hasAttached() || this.getTickSinceCreated() < 30) //driver, seat or gunner, or just created
+	if (this.hasAttached() || this.isAttached() || this.getTickSinceCreated() < 30) //is being used or held by player or vehicle, or just created
 	{
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v))
