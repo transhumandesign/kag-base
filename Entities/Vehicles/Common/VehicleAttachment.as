@@ -26,7 +26,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 				CBlob@ occBlob = ap.getOccupied();
 				if (occBlob !is null) //detach button
 				{
-					if (this.isOnGround())	  // HACK:
+					if (this.isOnGround() || !this.isInWater() || occBlob.getName() == "mounted_bow") 	// HACK:
 					{
 						CBitStream params;
 						params.write_netid(occBlob.getNetworkID());
