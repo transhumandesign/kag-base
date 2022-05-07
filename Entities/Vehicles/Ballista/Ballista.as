@@ -23,6 +23,8 @@ void onInit(CBlob@ this)
 
 	InitCosts();
 	this.set_s32("gold building amount", CTFCosts::ballista_gold);
+	
+	this.set_bool("facing_left", false);
 
 	AddIconToken("$Normal_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 0);
 	AddIconToken("$Explosive_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 1);
@@ -180,8 +182,8 @@ f32 getAngle(CBlob@ this, const u8 charge, VehicleInfo@ v)
 
 void onTick(CBlob@ this)
 {
-	if (this.hasAttached() || this.getTickSinceCreated() < 30)
-	{
+	if (this.hasAttached() || this.isFacingLeft() != this.get_bool("facing_left") || this.getTickSinceCreated() < 30) //player is attached, facing direction changed or just created
+	{	
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v))
 		{
@@ -232,7 +234,8 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-
+	
+	this.set_bool("facing_left", this.isFacingLeft());
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
