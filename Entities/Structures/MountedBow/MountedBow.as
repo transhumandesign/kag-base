@@ -7,6 +7,8 @@ const Vec2f arm_offset = Vec2f(-6, 0);
 
 void onInit(CBlob@ this)
 {
+	this.set_bool("facing_left", false);
+	
 	Vehicle_Setup(this,
 	              0.0f, // move speed
 	              0.31f,  // turn speed
@@ -112,9 +114,9 @@ f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
 }
 
 void onTick(CBlob@ this)
-{
-	if (this.hasAttached() || this.isAttached() || this.getTickSinceCreated() < 30) //is being used or held by player or vehicle, or just created
-	{
+{	
+	if (this.hasAttached() || this.isFacingLeft() != this.get_bool("facing_left") || this.getTickSinceCreated() < 30) //is being used or held by player or vehicle, or just created
+	{	
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v))
 		{
@@ -148,9 +150,11 @@ void onTick(CBlob@ this)
 			arm.RotateBy(rotation, Vec2f(facing_left ? -4.0f : 4.0f, 0.0f));
 		}
 
-
 		Vehicle_StandardControls(this, v);
 	}
+	
+	this.set_bool("facing_left", this.isFacingLeft());
+	this.Sync("facing_left", isServer());
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
