@@ -237,3 +237,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		TryToAttachVehicle(this, blob);
 	}
 }
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+    return blob.getShape().isStatic();
+}
