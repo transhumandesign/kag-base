@@ -135,11 +135,6 @@ void Vehicle_AddAmmo(CBlob@ this, VehicleInfo@ v, int fireDelay, int fireAmount,
 	a.ammo_stocked = 0;
 	a.infinite_ammo = false;
 
-	if (getRules().hasTag("singleplayer"))
-	{
-		a.infinite_ammo = true;
-	}
-
 	v.ammo_types.push_back(a);
 }
 
