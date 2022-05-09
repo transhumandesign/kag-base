@@ -6,6 +6,7 @@
 #include "MakeSeed.as";
 #include "MakeCrate.as";
 #include "MakeScroll.as";
+#include "MakeSign.as";
 
 const bool chatCommandCooldown = false; // enable if you want cooldown on your server
 const uint chatCommandDelay = 3 * 30; // Cooldown in seconds
@@ -302,10 +303,15 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					}
 					server_MakePredefinedScroll(pos, s);
 				}
-				else if(tokens[0] == "!coins")
+				else if (tokens[0] == "!coins")
 				{
 					int money = parseInt(tokens[1]);
 					player.server_setCoins(money);
+				}
+				else if (tokens[0] == "!sign")
+				{
+					CMap@ map = getMap();
+					createSign(pos, text_in.substr(tokens[0].length+1, -1));
 				}
 			}
 			else
