@@ -12,12 +12,12 @@ void onRender(CSprite@ this)
 
 	// draw only for local player
 	CBlob@ localBlob = getLocalPlayerBlob();
-
-	if (localBlob is null || localBlob.isAttached() || localBlob.isInInventory())
+	CBlob@ blob = this.getBlob();
+	
+	if (localBlob is null || localBlob.isAttached() || localBlob.isInInventory() || blob.isInInventory())
 	{
 		return;
 	}
-	CBlob@ blob = this.getBlob();
 
 	f32 arrowVisibleRadius = blob.getRadius() + 15.0f;
 
