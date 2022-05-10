@@ -5,6 +5,7 @@
 #include "MakeFood.as";
 #include "FireParticle.as";
 #include "FireCommon.as";
+#include "FireplaceCommon.as";
 #include "Hitters.as";
 
 void onInit(CBlob@ this)
@@ -42,7 +43,6 @@ void onTick(CBlob@ this)
 		Ignite(this);
 	}
 }
-
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {	
@@ -106,20 +106,7 @@ void Extinguish(CBlob@ this)
 
 void Ignite(CBlob@ this)
 {
-	if (this.getSprite().isAnimation("fire")) return;
-
-	this.SetLight(true);
-	this.Tag("fire source");
-
-	this.getSprite().SetAnimation("fire");
-	this.getSprite().SetEmitSoundPaused(false);
-	this.getSprite().PlaySound("/FireFwoosh.ogg");
-	
-	CSpriteLayer@ fire = this.getSprite().getSpriteLayer("fire_animation_large");
-	if (fire !is null)
-	{
-		fire.SetVisible(true);
-	}
+	IgniteFireplace(this);
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)

@@ -7,6 +7,7 @@
 #include "SplashWater.as";
 #include "TeamStructureNear.as";
 #include "KnockedCommon.as"
+#include "FireplaceCommon.as";
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
@@ -625,18 +626,7 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 			}
 			if (b.getName() == "fireplace" && !b.getSprite().isAnimation("fire") && (arrowType == ArrowType::fire))
 			{
-				b.SetLight(true);
-				b.Tag("fire source");
-
-				b.getSprite().SetAnimation("fire");
-				b.getSprite().SetEmitSoundPaused(false);
-				b.getSprite().PlaySound("/FireFwoosh.ogg");
-	
-				CSpriteLayer@ fire = b.getSprite().getSpriteLayer("fire_animation_large");
-				if (fire !is null)
-				{
-					fire.SetVisible(true);
-				}
+				IgniteFireplace(b);
 				break;
 			}
 		}
@@ -673,7 +663,6 @@ void MakeFireCross(CBlob@ this, Vec2f burnpos)
 	/*
 	fire starting pattern
 	X -> fire | O -> not fire
-
 	[O] [X] [O]
 	[X] [X] [X]
 	[O] [X] [O]
