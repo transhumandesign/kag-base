@@ -622,6 +622,17 @@ void onTick(CMovement@ this)
 			{
 				moveVars.walkFactor *= 0.6f;
 				moveVars.jumpFactor *= 0.5f;
+
+				// while carrying heavy, permit action once every 30 ticks, allows using inventories/tunnels while disabling slashes/bow
+				if (blob.isKeyPressed(key_action1) || blob.isKeyPressed(key_action2)) 
+				{
+					carryBlob.getAttachments().getAttachmentPointByName("PICKUP").SetKeysToTake( key_action1 | key_action2 );
+					blob.set_u32("tick_action_while_carrying_heavy", getGameTime());
+				}
+				else if (blob.get_u32("tick_action_while_carrying_heavy") + 30 < getGameTime())
+				{
+					carryBlob.getAttachments().getAttachmentPointByName("PICKUP").SetKeysToTake(0);
+				}
 			}
 		}
 

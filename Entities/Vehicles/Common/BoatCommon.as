@@ -31,12 +31,6 @@ void onInit(CBlob@ this)
 					oarSprite.SetRelativeZ(oar_offset);
 				}
 			}
-
-			// disable acion keys when carrying this
-			if (oar.name == "PICKUP")
-			{
-				oar.SetKeysToTake(key_action1 | key_action2);
-			}
 		}
 	}
 
