@@ -170,6 +170,10 @@ void DoSplash(CBlob@ this)
 	Splash(this, splash_halfwidth, splash_halfheight, splash_offset, false);
 }
 
+void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
+{
+	this.set_u8("water_delay", 1);
+}
 
 //sprite
 
