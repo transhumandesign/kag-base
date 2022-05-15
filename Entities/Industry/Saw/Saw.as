@@ -182,7 +182,7 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 
 		f32 dot = off * (Vec2f(0, -1).RotateBy(this.getAngleDegrees(), Vec2f()));
 
-		if (dot > 0.8f && blob.getVelocity().y > 0.5f)
+		if (dot > 0.8f && (blob.getVelocity().y - this.getVelocity().y) > 0.1f)
 		{
 			if (getNet().isClient() && !g_kidssafe) //add blood gfx
 			{
