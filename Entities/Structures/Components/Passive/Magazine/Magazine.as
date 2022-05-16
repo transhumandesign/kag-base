@@ -66,13 +66,13 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (this.getDistanceTo(caller) > 16.0f || !this.getShape().isStatic()) return;
 
 	CBlob@ carried = caller.getCarriedBlob();
-	bool LOAD = (carried !is null);
+	bool LOAD = carried !is null;
 
 	CBlob@ item = this.getInventory().getItem(0);
 
 	if (LOAD)
 	{
-		if  (!carried.canBePutInInventory(this) 			// doesn't go in inventories to begin with
+		if 	(!carried.canBePutInInventory(this) 			// doesn't go in inventories to begin with
 			|| !this.getInventory().canPutItem(carried)  	// does go in inventories but doesn't fit
 			|| (item !is null && (item.getName() != carried.getName() || item.getQuantity() == item.maxQuantity)))
 		{
@@ -87,10 +87,11 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	CBitStream params;
 	params.write_u16(LOAD ? carried.getNetworkID() : caller.getNetworkID());
 		
-	string iconName = LOAD ? "$" + carried.getName() + "$" : "$" + item.getName() + "$";
-	if (LOAD ? carried.hasTag("use inventory icon") : item.hasTag("use inventory icon"))
+	CBlob@ target = LOAD ? carried : item;
+	string iconName = "$" + target.getName() + "$";
+	if (target.hasTag("use inventory icon"))
 	{
-		iconName = LOAD ? "$" + carried.getInventoryName() + "$" : "$" + item.getInventoryName() + "$";
+		iconName = "$" + target.getInventoryName() + "$";
 	}
 
 	CButton@ button = caller.CreateGenericButton(
@@ -98,8 +99,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	Vec2f_zero,																									// button offset
 	this, 																										// button attachment
 	this.getCommandID(LOAD ? "load" : "unload"), 																// command id
-	LOAD ? getTranslatedString("Load {ITEM}").replace("{ITEM}", carried.getInventoryName())
-		 : getTranslatedString("Unload {ITEM}").replace("{ITEM}", item.getInventoryName()), 					// description
+	getTranslatedString(LOAD ? "Load {ITEM}" : "Unload {ITEM}").replace("{ITEM}", target.getInventoryName()),	// description
 	params);																									// cbitstream
 		
 	button.radius = 8.0f;
