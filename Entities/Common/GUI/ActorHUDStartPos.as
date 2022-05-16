@@ -34,8 +34,8 @@ void DrawInventoryOnHUD(CBlob@ this, Vec2f tl)
 			const int quantity = this.getBlobCount(name);
 			drawn.push_back(name);
 
-			GUI::DrawIcon(item.inventoryIconName, item.inventoryIconFrame, item.inventoryFrameDimension, tl + Vec2f(0 + (drawn.length - 1) * 40, -6), 1.0f);
-
+			GUI::DrawIcon(item.inventoryIconName, item.inventoryIconFrame, item.inventoryFrameDimension, tl + Vec2f((drawn.length - 1) * 40 + (16-item.inventoryFrameDimension.x), -6 + (16-item.inventoryFrameDimension.y)), 1.0f);
+			
 			f32 ratio = float(quantity) / float(item.maxQuantity);
 			col = ratio > 0.4f ? SColor(255, 255, 255, 255) :
 			      ratio > 0.2f ? SColor(255, 255, 255, 128) :
