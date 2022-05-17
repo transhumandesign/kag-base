@@ -33,11 +33,13 @@ void Light(CBlob@ this, bool on)
 	{
 		this.SetLight(false);
 		this.getSprite().SetAnimation("nofire");
+		SetFrame(this, false);
 	}
 	else
 	{
 		this.SetLight(true);
 		this.getSprite().SetAnimation("fire");
+		SetFrame(this, true);
 	}
 	this.getSprite().PlaySound("SparkleShort.ogg");
 }
@@ -48,10 +50,22 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		Light(this, !this.isLight());
 	}
-
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
     return blob.getShape().isStatic();
+}
+
+//sprite
+
+void SetFrame(CBlob@ blob, bool light_on)
+{
+	Animation@ animation = blob.getSprite().getAnimation("fire");
+	if (animation !is null)
+	{
+		u8 index = light_on ? 0 : 3;
+		animation.SetFrameIndex(index);
+		blob.inventoryIconFrame = index;
+	}
 }

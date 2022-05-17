@@ -2,11 +2,14 @@
 const int ABSORB_COUNT = 100;
 const string ABSORBED_PROP = "absorbed";
 
-
 void spongeUpdateSprite(CSprite@ this, u8 absorbed)
 {
-	uint16 old_frame_index = this.getFrameIndex();
-	this.animation.setFrameFromRatio(f32(absorbed) / ABSORB_COUNT);
+	uint8 old_frame_index = this.getFrameIndex();
+	this.animation.setFrameFromRatio(f32(absorbed) / ABSORB_COUNT); // update sprite on hand
+	
+	uint8 inventory_icon_index = Maths::Min((f32(absorbed) / ABSORB_COUNT)*4, 3);
+	this.getBlob().inventoryIconFrame = inventory_icon_index; // update inventory icon
+	
 	if (old_frame_index > this.getFrameIndex())
 	{
 		makeSteamPuff(this.getBlob());
