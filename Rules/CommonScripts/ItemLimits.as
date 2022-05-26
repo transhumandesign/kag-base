@@ -21,7 +21,6 @@ void onRestart(CRules@ this)
 void Reset(CRules@ this)
 {
 	resetLimitedItemsList();
-	print("hi");
 	CRules@ rules = getRules();
 	rules.set("item_limits", itemLimits);
 }
