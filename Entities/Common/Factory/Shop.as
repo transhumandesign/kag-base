@@ -138,35 +138,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					}
 				}
 			}
-			
-			/* Method 2:
-			Use this if we want to not rely on dictionary itemLimits in ItemLimits.as
-			and do item counting from scratch:
-			
-			CBlob@[] blobsInMap;
-			getBlobsByName(itemName, @blobsInMap);
-			int blobCounts = 0;
-			
-			int callerTeam = caller.getTeamNum();
-			if (callerTeam < 0 || callerTeam > 7) callerTeam = 8;
-			
-			ConfigFile cfg = ConfigFile();
-			cfg.loadFile("Rules/CommonScripts/ItemLimits.cfg");
-			s32 maximum = cfg.read_s32(itemName, 200);
-			
-			for (uint b = 0; b < blobsInMap.length(); ++b)
-			{
-				int blobTeam = blobsInMap[b].getTeamNum();
-				if (blobTeam < 0 || blobTeam > 7) blobTeam = 8;
-				if (callerTeam == blobTeam) blobCounts++;
-			}
-
-			if (blobCounts >= maximum && maximum > 0) 
-			{	
-				sendChatWarningLimitedItem(maximum, itemName);
-				return;
-			}
-			*/
 		}
 
 		if (this.getHealth() <= 0)
