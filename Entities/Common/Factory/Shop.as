@@ -8,6 +8,7 @@
 #include "MakeCrate.as"
 #include "CheckSpam.as"
 #include "GenericButtonCommon.as"
+#include "ItemLimitsCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -87,9 +88,9 @@ bool isInRadius(CBlob@ this, CBlob @caller)
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	bool isServer = getNet().isServer();
-
+	
 	if (cmd == this.getCommandID("shop buy"))
-	{
+	{	
 		if (this.hasTag("shop disabled"))
 			return;
 
@@ -106,6 +107,67 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ caller = getBlobByNetworkID(callerID);
 		if (caller is null) { return; }
 		CInventory@ inv = caller.getInventory();
+		
+		CRules@ rules = getRules();
+		
+		if (rules.exists('item_limits'))
+		{	
+			// Method 1:
+			dictionary itemLimits;
+			rules.get("item_limits", itemLimits);
+			
+			string itemName = blobName;
+			if (blobName == "filled_bucket") itemName = "bucket";
+			
+			if (itemLimits.exists(itemName))
+			{
+				int[] itemCounts;
+				itemLimits.get(itemName, itemCounts);
+				
+				if (itemCounts.length() > 0)
+				{
+					int maximum = itemCounts[9];
+					
+					int callerTeam = caller.getTeamNum();
+					if (callerTeam < 0 || callerTeam > 7) callerTeam = 8;
+					
+					if (itemCounts[callerTeam] >= maximum && maximum > 0)
+					{
+						sendChatWarningLimitedItem(maximum, itemName);
+						return;
+					}
+				}
+			}
+			
+			/* Method 2:
+			Use this if we want to not rely on dictionary itemLimits in ItemLimits.as
+			and do item counting from scratch:
+			
+			CBlob@[] blobsInMap;
+			getBlobsByName(itemName, @blobsInMap);
+			int blobCounts = 0;
+			
+			int callerTeam = caller.getTeamNum();
+			if (callerTeam < 0 || callerTeam > 7) callerTeam = 8;
+			
+			ConfigFile cfg = ConfigFile();
+			cfg.loadFile("Rules/CommonScripts/ItemLimits.cfg");
+			s32 maximum = cfg.read_s32(itemName, 200);
+			
+			for (uint b = 0; b < blobsInMap.length(); ++b)
+			{
+				int blobTeam = blobsInMap[b].getTeamNum();
+				if (blobTeam < 0 || blobTeam > 7) blobTeam = 8;
+				if (callerTeam == blobTeam) blobCounts++;
+			}
+
+			if (blobCounts >= maximum && maximum > 0) 
+			{	
+				sendChatWarningLimitedItem(maximum, itemName);
+				return;
+			}
+			*/
+		}
 
 		if (this.getHealth() <= 0)
 		{
@@ -189,7 +251,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 				else
 				{
-
 					//inv.server_TakeRequirements(s.requirements);
 					Vec2f spawn_offset = Vec2f();
 
@@ -215,9 +276,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 						}
 					}
 					else
-					{
+					{	
 						CBlob@ blob = server_CreateBlob(blobName, caller.getTeamNum(), this.getPosition() + spawn_offset);
 						CInventory@ callerInv = caller.getInventory();
+						
 						if (blob !is null)
 						{
 							bool pickable = blob.getAttachments() !is null && blob.getAttachments().getAttachmentPointByName("PICKUP") !is null;
