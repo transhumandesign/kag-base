@@ -7,11 +7,6 @@
 #include "RulesCore.as";
 #include "RespawnSystem.as";
 
-const int maxMines = 20;
-const int maxKegs = 20;
-int mineCount = 0;
-int kegCount = 0;
-
 //simple config function - edit the variables below to change the basics
 
 void Config(SandboxCore@ this)
@@ -38,9 +33,7 @@ void Config(SandboxCore@ this)
 	//spawn after death time
 	this.spawnTime = (getTicksASecond() * cfg.read_s32("spawn_time", 15));
 
-
 	getRules().Tag('quick decay');
-
 }
 
 //Sandbox spawn system
@@ -368,6 +361,7 @@ shared class SandboxCore : RulesCore
 
 void onInit(CRules@ this)
 {
+	this.Tag("item limits");
 	Reset(this);
 }
 
@@ -389,41 +383,4 @@ void Reset(CRules@ this)
 	this.set("core", @core);
 	this.set("start_gametime", getGameTime() + core.warmUpTime);
 	this.set_u32("game_end_time", getGameTime() + core.gameDuration); //for TimeToEnd.as
-
-	kegCount = 0;
-	mineCount = 0;
 }
-
-void onBlobCreated(CRules@ this, CBlob@ blob)
-{
-	if (blob.getName() == "mine")
-	{
-		mineCount += 1;
-		if (mineCount > maxMines)
-		{
-			blob.server_Die(); // wont explode because its just been made
-		}
-	}
-	else if (blob.getName() == "keg")
-	{
-		kegCount += 1;
-		if (kegCount > maxKegs)
-		{
-			blob.server_Die();
-		}
-	}
-}
-
-
-void onBlobDie(CRules@ this, CBlob@ blob)
-{
-	if (blob.getName() == "mine")
-	{
-		mineCount -= 1;
-	}
-	else if (blob.getName() == "keg")
-	{
-		kegCount -= 1;
-	}
-}
-

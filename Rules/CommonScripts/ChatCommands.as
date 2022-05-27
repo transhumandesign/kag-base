@@ -6,6 +6,7 @@
 #include "MakeSeed.as";
 #include "MakeCrate.as";
 #include "MakeScroll.as";
+#include "ItemLimits.as";
 
 const bool chatCommandCooldown = false; // enable if you want cooldown on your server
 const uint chatCommandDelay = 3 * 30; // Cooldown in seconds
@@ -16,7 +17,8 @@ const string[] blacklistedItems = {
 	"necromancer",  // annoying/grief
 	"greg",         // annoying/grief
 	"ctf_flag",     // sound spam
-	"flag_base"     // sound spam + bedrock grief
+	"flag_base",	// sound spam + bedrock grief
+	"war_base",     // bedrock grief
 };
 
 void onInit(CRules@ this)
@@ -70,7 +72,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 	const bool isMod = player.isMod();
 	const string gamemode = this.gamemode_name;
 	bool wasCommandSuccessful = true; // assume command is successful 
-	string errorMessage = ""; // so errors can be printed out of wasCommandSuccessful is false
+	string errorMessage = ""; // so errors can be printed out if wasCommandSuccessful is false
 	SColor errorColor = SColor(255,255,0,0); // ^
 
 	if (!isMod && this.hasScript("Sandbox_Rules.as") || chatCommandCooldown) // chat command cooldown timer
@@ -127,12 +129,14 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 	if (sv_test)
 	{
 		if (text_in == "!tree") // pine tree (seed)
-		{
-			server_MakeSeed(pos, "tree_pine", 600, 1, 16);
+		{	
+			if (!(getRules().hasTag('item limits') && blobLimitExceeded("seed", blob)))
+				server_MakeSeed(pos, "tree_pine", 600, 1, 16);
 		}
 		else if (text_in == "!btree") // bushy tree (seed)
 		{
-			server_MakeSeed(pos, "tree_bushy", 400, 2, 16);
+			if (!(getRules().hasTag('item limits') && blobLimitExceeded("seed", blob)))
+				server_MakeSeed(pos, "tree_bushy", 400, 2, 16);
 		}
 		else if (text_in == "!allarrows") // 30 normal arrows, 2 water arrows, 2 fire arrows, 1 bomb arrow (full inventory for archer)
 		{
@@ -176,9 +180,12 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			// crash prevention?
 		}
 		else if (text_in == "!crate")
-		{
-			client_AddToChat("usage: !crate BLOBNAME [DESCRIPTION]", SColor(255, 255, 0, 0)); //e.g., !crate shark Your Little Darling
-			server_MakeCrate("", "", 0, team, Vec2f(pos.x, pos.y - 30.0f));
+		{	
+			if (!(getRules().hasTag('item limits') && blobLimitExceeded("crate", blob)))
+			{
+				client_AddToChat("usage: !crate BLOBNAME [DESCRIPTION]", SColor(255, 255, 0, 0)); //e.g., !crate shark Your Little Darling
+				server_MakeCrate("", "", 0, team, Vec2f(pos.x, pos.y - 30.0f));
+			}
 		}
 		else if (text_in == "!coins") // adds 100 coins to the player's coins
 		{
@@ -190,17 +197,19 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		}
 		else if (text_in == "!fishyschool") // spawns 12 fishies
 		{
-			for (int i = 0; i < 12; i++)
-			{
-				server_CreateBlob('fishy', -1, pos);
-			}
+			if (!(getRules().hasTag('item limits') && blobLimitExceeded("fishy", blob)))
+				for (int i = 0; i < 12; i++)
+				{
+					server_CreateBlob('fishy', -1, pos);
+				}
 		}
 		else if (text_in == "!chickenflock") // spawns 12 chickens
 		{
-			for (int i = 0; i < 12; i++)
-			{
-				server_CreateBlob('chicken', -1, pos);
-			}
+			if (!(getRules().hasTag('item limits') && blobLimitExceeded("chicken", blob)))
+				for (int i = 0; i < 12; i++)
+				{
+					server_CreateBlob('chicken', -1, pos);
+				}
 		}
 		else if (text_in == "!allmats") // 500 wood, 500 stone, 100 gold
 		{
@@ -250,17 +259,19 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		// removed/commented out since this can easily be abused...
 		/*else if (text_in == "!sharkpit") // spawns 5 sharks, perfect for making shark pits
 		{
-			for (int i = 0; i < 5; i++)
-			{
-				CBlob@ b = server_CreateBlob('shark', -1, pos);
-			}
+			if (!(getRules().hasTag('item limits') && blobLimitExceeded("shark", blob)))
+				for (int i = 0; i < 5; i++)
+				{
+					CBlob@ b = server_CreateBlob('shark', -1, pos);
+				}
 		}
 		else if (text_in == "!bisonherd") // spawns 5 bisons
 		{
-			for (int i = 0; i < 5; i++)
-			{
-				CBlob@ b = server_CreateBlob('bison', -1, pos);
-			}
+			if (!(getRules().hasTag('item limits') && blobLimitExceeded("bison", blob)))
+				for (int i = 0; i < 5; i++)
+				{
+					CBlob@ b = server_CreateBlob('bison', -1, pos);
+				}
 		}*/
 		else
 		{
@@ -271,18 +282,24 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				//(see above for crate parsing example)
 				if (tokens[0] == "!crate")
 				{
-					string item = tokens[1];
-
-					if (!isMod && isBlacklisted(item))
+					if (!(getRules().hasTag('item limits') && blobLimitExceeded("crate")))
 					{
-						wasCommandSuccessful = false;
-						errorMessage = "blob is currently blacklisted";
-					}
-					else
-					{
-						int frame = item == "catapult" ? 1 : 0;
-						string description = tokens.length > 2 ? tokens[2] : item;
-						server_MakeCrate(item, description, frame, -1, Vec2f(pos.x, pos.y));
+						string item = tokens[1];
+						
+						if (!(getRules().hasTag('item limits') && blobLimitExceeded(item, blob)))
+						{
+							if (!isMod && isBlacklisted(item))
+							{
+								wasCommandSuccessful = false;
+								errorMessage = "blob is currently blacklisted";
+							}
+							else
+							{
+								int frame = item == "catapult" ? 1 : 0;
+								string description = tokens.length > 2 ? tokens[2] : item;
+								server_MakeCrate(item, description, frame, -1, Vec2f(pos.x, pos.y));
+							}
+						}
 					}
 				}
 				// eg. !team 2
@@ -294,15 +311,18 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 					// We should consider if this should change the player team as well, or not.
 				}
 				else if (tokens[0] == "!scroll")
-				{
-					string s = tokens[1];
-					for (uint i = 2; i < tokens.length; i++)
+				{	
+					if (!(getRules().hasTag('item limits') && blobLimitExceeded("scroll", blob)))
 					{
-						s += " " + tokens[i];
+						string s = tokens[1];
+						for (uint i = 2; i < tokens.length; i++)
+						{
+							s += " " + tokens[i];
+						}
+						server_MakePredefinedScroll(pos, s);
 					}
-					server_MakePredefinedScroll(pos, s);
 				}
-				else if(tokens[0] == "!coins")
+				else if (tokens[0] == "!coins")
 				{
 					int money = parseInt(tokens[1]);
 					player.server_setCoins(money);
@@ -318,14 +338,17 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				}
 				else
 				{
-					CBlob@ newBlob = server_CreateBlob(name, team, Vec2f(0, -5) + pos); // currently any blob made will come back with a valid pointer
-
-					if (newBlob !is null)
+					if (!(getRules().hasTag('item limits') && blobLimitExceeded(name, blob)))
 					{
-						if (newBlob.getName() != name)  // invalid blobs will have 'broken' names
+						CBlob@ newBlob = server_CreateBlob(name, team, Vec2f(0, -5) + pos); // currently any blob made will come back with a valid pointer
+
+						if (newBlob !is null)
 						{
-							wasCommandSuccessful = false;
-							errorMessage = "blob " + text_in + " not found";
+							if (newBlob.getName() != name)  // invalid blobs will have 'broken' names
+							{
+								wasCommandSuccessful = false;
+								errorMessage = "blob " + text_in + " not found";
+							}
 						}
 					}
 				}
