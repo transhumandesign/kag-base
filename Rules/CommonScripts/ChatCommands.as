@@ -16,7 +16,8 @@ const string[] blacklistedItems = {
 	"necromancer",  // annoying/grief
 	"greg",         // annoying/grief
 	"ctf_flag",     // sound spam
-	"flag_base"     // sound spam + bedrock grief
+	"flag_base",     // sound spam + bedrock grief
+	"war_base"	// bedrock grief
 };
 
 void onInit(CRules@ this)
