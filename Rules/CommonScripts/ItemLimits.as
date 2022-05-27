@@ -16,7 +16,6 @@ bool blobLimitExceeded(string blobName, CBlob@ caller = null) // returns true if
 	cfg.loadFile("Rules/CommonScripts/ItemLimits.cfg");
 	s32 maximum = cfg.read_s32( itemName, 200 );
 
-	if (itemName == "tree_pine" || itemName == "tree_bushy" ) print(blobsInMap.length()+"");
 	if ( maximum > 0 )
 	{
 		for (uint b = 0; b < blobsInMap.length(); ++b)
