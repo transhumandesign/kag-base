@@ -40,11 +40,11 @@ void chatWarningItemLimit(int maximum, string item)
 	CBitStream params;
 	CPlayer@ player = getLocalPlayer();
 	CRules@ rules = getRules();
-	string appendix;
+	string suffix;
 	
-	if (excludedFromTeamCheck.find( item ) == -1) appendix = "per team";
+	if (excludedFromTeamCheck.find( item ) == -1) suffix = "per team";
 		
-	params.write_string("Can't create more than " + maximum + " " + item + "s " + appendix + ".");
+	params.write_string("Can't create more than " + maximum + " " + item + "s " + suffix + ".");
 
 	// List is reverse so we can read it correctly into SColor when reading
 	SColor errorColor = SColor(255,255,100,0);
