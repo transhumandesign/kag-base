@@ -96,7 +96,7 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 void onTick(CBlob@ this)
 {
 	const int time = this.getTickSinceCreated();
-	if (this.hasAttached() || time < 30) //driver, seat or gunner, or just created
+	if (this.hasAttached() || this.isAttached() || time < 30) //driver, seat, gunner, pickup, or just created
 	{
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v))

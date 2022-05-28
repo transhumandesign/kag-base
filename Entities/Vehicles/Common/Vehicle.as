@@ -241,6 +241,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller !is null)
 			this.server_AttachTo(caller, "MAG");
 	}
+	/// LET GO
+	else if (isServer && cmd == this.getCommandID("vehicle letgo"))
+	{
+		CBlob@ caller = getBlobByNetworkID(params.read_u16());
+
+		if (caller !is null)
+		{
+			this.server_DetachFrom(caller);
+		}
+	}
 	/// GET OUT
 	else if (isServer && cmd == this.getCommandID("vehicle getout"))
 	{
