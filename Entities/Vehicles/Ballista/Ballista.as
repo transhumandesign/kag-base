@@ -232,22 +232,24 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	if (isOverlapping(this, caller) && !caller.isAttached())
+	if (caller.getTeamNum() == this.getTeamNum())
 	{
-		if (!Vehicle_AddFlipButton(this, caller) && caller.getTeamNum() == this.getTeamNum())
+		if (isOverlapping(this, caller) && !caller.isAttached())
 		{
-			Vehicle_AddLoadAmmoButton(this, caller);
-		}
-		if (/*!isAnotherRespawnClose(this) &&*/ !isFlipped(this))
-		{
-			caller.CreateGenericButton("$change_class$", Vec2f(0, 1), this, buildSpawnMenu, getTranslatedString("Change class"));
+			if (!Vehicle_AddFlipButton(this, caller))
+			{
+				Vehicle_AddLoadAmmoButton(this, caller);
+			}
+			if (/*!isAnotherRespawnClose(this) &&*/ !isFlipped(this))
+			{
+				caller.CreateGenericButton("$change_class$", Vec2f(0, 1), this, buildSpawnMenu, getTranslatedString("Change class"));
+			}
 		}
 	}
 }

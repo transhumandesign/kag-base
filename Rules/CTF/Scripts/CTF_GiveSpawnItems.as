@@ -9,7 +9,7 @@ const u32 materials_wait_warmup = 40; //seconds between free mats
 //property
 const string SPAWN_ITEMS_TIMER = "CTF SpawnItems:";
 
-string base_name() { return "tent"; }
+const string[] base_name = {"tent", "warboat", "ballista"};
 
 bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity)
 {
@@ -229,24 +229,32 @@ void onTick(CRules@ this)
 	{
 
 		CBlob@[] spots;
-		getBlobsByName(base_name(), @spots);
 		getBlobsByName("buildershop", @spots);
 		getBlobsByName("knightshop", @spots);
 		getBlobsByName("archershop", @spots);
+		
+		for (uint a = 0; a < base_name.length; ++a)
+		{
+			getBlobsByName(base_name[a], @spots);
+		}
+		
 		for (uint step = 0; step < spots.length; ++step)
 		{
 			CBlob@ spot = spots[step];
 			CBlob@[] overlapping;
 			if (spot !is null && spot.getOverlapping(overlapping))
 			{
-				string name = spot.getName();
-				bool isShop = (name.find("shop") != -1);
+				string spotName = spot.getName();
+				int spotTeam = spot.getTeamNum();
+				bool isShop = (spotName.find("shop") != -1);
+
 				for (uint o_step = 0; o_step < overlapping.length; ++o_step)
 				{
 					CBlob@ overlapped = overlapping[o_step];
 					if (overlapped !is null && overlapped.hasTag("player"))
 					{
-						if (!isShop || name.find(overlapped.getName()) != -1)
+						if 	((!isShop && (overlapped.getTeamNum() == spotTeam)) // is a friendly base
+							|| spotName.find(overlapped.getName()) != -1) // or is any shop
 						{
 							CPlayer@ p = overlapped.getPlayer();
 							if (p !is null)
