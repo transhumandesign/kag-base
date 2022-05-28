@@ -565,15 +565,13 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 						return;
 					}
 				}
-			} // let go
+			}
 
 			if (occupied !is null && ap.socket)
 			{
 				// GET OUT
 				if 	(occupied.isMyPlayer() && ap.isKeyJustPressed(key_up)
-					|| (this.getTeamNum() != occupied.getTeamNum() 
-						&& (this.getTeamNum() >= 0 && this.getTeamNum() <= 7)
-						&& (occupied.getName() == "knight" || occupied.getName() == "archer" || occupied.getName() == "builder")))
+					|| ((this.getTeamNum() != occupied.getTeamNum()) && (occupied.getName() == "knight" || occupied.getName() == "archer" || occupied.getName() == "builder")))
 				{	
 					CBitStream params;
 					params.write_u16(occupied.getNetworkID());
