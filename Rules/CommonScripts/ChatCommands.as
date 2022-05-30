@@ -202,7 +202,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 				server_CreateBlob('chicken', -1, pos);
 			}
 		}
-		else if (text_in == "!allmats") // 500 wood, 500 stone, 100 gold
+		else if (text_in == "!allmats") // 500 wood, 500 stone, 50 gold
 		{
 			//wood
 			CBlob@ wood = server_CreateBlob('mat_wood', -1, pos);
@@ -212,7 +212,6 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			stone.server_SetQuantity(500);
 			//gold
 			CBlob@ gold = server_CreateBlob('mat_gold', -1, pos);
-			gold.server_SetQuantity(100);
 		}
 		else if (text_in == "!woodstone") // 250 wood, 500 stone
 		{
@@ -242,10 +241,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		}
 		else if (text_in == "!gold") // 200 gold
 		{
-			for (int i = 0; i < 4; i++)
-			{
-				server_CreateBlob('mat_gold', -1, pos);
-			}
+			server_CreateBlob('mat_gold', -1, pos);
 		}
 		// removed/commented out since this can easily be abused...
 		/*else if (text_in == "!sharkpit") // spawns 5 sharks, perfect for making shark pits
