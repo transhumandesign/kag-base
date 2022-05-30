@@ -17,7 +17,7 @@ void onTick(CBlob@ this)
 	Vec2f vel = this.getVelocity();
 	if (getNet().isServer() && Maths::Abs(vel.x) > 0.1)
 	{
-		angle += vel.x * this.getRadius();
+		angle += vel.x / this.getRadius() * 180 / Maths::Pi;
 		if (angle > 360.0f)
 			angle -= 360.0f;
 		else if (angle < -360.0f)

@@ -23,7 +23,7 @@ void onTick(CBlob@ this)
 		CSprite@ sprite = this.getSprite();
 		if (sprite !is null)
 		{
-			angle += vel.x * this.getRadius();
+			angle += vel.x / this.getRadius() * 180 / Maths::Pi;
 			if (angle > 360.0f)
 				angle -= 360.0f;
 			else if (angle < -360.0f)
