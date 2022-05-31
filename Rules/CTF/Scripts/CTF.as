@@ -716,6 +716,6 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 {
 	if (blob.getName() == "mat_gold")
 	{
-		blob.RemoveScript("DecayQuantity");
+		blob.RemoveScript("DecayQuantity.as");
 	}
 }

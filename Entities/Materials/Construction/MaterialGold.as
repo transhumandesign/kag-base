@@ -1,9 +1,9 @@
 
 void onInit(CBlob@ this)
 {
-  if (getNet().isServer())
+  if (isServer())
   {
-	this.set_u8('decay step', 10);
+	this.set_u8("decay step", 10);
   }
   
   this.maxQuantity = 50;
