@@ -250,7 +250,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		if (sneaky_player.getTeamNum() == caller.getTeamNum())
 		{
 			CBitStream params;
-			params.write_u16( caller.getNetworkID() );
+			params.write_u16(caller.getNetworkID());
 			CButton@ button = caller.CreateGenericButton( 6, Vec2f(0,0), this, this.getCommandID("getout"), getTranslatedString("Get out"), params);
 			if (putting)
 			{
@@ -293,21 +293,26 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		}
 	}
 	else if (isUnpacking(this))
-	{
-		CButton@ button = caller.CreateGenericButton("$DISABLED$", buttonpos, this, this.getCommandID("stop unpack"), getTranslatedString("Stop {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name"))));
+	{		
+		string text = getTranslatedString("Stop {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name")));
+		CButton@ button = caller.CreateGenericButton("$DISABLED$", buttonpos, this, this.getCommandID("stop unpack"), text);
+		
 		button.enableRadius = 20.0f;
 	}
 	else if (hasSomethingPacked(this))
 	{
 		CBitStream params;
-		params.write_u16( caller.getNetworkID() );
-		CButton@ button = caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), getTranslatedString("Unpack {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name"))), params);
+		params.write_u16(caller.getNetworkID());
+		
+		string text = getTranslatedString("Unpack {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name")));
+		CButton@ button = caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), text, params);
+		
 		button.enableRadius = 20.0f;
 	}
 	else if (caller.getCarriedBlob() is this)
 	{
 		CBitStream params;
-		params.write_u16( caller.getNetworkID() );
+		params.write_u16(caller.getNetworkID());
 		caller.CreateGenericButton( 4, Vec2f(0,0), this, this.getCommandID("getin"), getTranslatedString("Get inside"), params );
 	}
 	else if (this.getTeamNum() != caller.getTeamNum() && !this.isOverlapping(caller))
@@ -333,8 +338,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				this.set_u32("unpack time", getGameTime() + this.get_u32("unpack secs") * getTicksASecond());
 				this.getShape().setDrag(10.0f);
 
-				CBlob @caller = getBlobByNetworkID( params.read_u16() );
-				if (caller !is null) this.server_setTeamNum( caller.getTeamNum() );
+				CBlob@ caller = getBlobByNetworkID(params.read_u16());
+				if (caller !is null) 
+				{ 
+					this.server_setTeamNum(caller.getTeamNum());
+				}
 			}
 		}
 		else
@@ -353,7 +361,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		{
 			return;
 		}
-		CBlob @caller = getBlobByNetworkID( params.read_u16() );
+		CBlob@ caller = getBlobByNetworkID(params.read_u16());
 
 		if (caller !is null && this.getInventory() !is null) 
 		{
@@ -393,7 +401,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("getout"))
 	{
-		CBlob @caller = getBlobByNetworkID( params.read_u16() );
+		CBlob@ caller = getBlobByNetworkID(params.read_u16());
 		CBlob@ sneaky_player = getPlayerInside(this);
 		if (caller !is null && sneaky_player !is null) {
 			if (caller.getTeamNum() != sneaky_player.getTeamNum())
