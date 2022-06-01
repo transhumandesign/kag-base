@@ -224,37 +224,42 @@ void onTick(CRules@ this)
 
 	RulesCore@ core;
 	this.get("core", @core);
+	
 	if (core !is null)
 	{
-		CBlob@[] overlapping;
 		CBlob@ playerBlob = getLocalPlayerBlob();
 		
-		playerBlob.getOverlapping(overlapping);
-		
-		for (uint i = 0; i < overlapping.length; i++)
+		if (playerBlob !is null)
 		{
-			string overlappingName = overlapping[i].getName();
+			CBlob@[] overlapping;
+			playerBlob.getOverlapping(overlapping);
 			
-			bool isSameTeam = playerBlob.getTeamNum() == overlapping[i].getTeamNum();
-			bool isBase = false;
-			
-			for (uint b = 0; b < BASE_NAME.length; ++b)
+			for (uint i = 0; i < overlapping.length; i++)
 			{
-				if (BASE_NAME[b].find(overlapping[i].getName()) != -1) 
-				{ 
-					isBase = true;
-					break;
-				};
-			}
-	
-			bool isClassShop = overlappingName == "buildershop" || overlappingName == "knightshop" || overlappingName == "archershop";
-			bool isMyClass = overlappingName.find(playerBlob.getName()) != -1;
+				string overlappingName = overlapping[i].getName();
+				int overlappingTeam = overlapping[i].getTeamNum();
+				
+				bool isSameTeam = playerBlob.getTeamNum() == overlapping[i].getTeamNum();
+				bool isBase = false;
+				
+				for (uint b = 0; b < BASE_NAME.length; ++b)
+				{
+					if (BASE_NAME[b].find(overlapping[i].getName()) != -1) 
+					{ 
+						isBase = true;
+						break;
+					};
+				}
+		
+				bool isClassShop = overlappingName == "buildershop" || overlappingName == "knightshop" || overlappingName == "archershop";
+				bool isMyClass = overlappingName.find(playerBlob.getName()) != -1;
 
-			if ( isSameTeam && isBase 
-			  || isClassShop && isMyClass )
-			{
-				doGiveSpawnMats(this, getLocalPlayer(), playerBlob, core);
-				return;
+				if ( isSameTeam  && isBase 
+					|| isClassShop && isMyClass )
+				{
+					doGiveSpawnMats(this, getLocalPlayer(), playerBlob, core);
+					return;
+				}
 			}
 		}
 	}
