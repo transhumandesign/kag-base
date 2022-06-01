@@ -211,7 +211,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 			CBlob@ stone = server_CreateBlob('mat_stone', -1, pos);
 			stone.server_SetQuantity(500);
 			//gold
-			CBlob@ gold = server_CreateBlob('mat_gold', -1, pos);
+			server_CreateBlob('mat_gold', -1, pos);
 		}
 		else if (text_in == "!woodstone") // 250 wood, 500 stone
 		{
