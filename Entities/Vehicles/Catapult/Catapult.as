@@ -143,17 +143,16 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	if (caller.getTeamNum() == this.getTeamNum())
-	{
-		CBlob@ occupiedBlob = this.getAttachments().getAttachmentPointByName("MAG").getOccupied();
-		if (
-			!Vehicle_AddFlipButton(this, caller) &&
-			isOverlapping(this, caller) &&
-			!caller.isAttached() &&
-			(occupiedBlob is null || !occupiedBlob.hasTag("player"))
-		) {
-			Vehicle_AddLoadAmmoButton(this, caller);
-		}
+	if (caller.getTeamNum() != this.getTeamNum()) return;
+	
+	CBlob@ occupiedBlob = this.getAttachments().getAttachmentPointByName("MAG").getOccupied();
+	if (
+		!Vehicle_AddFlipButton(this, caller) &&
+		isOverlapping(this, caller) &&
+		!caller.isAttached() &&
+		(occupiedBlob is null || !occupiedBlob.hasTag("player"))
+	) {
+		Vehicle_AddLoadAmmoButton(this, caller);
 	}
 }
 

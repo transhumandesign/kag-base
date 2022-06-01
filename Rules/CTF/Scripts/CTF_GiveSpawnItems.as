@@ -9,7 +9,7 @@ const u32 materials_wait_warmup = 40; //seconds between free mats
 //property
 const string SPAWN_ITEMS_TIMER = "CTF SpawnItems:";
 
-const string[] base_name = {"tent", "warboat", "ballista"};
+const string[] BASE_NAME = {"tent", "warboat", "ballista"};
 
 bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity)
 {
@@ -222,50 +222,40 @@ void onTick(CRules@ this)
 	if ((gametime % 15) != 5)
 		return;
 
-
 	RulesCore@ core;
 	this.get("core", @core);
 	if (core !is null)
 	{
-
-		CBlob@[] spots;
-		getBlobsByName("buildershop", @spots);
-		getBlobsByName("knightshop", @spots);
-		getBlobsByName("archershop", @spots);
+		CBlob@[] overlapping;
+		CBlob@ playerBlob = getLocalPlayerBlob();
 		
-		for (uint a = 0; a < base_name.length; ++a)
-		{
-			getBlobsByName(base_name[a], @spots);
-		}
+		playerBlob.getOverlapping(overlapping);
 		
-		for (uint step = 0; step < spots.length; ++step)
+		for (uint i = 0; i < overlapping.length; i++)
 		{
-			CBlob@ spot = spots[step];
-			CBlob@[] overlapping;
-			if (spot !is null && spot.getOverlapping(overlapping))
+			string overlappingName = overlapping[i].getName();
+			
+			bool isSameTeam = playerBlob.getTeamNum() == overlapping[i].getTeamNum();
+			bool isBase = false;
+			
+			for (uint b = 0; b < BASE_NAME.length; ++b)
 			{
-				string spotName = spot.getName();
-				int spotTeam = spot.getTeamNum();
-				bool isShop = (spotName.find("shop") != -1);
-
-				for (uint o_step = 0; o_step < overlapping.length; ++o_step)
-				{
-					CBlob@ overlapped = overlapping[o_step];
-					if (overlapped !is null && overlapped.hasTag("player"))
-					{
-						if 	((!isShop && (overlapped.getTeamNum() == spotTeam)) // is a friendly base
-							|| spotName.find(overlapped.getName()) != -1) // or is any shop
-						{
-							CPlayer@ p = overlapped.getPlayer();
-							if (p !is null)
-							{
-								doGiveSpawnMats(this, p, overlapped, core);
-							}
-						}
-					}
-				}
+				if (BASE_NAME[b].find(overlapping[i].getName()) != -1) 
+				{ 
+					isBase = true;
+					break;
+				};
 			}
+	
+			bool isClassShop = overlappingName == "buildershop" || overlappingName == "knightshop" || overlappingName == "archershop";
+			bool isMyClass = overlappingName.find(playerBlob.getName()) != -1;
 
+			if ( isSameTeam && isBase 
+			  || isClassShop && isMyClass )
+			{
+				doGiveSpawnMats(this, getLocalPlayer(), playerBlob, core);
+				return;
+			}
 		}
 	}
 }

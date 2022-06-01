@@ -238,18 +238,17 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	if (caller.getTeamNum() == this.getTeamNum())
+	if (caller.getTeamNum() == this.getTeamNum()) return;
+	
+	if (isOverlapping(this, caller) && !caller.isAttached())
 	{
-		if (isOverlapping(this, caller) && !caller.isAttached())
+		if (!Vehicle_AddFlipButton(this, caller))
 		{
-			if (!Vehicle_AddFlipButton(this, caller))
-			{
-				Vehicle_AddLoadAmmoButton(this, caller);
-			}
-			if (/*!isAnotherRespawnClose(this) &&*/ !isFlipped(this))
-			{
-				caller.CreateGenericButton("$change_class$", Vec2f(0, 1), this, buildSpawnMenu, getTranslatedString("Change class"));
-			}
+			Vehicle_AddLoadAmmoButton(this, caller);
+		}
+		if (/*!isAnotherRespawnClose(this) &&*/ !isFlipped(this))
+		{
+			caller.CreateGenericButton("$change_class$", Vec2f(0, 1), this, buildSpawnMenu, getTranslatedString("Change class"));
 		}
 	}
 }
