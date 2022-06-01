@@ -182,7 +182,7 @@ f32 getAngle(CBlob@ this, const u8 charge, VehicleInfo@ v)
 
 void onTick(CBlob@ this)
 {
-	if (this.hasAttached() || this.isFacingLeft() != this.get_bool("facing_left") || this.getTickSinceCreated() < 30) //player is attached, facing direction changed or just created
+	if (vehicleBaseCheck(this)) // is attached, changing direction, or just created
 	{	
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v))

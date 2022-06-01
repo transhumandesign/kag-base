@@ -83,9 +83,9 @@ void onTick(CBlob@ this)
 	const u16 delay = float(v.getCurrentAmmo().fire_delay);
 	const f32 time_til_fire = Maths::Max(0, Maths::Min(v.fire_time - getGameTime(), delay));
 
-	//is being used by player (on any seat), or just created, or is about to fire or has finished firing, or when changing facing direction
-	if ( this.hasAttached() || time < 30 || time_til_fire > 0 || this.isFacingLeft() != this.get_bool("facing_left"))
-	{	
+	// is attached, changing direction, just created, or is about to fire or has finished firing
+	if ( vehicleBaseCheck(this) || time < 30 || time_til_fire > 0 )
+	{
 		// load new item if present in inventory
 		Vehicle_StandardControls(this, v);
 

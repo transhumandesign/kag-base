@@ -115,7 +115,7 @@ f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
 
 void onTick(CBlob@ this)
 {	
-	if (this.hasAttached() || this.isFacingLeft() != this.get_bool("facing_left") || this.getTickSinceCreated() < 30) //is being used or held by player or vehicle, or just created
+	if (vehicleBaseCheck(this)) // is attached, changing direction, or just created
 	{	
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v))

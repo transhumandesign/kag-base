@@ -538,6 +538,11 @@ void server_FireBlob(CBlob@ this, CBlob@ blob, const u8 charge)
 	}
 }
 
+bool vehicleBaseCheck(CBlob@ this)
+{
+	return this.hasAttached() || this.isFacingLeft() != this.get_bool("facing_left") || this.getTickSinceCreated() < 30;
+}
+
 void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 {
 	v.move_direction = 0;
