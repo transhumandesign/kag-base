@@ -560,15 +560,12 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 			{
 				CBlob@ carrier = pickup.getOccupied();
 				
-				if (carrier !is null)
+				if (carrier !is null && this.getTeamNum() != carrier.getTeamNum())
 				{
-					if (this.getTeamNum() != carrier.getTeamNum())
-					{
 						CBitStream params;
 						params.write_u16(carrier.getNetworkID());
 						this.SendCommand(this.getCommandID("vehicle letgo"), params);
 						return;
-					}
 				}
 			} // let go
 

@@ -11,12 +11,9 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 	
 	CBlob@ carried = attached.getCarriedBlob();
 	
-	if (carried !is null)
+	if (carried !is null && carried.getName() == this.getName())
 	{
-		if (carried.getName() == this.getName())
-		{
-			this.server_setTeamNum(attached.getTeamNum());
-		}
+		this.server_setTeamNum(attached.getTeamNum());
 	}
 }
 
