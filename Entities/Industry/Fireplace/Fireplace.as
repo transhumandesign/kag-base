@@ -46,20 +46,19 @@ void onTick(CBlob@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {	
-	if (blob !is null)
-	{	
-		if (this.getSprite().isAnimation("fire"))
+	if (blob is null) return;
+	
+	if (this.getSprite().isAnimation("fire"))
+	{
+		CBlob@ food = cookFood(blob);
+		if (food !is null)
 		{
-			CBlob@ food = cookFood(blob);
-			if (food !is null)
-			{
-				food.setVelocity(blob.getVelocity().opMul(0.5f));
-			}
+			food.setVelocity(blob.getVelocity().opMul(0.5f));
 		}
-		else if (blob.hasTag("fire source")) //fire arrow works
-		{
-			Ignite(this);
-		}
+	}
+	else if (blob.hasTag("fire source")) //fire arrow works
+	{
+		Ignite(this);
 	}
 }
 
@@ -102,11 +101,6 @@ void Extinguish(CBlob@ this)
 	}
 	
 	makeSmokeParticle(this.getPosition()); //*poof*
-}
-
-void Ignite(CBlob@ this)
-{
-	IgniteFireplace(this);
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)

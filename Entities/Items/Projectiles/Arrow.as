@@ -626,7 +626,7 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 			}
 			if (b.getName() == "fireplace" && !b.getSprite().isAnimation("fire") && (arrowType == ArrowType::fire))
 			{
-				IgniteFireplace(b);
+				Ignite(b);
 				break;
 			}
 		}
