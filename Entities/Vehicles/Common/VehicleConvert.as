@@ -55,8 +55,9 @@ void onTick(CBlob@ this)
 		for (uint i = 0; i < blobsInRadius.length; i++)
 		{
 			CBlob @b = blobsInRadius[i];
+
 			if (b !is this && b.hasTag("player") && !b.hasTag("dead"))
-			{
+			{	
 				if (b.getTeamNum() != this.getTeamNum())
 				{
 					Vec2f bpos = b.getPosition();
@@ -98,6 +99,7 @@ void onTick(CBlob@ this)
 
 			if (ticks <= 0)
 			{
+				if (this.isAttached()) this.server_DetachAll();
 				this.server_setTeamNum(attackerTeam);
 				reset_timer = true;
 			}
@@ -149,6 +151,7 @@ void onChangeTeam(CBlob@ this, const int oldTeam)
 
 		ConvertPoint(this, "VEHICLE");
 		ConvertPoint(this, "DOOR");
+		ConvertPoint(this, "BOW");
 	}
 }
 

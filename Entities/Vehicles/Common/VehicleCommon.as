@@ -562,10 +562,10 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 				
 				if (carrier !is null && this.getTeamNum() != carrier.getTeamNum())
 				{
-						CBitStream params;
-						params.write_u16(carrier.getNetworkID());
-						this.SendCommand(this.getCommandID("vehicle letgo"), params);
-						return;
+					CBitStream params;
+					params.write_u16(carrier.getNetworkID());
+					this.SendCommand(this.getCommandID("vehicle letgo"), params);
+					return;
 				}
 			} // let go
 
@@ -584,7 +584,6 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 				} // get out
 
 				// DRIVER
-
 				if (ap.name == "DRIVER" && !this.hasTag("immobile"))
 				{
 					bool moveUp = false;
@@ -685,7 +684,7 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 					}
 
 					// climb uphills
-
+					
 					const bool down = ap.isKeyPressed(key_down) || ap.isKeyPressed(key_action3);
 					if (onground && (down || moveUp))
 					{
