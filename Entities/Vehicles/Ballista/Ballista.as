@@ -238,7 +238,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	if (caller.getTeamNum() == this.getTeamNum()) return;
+	if (caller.getTeamNum() != this.getTeamNum()) return;
 	
 	if (isOverlapping(this, caller) && !caller.isAttached())
 	{

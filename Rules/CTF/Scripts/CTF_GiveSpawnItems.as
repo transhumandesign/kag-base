@@ -9,8 +9,6 @@ const u32 materials_wait_warmup = 40; //seconds between free mats
 //property
 const string SPAWN_ITEMS_TIMER = "CTF SpawnItems:";
 
-const string[] BASE_NAME = {"tent", "warboat", "ballista"};
-
 bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity)
 {
 	CInventory@ inv = blob.getInventory();
@@ -236,26 +234,10 @@ void onTick(CRules@ this)
 			
 			for (uint i = 0; i < overlapping.length; i++)
 			{
-				string overlappingName = overlapping[i].getName();
-				int overlappingTeam = overlapping[i].getTeamNum();
-				
-				bool isSameTeam = playerBlob.getTeamNum() == overlapping[i].getTeamNum();
-				bool isBase = false;
-				
-				for (uint b = 0; b < BASE_NAME.length; ++b)
-				{
-					if (BASE_NAME[b].find(overlapping[i].getName()) != -1) 
-					{ 
-						isBase = true;
-						break;
-					};
-				}
-		
-				bool isClassShop = overlappingName == "buildershop" || overlappingName == "knightshop" || overlappingName == "archershop";
-				bool isMyClass = overlappingName.find(playerBlob.getName()) != -1;
+				bool isMyBase = overlapping[i].hasTag("respawn") && playerBlob.getTeamNum() == overlapping[i].getTeamNum(); // Base of same team
+				bool isClassShop = overlapping[i].get_string("required class") == playerBlob.getName(); // Shop of same class, of any team
 
-				if ( isSameTeam  && isBase 
-					|| isClassShop && isMyClass )
+				if ( isMyBase || isClassShop )
 				{
 					doGiveSpawnMats(this, getLocalPlayer(), playerBlob, core);
 					return;
