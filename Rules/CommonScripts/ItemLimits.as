@@ -46,7 +46,6 @@ void chatWarningItemLimit(int maximum, string item)
 		
 	params.write_string("Can't spawn more than " + maximum + " " + item + " blob" + plural + suffix + ".");
 
-	// List is reverse so we can read it correctly into SColor when reading
 	SColor errorColor = SColor(255,255,100,0);
 	params.write_u32(errorColor.color);
 

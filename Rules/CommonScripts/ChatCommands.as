@@ -364,8 +364,6 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 	{
 		CBitStream params;
 		params.write_string(errorMessage);
-
-		// List is reverse so we can read it correctly into SColor when reading
 		params.write_u32(errorColor.color);
 
 		this.SendCommand(this.getCommandID("SendChatMessage"), params, player);
