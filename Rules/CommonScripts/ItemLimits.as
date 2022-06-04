@@ -40,18 +40,15 @@ void chatWarningItemLimit(int maximum, string item)
 	CBitStream params;
 	CPlayer@ player = getLocalPlayer();
 	CRules@ rules = getRules();
-	string suffix;
 	
-	if (excludedFromTeamCheck.find( item ) == -1) suffix = "per team";
+	string suffix = (excludedFromTeamCheck.find(item) == -1) ? " per team" : "";
+	string plural = (maximum > 1) ? "s" : "";
 		
-	params.write_string("Can't create more than " + maximum + " " + item + "s " + suffix + ".");
+	params.write_string("Can't spawn more than " + maximum + " " + item + " blob" + plural + suffix + ".");
 
 	// List is reverse so we can read it correctly into SColor when reading
 	SColor errorColor = SColor(255,255,100,0);
-	params.write_u8(errorColor.getBlue());
-	params.write_u8(errorColor.getGreen());
-	params.write_u8(errorColor.getRed());
-	params.write_u8(errorColor.getAlpha());
+	params.write_u32(errorColor.color);
 
 	rules.SendCommand(rules.getCommandID("SendChatMessage"), params, player);
 }

@@ -183,7 +183,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		{	
 			if (!(getRules().hasTag('item limits') && blobLimitExceeded("crate", blob)))
 			{
-				client_AddToChat("usage: !crate BLOBNAME [DESCRIPTION]", SColor(255, 255, 0, 0)); //e.g., !crate shark Your Little Darling
+				client_AddToChat("Usage: !crate BLOBNAME [DESCRIPTION]", SColor(255, 255, 0, 0)); //e.g., !crate shark Your Little Darling
 				server_MakeCrate("", "", 0, team, Vec2f(pos.x, pos.y - 30.0f));
 			}
 		}
@@ -366,10 +366,7 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 		params.write_string(errorMessage);
 
 		// List is reverse so we can read it correctly into SColor when reading
-		params.write_u8(errorColor.getBlue());
-		params.write_u8(errorColor.getGreen());
-		params.write_u8(errorColor.getRed());
-		params.write_u8(errorColor.getAlpha());
+		params.write_u32(errorColor.color);
 
 		this.SendCommand(this.getCommandID("SendChatMessage"), params, player);
 	}
@@ -413,7 +410,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @para)
 	if (cmd == this.getCommandID("SendChatMessage"))
 	{
 		string errorMessage = para.read_string();
-		SColor col = SColor(para.read_u8(), para.read_u8(), para.read_u8(), para.read_u8());
+		SColor col = SColor(para.read_u32());
 		client_AddToChat(errorMessage, col);
 	}
 }
