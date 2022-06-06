@@ -101,7 +101,7 @@ void onTick(CBlob@ this)
 
 			if (ticks <= 0)
 			{
-				if (this.isAttached()) this.server_DetachAll();
+				if (this.isAttached()) this.server_DetachFromAll();
 				this.server_setTeamNum(attackerTeam);
 				reset_timer = true;
 			}
