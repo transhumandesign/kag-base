@@ -20,3 +20,8 @@ bool canOpenDoor(CBlob@ this, CBlob@ blob)
 	}
 	return false;
 }
+
+bool isOpen(CBlob@ this) // used by SwingDoor, Bridge, TrapBlock
+{
+	return !this.getShape().getConsts().collidable;
+}
