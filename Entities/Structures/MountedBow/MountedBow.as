@@ -174,16 +174,13 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
-	
-	if (isDifferentTeam(this, caller)) return;
+	if (!canSeeButtons(this, caller) || (isDifferentTeam(this, caller)) return;
 
 	if (!Vehicle_AddFlipButton(this, caller))
 	{
 		Vehicle_AddLoadAmmoButton(this, caller);
 	}
 }
-
 
 bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool wasActionPressed, u8 &out chargeValue) {return false;}
 
