@@ -1,5 +1,6 @@
 // requires VEHICLE attachment point
 
+#include "TeamChecking.as"
 #include "GenericButtonCommon.as"
 
 void onInit(CBlob@ this)
@@ -12,8 +13,7 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller) || caller.getTeamNum() != this.getTeamNum())
-		return;
+	if (!canSeeButtons(this, caller) || isDifferentTeam(this, caller)) return;
 
 	AttachmentPoint@[] aps;
 	if (this.getAttachmentPoints(@aps))

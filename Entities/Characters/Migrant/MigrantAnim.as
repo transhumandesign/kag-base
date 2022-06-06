@@ -11,6 +11,11 @@ void onPlayerInfoChanged(CSprite@ this)
 	LoadSprites(this);
 }
 
+void onChangeTeam(CBlob@ this, const int oldTeam)
+{
+	LoadSprites(this.getSprite());
+}
+
 void LoadSprites(CSprite@ this)
 {
 	ensureCorrectRunnerTexture(this, "migrant", "Migrant");

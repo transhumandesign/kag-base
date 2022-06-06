@@ -7,6 +7,7 @@
  */
 
 #include "MigrantCommon.as"
+#include "TeamChecking.as"
 
 //------------------------------------------------------//
 
@@ -36,9 +37,8 @@ namespace HallState
 
 //------------------------------------------------------//
 
-/**
- * Set the worker we're using - wont work for multi-worker situations
- */
+// Set the worker we're using - wont work for multi-worker situations
+
 shared void setWorker(CBlob@ this, CBlob@ worker)
 {
 	if (worker is null)
@@ -52,41 +52,38 @@ shared void setWorker(CBlob@ this, CBlob@ worker)
 	}
 }
 
-/**
- * get the ID of the worker we're using
- */
+// get the ID of the worker we're using
+
 shared u16 getWorkerID(CBlob@ this)
 {
 	return this.get_u16("worker id");
 }
-/**
- * get the worker we're using
- */
+
+// get the worker we're using
+
 shared CBlob@ getWorker(CBlob@ this)
 {
 	return getBlobByNetworkID(getWorkerID(this));
 }
 
-/**
- * get the ID of this workers owner
- */
+// get the ID of this workers owner
+
 shared u16 getOwnerID(CBlob@ worker)
 {
 	return worker.get_u16("owner id");
 }
-/**
- * get the owner of this worker
- */
+
+// get the owner of this worker
+ 
 shared CBlob@ getOwner(CBlob@ worker)
 {
 	return getBlobByNetworkID(getOwnerID(worker));
 }
 
-
 shared bool isUnderRaid(CBlob@ blob)
 {
 	if (blob.exists("hall state"))
-		return (blob.get_u8("hall state") == HallState::raid) && blob.getTeamNum() <= 10;
+		return (blob.get_u8("hall state") == HallState::raid) && !isNeutralTeam(blob);
 
 	return blob.hasTag("under raid");
 }
@@ -96,10 +93,7 @@ shared bool isHallDepleted(CBlob@ blob)
 	return (blob.get_u8("hall state") == HallState::depleted);
 }
 
-
-/**
- * Update the workers of a given hall
- */
+// Update the workers of a given hall
 
 //------------------------------------------------------//
 
@@ -303,7 +297,7 @@ shared class HallWorker
 
 	u32 timer;
 
-	/** so it's array compatible */
+	// so it's array compatible
 	HallWorker() { Setup(); }
 
 	/**
@@ -333,7 +327,7 @@ shared class HallWorker
 		timer = 0;
 	}
 
-	/** is this worker available for work?*/
+	// is this worker available for work?
 	bool isAvailable()
 	{
 		if (userID != ownerID) return false;
@@ -341,13 +335,13 @@ shared class HallWorker
 		return !isBusy();
 	}
 
-	/** is this worker currently busy with something else? (fleeing?) */
+	// is this worker currently busy with something else? (fleeing?)
 	bool isBusy()
 	{
 		return (timer + 90 > getGameTime());
 	}
 
-	/** does this worker match this blob?*/
+	// does this worker match this blob?
 	bool isBlob(u16 id) { return blobID == id; }
 
 	CBlob@ getBlob() { return getBlobByNetworkID(blobID); }
@@ -398,9 +392,8 @@ shared class HallWorker
 		timer = getGameTime();
 	}
 
-	/**
-	 * regenerate this worker if it's been killed somehow
-	 */
+	// regenerate this worker if it's been killed somehow
+	
 	void RegenBlob()
 	{
 		CBlob@ owner = getOwner();
@@ -445,7 +438,7 @@ shared class HallWorkerSet
 	u8 count;
 	bool under_raid;
 
-	/** so it's array compatible, if thats ever needed.. */
+	// so it's array compatible, if thats ever needed..
 	HallWorkerSet() { lastRespawnTime = 0; under_raid = false; }
 
 	/**
@@ -466,7 +459,7 @@ shared class HallWorkerSet
 		under_raid = false;
 	}
 
-	/** get the owner blob*/
+	// get the owner blob
 	CBlob@ getOwner() { return getBlobByNetworkID(ownerID); }
 
 	/**
@@ -616,7 +609,7 @@ shared class HallWorkerSet
 		}
 	}
 
-	/** Add a worker to the system */
+	// Add a worker to the system
 	void AddWorker(CBlob@ owner = null)
 	{
 		if (owner is null)
@@ -633,7 +626,6 @@ shared class HallWorkerSet
 	}
 
 };
-
 
 // useful for HUD
 

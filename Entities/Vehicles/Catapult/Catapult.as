@@ -3,6 +3,7 @@
 #include "MakeCrate.as";
 #include "MiniIconsInc.as";
 #include "GenericButtonCommon.as";
+#include "TeamChecking.as";
 
 // Catapult logic
 
@@ -141,12 +142,11 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (!canSeeButtons(this, caller) || isDifferentTeam(this, caller)) return;
 
 	CBlob@ occupiedBlob = this.getAttachments().getAttachmentPointByName("MAG").getOccupied();
 	if (
 		!Vehicle_AddFlipButton(this, caller) &&
-		this.getTeamNum() == caller.getTeamNum() &&
 		isOverlapping(this, caller) &&
 		!caller.isAttached() &&
 		(occupiedBlob is null || !occupiedBlob.hasTag("player"))

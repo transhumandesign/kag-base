@@ -15,8 +15,13 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().tickFrequency = 150; // opt
 }
 
+int z=0;
+
 void onTick(CBlob@ this)
 {
+	z++;
+	this.server_setTeamNum(z%7);
+
 	DoKnockedUpdate(this);
 
 	if (this.hasTag("dead"))

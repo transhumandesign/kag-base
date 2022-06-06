@@ -33,19 +33,16 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (!canSeeButtons(this, caller) || isDifferentTeam(this, caller)) return;
 
-	if (caller.getTeamNum() == this.getTeamNum())
+	CInventory @inv = caller.getInventory();
+	if (inv is null) return;
+
+	if (inv.getItemsCount() > 0)
 	{
-		CInventory @inv = caller.getInventory();
-		if (inv is null) return;
-
-		if (inv.getItemsCount() > 0)
-		{
-			CBitStream params;
-			params.write_u16(caller.getNetworkID());
-			caller.CreateGenericButton("$store_inventory$", Vec2f(0, 10), this, this.getCommandID("store inventory"), getTranslatedString("Store"), params);
-		}
+		CBitStream params;
+		params.write_u16(caller.getNetworkID());
+		caller.CreateGenericButton("$store_inventory$", Vec2f(0, 10), this, this.getCommandID("store inventory"), getTranslatedString("Store"), params);
 	}
 }
 
@@ -96,7 +93,7 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 void onTick(CBlob@ this)
 {
 	const int time = this.getTickSinceCreated();
-	if (this.hasAttached() || this.isAttached() || time < 30) //driver, seat, gunner, pickup, or just created
+	if (this.hasAttached() || time < 30) //driver, seat or gunner, or just created
 	{
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v))

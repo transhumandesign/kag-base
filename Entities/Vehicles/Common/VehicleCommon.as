@@ -1,6 +1,7 @@
 #include "SeatsCommon.as"
 #include "VehicleAttachmentCommon.as"
 #include "KnockedCommon.as"
+#include "TeamChecking.as";
 
 // HOOKS THAT YOU MUST IMPLEMENT WHEN INCLUDING THIS FILE
 // void Vehicle_onFire( CBlob@ this, CBlob@ bullet, const u8 charge )
@@ -560,7 +561,7 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 			{
 				CBlob@ carrier = pickup.getOccupied();
 				
-				if (carrier !is null && this.getTeamNum() != carrier.getTeamNum())
+				if 	(carrier !is null && isDifferentTeam(this, carrier))
 				{
 					CBitStream params;
 					params.write_u16(carrier.getNetworkID());
@@ -573,9 +574,7 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 			{
 				// GET OUT
 				if 	(occupied.isMyPlayer() && ap.isKeyJustPressed(key_up)
-					|| (this.getTeamNum() != occupied.getTeamNum() 
-						&& (this.getTeamNum() >= 0 && this.getTeamNum() <= 7)
-						&& (occupied.getName() == "knight" || occupied.getName() == "archer" || occupied.getName() == "builder")))
+					|| isDifferentTeam(this, occupied) && occupied.hasTag("player"))
 				{	
 					CBitStream params;
 					params.write_u16(occupied.getNetworkID());

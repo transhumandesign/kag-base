@@ -7,6 +7,7 @@
 #include "Requirements.as"
 #include "AddSectorOnTiles.as"
 #include "GenericButtonCommon.as"
+#include "TeamChecking.as"
 
 #include "Help.as"
 
@@ -146,7 +147,7 @@ void onTick(CBlob@ this)
 		const u32 gametime = getGameTime();
 		bool raiding = false;
 
-		const bool not_neutral = (this.getTeamNum() <= 10);
+		const bool not_neutral = !isNeutralTeam(this);
 
 		// regenerate tickets
 
@@ -176,7 +177,7 @@ void onTick(CBlob@ this)
 				CBlob @b = blobsInRadius[i];
 				if (b !is this && b.hasTag("player") && !b.hasTag("dead") && !b.hasTag("migrant"))
 				{
-					bool attacker = (b.getTeamNum() != this.getTeamNum());
+					bool attacker = b.getTeamNum() != this.getTeamNum();
 					if (not_neutral && attacker)
 					{
 						raiding = true;
@@ -358,7 +359,7 @@ void SetMinimap(CBlob@ this)
 	else
 	{
 		this.SetMinimapOutsideBehaviour(CBlob::minimap_arrow);
-		if (this.getTeamNum() >= 0 && this.getTeamNum() < 10)
+		if (!isNeutralTeam(this))
 			this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 2, Vec2f(16, 8));
 		else
 			this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 3, Vec2f(16, 8));
@@ -374,10 +375,10 @@ int getCaptureLimit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller) || !caller.isOverlapping(this))
+	if (!canSeeButtons(this, caller) || !caller.isOverlapping(this) || isDifferentTeam(this, caller))
 		return;
 
-	if (this.getTeamNum() != 255)
+	if (!isNeutralTeam(this))
 	{
 		CBitStream params;
 		params.write_u16(caller.getNetworkID());
@@ -409,6 +410,10 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	CSprite@ sprite = this.getSprite();
+	CBlob@ localBlob = getLocalPlayerBlob();
+	
+	if (localBlob is null) return;
+	
 	if (cmd == this.getCommandID("respawn"))
 	{
 		if (USE_TICKETS && getRules().isMatchRunning())
@@ -446,8 +451,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				caller.TakeBlob("mat_gold", MIGRANT_COST);
 				this.set_u8("migrants max", this.get_u8("migrants max") + 1);
 
-				CPlayer@ localPlayer = getLocalPlayer();
-				if (localPlayer !is null && localPlayer.getTeamNum() == this.getTeamNum())
+				if (!isDifferentTeam(this, localBlob))
 				{
 					Sound::Play("/party_join.ogg");
 					client_AddToChat(getTranslatedString("Another worker has been hired!"));
@@ -468,8 +472,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("shipment"))
 	{
-		CBlob@ localBlob = getLocalPlayerBlob();
-		if (localBlob !is null && localBlob.getTeamNum() == this.getTeamNum())
+		if (!isDifferentTeam(this, localBlob))
 		{
 			client_AddToChat(getTranslatedString("Supplies will drop at your halls."));
 		}
@@ -482,8 +485,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
-	return (this.getTeamNum() != 255 && //not neutral
-	        forBlob.getTeamNum() == this.getTeamNum() && //teammate
+	return (!isNeutralTeam(this) && //not neutral
+	        !isDifferentTeam(this, forBlob) && //teammate
 	        forBlob.isOverlapping(this) && //inside
 	        !getRules().hasTag("singleplayer") &&
 			canSeeButtons(this, forBlob));
@@ -522,7 +525,7 @@ void onChangeTeam(CBlob@ this, const int oldTeam)
 {
 	SetMinimap(this);
 
-	if (this.getTeamNum() >= 0 && this.getTeamNum() < 10)
+	if (!isNeutralTeam(this))
 	{
 		Sound::Play("/VehicleCapture");
 		this.set_s32("capture time", 0);
@@ -543,7 +546,6 @@ void onChangeTeam(CBlob@ this, const int oldTeam)
 		{
 			this.RemoveScript("Researching");
 		}
-
 
 		RegenTickets(this);
 	}

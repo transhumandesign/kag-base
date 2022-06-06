@@ -5,6 +5,7 @@
 #include "/Entities/Common/Emotes/EmotesCommon.as"
 #include "MigrantCommon.as"
 #include "HallCommon.as"
+#include "TeamChecking.as"
 
 void onInit(CBrain@ this)
 {
@@ -21,8 +22,8 @@ void onInit(CBrain@ this)
 void onTick(CBrain@ this)
 {
 	CBlob @blob = this.getBlob();
-	if (blob.getTeamNum() > 10)
-		return;
+	
+	if (isNeutralTeam(blob)) return;
 
 	const bool isStatic = blob.getShape().isStatic();
 
@@ -235,7 +236,7 @@ CBlob@ getAttacker(CBrain@ this, CBlob @blob)
 		{
 			CBlob @b = blobsInRadius[i];
 			if (b !is blob
-			        && (((b.getTeamNum() != blob.getTeamNum() && b.hasTag("player") && !b.hasTag("migrant") && !b.hasTag("dead")) || (b.isInFlames() || b.hasTag("animal"))) 	// runaway from enemies and from burning stuff
+			        && (((isDifferentTeam(blob, b) && b.hasTag("player") && !b.hasTag("migrant") && !b.hasTag("dead")) || (b.isInFlames() || b.hasTag("animal"))) 	// runaway from enemies and from burning stuff
 			            && !map.rayCastSolid(pos, b.getPosition()))
 			   )
 			{

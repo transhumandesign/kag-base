@@ -1,6 +1,8 @@
 /*
  * convertible if enemy outnumbers friends in radius
  */
+ 
+ #include "TeamChecking.as";
 
 const string counter_prop = "capture ticks";
 const string raid_tag = "under raid";
@@ -141,7 +143,7 @@ void onTick(CBlob@ this)
 
 void onChangeTeam(CBlob@ this, const int oldTeam)
 {
-	if (this.getTeamNum() >= 0 && this.getTeamNum() < 10)
+	if (!isNeutralTeam(this))
 	{
 		CSprite@ sprite = this.getSprite();
 		if (sprite !is null)

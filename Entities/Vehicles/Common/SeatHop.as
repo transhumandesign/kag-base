@@ -2,6 +2,8 @@
 
 #define SERVER_ONLY
 
+#include "TeamChecking.as"
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().runFlags |= Script::tick_blob_in_proximity;
@@ -33,7 +35,7 @@ void onTick(CBlob@ this)
 			if ((blob !is this) &&
 			        blob.hasTag("seats") &&
 			        blob !is carried &&
-			        (blob.getTeamNum() > 8 || blob.getTeamNum() == this.getTeamNum()) &&
+			        (isNeutralTeam(blob) || blob.getTeamNum() == this.getTeamNum()) &&
 					!this.getMap().rayCastSolid(this.getPosition(), blob.getPosition()))
 			{
 				//can't get into carried blob - can pick it up after they get in though

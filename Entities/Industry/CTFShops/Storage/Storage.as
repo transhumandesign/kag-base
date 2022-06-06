@@ -1,6 +1,7 @@
 ﻿// Storage.as
 
 #include "GenericButtonCommon.as"
+#include "TeamChecking.as"
 
 void onInit(CSprite@ this)
 {
@@ -114,8 +115,10 @@ void PickupOverlap(CBlob@ this)
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
+	
+	if (isDifferentTeam(this, caller)) return;
 
-	if (caller.getTeamNum() == this.getTeamNum() && caller.isOverlapping(this))
+	if (caller.isOverlapping(this))
 	{
 		CInventory @inv = caller.getInventory();
 		if (inv is null) return;
@@ -328,5 +331,5 @@ bool checkName(string blobName)
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
-	return (forBlob.getTeamNum() == this.getTeamNum() && forBlob.isOverlapping(this) && canSeeButtons(this, forBlob));
+	return (!isDifferentTeam(this, forBlob) && forBlob.isOverlapping(this) && canSeeButtons(this, forBlob));
 }

@@ -1,5 +1,6 @@
 //Wheeled vehicle deactivate script
 
+#include "TeamChecking.as"
 #include "GenericButtonCommon.as"
 
 void onInit(CBlob@ this)
@@ -13,11 +14,11 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (!canSeeButtons(this, caller) || isDifferentTeam(this, caller)) return;
 
 	if (this.getAttachments().getAttachmentPointByName("DRIVER").getOccupied() !is null) return;
 
-	if (this.getTeamNum() == caller.getTeamNum() && isOverlapping(this, caller) && !caller.isAttached() && !this.hasTag("immobile"))
+	if (isOverlapping(this, caller) && !caller.isAttached() && !this.hasTag("immobile"))
 	{
 		caller.CreateGenericButton(2, Vec2f(0.0f, 8.0f), this, this.getCommandID("pop_wheels"), getTranslatedString("Immobilise"));
 	}

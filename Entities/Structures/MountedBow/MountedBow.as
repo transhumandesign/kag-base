@@ -1,5 +1,6 @@
 #include "VehicleCommon.as"
 #include "GenericButtonCommon.as"
+#include "TeamChecking.as"
 
 // Mounted Bow logic
 
@@ -159,7 +160,6 @@ void onTick(CBlob@ this)
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
-
 	f32 hp = this.getHealth();
 	f32 max_hp = this.getInitialHealth();
 	int damframe = hp < max_hp * 0.4f ? 2 : hp < max_hp * 0.9f ? 1 : 0;
@@ -175,6 +175,8 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
+	
+	if (isDifferentTeam(this, caller)) return;
 
 	if (!Vehicle_AddFlipButton(this, caller))
 	{

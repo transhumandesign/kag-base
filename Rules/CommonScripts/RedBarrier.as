@@ -1,5 +1,7 @@
 // red barrier before match starts
 
+#include "TeamChecking.as";
+
 const f32 BARRIER_PERCENT = 0.175f;
 //extra area of no build around the barrier
 //(unpopular)
@@ -64,7 +66,7 @@ void onTick(CRules@ this)
 			for (uint i = 0; i < blobsInBox.length; i++)
 			{
 				CBlob @b = blobsInBox[i];
-				if (b.getTeamNum() < 100 || b.hasTag("no barrier pass"))
+				if (!isNeutralTeam(b) || b.hasTag("no barrier pass"))
 				{
 					Vec2f pos = b.getPosition();
 

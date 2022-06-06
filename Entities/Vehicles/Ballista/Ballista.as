@@ -3,6 +3,7 @@
 #include "StandardRespawnCommand.as";
 #include "GenericButtonCommon.as";
 #include "Costs.as";
+#include "TeamChecking.as";
 
 // Ballista logic
 
@@ -240,11 +241,11 @@ void onTick(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (!canSeeButtons(this, caller) || isDifferentTeam(this, caller)) return;
 
 	if (isOverlapping(this, caller) && !caller.isAttached())
 	{
-		if (!Vehicle_AddFlipButton(this, caller) && caller.getTeamNum() == this.getTeamNum())
+		if (!Vehicle_AddFlipButton(this, caller))
 		{
 			Vehicle_AddLoadAmmoButton(this, caller);
 		}
