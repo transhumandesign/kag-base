@@ -515,7 +515,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 		{
 			damage = 0.0f;
 		}
-		
+
 		if (arrowType == ArrowType::fire)
 		{
 			if (hitBlob.getName() == "keg" && !hitBlob.hasTag("exploding"))
