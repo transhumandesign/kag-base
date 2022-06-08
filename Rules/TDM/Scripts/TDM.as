@@ -55,6 +55,15 @@ void Config(TDMCore@ this)
 	rules.set_f32("fall vel modifier", cfg.read_f32("fall_dmg_nerf", 1.3f));
 }
 
+void onBlobCreated(CRules@ this, CBlob@ blob)
+{
+	const string name = blob.getName();
+	if (name == "dummy")
+	{
+		blob.server_setTeamNum(2+XORRandom(5)); // team 2-6
+	}
+}
+
 //TDM spawn system
 
 shared class TDMSpawns : RespawnSystem

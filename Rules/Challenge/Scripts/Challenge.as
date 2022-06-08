@@ -1023,6 +1023,13 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 		blob.RemoveScript("DecayIfFlipped");
 		blob.RemoveScript("DecayIfLeftAlone");
 	}
+	else if (name == "dummy")
+	{
+		if (getMap().getMapName().find("Tutorial") != -1)
+		{
+			blob.server_setTeamNum(1);
+		}
+	}
 
 	if (blob.hasTag("material"))
 	{
