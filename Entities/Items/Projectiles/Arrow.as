@@ -164,35 +164,41 @@ void onTick(CBlob@ this)
 	// sticking
 	if (processSticking)
 	{	
-		if (this.get_bool("hitBlobExists")) 
+		if (isServer())
 		{
-			// structure blob: door, platform, team bridge, trap block etc.
-			
-			CBlob@ gottenBlob = getBlobByNetworkID(this.get_u32("hitBlob"));
-			
-			if (gottenBlob is null) // structure blob is gone
+			if (this.exists("hitBlob")) 
 			{
-				this.server_Die();
+				// structure blob: door, platform, team bridge, trap block etc.
+
+				CBlob@ gottenBlob = getBlobByNetworkID(this.get_u32("hitBlob"));
+
+				if (gottenBlob is null) // structure blob is gone
+				{
+					this.server_Die();
+				}
+				else 
+				{
+					string n = gottenBlob.getName();
+					bool isOpened = (isOpen(gottenBlob) && n.find("door") != -1 || n == "bridge" || n == "trap_block");
+				
+					if (gottenBlob.hasTag("fallen") || isOpened) // structure blob is collapsing or is an opening door/bridge/trap
+					{
+						this.server_Die();
+					}
+				}
 			}
-			else if (gottenBlob.hasTag("fallen")										// structure blob is falling
-					|| (gottenBlob.getName().find("door") != -1 && isOpen(gottenBlob))	// opening door
-					|| (gottenBlob.getName() == "bridge" && isOpen(gottenBlob))			// opening bridge
-					|| (gottenBlob.getName() == "trap_block" && isOpen(gottenBlob)))	// opening trap block
+			else if (this.exists("hitWorldPoint"))
 			{
-				this.server_Die();
+				// maptile: stone, wood, dirt, obstructor etc.
+				
+				CMap@ map = getMap();
+				
+				Vec2f hitpos = this.get_Vec2f("hitWorldPoint");
+				Tile hitTile = map.getTile(hitpos);
+				
+				if (!map.isTileSolid(hitTile))
+					this.server_Die();	
 			}
-		}
-		else 
-		{
-			// maptile: stone, wood, dirt, obstructor etc.
-			
-			CMap@ map = getMap();
-			Vec2f hitpos = this.get_Vec2f("hitWorldPoint");
-			
-			Tile hitTile = map.getTile(hitpos);
-			
-			if (!map.isTileSolid(hitTile))
-				this.server_Die();		
 		}
 		
 		shape.getConsts().collidable = false;	//no collision
@@ -599,23 +605,18 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 	this.set_Vec2f("lock", lock);
 
 	// saving information on what was hit to determine when the arrow should collapse
-	
-	if (hitBlob is null) // map (stone, wood, dirt)
+	if (isServer())
 	{
-		this.set_bool("hitBlobExists", false);
-		this.set_Vec2f("hitWorldPoint", worldPoint);
-		
-		this.Sync("hitWorldPoint", true);
+		if (hitBlob is null) // map (stone, wood, dirt)
+		{
+			this.set_Vec2f("hitWorldPoint", worldPoint);
+		}
+		else // hitBlob (door, platform, etc.)
+		{
+			this.set_u32("hitBlob", hitBlob.getNetworkID());
+		}
 	}
-	else // hitBlob (door, platform, etc.)
-	{
-		this.set_bool("hitBlobExists", true);
-		this.set_u32("hitBlob", hitBlob.getNetworkID());
-		
-		this.Sync("hitBlob", true);
-	}
-	
-	this.Sync("hitBlobExists", true);
+
 	this.Sync("lock", true);
 	this.Sync("angle", true);
 
