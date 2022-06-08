@@ -21,8 +21,6 @@ void onInit(CBlob@ this)
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().runFlags |= Script::tick_moving;
-	
-	//this.SetInventoryIcon(
 
 	//EnsureWantedList();
 }
