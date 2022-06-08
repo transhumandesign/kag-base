@@ -2,9 +2,7 @@
 
 #include "RunnerCommon.as"
 #include "Help.as";
-
 #include "Hitters.as";
-
 #include "TraderWantedList.as";
 
 //trader methods
@@ -17,10 +15,14 @@ void onInit(CBlob@ this)
 	this.getShape().SetRotationsAllowed(false);
 	this.set_f32("gib health", -1.5f);
 	this.Tag("flesh");
+	this.Tag("no death sound"); // has their own death scream
+
 	this.getBrain().server_SetActive(true);
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().runFlags |= Script::tick_moving;
+	
+	//this.SetInventoryIcon(
 
 	//EnsureWantedList();
 }
@@ -42,22 +44,6 @@ void onGib(CSprite@ this)
 	CParticle@ Gib1     = makeGibParticle("Entities/Special/WAR/Trading/TraderGibs.png", pos, vel + getRandomVelocity(90, hp , 80), 0, 0, Vec2f(16, 16), 2.0f, 20, "/BodyGibFall");
 	CParticle@ Gib2     = makeGibParticle("Entities/Special/WAR/Trading/TraderGibs.png", pos, vel + getRandomVelocity(90, hp - 0.2 , 80), 1, 0, Vec2f(16, 16), 2.0f, 20, "/BodyGibFall");
 	CParticle@ Gib3     = makeGibParticle("Entities/Special/WAR/Trading/TraderGibs.png", pos, vel + getRandomVelocity(90, hp , 80), 2, 0, Vec2f(16, 16), 2.0f, 0, "/BodyGibFall");
-}
-
-void onHealthChange(CBlob@ this, f32 oldHealth)
-{
-	if (this.getHealth() < 1.0f && !this.hasTag("dead"))
-	{
-		this.Tag("dead");
-		this.server_SetTimeToDie(20);
-	}
-
-	if (this.getHealth() < 0)
-	{
-		this.getSprite().Gib();
-		this.server_Die();
-		return;
-	}
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
