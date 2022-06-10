@@ -166,7 +166,7 @@ void onTick(CBlob@ this)
 		// attach certain blobs with the tip of the arrow	
 		if (!this.hasAttached() 												// arrow doesn't have anything attached yet
 			&& (arrowType == ArrowType::normal || arrowType == ArrowType::fire)	// only normal and fire type
-			&& this.getShape().vellen > 10)										// only if enough velocity
+			&& this.getShape().vellen > 12)										// only if enough velocity
 		{
 			CBlob@[] overlapping;
 			getMap().getBlobsInRadius(this.getPosition(), 7.0f, @overlapping);
@@ -178,13 +178,12 @@ void onTick(CBlob@ this)
 					AttachmentPoint@ tip = this.getAttachments().getAttachmentPointByName("TIP");
 					
 					if (tip !is null 								// attachment point exists
-						&& tip.getOccupied() is null 				// no blob in the attachment point yet
-						&& !overlapping[i].hasTag("arrow tipped")) 	// don't attach blob that is already tipped
+						&& tip.getOccupied() is null)				// no blob in the attachment point yet
 					{
 						this.server_AttachTo(overlapping[i], "TIP");
 						overlapping[i].getSprite().SetRelativeZ(500.0f);			
-						overlapping[i].Tag("arrow tipped");
 						this.set_netid("tipped blob", overlapping[i].getNetworkID());
+						this.set_bool("tipped blob was collidable", overlapping[i].getShape().getConsts().collidable);
 						break;
 					}		
 				}		
@@ -223,16 +222,22 @@ void onTick(CBlob@ this)
 			if (tip !is null && tip.getOccupied() !is null)
 			{
 				tip.getOccupied().getShape().SetStatic(true);
+				tip.getOccupied().getShape().getConsts().collidable = false;
 				this.server_DetachAll();
 			}
 		}
-		else if (this.exists("tipped blob")) // untag "arrow tipped" if the tipped blob is picked up
+		else if (this.exists("tipped blob")) // revert collidable state of tipped blob when it is picked up
 		{
 			CBlob@ tipped = getBlobByNetworkID(this.get_netid("tipped blob"));
-					
-			if (tipped !is null && tipped.isAttachedTo(getLocalPlayerBlob()))
+
+			if (tipped !is null)
 			{
-				tipped.Untag("arrow tipped");
+				AttachmentPoint@ pickup = tipped.getAttachments().getAttachmentPointByName("PICKUP");
+				
+				if (pickup !is null && pickup.getOccupied() !is null)
+				{
+					tipped.getShape().getConsts().collidable = this.get_bool("tipped blob was collidable");
+				}
 			}
 		}
 	}
@@ -384,7 +389,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	if (!check)
 	{
 		CShape@ shape = blob.getShape();
-		check = (shape.isStatic() && !blob.hasTag("arrow tipped") && !shape.getConsts().platform);
+		check = (shape.isStatic()  && !shape.getConsts().platform);
 	}
 
 	if (check)
@@ -772,15 +777,15 @@ void onDie(CBlob@ this)
 		SplashArrow(this);
 	}
 	
-	// revert things done to the tipped blob
+	// revert static and collidable state of tipped blob
 	if (this.exists("tipped blob"))
 	{
 		CBlob@ tipped = getBlobByNetworkID(this.get_netid("tipped blob"));
 				
 		if (tipped !is null)
 		{
-			tipped.Untag("arrow tipped");
 			tipped.getShape().SetStatic(false);
+			tipped.getShape().getConsts().collidable = this.get_bool("tipped blob was collidable");
 		}
 	}
 }
