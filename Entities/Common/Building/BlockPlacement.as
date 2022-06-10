@@ -31,9 +31,10 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 
 	if (validTile && hasReqs && passesChecks)
 	{
-		DestroyScenary(cursorPos, Vec2f(cursorPos.x+8, cursorPos.y+8));
+		CMap@ map = getMap();
+		DestroyScenary(cursorPos, Vec2f(cursorPos.x+map.tilesize, cursorPos.y+map.tilesize));
 		server_TakeRequirements(inv, bc.reqs);
-		getMap().server_SetTile(cursorPos, bc.tile);
+		map.server_SetTile(cursorPos, bc.tile);
 
 		u32 delay = this.get_u32("build delay");
 		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
