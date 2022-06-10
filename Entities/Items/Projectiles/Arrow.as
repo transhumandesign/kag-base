@@ -388,7 +388,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	if (!check)
 	{
 		CShape@ shape = blob.getShape();
-		check = (shape.isStatic()  && !shape.getConsts().platform);
+		check = (shape.isStatic() && !shape.getConsts().platform);
 	}
 
 	if (check)
