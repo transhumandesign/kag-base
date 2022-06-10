@@ -31,7 +31,7 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 
 	if (validTile && hasReqs && passesChecks)
 	{
-		DestroyScenary(cursorPos, cursorPos);
+		DestroyScenary(cursorPos, Vec2f(cursorPos.x+8, cursorPos.y+8));
 		server_TakeRequirements(inv, bc.reqs);
 		getMap().server_SetTile(cursorPos, bc.tile);
 
