@@ -177,8 +177,7 @@ void onTick(CBlob@ this)
 				{	
 					AttachmentPoint@ tip = this.getAttachments().getAttachmentPointByName("TIP");
 					
-					if (tip !is null 								// attachment point exists
-						&& tip.getOccupied() is null)				// no blob in the attachment point yet
+					if (tip !is null && tip.getOccupied() is null)				// no blob in the attachment point yet
 					{
 						this.server_AttachTo(overlapping[i], "TIP");
 						overlapping[i].getSprite().SetRelativeZ(500.0f);			
