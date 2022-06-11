@@ -173,20 +173,24 @@ void onTick(CBlob@ this)
 		
 			for (uint i = 0; i < overlapping.length; i++)
 			{
-				if (attachableBlobs.find(overlapping[i].getName()) != -1)
+				CBlob@ o = overlapping[i];
+			
+				if (attachableBlobs.find(o.getName()) != -1)
 				{	
 					AttachmentPoint@ tip = this.getAttachments().getAttachmentPointByName("TIP");
 					
-					// no blob attached yet, blob to be added is not attached
-					if (tip !is null && tip.getOccupied() is null && !overlapping[i].isAttached())
+					if (tip !is null && tip.getOccupied() is null && !o.isAttached())	// no blob in the attachment point yet
 					{
-						this.server_AttachTo(overlapping[i], "TIP");
-						overlapping[i].getSprite().SetRelativeZ(500.0f);	
-						overlapping[i].getShape().getConsts().collideWhenAttached = true; // allow foods to heal teammates
-						overlapping[i].set_u16("healer", getLocalPlayer().getNetworkID()); // healing reward
-						this.set_netid("tipped blob", overlapping[i].getNetworkID());
-						this.set_bool("tipped blob collidable", overlapping[i].getShape().getConsts().collidable);
-						this.set_bool("tipped blob collidableWhenAttached", overlapping[i].getShape().getConsts().collideWhenAttached);
+						this.server_AttachTo(o, "TIP");
+						o.getSprite().SetRelativeZ(500.0f);	
+						if (o.exists("eat sound"))	// this is a food item
+						{
+							o.getShape().getConsts().collideWhenAttached = true; 	// allow foods to heal teammates
+							o.set_u16("healer", getLocalPlayer().getNetworkID());	// coin reward
+						}
+						this.set_netid("tipped blob", o.getNetworkID());
+						this.set_bool("tipped blob collidable", o.getShape().getConsts().collidable);
+						this.set_bool("tipped blob collidableWhenAttached", o.getShape().getConsts().collideWhenAttached);
 
 						break;
 					}		
