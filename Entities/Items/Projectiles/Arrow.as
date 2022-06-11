@@ -186,7 +186,7 @@ void onTick(CBlob@ this)
 						this.set_netid("tipped blob", o.getNetworkID());
 						this.set_bool("tipped blob collidable", o.getShape().getConsts().collidable);
 						this.set_bool("tipped blob collidableWhenAttached", o.getShape().getConsts().collideWhenAttached);
-						this.set_f32("tipped blob Z", o.getSprite().getZ());
+						this.set_f32("tipped blob Z", o.getSprite().getRelativeZ());
 						
 						if (o.exists("eat sound"))	// this is a food item
 						{
@@ -803,6 +803,8 @@ void onDie(CBlob@ this)
 			tipped.getShape().getConsts().collidable 			= this.get_bool("tipped blob collidable");
 			tipped.getShape().getConsts().collideWhenAttached 	= this.get_bool("tipped blob collideWhenAttached");
 			tipped.getSprite().SetRelativeZ(this.get_f32("tipped blob Z"));
+			this.server_DetachAll();
+			tipped.setVelocity(this.getVelocity());
 		}
 	}
 }
