@@ -177,12 +177,17 @@ void onTick(CBlob@ this)
 				{	
 					AttachmentPoint@ tip = this.getAttachments().getAttachmentPointByName("TIP");
 					
-					if (tip !is null && tip.getOccupied() is null)				// no blob in the attachment point yet
+					// no blob attached yet, blob to be added is not attached
+					if (tip !is null && tip.getOccupied() is null && !overlapping[i].isAttached())
 					{
 						this.server_AttachTo(overlapping[i], "TIP");
-						overlapping[i].getSprite().SetRelativeZ(500.0f);			
+						overlapping[i].getSprite().SetRelativeZ(500.0f);	
+						overlapping[i].getShape().getConsts().collideWhenAttached = true; // allow foods to heal teammates
+						overlapping[i].set_u16("healer", getLocalPlayer().getNetworkID()); // healing reward
 						this.set_netid("tipped blob", overlapping[i].getNetworkID());
-						this.set_bool("tipped blob was collidable", overlapping[i].getShape().getConsts().collidable);
+						this.set_bool("tipped blob collidable", overlapping[i].getShape().getConsts().collidable);
+						this.set_bool("tipped blob collidableWhenAttached", overlapping[i].getShape().getConsts().collideWhenAttached);
+
 						break;
 					}		
 				}		
@@ -221,7 +226,8 @@ void onTick(CBlob@ this)
 			if (tip !is null && tip.getOccupied() !is null)
 			{
 				tip.getOccupied().getShape().SetStatic(true);
-				tip.getOccupied().getShape().getConsts().collidable = false;
+				tip.getOccupied().getShape().getConsts().collidable 			= false;
+				tip.getOccupied().getShape().getConsts().collideWhenAttached 	= false;
 				this.server_DetachAll();
 			}
 		}
@@ -235,7 +241,8 @@ void onTick(CBlob@ this)
 				
 				if (pickup !is null && pickup.getOccupied() !is null)
 				{
-					tipped.getShape().getConsts().collidable = this.get_bool("tipped blob was collidable");
+					tipped.getShape().getConsts().collidable 			= this.get_bool("tipped blob collidable");
+					tipped.getShape().getConsts().collideWhenAttached 	= this.get_bool("tipped blob collideWhenAttached");
 				}
 			}
 		}
@@ -784,7 +791,8 @@ void onDie(CBlob@ this)
 		if (tipped !is null)
 		{
 			tipped.getShape().SetStatic(false);
-			tipped.getShape().getConsts().collidable = this.get_bool("tipped blob was collidable");
+			tipped.getShape().getConsts().collidable 			= this.get_bool("tipped blob collidable");
+			tipped.getShape().getConsts().collideWhenAttached 	= this.get_bool("tipped blob collideWhenAttached");
 		}
 	}
 }
