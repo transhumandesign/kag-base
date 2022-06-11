@@ -1028,6 +1028,7 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 		if (getMap().getMapName().find("Tutorial") != -1)
 		{
 			blob.server_setTeamNum(1);
+			blob.SetFacingLeft(true);
 		}
 	}
 

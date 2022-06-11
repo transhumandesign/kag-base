@@ -1,9 +1,16 @@
+void onInit(CSprite@ this)
+{
+	this.SetZ(-20.0f);
+	this.animation.frame = (this.getBlob().getNetworkID() * 31) % 4;
+	
+	uint col = uint(XORRandom(8));
+	this.ReloadSprites(col, 0); // random colour
+}
 
 void onInit(CBlob@ this)
 {
-	this.getSprite().SetZ(-20.0f);
-	this.getSprite().animation.frame = (this.getNetworkID() * 31) % 4;
 	this.SetFacingLeft(((this.getNetworkID() + 27) * 31) % 18 > 9);
+	this.server_setTeamNum(-1);	// force neutral team
 }
 
 void onGib(CSprite@ this)
