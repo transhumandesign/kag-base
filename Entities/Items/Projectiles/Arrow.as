@@ -182,15 +182,19 @@ void onTick(CBlob@ this)
 					if (tip !is null && tip.getOccupied() is null && !o.isAttached())	// no blob in the attachment point yet
 					{
 						this.server_AttachTo(o, "TIP");
-						o.getSprite().SetRelativeZ(500.0f);	
+						
+						this.set_netid("tipped blob", o.getNetworkID());
+						this.set_bool("tipped blob collidable", o.getShape().getConsts().collidable);
+						this.set_bool("tipped blob collidableWhenAttached", o.getShape().getConsts().collideWhenAttached);
+						this.set_f32("tipped blob Z", o.getSprite().getZ());
+						
 						if (o.exists("eat sound"))	// this is a food item
 						{
 							o.getShape().getConsts().collideWhenAttached = true; 	// allow foods to heal teammates
 							o.set_u16("healer", getLocalPlayer().getNetworkID());	// coin reward
 						}
-						this.set_netid("tipped blob", o.getNetworkID());
-						this.set_bool("tipped blob collidable", o.getShape().getConsts().collidable);
-						this.set_bool("tipped blob collidableWhenAttached", o.getShape().getConsts().collideWhenAttached);
+						
+						o.getSprite().SetRelativeZ(500.0f);	
 
 						break;
 					}		
@@ -247,6 +251,7 @@ void onTick(CBlob@ this)
 				{
 					tipped.getShape().getConsts().collidable 			= this.get_bool("tipped blob collidable");
 					tipped.getShape().getConsts().collideWhenAttached 	= this.get_bool("tipped blob collideWhenAttached");
+					tipped.getSprite().SetRelativeZ(this.get_f32("tipped blob Z"));
 				}
 			}
 		}
@@ -797,6 +802,7 @@ void onDie(CBlob@ this)
 			tipped.getShape().SetStatic(false);
 			tipped.getShape().getConsts().collidable 			= this.get_bool("tipped blob collidable");
 			tipped.getShape().getConsts().collideWhenAttached 	= this.get_bool("tipped blob collideWhenAttached");
+			tipped.getSprite().SetRelativeZ(this.get_f32("tipped blob Z"));
 		}
 	}
 }
