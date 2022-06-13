@@ -1,6 +1,7 @@
 ﻿// Storage.as
 
-#include "GenericButtonCommon.as"
+#include "GenericButtonCommon.as";
+#include "LanternCommon.as";
 
 void onInit(CSprite@ this)
 {
@@ -90,11 +91,30 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	PickupOverlap(this);
+	
+	// if the placeholder/overlay lantern extinguishes, make all lanterns inside extinguish
+	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("LANTERN");
+	if (point.getOccupied() !is null && !point.getOccupied().getSprite().isAnimation("fire"))
+	{
+		CInventory@ inv = this.getInventory();
+		
+		for (int i = 0; i < inv.getItemsCount(); i++) 
+		{
+			CBlob@ item = inv.getItem(i);
+			
+			if (item !is null 
+				&& item.getName() == "lantern"
+				&& item.getSprite().isAnimation("fire"))
+			{
+				Light(item, false);
+			}
+		}
+	}
 }
 
 void PickupOverlap(CBlob@ this)
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
 		Vec2f tl, br;
 		this.getShape().getBoundingRect(tl, br);
@@ -131,7 +151,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
 		if (cmd == this.getCommandID("store inventory"))
 		{
@@ -278,31 +298,58 @@ void updateLayers(CBlob@ this, CBlob@ blob)
 		}
 	}
 	else if (blobName == "lantern")
-	{
-		if (blobCount > 0)
+	{		
+		if (isServer())
 		{
-			AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("LANTERN");
-			if (getNet().isServer() && point.getOccupied() is null)
+			if (blobCount > 0)
 			{
-				CBlob@ lantern = server_CreateBlob("lantern");
-				if (lantern !is null)
+				// checking if a burning lantern exists in storage
+				bool burningLanternExists = false;
+				CInventory@ inv = this.getInventory();
+		
+				for (int i = 0; i < inv.getItemsCount(); i++) 
 				{
-					lantern.server_setTeamNum(this.getTeamNum());
-					lantern.getShape().getConsts().collidable = false;
-					this.server_AttachTo(lantern, "LANTERN");
-					blob.set_u16("lantern id", lantern.getNetworkID());
-					Sound::Play("SparkleShort.ogg", lantern.getPosition());
+					CBlob@ item = inv.getItem(i);
+					
+					if (item !is null 
+						&& item.getName() == "lantern" 
+						&& item.getSprite().isAnimation("fire"))
+					{
+						 burningLanternExists = true;
+						 break;
+					}
+				}
+			
+				// setting up placeholder lantern
+				AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("LANTERN");
+				if (point.getOccupied() is null)
+				{
+					CBlob@ lantern = server_CreateBlob("lantern");
+					if (lantern !is null)
+					{
+						lantern.server_setTeamNum(this.getTeamNum());
+						lantern.getShape().getConsts().collidable = false;
+						this.server_AttachTo(lantern, "LANTERN");
+						blob.set_u16("lantern id", lantern.getNetworkID());
+						Sound::Play("SparkleShort.ogg", lantern.getPosition());
+					}
+				}
+				
+				if (point.getOccupied().getSprite().isAnimation("fire") && !burningLanternExists
+					|| !point.getOccupied().getSprite().isAnimation("fire") && burningLanternExists)
+				{
+					Light(point.getOccupied(), burningLanternExists);
 				}
 			}
-		}
-		else
-		{
-			if (blob.exists("lantern id"))
+			else
 			{
-				CBlob@ lantern = getBlobByNetworkID(blob.get_u16("lantern id"));
-				if (lantern !is null)
+				if (blob.exists("lantern id"))
 				{
-					lantern.server_Die();
+					CBlob@ lantern = getBlobByNetworkID(blob.get_u16("lantern id"));
+					if (lantern !is null)
+					{
+						lantern.server_Die();
+					}
 				}
 			}
 		}

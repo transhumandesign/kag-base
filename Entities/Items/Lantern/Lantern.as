@@ -1,5 +1,7 @@
 // Lantern script
 
+#include "LanternCommon.as";
+
 void onInit(CBlob@ this)
 {
 	this.SetLight(true);
@@ -25,21 +27,6 @@ void onTick(CBlob@ this)
 	{
 		Light(this, false);
 	}
-}
-
-void Light(CBlob@ this, bool on)
-{
-	if (!on)
-	{
-		this.SetLight(false);
-		this.getSprite().SetAnimation("nofire");
-	}
-	else
-	{
-		this.SetLight(true);
-		this.getSprite().SetAnimation("fire");
-	}
-	this.getSprite().PlaySound("SparkleShort.ogg");
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
