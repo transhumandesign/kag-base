@@ -217,9 +217,7 @@ void onTick(CBlob@ this)
 						@closest = @GetBetterAlternativePickupBlobs(blobsInRadius, closest);
 						server_Pickup(this, this, closest);
 					}
-
 				}
-
 			}
 
 			return;
@@ -583,6 +581,8 @@ CBlob@ getClosestBlob(CBlob@ this)
 
 bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 {
+	if (!blob.canBePickedUp(this)) return false;
+
 	float maxDist = Maths::Max(this.getRadius() + blob.getRadius() + 20.0f, 36.0f);
 
 	Vec2f pos = this.getPosition() + Vec2f(0.0f, -this.getRadius() * 0.9f);
