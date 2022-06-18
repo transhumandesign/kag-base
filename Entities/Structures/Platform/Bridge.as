@@ -1,15 +1,11 @@
 #include "Hitters.as"
-
 #include "FireCommon.as"
 
 void onInit(CBlob@ this)
 {
 	this.Tag("place norotate");
-
 	this.Tag("explosion always teamkill"); // ignore 'no teamkill' for explosives
-
 	this.SetFacingLeft(XORRandom(128) > 64);
-
 	this.getShape().getConsts().waterPasses = true;
 
 	CShape@ shape = this.getShape();
@@ -22,7 +18,7 @@ void onInit(CBlob@ this)
 	//transfer fire to underlying tiles
 	this.Tag(spread_fire_tag);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		dictionary harvest;
 		harvest.set('mat_wood', 4);
@@ -51,6 +47,14 @@ void MakeDamageFrame(CBlob@ this)
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic) return;
+
+	CSprite@ sprite = this.getSprite();
+	if (sprite !is null)
+	{
+		sprite.getConsts().accurateLighting = true;
+		this.SetLight(true);
+		this.SetLightRadius(7.0f);
+	}
 
 	this.getCurrentScript().tickFrequency = 3;
 	this.getSprite().PlaySound("/build_wood.ogg");
