@@ -41,7 +41,7 @@ void onTick(CSprite@ this)
 	}
 			
 	CSpriteLayer@ saddle = this.getSpriteLayer("saddle");
-	const s16 friendTeam = this.getBlob().get_s16("friend team"); 
+	const s16 friendTeam = this.getBlob().get_s16(friend_team); 
 
 	if (friendTeam >= 0 && !saddle.isVisible())
 	{
@@ -74,7 +74,7 @@ void onInit(CBlob@ this)
 	this.getBrain().server_SetActive(true);
 
 	//befriended team
-	this.set_s16("friend team", -1); // Please note, -1 here means "no team"
+	this.set_s16(friend_team, -1); // Please note, -1 here means "no team"
 
 	//for steaks
 	this.set_u8("number of steaks", 8);
@@ -175,20 +175,20 @@ void onTick(CBlob@ this)
 
 void MadAt(CBlob@ this, CBlob@ hitterBlob)
 {
-	const s16 friendTeam 	= this.get_s16("friend team");
+	const s16 friendTeam 	= this.get_s16(friend_team);
 	
 	CPlayer@ damageOwner 	= hitterBlob.getDamageOwnerPlayer();
 	const u16 damageOwnerId = (damageOwner !is null && damageOwner.getBlob() !is null) ? damageOwner.getBlob().getNetworkID() : 0;
 	const s16 damageOwnerTeam = (damageOwner !is null && damageOwner.getBlob() !is null) ? damageOwner.getBlob().getTeamNum() : -1;
-	
+
 	if (friendTeam == damageOwnerTeam || friendTeam == hitterBlob.getTeamNum()) // unfriend
 	{
-		this.set_s16("friend team", -1);
+		this.set_s16(friend_team, -1);
 	}
 	else // now I'm mad!
 	{
 		if (friendTeam == damageOwnerTeam)
-			this.set_s16("friend team", -1);
+			this.set_s16(friend_team, -1);
 	
 		if (this.get_s16("mad timer") <= MAD_TIME / 8)
 			this.getSprite().PlaySound("/BisonMad");
@@ -224,7 +224,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	if (blob is null)
 		return;
 
-	const s16 friendTeam 	= this.get_s16("friend team");
+	const s16 friendTeam 	= this.get_s16(friend_team);
 	
 	if (blob.getTeamNum() != friendTeam && blob.getName() != this.getName() && blob.hasTag("flesh"))
 	{
@@ -243,16 +243,15 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				this.server_Hit(blob, point1, vel, power, Hitters::flying, false);
 			}
 		}
-
-		MadAt(this, blob);
 	}
 
 	// eat cake	and make friends
 	{
 		if (blob.getName() == "food")
 		{
+			// eat the food even at full health
 			this.getSprite().PlaySound("/Eat.ogg");
-			this.server_SetHealth(this.getInitialHealth());
+			this.server_SetHealth(Maths::Min(this.getHealth() + 4.0f, this.getInitialHealth()));
 			blob.server_Die();
 
 			//if (blob.getPosition().x < this.getPosition().x)	crash
@@ -265,8 +264,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			{
 				u8 newFriendTeam = owner.getBlob().getTeamNum();
 				this.set_u8(state_property, MODE_FRIENDLY);
-				this.set_s16("friend team", newFriendTeam);
-				this.getSprite().ReloadSprites(newFriendTeam, newFriendTeam);
+				
+				if (this.get_s16(friend_team) != newFriendTeam)
+				{
+					this.set_s16(friend_team, newFriendTeam);
+					this.getSprite().ReloadSprites(newFriendTeam, newFriendTeam);
+				}
 			}
 		}
 	}

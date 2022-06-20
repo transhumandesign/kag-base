@@ -49,7 +49,7 @@ void onTick(CBlob@ this)
 			{
 				CBlob@ occ = ap.getOccupied();
 
-				s16 friendTeam = this.get_s16("friend team");
+				s16 friendTeam = this.get_s16(friend_team);
 
 				if (occ is null && seattime + ridetime > gametime)
 					ap.SetKeysToTake(0);

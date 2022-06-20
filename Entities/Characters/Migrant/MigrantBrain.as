@@ -239,6 +239,9 @@ CBlob@ getAttacker(CBrain@ this, CBlob @blob)
 			            && !map.rayCastSolid(pos, b.getPosition()))
 			   )
 			{
+				if (b.exists("brain_friend_team") && b.get_s16("brain_friend_team") == this.getBlob().getTeamNum()) // friendly Bison
+					continue;
+				
 				potentials.push_back(b);
 			}
 		}
