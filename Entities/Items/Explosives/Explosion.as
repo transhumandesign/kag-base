@@ -568,7 +568,7 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
 	}
 
 	f32 scale;
-	Vec2f bombforce = getBombForce(this, radius, hit_blob_pos, pos, hit_blob.getMass(), scale);
+	Vec2f bombforce = hit_blob.hasTag("invincible") ? Vec2f_zero : getBombForce(this, radius, hit_blob_pos, pos, hit_blob.getMass(), scale);
 	f32 dam = damage * scale;
 
 	//explosion particle
