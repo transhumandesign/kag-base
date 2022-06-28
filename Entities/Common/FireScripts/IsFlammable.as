@@ -70,7 +70,6 @@ void onTick(CBlob@ this)
 
 	s16 burn_time = this.get_s16(burn_timer);
 	//check if we should be getting set on fire or put out
-	if (burn_time < (burn_thresh / fire_wait_ticks) && this.isInFlames())
 	if (burn_time < (burn_thresh / fire_wait_ticks) && this.isInFlames() && !this.hasTag("invincible"))
 	{
 		server_setFireOn(this);
