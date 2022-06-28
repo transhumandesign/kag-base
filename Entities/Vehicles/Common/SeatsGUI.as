@@ -14,7 +14,7 @@ void onRender(CSprite@ this)
 	CBlob@ localBlob = getLocalPlayerBlob();
 	CBlob@ blob = this.getBlob();
 	
-	if (localBlob is null || localBlob.isAttached() || localBlob.isInInventory() || blob.isInInventory())
+	if (localBlob is null || localBlob.isAttached() || localBlob.isInInventory() || blob.isInInventory() || blob.isAttachedToPoint("PICKUP"))
 	{
 		return;
 	}
