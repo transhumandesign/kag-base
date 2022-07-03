@@ -125,3 +125,13 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	return damage;
 }
+
+void onThisRemoveFromInventory(CBlob@ this, CBlob@ inventoryBlob)
+{
+	CSpriteLayer@ fuse = this.getSprite().getSpriteLayer("fuse");
+
+	if (fuse !is null)
+	{
+		fuse.SetVisible(true);
+	}
+}
