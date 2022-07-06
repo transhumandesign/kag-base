@@ -305,10 +305,15 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 
 void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 {
+	if (!isClient())
+	{
+		return;	
+	}
+	
 	//are we responsible for this actor?
 	bool ismyplayer = this.isMyPlayer();
 	bool responsible = ismyplayer;
-	if (isServer() && !ismyplayer)
+	if (!ismyplayer)
 	{
 		CPlayer@ p = this.getPlayer();
 		if (p !is null)
