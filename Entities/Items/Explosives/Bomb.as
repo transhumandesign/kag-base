@@ -111,7 +111,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 	const f32 vellen = this.getOldVelocity().Length();
 	const u8 hitter = this.get_u8("custom_hitter");
-	if (vellen > 1.7f)
+	if (vellen > 1.7f && !this.isInInventory())
 	{
 		Sound::Play(!isExplosionHitter(hitter) ? "/WaterBubble" :
 		            "/BombBounce.ogg", this.getPosition(), Maths::Min(vellen / 8.0f, 1.1f));
