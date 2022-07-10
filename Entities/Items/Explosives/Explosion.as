@@ -442,7 +442,7 @@ void LinearExplosion(CBlob@ this, Vec2f _direction, f32 length, const f32 width,
 		//widthwise overlap
 		float q = Maths::Abs(v * normal) - rad - tilesize;
 
-		if (p > 0.0f && p < length && q < halfwidth)
+		if (p >= 0.0f && p < length && q < halfwidth)
 		{
 			HitBlob(this, m_pos, hit_blob, length, damage, hitter, false, should_teamkill);
 		}
