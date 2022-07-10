@@ -580,7 +580,8 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
 	                hitter, hitter == Hitters::water || //hit with water
 	                isOwnerBlob(this, hit_blob) ||	//allow selfkill with bombs
 	                should_teamkill || hit_blob.hasTag("dead") || //hit all corpses ("dead" tag)
-					hit_blob.hasTag("explosion always teamkill") // check for override with tag
+					hit_blob.hasTag("explosion always teamkill") || // check for override with tag
+					this.isInInventory() && this.getInventoryBlob().getNetworkID() == hit_blob.getNetworkID() //is the inventory container
 	               );
 	return true;
 }
