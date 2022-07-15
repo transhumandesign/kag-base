@@ -83,6 +83,7 @@ void onInit(CBlob@ this)
 	this.Tag("flesh");
 
 	this.addCommandID("get bomb");
+	this.addCommandID("activate/throw bomb");
 
 	this.push("names to activate", "keg");
 
@@ -309,9 +310,7 @@ void onTick(CBlob@ this)
 						}
 						else
 						{
-							CBitStream params;
-							params.write_u8(bombType);
-							this.SendCommand(this.getCommandID("get bomb"), params);
+							client_SendThrowOrActivateCommandBomb(this, bombType);
 							thrown = true;
 						}
 						break;
@@ -1074,9 +1073,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("get bomb"))
 	{
-		if (this.getCarriedBlob() !is null)
-			return;
-
 		const u8 bombType = params.read_u8();
 		if (bombType >= bombTypeNames.length)
 			return;
@@ -1152,6 +1148,30 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("activate/throw"))
 	{
+		SetFirstAvailableBomb(this);
+	}
+	else if (cmd == this.getCommandID("activate/throw bomb"))
+	{
+		if (isServer())
+		{
+			Vec2f pos = params.read_Vec2f();
+			Vec2f vector = params.read_Vec2f();
+			Vec2f vel = params.read_Vec2f();
+			u8 bombType = params.read_u8();
+
+			CBlob @carried = this.getCarriedBlob();
+
+			if (carried !is null)
+			{
+				DoThrow(this, carried, pos, vector, vel);
+			}
+			else
+			{
+				CBitStream cparams;
+				cparams.write_u8(bombType);
+				this.SendCommand(this.getCommandID("get bomb"), cparams);
+			}
+		}
 		SetFirstAvailableBomb(this);
 	}
 	else
