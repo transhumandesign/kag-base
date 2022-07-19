@@ -194,7 +194,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (blob is null)
+	if (blob is null || blob.hasTag("invincible"))
 		return;
 
 	const u16 friendId = this.get_netid(friend_property);
