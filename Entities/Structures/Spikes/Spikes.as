@@ -194,6 +194,9 @@ void onTick(CBlob@ this)
 				for (uint i = 0; i < blobsInRadius.length; i++)
 				{
 					CBlob @b = blobsInRadius[i];
+					
+					if (b is this)	continue;
+					
 					if (canStab(b, this))
 					{
 						state = stabbing;
@@ -225,6 +228,9 @@ void onTick(CBlob@ this)
 					for (uint i = 0; i < blobsInRadius.length; i++)
 					{
 						CBlob @b = blobsInRadius[i];
+
+						if (b is this)	continue;
+						
 						if (canHurt(b)) //even hurts team when stabbing
 						{
 							// hurt?
