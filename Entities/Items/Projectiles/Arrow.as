@@ -14,11 +14,12 @@ const f32 arrowFastSpeed = 13.0f;
 //maximum is 15 as of 22/11/12 (see ArcherCommon.as)
 
 const f32 ARROW_PUSH_FORCE = 6.0f;
-const f32 SPECIAL_HIT_SCALE = 1.0f; //special hit on food items to shoot to team-mates
 
 const s32 FIRE_IGNITE_TIME = 5;
 
 const u32 STUCK_ARROW_DECAY_SECS = 30;
+
+const string[] attachableBlobs = {"food", "grain", "bread", "steak", "cooked_steak", "cooked_fish", "heart", "sponge"};
 
 //Arrow logic
 
@@ -161,6 +162,45 @@ void onTick(CBlob@ this)
 		{
 			turnOnFire(this);
 		}
+		
+		// attach certain blobs with the tip of the arrow	
+		if (!this.hasAttached() 												// arrow doesn't have anything attached yet
+			&& (arrowType == ArrowType::normal || arrowType == ArrowType::fire)	// only normal and fire type
+			&& this.getShape().vellen > 12)										// only if enough velocity
+		{
+			CBlob@[] overlapping;
+			getMap().getBlobsInRadius(this.getPosition(), 7.0f, @overlapping);
+		
+			for (uint i = 0; i < overlapping.length; i++)
+			{
+				CBlob@ o = overlapping[i];
+			
+				if (attachableBlobs.find(o.getName()) != -1)
+				{	
+					AttachmentPoint@ tip = this.getAttachments().getAttachmentPointByName("TIP");
+					
+					if (tip !is null && tip.getOccupied() is null && !o.isAttached())	// no blob in the attachment point yet
+					{
+						this.server_AttachTo(o, "TIP");
+						
+						this.set_netid("tipped blob", o.getNetworkID());
+						this.set_bool("tipped blob collidable", o.getShape().getConsts().collidable);
+						this.set_bool("tipped blob collidableWhenAttached", o.getShape().getConsts().collideWhenAttached);
+						this.set_f32("tipped blob Z", o.getSprite().getRelativeZ());
+						
+						if (o.exists("eat sound"))	// this is a food item
+						{
+							o.getShape().getConsts().collideWhenAttached = true; 	// allow foods to heal teammates
+							o.set_u16("healer", getLocalPlayer().getNetworkID());	// coin reward
+						}
+						
+						o.getSprite().SetRelativeZ(500.0f);	
+
+						break;
+					}		
+				}		
+			}
+		}
 	}
 
 	// sticking
@@ -185,6 +225,36 @@ void onTick(CBlob@ this)
 		this.setVelocity(Vec2f(0, 0));
 		this.setPosition(this.get_Vec2f("lock"));
 		shape.SetStatic(true);
+		
+		// detach blob from tip and make it static, so it isn't inside walls and can be picked up
+		if (this.hasAttached())
+		{
+			AttachmentPoint@ tip = this.getAttachments().getAttachmentPointByName("TIP");
+					
+			if (tip !is null && tip.getOccupied() !is null)
+			{
+				tip.getOccupied().getShape().SetStatic(true);
+				tip.getOccupied().getShape().getConsts().collidable 			= false;
+				tip.getOccupied().getShape().getConsts().collideWhenAttached 	= false;
+				this.server_DetachAll();
+			}
+		}
+		else if (this.exists("tipped blob")) // revert collidable state of tipped blob when it is picked up
+		{
+			CBlob@ tipped = getBlobByNetworkID(this.get_netid("tipped blob"));
+
+			if (tipped !is null)
+			{
+				AttachmentPoint@ pickup = tipped.getAttachments().getAttachmentPointByName("PICKUP");
+				
+				if (pickup !is null && pickup.getOccupied() !is null)
+				{
+					tipped.getShape().getConsts().collidable 			= this.get_bool("tipped blob collidable");
+					tipped.getShape().getConsts().collideWhenAttached 	= this.get_bool("tipped blob collideWhenAttached");
+					tipped.getSprite().SetRelativeZ(this.get_f32("tipped blob Z"));
+				}
+			}
+		}
 	}
 
 	// fire arrow
@@ -217,7 +287,9 @@ void onTick(CBlob@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (blob !is null && doesCollideWithBlob(this, blob) && !this.hasTag("collided"))
+	if (blob is null || this.hasTag("collided")) return;
+
+	if (doesCollideWithBlob(this, blob) && !blob.isAttachedTo(this))
 	{
 		const u8 arrowType = this.get_u8("arrow type");
 
@@ -234,7 +306,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 		if (
 			!solid && !blob.hasTag("flesh") &&
-			!specialArrowHit(blob) &&
 			(blob.getName() != "mounted_bow" || this.getTeamNum() != blob.getTeamNum())
 		) {
 			return;
@@ -327,12 +398,6 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 		return true;
 	}
 
-	//anything to always hit
-	if (specialArrowHit(blob))
-	{
-		return true;
-	}
-
 	//definitely collide with non-team blobs
 	bool check = this.getTeamNum() != blob.getTeamNum() || blob.getName() == "bridge";
 	//maybe collide with team structures
@@ -362,13 +427,6 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	}
 
 	return false;
-}
-
-bool specialArrowHit(CBlob@ blob)
-{
-	string bname = blob.getName();
-	return (bname == "fishy" && blob.hasTag("dead") || bname == "food"
-		|| bname == "steak" || bname == "grain"/* || bname == "heart"*/); //no egg because logic
 }
 
 void Pierce(CBlob @this, CBlob@ blob = null)
@@ -465,22 +523,6 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 	{
 		Pierce(this, hitBlob);
 		if (this.hasTag("collided")) return 0.0f;
-
-		// check if invincible + special -> add force here
-		if (specialArrowHit(hitBlob))
-		{
-			const f32 scale = SPECIAL_HIT_SCALE;
-			f32 force = (ARROW_PUSH_FORCE * 0.125f) * Maths::Sqrt(hitBlob.getMass() + 1) * scale;
-			if (this.hasTag("bow arrow"))
-			{
-				force *= 1.3f;
-			}
-
-			hitBlob.AddForce(velocity * force);
-
-			//die
-			this.server_Hit(this, this.getPosition(), Vec2f(), 1.0f, Hitters::crush);
-		}
 
 		// check if shielded
 		const bool hitShield = (hitBlob.hasTag("shielded") && blockAttack(hitBlob, velocity, 0.0f));
@@ -723,7 +765,7 @@ bool isFlammableAt(Vec2f worldPos)
 Random _gib_r(0xa7c3a);
 void onDie(CBlob@ this)
 {
-	if (getNet().isClient())
+	if (isClient())
 	{
 		Vec2f pos = this.getPosition();
 		if (pos.x >= 1 && pos.y >= 1)
@@ -748,6 +790,22 @@ void onDie(CBlob@ this)
 	if (arrowType == ArrowType::water)
 	{
 		SplashArrow(this);
+	}
+	
+	// revert static and collidable state of tipped blob
+	if (this.exists("tipped blob"))
+	{
+		CBlob@ tipped = getBlobByNetworkID(this.get_netid("tipped blob"));
+				
+		if (tipped !is null)
+		{
+			tipped.getShape().SetStatic(false);
+			tipped.getShape().getConsts().collidable 			= this.get_bool("tipped blob collidable");
+			tipped.getShape().getConsts().collideWhenAttached 	= this.get_bool("tipped blob collideWhenAttached");
+			tipped.getSprite().SetRelativeZ(this.get_f32("tipped blob Z"));
+			this.server_DetachAll();
+			tipped.setVelocity(this.getVelocity());
+		}
 	}
 }
 
@@ -818,10 +876,10 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	{
 		// affect players velocity
 
-		const f32 scale = specialArrowHit(hitBlob) ? SPECIAL_HIT_SCALE : 1.0f;
-
+		const f32 scale = 1.0f;
 		Vec2f vel = velocity;
 		const f32 speed = vel.Normalize();
+		
 		if (speed > ArcherParams::shoot_max_vel * 0.5f)
 		{
 			f32 force = (ARROW_PUSH_FORCE * 0.125f) * Maths::Sqrt(hitBlob.getMass() + 1) * scale;
@@ -845,7 +903,6 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		}
 	}
 }
-
 
 f32 getArrowDamage(CBlob@ this, f32 vellen = -1.0f)
 {
