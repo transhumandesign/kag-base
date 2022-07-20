@@ -3,7 +3,7 @@
 void client_SendThrowOrActivateCommand(CBlob@ this)
 {
 	CBlob @carried = this.getCarriedBlob();
-	if ((carried !is null || this.getInventory().getItemsCount() > 0) && this.isMyPlayer())
+	if (this.isMyPlayer())
 	{
 		CBitStream params;
 		params.write_Vec2f(this.getPosition());
@@ -46,6 +46,53 @@ void server_ActivateCommand(CBlob@ this, CBlob@ blob)
 		blob.SendCommand(blob.getCommandID("activate"));
 		blob.Tag("activated");
 	}
+}
+
+bool ActivateBlob(CBlob@ this, CBlob@ blob, Vec2f pos, Vec2f vector, Vec2f vel)
+{
+	bool shouldthrow = true;
+	bool done = false;
+
+	if (!blob.hasTag("activated") || blob.hasTag("dont deactivate"))
+	{
+		string carriedname = blob.getName();
+		string[]@ names;
+
+		if (this.get("names to activate", @names))
+		{
+			for (uint step = 0; step < names.length; ++step)
+			{
+				if (names[step] == carriedname)
+				{
+					//if compatible
+					if (isServer() && blob.hasTag("activatable"))
+					{
+						blob.SendCommand(blob.getCommandID("activate"));
+					}
+
+					blob.Tag("activated");//just in case
+					shouldthrow = false;
+					this.Tag(blob.getName() + " done activate");
+
+					// move ouit of inventory if its the case
+					if (blob.isInInventory())
+					{
+						this.server_Pickup(blob);
+					}
+					done = true;
+				}
+			}
+		}
+	}
+
+	//throw it if it's already lit or we cant light it
+	if (isServer() && !blob.hasTag("custom throw") && shouldthrow && this.getCarriedBlob() is blob)
+	{
+		DoThrow(this, blob, pos, vector, vel);
+		done = true;
+	}
+
+	return done;
 }
 
 const f32 DEFAULT_THROW_VEL = 6.0f;

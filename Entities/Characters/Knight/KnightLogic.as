@@ -1113,7 +1113,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 			if (carried !is null)
 			{
-				DoThrow(this, carried, pos, vector, vel);
+				bool holding_bomb = false;
+				// are we actually holding a bomb or something else?
+				for (uint i = 0; i < bombNames.length; i++)
+				{
+					if(carried.getName() == bombNames[i])
+					{
+						holding_bomb = true;
+						DoThrow(this, carried, pos, vector, vel);
+					}
+				}
+
+				if (!holding_bomb)
+				{
+					ActivateBlob(this, carried, pos, vector, vel);
+				}
 			}
 			else
 			{

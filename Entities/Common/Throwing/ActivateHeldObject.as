@@ -32,53 +32,6 @@ void onInit(CBlob@ this)
 	this.set_f32("throw ourvel scale", 1.0f);
 }
 
-bool ActivateBlob(CBlob@ this, CBlob@ blob, Vec2f pos, Vec2f vector, Vec2f vel)
-{
-	bool shouldthrow = true;
-	bool done = false;
-
-	if (!blob.hasTag("activated") || blob.hasTag("dont deactivate"))
-	{
-		string carriedname = blob.getName();
-		string[]@ names;
-
-		if (this.get("names to activate", @names))
-		{
-			for (uint step = 0; step < names.length; ++step)
-			{
-				if (names[step] == carriedname)
-				{
-					//if compatible
-					if (getNet().isServer() && blob.hasTag("activatable"))
-					{
-						blob.SendCommand(blob.getCommandID("activate"));
-					}
-
-					blob.Tag("activated");//just in case
-					shouldthrow = false;
-					this.Tag(blob.getName() + " done activate");
-
-					// move ouit of inventory if its the case
-					if (blob.isInInventory())
-					{
-						this.server_Pickup(blob);
-					}
-					done = true;
-				}
-			}
-		}
-	}
-
-	//throw it if it's already lit or we cant light it
-	if (getNet().isServer() && !blob.hasTag("custom throw") && shouldthrow && this.getCarriedBlob() is blob)
-	{
-		DoThrow(this, blob, pos, vector, vel);
-		done = true;
-	}
-
-	return done;
-}
-
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("activate/throw"))
@@ -111,7 +64,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (carried !is null)
 		{
-			if (getNet().isServer() && !carried.hasTag("custom throw"))
+			if (isServer() && !carried.hasTag("custom throw"))
 			{
 				DoThrow(this, carried, pos, vector, vel);
 			}
