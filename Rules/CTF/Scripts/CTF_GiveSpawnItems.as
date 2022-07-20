@@ -63,48 +63,34 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 {
 	if (victim !is null)
 	{
-		SetCTFTimerArcher(this, victim, 0);
+		SetCTFTimer(this, victim, 0, "archer");
 	}
 }
 
-string getCTFTimerPropertyNameBuilder(CPlayer@ p)
+string getCTFTimerPropertyName(CPlayer@ p, string classname)
 {
-	return SPAWN_ITEMS_TIMER_BUILDER + p.getUsername();
+	if (classname == "builder")
+	{
+		return SPAWN_ITEMS_TIMER_BUILDER + p.getUsername();
+	}
+	else
+	{
+		return SPAWN_ITEMS_TIMER_ARCHER + p.getUsername();
+	} 
 }
 
-s32 getCTFTimerBuilder(CRules@ this, CPlayer@ p)
+s32 getCTFTimer(CRules@ this, CPlayer@ p, string classname)
 {
-	string property = getCTFTimerPropertyNameBuilder(p);
+	string property = getCTFTimerPropertyName(p, classname);
 	if (this.exists(property))
 		return this.get_s32(property);
 	else
 		return 0;
 }
 
-void SetCTFTimerBuilder(CRules@ this, CPlayer@ p, s32 time)
+void SetCTFTimer(CRules@ this, CPlayer@ p, s32 time, string classname)
 {
-	string property = getCTFTimerPropertyNameBuilder(p);
-	this.set_s32(property, time);
-	this.SyncToPlayer(property, p);
-}
-
-string getCTFTimerPropertyNameArcher(CPlayer@ p)
-{
-	return SPAWN_ITEMS_TIMER_ARCHER + p.getUsername();
-}
-
-s32 getCTFTimerArcher(CRules@ this, CPlayer@ p)
-{
-	string property = getCTFTimerPropertyNameArcher(p);
-	if (this.exists(property))
-		return this.get_s32(property);
-	else
-		return 0;
-}
-
-void SetCTFTimerArcher(CRules@ this, CPlayer@ p, s32 time)
-{
-	string property = getCTFTimerPropertyNameArcher(p);
+	string property = getCTFTimerPropertyName(p, classname);
 	this.set_s32(property, time);
 	this.SyncToPlayer(property, p);
 }
@@ -118,7 +104,7 @@ void doGiveSpawnMats(CRules@ this, CPlayer@ p, CBlob@ b)
 	
 	if (name == "builder" || this.isWarmup()) 
 	{
-		if (gametime > getCTFTimerBuilder(this, p)) 
+		if (gametime > getCTFTimer(this, p, "builder")) 
 		{
 			int wood_amount = matchtime_wood_amount;
 			int stone_amount = matchtime_stone_amount;
@@ -134,17 +120,17 @@ void doGiveSpawnMats(CRules@ this, CPlayer@ p, CBlob@ b)
 			
 			if (did_give_wood || did_give_stone)
 			{
-				SetCTFTimerBuilder(this, p, gametime + (this.isWarmup() ? materials_wait_warmup : materials_wait)*getTicksASecond());
+				SetCTFTimer(this, p, gametime + (this.isWarmup() ? materials_wait_warmup : materials_wait)*getTicksASecond(), "builder");
 			}
 		}
 	} 
 	else if (name == "archer") 
 	{
-		if (gametime > getCTFTimerArcher(this, p)) 
+		if (gametime > getCTFTimer(this, p, "archer")) 
 		{
 			if (SetMaterials(b, "mat_arrows", 30)) 
 			{
-				SetCTFTimerArcher(this, p, gametime + (this.isWarmup() ? materials_wait_warmup : materials_wait)*getTicksASecond());
+				SetCTFTimer(this, p, gametime + (this.isWarmup() ? materials_wait_warmup : materials_wait)*getTicksASecond(), "archer");
 			}
 		}
 	}
@@ -222,8 +208,8 @@ void Reset(CRules@ this)
 {
 	//restart everyone's timers
 	for (uint i = 0; i < getPlayersCount(); ++i) {
-		SetCTFTimerBuilder(this, getPlayer(i), 0);
-		SetCTFTimerArcher(this, getPlayer(i), 0);
+		SetCTFTimer(this, getPlayer(i), 0, "builder");
+		SetCTFTimer(this, getPlayer(i), 0, "archer");
 	}
 }
 
@@ -314,7 +300,7 @@ void onRender(CRules@ this)
 	GUI::SetFont("menu");
 
 	// Display builder resupply text for everyone
-	string propname = getCTFTimerPropertyNameBuilder(p);
+	string propname = getCTFTimerPropertyName(p, "builder");
 	if (this.exists(propname)) 
 	{
 		Vec2f offset = Vec2f(20, 64);
@@ -324,7 +310,7 @@ void onRender(CRules@ this)
 	}
 	
 	// Display archer resupply text for archers
-	propname = getCTFTimerPropertyNameArcher(p);
+	propname = getCTFTimerPropertyName(p, "archer");
 	if (name == "archer" && this.exists(propname))
 	{
 		Vec2f offset = Vec2f(20, 96);
@@ -339,9 +325,9 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
 	s32 next_add_time = getGameTime() + (this.isWarmup() ? materials_wait_warmup : materials_wait) * getTicksASecond();
 
-	if (next_add_time < getCTFTimerArcher(this, player) || next_add_time < getCTFTimerBuilder(this, player))
+	if (next_add_time < getCTFTimer(this, player, "builder") || next_add_time < getCTFTimer(this, player, "archer"))
 	{
-		SetCTFTimerBuilder(this, player, getGameTime());
-		SetCTFTimerArcher(this, player, getGameTime());
+		SetCTFTimer(this, player, getGameTime(), "builder");
+		SetCTFTimer(this, player, getGameTime(), "archer");
 	}
 }
