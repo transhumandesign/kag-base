@@ -64,8 +64,7 @@ void onInit(CBlob@ this)
 			PickupWheelOption("fishy"),
 			PickupWheelOption("grain"),
 			PickupWheelOption("steak"),
-			PickupWheelOption("egg"),
-			PickupWheelOption("flowers")
+			PickupWheelOption("egg")
 		};
 		menu.add_entry(PickupWheelMenuEntry("Food", "$food$", food_options));
 		menu.add_entry(PickupWheelMenuEntry("Ballista Ammo", "$mat_bolts$", "mat_bolts"));
@@ -94,44 +93,38 @@ void onTick(CBlob@ this)
 		{
 			set_active_wheel_menu(@menu);
 		}
+		
+		GatherPickupBlobs(this);
 
-		if (this.isKeyPressed(key_pickup))
+		CBlob@[]@ pickupBlobs;
+		this.get("pickup blobs", @pickupBlobs);
+
+		CBlob@[] available;
+		FillAvailable(this, available, pickupBlobs);
+
+		for (uint i = 0; i < menu.entries.length; i++)
 		{
-			GatherPickupBlobs(this);
+			PickupWheelMenuEntry@ entry = cast<PickupWheelMenuEntry>(menu.entries[i]);
+			entry.disabled = true;
 
-			CBlob@[]@ pickupBlobs;
-			this.get("pickup blobs", @pickupBlobs);
-
-			CBlob@[] available;
-			FillAvailable(this, available, pickupBlobs);
-
-			for (uint i = 0; i < menu.entries.length; i++)
+			for (uint j = 0; j < available.length; j++)
 			{
-				PickupWheelMenuEntry@ entry = cast<PickupWheelMenuEntry>(menu.entries[i]);
-				entry.disabled = true;
-
-				for (uint j = 0; j < available.length; j++)
+				string bname = available[j].getName();
+				for (uint k = 0; k < entry.options.length; k++)
 				{
-					string bname = available[j].getName();
-					for (uint k = 0; k < entry.options.length; k++)
+					if (entry.options[k].name == bname)
 					{
-						if (entry.options[k].name == bname)
-						{
-							entry.disabled = false;
-							break;
-						}
-					}
-
-					if (!entry.disabled)
-					{
+						entry.disabled = false;
 						break;
 					}
 				}
 
+				if (!entry.disabled)
+				{
+					break;
+				}
 			}
-
 		}
-
 	}
 	else if (this.isKeyJustPressed(key_pickup))
 	{
@@ -224,9 +217,7 @@ void onTick(CBlob@ this)
 						@closest = @GetBetterAlternativePickupBlobs(blobsInRadius, closest);
 						server_Pickup(this, this, closest);
 					}
-
 				}
-
 			}
 
 			return;
@@ -590,6 +581,8 @@ CBlob@ getClosestBlob(CBlob@ this)
 
 bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 {
+	if (!blob.canBePickedUp(this)) return false;
+
 	float maxDist = Maths::Max(this.getRadius() + blob.getRadius() + 20.0f, 36.0f);
 
 	Vec2f pos = this.getPosition() + Vec2f(0.0f, -this.getRadius() * 0.9f);
