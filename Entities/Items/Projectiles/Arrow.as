@@ -539,7 +539,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 		//stick into "map" blobs
 		if (hitBlob.getShape().isStatic())
 		{
-			ArrowHitMap(this, worldPoint, velocity, damage, Hitters::arrow, hitBlob);
+			ArrowHitMap(this, worldPoint, velocity, damage, Hitters::arrow);
 		}
 		//die otherwise
 		else
