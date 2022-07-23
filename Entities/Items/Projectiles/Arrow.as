@@ -338,8 +338,10 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 		return true;
 	}
 
-	//definitely collide with non-team blobs
-	bool check = this.getTeamNum() != blob.getTeamNum() || blob.getName() == "bridge";
+	bool check =	this.getTeamNum() != blob.getTeamNum() || // collide with enemy blobs
+					blob.getName() == "bridge" ||
+					(blob.getName() == "keg" && !blob.isAttached() && this.hasTag("fire source")); // fire arrows collide with team kegs that arent held
+
 	//maybe collide with team structures
 	if (!check)
 	{
@@ -489,6 +491,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 
 		// check if shielded
 		const bool hitShield = (hitBlob.hasTag("shielded") && blockAttack(hitBlob, velocity, 0.0f));
+		const bool hitKeg = (hitBlob.getName() == "keg");
 
 		// play sound
 		if (!hitShield)
@@ -529,6 +532,10 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 				// don't set anything on fire if we hit a shield
 				this.Tag("no_fire");
 				this.server_Die();
+			}
+			else if (hitKeg)
+			{
+				this.server_Die(); // so that it doesn't bounce off
 			}
 			else
 			{
