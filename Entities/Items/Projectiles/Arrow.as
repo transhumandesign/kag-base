@@ -543,24 +543,22 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 				this.set_Vec2f("override fire pos", hitBlob.getPosition());
 			}
 		}
+		
+		//stick into "map" blobs
+		if (hitBlob.getShape().isStatic())
+		{
+			ArrowHitMap(this, worldPoint, velocity, damage, Hitters::arrow);
+		}
+		//die otherwise
 		else
 		{
-			//stick into "map" blobs
-			if (hitBlob.getShape().isStatic())
+			//add arrow layer
+			CSprite@ sprite = hitBlob.getSprite();
+			if (sprite !is null && !hitShield && arrowType != ArrowType::bomb && isClient() && !v_fastrender)
 			{
-				ArrowHitMap(this, worldPoint, velocity, damage, Hitters::arrow);
+				AddArrowLayer(this, hitBlob, sprite, worldPoint, velocity);
 			}
-			//die otherwise
-			else
-			{
-				//add arrow layer
-				CSprite@ sprite = hitBlob.getSprite();
-				if (sprite !is null && !hitShield && arrowType != ArrowType::bomb && isClient() && !v_fastrender)
-				{
-					AddArrowLayer(this, hitBlob, sprite, worldPoint, velocity);
-				}
-				this.server_Die();
-			}
+			this.server_Die();
 		}
 	}
 
