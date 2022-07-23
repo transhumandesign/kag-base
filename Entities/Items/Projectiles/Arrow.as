@@ -46,15 +46,18 @@ void onInit(CBlob@ this)
 
 	const u8 arrowType = this.get_u8("arrow type");
 
-	if (arrowType == ArrowType::bomb)			 // bomb arrow
+	if (arrowType == ArrowType::bomb)
 	{
 		SetupBomb(this, bomb_fuse, 48.0f, 1.5f, 24.0f, 0.5f, true);
 		this.set_u8("custom_hitter", Hitters::bomb_arrow);
 	}
-
-	if (arrowType == ArrowType::water)
+	else if (arrowType == ArrowType::water)
 	{
 		this.Tag("splash ray cast");
+	}
+	else if (arrowType == ArrowType::fire)
+	{
+		this.Tag("fire source");
 	}
 
 	CSprite@ sprite = this.getSprite();
@@ -195,7 +198,6 @@ void onTick(CBlob@ this)
 		if (gametime % 6 == 0)
 		{
 			this.getSprite().SetAnimation("fire");
-			this.Tag("fire source");
 
 			Vec2f offset = Vec2f(this.getWidth(), 0.0f);
 			offset.RotateBy(-angle);
