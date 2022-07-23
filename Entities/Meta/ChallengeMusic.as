@@ -136,7 +136,7 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 
 			if (mixer.isPlaying(world_ambient) 
 				|| mixer.isPlaying(world_ambient_underground) 
-				|| mixer.isPlaying(world_ambient_mountain
+				|| mixer.isPlaying(world_ambient_mountain)
 				|| mixer.isPlaying(world_ambient_night))
 			{
 				mixer.FadeOutAll(0.0f, 0.01f);
