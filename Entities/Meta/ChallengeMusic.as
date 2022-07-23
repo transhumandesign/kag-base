@@ -97,7 +97,7 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 		if (timer % 48 != 0)
 			return;
 
-		bool isNight = map.getDayTime() > 0.75f;
+		bool isNight = map.getDayTime() > 0.85f && map.getDayTime() < 0.1f;
 		bool isUnderground = map.rayCastSolid(pos, Vec2f(pos.x, pos.y - 60.0f));
 		if (isUnderground)
 		{
