@@ -1,6 +1,7 @@
 //Rock logic
 
 #include "/Entities/Common/Attacks/Hitters.as";
+#include "MakeDustParticle.as"
 
 // defines amount of damage as well as maximum separate hits
 // - in terms of this's health. see config
@@ -46,9 +47,12 @@ void onTick(CBlob@ this)
 	{
 		Vec2f pos = this.getPosition();
 
-		if (isClient && (getGameTime() + this.getNetworkID() * 31) % 19 == 0)
+		if (isClient && (getGameTime() + this.getNetworkID() * 31) % 7 == 0)
 		{
-			MakeDustParticle(pos, "Smoke.png");
+			MakeRockDustParticle(
+				pos,
+				"Smoke.png",
+				this.getOldVelocity() * 0.06 + Vec2f(0.0, 0.2));
 		}
 
 		CMap@ map = this.getMap();
@@ -63,6 +67,9 @@ void onTick(CBlob@ this)
 					return;
 				}
 				map.server_DestroyTile(pos, 2.0f, this);
+
+				// slightly damage the rock too
+				this.server_Hit(this, this.getPosition(), this.getVelocity(), 0.05f, Hitters::cata_stones, true);
 			}
 		}
 		else if (map.isTileSolid(tile))
@@ -83,9 +90,9 @@ void onTick(CBlob@ this)
 	}
 }
 
-void MakeDustParticle(Vec2f pos, string file)
+void MakeRockDustParticle(Vec2f pos, string file, Vec2f vel=Vec2f(0.0, 0.0))
 {
-	CParticle@ temp = ParticleAnimated(CFileMatcher(file).getFirst(), pos, Vec2f(0, 0), 0.0f, 1.0f, 3, 0.0f, false);
+	CParticle@ temp = ParticleAnimated(CFileMatcher(file).getFirst(), pos, vel, 0.0f, 1.0f, 3, 0.0f, false);
 
 	if (temp !is null)
 	{
@@ -123,28 +130,99 @@ bool CollidesWithPlatform(CBlob@ this, CBlob@ blob, Vec2f velocity)
 	return !(velocity_angle > -90.0f && velocity_angle < 90.0f);
 }
 
-void HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
+float HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
 {
 	TileType t = map.getTile(tilepos).type;
+
+	// another rock may have hit this tile on the same tick...
+	if (t == 0)
+	{
+		return 0.0;
+	}
 
 	if (map.isTileCastle(t) || map.isTileWood(t))
 	{
 		if (map.getSectorAtPosition(tilepos, "no build") is null)
 		{
-			map.server_DestroyTile(tilepos, ricochet ? 2.0f : 10.0f, this);
+			// make particles
+			if (isClient())
+			{
+				if (map.isTileWood(t))
+				{
+					// throw wood particles on the back of where the projectile hit
+					for (int i = 0; i < 2; ++i)
+					{
+						makeGibParticle(
+							"/GenericGibs",
+							this.getPosition(),
+							getRandomVelocity(this.getOldVelocity().getAngle(), XORRandom(2.0f) + 4.0f, 30.0f),
+							1,
+							4 + XORRandom(4),
+							Vec2f(8, 8),
+							2.0f,
+							0,
+							"",
+							0
+						);
+					}
+				}
+				else
+				{
+					// show some stone dust particles where the catapult hit
+					MakeRockDustParticle(this.getPosition() - (this.getOldVelocity() * 3.0), "Smoke.png");
+				}
+			}
+
+			const float dmg = map.isTileCastle(t) ? 0.5f : 1.0f;
+
+			map.server_DestroyTile(tilepos, dmg, this);
+			return 0.4f; // ~3 hits before the rock dies
 		}
 	}
+
+	if (isClient())
+	{
+		if (XORRandom(3) == 0)
+		{
+			MakeDustParticle(this.getPosition(), "/dust2");
+		}
+		
+		u32 gametime = getGameTime();
+		if (getNet().isClient() && (gametime) > g_lastplayedsound + 2)
+		{
+			g_lastplayedsound = gametime;
+			Sound::Play("/thud", this.getPosition(), 0.2f * Maths::Min(Maths::Max(0.5f, this.getOldVelocity().Length()), 1.5f));
+		}
+	}
+
+	return 0.5f;
 }
 
 void onDie(CBlob@ this)
 {
-	this.getSprite().Gib();
-
-	u32 gametime = getGameTime();
-	if (getNet().isClient() && (gametime) > g_lastplayedsound + 3)
+	if (isClient())
 	{
-		g_lastplayedsound = gametime;
-		Sound::Play("/rock_hit", this.getPosition(), Maths::Min(Maths::Max(0.5f, this.getOldVelocity().Length()), 1.5f));
+		// make gib particles that aren't the cata particles
+		// we want to differentiate a particule from a ricochetting rock visually
+		makeGibParticle(
+			"rocks.png", // not CataRocks.png
+			this.getPosition(),
+			getRandomVelocity(-this.getOldVelocity().getAngle(), XORRandom(4.0f) + 2.0f, 10.0f),
+			1,
+			XORRandom(4), // any of the smaller frames
+			Vec2f(8, 8),
+			7.0f,
+			0,
+			"",
+			0
+		);
+
+		u32 gametime = getGameTime();
+		if (gametime > g_lastplayedsound + 2)
+		{
+			g_lastplayedsound = gametime;
+			Sound::Play("/rock_hit", this.getPosition(), Maths::Min(Maths::Max(0.5f, this.getOldVelocity().Length()), 1.5f));
+		}
 	}
 }
 
@@ -175,9 +253,11 @@ void Pierce(CBlob @this)
 
 	u32 gametime = getGameTime();
 
-	bool hit = false;
-	bool ricochet = (gametime + this.getNetworkID() * 17) % 3 == 0;
+	const float damageBudget = this.getHealth();
+	float damageDealt = 0.0f;
 
+	bool ricochet = false;
+	
 	if (map.getHitInfosFromArc(oldpos, -angle, 0, displen, this, true, @hitInfos))
 	{
 		for (uint i = 0; i < hitInfos.length; i++)
@@ -191,53 +271,55 @@ void Pierce(CBlob @this)
 
 				if (canHitBlob(this, hi.blob))
 				{
-					hit = true;
-					this.server_Hit(hi.blob, hi.hitpos, initVelocity, ROCK_DAMAGE, Hitters::cata_stones, true);
+					const float oldTargetHealth = hi.blob.getHealth();
+					this.server_Hit(hi.blob, hi.hitpos, initVelocity, Maths::Min(ROCK_DAMAGE, damageBudget), Hitters::cata_stones, true);
+					const float newTargetHealth = hi.blob.getHealth();
+
+					if (newTargetHealth < oldTargetHealth)
+					{
+						damageDealt += (oldTargetHealth - newTargetHealth);
+					}
 				}
 			}
 			else //map
 			{
-				hit = true;
-
 				Vec2f tilepos = hi.hitpos + velDir;
-				HitMap(this, map, tilepos, true);
-				ricochet = true;
 
-				this.setPosition(hi.hitpos - velDir * 0.4f);
+				damageDealt += HitMap(this, map, tilepos, true);
+				
+				// bounce only if we didn't fully break the block 
+				ricochet = map.getTile(tilepos).type != 0;
+
+				if (ricochet)
+				{
+					this.setPosition(this.getOldPosition());
+				}
+
+				if (damageDealt > 0.0f)
+				{
+					this.setPosition(hi.hitpos - velDir * 0.4f);
+				}
 			}
 
-			if (hit)
+			if (damageDealt > 0.0f)
 			{
 				break;
 			}
 		}
 	}
 
-	if (!hit)
-	{
-		TileType t = map.getTile(pos).type;
-		if (map.isTileSolid(t))
-		{
-			hit = true;
-			HitMap(this, map, pos, false);
-		}
-	}
-
-	if (hit)
+	if (damageDealt > 0.0f)
 	{
 		if (getNet().isServer())
 		{
 			uint seed = (getGameTime() * (this.getNetworkID() * 997 + 1337));
 			Random@ r = Random(seed);
 
+			this.server_Hit(this, pos, initVelocity, damageDealt, Hitters::cata_stones, true);
+
 			if (ricochet)
 			{
-				this.server_Hit(this, pos, initVelocity, ROCK_DAMAGE, Hitters::cata_stones, true);
 				this.setVelocity(Vec2f(r.NextFloat() - 0.5f, r.NextFloat() - 0.5f) * vellen * 1.5f + initVelocity * 0.25f);
-			}
-			else
-			{
-				this.server_Die();
 			}
 		}
 	}
