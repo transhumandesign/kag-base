@@ -939,7 +939,7 @@ void onRender(CSprite@ this)
 		int top = pos2d.y + zoom * blob.getHeight() + 160.0f;
 		const uint margin = 7;
 		Vec2f dim;
-		string label = "Level 10000";
+		string label = getTranslatedString("Level {LEVEL}").replace("{LEVEL}", "" + 10000);
 		GUI::SetFont("menu");
 		GUI::GetTextDimensions(label , dim);
 		dim.x += 2.0f * margin;
@@ -965,7 +965,7 @@ void onRender(CSprite@ this)
 		{
 			for (uint i = 0; i < 3; i++)
 			{
-				label = "Level " + (i + 1);
+				label = getTranslatedString("Level {LEVEL}").replace("{LEVEL}", "" + (i + 1));
 				Vec2f upperleft(pos2d.x - dim.x / 2 + leftX, top - 2 * dim.y);
 				Vec2f lowerright(pos2d.x + dim.x / 2 + leftX, top - dim.y);
 				bool isNextLevel = (i == level + 1);

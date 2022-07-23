@@ -426,7 +426,7 @@ void onTick(CBlob@ this)
 		}
 	}
 
-	if (!swordState && getNet().isServer())
+	if (!swordState)
 	{
 		knight_clear_actor_limits(this);
 	}
@@ -1074,6 +1074,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("get bomb"))
 	{
+		if (this.getCarriedBlob() !is null)
+			return;
+
 		const u8 bombType = params.read_u8();
 		if (bombType >= bombTypeNames.length)
 			return;
@@ -1132,15 +1135,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			count++;
 			if (type >= bombTypeNames.length)
 				type = 0;
-			if (this.getBlobCount(bombTypeNames[type]) > 0)
+			if (hasBombs(this, type))
 			{
-				this.set_u8("bomb type", type);
-				if (this.isMyPlayer())
-				{
-					Sound::Play("/CycleInventory.ogg");
-				}
+				CycleToBombType(this, type);
 				break;
 			}
+		}
+	}
+	else if (cmd == this.getCommandID("switch"))
+	{
+		u8 type;
+		if (params.saferead_u8(type) && hasBombs(this, type))
+		{
+			CycleToBombType(this, type);
 		}
 	}
 	else if (cmd == this.getCommandID("activate/throw"))
@@ -1157,6 +1164,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				break;
 			}
 		}
+	}
+}
+
+void CycleToBombType(CBlob@ this, u8 bombType)
+{
+	this.set_u8("bomb type", bombType);
+	if (this.isMyPlayer())
+	{
+		Sound::Play("/CycleInventory.ogg");
 	}
 }
 
@@ -1275,6 +1291,7 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 				{
 					bool ground = map.isTileGround(hi.tile);
 					bool dirt_stone = map.isTileStone(hi.tile);
+					bool dirt_thick_stone = map.isTileThickStone(hi.tile);
 					bool gold = map.isTileGold(hi.tile);
 					bool wood = map.isTileWood(hi.tile);
 					if (ground || wood || dirt_stone || gold)
@@ -1324,15 +1341,30 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 									// Note: 0.1f damage doesn't harvest anything I guess
 									// This puts it in inventory - include MaterialCommon
 									//Material::fromTile(this, hi.tile, 1.f);
-
 									CBlob@ ore = server_CreateBlobNoInit("mat_gold");
 									if (ore !is null)
 									{
 										ore.Tag('custom quantity');
-	     								ore.Init();
-	     								ore.setPosition(hi.hitpos);
-	     								ore.server_SetQuantity(4);
-	     							}
+										ore.Init();
+										ore.setPosition(hi.hitpos);
+										ore.server_SetQuantity(4);
+									}
+								}
+								else if (dirt_stone)
+								{
+									int quantity = 4;
+									if(dirt_thick_stone)
+									{
+										quantity = 6;
+									}
+									CBlob@ ore = server_CreateBlobNoInit("mat_stone");
+									if (ore !is null)
+									{
+										ore.Tag('custom quantity');
+										ore.Init();
+										ore.setPosition(hi.hitpos);
+										ore.server_SetQuantity(quantity);
+									}
 								}
 							}
 						}
@@ -1378,8 +1410,9 @@ bool isSliding(KnightInfo@ knight)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	//return if we didn't collide or if it's teamie
-	if (blob is null || !solid || this.getTeamNum() == blob.getTeamNum())
+	// return if we collided with map, solid (door/platform), or something non-fleshy (like a boulder)
+	// allow shieldbashing enemy bombs so knights can "deflect" them
+	if (blob is null || !solid || (!blob.hasTag("flesh") && blob.getName() != "bomb") || this.getTeamNum() == blob.getTeamNum())
 	{
 		return;
 	}
@@ -1401,6 +1434,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		{
 			Vec2f pos = this.getPosition();
 			Vec2f vel = this.getOldVelocity();
+			f32 vellen = vel.getLength();
 			vel.Normalize();
 
 			//printf("nor " + vel * normal );
@@ -1410,12 +1444,29 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				//printf("shi " + shieldVars.direction * normal );
 				if (shieldVars.direction * normal < 0.0f)
 				{
+					//print("" + vellen);
 					knight_add_actor_limit(this, blob);
 					this.server_Hit(blob, pos, vel, 0.0f, Hitters::shield);
 
 					Vec2f force = Vec2f(shieldVars.direction.x * this.getMass(), -this.getMass()) * 3.0f;
 
+					// scale knockback with knight's velocity
+
+					vellen = Maths::Min(vellen, 8.0f); // cap on velocity so enemies don't get launched too much
+
+					if (vellen < 3.5f)
+					{
+						// roughly the same weak knockback at low velocity
+						force *= Maths::Pow(vellen, 1.0f / 3.0f) / 2;
+					}
+					else
+					{
+						// scale linearly at higher velocity
+						force *= (vellen - 3.5f) / 6 + 0.759f;
+					}
+
 					blob.AddForce(force);
+					force *= 0.5f;
 					this.AddForce(Vec2f(-force.x, force.y));
 				}
 			}
@@ -1551,7 +1602,7 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 
 			if (button !is null)
 			{
-				bool enabled = this.getBlobCount(bombTypeNames[i]) > 0;
+				bool enabled = hasBombs(this, i);
 				button.SetEnabled(enabled);
 				button.selectOneOnClick = true;
 				if (weaponSel == i)
@@ -1620,13 +1671,14 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 void SetFirstAvailableBomb(CBlob@ this)
 {
 	u8 type = 255;
+	u8 nowType = 255;
 	if (this.exists("bomb type"))
-		type = this.get_u8("bomb type");
+		nowType = this.get_u8("bomb type");
 
 	CInventory@ inv = this.getInventory();
 
-	bool typeReal = (uint(type) < bombTypeNames.length);
-	if (typeReal && inv.getItem(bombTypeNames[type]) !is null)
+	bool typeReal = (uint(nowType) < bombTypeNames.length);
+	if (typeReal && inv.getItem(bombTypeNames[nowType]) !is null)
 		return;
 
 	for (int i = 0; i < inv.getItemsCount(); i++)
@@ -1673,4 +1725,23 @@ bool canHit(CBlob@ this, CBlob@ b)
 
 	return b.getTeamNum() != this.getTeamNum();
 
+}
+
+void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
+{
+	CheckSelectedBombRemovedFromInventory(this, blob);
+}
+
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+{
+	CheckSelectedBombRemovedFromInventory(this, detached);
+}
+
+void CheckSelectedBombRemovedFromInventory(CBlob@ this, CBlob@ blob)
+{
+	string name = blob.getName();
+	if (bombTypeNames.find(name) > -1 && this.getBlobCount(name) == 0)
+	{
+		SetFirstAvailableBomb(this);
+	}
 }

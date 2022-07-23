@@ -1,4 +1,4 @@
-//not server only so the client also gets the game event setup stuff
+#define SERVER_ONLY
 
 #include "GameplayEvents.as"
 #include "AssistCommon.as"
@@ -6,6 +6,7 @@
 const int coinsOnDamageAdd = 5;
 const int coinsOnAssistAdd = 7;
 const int coinsOnKillAdd = 10;
+const f32 killstreakFactor = 1.2f;
 
 const int coinsOnDeathLosePercent = 20;
 const int coinsOnTKLose = 50;
@@ -53,9 +54,6 @@ void GiveRestartCoinsIfNeeded(CPlayer@ player)
 //extra coins on start to prevent stagnant round start
 void Reset(CRules@ this)
 {
-	if (!getNet().isServer())
-		return;
-
 	names.clear();
 
 	uint count = getPlayerCount();
@@ -80,9 +78,6 @@ void onInit(CRules@ this)
 //also given when plugging player -> on first spawn
 void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 {
-	if (!getNet().isServer())
-		return;
-
 	if (player !is null)
 	{
 		GiveRestartCoinsIfNeeded(player);
@@ -94,16 +89,13 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 {
-	if (!getNet().isServer())
-		return;
-
 	if (victim !is null)
 	{
 		if (killer !is null)
 		{
 			if (killer !is victim && killer.getTeamNum() != victim.getTeamNum())
 			{
-				killer.server_setCoins(killer.getCoins() + coinsOnKillAdd);
+				killer.server_setCoins(killer.getCoins() + coinsOnKillAdd * Maths::Pow(killstreakFactor, killer.get_u8("killstreak")));
 			}
 			else if (killer !is victim && killer.getTeamNum() == victim.getTeamNum())
 			{
@@ -134,9 +126,6 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 
 f32 onPlayerTakeDamage(CRules@ this, CPlayer@ victim, CPlayer@ attacker, f32 DamageScale)
 {
-	if (!getNet().isServer())
-		return DamageScale;
-
 	if (attacker !is null && attacker !is victim && attacker.getTeamNum() != victim.getTeamNum())
 	{
         CBlob@ v = victim.getBlob();
@@ -155,10 +144,6 @@ f32 onPlayerTakeDamage(CRules@ this, CPlayer@ victim, CPlayer@ attacker, f32 Dam
 // coins for various game events
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
-	//only important on server
-	if (!getNet().isServer())
-		return;
-
 	if (cmd == getGameplayEventID(this))
 	{
 		GameplayEvent g(params);

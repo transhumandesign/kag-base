@@ -573,7 +573,7 @@ shared class CTFCore : RulesCore
 					CPlayer@ player = players[i].getPlayer();
 					if (player !is null && players[i].getTeamNum() == winteamIndex)
 					{
-						player.server_setCoins(player.getCoins() + 10);
+						player.server_setCoins(player.getCoins() + 150);
 					}
 				}
 			}
@@ -696,6 +696,24 @@ void onInit(CRules@ this)
 {
 	Reset(this);
 	this.set_s32("restart_rules_after_game_time", 30 * 30);
+}
+
+void onStateChange(CRules@ this, const u8 oldState)
+{
+	// we have to do it like this because warmup state is broken and not synced properly clientside
+	if(isServer())
+	{
+		if (this.getCurrentState() == WARMUP)
+		{
+			this.Tag("faster building");
+			this.Sync("faster building", true);
+		}
+		else
+		{
+			this.Untag("faster building");
+			this.Sync("faster building", true);
+		}
+	}
 }
 
 // had to add it here for tutorial cause something didnt work in the tutorial script

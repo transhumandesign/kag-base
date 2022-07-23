@@ -29,22 +29,13 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 	bool hasReqs = hasRequirements(inv, bc.reqs, missing);
 	bool passesChecks = serverTileCheck(this, index, cursorPos);
 
-	if (!validTile)
-		warn(name + " tried to place an invalid tile");
-
-	if (!hasReqs)
-		warn(name + " tried to place a tile without having correct resoruces");
-
-	if (!passesChecks)
-		warn(name + " tried to place tile in an invalid way");
-
 	if (validTile && hasReqs && passesChecks)
 	{
 		DestroyScenary(cursorPos, cursorPos);
 		server_TakeRequirements(inv, bc.reqs);
 		getMap().server_SetTile(cursorPos, bc.tile);
 
-		u32 delay = this.get_u32("build delay");
+		u32 delay = getCurrentBuildDelay(this);
 		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
 
 		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), bc.tile));
@@ -86,6 +77,19 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 
 		if (map.getSectorAtPosition(pos, "no build") !is null)
 			return false;
+	}
+
+	BuildBlock @blockToPlace = getBlockByIndex(blob, tileIndex);
+	// Are we trying to place a tile on the same tile (usually due to lag)?
+	if (backtile.type == blockToPlace.tile)
+	{
+		return false;
+	}
+
+	// Are we trying to place a solid tile on a door/ladder/platform/bridge (usually due to lag)?
+	if (fakeHasTileSolidBlobs(cursorPos) && map.isTileSolid(blockToPlace.tile))
+	{
+		return false;
 	}
 
 	return true;
@@ -174,7 +178,7 @@ void onTick(CBlob@ this)
 				params.write_u8(blockIndex);
 				params.write_Vec2f(bc.tileAimPos);
 				this.SendCommand(this.getCommandID("placeBlock"), params);
-				u32 delay = this.get_u32("build delay");
+				u32 delay = getCurrentBuildDelay(this);
 				SetBuildDelay(this, block.tile < 255 ? delay : delay / 3);
 				bc.blockActive = false;
 			}

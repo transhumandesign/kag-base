@@ -66,6 +66,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 			(blob.hasTag("player") || blob.hasTag("vehicle") || blob.hasTag("migrant")))
 		{
 			OpenDoor(this, blob);
+			break;
 		}
 	}
 }
@@ -117,6 +118,7 @@ void onTick(CBlob@ this)
 		if (canOpenDoor(this, blob) && !isOpen(this))
 		{
 			OpenDoor(this, blob);
+			break;
 		}
 	}
 	// close it
@@ -185,6 +187,11 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	if (customData == Hitters::bomb)
 		damage *= 1.3f;
 
+	return damage;
+}
+
+void onHealthChange(CBlob@ this, f32 oldHealth)
+{
 	CSprite @sprite = this.getSprite();
 
 	if (sprite !is null)
@@ -195,9 +202,11 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 		if (destruction_anim !is null)
 		{
-			if ((this.getHealth() - damage) < this.getInitialHealth())
+			f32 newHealth = this.getHealth();
+
+			if (newHealth < this.getInitialHealth())
 			{
-				f32 ratio = (this.getHealth() - damage * getRules().attackdamage_modifier) / this.getInitialHealth();
+				f32 ratio = newHealth / this.getInitialHealth();
 
 				if (ratio <= 0.0f)
 				{
@@ -214,15 +223,13 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 		Animation @close_anim = sprite.getAnimation("close");
 		u8 lastframe = close_anim.getFrame(close_anim.getFramesCount() - 1);
-		if (lastframe < frame)
+		if (lastframe < frame) // if our current final frame is less damaged than our door actually is
 		{
-			close_anim.AddFrame(frame);
+			close_anim.RemoveFrame(lastframe);
+			close_anim.AddFrame(frame); // replace the final frame by a more damaged one
 		}
 	}
-
-	return damage;
 }
-
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {

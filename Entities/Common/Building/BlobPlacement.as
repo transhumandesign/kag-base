@@ -16,7 +16,7 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 		if (!serverBlobCheck(this, blob, cursorPos))
 			return;
 
-		u32 delay = this.get_u32("build delay");
+		u32 delay = getCurrentBuildDelay(this);
 		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
 
 		CShape@ shape = blob.getShape();
@@ -58,7 +58,7 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 	CMap@ map = getMap();
 	Tile backtile = map.getTile(cursorPos);
 
-	if (map.isTileBedrock(backtile.type) || map.isTileSolid(backtile.type) && map.isTileGroundStuff(backtile.type)) 
+	if (map.isTileBedrock(backtile.type) || map.isTileSolid(backtile.type))
 		return false;
 
 	// Make sure we actually have support at our cursor pos
@@ -78,6 +78,11 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 			return false;
 	}
 
+	// Are we trying to place a blob on a door/ladder/platform/bridge (usually due to lag)?
+	if (fakeHasTileSolidBlobs(cursorPos, blobToPlace.getName() == "ladder"))
+	{
+		return false;
+	}
 
 	return true;
 } 
@@ -183,7 +188,9 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.getControls() is null || this.isInInventory())
+	CControls@ controls = this.getControls();
+
+	if (controls is null || this.isInInventory())
 	{
 		return;
 	}
@@ -343,7 +350,7 @@ void onTick(CBlob@ this)
 					params.write_u16(carryBlob.getNetworkID());
 					params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
 					this.SendCommand(this.getCommandID("placeBlob"), params);
-					u32 delay = 2 * this.get_u32("build delay");
+					u32 delay = 2 * getCurrentBuildDelay(this);
 					SetBuildDelay(this, delay);
 					bc.blobActive = false;
 				}
@@ -355,8 +362,10 @@ void onTick(CBlob@ this)
 
 			if (this.isKeyJustPressed(key_action3))
 			{
+				s8 rotateDir = controls.ActionKeyPressed(AK_BUILD_MODIFIER) ? -1 : 1;
+
 				CBitStream params;
-				params.write_u16((this.get_u16("build_angle") + 90) % 360);
+				params.write_u16((360 + this.get_u16("build_angle") + 90 * rotateDir) % 360);
 				this.SendCommand(this.getCommandID("rotateBlob"), params);
 			}
 		}

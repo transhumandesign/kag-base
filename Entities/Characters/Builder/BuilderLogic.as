@@ -142,26 +142,45 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 
 	if (blobID == 0)
 	{
+		// block
 		CMap@ map = getMap();
 		if (map !is null)
 		{
-			if (map.getSectorAtPosition(tilepos, "no build") is null)
+			uint16 type = map.getTile(tilepos).type;
+			if (!inNoBuildZone(map, tilepos, type))
 			{
-				uint16 type = map.getTile(tilepos).type;
+				CBlob@[] blobs_here;
+				map.getBlobsAtPosition(tilepos + Vec2f(1, 1), blobs_here);
 
-				if (getNet().isServer())
+				bool no_dmg = false;
+
+				// dont dmg backwall if it's behind a blob-block
+				// hack: fixes the issue where with specific timing you can damage backwall behind blob-blocks right after placing it
+				for(int i=0; i < blobs_here.size(); ++i)
 				{
-					map.server_DestroyTile(tilepos, 1.0f, this);
-
-					Material::fromTile(this, type, 1.0f);
+					CBlob@ current_blob = blobs_here[i];
+					if (current_blob !is null && (current_blob.hasTag("door") || current_blob.getName() == "bridge" || current_blob.getName() == "wooden_platform"))
+					{
+						no_dmg = true;
+					}
 				}
 
-				if (getNet().isClient())
+				if (!no_dmg)
 				{
-					if (map.isTileBedrock(type))
+					if (getNet().isServer())
 					{
-						this.getSprite().PlaySound("/metal_stone.ogg");
-						sparks(tilepos, attackVel.Angle(), 1.0f);
+						map.server_DestroyTile(tilepos, 1.0f, this);
+
+						Material::fromTile(this, type, 1.0f);
+					}
+
+					if (getNet().isClient())
+					{
+						if (map.isTileBedrock(type))
+						{
+							this.getSprite().PlaySound("/metal_stone.ogg");
+							sparks(tilepos, attackVel.Angle(), 1.0f);
+						}
 					}
 				}
 			}
@@ -169,6 +188,7 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 	}
 	else
 	{
+		// blob
 		CBlob@ blob = getBlobByNetworkID(blobID);
 		if (blob !is null)
 		{
@@ -341,7 +361,8 @@ void Pickaxe(CBlob@ this)
 	@bestinfo = hit_p.bestinfo;
 	bestDistance = hit_p.bestDistance;
 
-	bool noBuildZone = map.getSectorAtPosition(tilepos, "no build") !is null;
+	Tile tile = map.getTile(tilepos);
+	bool noBuildZone = inNoBuildZone(map, tilepos, tile.type);
 	bool isgrass = false;
 
 	if ((tilepos - aimPos).Length() < bestDistance - 4.0f && map.getBlobAtPosition(tilepos) is null)
@@ -511,7 +532,7 @@ bool canHit(CBlob@ this, CBlob@ b, Vec2f tpos, bool extra = true)
 		if (BuilderAlwaysHit(b) || b.hasTag("dead") || b.hasTag("vehicle"))
 			return true;
 
-		if (b.getName() == "saw" || b.getName() == "trampoline")
+		if (b.getName() == "saw" || b.getName() == "trampoline" || b.getName() == "crate")
 			return true;
 
 		return false;

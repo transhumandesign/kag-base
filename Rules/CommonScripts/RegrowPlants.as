@@ -97,7 +97,7 @@ class TileInfo
 			luck += 0.15f;
 		}
 
-		if (map.isTileGrass(tile_left.type))
+		if (map.isTileGrass(tile_right.type))
 		{
 			luck += 0.15f;
 		}
@@ -175,6 +175,7 @@ void onInit(CRules@ this)
 
 void onRestart(CRules@ this)
 {
+	next_check_time = min_random_time;
 	// refill TileInfo arrays with info for the newly loaded map
 	dirt_tiles.clear();
 	castle_tiles.clear();

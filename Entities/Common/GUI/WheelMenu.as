@@ -1,3 +1,5 @@
+#define CLIENT_ONLY
+
 #include "WheelMenuCommon.as"
 
 void onInit(CRules@ rules)

@@ -7,29 +7,37 @@
 //      bullet will be null on client! always check for null
 // bool Vehicle_canFire( CBlob@ this, bool isActionPressed, bool wasActionPressed, u8 &out chargeValue )
 
+class AmmoInfo
+{
+	u8 loaded_ammo;
+	string fire_sound;
+	string empty_sound;
+	bool blob_ammo;
+	string ammo_name;
+	string ammo_inventory_name;
+	string bullet_name;
+	bool infinite_ammo;
+	u16 fire_delay;
+	u8 fire_amount;
+	u8 fire_cost_per_amount;
+	u8 fire_style;
+	u16 ammo_stocked;
+	u16 max_charge_time;
+}
 
 class VehicleInfo
 {
 	s32 fire_time;
 	bool firing;
-	u8 loaded_ammo;
-	string fire_sound;
-	string empty_sound;
-	string bullet_sound;
-	bool blob_ammo;
-	string ammo_name;
-	string bullet_name;
-	u16 fire_delay;
-	u8 fire_amount;
-	u8 fire_cost_per_amount;
+	AmmoInfo[] ammo_types;
+	u8 current_ammo_index;
+	u8 last_fired_index;
 	Vec2f fire_pos;
 	f32 move_speed;
 	f32 turn_speed;
 	Vec2f out_vel;
 	bool inventoryAccess;
-	u16 ammo_stocked;
 	Vec2f mag_offset;
-	u8 fire_style;
 	f32 wep_angle;
 	f32 fly_speed;
 	f32 fly_amount;
@@ -40,15 +48,17 @@ class VehicleInfo
 	string water_sound;
 	f32 water_volume;
 	f32 water_pitch;
-	bool infinite_ammo;
 	u8 wheels_angle;
 	u32 pack_secs;
 	u32 pack_time;
 	u16 charge;
 	u16 last_charge;
-	u16 max_charge_time;
 	u16 cooldown_time;
-	u16 max_cooldown_time;
+
+	AmmoInfo@ getCurrentAmmo()
+	{
+		return ammo_types[current_ammo_index];
+	}
 };
 
 
@@ -69,32 +79,29 @@ void Vehicle_Setup(CBlob@ this,
 
 	v.fire_time = 0;
 	v.firing = false;
-	v.loaded_ammo = 0;
-	v.fire_sound = 0;
-	v.blob_ammo = false;
-	v.ammo_name = "";
-	v.fire_delay = 0;
-	v.fire_amount = 0;
 	v.fire_pos = Vec2f_zero;
 	v.move_speed = moveSpeed;
 	v.turn_speed = turnSpeed;
 	v.out_vel = jumpOutVelocity;
 	v.inventoryAccess = inventoryAccess;
-	v.ammo_stocked = 0;
 	v.mag_offset = Vec2f_zero;
-	v.infinite_ammo = false;
 	v.charge = 0;
 	v.last_charge = 0;
-	v.max_charge_time = 100;
 	v.cooldown_time = 0;
-	v.max_cooldown_time = 30;
-	v.fire_cost_per_amount = 1;
+	v.fire_time = 0;
+	v.current_ammo_index = 0;
+	v.last_fired_index = 0;
+	v.wep_angle = 0.0f;
 
 	this.addCommandID("fire");
 	this.addCommandID("fire blob");
 	this.addCommandID("flip_over");
 	this.addCommandID("getin_mag");
 	this.addCommandID("load_ammo");
+	this.addCommandID("ammo_menu");
+	this.addCommandID("swap_ammo");
+	this.addCommandID("sync_ammo");
+	this.addCommandID("sync_last_fired");
 	this.addCommandID("putin_mag");
 	this.addCommandID("vehicle getout");
 	this.addCommandID("reload");
@@ -109,25 +116,31 @@ void Vehicle_Setup(CBlob@ this,
 	this.set("VehicleInfo", @v);
 }
 
-void Vehicle_SetupWeapon(CBlob@ this, VehicleInfo@ v, int fireDelay, int fireAmount, Vec2f firePosition, const string& in ammoConfigName, const string& in bulletConfigName,
-                         const string& in fireSound, const string& in emptySound, Vehicle_Fire_Style::Style fireStyle = Vehicle_Fire_Style::normal)
+void Vehicle_AddAmmo(CBlob@ this, VehicleInfo@ v, int fireDelay, int fireAmount, int fireCost, const string& in ammoConfigName, const string& in ammoInvName, 
+					 const string& in bulletConfigName, const string& in fireSound, const string& in emptySound, Vehicle_Fire_Style::Style fireStyle = Vehicle_Fire_Style::normal, Vec2f firePosition = Vec2f_zero, int chargeTime = 0)
 {
-	v.fire_time = 0;
-	v.loaded_ammo = 0;
-	v.fire_sound = fireSound;
-	v.empty_sound = emptySound;
-	v.bullet_name = bulletConfigName;
-	v.blob_ammo = hasMag(this);
-	v.ammo_name = ammoConfigName;
-	v.fire_delay = fireDelay;
-	v.fire_amount = fireAmount;
-	v.fire_style = fireStyle;
-	v.wep_angle = 0.0f;
+	AmmoInfo a;
+	a.loaded_ammo = 0;
+	a.fire_sound = fireSound;
+	a.empty_sound = emptySound;
+	a.bullet_name = bulletConfigName;
+	a.blob_ammo = hasMag(this);
+	a.ammo_name = ammoConfigName;
+	a.ammo_inventory_name = ammoInvName;
+	a.fire_delay = fireDelay;
+	a.fire_amount = fireAmount;
+	a.fire_cost_per_amount = fireCost;
+	a.max_charge_time = chargeTime;
+	a.fire_style = fireStyle;
+	a.ammo_stocked = 0;
+	a.infinite_ammo = false;
 
 	if (getRules().hasTag("singleplayer"))
 	{
-		v.infinite_ammo = true;
+		a.infinite_ammo = true;
 	}
+
+	v.ammo_types.push_back(a);
 }
 
 void Vehicle_SetupAirship(CBlob@ this, VehicleInfo@ v,
@@ -159,17 +172,15 @@ int server_LoadAmmo(CBlob@ this, CBlob@ ammo, int take, VehicleInfo@ v)
 {
 	if (ammo is null)
 	{
-		v.loaded_ammo = take;
+		v.getCurrentAmmo().loaded_ammo = take;
 		CBitStream params;
 		params.write_u8(take);
 		this.SendCommand(this.getCommandID("reload"), params);
 		return take;
 	}
 
-	u8 loadedAmmo = v.loaded_ammo;
+	u8 loadedAmmo = v.getCurrentAmmo().loaded_ammo;
 	int amount = ammo.getQuantity();
-
-	const bool infinite = v.infinite_ammo;
 
 	if (amount >= take)
 	{
@@ -187,7 +198,7 @@ int server_LoadAmmo(CBlob@ this, CBlob@ ammo, int take, VehicleInfo@ v)
 		SetOccupied(this.getAttachments().getAttachmentPointByName("MAG"), 1);
 	}
 
-	v.loaded_ammo = loadedAmmo;
+	v.getCurrentAmmo().loaded_ammo = loadedAmmo;
 	CBitStream params;
 	params.write_u8(loadedAmmo);
 	this.SendCommand(this.getCommandID("reload"), params);
@@ -208,27 +219,46 @@ int server_LoadAmmo(CBlob@ this, CBlob@ ammo, int take, VehicleInfo@ v)
 
 void RecountAmmo(CBlob@ this, VehicleInfo@ v)
 {
-	int ammoStocked = v.loaded_ammo;
-	const string ammoName = v.ammo_name;
-	for (int i = 0; i < this.getInventory().getItemsCount(); i++)
+	for(int i = 0; i < v.ammo_types.size(); ++i)
 	{
-		CBlob@ invItem = this.getInventory().getItem(i);
-		if (invItem.getName() == ammoName)
+		AmmoInfo@ current_ammo = v.ammo_types[i];
+		int ammoStocked = current_ammo.loaded_ammo;
+		const string ammoName = current_ammo.ammo_name;
+		CInventory@ inventory = this.getInventory();
+
+		for (int i = 0; i < inventory.getItemsCount(); i++)
 		{
-			ammoStocked += invItem.getQuantity();
+			CBlob@ invItem = inventory.getItem(i);
+			if (invItem.getName() == ammoName)
+			{
+				ammoStocked += invItem.getQuantity();
+			}
 		}
+
+		current_ammo.ammo_stocked = ammoStocked;
+
+		CBitStream params;
+		params.write_u8(i);
+		params.write_u16(current_ammo.ammo_stocked);
+		params.write_u8(current_ammo.loaded_ammo);
+		this.SendCommand(this.getCommandID("recount ammo"), params);
+	}
+}
+
+void swapAmmo(CBlob@ this, VehicleInfo@ v, u8 ammoIndex)
+{
+	if(ammoIndex >= v.ammo_types.size())
+	{
+		ammoIndex = 0;
 	}
 
-	v.ammo_stocked = ammoStocked;
-
-	CBitStream params;
-	params.write_u16(v.ammo_stocked);
-	this.SendCommand(this.getCommandID("recount ammo"), params);
+	v.current_ammo_index = ammoIndex;
 }
 
 AttachmentPoint@ getMagAttachmentPoint(CBlob@ this)
 {
-	return this.getAttachments().getAttachmentPointByName("MAG");
+	// returns the "MAG" point only if this blob is the socket
+	return this.getAttachments().getAttachmentPoint("MAG", true);
 }
 
 CBlob@ getMagBlob(CBlob@ this)
@@ -270,25 +300,33 @@ f32 Vehicle_getWeaponAngle(CBlob@ this, VehicleInfo@ v)
 
 void Vehicle_LoadAmmoIfEmpty(CBlob@ this, VehicleInfo@ v)
 {
-	if (getNet().isServer() && (this.getInventory().getItemsCount() > 0 || v.infinite_ammo) &&
-	        getMagBlob(this) is null &&
-	        v.loaded_ammo == 0)
+	if(v.current_ammo_index < v.ammo_types.size())
 	{
-		CBlob@ toLoad = this.getInventory().getItem(0);
-		if (toLoad !is null)
+		if (getNet().isServer() && (this.getInventory().getItemsCount() > 0 || v.getCurrentAmmo().infinite_ammo) &&
+		        getMagBlob(this) is null &&
+		        v.getCurrentAmmo().loaded_ammo == 0)
 		{
-			if (toLoad.getName() == v.ammo_name)
+			for (int i = 0; i < this.getInventory().getItemsCount(); ++i)
 			{
-				server_LoadAmmo(this, toLoad, v.fire_amount * v.fire_cost_per_amount, v);
+				CBlob@ toLoad = this.getInventory().getItem(i);
+				if (toLoad !is null)
+				{
+					if (toLoad.getName() == v.getCurrentAmmo().ammo_name)
+					{
+						server_LoadAmmo(this, toLoad, v.getCurrentAmmo().fire_amount * v.getCurrentAmmo().fire_cost_per_amount, v);
+						break;
+					}
+					else if (v.getCurrentAmmo().blob_ammo && this.server_PutOutInventory(toLoad))
+					{
+						this.server_AttachTo(toLoad, "MAG");
+					}
+				}
+				else
+				{
+					server_LoadAmmo(this, null, v.getCurrentAmmo().fire_amount * v.getCurrentAmmo().fire_cost_per_amount, v);
+					break;
+				}
 			}
-			else if (v.blob_ammo && this.server_PutOutInventory(toLoad))
-			{
-				this.server_AttachTo(toLoad, "MAG");
-			}
-		}
-		else
-		{
-			server_LoadAmmo(this, null, v.fire_amount * v.fire_cost_per_amount, v);
 		}
 	}
 }
@@ -322,29 +360,31 @@ bool MakeLoadAmmoButton(CBlob@ this, CBlob@ caller, Vec2f offset, VehicleInfo@ v
 
 	if (inv !is null)
 	{
-		string ammo = v.ammo_name;
-		CBlob@ ammoBlob = inv.getItem(ammo);
-
-		//check hands
-		if (ammoBlob is null)
+		for (int i = 0; i < v.ammo_types.size(); i++)
 		{
-			CBlob@ held = caller.getCarriedBlob();
+			string ammo = v.ammo_types[i].ammo_name;
+			CBlob@ ammoBlob = inv.getItem(ammo);
 
-			if (held !is null)
+			if (ammoBlob is null)
 			{
-				if (held.getName() == ammo)
+				CBlob@ held = caller.getCarriedBlob();
+
+				if (held !is null)
 				{
-					@ammoBlob = held;
+					if (held.getName() == ammo)
+					{
+						@ammoBlob = held;
+					}
 				}
 			}
-		}
 
-		if (ammoBlob !is null)
-		{
-			CBitStream callerParams;
-			callerParams.write_u16(caller.getNetworkID());
-			caller.CreateGenericButton("$" + ammoBlob.getName() + "$", offset, this, this.getCommandID("load_ammo"), getTranslatedString("Load {ITEM}").replace("{ITEM}", ammoBlob.getInventoryName()), callerParams);
-			return true;
+			if (ammoBlob !is null)
+			{
+				CBitStream callerParams;
+				callerParams.write_u16(caller.getNetworkID());
+				caller.CreateGenericButton("$" + ammoBlob.getName() + "$", offset + Vec2f(0, -4), this, this.getCommandID("load_ammo"), getTranslatedString("Load {ITEM}").replace("{ITEM}", ammoBlob.getInventoryName()), callerParams);
+				return true;
+			}
 		}
 
 		/*else
@@ -442,16 +482,16 @@ void Fire(CBlob@ this, VehicleInfo@ v, CBlob@ caller, const u8 charge)
 		}
 		else
 		{
-			u8 loadedAmmo = v.loaded_ammo;
+			u8 loadedAmmo = v.getCurrentAmmo().loaded_ammo;
 			if (loadedAmmo != 0) // shoot if ammo loaded
 			{
 				shot = true;
 
 				const int team = caller.getTeamNum();
 				const bool isServer = getNet().isServer();
-				for (u8 i = 0; i < loadedAmmo; i += v.fire_cost_per_amount)
+				for (u8 i = 0; i < loadedAmmo; i += v.getCurrentAmmo().fire_cost_per_amount)
 				{
-					CBlob@ bullet = isServer ? server_CreateBlobNoInit(v.bullet_name) : null;
+					CBlob@ bullet = isServer ? server_CreateBlobNoInit(v.getCurrentAmmo().bullet_name) : null;
 					if (bullet !is null)
 					{
 						bullet.setPosition(bulletPos);
@@ -463,9 +503,14 @@ void Fire(CBlob@ this, VehicleInfo@ v, CBlob@ caller, const u8 charge)
 
 					server_FireBlob(this, bullet, charge);
 				}
-
-				v.loaded_ammo = 0;
+				
+				v.getCurrentAmmo().loaded_ammo = 0;
 				SetOccupied(mag, 0);
+
+				v.last_fired_index = v.current_ammo_index;
+				CBitStream params;
+				params.write_u8(v.last_fired_index);
+				this.SendCommand(this.getCommandID("sync_last_fired"), params);
 			}
 		}
 
@@ -473,17 +518,17 @@ void Fire(CBlob@ this, VehicleInfo@ v, CBlob@ caller, const u8 charge)
 
 		if (shot)
 		{
-			this.getSprite().PlayRandomSound(v.fire_sound);
+			this.getSprite().PlayRandomSound(v.getCurrentAmmo().fire_sound);
 		}
 		else
 		{
 			// empty shot
-			this.getSprite().PlayRandomSound(v.empty_sound);
+			this.getSprite().PlayRandomSound(v.getCurrentAmmo().empty_sound);
 			Vehicle_onFire(this, v, null, 0);
 		}
 
 		// finally set the delay
-		SetFireDelay(this, v.fire_delay, v);
+		SetFireDelay(this, v.getCurrentAmmo().fire_delay, v);
 	}
 }
 
@@ -655,7 +700,12 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 					// set facing
 					blob.SetFacingLeft(this.isFacingLeft());
 
-					const u8 style = v.fire_style;
+					if (blob.isMyPlayer() && ap.isKeyJustPressed(key_inventory) && v.charge == 0)
+					{
+						this.SendCommand(this.getCommandID("swap_ammo"));
+					}
+
+					u8 style = v.getCurrentAmmo().fire_style;
 					switch (style)
 					{
 						case Vehicle_Fire_Style::normal:
@@ -944,20 +994,33 @@ bool Vehicle_doesCollideWithBlob_boat(CBlob@ this, CBlob@ blob)
 void Vehicle_onAttach(CBlob@ this, VehicleInfo@ v, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	// special-case stone material  - put in inventory
-	if (getNet().isServer() && attached.getName() == v.ammo_name)
+	if(v.current_ammo_index < v.ammo_types.size())
 	{
-		attached.server_DetachFromAll();
-		this.server_PutInInventory(attached);
-		server_LoadAmmo(this, attached, v.fire_amount, v);
+		if (getNet().isServer() && attached.getName() == v.getCurrentAmmo().ammo_name)
+		{
+			attached.server_DetachFromAll();
+			this.server_PutInInventory(attached);
+			server_LoadAmmo(this, attached, v.getCurrentAmmo().fire_amount, v);
+		}
 	}
 
 	// move mag offset
-
 	if (attachedPoint.name == "MAG")
 	{
 		attachedPoint.offset = v.mag_offset;
 		attachedPoint.offset.y += attached.getHeight() / 2.0f;
 		attachedPoint.offsetZ = -60.0f;
+	}
+
+	// sync current ammo index
+	if(isServer())
+	{
+		CBitStream params;
+		params.write_u8(v.current_ammo_index);
+		this.SendCommand(this.getCommandID("sync_ammo"), params);
+
+		// recount all ammo so the client has proper numbers
+		RecountAmmo(this, v);
 	}
 }
 
@@ -972,14 +1035,10 @@ void Vehicle_onDetach(CBlob@ this, VehicleInfo@ v, CBlob@ detached, AttachmentPo
 
 	if (detached.hasTag("player") && attachedPoint.socket)
 	{
-
-		// Fires on detach. Blame Fuzzle.
-		if (attachedPoint.name == "GUNNER" && v.charge > 0)
+		// reset charge if gunner leaves while charging
+		if (attachedPoint.name == "GUNNER")
 		{
-			CBitStream params;
-			params.write_u16(detached.getNetworkID());
-			params.write_u8(v.charge);
-			this.SendCommand(this.getCommandID("fire"), params);
+			v.charge = 0;
 		}
 
 		detached.setPosition(detached.getPosition() + Vec2f(0.0f, -4.0f));

@@ -95,11 +95,11 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		//cant build wood on stone background
 		return false;
 	}
-	else if (map.isTileSolid(backtile) || map.hasTileSolidBlobs(backtile))
+	else if (map.isTileSolid(backtile))
 	{
-		if (!buildSolid && !map.hasTileSolidBlobsNoPlatform(backtile) && !map.isTileSolid(backtile))
+		if (!buildSolid && !map.isTileSolid(backtile))
 		{
-			//skip onwards, platforms don't block backwall
+			//skip onwards, platforms and doors don't block backwall
 		}
 		else
 		{
@@ -119,8 +119,8 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 	{
 		return false;
 	}
+
 	// no blocking actors?
-	// printf("d");
 	if (blob is null || !blob.hasTag("ignore blocking actors"))
 	{
 		bool isLadder = false;
@@ -144,6 +144,11 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 			return false;
 		}
 
+		if (inNoBuildZone(blob, map, middle, buildTile))
+		{
+			return false;
+		}
+
 		//if (blob is null)
 		//middle += Vec2f(map.tilesize*0.5f, map.tilesize*0.5f);
 
@@ -158,7 +163,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 				{
 					if (blob !is null || buildSolid)
 					{
-						if (b is this && isSpikes) continue;
+						if (b is this && b.getName() == "spikes") continue;
 
 						Vec2f bpos = b.getPosition();
 
@@ -255,6 +260,11 @@ void SetTileAimpos(CBlob@ this, BlockCursor@ bc)
 	bc.cursorClose = (mouseLen < getMaxBuildDistance(this));
 }
 
+u32 getCurrentBuildDelay(CBlob@ this)
+{
+	return (getRules().hasTag("faster building") ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
+}
+
 f32 getMaxBuildDistance(CBlob@ this)
 {
 	return (MAX_BUILD_LENGTH + 0.51f) * getMap().tilesize;
@@ -263,7 +273,8 @@ f32 getMaxBuildDistance(CBlob@ this)
 void SetupBuildDelay(CBlob@ this)
 {
 	this.set_u32("build time", getGameTime());
-	this.set_u32("build delay", 7);  // move this to builder init
+	this.set_u32("build delay", 7);
+	this.set_u32("warmup build delay", 4);
 }
 
 bool isBuildDelayed(CBlob@ this)
@@ -295,4 +306,52 @@ bool isBuildRayBlocked(Vec2f pos, Vec2f target, Vec2f &out point)
 		   map.rayCastSolid(pos + Vec2f(halfsize, 0), target, point) &&
 		   map.rayCastSolid(pos + Vec2f(0, -halfsize), target, point) &&
 		   map.rayCastSolid(pos + Vec2f(-halfsize, 0), target, point);
+}
+
+bool inNoBuildZone(CMap@ map, Vec2f here, TileType buildTile)
+{
+	return inNoBuildZone(null, map, here, buildTile);
+}
+
+bool inNoBuildZone(CBlob@ blob, CMap@ map, Vec2f here, TileType buildTile)
+{
+	bool isLadder = false;
+	bool isSpikes = false;
+	if (blob !is null)
+	{
+		const string bname = blob.getName();
+		isLadder = bname == "ladder";
+		isSpikes = bname == "spikes";
+	}
+
+	const bool buildSolid = (map.isTileSolid(buildTile) || (blob !is null && blob.isCollidable()));
+
+	return (!isLadder && (buildSolid || isSpikes) && map.getSectorAtPosition(here, "no build") !is null);
+}
+
+// This has to exist due to an engine issue where CMap.hasTileSolidBlobs() returns false if the blobtile was placed in the previous tick
+// and an engine issue where CMap.getBlobsFromTile() crashes the server 
+// wonderful game
+bool fakeHasTileSolidBlobs(Vec2f cursorPos, bool toPlaceIsLadder=false)
+{
+	CMap@ map = getMap();
+	CBlob@[] blobsAtPos;
+	
+	map.getBlobsAtPosition(cursorPos + Vec2f(1, 1), blobsAtPos);
+
+	for (int i = 0; i < blobsAtPos.size(); i++)
+	{
+		CBlob@ blobAtPos = blobsAtPos[i];
+		
+		if (blobAtPos !is null && (
+		blobAtPos.hasTag("door") || 
+		blobAtPos.getName() == "wooden_platform" || 
+		(blobAtPos.getName() == "ladder" && !toPlaceIsLadder) || 
+		blobAtPos.getName() == "bridge"))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
