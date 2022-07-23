@@ -289,14 +289,19 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 		if (dmg > 0.0f)
 		{
-			//determine the hit type
+			// determine the hit type
+			// fire arrows still act as normal arrows
 			const u8 hit_type =
-				(arrowType == ArrowType::fire) ? Hitters::fire :
 				(arrowType == ArrowType::bomb) ? Hitters::bomb_arrow :
 				Hitters::arrow;
 
 			//perform the hit and tag so that another doesn't happen
 			this.server_Hit(blob, point1, initVelocity, dmg, hit_type);
+
+			// for fire arrows, make fire
+			if (arrowType == ArrowType::fire && !this.hasTag("no_fire"))
+				this.server_Hit(blob, point1, initVelocity, 0.0f, Hitters::fire);
+			
 			this.Tag("collided");
 		}
 
@@ -510,10 +515,6 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 					this.getSprite().PlaySound("ArrowHitGround.ogg");
 				}
 			}
-		}
-		else if (arrowType != ArrowType::normal)
-		{
-			damage = 0.0f;
 		}
 
 		if (arrowType == ArrowType::fire)
