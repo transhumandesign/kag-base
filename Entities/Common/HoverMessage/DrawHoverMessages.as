@@ -43,6 +43,23 @@ const string[] ignored_material_losses = {
 	"mat_waterbombs",
 };
 
+void updateCoinMessage(CPlayer@ player)
+{
+	const string prop_name = "old coin count";
+
+	if (player.exists(prop_name))
+	{
+		const int quantity_diff = player.getCoins() - player.get_u32(prop_name);
+
+		if (Maths::Abs(quantity_diff) > 0)
+		{
+			add_message(MaterialMessage("Coins", quantity_diff));
+		}
+	}
+
+	player.set_u32(prop_name, player.getCoins());
+}
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().tickFrequency = 5;
@@ -163,4 +180,6 @@ void onTick(CBlob@ this)
 	}
 
 	this.set(prop_string, @current_caches);
+	
+	updateCoinMessage(@player);
 }
