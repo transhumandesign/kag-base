@@ -5,7 +5,8 @@
 
 // defines amount of damage as well as maximum separate hits
 // - in terms of this's health. see config
-const f32 ROCK_DAMAGE = 2.0f;
+const f32 ROCK_MAX_DAMAGE = 10.0f; // just deal all the damage of the rock to blobs
+const f32 ROCK_DAMAGE_MULT = 0.6f; // but make the rock kinda weak against blobs
 
 u32 g_lastplayedsound = 0;
 
@@ -30,22 +31,26 @@ void onInit(CBlob@ this)
 
 	this.getShape().getConsts().mapCollisions = false;
 	this.getShape().getConsts().bullet = false;
-	this.getShape().getConsts().net_threshold_multiplier = 4.0f;
 
+	if (isClient())
+	{
+		this.getShape().getConsts().net_threshold_multiplier = 4.0f;
+		this.set_u32("last collided tile", -1);
+	}
 }
 
 void onTick(CBlob@ this)
 {
+	bool isServer = getNet().isServer();
+	bool isClient = getNet().isClient();
+
 	const f32 vellen = this.getShape().vellen;
 
 	// chew through backwalls
 
-	bool isServer = getNet().isServer();
-	bool isClient = getNet().isClient();
-
 	Vec2f pos = this.getPosition();
 
-	if (isClient && (getGameTime() + this.getNetworkID() * 31) % 7 == 0)
+	if (isClient && vellen > 0.3f && (getGameTime() + this.getNetworkID() * 31) % 7 == 0)
 	{
 		MakeRockDustParticle(
 			pos,
@@ -71,16 +76,8 @@ void onTick(CBlob@ this)
 			this.server_Hit(this, this.getPosition(), this.getVelocity(), 0.05f, Hitters::cata_stones, true);
 		}
 	}
-	else if (map.isTileSolid(tile))
-	{
-		if (!isServer)
-			this.getShape().SetStatic(true);
-	}
 
-	if (isServer)
-	{
-		Pierce(this);
-	}
+	Pierce(this);
 }
 
 void MakeRockDustParticle(Vec2f pos, string file, Vec2f vel=Vec2f(0.0, 0.0), int animate_speed = 4)
@@ -125,6 +122,7 @@ bool CollidesWithPlatform(CBlob@ this, CBlob@ blob, Vec2f velocity)
 
 float HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
 {
+	const u32 tileoffset = map.getTileOffsetFromTileSpace(tilepos);
 	TileType t = map.getTile(tilepos).type;
 
 	// another rock may have hit this tile on the same tick...
@@ -138,8 +136,10 @@ float HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
 		if (map.getSectorAtPosition(tilepos, "no build") is null)
 		{
 			// make particles
-			if (isClient())
+			if (isClient() && this.get_u32("last collided tile") != tileoffset)
 			{
+				this.set_u32("last collided tile", tileoffset);
+
 				if (map.isTileWood(t))
 				{
 					// throw wood particles on the back of where the projectile hit
@@ -258,17 +258,30 @@ void Pierce(CBlob @this)
 			if (hi.blob !is null) // blob
 			{
 				if (hi.blob.getShape().getConsts().platform && !CollidesWithPlatform(this, hi.blob, this.getVelocity()))
-				return;
-
-				if (canHitBlob(this, hi.blob))
 				{
+					return;
+				}
+
+				if (isServer() && canHitBlob(this, hi.blob))
+				{
+					const float appliedDamage = Maths::Min(ROCK_MAX_DAMAGE, damageBudget) * ROCK_DAMAGE_MULT;
+
 					const float oldTargetHealth = hi.blob.getHealth();
-					this.server_Hit(hi.blob, hi.hitpos, initVelocity, Maths::Min(ROCK_DAMAGE, damageBudget), Hitters::cata_stones, true);
+					this.server_Hit(hi.blob, hi.hitpos, initVelocity, appliedDamage, Hitters::cata_stones, true);
 					const float newTargetHealth = hi.blob.getHealth();
 
-					if (newTargetHealth < oldTargetHealth)
+					const float lostHealth = oldTargetHealth - newTargetHealth;
+
+					// HACK: not sure how to check from here if the hit was cancelled by shielding
+					if (lostHealth == 0.0f && hi.blob.hasTag("shielded"))
 					{
-						damageDealt += (oldTargetHealth - newTargetHealth);
+						// just kill the rock if it hits a shield, it causes too many issues otherwise
+						this.server_Die();
+					}
+
+					if (lostHealth > 0.0f)
+					{
+						damageDealt += lostHealth / ROCK_DAMAGE_MULT;
 					}
 				}
 			}
@@ -279,20 +292,18 @@ void Pierce(CBlob @this)
 				damageDealt += HitMap(this, map, tilepos, true);
 				
 				// bounce only if we didn't fully break the block 
-				ricochet = map.getTile(tilepos).type != 0;
+
+				// though if we're the client... we honestly don't really have a way to tell.
+				// so if we're the client, assume it's a ricochet and let the resync occur if we were wrong
+				ricochet = map.getTile(tilepos).type != 0 || !isServer();
 
 				if (ricochet)
-				{
-					this.setPosition(this.getOldPosition());
-				}
-
-				if (damageDealt > 0.0f)
 				{
 					this.setPosition(hi.hitpos - velDir * 0.4f);
 				}
 			}
 
-			if (damageDealt > 0.0f)
+			if (isServer() && damageDealt > 0.0f)
 			{
 				break;
 			}
@@ -301,17 +312,16 @@ void Pierce(CBlob @this)
 
 	if (damageDealt > 0.0f)
 	{
-		if (getNet().isServer())
+		Random r(this.getNetworkID());
+
+		if (isServer())
 		{
-			uint seed = (getGameTime() * (this.getNetworkID() * 997 + 1337));
-			Random@ r = Random(seed);
-
 			this.server_Hit(this, pos, initVelocity, damageDealt, Hitters::cata_stones, true);
+		}
 
-			if (ricochet)
-			{
-				this.setVelocity(Vec2f(r.NextFloat() - 0.5f, r.NextFloat() - 0.5f) * vellen * 1.5f + initVelocity * 0.25f);
-			}
+		if (ricochet)
+		{
+			this.setVelocity(Vec2f(r.NextFloat() - 0.5f, r.NextFloat() - 0.5f) * vellen * 1.5f + initVelocity * 0.25f);
 		}
 	}
 }
