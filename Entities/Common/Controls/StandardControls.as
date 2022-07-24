@@ -58,6 +58,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (owner !is null 
 		    && !owner.isInInventory()
+		    && !owner.isAttached()
 		    && pick !is null 
 		    && !pick.isAttached())
 		{
