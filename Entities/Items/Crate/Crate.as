@@ -382,10 +382,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			Vec2f velocity = caller.getVelocity();
 			this.server_PutInInventory( caller );
 			this.setVelocity(velocity);
+			this.set_u32("timestamp gotten inside", getGameTime());
 		}
 	}
 	else if (cmd == this.getCommandID("getout"))
 	{
+		if (this.exists("timestamp gotten inside") && this.get_u32("timestamp gotten inside") == getGameTime())
+			return;
+	
 		CBlob @caller = getBlobByNetworkID( params.read_u16() );
 		CBlob@ sneaky_player = getPlayerInside(this);
 		if (caller !is null && sneaky_player !is null) {
