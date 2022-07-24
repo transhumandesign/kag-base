@@ -5,7 +5,7 @@
 
 // defines amount of damage as well as maximum separate hits
 // - in terms of this's health. see config
-const f32 ROCK_DAMAGE = 1.0f;
+const f32 ROCK_DAMAGE = 2.0f;
 
 u32 g_lastplayedsound = 0;
 
@@ -170,10 +170,10 @@ float HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
 				}
 			}
 
-			const float dmg = map.isTileCastle(t) ? 0.5f : 1.0f;
-
-			map.server_DestroyTile(tilepos, dmg, this);
-			return 1.2f; // ~2 hits before the rock dies
+			// a rock can do ~4 hits to wood, ~3 hits to stone
+			const float dmg = map.isTileCastle(t) ? 2.6f : 1.6f;
+			map.server_DestroyTile(tilepos, 1.0f, this);
+			return dmg;
 		}
 	}
 
@@ -192,7 +192,7 @@ float HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
 		}
 	}
 
-	return 0.6f; // let it bounce a bit on ground but don't let it live
+	return 1.2f; // sometimes let it bounce a bit on ground but don't let it live too long
 }
 
 void onDie(CBlob@ this)
