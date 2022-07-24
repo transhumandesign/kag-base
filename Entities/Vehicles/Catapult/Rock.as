@@ -50,7 +50,8 @@ void onTick(CBlob@ this)
 		MakeRockDustParticle(
 			pos,
 			"Smoke.png",
-			this.getOldVelocity() * 0.06 + Vec2f(0.0, 0.2));
+			this.getOldVelocity() * 0.06 + Vec2f(0.0, 0.2),
+			2 + XORRandom(3));
 	}
 
 	CMap@ map = this.getMap();
@@ -82,9 +83,9 @@ void onTick(CBlob@ this)
 	}
 }
 
-void MakeRockDustParticle(Vec2f pos, string file, Vec2f vel=Vec2f(0.0, 0.0))
+void MakeRockDustParticle(Vec2f pos, string file, Vec2f vel=Vec2f(0.0, 0.0), int animate_speed = 4)
 {
-	CParticle@ temp = ParticleAnimated(CFileMatcher(file).getFirst(), pos, vel, 0.0f, 1.0f, 3, 0.0f, false);
+	CParticle@ temp = ParticleAnimated(CFileMatcher(file).getFirst(), pos, vel, 0.0f, 1.0f, animate_speed, 0.0f, false);
 
 	if (temp !is null)
 	{
@@ -161,14 +162,18 @@ float HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
 				else
 				{
 					// show some stone dust particles where the catapult hit
-					MakeRockDustParticle(this.getPosition() - (this.getOldVelocity() * 3.0), "Smoke.png");
+					MakeRockDustParticle(
+						this.getPosition() - (this.getOldVelocity() * 3.0),
+						"Smoke.png",
+						-this.getOldVelocity() * 0.03 + Vec2f(0.0, 0.5),
+						XORRandom(9) + 3);
 				}
 			}
 
 			const float dmg = map.isTileCastle(t) ? 0.5f : 1.0f;
 
 			map.server_DestroyTile(tilepos, dmg, this);
-			return 0.5f; // ~2 hits before the rock dies
+			return 1.2f; // ~2 hits before the rock dies
 		}
 	}
 
@@ -187,7 +192,7 @@ float HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
 		}
 	}
 
-	return 0.5f;
+	return 0.6f; // let it bounce a bit on ground but don't let it live
 }
 
 void onDie(CBlob@ this)
