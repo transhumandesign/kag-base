@@ -56,7 +56,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ owner = getBlobByNetworkID(params.read_netid());
 		CBlob@ pick = getBlobByNetworkID(params.read_netid());
 
-		if (owner !is null && pick !is null)
+		if (owner !is null && pick !is null && !owner.isInInventory())
 		{
 			owner.server_Pickup(pick);
 		}
