@@ -171,7 +171,7 @@ float HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
 			}
 
 			// a rock can do ~4 hits to wood, ~3 hits to stone
-			const float dmg = map.isTileCastle(t) ? 2.6f : 1.6f;
+			const float dmg = map.isTileCastle(t) ? 1.3f : 0.8f;
 			map.server_DestroyTile(tilepos, 1.0f, this);
 			return dmg;
 		}
@@ -192,7 +192,7 @@ float HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
 		}
 	}
 
-	return 1.2f; // sometimes let it bounce a bit on ground but don't let it live too long
+	return 0.6f; // sometimes let it bounce a bit on ground but don't let it live too long
 }
 
 void onDie(CBlob@ this)
