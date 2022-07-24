@@ -33,8 +33,8 @@ void onInit(CBlob@ this)
 
 	Vehicle_AddAmmo(this, v,
 	                    cooldown_time, // fire delay (ticks)
-	                    5, // fire bullets amount
-	                    2, // fire cost
+	                    7, // fire bullets amount
+	                    3, // fire cost
 	                    "mat_stone", // bullet ammo config name
 	                    "Catapult Rocks", // name for ammo selection
 	                    "cata_rock", // bullet config name
