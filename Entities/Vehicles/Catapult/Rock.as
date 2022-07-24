@@ -43,50 +43,42 @@ void onTick(CBlob@ this)
 	bool isServer = getNet().isServer();
 	bool isClient = getNet().isClient();
 
-	if (vellen > 2.0f)
+	Vec2f pos = this.getPosition();
+
+	if (isClient && (getGameTime() + this.getNetworkID() * 31) % 7 == 0)
 	{
-		Vec2f pos = this.getPosition();
+		MakeRockDustParticle(
+			pos,
+			"Smoke.png",
+			this.getOldVelocity() * 0.06 + Vec2f(0.0, 0.2));
+	}
 
-		if (isClient && (getGameTime() + this.getNetworkID() * 31) % 7 == 0)
-		{
-			MakeRockDustParticle(
-				pos,
-				"Smoke.png",
-				this.getOldVelocity() * 0.06 + Vec2f(0.0, 0.2));
-		}
+	CMap@ map = this.getMap();
+	Tile tile = map.getTile(pos);
 
-		CMap@ map = this.getMap();
-		Tile tile = map.getTile(pos);
-
-		if (map.isTileBackgroundNonEmpty(tile) && this.getTickSinceCreated() > 9.0f - vellen*0.42f) // prevent hitting backtiles if just created.
-		{
-			if (isServer)
-			{
-				if (map.getSectorAtPosition(pos, "no build") !is null)
-				{
-					return;
-				}
-				map.server_DestroyTile(pos, 2.0f, this);
-
-				// slightly damage the rock too
-				this.server_Hit(this, this.getPosition(), this.getVelocity(), 0.05f, Hitters::cata_stones, true);
-			}
-		}
-		else if (map.isTileSolid(tile))
-		{
-			if (!isServer)
-				this.getShape().SetStatic(true);
-		}
-
+	if (map.isTileBackgroundNonEmpty(tile) && this.getTickSinceCreated() > 9.0f - vellen*0.42f) // prevent hitting backtiles if just created.
+	{
 		if (isServer)
 		{
-			Pierce(this);
+			if (map.getSectorAtPosition(pos, "no build") !is null)
+			{
+				return;
+			}
+			map.server_DestroyTile(pos, 2.0f, this);
+
+			// slightly damage the rock too
+			this.server_Hit(this, this.getPosition(), this.getVelocity(), 0.05f, Hitters::cata_stones, true);
 		}
 	}
-	else
+	else if (map.isTileSolid(tile))
 	{
-		if (isServer)
-			this.server_Die();
+		if (!isServer)
+			this.getShape().SetStatic(true);
+	}
+
+	if (isServer)
+	{
+		Pierce(this);
 	}
 }
 
@@ -176,7 +168,7 @@ float HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
 			const float dmg = map.isTileCastle(t) ? 0.5f : 1.0f;
 
 			map.server_DestroyTile(tilepos, dmg, this);
-			return 0.4f; // ~3 hits before the rock dies
+			return 0.5f; // ~2 hits before the rock dies
 		}
 	}
 
@@ -234,12 +226,6 @@ void Pierce(CBlob @this)
 
 	Vec2f velDir = initVelocity;
 	f32 vellen = velDir.Normalize();
-
-	if (vellen < 0.1f)
-	{
-		this.server_Die();
-		return;
-	}
 
 	f32 angle = velDir.Angle();
 
