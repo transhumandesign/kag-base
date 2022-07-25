@@ -19,7 +19,7 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(6, 2));
+	this.set_Vec2f("shop menu size", Vec2f(8, 2));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
 
@@ -44,6 +44,12 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::warboat);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::warboat_gold);
 		s.crate_icon = 2;
+	}
+	{
+		string fishingrod_icon = getTeamIcon("fishingrod", "FishingRod.png", team_num, Vec2f(32, 32), 1);
+		ShopItem@ s = addShopItem(this, "Fishing Rod", fishingrod_icon, "fishingrod", fishingrod_icon + "\n\n\n\n" + Descriptions::fishingrod, false, false);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::fishingrod);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::fishingrod_wood);
 	}
 }
 

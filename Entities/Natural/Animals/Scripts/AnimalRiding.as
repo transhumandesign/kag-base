@@ -13,7 +13,7 @@ void onInit(CBlob@ this)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if (attachedPoint.socket)
+	if (attachedPoint.socket && attachedPoint.name == "DRIVER")
 	{
 		this.set_u32("seat time", getGameTime());
 		this.Tag("no barrier pass");
@@ -22,7 +22,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 {
-	if (attachedPoint.socket)
+	if (attachedPoint.socket && attachedPoint.name == "DRIVER")
 	{
 		detached.setVelocity(this.getVelocity());
 		detached.AddForce(Vec2f(0.0f, -300.0f));
@@ -45,7 +45,7 @@ void onTick(CBlob@ this)
 		{
 			AttachmentPoint@ ap = aps[i];
 
-			if (ap.socket)
+			if (ap.socket && ap.name == "DRIVER")
 			{
 				CBlob@ occ = ap.getOccupied();
 

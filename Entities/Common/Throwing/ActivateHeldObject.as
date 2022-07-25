@@ -15,6 +15,8 @@
 
 #include "ThrowCommon.as";
 
+const f32 DEFAULT_THROW_VEL = 6.0f;
+
 void onInit(CBlob@ this)
 {
 	if (!this.exists("names to activate"))
@@ -30,6 +32,53 @@ void onInit(CBlob@ this)
 	this.set_f32("throw scale", 1.0f);
 	this.set_bool("throw uses ourvel", true);
 	this.set_f32("throw ourvel scale", 1.0f);
+}
+
+bool ActivateBlob(CBlob@ this, CBlob@ blob, Vec2f pos, Vec2f vector, Vec2f vel)
+{
+	bool shouldthrow = true;
+	bool done = false;
+
+	if (!blob.hasTag("activated") || blob.hasTag("dont deactivate"))
+	{
+		string carriedname = blob.getName();
+		string[]@ names;
+
+		if (this.get("names to activate", @names))
+		{
+			for (uint step = 0; step < names.length; ++step)
+			{
+				if (names[step] == carriedname)
+				{
+					//if compatible
+					if (isServer() && blob.hasTag("activatable"))
+					{
+						blob.SendCommand(blob.getCommandID("activate"));
+					}
+
+					blob.Tag("activated");//just in case
+					shouldthrow = false;
+					this.Tag(blob.getName() + " done activate");
+
+					// move out of inventory if it's the case
+					if (blob.isInInventory())
+					{
+						this.server_Pickup(blob);
+					}
+					done = true;
+				}
+			}
+		}
+	}
+
+	//throw it if it's already lit or we can't light it
+	if (isServer() && !blob.hasTag("custom throw") && shouldthrow && this.getCarriedBlob() is blob)
+	{
+		DoThrow(this, blob, pos, vector, vel);
+		done = true;
+	}
+
+	return done;
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
@@ -64,11 +113,66 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (carried !is null)
 		{
-			if (isServer() && !carried.hasTag("custom throw"))
+			if (getNet().isServer() && !carried.hasTag("custom throw"))
 			{
 				DoThrow(this, carried, pos, vector, vel);
 			}
 			//this.Tag( carried.getName() + " done throw" );
 		}
 	}
+}
+
+
+// THROW
+
+void DoThrow(CBlob@ this, CBlob@ carried, Vec2f pos, Vec2f vector, Vec2f selfVelocity)
+{
+	f32 ourvelscale = 0.0f;
+
+	if (this.get_bool("throw uses ourvel"))
+	{
+		ourvelscale = this.get_f32("throw ourvel scale");
+	}
+
+	Vec2f vel = getThrowVelocity(this, vector, selfVelocity, ourvelscale);
+
+	if (carried !is null)
+	{
+		if (carried.hasTag("medium weight"))
+		{
+			vel *= 0.6f;
+		}
+		else if (carried.hasTag("heavy weight"))
+		{
+			vel *= 0.3f;
+		}
+
+		if (carried.server_DetachFrom(this))
+		{
+			carried.setVelocity(vel);
+
+			CShape@ carriedShape = carried.getShape();
+			if (carriedShape !is null)
+			{
+				carriedShape.checkCollisionsAgain = true;
+				carriedShape.ResolveInsideMapCollision();
+			}
+		}
+	}
+}
+
+Vec2f getThrowVelocity(CBlob@ this, Vec2f vector, Vec2f selfVelocity, f32 this_vel_affect = 0.1f)
+{
+	Vec2f vel = vector;
+	f32 len = vel.Normalize();
+	vel *= DEFAULT_THROW_VEL;
+	vel *= this.get_f32("throw scale");
+	vel += selfVelocity * this_vel_affect; // blob velocity
+
+	f32 closeDist = this.getRadius() + 64.0f;
+	if (selfVelocity.getLengthSquared() < 0.1f && len < closeDist)
+	{
+		vel *= len / closeDist;
+	}
+	return vel;
 }

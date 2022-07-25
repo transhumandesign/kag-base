@@ -27,7 +27,7 @@ namespace CTFCosts
 		crate_wood, crate;
 
 	//BoatShop.as
-	s32 dinghy, dinghy_wood, longboat, longboat_wood, warboat, warboat_gold;
+	s32 dinghy, dinghy_wood, longboat, longboat_wood, warboat, warboat_gold, fishingrod, fishingrod_wood;
 
 	//VehicleShop.as
 	s32 catapult, ballista, ballista_gold, ballista_ammo, ballista_bomb_ammo;
@@ -127,11 +127,13 @@ void InitCosts()
 
 	//BoatShop.as
 	CTFCosts::dinghy =                      ReadCost(cfg, "cost_dinghy"             , 25);
-	CTFCosts::dinghy_wood =                 ReadCost(cfg, "cost_dinghy_wood"        , 100);
+	CTFCosts::dinghy_wood =                 ReadCost(cfg, "cost_dinghy_wood"        , 150);
 	CTFCosts::longboat =                    ReadCost(cfg, "cost_longboat"           , 50);
 	CTFCosts::longboat_wood =               ReadCost(cfg, "cost_longboat_wood"      , 200);
 	CTFCosts::warboat =                     ReadCost(cfg, "cost_warboat"            , 250);
 	CTFCosts::warboat_gold =                ReadCost(cfg, "cost_warboat_gold"       , 50);
+	CTFCosts::fishingrod =                  ReadCost(cfg, "cost_fishingrod"         , 30);
+	CTFCosts::fishingrod_wood =             ReadCost(cfg, "cost_fishingrod_wood"    , 100);
 
 	//VehicleShop.as
 	CTFCosts::catapult =                    ReadCost(cfg, "cost_catapult"                   , 120);

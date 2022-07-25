@@ -53,6 +53,7 @@ namespace Descriptions
 	grain                      = getTranslatedString("Grain used as food."),
 	wooden_door                = getTranslatedString("Wooden swing door."),
 	spikes                     = getTranslatedString("Stone spikes used as a defense around fortifications."),
+	fishingrod                 = getTranslatedString("A rod used by anglers to catch fish."),
 
 	mounted_bow                = getTranslatedString("A stationary arrow-firing death machine."),
 	dinghy                     = getTranslatedString("A small boat with two rowing positions and a large space for cargo."),
