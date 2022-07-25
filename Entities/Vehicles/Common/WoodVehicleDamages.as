@@ -1,5 +1,6 @@
 #include "Hitters.as";
 #include "GameplayEvents.as";
+#include "TeamChecking.as";
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
@@ -48,7 +49,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		CPlayer@ damageowner = hitterBlob.getDamageOwnerPlayer();
 		if (damageowner !is null)
 		{
-			if (damageowner.getTeamNum() != this.getTeamNum())
+			if (isDifferentTeam(this, hitterBlob))
 			{
 				SendGameplayEvent(createVehicleDamageEvent(damageowner, dmg));
 			}
@@ -64,9 +65,9 @@ void onDie(CBlob@ this)
 	if (p !is null)
 	{
 		CBlob@ b = p.getBlob();
-		if (b !is null && b.getTeamNum() != this.getTeamNum())
+		if (b !is null && isDifferentTeam(this, b))
 		{
-			SendGameplayEvent(createVehicleDestroyEvent(this.getPlayerOfRecentDamage()));
+			SendGameplayEvent(createVehicleDestroyEvent(p));
 		}
 	}
 }

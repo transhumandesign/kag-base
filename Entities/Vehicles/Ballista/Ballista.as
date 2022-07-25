@@ -3,6 +3,7 @@
 #include "StandardRespawnCommand.as";
 #include "GenericButtonCommon.as";
 #include "Costs.as";
+#include "TeamChecking.as";
 
 // Ballista logic
 
@@ -23,6 +24,8 @@ void onInit(CBlob@ this)
 
 	InitCosts();
 	this.set_s32("gold building amount", CTFCosts::ballista_gold);
+	
+	this.set_bool("facing_left", false);
 
 	AddIconToken("$Normal_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 0);
 	AddIconToken("$Explosive_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 1);
@@ -180,8 +183,8 @@ f32 getAngle(CBlob@ this, const u8 charge, VehicleInfo@ v)
 
 void onTick(CBlob@ this)
 {
-	if (this.hasAttached() || this.getTickSinceCreated() < 30)
-	{
+	if (vehicleBaseCheck(this)) // is attached, changing direction, or just created
+	{	
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v))
 		{
@@ -232,16 +235,17 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-
+	
+	this.set_bool("facing_left", this.isFacingLeft());
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (!canSeeButtons(this, caller) || isDifferentTeam(this, caller)) return;
 
 	if (isOverlapping(this, caller) && !caller.isAttached())
 	{
-		if (!Vehicle_AddFlipButton(this, caller) && caller.getTeamNum() == this.getTeamNum())
+		if (!Vehicle_AddFlipButton(this, caller))
 		{
 			Vehicle_AddLoadAmmoButton(this, caller);
 		}

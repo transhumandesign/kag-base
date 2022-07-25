@@ -1,5 +1,6 @@
 // Migrant effects/sounds for client
 
+#include "TeamChecking.as"
 #include "MigrantCommon.as"
 
 void onInit(CBlob@ this)
@@ -50,14 +51,14 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	{
 		if (XORRandom(2) == 0 && blob.hasTag("player"))
 		{
-			if (blob.getTeamNum() == this.getTeamNum())
+			if (!isDifferentTeam(this, blob))
 			{
 				if (XORRandom(5) == 0 && !blob.hasTag("migrant"))
 				{
 					this.getSprite().PlaySound("/" + getTranslatedString("MigrantSayFriend"));
 				}
 			}
-			else if (this.getTeamNum() < 10)
+			else if (!isNeutralTeam(this))
 			{
 				this.getSprite().PlaySound("/" + getTranslatedString("MigrantSayNo"));
 			}

@@ -1,5 +1,6 @@
 // requires VEHICLE attachment point
 
+#include "TeamChecking.as"
 #include "GenericButtonCommon.as"
 
 void onInit(CBlob@ this)
@@ -12,8 +13,7 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller) || caller.getTeamNum() != this.getTeamNum())
-		return;
+	if (!canSeeButtons(this, caller) || isDifferentTeam(this, caller)) return;
 
 	AttachmentPoint@[] aps;
 	if (this.getAttachmentPoints(@aps))
@@ -26,7 +26,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 				CBlob@ occBlob = ap.getOccupied();
 				if (occBlob !is null) //detach button
 				{
-					if (this.isOnGround() && occBlob.getName() != "mounted_bow")	  // HACK:
+					if (this.isOnGround() || !this.isInWater() || occBlob.getName() == "mounted_bow") 	// HACK:
 					{
 						CBitStream params;
 						params.write_netid(occBlob.getNetworkID());

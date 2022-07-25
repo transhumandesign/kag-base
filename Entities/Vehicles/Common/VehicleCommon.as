@@ -1,6 +1,7 @@
 #include "SeatsCommon.as"
 #include "VehicleAttachmentCommon.as"
 #include "KnockedCommon.as"
+#include "TeamChecking.as";
 
 // HOOKS THAT YOU MUST IMPLEMENT WHEN INCLUDING THIS FILE
 // void Vehicle_onFire( CBlob@ this, CBlob@ bullet, const u8 charge )
@@ -103,6 +104,7 @@ void Vehicle_Setup(CBlob@ this,
 	this.addCommandID("sync_ammo");
 	this.addCommandID("sync_last_fired");
 	this.addCommandID("putin_mag");
+	this.addCommandID("vehicle letgo");
 	this.addCommandID("vehicle getout");
 	this.addCommandID("reload");
 	this.addCommandID("recount ammo");
@@ -134,11 +136,6 @@ void Vehicle_AddAmmo(CBlob@ this, VehicleInfo@ v, int fireDelay, int fireAmount,
 	a.fire_style = fireStyle;
 	a.ammo_stocked = 0;
 	a.infinite_ammo = false;
-
-	if (getRules().hasTag("singleplayer"))
-	{
-		a.infinite_ammo = true;
-	}
 
 	v.ammo_types.push_back(a);
 }
@@ -543,6 +540,11 @@ void server_FireBlob(CBlob@ this, CBlob@ blob, const u8 charge)
 	}
 }
 
+bool vehicleBaseCheck(CBlob@ this)
+{
+	return this.hasAttached() || this.isFacingLeft() != this.get_bool("facing_left") || this.getTickSinceCreated() < 30;
+}
+
 void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 {
 	v.move_direction = 0;
@@ -552,27 +554,42 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 		for (uint i = 0; i < aps.length; i++)
 		{
 			AttachmentPoint@ ap = aps[i];
-			CBlob@ blob = ap.getOccupied();
-
-			if (blob !is null && ap.socket)
+			CBlob@ occupied = ap.getOccupied();
+			
+			//LET GO
+			AttachmentPoint@ pickup = this.getAttachments().getAttachmentPointByName("PICKUP");
+			if (pickup !is null)
 			{
-				// GET OUT
-				if (blob.isMyPlayer() && ap.isKeyJustPressed(key_up))
+				CBlob@ carrier = pickup.getOccupied();
+				
+				if 	(carrier !is null && isDifferentTeam(this, carrier))
 				{
 					CBitStream params;
-					params.write_u16(blob.getNetworkID());
+					params.write_u16(carrier.getNetworkID());
+					this.SendCommand(this.getCommandID("vehicle letgo"), params);
+					return;
+				}
+			} // let go
+
+			if (occupied !is null && ap.socket)
+			{
+				// GET OUT
+				if 	(occupied.isMyPlayer() && ap.isKeyJustPressed(key_up)
+					|| isDifferentTeam(this, occupied) && occupied.hasTag("player"))
+				{	
+					CBitStream params;
+					params.write_u16(occupied.getNetworkID());
 					this.SendCommand(this.getCommandID("vehicle getout"), params);
 					return;
 				} // get out
 
 				// DRIVER
-
 				if (ap.name == "DRIVER" && !this.hasTag("immobile"))
 				{
 					bool moveUp = false;
 					const f32 angle = this.getAngleDegrees();
 					// set facing
-					blob.SetFacingLeft(this.isFacingLeft());
+					occupied.SetFacingLeft(this.isFacingLeft());
 					const bool left = ap.isKeyPressed(key_left);
 					const bool right = ap.isKeyPressed(key_right);
 					const bool onground = this.isOnGround();
@@ -667,7 +684,7 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 					}
 
 					// climb uphills
-
+					
 					const bool down = ap.isKeyPressed(key_down) || ap.isKeyPressed(key_action3);
 					if (onground && (down || moveUp))
 					{
@@ -695,12 +712,12 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 					}
 				}  // driver
 
-				if (ap.name == "GUNNER" && !isKnocked(blob))
+				if (ap.name == "GUNNER" && !isKnocked(occupied))
 				{
 					// set facing
-					blob.SetFacingLeft(this.isFacingLeft());
+					occupied.SetFacingLeft(this.isFacingLeft());
 
-					if (blob.isMyPlayer() && ap.isKeyJustPressed(key_inventory) && v.charge == 0)
+					if (occupied.isMyPlayer() && ap.isKeyJustPressed(key_inventory) && v.charge == 0)
 					{
 						this.SendCommand(this.getCommandID("swap_ammo"));
 					}
@@ -714,10 +731,10 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 							if (ap.isKeyPressed(key_action1))
 							{
 								v.firing = true;
-								if (canFire(this, v) && blob.isMyPlayer())
+								if (canFire(this, v) && occupied.isMyPlayer())
 								{
 									CBitStream fireParams;
-									fireParams.write_u16(blob.getNetworkID());
+									fireParams.write_u16(occupied.getNetworkID());
 									fireParams.write_u8(0);
 									this.SendCommand(this.getCommandID("fire"), fireParams);
 								}
@@ -735,10 +752,10 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 								v.charge = 0;
 								v.cooldown_time = Maths::Max(v.cooldown_time, 15);
 							}
-							else if (Vehicle_canFire(this, v, ap.isKeyPressed(key_action1), ap.wasKeyPressed(key_action1), charge) && canFire(this, v) && blob.isMyPlayer())
+							else if (Vehicle_canFire(this, v, ap.isKeyPressed(key_action1), ap.wasKeyPressed(key_action1), charge) && canFire(this, v) && occupied.isMyPlayer())
 							{
 								CBitStream fireParams;
-								fireParams.write_u16(blob.getNetworkID());
+								fireParams.write_u16(occupied.getNetworkID());
 								fireParams.write_u8(charge);
 								this.SendCommand(this.getCommandID("fire"), fireParams);
 							}

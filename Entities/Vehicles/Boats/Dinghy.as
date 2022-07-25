@@ -33,19 +33,16 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (!canSeeButtons(this, caller) || isDifferentTeam(this, caller)) return;
 
-	if (caller.getTeamNum() == this.getTeamNum())
+	CInventory @inv = caller.getInventory();
+	if (inv is null) return;
+
+	if (inv.getItemsCount() > 0)
 	{
-		CInventory @inv = caller.getInventory();
-		if (inv is null) return;
-
-		if (inv.getItemsCount() > 0)
-		{
-			CBitStream params;
-			params.write_u16(caller.getNetworkID());
-			caller.CreateGenericButton("$store_inventory$", Vec2f(0, 10), this, this.getCommandID("store inventory"), getTranslatedString("Store"), params);
-		}
+		CBitStream params;
+		params.write_u16(caller.getNetworkID());
+		caller.CreateGenericButton("$store_inventory$", Vec2f(0, 10), this, this.getCommandID("store inventory"), getTranslatedString("Store"), params);
 	}
 }
 

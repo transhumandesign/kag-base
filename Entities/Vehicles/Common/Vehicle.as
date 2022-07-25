@@ -2,6 +2,7 @@
 #include "VehicleCommon.as"
 #include "VehicleAttachmentCommon.as"
 #include "GenericButtonCommon.as"
+#include "TeamChecking.as"
 
 void onInit(CBlob@ this)
 {
@@ -241,6 +242,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller !is null)
 			this.server_AttachTo(caller, "MAG");
 	}
+	/// LET GO
+	else if (isServer && cmd == this.getCommandID("vehicle letgo"))
+	{
+		CBlob@ caller = getBlobByNetworkID(params.read_u16());
+
+		if (caller !is null)
+		{
+			this.server_DetachFrom(caller);
+		}
+	}
 	/// GET OUT
 	else if (isServer && cmd == this.getCommandID("vehicle getout"))
 	{
@@ -284,7 +295,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 {
-	if (forBlob.getTeamNum() == this.getTeamNum() && canSeeButtons(this, forBlob))
+	if (!isDifferentTeam(this, forBlob) && canSeeButtons(this, forBlob))
 	{
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v))

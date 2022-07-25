@@ -1,4 +1,6 @@
 
+#include "TeamChecking.as";
+
 const f32 MAX_BUILD_LENGTH = 4.0f;
 
 shared class BlockCursor
@@ -168,7 +170,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 						Vec2f bpos = b.getPosition();
 
 						bool cantBuild = isBlocking(b);
-						bool buildingOnTeam = isDoor && (b.getTeamNum() == this.getTeamNum() || b.getTeamNum() == 255) && !b.getShape().isStatic() && this !is b;
+						bool buildingOnTeam = isDoor && !isDifferentTeam(b, this) && !b.getShape().isStatic() && this !is b;
 						bool ladderBuild = isLadder && !b.getShape().isStatic();
 
 						// cant place on any other blob

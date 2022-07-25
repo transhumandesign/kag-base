@@ -1,5 +1,6 @@
 #include "VehicleCommon.as"
 #include "GenericButtonCommon.as"
+#include "TeamChecking.as"
 
 // Mounted Bow logic
 
@@ -7,6 +8,8 @@ const Vec2f arm_offset = Vec2f(-6, 0);
 
 void onInit(CBlob@ this)
 {
+	this.set_bool("facing_left", false);
+	
 	Vehicle_Setup(this,
 	              0.0f, // move speed
 	              0.31f,  // turn speed
@@ -62,8 +65,6 @@ void onInit(CBlob@ this)
 
 	sprite.SetZ(-10.0f);
 
-	this.getCurrentScript().runFlags |= Script::tick_hasattached;
-
 	// auto-load on creation
 	if (getNet().isServer())
 	{
@@ -114,9 +115,9 @@ f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
 }
 
 void onTick(CBlob@ this)
-{
-	if (this.hasAttached() || this.getTickSinceCreated() < 30) //driver, seat or gunner, or just created
-	{
+{	
+	if (vehicleBaseCheck(this)) // is attached, changing direction, or just created
+	{	
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v))
 		{
@@ -150,14 +151,15 @@ void onTick(CBlob@ this)
 			arm.RotateBy(rotation, Vec2f(facing_left ? -4.0f : 4.0f, 0.0f));
 		}
 
-
 		Vehicle_StandardControls(this, v);
 	}
+	
+	this.set_bool("facing_left", this.isFacingLeft());
+	this.Sync("facing_left", isServer());
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
-
 	f32 hp = this.getHealth();
 	f32 max_hp = this.getInitialHealth();
 	int damframe = hp < max_hp * 0.4f ? 2 : hp < max_hp * 0.9f ? 1 : 0;
@@ -172,14 +174,13 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (!canSeeButtons(this, caller) || (isDifferentTeam(this, caller)) return;
 
 	if (!Vehicle_AddFlipButton(this, caller))
 	{
 		Vehicle_AddLoadAmmoButton(this, caller);
 	}
 }
-
 
 bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool wasActionPressed, u8 &out chargeValue) {return false;}
 
@@ -234,4 +235,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	{
 		TryToAttachVehicle(this, blob);
 	}
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+    return blob.getShape().isStatic();
 }

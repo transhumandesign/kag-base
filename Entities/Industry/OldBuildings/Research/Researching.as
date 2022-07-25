@@ -5,6 +5,7 @@
 #include "RulesCore.as"
 #include "ResearchCommon.as"
 #include "GenericButtonCommon.as"
+#include "TeamChecking.as"
 
 const int OPT_TICK = 15;
 
@@ -90,28 +91,25 @@ void onTick( CBlob@ this )
 
 void GetButtonsFor( CBlob@ this, CBlob@ caller )
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (!canSeeButtons(this, caller) || !caller.isOverlapping(this) || isDifferentTeam(this, caller)) return;
 
 	// add button for adding scroll if caller has it
 
 	CBitStream params;
 	params.write_u16( caller.getNetworkID() );
-	if (this.getTeamNum() != 255 && caller.getTeamNum() == this.getTeamNum())
-	{
-		CBlob@ carried = caller.getCarriedBlob();
-		bool overlapping = this.isOverlapping(caller);
-		Vec2f offset = !overlapping ? Vec2f_zero : Vec2f(-12, -7);
-		if ( overlapping && carried !is null && carried.getName() == "scroll" && carried.hasTag("tech"))
-		{
-			params.write_u16( carried.getNetworkID() );
-			caller.CreateGenericButton( "$scroll$", offset, this, this.getCommandID("use scroll"), getTranslatedString("Use scroll"), params );
-		}
-		else
-		{
-			caller.CreateGenericButton(27, offset, this, this.getCommandID("show research"), getTranslatedString("Research"), params );
-		}
-	}
 
+	CBlob@ carried = caller.getCarriedBlob();
+	bool overlapping = this.isOverlapping(caller);
+	Vec2f offset = !overlapping ? Vec2f_zero : Vec2f(-12, -7);
+	if ( overlapping && carried !is null && carried.getName() == "scroll" && carried.hasTag("tech"))
+	{
+		params.write_u16( carried.getNetworkID() );
+		caller.CreateGenericButton( "$scroll$", offset, this, this.getCommandID("use scroll"), getTranslatedString("Use scroll"), params );
+	}
+	else
+	{
+		caller.CreateGenericButton(27, offset, this, this.getCommandID("show research"), getTranslatedString("Research"), params );
+	}
 }
 
 void onCommand( CBlob@ this, u8 cmd, CBitStream @params )

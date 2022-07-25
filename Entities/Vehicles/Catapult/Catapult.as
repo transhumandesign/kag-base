@@ -3,6 +3,7 @@
 #include "MakeCrate.as";
 #include "MiniIconsInc.as";
 #include "GenericButtonCommon.as";
+#include "TeamChecking.as";
 
 // Catapult logic
 
@@ -16,6 +17,8 @@ const u8 startStone = 100;
 
 void onInit(CBlob@ this)
 {
+	this.set_bool("facing_left", false);
+	
 	Vehicle_Setup(this,
 	              30.0f, // move speed
 	              0.31f,  // turn speed
@@ -73,8 +76,6 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	const int time = this.getTickSinceCreated();
-	const bool hasAttached = this.hasAttached();
-	const bool hadAttached = this.get_bool("had_attached");
 
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v))
@@ -83,8 +84,8 @@ void onTick(CBlob@ this)
 	const u16 delay = float(v.getCurrentAmmo().fire_delay);
 	const f32 time_til_fire = Maths::Max(0, Maths::Min(v.fire_time - getGameTime(), delay));
 
-	// hadAttached is here so it sets the arm angle the tick after the last player detaches
-	if (hasAttached || hadAttached || time < 30 || time_til_fire > 0) //driver, seat or gunner, or just created
+	// is attached, changing direction, just created, or is about to fire or has finished firing
+	if ( vehicleBaseCheck(this) || time < 30 || time_til_fire > 0 )
 	{
 		// load new item if present in inventory
 		Vehicle_StandardControls(this, v);
@@ -135,18 +136,17 @@ void onTick(CBlob@ this)
 	}
 	else if (time % 30 == 0)
 		Vehicle_StandardControls(this, v); //just make sure it's updated
-
-	this.set_bool("had_attached", hasAttached);
+		
+	this.set_bool("facing_left", this.isFacingLeft());
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (!canSeeButtons(this, caller) || isDifferentTeam(this, caller)) return;
 
 	CBlob@ occupiedBlob = this.getAttachments().getAttachmentPointByName("MAG").getOccupied();
 	if (
 		!Vehicle_AddFlipButton(this, caller) &&
-		this.getTeamNum() == caller.getTeamNum() &&
 		isOverlapping(this, caller) &&
 		!caller.isAttached() &&
 		(occupiedBlob is null || !occupiedBlob.hasTag("player"))

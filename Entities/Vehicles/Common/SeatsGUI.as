@@ -1,4 +1,5 @@
 #include "SeatsCommon.as"
+#include "TeamChecking.as"
 
 // optimization: we use script globals here cause all seats GUI use the same value for this
 f32 bounce;
@@ -32,7 +33,7 @@ void onRender(CSprite@ this)
 		return;
 	}
 	//not same team
-	if ((blob.getTeamNum() <= 8 && blob.getTeamNum() != localBlob.getTeamNum()))
+	if (isDifferentTeam(blob, localBlob))
 	{
 		return;
 	}

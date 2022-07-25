@@ -1,5 +1,7 @@
 // this is a simple box collision for boat vs boat because box2d sucks at this
 
+#include "TeamChecking.as"
+
 void onInit(CBlob@ this)
 {
 	this.Tag("fake boat collision");
@@ -41,19 +43,17 @@ void onTick(CBlob@ this)
 	//	}
 	//}
 
-
 	CBlob@[] blobsInRadius;
 	this.getMap().getBlobsInRadius(pos, this.getRadius() + buffer, @blobsInRadius);
 	for (uint i = 0; i < blobsInRadius.length; i++)
 	{
 		CBlob @blob = blobsInRadius[i];
-		if (blob !is this && vellen > blob.getShape().vellen && blob.hasTag("fake boat collision") && blob.getTeamNum() != this.getTeamNum())
+		if (blob !is this && vellen > blob.getShape().vellen && blob.hasTag("fake boat collision") && isDifferentTeam(blob, this))
 		{
 			Vec2f other_tl, other_br;
 			CShape@ other_shape = blob.getShape();
 			other_shape.getBoundingRect(other_tl, other_br);
 			Vec2f other_vel = blob.getVelocity();
-
 
 			if (pos.y > other_tl.y && pos.y < other_br.y)
 			{
@@ -82,8 +82,7 @@ void onTick(CBlob@ this)
 	}
 }
 
-
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	return !blob.hasTag("fake boat collision") || blob.getTeamNum() != this.getTeamNum();
+	return !blob.hasTag("fake boat collision") || isDifferentTeam(blob, this);
 }

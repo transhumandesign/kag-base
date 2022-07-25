@@ -8,7 +8,13 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 	{
 		return;
 	}
-	this.server_setTeamNum(attached.getTeamNum());
+	
+	CBlob@ carried = attached.getCarriedBlob();
+	
+	if (carried !is null && carried.getName() == this.getName())
+	{
+		this.server_setTeamNum(attached.getTeamNum());
+	}
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)

@@ -17,6 +17,8 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	this.server_setTeamNum(z%7);
+
 	DoKnockedUpdate(this);
 
 	if (this.hasTag("dead"))

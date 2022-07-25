@@ -2,6 +2,7 @@
 
 #include "Hitters.as"
 #include "GenericButtonCommon.as"
+#include "TeamChecking.as"
 
 const string toggle_id = "toggle_power";
 const string sawteammate_id = "sawteammate";
@@ -32,9 +33,7 @@ bool getSawOn(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
-
-	if (caller.getTeamNum() != this.getTeamNum() || this.getDistanceTo(caller) > 16) return;
+	if (!canSeeButtons(this, caller) || isDifferentTeam(this, caller) || this.getDistanceTo(caller) > 16) return;
 
 	string desc = getTranslatedString("Turn Saw " + (getSawOn(this) ? "Off" : "On"));
 	caller.CreateGenericButton(8, Vec2f(0, 0), this, this.getCommandID(toggle_id), desc);

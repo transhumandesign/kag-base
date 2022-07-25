@@ -3,6 +3,7 @@
 #include "StandardRespawnCommand.as"
 #include "StandardControlsCommon.as"
 #include "GenericButtonCommon.as"
+#include "TeamChecking.as"
 
 void onInit(CBlob@ this)
 {
@@ -32,7 +33,7 @@ void onTick(CBlob@ this)
 		if (blob !is null && blob.isMyPlayer())
 		{
 			if (
-				canChangeClass(this, blob) && blob.getTeamNum() == this.getTeamNum() && //can change class
+				canChangeClass(this, blob) && !isDifferentTeam(this, blob) && //can change class
 				blob.isKeyJustReleased(key_use) && //just released e
 				isTap(blob, 4) && //tapped e
 				blob.getTickSinceCreated() > 1 //prevents infinite loop of swapping class
@@ -41,16 +42,15 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
-
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (!canSeeButtons(this, caller) || isDifferentTeam(this, caller)) return;
 
 	// button for runner
 	// create menu for class change
-	if (canChangeClass(this, caller) && caller.getTeamNum() == this.getTeamNum())
+	if (canChangeClass(this, caller))
 	{
 		caller.CreateGenericButton("$change_class$", Vec2f(0, 0), this, buildSpawnMenu, getTranslatedString("Swap Class"));
 	}
