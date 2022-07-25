@@ -87,7 +87,6 @@ void FetchExisting()
 {
 	if (getMap() !is null)
 	{
-		print("A");
 		CBlob@[] blobs;
 		
 		for (uint i = 0; i < names_to_decay.length; i++)
