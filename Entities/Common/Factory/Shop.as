@@ -8,6 +8,7 @@
 #include "MakeCrate.as"
 #include "CheckSpam.as"
 #include "GenericButtonCommon.as"
+#include "ItemLimits.as";
 
 void onInit(CBlob@ this)
 {
@@ -87,9 +88,9 @@ bool isInRadius(CBlob@ this, CBlob @caller)
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	bool isServer = getNet().isServer();
-
+	
 	if (cmd == this.getCommandID("shop buy"))
-	{
+	{	
 		if (this.hasTag("shop disabled"))
 			return;
 
@@ -106,6 +107,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ caller = getBlobByNetworkID(callerID);
 		if (caller is null) { return; }
 		CInventory@ inv = caller.getInventory();
+		
+		CRules@ rules = getRules();
+		
+		if (rules.hasTag('item limits'))
+		{	
+			if (blobLimitExceeded( blobName, caller )) { return; }
+		}
 
 		if (this.getHealth() <= 0)
 		{
@@ -189,7 +197,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 				else
 				{
-
 					//inv.server_TakeRequirements(s.requirements);
 					Vec2f spawn_offset = Vec2f();
 
@@ -215,9 +222,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 						}
 					}
 					else
-					{
+					{	
 						CBlob@ blob = server_CreateBlob(blobName, caller.getTeamNum(), this.getPosition() + spawn_offset);
 						CInventory@ callerInv = caller.getInventory();
+						
 						if (blob !is null)
 						{
 							bool pickable = blob.getAttachments() !is null && blob.getAttachments().getAttachmentPointByName("PICKUP") !is null;
@@ -425,7 +433,6 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 			menu.AddKeyCommand(numKeys[i], this.getCommandID("shop buy"), params);
 		}
 	}
-
 }
 
 void BuildDefaultShopMenu(CBlob@ this, CBlob @caller)
