@@ -18,7 +18,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	{
 		this.getSprite().PlaySound(this.get_string("eat sound"));
 
-		if (getNet().isServer())
+		if (isServer())
 		{
 			u16 blob_id;
 			if (!params.saferead_u16(blob_id)) return;
@@ -74,7 +74,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		return;
 	}
 
-	if (getNet().isServer() && !blob.hasTag("dead"))
+	if (isServer() && !blob.hasTag("dead"))
 	{
 		Heal(blob, this);
 	}
@@ -83,30 +83,24 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if (this is null || attached is null) {return;}
-
-	if (isServer())
-	{
-		Heal(attached, this);
-	}
-
-	CPlayer@ p = attached.getPlayer();
-	if (p is null){return;}
-
-	this.set_u16("healer", p.getNetworkID());
+	SetHealer(this, attached);
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 {
-	if (this is null || detached is null) {return;}
+	SetHealer(this, detached);
+}
 
-	if (isServer())
+void SetHealer(CBlob@ food, CBlob@ blob)
+{
+	if (food is null || blob is null) 
 	{
-		Heal(detached, this);
+		return;
 	}
 
-	CPlayer@ p = detached.getPlayer();
-	if (p is null){return;}
-
-	this.set_u16("healer", p.getNetworkID());
-}
+	CPlayer@ p = blob.getPlayer();
+	if (p !is null)
+	{
+		food.set_u16("healer", p.getNetworkID());
+	}
+} 
