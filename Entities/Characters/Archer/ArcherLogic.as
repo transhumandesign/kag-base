@@ -409,9 +409,17 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		moveVars.walkFactor *= 0.75f;
 		moveVars.canVault = false;
 
-		const bool just_action1 = this.isKeyJustPressed(key_action1);
+		bool just_action1 = this.isKeyJustPressed(key_action1);
 
 		//	printf("charge_state " + charge_state );
+		if (hasarrow && charge_state == ArcherParams::no_arrows)
+		{
+			// (when key_action1 is down) reset charge state when:
+			// * the player has picks up arrows when inventory is empty
+			// * the player switches arrow type while charging bow
+			charge_state = ArcherParams::not_aiming;
+			just_action1 = true;
+		}
 
 		if ((just_action1 || this.wasKeyPressed(key_action2) && !pressed_action2) &&
 		        (charge_state == ArcherParams::not_aiming || charge_state == ArcherParams::fired || charge_state == ArcherParams::stabbing))

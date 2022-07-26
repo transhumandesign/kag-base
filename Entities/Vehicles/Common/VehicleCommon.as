@@ -257,7 +257,8 @@ void swapAmmo(CBlob@ this, VehicleInfo@ v, u8 ammoIndex)
 
 AttachmentPoint@ getMagAttachmentPoint(CBlob@ this)
 {
-	return this.getAttachments().getAttachmentPointByName("MAG");
+	// returns the "MAG" point only if this blob is the socket
+	return this.getAttachments().getAttachmentPoint("MAG", true);
 }
 
 CBlob@ getMagBlob(CBlob@ this)
