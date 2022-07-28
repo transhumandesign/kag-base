@@ -1009,7 +1009,6 @@ void Vehicle_onAttach(CBlob@ this, VehicleInfo@ v, CBlob@ attached, AttachmentPo
 	{
 		attachedPoint.offset = v.mag_offset;
 		attachedPoint.offset.y += attached.getHeight() / 2.0f;
-		attachedPoint.offsetZ = -60.0f;
 	}
 
 	// sync current ammo index
