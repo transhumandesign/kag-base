@@ -1,3 +1,14 @@
+// Blob script to override the pickup importance of the blob.
+// This will set the sprite Z to the value of the "important-pickup" f32 blob property at init time.
+// It will also try to restore the chosen Z when the blob gets detached.
+//
+// By default, "important-pickup" is set to 20, as a sane default for important blobs.
+// Use `blob.set_f32("important-pickup", any_z_you_want);` in your onInit hook to override this value.
+// A higher value means closer to the front, i.e. has a higher importance during pickup.
+//
+// WARNING: Make sure that this script is late in the script list.
+// ImportantPickup's onInit must be executed *after* yours to assign the correct Z.
+
 #include "StandardControlsCommon.as"
 
 // Current baseZ ordening in the game:
