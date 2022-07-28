@@ -42,26 +42,15 @@ bool isTapPickup(CBlob@ this, int ticks = 15)
 }
 
 
-bool PointInsidePolygon( Vec2f Point, Vec2f[] polyVerts, Vec2f polyPos, bool facingLeft )
+bool PointInsidePolygon( Vec2f Point, Vec2f[] polygon, Vec2f polyPos, bool facingLeft )
 {
-	// Mirror the polygon when the blob is facing left
-	// We make a copy, as we do not want to modify the original
-    Vec2f[] polygon;
-
+    // Mirror the polygon when the blob is facing left
     if (facingLeft) 
     {
-      Vec2f[] mirrored;
-      for ( int i = 0 ; i < polyVerts.length ; i++ )
+      for ( int i = 0 ; i < polygon.length ; i++ )
       {
-        Vec2f q = Vec2f(-polyVerts[i].x, polyVerts[i].y);
-        mirrored.push_back(q);
+        polygon[i].x = -polygon[i].x;
       }
-
-      polygon = mirrored;
-    } 
-    else 
-    {
-      polygon = polyVerts;
     }
 
     double minX = polyPos.x+polygon[0].x;
