@@ -59,18 +59,8 @@ void onInit(CBlob@ this)
 	this.set_f32("important-pickup", baseZ);
 }
 
-void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
-{
-	print("pickup onattach");
-	f32 baseZ = this.getSprite().getZ();
-	this.set_f32("important-pickup", baseZ);
-}
-
-
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
-	print("pickup ondetach");
-	
 	f32 baseZ = this.get_f32("important-pickup");
 	this.getSprite().SetZ(baseZ);
 }
