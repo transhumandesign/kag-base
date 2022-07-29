@@ -167,7 +167,6 @@ void onEndCollision(CBlob@ this, CBlob@ blob)
 	}
 }
 
-
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return false;
@@ -179,14 +178,36 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	if (customData == Hitters::boulder)
 		return 0;
 
-	//print("custom data: "+customData+" builder: "+Hitters::builder);
-	if (customData == Hitters::builder)
-		damage *= 2;
-	if (customData == Hitters::drill)                //Hitters::saw is the drill hitter.... why //fixed
-		damage *= 2;
-	if (customData == Hitters::bomb)
-		damage *= 1.3f;
+	switch (customData)
+	{
+		case Hitters::builder:
+			damage *= 2.0f;
+			break;
+		case Hitters::sword:
+			damage *= 1.5f;
+			break;
+		case Hitters::bomb:
+			damage *= 1.4f;
+			if (hitterBlob.getTeamNum() == this.getTeamNum())
+				damage *= 0.65f;
+			break;
+		case Hitters::drill:
+			damage *= 2.0f;
+			break;
+		default:
+			break;
+	}
 
+	if (this.hasTag("will_soon_collapse"))
+	{
+		damage *= 1.25f;
+	}
+
+	return damage;
+}
+
+void onHealthChange(CBlob@ this, f32 oldHealth)
+{
 	CSprite @sprite = this.getSprite();
 
 	if (sprite !is null)
@@ -197,9 +218,11 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 		if (destruction_anim !is null)
 		{
-			if ((this.getHealth() - damage) < this.getInitialHealth())
+			f32 newHealth = this.getHealth();
+
+			if (newHealth < this.getInitialHealth())
 			{
-				f32 ratio = (this.getHealth() - damage * getRules().attackdamage_modifier) / this.getInitialHealth();
+				f32 ratio = newHealth / this.getInitialHealth();
 
 				if (ratio <= 0.0f)
 				{
@@ -216,15 +239,13 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 		Animation @close_anim = sprite.getAnimation("close");
 		u8 lastframe = close_anim.getFrame(close_anim.getFramesCount() - 1);
-		if (lastframe < frame)
+		if (lastframe < frame) // if our current final frame is less damaged than our door actually is
 		{
-			close_anim.AddFrame(frame);
+			close_anim.RemoveFrame(lastframe);
+			close_anim.AddFrame(frame); // replace the final frame by a more damaged one
 		}
 	}
-
-	return damage;
 }
-
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {

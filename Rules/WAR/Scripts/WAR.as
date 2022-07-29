@@ -1050,6 +1050,10 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 	{
 		MakeWarTradeMenu(blob);
 	}
+	else if (blob.getName() == "mat_gold")
+	{
+		blob.RemoveScript("DecayQuantity.as");
+	}
 }
 
 TradeItem@ addGoldForItem(CBlob@ this, const string &in name,

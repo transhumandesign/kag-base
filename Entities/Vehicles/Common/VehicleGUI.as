@@ -30,7 +30,7 @@ void onRender(CSprite@ this)
 		if (!v.getCurrentAmmo().infinite_ammo)
 			drawAmmoCount(blob, v);
 
-		if (blob.getName() != "mounted_bow")
+		if (v.getCurrentAmmo().max_charge_time > 0)
 		{
 			drawChargeBar(blob, v);
 			drawCooldownBar(blob, v);

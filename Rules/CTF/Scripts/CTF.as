@@ -738,6 +738,24 @@ void onInit(CRules@ this)
 	this.set_s32("restart_rules_after_game_time", 30 * 30);
 }
 
+void onStateChange(CRules@ this, const u8 oldState)
+{
+	// we have to do it like this because warmup state is broken and not synced properly clientside
+	if(isServer())
+	{
+		if (this.getCurrentState() == WARMUP)
+		{
+			this.Tag("faster building");
+			this.Sync("faster building", true);
+		}
+		else
+		{
+			this.Untag("faster building");
+			this.Sync("faster building", true);
+		}
+	}
+}
+
 // had to add it here for tutorial cause something didnt work in the tutorial script
 void onBlobDie(CRules@ this, CBlob@ blob)
 {
@@ -749,5 +767,13 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 			server_DropCoins(blob.getPosition(), XORRandom(15) + 5);
 			blob.Tag("dropped coins");
 		}
+	}
+}
+
+void onBlobCreated(CRules@ this, CBlob@ blob)
+{
+	if (blob.getName() == "mat_gold")
+	{
+		blob.RemoveScript("DecayQuantity.as");
 	}
 }

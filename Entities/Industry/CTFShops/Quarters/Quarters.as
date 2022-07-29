@@ -202,7 +202,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 			if (name == "beer")
 			{
-				// TODO: gulp gulp sound
+				this.getSprite().PlaySound("/Gulp.ogg");
 				if (isServer)
 				{
 					callerBlob.server_Heal(beer_amount);

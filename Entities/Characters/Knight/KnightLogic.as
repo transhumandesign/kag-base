@@ -82,7 +82,7 @@ void onInit(CBlob@ this)
 	this.Tag("player");
 	this.Tag("flesh");
 
-	this.addCommandID("get bomb");
+	this.addCommandID("activate/throw bomb");
 
 	this.push("names to activate", "keg");
 
@@ -309,9 +309,7 @@ void onTick(CBlob@ this)
 						}
 						else
 						{
-							CBitStream params;
-							params.write_u8(bombType);
-							this.SendCommand(this.getCommandID("get bomb"), params);
+							client_SendThrowOrActivateCommandBomb(this, bombType);
 							thrown = true;
 						}
 						break;
@@ -1072,56 +1070,7 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("get bomb"))
-	{
-		const u8 bombType = params.read_u8();
-		if (bombType >= bombTypeNames.length)
-			return;
-
-		const string bombTypeName = bombTypeNames[bombType];
-		this.Tag(bombTypeName + " done activate");
-		if (hasItem(this, bombTypeName))
-		{
-			if (bombType == 0)
-			{
-				if (getNet().isServer())
-				{
-					CBlob @blob = server_CreateBlob("bomb", this.getTeamNum(), this.getPosition());
-					if (blob !is null)
-					{
-						TakeItem(this, bombTypeName);
-						this.server_Pickup(blob);
-					}
-				}
-			}
-			else if (bombType == 1)
-			{
-				if (getNet().isServer())
-				{
-					CBlob @blob = server_CreateBlob("waterbomb", this.getTeamNum(), this.getPosition());
-					if (blob !is null)
-					{
-						TakeItem(this, bombTypeName);
-						this.server_Pickup(blob);
-						blob.set_f32("map_damage_ratio", 0.0f);
-						blob.set_f32("explosive_damage", 0.0f);
-						blob.set_f32("explosive_radius", 92.0f);
-						blob.set_bool("map_damage_raycast", false);
-						blob.set_string("custom_explosion_sound", "/GlassBreak");
-						blob.set_u8("custom_hitter", Hitters::water);
-                        blob.Tag("splash ray cast");
-
-					}
-				}
-			}
-			else
-			{
-			}
-
-			SetFirstAvailableBomb(this);
-		}
-	}
-	else if (cmd == this.getCommandID("cycle"))  //from standardcontrols
+	if (cmd == this.getCommandID("cycle"))  //from standardcontrols
 	{
 		// cycle bombs
 		u8 type = this.get_u8("bomb type");
@@ -1149,6 +1098,74 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("activate/throw"))
 	{
+		SetFirstAvailableBomb(this);
+	}
+	else if (cmd == this.getCommandID("activate/throw bomb"))
+	{
+		if (isServer())
+		{
+			Vec2f pos = params.read_Vec2f();
+			Vec2f vector = params.read_Vec2f();
+			Vec2f vel = params.read_Vec2f();
+			u8 bombType = params.read_u8();
+
+			CBlob @carried = this.getCarriedBlob();
+
+			if (carried !is null)
+			{
+				bool holding_bomb = false;
+				// are we actually holding a bomb or something else?
+				for (uint i = 0; i < bombNames.length; i++)
+				{
+					if(carried.getName() == bombNames[i])
+					{
+						holding_bomb = true;
+						DoThrow(this, carried, pos, vector, vel);
+					}
+				}
+
+				if (!holding_bomb)
+				{
+					ActivateBlob(this, carried, pos, vector, vel);
+				}
+			}
+			else
+			{
+				if (bombType >= bombTypeNames.length)
+					return;
+
+				const string bombTypeName = bombTypeNames[bombType];
+				this.Tag(bombTypeName + " done activate");
+				if (hasItem(this, bombTypeName))
+				{
+					if (bombType == 0)
+					{
+						CBlob @blob = server_CreateBlob("bomb", this.getTeamNum(), this.getPosition());
+						if (blob !is null)
+						{
+							TakeItem(this, bombTypeName);
+							this.server_Pickup(blob);
+						}
+					}
+					else if (bombType == 1)
+					{
+						CBlob @blob = server_CreateBlob("waterbomb", this.getTeamNum(), this.getPosition());
+						if (blob !is null)
+						{
+							TakeItem(this, bombTypeName);
+							this.server_Pickup(blob);
+							blob.set_f32("map_damage_ratio", 0.0f);
+							blob.set_f32("explosive_damage", 0.0f);
+							blob.set_f32("explosive_radius", 92.0f);
+							blob.set_bool("map_damage_raycast", false);
+							blob.set_string("custom_explosion_sound", "/GlassBreak");
+							blob.set_u8("custom_hitter", Hitters::water);
+							blob.Tag("splash ray cast");
+						}
+					}
+				}
+			}
+		}
 		SetFirstAvailableBomb(this);
 	}
 	else
