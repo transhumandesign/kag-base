@@ -42,7 +42,7 @@ bool isTapPickup(CBlob@ this, int ticks = 15)
 }
 
 
-bool PointInsidePolygon( Vec2f Point, Vec2f[] polygon, Vec2f polyPos, bool facingLeft )
+bool pointInsidePolygon( Vec2f Point, Vec2f[] polygon, Vec2f polyPos, bool facingLeft )
 {
     // Mirror the polygon when the blob is facing left
     if (facingLeft) 

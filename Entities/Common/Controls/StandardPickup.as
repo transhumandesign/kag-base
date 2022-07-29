@@ -573,14 +573,14 @@ CBlob@ getClosestBlob(CBlob@ this)
 
 
 			Vec2f[]@ hoverShape;
-			bool pointInsidePolygon = false;
+			bool isPointInsidePolygon = false;
 			
 			if (b.get("hover-poly", @hoverShape))
 			{
-				pointInsidePolygon = PointInsidePolygon(this.getAimPos(),  hoverShape, bpos, b.isFacingLeft());
+				isPointInsidePolygon = pointInsidePolygon(this.getAimPos(),  hoverShape, bpos, b.isFacingLeft());
 			}
 			
-			if (pointInsidePolygon || b.isPointInside(this.getAimPos())) 
+			if (isPointInsidePolygon || b.isPointInside(this.getAimPos())) 
 			{
 				// Let's just get the draw order of the sprite
 				CSprite @bs = b.getSprite();

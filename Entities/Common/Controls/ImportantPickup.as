@@ -49,65 +49,71 @@
 
 void onInit(CBlob@ this)
 {
-  f32 baseZ = 20.0f;
-  if (this.exists("important-pickup")) 
-  {
-    baseZ = this.get_f32("important-pickup");
-  }
+	f32 baseZ = 20.0f;
+	if (this.exists("important-pickup")) 
+	{
+		baseZ = this.get_f32("important-pickup");
+	}
 
-  this.getSprite().SetZ(baseZ);
-  this.set_f32("important-pickup", baseZ);
+	this.getSprite().SetZ(baseZ);
+	this.set_f32("important-pickup", baseZ);
 }
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-  f32 baseZ = this.getSprite().getZ();
-  this.set_f32("important-pickup", baseZ);
+	print("pickup onattach");
+	f32 baseZ = this.getSprite().getZ();
+	this.set_f32("important-pickup", baseZ);
 }
 
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
-  f32 baseZ = this.get_f32("important-pickup");
-  this.getSprite().SetZ(baseZ);
+	print("pickup ondetach");
+	
+	f32 baseZ = this.get_f32("important-pickup");
+	this.getSprite().SetZ(baseZ);
 }
 
-// Add ImportantPickup.as to sprite_scripts in the .ctf file to enable rendering of 
-// the hover square (for debug purposes)
+// Add ImportantPickup.as to sprite_scripts in the .ctf file, and enable g_debug to turn on rendering of 
+// the hover squares
 void onRender(CSprite@ this)
 {
-  const SColor inactive_color(0xFFAAAAAA);
-  const SColor active_color(0xFFFFFFFF);
+	if (g_debug == 0)
+		return;
 
-  CBlob@ blob = this.getBlob();
+	const SColor inactive_color(0xFFAAAAAA);
+	const SColor active_color(0xFFFFFFFF);
 
-  Vec2f[]@ hoverPoly;
-  if (blob.get("hover-poly", @hoverPoly)) {
-    Vec2f[] polygon;
+	CBlob@ blob = this.getBlob();
 
-    if (blob.isFacingLeft()) 
-    {
-      Vec2f[] mirrored;
-      for ( int i = 0 ; i < hoverPoly.length ; i++ )
-      {
-        Vec2f q = Vec2f(-hoverPoly[i].x, hoverPoly[i].y);
-        mirrored.push_back(q);
-      }
+	Vec2f[]@ hoverPoly;
+	if (blob.get("hover-poly", @hoverPoly)) {
+		Vec2f[] polygon;
 
-      polygon = mirrored;
-    } 
-    else 
-    {
-      polygon = hoverPoly;
-    }
+		if (blob.isFacingLeft()) 
+		{
+			Vec2f[] mirrored;
+			for ( int i = 0 ; i < hoverPoly.length ; i++ )
+			{
+				Vec2f q = Vec2f(-hoverPoly[i].x, hoverPoly[i].y);
+				mirrored.push_back(q);
+			}
+
+			polygon = mirrored;
+		} 
+		else 
+		{
+			polygon = hoverPoly;
+		}
 
 
-    Vec2f pos = blob.getPosition();
+		Vec2f pos = blob.getPosition();
 
-    for (int i = 0; i < polygon.length-1; ++i) 
-    {
-      GUI::DrawLine(polygon[i] + pos, polygon[i+1] + pos, active_color);
-    }
-  
-  }
+		for (int i = 0; i < polygon.length-1; ++i) 
+		{
+			GUI::DrawLine(polygon[i] + pos, polygon[i+1] + pos, active_color);
+		}
+	
+	}
 }

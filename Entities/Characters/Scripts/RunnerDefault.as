@@ -58,6 +58,13 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	this.server_DetachFrom( attached ); CRASHES*/
 }
 
+// set the Z back
+// The baseZ is assumed to be 0
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+{
+	this.getSprite().SetZ(0.0f);
+}
+
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return this.hasTag("migrant") || this.hasTag("dead");

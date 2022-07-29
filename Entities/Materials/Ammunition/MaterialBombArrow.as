@@ -1,5 +1,4 @@
-
-#define SERVER_ONLY
+#include "ArrowCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -7,18 +6,7 @@ void onInit(CBlob@ this)
 
   this.getCurrentScript().runFlags |= Script::remove_after_this;
 
-  // Pickup: custom hover area
-  Vec2f[] hoverRect = 
-    { Vec2f(-3.0f, -4.5f)
-    , Vec2f(-1.5f, -7.5f)
-    , Vec2f(1.5f, -7.5f)
-    , Vec2f(3.0f, -4.5f)
-    , Vec2f(3.0f, 3.5f)
-    , Vec2f(-3.0f,  3.5f)
-    , Vec2f(-3.0f,  -4.5f)
-    };
+  setArrowHoverRect(this);
 
-  this.set("hover-poly", hoverRect);
-
-  this.set_f32("important-pickup", 25.0f);
+  this.set_f32("important-pickup", 30.0f);
 }
