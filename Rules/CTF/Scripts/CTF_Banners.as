@@ -69,6 +69,10 @@ void onTick(CRules@ this)
 	if (this.get_bool("Draw Banner"))
 	{
 		u8 banner_type = this.get_u8("Animate Banner");
+		
+		if (banner_type >= banners.length)	
+			return;
+		
 		Banner@ banner = banners[banner_type];
 
 		if (banner_type == BannerType::GAME_START)
@@ -109,6 +113,9 @@ void onRender(CRules@ this)
 
 				bannerPos = Vec2f_lerp(bannerStart, bannerDest, frameTime);
 			}
+
+			if (banner_type >= banners.length)
+				return;
 
 			Banner@ banner = banners[banner_type];
 
