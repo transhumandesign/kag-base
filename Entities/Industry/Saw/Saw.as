@@ -152,8 +152,11 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 
 bool canSaw(CBlob@ this, CBlob@ blob)
 {
-	if (blob.getRadius() >= this.getRadius() * 0.99f || blob.getShape().isStatic() ||
-	        blob.hasTag("sawed") || blob.hasTag("invincible"))
+	if (blob.getRadius() >= this.getRadius() * 0.99f 
+		|| blob.getShape().isStatic() 
+		|| blob.hasTag("sawed") 
+		|| blob.hasTag("invincible")
+		|| blob.getTickSinceCreated() < 30)
 	{
 		return false;
 	}
