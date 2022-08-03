@@ -146,10 +146,10 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 						newBlob.setPosition(caller.getPosition());
 
 						// no extra immunity after class change
-						if (caller.exists("spawn immunity time"))
+						if (caller.exists("immunity ticks"))
 						{
-							newBlob.set_u32("spawn immunity time", caller.get_u32("spawn immunity time"));
-							newBlob.Sync("spawn immunity time", true);
+							newBlob.set_s32("immunity ticks", caller.get_s32("immunity ticks"));
+							newBlob.Sync("immunity ticks", true);
 						}
 
 						caller.Tag("switch class");

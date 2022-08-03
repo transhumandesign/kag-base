@@ -1,25 +1,27 @@
 void onInit(CBlob@ this)
 {
-	if (this.hasTag("invincibility done"))
-	{
-		return;
-	}
 	this.Tag("invincible");
-
-	if (!this.exists("spawn immunity time"))
-		this.set_u32("spawn immunity time", getGameTime());
+	this.set_s32("immunity ticks", getRules().get_f32("immunity sec") * getTicksASecond());
 }
 
 void onTick(CBlob@ this)
 {
-	bool immunity = false;
-
-	float time_modifier = (this.isKeyPressed(key_action1) ? 0.75f : 1.0f);
-
-	u32 ticksSinceImmune = getGameTime() - this.get_u32("spawn immunity time");
-	u32 maximumImmuneTicks = getRules().get_f32("immunity sec") * getTicksASecond() * time_modifier;
-	if (ticksSinceImmune < maximumImmuneTicks)
+	if (!this.hasTag("invincible"))
 	{
+		return;
+	}
+	
+	bool isImmune	= false;
+	s32 immunity 	= this.get_s32("immunity ticks");
+	
+	if (immunity > 0)
+	{
+		// is immune, handle values
+		isImmune = true;
+		immunity -= (this.isKeyPressed(key_action1)) ? 2 : 1;
+		this.set_s32("immunity ticks", Maths::Max(immunity, 0));
+		
+		// handle sprite
 		CSprite@ s = this.getSprite();
 		if (s !is null)
 		{
@@ -28,16 +30,13 @@ void onTick(CBlob@ this)
 			if (layer !is null)
 				layer.setRenderStyle(getGameTime() % 7 < 5 ? RenderStyle::normal : RenderStyle::additive);
 		}
-		immunity = true;
 	}
-
-	if (!immunity || this.getPlayer() is null)
+	
+	if (!isImmune || this.getPlayer() is null)
 	{
+		//not immune anymore
 		this.Untag("invincible");
-		this.Tag("invincibility done");
-		this.Sync("invincibility done", true);
-
-		this.getCurrentScript().runFlags |= Script::remove_after_this;
 		this.getSprite().setRenderStyle(RenderStyle::normal);
+		this.getCurrentScript().runFlags |= Script::remove_after_this;
 	}
 }
