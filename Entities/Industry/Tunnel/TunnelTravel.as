@@ -151,7 +151,7 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 			return;
 
 		// move caller
-		caller.setPosition(Vec2f(tunnel.getPosition().x, tunnel.getPosition().y+getMap().tilesize));
+		caller.setPosition(Vec2f(tunnel.getPosition().x, tunnel.getPosition().y + getMap().tilesize));
 		caller.setVelocity(Vec2f_zero);
 		//caller.getShape().PutOnGround();
 
