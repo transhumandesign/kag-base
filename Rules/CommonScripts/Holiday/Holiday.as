@@ -95,21 +95,14 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		if(!params.saferead_string(_holiday)) return;
 		if(!params.saferead_string(_holiday_cache)) return;
 
-
-		if (scriptlist.find(_holiday) == -1) {
-			warn("script " + _holiday + " not found inside script list");
-			return;
-		}
-
-		if (scriptlist.find(_holiday_cache) == -1) {
-			warn("script " + _holiday_cache + " cache not found inside script list");
-			return;
-		} 
-
 		if(_holiday != _holiday_cache) //changed
 		{
 			if(_holiday_cache != "")
 			{
+				if (scriptlist.find(_holiday_cache) == -1) {
+					warn("script " + _holiday_cache + " cache not found inside script list");
+					return;
+				} 
 				print("removing " + _holiday_cache + " holiday script");
 				//remove old holiday
 				this.RemoveScript(_holiday_cache + ".as");
@@ -120,6 +113,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			}
 			if(_holiday != "")
 			{
+				if (scriptlist.find(_holiday) == -1) {
+					warn("script " + _holiday + " not found inside script list");
+					return;
+				}
+
 				print("adding " + _holiday + " holiday script");
 				//adds the holiday script
 				this.AddScript(_holiday+".as");
