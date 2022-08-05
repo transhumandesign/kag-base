@@ -146,6 +146,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 			if (!getNet().isServer()) { return; } //only do this on server
 
+			// QUICK FIX: Check that the blob we are buying is an item we sell
+			bool blob_found = false;
+
+			for (int i = 0; i < shop_items.length; i++) {
+				if (shop_items[i].blobName == blobName) {
+					blob_found = true;
+					break;
+				}
+			}
+
+			if (!blob_found) {
+				warn("blob " + blobName + " not found in shop" + this.getName());
+				return;
+			}
+
 			bool tookReqs = false;
 
 			// try taking from the caller + this shop first
