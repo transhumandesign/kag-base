@@ -99,7 +99,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		bool spawnToInventory = params.read_bool();
 		bool spawnInCrate = params.read_bool();
 		bool producing = params.read_bool();
-		string blobName = params.read_string();
 		u8 s_index = params.read_u8();
 		bool hotkey = params.read_bool();
 
@@ -146,21 +145,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 			if (!getNet().isServer()) { return; } //only do this on server
 
-			// QUICK FIX: Check that the blob we are buying is an item we sell
-			bool blob_found = false;
-
-			for (int i = 0; i < shop_items.length; i++) {
-				if (shop_items[i].blobName == blobName) {
-					blob_found = true;
-					break;
-				}
-			}
-
-			if (!blob_found) {
-				warn("blob " + blobName + " not found in shop" + this.getName());
-				return;
-			}
-
 			bool tookReqs = false;
 
 			// try taking from the caller + this shop first
@@ -199,7 +183,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					CBitStream params;
 					params.write_netid(caller.getNetworkID());
 					params.write_netid(0);
-					params.write_string(blobName);
+					params.write_string(s.blobName);
 					this.SendCommand(this.getCommandID("shop made item"), params);
 				}
 				else
@@ -214,7 +198,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 					if (spawnInCrate)
 					{
-						CBlob@ crate = server_MakeCrate(blobName, s.name, s.crate_icon, caller.getTeamNum(), caller.getPosition());
+						CBlob@ crate = server_MakeCrate(s.blobName, s.name, s.crate_icon, caller.getTeamNum(), caller.getPosition());
 
 						if (crate !is null)
 						{
@@ -231,7 +215,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					}
 					else
 					{
-						CBlob@ blob = server_CreateBlob(blobName, caller.getTeamNum(), this.getPosition() + spawn_offset);
+						CBlob@ blob = server_CreateBlob(s.blobName, caller.getTeamNum(), this.getPosition() + spawn_offset);
 						CInventory@ callerInv = caller.getInventory();
 						if (blob !is null)
 						{
@@ -305,7 +289,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 						CBitStream params;
 						params.write_netid(caller.getNetworkID());
 						params.write_netid(newlyMade.getNetworkID());
-						params.write_string(blobName);
+						params.write_string(s.blobName);
 						this.SendCommand(this.getCommandID("shop made item"), params);
 					}
 				}
@@ -332,7 +316,6 @@ void addShopItemsToMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
 			params.write_bool(s_item.spawnToInventory);
 			params.write_bool(s_item.spawnInCrate);
 			params.write_bool(s_item.producing);
-			params.write_string(s_item.blobName);
 			params.write_u8(u8(i));
 			params.write_bool(false); //used hotkey?
 
@@ -433,7 +416,6 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 			params.write_bool(shopitems[i].spawnToInventory);
 			params.write_bool(shopitems[i].spawnInCrate);
 			params.write_bool(shopitems[i].producing);
-			params.write_string(shopitems[i].blobName);
 			params.write_u8(i);
 			params.write_bool(true); //used hotkey?
 
