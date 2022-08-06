@@ -34,7 +34,7 @@ shared class RespawnSystem
 			newBlob.server_SetPlayer(player);
 			player.server_setTeamNum(p_info.team);
 
-			if (p_info.customImmunityTime > 0)
+			if (p_info.customImmunityTime >= 0)
 			{
 				newBlob.set_u32("custom immunity time", p_info.customImmunityTime);
 			}

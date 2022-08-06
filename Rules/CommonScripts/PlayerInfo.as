@@ -22,7 +22,7 @@ shared class PlayerInfo
 		spawnsCount = 0;
 		oldteam = 255;
 		lastSpawnRequest = 0;
-		customImmunityTime = 0;
+		customImmunityTime = -1;
 	}
 
 	void setTeam(u8 newTeam)
