@@ -14,8 +14,6 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
-	this.CreateRespawnPoint("outpost", Vec2f(0.0f, -4.0f));
-
 	InitRespawnCommand(this);
 	InitClasses(this);
 
@@ -51,6 +49,10 @@ void onInit(CBlob@ this)
 		planks.SetRelativeZ(10.0f);
 		planks.SetOffset(Vec2f(9.0f, 10.0f));
 	}
+
+	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
+	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 7, Vec2f(16, 16));
+	this.SetMinimapRenderAlways(true);
 }
 
 void onTick(CSprite@ this)
