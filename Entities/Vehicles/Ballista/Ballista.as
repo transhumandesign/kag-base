@@ -1,6 +1,4 @@
 #include "VehicleCommon.as"
-#include "ClassSelectMenu.as";
-#include "StandardRespawnCommand.as";
 #include "GenericButtonCommon.as";
 #include "Costs.as";
 
@@ -15,14 +13,7 @@ const f32 low_angle = 60.0f;
 
 void onInit(CBlob@ this)
 {
-	this.Tag("respawn");
-
-	InitRespawnCommand(this);
-	InitClasses(this);
-	this.Tag("change class drop inventory");
-
 	InitCosts();
-	this.set_s32("gold building amount", CTFCosts::ballista_gold);
 
 	AddIconToken("$Normal_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 0);
 	AddIconToken("$Explosive_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 1);
@@ -136,10 +127,6 @@ void onInit(CBlob@ this)
 		flag.SetRelativeZ(-0.8f);
 		flag.SetOffset(Vec2f(20.0f, -2.0f));
 	}
-
-	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
-	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 7, Vec2f(16, 16));
-	this.SetMinimapRenderAlways(false);
 }
 
 f32 getAngle(CBlob@ this, const u8 charge, VehicleInfo@ v)
@@ -245,20 +232,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		{
 			Vehicle_AddLoadAmmoButton(this, caller);
 		}
-		if (/*!isAnotherRespawnClose(this) &&*/ !isFlipped(this))
-		{
-			caller.CreateGenericButton("$change_class$", Vec2f(0, 1), this, buildSpawnMenu, getTranslatedString("Change class"));
-		}
 	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == SpawnCmd::changeClass)
-	{
-		onRespawnCommand(this, cmd, params);
-	}
-	else if (cmd == this.getCommandID("fire blob"))
+	if (cmd == this.getCommandID("fire blob"))
 	{
 		CBlob@ blob = getBlobByNetworkID(params.read_netid());
 		const u8 charge = params.read_u8();
@@ -368,23 +347,6 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 		return;
 	}
 	Vehicle_onDetach(this, v, detached, attachedPoint);
-}
-
-bool isAnotherRespawnClose(CBlob@ this)
-{
-	CBlob@[] blobsInRadius;
-	if (this.getMap().getBlobsInRadius(this.getPosition(), this.getRadius() * 1.5f, @blobsInRadius))
-	{
-		for (uint i = 0; i < blobsInRadius.length; i++)
-		{
-			CBlob @b = blobsInRadius[i];
-			if (b !is this && b.hasTag("respawn") && b.getNetworkID() < this.getNetworkID())
-			{
-				return true;
-			}
-		}
-	}
-	return false;
 }
 
 // Blame Fuzzle.

@@ -10,7 +10,7 @@ bool getTunnels(CBlob@ this, CBlob@[]@ tunnels)
 	{
 		CBlob@ blob = list[i];
 		if (blob !is this && blob.getTeamNum() == this.getTeamNum()
-		        && !blob.hasTag("under raid"))  // HACK
+		        && (!blob.hasTag("under raid") || blob.hasTag("ignore raid")))  // HACK
 		{
 			tunnels.push_back(blob);
 		}

@@ -14,6 +14,9 @@ const u8 cooldown_time = 45;
 const u8 cooldown_time_player = 90;
 const u8 startStone = 100;
 
+const f32 player_launch_modifier = 0.75f;
+const f32 other_launch_modifier = 1.1f;
+
 void onInit(CBlob@ this)
 {
 	Vehicle_Setup(this,
@@ -30,8 +33,8 @@ void onInit(CBlob@ this)
 
 	Vehicle_AddAmmo(this, v,
 	                    cooldown_time, // fire delay (ticks)
-	                    5, // fire bullets amount
-	                    2, // fire cost
+	                    7, // fire bullets amount
+	                    3, // fire cost
 	                    "mat_stone", // bullet ammo config name
 	                    "Catapult Rocks", // name for ammo selection
 	                    "cata_rock", // bullet config name
@@ -230,13 +233,18 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 	{
 		f32 angle = this.getAngleDegrees();
 		f32 sign = this.isFacingLeft() ? -1.0f : 1.0f;
-
 		Vec2f vel = Vec2f(sign, -0.5f) * charge * 0.3f;
-
 		vel += (Vec2f((_r.NextFloat() - 0.5f) * 128, (_r.NextFloat() - 0.5f) * 128) * 0.01f);
 		vel.RotateBy(angle);
 
-		bullet.setVelocity(vel);
+		if(bullet.hasTag("player"))
+		{
+			bullet.setVelocity(vel * player_launch_modifier);
+		}
+		else
+		{
+			bullet.setVelocity(vel * other_launch_modifier);
+		}
 
 		if (isKnockable(bullet))
 		{
@@ -248,7 +256,7 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 			bullet.getShape().getConsts().mapCollisions = false;
 			bullet.getShape().getConsts().collidable = false;
 		}
-		if(bullet.hasTag("player"))
+		if (bullet.hasTag("player"))
 		{
 			shot_player = true;
 		}
@@ -261,7 +269,7 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 	v.charge = 0;
 
 	// mildly hacky, but this is probably the cleaniest way to do it with how the code currently works
-	if(shot_player)
+	if (shot_player)
 	{
 		delay = delay * (float(cooldown_time_player) / cooldown_time);
 	}

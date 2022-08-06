@@ -36,7 +36,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (this.isOverlapping(caller) &&
 	        this.hasTag("travel tunnel") &&
 	        (!this.hasTag("teamlocked tunnel") || this.getTeamNum() == caller.getTeamNum()) &&
-	        !this.hasTag("under raid") &&
+	        (!this.hasTag("under raid") || this.hasTag("ignore raid")) &&
 	        //CANNOT travel when stunned
 			!(isKnockable(caller) && isKnocked(caller))
 		)
@@ -150,8 +150,15 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 		if (caller.isAttached())
 			return;
 
+		Vec2f position = tunnel.getPosition();
+		if (tunnel.exists("travel offset"))
+		{
+			Vec2f offset = tunnel.get_Vec2f("travel offset");
+			position += tunnel.isFacingLeft() ? -offset : offset;
+		}
+
 		// move caller
-		caller.setPosition(tunnel.getPosition());
+		caller.setPosition(position);
 		caller.setVelocity(Vec2f_zero);
 		//caller.getShape().PutOnGround();
 
