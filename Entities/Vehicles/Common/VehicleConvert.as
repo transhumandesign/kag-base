@@ -154,7 +154,9 @@ void onChangeTeam(CBlob@ this, const int oldTeam)
 
 void ConvertPoint(CBlob@ this, const string pointName)
 {
-	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName(pointName);
+	CAttachment@ att = this.getAttachments();
+	if (att is null) return;
+	AttachmentPoint@ point = att.getAttachmentPointByName(pointName);
 	if (point !is null)
 	{
 		CBlob@ blob = point.getOccupied();

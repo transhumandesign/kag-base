@@ -22,9 +22,10 @@ namespace Descriptions
 
 	ram                        = getTranslatedString("A siege engine designed to break open walls and fortifications."), //OLD
 	catapult                   = getTranslatedString("A stone throwing, ridable siege engine, requiring a crew of two."),
-	ballista                   = getTranslatedString("A bolt-firing pinpoint accurate siege engine, requiring a crew of two. Allows respawn and class change."),
+	ballista                   = getTranslatedString("A bolt-firing pinpoint accurate siege engine, requiring a crew of two."),
 	ballista_ammo              = getTranslatedString("Piercing bolts for ballista."),
 	ballista_bomb_ammo         = getTranslatedString("Explosive bolts for ballista."),
+	outpost                    = getTranslatedString("A deployable respawn point that allows class change. Has a storage and a tunnel that allows fast travel."),
 
 	stone                      = getTranslatedString("Raw stone material."),
 	wood                       = getTranslatedString("Raw wood material."),
