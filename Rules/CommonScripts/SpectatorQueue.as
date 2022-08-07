@@ -39,7 +39,7 @@ class QueueEntry
 	{
 		CPlayer@ player = getPlayerByUsername(username);
 
-		if(player !is null) return player;
+		if (player !is null) return player;
 
 		return null; 
 	}
@@ -309,14 +309,14 @@ class ClickButton
 				bool selected = (client_selected != id);
 				printf('d'+selected);
 
-				if(selected) 
+				if (selected) 
 				{
 					hide = true;
 				}
 
 				Sound::Play("buttonclick.ogg");
 
-				if(id >= -1)
+				if (id >= -1)
 				{
 					CPlayer@ player = getLocalPlayer();
 					if (player is null) return;
@@ -347,14 +347,13 @@ void setupQueueGUI(CRules@ this)
 	if (!isClient()) return;
 
 	int team_count = this.get_s32("core.teams.length");
-	if(team_count == 0) return;
+	if (team_count == 0) return;
 
 	int width = getScreenWidth();
 	int height = getScreenHeight();
 
 	int horizontal_center = width / 2;
 
-	// Main queue GUI
 	Vec2f tl = Vec2f(horizontal_center - (QueuePaneWidth / 2), height - 300);
 	Vec2f lr = tl + Vec2f(QueuePaneWidth, QueuePaneHeight);
 
@@ -376,9 +375,9 @@ void addToQueue(CPlayer@ player, int team=-1)
 
 void RemoveFromQueue(CPlayer@ player)
 {
-	for(int i=0; i<queue.length; ++i)
+	for (int i=0; i<queue.length; ++i)
 	{
-		if(queue[i].username == player.getUsername())
+		if (queue[i].username == player.getUsername())
 		{
 			queue.removeAt(i);
 
@@ -390,8 +389,6 @@ void RemoveFromQueue(CPlayer@ player)
 		}
 	}
 }
-
-// hooks
 
 int screenheight;
 int screenwidth;
@@ -474,7 +471,7 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 	{
 		if (isClient() && player.isMyPlayer())
 		{
-			Sound::Play("AchievementUnlocked.ogg"); // ?
+			Sound::Play("AchievementUnlocked.ogg"); // TODO: different, distinct sound
 		}
 
 		this.set_bool(player.getUsername() + "_playsound", false);
@@ -534,9 +531,9 @@ void onTick(CRules@ this)
 		{
 			CControls@ controls = getControls();
 
-			if(this.getSpectatorTeamNum() == getLocalPlayer().getTeamNum())
+			if (this.getSpectatorTeamNum() == getLocalPlayer().getTeamNum())
 			{
-				if(!hide)
+				if (!hide)
 				{
 					QueueGUI@ GUI;
 					this.get("queuegui", @GUI);
@@ -569,7 +566,7 @@ void onTick(CRules@ this)
 	{
 		RulesCore@ core;
 		this.get("core", @core);
-		if (core is null) return; // this will run serverside only
+		if (core is null) return; // core will be null on client
 
 		for (u16 i=0; i<queue.length; ++i)
 		{
@@ -596,7 +593,7 @@ void onTick(CRules@ this)
 				int ourSize = getTeamSize(core.teams, team);
 				int smallestSize = getTeamSize(core.teams, smallestTeam);
 
-				if(smallestSize == ourSize)
+				if (smallestSize == ourSize)
 				{
 					newTeam = team;
 				}
@@ -606,7 +603,7 @@ void onTick(CRules@ this)
 				}
 			}
 
-			// disgusting workaround to play sound
+			// disgusting workaround to play sound (didn't want to add a command just for a team change & sound)
 			this.set_bool(player.getUsername() + "_playsound", false);
 			this.SyncToPlayer(player.getUsername() + "_playsound", player);
 			this.set_bool(player.getUsername() + "_playsound", true);
@@ -621,11 +618,11 @@ void onRender(CRules@ this)
 {
 	if (g_videorecording) return;
 
-	if(getLocalPlayer() !is null)
+	if (getLocalPlayer() !is null)
 	{
-		if(this.getSpectatorTeamNum() == getLocalPlayer().getTeamNum())
+		if (this.getSpectatorTeamNum() == getLocalPlayer().getTeamNum())
 		{
-			if(!hide)
+			if (!hide)
 			{
 				QueueGUI@ GUI;
 				this.get("queuegui", @GUI);
