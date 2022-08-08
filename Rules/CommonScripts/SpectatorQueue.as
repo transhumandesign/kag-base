@@ -77,10 +77,7 @@ class QueueGUIHidden
 		if (hovered)
 		{
 			f32 tint_factor = (client_selected >= 0 ? 0.20 : 0.80);
-			color.set(255, 
-				color.getRed() + (255 - color.getRed()) * tint_factor, 
-				color.getGreen() + (255 - color.getGreen()) * tint_factor, 
-				color.getBlue() + (255 - color.getBlue()) * tint_factor);
+			color = color.getInterpolated(color_white, tint_factor);
 		}
 
 		string text = "Queue Position: " + (client_queue_pos == -1 ? "None" : "" + (client_queue_pos + 1));
