@@ -1,6 +1,5 @@
 /* Spectator Queue script written by Bunnie
    Uses custom GUI, because in-built kag GUI functions didn't really work well for this purpose
-   (although the way this thing is )
    Supports multiple teams
 */
 
