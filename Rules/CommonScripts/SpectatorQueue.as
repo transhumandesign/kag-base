@@ -524,7 +524,7 @@ void onTick(CRules@ this)
 	}
 
 	// Queue checking logic
-	if (getPlayersCount_NotSpectator() < sv_maxplayers && getGameTime() % 300 == 0)
+	if (getPlayersCount_NotSpectator() < sv_maxplayers)
 	{
 		RulesCore@ core;
 		this.get("core", @core);
