@@ -92,22 +92,11 @@ class QueueGUIHidden
 		const bool mousePressed = controls.isKeyPressed(KEY_LBUTTON);
 		const bool mouseJustReleased = controls.isKeyJustReleased(KEY_LBUTTON);
 
-		if (this.isHovered(mousepos))
+		hovered = this.isHovered(mousepos);
+		if (hovered && mouseJustReleased)
 		{
-			if (!hovered)
-			{
-				hovered = true;
-			}
-
-			if (mouseJustReleased)
-			{
-				hide = false;
-				Sound::Play("buttonclick.ogg");
-			}
-		}
-		else if (hovered)
-		{
-			hovered = false;
+			hide = false;
+			Sound::Play("buttonclick.ogg");
 		}
 	}
 }
