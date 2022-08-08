@@ -118,7 +118,7 @@ class QueueGUI
 		Vec2f size = mainpane_size;
 
 		// pane is too small for text if we try to divide it by more than 4 
-		int QueueTeamWidth = size.x / (team_count <= 4 ? team_count : 4);
+		int QueueTeamWidth = size.x / Maths::Min(team_count, 4);
 
 		// "Any team" team button
 		ClickButton@ anyteam = ClickButton(Vec2f(tl.x + (size.x / 2) - (QueueTeamWidth / 2), tl.y + size.y + QueueTeamHeight), Vec2f(QueueTeamWidth, QueueTeamHeight), -1);
