@@ -76,7 +76,7 @@ class QueueGUIHidden
 		}
 		if (hovered)
 		{
-			f32 tint_factor = (client_selected >= 0 ? 0.20 : 0.80);
+			f32 tint_factor = (client_selected >= 0 ? 0.80 : 0.20);
 			color = color.getInterpolated(color_white, tint_factor);
 		}
 
@@ -226,7 +226,7 @@ class ClickButton
 		{
 			if (hovered)
 			{
-				f32 tint_factor = (id >= 0 ? 0.20 : 0.80);
+				f32 tint_factor = (id >= 0 ? 0.80 : 0.20);
 				color = color.getInterpolated(color_white, tint_factor);
 			}
 		}
@@ -236,7 +236,7 @@ class ClickButton
 			color = SColor(255, 131, 198, 123);
 			if (hovered)
 			{
-				f32 tint_factor = 0.20;
+				f32 tint_factor = 0.80;
 				color = color.getInterpolated(color_white, tint_factor);
 			}
 		}
@@ -268,7 +268,7 @@ class ClickButton
 		const bool mousePressed = controls.isKeyPressed(KEY_LBUTTON);
 		const bool mouseJustReleased = controls.isKeyJustReleased(KEY_LBUTTON);
 
-		bool hovered = this.isHovered(mousepos);
+		hovered = this.isHovered(mousepos);
 
 		if (hovered && mouseJustReleased)
 		{
@@ -524,7 +524,7 @@ void onTick(CRules@ this)
 	}
 
 	// Queue checking logic
-	if (getPlayersCount_NotSpectator() < sv_maxplayers)
+	if (getPlayersCount_NotSpectator() < sv_maxplayers && getGameTime() % 300 == 0)
 	{
 		RulesCore@ core;
 		this.get("core", @core);
