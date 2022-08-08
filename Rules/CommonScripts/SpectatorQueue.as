@@ -268,47 +268,39 @@ class ClickButton
 		const bool mousePressed = controls.isKeyPressed(KEY_LBUTTON);
 		const bool mouseJustReleased = controls.isKeyJustReleased(KEY_LBUTTON);
 
-		if (this.isHovered(mousepos))
+		bool hovered = this.isHovered(mousepos);
+
+		if (hovered && mouseJustReleased)
 		{
-			if (!hovered)
+			hide = false;
+			Sound::Play("buttonclick.ogg");
+
+			bool selected = (client_selected != id);
+
+			if (selected) 
 			{
-				hovered = true;
+				hide = true;
 			}
 
-			if (mouseJustReleased)
+			Sound::Play("buttonclick.ogg");
+
+			if (id >= -1)
 			{
-				bool selected = (client_selected != id);
-				printf('d'+selected);
+				CPlayer@ player = getLocalPlayer();
+				if (player is null) return;
 
-				if (selected) 
-				{
-					hide = true;
-				}
+				if (selected)
+					client_selected = id;
+				else
+					client_selected = -99;
 
-				Sound::Play("buttonclick.ogg");
+				CBitStream params;
+				params.write_string(player.getUsername());
+				params.write_s32(id);
+				params.write_bool(selected);
 
-				if (id >= -1)
-				{
-					CPlayer@ player = getLocalPlayer();
-					if (player is null) return;
-
-					if (selected)
-						client_selected = id;
-					else
-						client_selected = -99;
-
-					CBitStream params;
-					params.write_string(player.getUsername());
-					params.write_s32(id);
-					params.write_bool(selected);
-
-					getRules().SendCommand(getRules().getCommandID("queue action"), params);
-				}
+				getRules().SendCommand(getRules().getCommandID("queue action"), params);
 			}
-		}
-		else if (hovered)
-		{
-			hovered = false;
 		}
 	}
 }
