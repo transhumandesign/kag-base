@@ -61,12 +61,8 @@ class QueueGUIHidden
 		Vec2f tl = origin;
 		Vec2f br = origin + size;
 
-		if (mousepos.x > tl.x && mousepos.y > tl.y &&
-			 mousepos.x < br.x && mousepos.y < br.y)
-		{
-			return true;
-		}
-		return false;
+		return (mousepos.x > tl.x && mousepos.y > tl.y &&
+		        mousepos.x < br.x && mousepos.y < br.y);
 	}
 
 	void RenderGUI()
