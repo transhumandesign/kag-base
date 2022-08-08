@@ -24,7 +24,7 @@ class QueueEntry
 	string username;
 	int team_num;
 
-	QueueEntry(string _username, int _team_num=-1)
+	QueueEntry(string _username, int _team_num = -1)
 	{
 		username = _username;
 		team_num = _team_num;
@@ -342,7 +342,7 @@ class ClickButton
 	}
 }
 
-void setupQueueGUI(CRules@ this)
+void SetupQueueGUI(CRules@ this)
 {
 	if (!isClient()) return;
 
@@ -364,7 +364,7 @@ void setupQueueGUI(CRules@ this)
 	this.set("queueguismall", @SmallGUI);
 }
 
-void addToQueue(CPlayer@ player, int team=-1)
+void AddToQueue(CPlayer@ player, int team = -1)
 {
 	QueueEntry@ queue_entry = QueueEntry(player.getUsername(), team);
 	queue.push_back(queue_entry);
@@ -438,11 +438,11 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 	// automatically add to queue 
 	if (this.getSpectatorTeamNum() == player.getTeamNum())
 	{
-		setupQueueGUI(this);
+		SetupQueueGUI(this);
 
 		if (getPlayersCount_NotSpectator() >= sv_maxplayers)
 		{
-			addToQueue(player);
+			AddToQueue(player);
 		}
 	}
 }
@@ -458,7 +458,7 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 {
 	if (newteam == this.getSpectatorTeamNum())
 	{
-		setupQueueGUI(this);
+		SetupQueueGUI(this);
 	}
 
 	if (oldteam != this.getSpectatorTeamNum() && player.isMyPlayer()) 
@@ -502,7 +502,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 
 		if (selected)
 		{
-			addToQueue(player, team_num);
+			AddToQueue(player, team_num);
 		}
 
 		QueueGUI@ GUI;
@@ -524,7 +524,7 @@ void onTick(CRules@ this)
 
 			QueueGUI@ GUI;
 			this.get("queuegui", @GUI);
-			setupQueueGUI(this);
+			SetupQueueGUI(this);
 		}
 
 		if (getLocalPlayer() !is null)
@@ -539,7 +539,7 @@ void onTick(CRules@ this)
 					this.get("queuegui", @GUI);
 					if (GUI is null) 
 					{
-						setupQueueGUI(this);
+						SetupQueueGUI(this);
 						return;
 					}
 
@@ -551,7 +551,7 @@ void onTick(CRules@ this)
 					this.get("queueguismall", @GUI);
 					if (GUI is null) 
 					{
-						setupQueueGUI(this);
+						SetupQueueGUI(this);
 						return;
 					}
 
