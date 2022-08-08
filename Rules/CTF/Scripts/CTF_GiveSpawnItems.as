@@ -18,7 +18,7 @@ const string SPAWN_ITEMS_TIMER_ARCHER  = "CTF SpawnItems Archer:";
 
 string base_name() { return "tent"; }
 
-bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity)
+bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity, bool drop = false)
 {
 	CInventory@ inv = blob.getInventory();
 	
@@ -37,7 +37,7 @@ bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity)
 		
 		mat.server_SetQuantity(quantity);
 		
-		if (not blob.server_PutInInventory(mat))
+		if (drop || not blob.server_PutInInventory(mat))
 		{
 			mat.setPosition(blob.getPosition());
 		}
@@ -114,9 +114,11 @@ void doGiveSpawnMats(CRules@ this, CPlayer@ p, CBlob@ b)
 				wood_amount = warmup_wood_amount;
 				stone_amount = warmup_stone_amount;
 			}
+
+			bool drop_mats = (name != "builder");
 			
-			bool did_give_wood = SetMaterials(b, "mat_wood", wood_amount);
-			bool did_give_stone = SetMaterials(b, "mat_stone", stone_amount);
+			bool did_give_wood = SetMaterials(b, "mat_wood", wood_amount, drop_mats);
+			bool did_give_stone = SetMaterials(b, "mat_stone", stone_amount, drop_mats);
 			
 			if (did_give_wood || did_give_stone)
 			{
@@ -124,11 +126,17 @@ void doGiveSpawnMats(CRules@ this, CPlayer@ p, CBlob@ b)
 			}
 		}
 	} 
-	else if (name == "archer") 
+
+	if (name == "archer") 
 	{
 		if (gametime > getCTFTimer(this, p, "archer")) 
 		{
-			if (SetMaterials(b, "mat_arrows", 30)) 
+			CInventory@ inv = b.getInventory();
+			if (inv.isInInventory("mat_arrows", 30)) 
+			{
+				return; // don't give arrows if they have 30 already
+			}
+			else if (SetMaterials(b, "mat_arrows", 30)) 
 			{
 				SetCTFTimer(this, p, gametime + (this.isWarmup() ? materials_wait_warmup : materials_wait)*getTicksASecond(), "archer");
 			}
@@ -142,8 +150,6 @@ void displayResupply(CRules@ this, string player_class, string resupply_class, V
 
 	u32 secs = ((next_items - 1 - getGameTime()) / getTicksASecond()) + 1;
 	string units = ((secs != 1) ? " seconds" : " second");
-
-	SColor color = SColor(200, 135, 185, 45);
 
 	string resupply_available;
 	string resupply_unavailable;
@@ -181,25 +187,29 @@ void displayResupply(CRules@ this, string player_class, string resupply_class, V
 			.replace("{WOOD}", "" + wood_amount)
 			.replace("{STONE}", "" + stone_amount);
 	}
-
-	// this is shown on upper center of screen
-	string text = resupply_available;
-
-	float x = getScreenWidth() / 3 + offset.x;
-	float y = getScreenHeight() - offset.y;
 		
-	// this is shown above inventory GUI
-	if (next_items > getGameTime())
+	if (next_items > getGameTime()) // Unavailable resupply - shown on upper center of screen
 	{
-		color = SColor(255, 255, 55, 55);
+		SColor color = SColor(255, 255, 55, 55);
 			
-		text = resupply_unavailable;
+		string text = resupply_unavailable;
 
-		x = getScreenWidth() / 2;
-		y = getScreenHeight() / 3 - offset_second.y;
+		float x = getScreenWidth() / 2;
+		float y = getScreenHeight() / 3 - offset_second.y;
+
+		GUI::DrawTextCentered(text, Vec2f(x, y), color);
 	}
-	
-	GUI::DrawTextCentered(text, Vec2f(x, y), color);
+	else if (this.getCurrentState() == GAME) // Available resupply & not warmup - shown above inventory GUI
+	{
+		SColor color = SColor(200, 135, 185, 45);
+
+		string text = resupply_available;
+
+		float x = getScreenWidth() / 3 + offset.x;
+		float y = getScreenHeight() - offset.y;
+
+		GUI::DrawTextCentered(text, Vec2f(x, y), color);
+	}
 }
 
 // normal hooks
@@ -274,9 +284,11 @@ void onTick(CRules@ this)
 				if (!overlapped.hasTag("player")) continue;
 				CPlayer@ p = overlapped.getPlayer();
 				if (p is null) continue;
+
+				string class_name = overlapped.getName();
 				
-				if (isShop && name.find(overlapped.getName()) == -1) continue; // NOTE(hobey): builder doesn't get wood+stone at archershop, archer doesn't get arrows at buildershop
-					
+				if (isShop && name.find(class_name) == -1) continue; // NOTE: builder doesn't get wood+stone at archershop, archer doesn't get arrows at buildershop
+
 				doGiveSpawnMats(this, p, overlapped);
 			}
 		}
