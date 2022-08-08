@@ -201,12 +201,8 @@ class ClickButton
 		Vec2f tl = origin;
 		Vec2f br = origin + size;
 
-		if (mousepos.x > tl.x && mousepos.y > tl.y &&
-			 mousepos.x < br.x && mousepos.y < br.y)
-		{
-			return true;
-		}
-		return false;
+		return (mousepos.x > tl.x && mousepos.y > tl.y &&
+		        mousepos.x < br.x && mousepos.y < br.y);
 	}
 
 	void RenderGUI()
@@ -231,10 +227,7 @@ class ClickButton
 			if (hovered)
 			{
 				f32 tint_factor = (id >= 0 ? 0.20 : 0.80);
-				color.set(255, 
-					color.getRed() + (255 - color.getRed()) * tint_factor, 
-					color.getGreen() + (255 - color.getGreen()) * tint_factor, 
-					color.getBlue() + (255 - color.getBlue()) * tint_factor);
+				color = color.getInterpolated(color_white, tint_factor);
 			}
 		}
 		else
@@ -244,10 +237,7 @@ class ClickButton
 			if (hovered)
 			{
 				f32 tint_factor = 0.20;
-				color.set(255, 
-					color.getRed() + (255 - color.getRed()) * tint_factor, 
-					color.getGreen() + (255 - color.getGreen()) * tint_factor, 
-					color.getBlue() + (255 - color.getBlue()) * tint_factor);
+				color = color.getInterpolated(color_white, tint_factor);
 			}
 		}
 
@@ -347,8 +337,7 @@ void SetupQueueGUI(CRules@ this)
 
 void AddToQueue(CPlayer@ player, int team = -1)
 {
-	QueueEntry@ queue_entry = QueueEntry(player.getUsername(), team);
-	queue.push_back(queue_entry);
+	queue.push_back(QueueEntry(player.getUsername(), team));
 
 	if (isClient() && player.isMyPlayer())
 		client_queue_pos = queue.length - 1;
