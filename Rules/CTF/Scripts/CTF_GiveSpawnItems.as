@@ -131,7 +131,12 @@ void doGiveSpawnMats(CRules@ this, CPlayer@ p, CBlob@ b)
 	{
 		if (gametime > getCTFTimer(this, p, "archer")) 
 		{
-			if (SetMaterials(b, "mat_arrows", 30)) 
+			CInventory@ inv = b.getInventory();
+			if (inv.isInInventory("mat_arrows", 30)) 
+			{
+				return; // don't give arrows if they have 30 already
+			}
+			else if (SetMaterials(b, "mat_arrows", 30)) 
 			{
 				SetCTFTimer(this, p, gametime + (this.isWarmup() ? materials_wait_warmup : materials_wait)*getTicksASecond(), "archer");
 			}
@@ -284,9 +289,6 @@ void onTick(CRules@ this)
 				string class_name = overlapped.getName();
 				
 				if (isShop && name.find(class_name) == -1) continue; // NOTE: builder doesn't get wood+stone at archershop, archer doesn't get arrows at buildershop
-
-				CInventory@ inv = overlapped.getInventory();
-				if (inv.isInInventory("mat_arrows", 30) && class_name == "archer") continue; // don't give arrows if they have 30 already
 
 				doGiveSpawnMats(this, p, overlapped);
 			}
