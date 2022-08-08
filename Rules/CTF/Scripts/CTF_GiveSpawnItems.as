@@ -188,8 +188,7 @@ void displayResupply(CRules@ this, string player_class, string resupply_class, V
 			.replace("{STONE}", "" + stone_amount);
 	}
 		
-	// Unavailable resupply - shown on upper center of screen
-	if (next_items > getGameTime())
+	if (next_items > getGameTime()) // Unavailable resupply - shown on upper center of screen
 	{
 		SColor color = SColor(255, 255, 55, 55);
 			
