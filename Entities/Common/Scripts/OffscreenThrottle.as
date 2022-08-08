@@ -8,6 +8,7 @@
 // NOTE: This optimization will *not* be done on servers, but it will be done in localhost.
 //       This is acceptable for vanilla, but you may want to override this behavior in a mod.
 
+#ifdef STAGING
 uint32 throttleDuration(CBlob@ blob)
 {
 	const bool client = isClient(), server = isServer();
@@ -34,7 +35,6 @@ uint32 throttleDuration(CBlob@ blob)
 	return 0;
 }
 
-#ifdef STAGING
 void onTick(CBlob@ blob)
 {
 	blob.throttleInterval = throttleDuration(blob);
