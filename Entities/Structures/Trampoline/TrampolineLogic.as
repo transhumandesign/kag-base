@@ -1,3 +1,5 @@
+#include "Help.as";
+
 namespace Trampoline
 {
 	const string TIMER = "trampoline_timer";
@@ -151,9 +153,18 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 // for help text
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if (!attached.hasTag("player")) return;
+	if (!attached.isMyPlayer()) return;
 
-	this.set_s32("attachtime", getGameTime());
+	SetHelp(attached, "trampoline help lmb", "", getTranslatedString("$trampoline$ Lock to 45° steps  $KEY_HOLD$$LMB$"), "", 3, true);
+	SetHelp(attached, "trampoline help rmb", "", getTranslatedString("$trampoline$ Lock current angle  $KEY_HOLD$$RMB$"), "", 3, true);
+}
+
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+{
+	if (!detached.isMyPlayer()) return;
+
+	RemoveHelps(detached, "trampoline help lmb");
+	RemoveHelps(detached, "trampoline help rmb");
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
@@ -164,64 +175,4 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return !this.hasTag("no pickup");
-}
-
-void onRender(CSprite@ this)
-{
-	if (g_videorecording) return;
-
-	CBlob@ blob = this.getBlob();
-
-	if (!blob.isAttached()) return;
-
-	CAttachment@ attachment = blob.getAttachments();
-
-	AttachmentPoint@ ap = attachment.getAttachmentPointByName("PICKUP");
-
-	CBlob@ playerblob = ap.getOccupied();
-
-	CControls@ controls = playerblob.getControls();
-
-	if (controls is null) return;
-
-	GUI::SetFont("menu");
-
-	string lmb = getTranslatedString(controls.getActionKeyKeyName(AK_ACTION1));
-	string rmb = getTranslatedString(controls.getActionKeyKeyName(AK_ACTION2));
-	string help_text = getTranslatedString(
-		"Hold {KEY1} to lock trampoline rotation to 45 degree steps\n\nHold {KEY2} to lock angle")
-	.replace("{KEY1}", lmb).replace("{KEY2}", rmb);
-
-	Vec2f text_dim;
-	GUI::GetTextDimensions(help_text, text_dim);
-
-	Vec2f offset = Vec2f(20, 80);
-	float x = getScreenWidth() / 3 + offset.x;
-	float y = getScreenHeight() - offset.y;
-
-	Vec2f drawpos = getDriver().getScreenCenterPos() - Vec2f(0, 240);
-
-	drawpos = Vec2f(x, y);
-
-	int ticks_since_pickup = getGameTime() - this.getBlob().get_s32("attachtime");
-
-	int alpha = 255;
-
-	if (ticks_since_pickup >= 5 * getTicksASecond())
-	{
-		alpha = Maths::Max(0, alpha - Maths::Pow((ticks_since_pickup - 5 * getTicksASecond()), 1.75));
-	}
-
-	SColor color_text = SColor(alpha, 255, 255, 255);
-	SColor color_pane = SColor(alpha, 200, 200, 200);
-
-	GUI::DrawPane(
-		Vec2f(drawpos.x - text_dim.x / 2 - 5, drawpos.y - text_dim.y / 2 - 5), 
-		Vec2f(drawpos.x + text_dim.x / 2 + 5, drawpos.y + text_dim.y / 2 + 5),
-		color_pane);
-
-	GUI::DrawTextCentered(help_text,
-			              drawpos,
-			              color_text);
-
 }
