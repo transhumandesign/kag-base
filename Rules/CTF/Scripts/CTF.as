@@ -131,6 +131,12 @@ shared class CTFSpawns : RespawnSystem
 				p_info.team = 0;
 			}
 
+			// spawn as builder in warmup
+			if (getRules().isWarmup())
+			{
+				p_info.blob_name = "builder";
+			}
+
 			CBlob@ spawnBlob = getSpawnBlob(p_info);
 
 			if (spawnBlob !is null)

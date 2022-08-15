@@ -512,7 +512,7 @@ CBlob@ getClosestAimedBlob(CBlob@ this, CBlob@[] available)
 		float cursorDistance = (this.getAimPos() - current.getPosition()).Length();
 
 		float radius = current.getRadius();
-		if (radius > 3.0f && cursorDistance > current.getRadius() * (current.hasTag("dead") ? 0.5f : 1.5f)) // corpses don't count unless you really try to aim at one
+		if (radius > 3.0f && cursorDistance > radius * (current.hasTag("dead") ? 0.5f : 1.5f)) // corpses don't count unless you really try to aim at one
 		{
 			continue;
 		}
@@ -527,9 +527,12 @@ CBlob@ getClosestAimedBlob(CBlob@ this, CBlob@[] available)
 	return closest;
 }
 
+
+
 CBlob@ getClosestBlob(CBlob@ this)
 {
 	CBlob@ closest;
+	CBlob@ target; // when hovering a blob
 
 	CBlob@[]@ pickupBlobs;
 	if (this.get("pickup blobs", @pickupBlobs))
@@ -549,14 +552,38 @@ CBlob@ getClosestBlob(CBlob@ this)
 		}
 
 		float closestScore = 999999.9f;
-
+		float drawOrderScore = -999999.9f;
 		for (uint i = 0; i < available.length; ++i)
 		{
 			CBlob @b = available[i];
+
 			Vec2f bpos = b.getPosition();
 			// consider corpse center to be lower than it actually is because otherwise centers of player and corpse are on the same level,
 			// which makes corpse priority skyrocket if player is standing too close 
 			if (b.hasTag("dead")) bpos += Vec2f(0, 6.0f);
+
+
+			Vec2f[]@ hoverShape;
+			bool isPointInsidePolygon = false;
+			
+			if (b.get("hover-poly", @hoverShape))
+			{
+				isPointInsidePolygon = pointInsidePolygon(this.getAimPos(),  hoverShape, bpos, b.isFacingLeft());
+			}
+			
+			if (isPointInsidePolygon || b.isPointInside(this.getAimPos())) 
+			{
+				// Let's just get the draw order of the sprite
+				CSprite @bs = b.getSprite();
+				float draworder = bs.getDrawOrder();
+
+				if (draworder > drawOrderScore)
+				{
+					drawOrderScore = draworder;
+					@target = @b;
+				}			
+			}
+
 
 			float maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
 
@@ -575,6 +602,9 @@ CBlob@ getClosestBlob(CBlob@ this)
 			@closest = @GetBetterAlternativePickupBlobs(available, closest);
 		}
 	}
+
+	if (target !is null)
+		return target;
 
 	return closest;
 }
@@ -641,6 +671,7 @@ void onInit(CSprite@ this)
 void onRender(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
+
 
 	// render item held when in inventory
 
