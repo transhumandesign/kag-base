@@ -20,7 +20,7 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(6, 2));
+	this.set_Vec2f("shop menu size", Vec2f(4, 4));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
 
@@ -37,7 +37,13 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Ballista", ballista_icon, "ballista", ballista_icon + "\n\n\n" + Descriptions::ballista, false, true);
 		s.crate_icon = 5;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista);
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::ballista_gold);
+	}
+	{
+		string outpost_icon = getTeamIcon("outpost", "VehicleIcons.png", team_num, Vec2f(32, 32), 6);
+		ShopItem@ s = addShopItem(this, "Outpost", outpost_icon, "outpost", outpost_icon + "\n\n\n" + Descriptions::outpost, false, true);
+		s.crate_icon = 7;
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::outpost_coins);
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::outpost_gold);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Ballista Ammo", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + Descriptions::ballista_ammo, false, false);
@@ -79,12 +85,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			{
 				GiveFakeTech(getRules(), "bomb ammo", this.getTeamNum());
 			}
-			else if (name == "ballista")
+			else if (name == "outpost")
 			{
-				// makes crate still drop gold if it breaks before it's unpacked
-				// Crate.as prevents gold from dropping if it dies after unpack
-				CBlob@ box = getBlobByNetworkID(item);
-				if (box !is null) box.set_s32("gold building amount", CTFCosts::ballista_gold);
+				CBlob@ crate = getBlobByNetworkID(item);
+				
+				crate.set_Vec2f("required space", Vec2f(5, 5));
+				crate.set_s32("gold building amount", CTFCosts::outpost_gold);
+				crate.Tag("unpack_check_nobuild");
 			}
 		}
 	}

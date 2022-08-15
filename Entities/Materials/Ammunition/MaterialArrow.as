@@ -3,7 +3,7 @@ void onInit(CBlob@ this)
 {
   if (getNet().isServer())
   {
-    this.set_u16('decay time', 45);
+    this.set_u16("decay time", 45);
   }
 
   this.maxQuantity = 30;

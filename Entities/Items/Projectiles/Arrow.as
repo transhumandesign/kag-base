@@ -46,15 +46,18 @@ void onInit(CBlob@ this)
 
 	const u8 arrowType = this.get_u8("arrow type");
 
-	if (arrowType == ArrowType::bomb)			 // bomb arrow
+	if (arrowType == ArrowType::bomb)
 	{
 		SetupBomb(this, bomb_fuse, 48.0f, 1.5f, 24.0f, 0.5f, true);
 		this.set_u8("custom_hitter", Hitters::bomb_arrow);
 	}
-
-	if (arrowType == ArrowType::water)
+	else if (arrowType == ArrowType::water)
 	{
 		this.Tag("splash ray cast");
+	}
+	else if (arrowType == ArrowType::fire)
+	{
+		this.Tag("fire source");
 	}
 
 	CSprite@ sprite = this.getSprite();
@@ -195,7 +198,6 @@ void onTick(CBlob@ this)
 		if (gametime % 6 == 0)
 		{
 			this.getSprite().SetAnimation("fire");
-			this.Tag("fire source");
 
 			Vec2f offset = Vec2f(this.getWidth(), 0.0f);
 			offset.RotateBy(-angle);
@@ -289,14 +291,19 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 		if (dmg > 0.0f)
 		{
-			//determine the hit type
+			// determine the hit type
+			// fire arrows still act as normal arrows
 			const u8 hit_type =
-				(arrowType == ArrowType::fire) ? Hitters::fire :
 				(arrowType == ArrowType::bomb) ? Hitters::bomb_arrow :
 				Hitters::arrow;
 
 			//perform the hit and tag so that another doesn't happen
 			this.server_Hit(blob, point1, initVelocity, dmg, hit_type);
+
+			// for fire arrows, make fire
+			if (arrowType == ArrowType::fire && !this.hasTag("no_fire"))
+				this.server_Hit(blob, point1, initVelocity, 0.0f, Hitters::fire);
+			
 			this.Tag("collided");
 		}
 
@@ -333,8 +340,10 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 		return true;
 	}
 
-	//definitely collide with non-team blobs
-	bool check = this.getTeamNum() != blob.getTeamNum() || blob.getName() == "bridge";
+	bool check =	this.getTeamNum() != blob.getTeamNum() || // collide with enemy blobs
+					blob.getName() == "bridge" ||
+					(blob.getName() == "keg" && !blob.isAttached() && this.hasTag("fire source")); // fire arrows collide with team kegs that arent held
+
 	//maybe collide with team structures
 	if (!check)
 	{
@@ -484,6 +493,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 
 		// check if shielded
 		const bool hitShield = (hitBlob.hasTag("shielded") && blockAttack(hitBlob, velocity, 0.0f));
+		const bool hitKeg = (hitBlob.getName() == "keg");
 
 		// play sound
 		if (!hitShield)
@@ -511,10 +521,6 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 				}
 			}
 		}
-		else if (arrowType != ArrowType::normal)
-		{
-			damage = 0.0f;
-		}
 
 		if (arrowType == ArrowType::fire)
 		{
@@ -529,30 +535,32 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 				this.Tag("no_fire");
 				this.server_Die();
 			}
+			else if (hitKeg)
+			{
+				this.server_Die(); // so that it doesn't bounce off
+			}
 			else
 			{
 				this.server_SetTimeToDie(0.5f);
 				this.set_Vec2f("override fire pos", hitBlob.getPosition());
 			}
 		}
+		
+		//stick into "map" blobs
+		if (hitBlob.getShape().isStatic())
+		{
+			ArrowHitMap(this, worldPoint, velocity, damage, Hitters::arrow);
+		}
+		//die otherwise
 		else
 		{
-			//stick into "map" blobs
-			if (hitBlob.getShape().isStatic())
+			//add arrow layer
+			CSprite@ sprite = hitBlob.getSprite();
+			if (sprite !is null && !hitShield && arrowType != ArrowType::bomb && isClient() && !v_fastrender)
 			{
-				ArrowHitMap(this, worldPoint, velocity, damage, Hitters::arrow);
+				AddArrowLayer(this, hitBlob, sprite, worldPoint, velocity);
 			}
-			//die otherwise
-			else
-			{
-				//add arrow layer
-				CSprite@ sprite = hitBlob.getSprite();
-				if (sprite !is null && !hitShield && arrowType != ArrowType::bomb && isClient() && !v_fastrender)
-				{
-					AddArrowLayer(this, hitBlob, sprite, worldPoint, velocity);
-				}
-				this.server_Die();
-			}
+			this.server_Die();
 		}
 	}
 
