@@ -15,7 +15,7 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos, bool repairing=false, 
 		if (!serverBlobCheck(this, blob, cursorPos, repairing))
 			return;
 
-		u32 delay = this.get_u32("build delay");
+		u32 delay = getCurrentBuildDelay(this);
 		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
 
 		CShape@ shape = blob.getShape();
@@ -398,7 +398,7 @@ void onTick(CBlob@ this)
 						this.SendCommand(this.getCommandID("placeBlob"), params);
 					}
 
-					u32 delay = 2 * this.get_u32("build delay");
+					u32 delay = 2 * getCurrentBuildDelay(this);
 					SetBuildDelay(this, delay);
 					bc.blobActive = false;
 				}
