@@ -86,6 +86,18 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 		return false;
 	}
 
+	if ((blockToPlace.tile == CMap::tile_wood && backtile.type >= CMap::tile_wood_d1 && backtile.type <= CMap::tile_wood_d0) ||
+			(blockToPlace.tile == CMap::tile_castle && backtile.type >= CMap::tile_castle_d1 && backtile.type <= CMap::tile_castle_d0))
+	{
+		//repair like tiles
+		return true;
+	}
+	else if (blockToPlace.tile == CMap::tile_castle && backtile.type >= CMap::tile_wood && backtile.type <= CMap::tile_wood_d0 && !map.isInFire(cursorPos))
+	{
+		// can build stone on wood when not on fire, do nothing
+		return true;
+	}
+
 	// Are we trying to place a solid tile on a door/ladder/platform/bridge (usually due to lag)?
 	if (fakeHasTileSolidBlobs(cursorPos) && map.isTileSolid(blockToPlace.tile))
 	{
