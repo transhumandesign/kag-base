@@ -68,6 +68,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		&& blob.hasTag("player")
 		&& this.getTeamNum() != blob.getTeamNum())
 	{
+		this.Tag("egg projectile");
 		BreakEgg(this);
 		blob.Tag("dazzled");
 		setKnocked(blob, 10, true);
