@@ -1,3 +1,4 @@
+#include "KnockedCommon.as"
 
 const int grow_time = 50 * getTicksASecond();
 
@@ -38,22 +39,53 @@ void onTick(CBlob@ this)
 	}
 }
 
-
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("hatch"))
 	{
-		CSprite@ s = this.getSprite();
-		if (s !is null)
-		{
-			s.Gib();
-		}
-
-		if (getNet().isServer())
-		{
-			this.server_SetHealth(-1);
-			this.server_Die();
+		BreakEgg(this);
+	
+		if (isServer())
+		{			
 			server_CreateBlob("chicken", -1, this.getPosition() + Vec2f(0, -5.0f));
 		}
+	}
+}
+
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point)
+{
+	if (this.getShape().vellen <= 6.8f)
+		return;
+
+	// throwing egg too hard on the ground breaks it
+	if (solid)
+	{
+		BreakEgg(this);
+	}
+	
+	// throw egg at enemies to mini-stun them
+	if 	(blob !is null 
+		&& blob.hasTag("player")
+		&& this.getTeamNum() != blob.getTeamNum())
+	{
+		BreakEgg(this);
+		blob.Tag("dazzled");
+		setKnocked(blob, 10, true);
+		Sound::Play("/ArgShort", blob.getPosition());
+	}
+}
+
+void BreakEgg(CBlob@ this)
+{
+	CSprite@ s = this.getSprite();
+	if (s !is null)
+	{
+		s.Gib();
+		s.PlaySound("/EggCrack" + XORRandom(2) + ".ogg");
+	}
+	if (isServer())
+	{
+		this.server_SetHealth(-1);
+		this.server_Die();
 	}
 }
