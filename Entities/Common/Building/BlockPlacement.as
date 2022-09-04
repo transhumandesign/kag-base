@@ -9,7 +9,6 @@ void onInit(CBlob@ this)
 {
 	AddCursor(this);
 	SetupBuildDelay(this);
-	this.addCommandID("placeBlock");
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;

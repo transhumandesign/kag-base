@@ -78,16 +78,6 @@ void onTick(CBlob@ this)
     }
 }
 
-Vec2f getBottomOfCursor(Vec2f cursorPos, CBlob@ carryBlob)
-{
-	// check at bottom of cursor
-	CMap@ map = getMap();
-	f32 w = map.tilesize / 2.0f;
-	f32 h = map.tilesize / 2.0f;
-	return Vec2f(cursorPos.x + w, cursorPos.y + h);
-}
-
-
 /*
 TODO list:
 clean code massively

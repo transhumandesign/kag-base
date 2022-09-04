@@ -98,7 +98,6 @@ void onInit(CBlob@ this)
 	AddCursor(this);
 	SetupBuildDelay(this);
 
-	this.addCommandID("placeBlob");
 	this.addCommandID("settleLadder");
 	this.addCommandID("rotateBlob");
 
@@ -241,9 +240,6 @@ void onTick(CBlob@ this)
 		{
 			if (snap && bc.cursorClose && bc.hasReqs && bc.buildable && bc.supported)
 			{
-				CBitStream params;
-				params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
-				//this.SendCommand(this.getCommandID("placeBlob"), params);
 				u32 delay = 2 * getCurrentBuildDelay(this);
 				SetBuildDelay(this, delay);
 			}
