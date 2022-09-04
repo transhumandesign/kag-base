@@ -24,6 +24,27 @@ void onTick(CBlob@ this)
     bc.blockActive = false;
     bc.blobActive = false;
 
+    CMap@ map = this.getMap();
+	Vec2f halftileoffset = Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
+	bc.rayBlocked = isBuildRayBlocked(this.getPosition(), bc.tileAimPos + halftileoffset, bc.rayBlockedPos);
+    bc.hasReqs = false;
+
+    BuildBlock@ block = GetBlobBlock(this);
+    if (block is null)
+    {
+        @block = GetTileBlock(this);
+        if (block !is null)
+        {
+            bc.missing.Clear();
+            bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
+        }
+    }
+    else
+    {
+        bc.missing.Clear();
+        bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
+    }
+
     TileType buildtile = this.get_TileType("buildtile");
     if (buildtile > 0)
     {
@@ -41,22 +62,10 @@ void onTick(CBlob@ this)
         }
     }
 
-    if (this.isInInventory())
-    {
-        return;
-    }
-
-    if (getHUD().hasMenus())
-    {
-        return;
-    }
-
-    if (getHUD().hasButtons())
-    {
-        return;
-    }
-
-    if (this.isKeyPressed(key_action1))
+    if (!this.isInInventory()
+    && !getHUD().hasMenus()
+    && !getHUD().hasButtons()
+    && this.isKeyPressed(key_action1))
     {
         CBitStream params;
         params.write_Vec2f(bc.tileAimPos);
@@ -68,7 +77,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (isServer() && cmd == this.getCommandID("place"))
 	{
-        print("received");
 		Vec2f cursorPos;
         if (!params.saferead_Vec2f(cursorPos)) return;
 		BlockCursor @bc;
@@ -150,6 +158,18 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 			return false;
 	}
 
+	Vec2f halftileoffset = Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
+	if (!isBuildableAtPos(blob, cursorPos + halftileoffset, getBlockByIndex(blob, tileIndex).tile, null, false))
+    {
+        return false;
+    }
+    
+    Vec2f rayBlockedPos;
+    if (isBuildRayBlocked(blob.getPosition(), cursorPos + halftileoffset, rayBlockedPos))
+    {
+        return false;
+    }
+
 	return true;
 }
 
@@ -225,8 +245,7 @@ Vec2f getBottomOfCursor(Vec2f cursorPos, CBlob@ carryBlob)
 TODO list:
 
 move render block stuff into blockPlacementrender.as, blobplacementrender.as
-fix being able to place blocks on blocks
-fix blob placement
+fix being able to place blobs on blobs
 
 
 */

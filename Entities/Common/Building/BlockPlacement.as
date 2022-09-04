@@ -40,7 +40,6 @@ void onTick(CBlob@ this)
 	// check buildable
 	bc.buildable = false;
 	bc.supported = false;
-	bc.hasReqs = false;
 	TileType buildtile = this.get_TileType("buildtile");
 
 	if (buildtile <= 0)
@@ -56,7 +55,6 @@ void onTick(CBlob@ this)
 	if (block !is null)
 	{
 		bc.missing.Clear();
-		bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
 	}
 
 	if (bc.cursorClose)
@@ -64,10 +62,9 @@ void onTick(CBlob@ this)
 		Vec2f halftileoffset(map.tilesize * 0.5f, map.tilesize * 0.5f);
 		bc.buildableAtPos = isBuildableAtPos(this, bc.tileAimPos + halftileoffset, buildtile, null, bc.sameTileOnBack);
 		//printf("bc.buildableAtPos " + bc.buildableAtPos );
-		bc.rayBlocked = isBuildRayBlocked(this.getPosition(), bc.tileAimPos + halftileoffset, bc.rayBlockedPos);
 		bc.buildable = bc.buildableAtPos && !bc.rayBlocked;
 
-		bc.supported = bc.buildable && map.hasSupportAtPos(bc.tileAimPos);
+		bc.supported = map.hasSupportAtPos(bc.tileAimPos);
 	}
 
 	// place block

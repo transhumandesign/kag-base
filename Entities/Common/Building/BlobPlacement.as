@@ -176,15 +176,9 @@ void onTick(CBlob@ this)
 	SetTileAimpos(this, bc);
 	// check buildable
 
-	bc.buildable = false;
-	bc.supported = false;
 	bc.hasReqs = true;
 
-	u8 blockIndex = this.get_u8("buildblob");
-	BuildBlock @block = getBlockByIndex(this, blockIndex);
-	if (block !is null) {
-		bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
-	}
+	BuildBlock@ block = GetBlobBlock(this);
 
 	if (carryBlob is null)
 	{
@@ -242,7 +236,6 @@ void onTick(CBlob@ this)
 
 	bc.buildableAtPos = isBuildableAtPos(this, bottomPos, buildtile, carryBlob, bc.sameTileOnBack) && !overlapped;
 	//print(""+bc.buildableAtPos);
-	bc.rayBlocked = isBuildRayBlocked(this.getPosition(), bc.tileAimPos + halftileoffset, bc.rayBlockedPos);
 	bc.buildable = bc.buildableAtPos && !bc.rayBlocked;
 	bc.supported = carryBlob.getShape().getConsts().support > 0 ? map.hasSupportAtPos(bc.tileAimPos) : true;
 	//printf("bc.buildableAtPos " + bc.buildableAtPos + " bc.supported " + bc.supported );
@@ -275,8 +268,6 @@ void onTick(CBlob@ this)
 			this.SendCommand(this.getCommandID("rotateBlob"), params);
 		}
 	}
-
-
 }
 
 void onInit(CSprite@ this)
@@ -355,12 +346,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		return;
 	}
 
-	if (!getNet().isServer())
-	{
-		return;
-	}
-
-	if (cmd == this.getCommandID("settleLadder"))
+	if (isServer() && cmd == this.getCommandID("settleLadder"))
 	{
 		CBlob @carryBlob = getBlobByNetworkID(params.read_u16());
 		Vec2f pos = params.read_Vec2f();
