@@ -97,6 +97,12 @@ void onRender(CSprite@ this)
 		return;
 	}
 
+	{
+		GUI::SetFont("menu");
+		BlockCursor @bc;
+		blob.get("blockCursor", @bc);
+    	GUI::DrawText("Has requirements " + bc.hasReqs, Vec2f(0,0), color_white);
+	}
 	if (blob.isKeyPressed(key_action2) || blob.isKeyPressed(key_pickup))   //hack: dont show when builder is attacking
 	{
 		return;
@@ -129,7 +135,7 @@ void onRender(CSprite@ this)
 				SColor color;
 				Vec2f aimpos = bc.tileAimPos;
 
-				if (bc.buildable && bc.supported)
+				if (bc.supported)
 				{
 					color.set(255, 255, 255, 255);
 					map.DrawTile(aimpos, buildtile, color, getCamera().targetDistance, false);
@@ -170,4 +176,87 @@ void onRender(CSprite@ this)
 			}
 		}
 	}
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
+{
+	if (isServer() && cmd == this.getCommandID("place"))
+	{
+		Vec2f cursorPos;
+        if (!params.saferead_Vec2f(cursorPos)) return;
+
+        if (!genericPlaceCheck(this, cursorPos))
+        {
+            return;
+        }
+
+        PlaceBlock(this, cursorPos);
+	}
+}
+
+void PlaceBlock(CBlob@ this, Vec2f cursorPos)
+{
+    BuildBlock@ block = GetTileBlock(this);
+    if (block is null)
+    {
+        return;
+    }
+
+    if (!hasBlockRequirements(this, block))
+    {
+        return;
+    }
+
+	bool validTile = block.tile > 0;
+	bool passesChecks = serverTileCheck(this, getBlockIndexByTile(this, block.tile), cursorPos);
+
+	if (validTile && passesChecks)
+	{
+		DestroyScenary(cursorPos, cursorPos);
+        CInventory@ inv = this.getInventory();
+		server_TakeRequirements(inv, block.reqs);
+		getMap().server_SetTile(cursorPos, block.tile);
+
+		u32 delay = getCurrentBuildDelay(this);
+		SetBuildDelay(this, delay);
+
+		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), block.tile));
+	}
+}
+
+bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
+{
+	CBlob @carryBlob = blob.getCarriedBlob();
+	if (carryBlob !is null)
+	{
+		return false;
+	}
+
+	// Make sure we actually have support at our cursor pos
+    CMap@ map = getMap();
+	if (!map.hasSupportAtPos(cursorPos)) 
+		return false;
+
+	// Is our tile solid and are we trying to place it into a no build area
+	if (map.isTileSolid(tileIndex))
+	{
+		Vec2f pos = cursorPos + Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
+
+		if (map.getSectorAtPosition(pos, "no build") !is null)
+			return false;
+	}
+
+	Vec2f halftileoffset = Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
+	if (!isBuildableAtPos(blob, cursorPos + halftileoffset, getBlockByIndex(blob, tileIndex).tile, null, false))
+    {
+        return false;
+    }
+    
+    Vec2f rayBlockedPos;
+    if (isBuildRayBlocked(blob.getPosition(), cursorPos + halftileoffset, rayBlockedPos))
+    {
+        return false;
+    }
+
+	return true;
 }

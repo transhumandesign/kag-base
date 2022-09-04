@@ -176,8 +176,6 @@ void onTick(CBlob@ this)
 	SetTileAimpos(this, bc);
 	// check buildable
 
-	bc.hasReqs = true;
-
 	BuildBlock@ block = GetBlobBlock(this);
 
 	if (carryBlob is null)
@@ -357,6 +355,29 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			carryBlob.getShape().SetStatic(true);
 		}
 	}
+
+	if (isServer() && cmd == this.getCommandID("place"))
+	{
+		Vec2f cursorPos;
+        if (!params.saferead_Vec2f(cursorPos)) return;
+
+        CBlob@ carriedBlob = this.getCarriedBlob();
+        if (carriedBlob is null)
+        {
+			return;
+        }
+		cursorPos = getBottomOfCursor(cursorPos, carriedBlob);
+        
+        if (!genericPlaceCheck(this, cursorPos))
+        {
+            return;
+        }
+
+        if (carriedBlob.isSnapToGrid())
+        {
+            PlaceBlob(this, carriedBlob, cursorPos);
+        }            
+	}
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
@@ -371,4 +392,67 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 		detached.IgnoreCollisionWhileOverlapped(null);
 		detached.Untag("temp blob placed");
 	}
+}
+
+void PlaceBlob(CBlob@ this, CBlob@ blob, Vec2f cursorPos)
+{
+    if (!serverBlobCheck(this, blob, cursorPos))
+    {
+        return;
+    }
+
+	BuildBlock@ block = GetBlobBlock(this);
+    if (!hasBlockRequirements(this, block))
+    {
+        return;
+    }
+
+    CShape@ shape = blob.getShape();
+    shape.server_SetActive(true);
+
+    blob.Tag("temp blob placed");
+    if (blob.hasTag("has damage owner"))
+    {
+        blob.SetDamageOwnerPlayer(this.getPlayer());
+    }
+
+    if (this.server_DetachFrom(blob))
+    {
+        blob.setPosition(cursorPos);
+        if (blob.isSnapToGrid())
+        {
+            shape.SetStatic(true);
+        }
+    }
+
+    DestroyScenary(cursorPos, cursorPos);
+    SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), blob.getName()));
+
+    u32 delay = getCurrentBuildDelay(this);
+    SetBuildDelay(this, delay * 2);
+}
+
+// Returns true if pos is valid
+bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
+{
+	// Make sure we actually have support at our cursor pos
+	CMap@ map = getMap();
+	if (!(blobToPlace.getShape().getConsts().support > 0 ? map.hasSupportAtPos(cursorPos) : true)) 
+		return false;
+
+	// Is our blob not a ladder and are we trying to place it into a no build area
+	if (blobToPlace.getName() != "ladder")
+	{
+		Vec2f pos = cursorPos + Vec2f(map.tilesize * 0.2f, map.tilesize * 0.2f);
+
+		if (map.getSectorAtPosition(pos, "no build") !is null)
+			return false;
+	}
+
+    if (!isBuildableAtPos(blob, cursorPos, 256, blobToPlace, false))
+    {
+        return false;
+    }
+
+	return true;
 }
