@@ -52,7 +52,7 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
     
 	// Are we still on cooldown?
 	if (isBuildDelayed(blob)) 
-		return true;
+		return false;
 
 	// Are we trying to place in a bad pos?
 	CMap@ map = getMap();

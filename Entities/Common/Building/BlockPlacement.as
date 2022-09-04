@@ -7,9 +7,9 @@
 // Called server side
 void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 {
-	BuildBlock @bc = getBlockByIndex(this, index);
+	BuildBlock @block = getBlockByIndex(this, index);
 
-	if (bc is null)
+	if (block is null)
 	{
 		warn("BuildBlock is null " + index);
 		return;
@@ -25,8 +25,8 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 
 	CInventory@ inv = this.getInventory();
 
-	bool validTile = bc.tile > 0;
-	bool hasReqs = hasRequirements(inv, bc.reqs, missing);
+	bool validTile = block.tile > 0;
+	bool hasReqs = hasRequirements(inv, block.reqs, missing);
 	bool passesChecks = serverTileCheck(this, index, cursorPos);
 
 	if (!validTile)
@@ -41,13 +41,13 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 	if (validTile && hasReqs && passesChecks)
 	{
 		DestroyScenary(cursorPos, cursorPos);
-		server_TakeRequirements(inv, bc.reqs);
-		getMap().server_SetTile(cursorPos, bc.tile);
+		server_TakeRequirements(inv, block.reqs);
+		getMap().server_SetTile(cursorPos, block.tile);
 
 		u32 delay = getCurrentBuildDelay(this);
 		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
 
-		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), bc.tile));
+		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), block.tile));
 	}
 }
 
@@ -62,7 +62,7 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
     
 	// Are we still on cooldown?
 	if (isBuildDelayed(blob)) 
-		return true;
+		return false;
 
 	// Are we trying to place in a bad pos?
 	CMap@ map = getMap();
