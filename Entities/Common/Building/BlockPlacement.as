@@ -36,10 +36,6 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	SetTileAimpos(this, bc);
-	// check buildable
-	bc.buildable = false;
-	bc.supported = false;
 	TileType buildtile = this.get_TileType("buildtile");
 
 	if (buildtile <= 0)
@@ -63,11 +59,8 @@ void onTick(CBlob@ this)
 		bc.buildableAtPos = isBuildableAtPos(this, bc.tileAimPos + halftileoffset, buildtile, null, bc.sameTileOnBack);
 		//printf("bc.buildableAtPos " + bc.buildableAtPos );
 		bc.buildable = bc.buildableAtPos && !bc.rayBlocked;
-
 		bc.supported = map.hasSupportAtPos(bc.tileAimPos);
 	}
-
-	// place block
 
 	if (!getHUD().hasButtons() && this.isKeyPressed(key_action1))
 	{
@@ -79,8 +72,6 @@ void onTick(CBlob@ this)
 	}
 
 }
-
-// render block placement
 
 void onInit(CSprite@ this)
 {
@@ -102,6 +93,9 @@ void onRender(CSprite@ this)
 		BlockCursor @bc;
 		blob.get("blockCursor", @bc);
     	GUI::DrawText("Has requirements " + bc.hasReqs, Vec2f(0,0), color_white);
+		GUI::DrawText("Cursor close " + bc.cursorClose, Vec2f(0, 30), color_white);
+		GUI::DrawText("Buildable " + bc.buildable, Vec2f(0, 60), color_white);
+		GUI::DrawText("Supported " + bc.supported, Vec2f(0, 80), color_white);
 	}
 	if (blob.isKeyPressed(key_action2) || blob.isKeyPressed(key_pickup))   //hack: dont show when builder is attacking
 	{

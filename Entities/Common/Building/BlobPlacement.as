@@ -173,9 +173,6 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	SetTileAimpos(this, bc);
-	// check buildable
-
 	BuildBlock@ block = GetBlobBlock(this);
 
 	if (carryBlob is null)
@@ -196,7 +193,6 @@ void onTick(CBlob@ this)
 
 	Vec2f halftileoffset(map.tilesize * 0.5f, map.tilesize * 0.5f);
 
-	TileType buildtile = 256;   // something else than a tile
 	Vec2f bottomPos = getBottomOfCursor(bc.tileAimPos, carryBlob);
 
 	bool overlapped;
@@ -231,7 +227,7 @@ void onTick(CBlob@ this)
 		overlapped = carryBlob.isOverlappedAtPosition(bottomPos, carryBlob.getAngleDegrees());
 	}
 
-
+	TileType buildtile = 256;   // something other than a tile
 	bc.buildableAtPos = isBuildableAtPos(this, bottomPos, buildtile, carryBlob, bc.sameTileOnBack) && !overlapped;
 	//print(""+bc.buildableAtPos);
 	bc.buildable = bc.buildableAtPos && !bc.rayBlocked;
