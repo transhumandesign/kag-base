@@ -84,6 +84,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
         CBlob@ carriedBlob = this.getCarriedBlob();
         if (carriedBlob !is null)
         {
+            u32 delay = getCurrentBuildDelay(this);
+			SetBuildDelay(this, delay);
             PlaceBlob(this, carriedBlob, getBottomOfCursor(cursorPos, carriedBlob));
         }
             
@@ -106,12 +108,6 @@ void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 		return;
 	}
 
-	string name = "Blob " + this.getName();
-
-	CPlayer@ p = this.getPlayer();
-	if (p !is null) 
-		name = "User " + p.getUsername();
-
 	CBitStream missing;
 
 	CInventory@ inv = this.getInventory();
@@ -119,15 +115,6 @@ void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 	bool validTile = block.tile > 0;
 	bool hasReqs = hasRequirements(inv, block.reqs, missing);
 	bool passesChecks = serverTileCheck(this, blockIndex, cursorPos);
-
-	if (!validTile)
-		warn(name + " tried to place an invalid tile");
-
-	if (!hasReqs)
-		warn(name + " tried to place a tile without having correct resoruces");
-
-	if (!passesChecks)
-		warn(name + " tried to place tile in an invalid way");
 
 	if (validTile && hasReqs && passesChecks)
 	{
@@ -205,6 +192,7 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 		}
 
 		DestroyScenary(cursorPos, cursorPos);
+        SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), blob.getName()));
 	}
 }
 
@@ -250,10 +238,8 @@ Vec2f getBottomOfCursor(Vec2f cursorPos, CBlob@ carryBlob)
 TODO list:
 
 move render block stuff into blockPlacementrender.as, blobplacementrender.as
-get rid of duplicated functions here
-fix slow building in localhost
 fix being able to place blocks on blocks
-fix rendering of blob placement
+fix blob placement
 
 
 */

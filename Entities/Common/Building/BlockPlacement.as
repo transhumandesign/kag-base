@@ -4,92 +4,6 @@
 
 #include "GameplayEvents.as"
 
-// Called server side
-void PlaceBlock(CBlob@ this, Vec2f cursorPos)
-{
-	TileType buildtile = this.get_TileType("buildtile");
-	if (buildtile <= 0)
-	{
-		return;
-	}
-	u8 blockIndex = getBlockIndexByTile(this, buildtile);
-	BuildBlock @block = getBlockByIndex(this, blockIndex);
-
-	if (block is null)
-	{
-		warn("BuildBlock is null " + blockIndex);
-		return;
-	}
-
-	string name = "Blob " + this.getName();
-
-	CPlayer@ p = this.getPlayer();
-	if (p !is null) 
-		name = "User " + p.getUsername();
-
-	CBitStream missing;
-
-	CInventory@ inv = this.getInventory();
-
-	bool validTile = block.tile > 0;
-	bool hasReqs = hasRequirements(inv, block.reqs, missing);
-	bool passesChecks = serverTileCheck(this, blockIndex, cursorPos);
-
-	if (!validTile)
-		warn(name + " tried to place an invalid tile");
-
-	if (!hasReqs)
-		warn(name + " tried to place a tile without having correct resoruces");
-
-	if (!passesChecks)
-		warn(name + " tried to place tile in an invalid way");
-
-	if (validTile && hasReqs && passesChecks)
-	{
-		DestroyScenary(cursorPos, cursorPos);
-		server_TakeRequirements(inv, block.reqs);
-		getMap().server_SetTile(cursorPos, block.tile);
-
-		u32 delay = getCurrentBuildDelay(this);
-		SetBuildDelay(this, delay * 1.0f);
-
-		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), block.tile));
-	}
-}
-
-// Returns true if pos is valid
-bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
-{
-	// Are we trying to place in a bad pos?
-	CMap@ map = getMap();
-
-	if (!(genericPlaceCheck(blob, cursorPos)))
-	{
-		return false;
-	}
-
-
-	CBlob @carryBlob = blob.getCarriedBlob();
-	if (carryBlob !is null)
-	{
-		return false;
-	}
-
-	// Make sure we actually have support at our cursor pos
-	if (!map.hasSupportAtPos(cursorPos)) 
-		return false;
-
-	// Is our tile solid and are we trying to place it into a no build area
-	if (map.isTileSolid(tileIndex))
-	{
-		Vec2f pos = cursorPos + Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
-
-		if (map.getSectorAtPosition(pos, "no build") !is null)
-			return false;
-	}
-
-	return true;
-}
 
 void onInit(CBlob@ this)
 {
@@ -160,15 +74,8 @@ void onTick(CBlob@ this)
 
 	if (!getHUD().hasButtons() && this.isKeyPressed(key_action1))
 	{
-		if (bc.cursorClose && bc.buildable && bc.supported)
-		{
-			CBitStream params;
-			params.write_Vec2f(bc.tileAimPos);
-			//this.SendCommand(this.getCommandID("placeBlock"), params);
-			u32 delay = getCurrentBuildDelay(this);
-			SetBuildDelay(this, block.tile < 255 ? delay : delay / 3);
-		}
-		else if (this.isKeyJustPressed(key_action1) && !bc.sameTileOnBack)
+		if (!(bc.cursorClose && bc.buildable && bc.supported)
+		&& this.isKeyJustPressed(key_action1) && !bc.sameTileOnBack)
 		{
 			this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 		}
@@ -265,14 +172,5 @@ void onRender(CSprite@ this)
 				             getCamera().targetDistance, false);
 			}
 		}
-	}
-}
-
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
-{
-	if (getNet().isServer() && cmd == this.getCommandID("placeBlock"))
-	{
-		Vec2f pos = params.read_Vec2f();
-		PlaceBlock(this, pos);
 	}
 }

@@ -8,65 +8,6 @@
 #include "Requirements.as"
 #include "RunnerTextures.as"
 
-//server-only
-void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
-{
-	if (blob !is null)
-	{
-		if (!serverBlobCheck(this, blob, cursorPos))
-			return;
-
-		u32 delay = getCurrentBuildDelay(this);
-		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
-
-		CShape@ shape = blob.getShape();
-		shape.server_SetActive(true);
-
-		blob.Tag("temp blob placed");
-		if (blob.hasTag("has damage owner"))
-		{
-			blob.SetDamageOwnerPlayer(this.getPlayer());
-		}
-
-		if (this.server_DetachFrom(blob))
-		{
-			blob.setPosition(cursorPos);
-			if (blob.isSnapToGrid())
-			{
-				shape.SetStatic(true);
-			}
-		}
-
-		DestroyScenary(cursorPos, cursorPos);
-	}
-}
-
-// Returns true if pos is valid
-bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
-{
-	CMap@ map = getMap();
-
-	if (!(genericPlaceCheck(blob, cursorPos)))
-	{
-		return false;
-	}
-
-	// Make sure we actually have support at our cursor pos
-	if (!(blobToPlace.getShape().getConsts().support > 0 ? map.hasSupportAtPos(cursorPos) : true)) 
-		return false;
-
-	// Is our blob not a ladder and are we trying to place it into a no build area
-	if (blobToPlace.getName() != "ladder")
-	{
-		Vec2f pos = cursorPos + Vec2f(map.tilesize * 0.2f, map.tilesize * 0.2f);
-
-		if (map.getSectorAtPosition(pos, "no build") !is null)
-			return false;
-	}
-
-
-	return true;
-} 
 
 Vec2f getBottomOfCursor(Vec2f cursorPos, CBlob@ carryBlob)
 {
@@ -378,7 +319,7 @@ void onRender(CSprite@ this)
 
 		if (bc !is null)
 		{
-			if (/*bc.cursorClose && bc.hasReqs && bc.buildable*/true)
+			if (bc.cursorClose && bc.hasReqs && bc.buildable)
 			{
 				SColor color;
 
@@ -419,17 +360,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		return;
 	}
 
-	if (cmd == this.getCommandID("placeBlob"))
-	{
-		CBlob @carryBlob = this.getCarriedBlob();
-		if (carryBlob !is null)
-		{
-			Vec2f pos = params.read_Vec2f();
-			PlaceBlob(this, carryBlob, pos);
-			SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), carryBlob.getName()));
-		}
-	}
-	else if (cmd == this.getCommandID("settleLadder"))
+	if (cmd == this.getCommandID("settleLadder"))
 	{
 		CBlob @carryBlob = getBlobByNetworkID(params.read_u16());
 		Vec2f pos = params.read_Vec2f();

@@ -290,6 +290,11 @@ void SetBuildDelay(CBlob@ this)
 void SetBuildDelay(CBlob@ this, uint time)
 {
 	this.set_u32("build time", getGameTime() + time);
+	if (isServer())
+	{
+		this.Sync("build time", true);
+	}
+
 }
 
 bool isBuildRayBlocked(Vec2f pos, Vec2f target, Vec2f &out point)
