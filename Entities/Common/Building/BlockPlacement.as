@@ -131,19 +131,10 @@ void onTick(CBlob@ this)
 
 	if (buildtile <= 0)
 	{
-		bc.blockActive = false;
 		return;
 	}
 
-	bc.blockActive = true;
-	bc.blobActive = false;
-
 	CBlob @carryBlob = this.getCarriedBlob();
-	if (carryBlob !is null)
-	{
-		bc.blobActive = true;
-		bc.blockActive = false;
-	}
 
 	CMap@ map = this.getMap();
 	u8 blockIndex = getBlockIndexByTile(this, buildtile);
@@ -173,10 +164,9 @@ void onTick(CBlob@ this)
 		{
 			CBitStream params;
 			params.write_Vec2f(bc.tileAimPos);
-			this.SendCommand(this.getCommandID("placeBlock"), params);
+			//this.SendCommand(this.getCommandID("placeBlock"), params);
 			u32 delay = getCurrentBuildDelay(this);
 			SetBuildDelay(this, block.tile < 255 ? delay : delay / 3);
-			bc.blockActive = false;
 		}
 		else if (this.isKeyJustPressed(key_action1) && !bc.sameTileOnBack)
 		{

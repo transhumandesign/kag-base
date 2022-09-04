@@ -221,7 +221,6 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	bc.blobActive = false;
 
 	if (isBuildDelayed(this))
 	{
@@ -251,8 +250,6 @@ void onTick(CBlob@ this)
 		return;
 	}
 	
-	bc.blobActive = true;
-	bc.blockActive = false;
 	CMap@ map = this.getMap();
 	bool snap = carryBlob.isSnapToGrid();
 
@@ -303,7 +300,7 @@ void onTick(CBlob@ this)
 
 
 	bc.buildableAtPos = isBuildableAtPos(this, bottomPos, buildtile, carryBlob, bc.sameTileOnBack) && !overlapped;
-	print(""+bc.buildableAtPos);
+	//print(""+bc.buildableAtPos);
 	bc.rayBlocked = isBuildRayBlocked(this.getPosition(), bc.tileAimPos + halftileoffset, bc.rayBlockedPos);
 	bc.buildable = bc.buildableAtPos && !bc.rayBlocked;
 	bc.supported = carryBlob.getShape().getConsts().support > 0 ? map.hasSupportAtPos(bc.tileAimPos) : true;
@@ -317,12 +314,10 @@ void onTick(CBlob@ this)
 			if (snap && bc.cursorClose && bc.hasReqs && bc.buildable && bc.supported)
 			{
 				CBitStream params;
-				params.write_u16(carryBlob.getNetworkID());
 				params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
-				this.SendCommand(this.getCommandID("placeBlob"), params);
+				//this.SendCommand(this.getCommandID("placeBlob"), params);
 				u32 delay = 2 * getCurrentBuildDelay(this);
 				SetBuildDelay(this, delay);
-				bc.blobActive = false;
 			}
 			else if (snap && this.isKeyJustPressed(key_action1))
 			{
@@ -426,7 +421,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 	if (cmd == this.getCommandID("placeBlob"))
 	{
-		CBlob @carryBlob = getBlobByNetworkID(params.read_u16());
+		CBlob @carryBlob = this.getCarriedBlob();
 		if (carryBlob !is null)
 		{
 			Vec2f pos = params.read_Vec2f();
