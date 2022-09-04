@@ -51,7 +51,7 @@ void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 		getMap().server_SetTile(cursorPos, block.tile);
 
 		u32 delay = getCurrentBuildDelay(this);
-		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
+		SetBuildDelay(this, delay * 1.0f);
 
 		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), block.tile));
 	}
@@ -64,6 +64,13 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 	CMap@ map = getMap();
 
 	if (!(genericPlaceCheck(blob, cursorPos)))
+	{
+		return false;
+	}
+
+
+	CBlob @carryBlob = blob.getCarriedBlob();
+	if (carryBlob !is null)
 	{
 		return false;
 	}
@@ -108,17 +115,6 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	CBlob @carryBlob = this.getCarriedBlob();
-	if (carryBlob !is null)
-	{
-		return;
-	}
-
-	if (isBuildDelayed(this))
-	{
-		return;
-	}
-
 	BlockCursor @bc;
 	this.get("blockCursor", @bc);
 	if (bc is null)
@@ -133,53 +129,61 @@ void onTick(CBlob@ this)
 	bc.hasReqs = false;
 	TileType buildtile = this.get_TileType("buildtile");
 
-	if (buildtile > 0)
-	{
-		bc.blockActive = true;
-		bc.blobActive = false;
-		CMap@ map = this.getMap();
-		u8 blockIndex = getBlockIndexByTile(this, buildtile);
-		BuildBlock @block = getBlockByIndex(this, blockIndex);
-		if (block !is null)
-		{
-			bc.missing.Clear();
-			bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
-		}
-
-		if (bc.cursorClose)
-		{
-			Vec2f halftileoffset(map.tilesize * 0.5f, map.tilesize * 0.5f);
-			bc.buildableAtPos = isBuildableAtPos(this, bc.tileAimPos + halftileoffset, buildtile, null, bc.sameTileOnBack);
-			//printf("bc.buildableAtPos " + bc.buildableAtPos );
-			bc.rayBlocked = isBuildRayBlocked(this.getPosition(), bc.tileAimPos + halftileoffset, bc.rayBlockedPos);
-			bc.buildable = bc.buildableAtPos && !bc.rayBlocked;
-
-			bc.supported = bc.buildable && map.hasSupportAtPos(bc.tileAimPos);
-		}
-
-		// place block
-
-		if (!getHUD().hasButtons() && this.isKeyPressed(key_action1))
-		{
-			if (bc.cursorClose && bc.buildable && bc.supported)
-			{
-				CBitStream params;
-				params.write_Vec2f(bc.tileAimPos);
-				this.SendCommand(this.getCommandID("placeBlock"), params);
-				u32 delay = getCurrentBuildDelay(this);
-				SetBuildDelay(this, block.tile < 255 ? delay : delay / 3);
-				bc.blockActive = false;
-			}
-			else if (this.isKeyJustPressed(key_action1) && !bc.sameTileOnBack)
-			{
-				this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
-			}
-		}
-	}
-	else
+	if (buildtile <= 0)
 	{
 		bc.blockActive = false;
+		return;
 	}
+
+	bc.blockActive = true;
+	bc.blobActive = false;
+
+	CBlob @carryBlob = this.getCarriedBlob();
+	if (carryBlob !is null)
+	{
+		bc.blobActive = true;
+		bc.blockActive = false;
+	}
+
+	CMap@ map = this.getMap();
+	u8 blockIndex = getBlockIndexByTile(this, buildtile);
+	BuildBlock @block = getBlockByIndex(this, blockIndex);
+	if (block !is null)
+	{
+		bc.missing.Clear();
+		bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
+	}
+
+	if (bc.cursorClose)
+	{
+		Vec2f halftileoffset(map.tilesize * 0.5f, map.tilesize * 0.5f);
+		bc.buildableAtPos = isBuildableAtPos(this, bc.tileAimPos + halftileoffset, buildtile, null, bc.sameTileOnBack);
+		//printf("bc.buildableAtPos " + bc.buildableAtPos );
+		bc.rayBlocked = isBuildRayBlocked(this.getPosition(), bc.tileAimPos + halftileoffset, bc.rayBlockedPos);
+		bc.buildable = bc.buildableAtPos && !bc.rayBlocked;
+
+		bc.supported = bc.buildable && map.hasSupportAtPos(bc.tileAimPos);
+	}
+
+	// place block
+
+	if (!getHUD().hasButtons() && this.isKeyPressed(key_action1))
+	{
+		if (bc.cursorClose && bc.buildable && bc.supported)
+		{
+			CBitStream params;
+			params.write_Vec2f(bc.tileAimPos);
+			this.SendCommand(this.getCommandID("placeBlock"), params);
+			u32 delay = getCurrentBuildDelay(this);
+			SetBuildDelay(this, block.tile < 255 ? delay : delay / 3);
+			bc.blockActive = false;
+		}
+		else if (this.isKeyJustPressed(key_action1) && !bc.sameTileOnBack)
+		{
+			this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
+		}
+	}
+
 }
 
 // render block placement

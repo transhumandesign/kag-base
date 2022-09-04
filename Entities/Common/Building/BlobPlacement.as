@@ -223,11 +223,6 @@ void onTick(CBlob@ this)
 
 	bc.blobActive = false;
 
-	if (carryBlob is null)
-	{
-		return;
-	}
-
 	if (isBuildDelayed(this))
 	{
 		// don't draw blob while waiting to build
@@ -251,106 +246,100 @@ void onTick(CBlob@ this)
 		bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
 	}
 
-	if (carryBlob !is null)
+	if (carryBlob is null)
 	{
-		CMap@ map = this.getMap();
-		bool snap = carryBlob.isSnapToGrid();
+		return;
+	}
+	
+	bc.blobActive = true;
+	bc.blockActive = false;
+	CMap@ map = this.getMap();
+	bool snap = carryBlob.isSnapToGrid();
 
-		carryBlob.SetVisible(!carryBlob.hasTag("temp blob"));
+	carryBlob.SetVisible(!carryBlob.hasTag("temp blob"));
 
-		bool isLadder = false;
-		if (carryBlob.getName() == "ladder")
+	bool isLadder = false;
+	if (carryBlob.getName() == "ladder")
+	{
+		isLadder = true;
+	}
+
+	Vec2f halftileoffset(map.tilesize * 0.5f, map.tilesize * 0.5f);
+
+	TileType buildtile = 256;   // something else than a tile
+	Vec2f bottomPos = getBottomOfCursor(bc.tileAimPos, carryBlob);
+
+	bool overlapped;
+
+	if (isLadder)
+	{
+		Vec2f ontilepos = halftileoffset + bc.tileAimPos;
+
+		overlapped = false;
+		CBlob@[] b;
+
+		f32 tsqr = halftileoffset.LengthSquared() - 1.0f;
+
+		if (map.getBlobsInRadius(ontilepos, 0.5f, @b))
 		{
-			isLadder = true;
-		}
-
-		if (snap) // activate help line
-		{
-			bc.blobActive = true;
-			bc.blockActive = false;
-		}
-
-		if (bc.cursorClose)
-		{
-			if (snap) // if snaps to grid make cursor
+			for (uint nearblob_step = 0; nearblob_step < b.length && !overlapped; ++nearblob_step)
 			{
-				Vec2f halftileoffset(map.tilesize * 0.5f, map.tilesize * 0.5f);
+				CBlob@ blob = b[nearblob_step];
 
-				CMap@ map = this.getMap();
-				TileType buildtile = 256;   // something else than a tile
-				Vec2f bottomPos = getBottomOfCursor(bc.tileAimPos, carryBlob);
-
-				bool overlapped;
-
-				if (isLadder)
+				string bname = blob.getName();
+				if (blob is carryBlob || blob.hasTag("player") || !isBlocking(blob) || !blob.getShape().isStatic())
 				{
-					Vec2f ontilepos = halftileoffset + bc.tileAimPos;
-
-					overlapped = false;
-					CBlob@[] b;
-
-					f32 tsqr = halftileoffset.LengthSquared() - 1.0f;
-
-					if (map.getBlobsInRadius(ontilepos, 0.5f, @b))
-					{
-						for (uint nearblob_step = 0; nearblob_step < b.length && !overlapped; ++nearblob_step)
-						{
-							CBlob@ blob = b[nearblob_step];
-
-							string bname = blob.getName();
-							if (blob is carryBlob || blob.hasTag("player") || !isBlocking(blob) || !blob.getShape().isStatic())
-							{
-								continue;
-							}
-
-							overlapped = (blob.getPosition() - ontilepos).LengthSquared() < tsqr;
-						}
-					}
-				}
-				else
-				{
-					overlapped = carryBlob.isOverlappedAtPosition(bottomPos, carryBlob.getAngleDegrees());
+					continue;
 				}
 
-				bc.buildableAtPos = isBuildableAtPos(this, bottomPos, buildtile, carryBlob, bc.sameTileOnBack) && !overlapped;
-				bc.rayBlocked = isBuildRayBlocked(this.getPosition(), bc.tileAimPos + halftileoffset, bc.rayBlockedPos);
-				bc.buildable = bc.buildableAtPos && !bc.rayBlocked;
-				bc.supported = carryBlob.getShape().getConsts().support > 0 ? map.hasSupportAtPos(bc.tileAimPos) : true;
-				//printf("bc.buildableAtPos " + bc.buildableAtPos + " bc.supported " + bc.supported );
-			}
-		}
-
-		// place blob with action1 key
-		if (!getHUD().hasButtons() && !carryBlob.hasTag("custom drop"))
-		{
-			if (this.isKeyPressed(key_action1))
-			{
-				if (snap && bc.cursorClose && bc.hasReqs && bc.buildable && bc.supported)
-				{
-					CBitStream params;
-					params.write_u16(carryBlob.getNetworkID());
-					params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
-					this.SendCommand(this.getCommandID("placeBlob"), params);
-					u32 delay = 2 * getCurrentBuildDelay(this);
-					SetBuildDelay(this, delay);
-					bc.blobActive = false;
-				}
-				else if (snap && this.isKeyJustPressed(key_action1))
-				{
-					this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
-				}
-			}
-
-			if (this.isKeyJustPressed(key_action3))
-			{
-				s8 rotateDir = controls.ActionKeyPressed(AK_BUILD_MODIFIER) ? -1 : 1;
-
-				CBitStream params;
-				params.write_u16((360 + this.get_u16("build_angle") + 90 * rotateDir) % 360);
-				this.SendCommand(this.getCommandID("rotateBlob"), params);
+				overlapped = (blob.getPosition() - ontilepos).LengthSquared() < tsqr;
 			}
 		}
 	}
+	else
+	{
+		overlapped = carryBlob.isOverlappedAtPosition(bottomPos, carryBlob.getAngleDegrees());
+	}
+
+
+	bc.buildableAtPos = isBuildableAtPos(this, bottomPos, buildtile, carryBlob, bc.sameTileOnBack) && !overlapped;
+	print(""+bc.buildableAtPos);
+	bc.rayBlocked = isBuildRayBlocked(this.getPosition(), bc.tileAimPos + halftileoffset, bc.rayBlockedPos);
+	bc.buildable = bc.buildableAtPos && !bc.rayBlocked;
+	bc.supported = carryBlob.getShape().getConsts().support > 0 ? map.hasSupportAtPos(bc.tileAimPos) : true;
+	//printf("bc.buildableAtPos " + bc.buildableAtPos + " bc.supported " + bc.supported );
+
+	// place blob with action1 key
+	if (!getHUD().hasButtons() && !carryBlob.hasTag("custom drop"))
+	{
+		if (this.isKeyPressed(key_action1))
+		{
+			if (snap && bc.cursorClose && bc.hasReqs && bc.buildable && bc.supported)
+			{
+				CBitStream params;
+				params.write_u16(carryBlob.getNetworkID());
+				params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
+				this.SendCommand(this.getCommandID("placeBlob"), params);
+				u32 delay = 2 * getCurrentBuildDelay(this);
+				SetBuildDelay(this, delay);
+				bc.blobActive = false;
+			}
+			else if (snap && this.isKeyJustPressed(key_action1))
+			{
+				this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
+			}
+		}
+
+		if (this.isKeyJustPressed(key_action3))
+		{
+			s8 rotateDir = controls.ActionKeyPressed(AK_BUILD_MODIFIER) ? -1 : 1;
+
+			CBitStream params;
+			params.write_u16((360 + this.get_u16("build_angle") + 90 * rotateDir) % 360);
+			this.SendCommand(this.getCommandID("rotateBlob"), params);
+		}
+	}
+
 
 }
 
@@ -394,11 +383,11 @@ void onRender(CSprite@ this)
 
 		if (bc !is null)
 		{
-			if (bc.cursorClose && bc.hasReqs && bc.buildable)
+			if (/*bc.cursorClose && bc.hasReqs && bc.buildable*/true)
 			{
 				SColor color;
 
-				if (bc.buildable && bc.supported)
+				if (bc.supported)
 				{
 					color.set(255, 255, 255, 255);
 					carryBlob.RenderForHUD(getBottomOfCursor(bc.tileAimPos, carryBlob) - carryBlob.getPosition(), 0.0f, color, RenderStyle::normal);
