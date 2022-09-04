@@ -357,7 +357,7 @@ bool genericPlaceCheck(CBlob@ placer, Vec2f cursorPos)
 	return true;
 }
 
-BuildBlock@ getTileBlock(CBlob@ this)
+BuildBlock@ GetTileBlock(CBlob@ this)
 {
 	TileType buildtile = this.get_TileType("buildtile");
 	if (buildtile <= 0)
@@ -367,4 +367,18 @@ BuildBlock@ getTileBlock(CBlob@ this)
 
 	u8 blockIndex = getBlockIndexByTile(this, buildtile);
 	return getBlockByIndex(this, blockIndex);
+}
+
+BuildBlock@ GetBlobBlock(CBlob@ this)
+{
+	u8 blockIndex = this.get_u8("buildblob");
+	return getBlockByIndex(this, blockIndex);
+}
+
+bool hasBlockRequirements(CBlob@ this, BuildBlock@ block)
+{
+	CBitStream missing;
+	CInventory@ inv = this.getInventory();
+	bool validTile = block.tile > 0;
+	return hasRequirements(inv, block.reqs, missing);
 }

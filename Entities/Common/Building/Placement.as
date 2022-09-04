@@ -78,44 +78,50 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
             return;
         }
 
-        print("attempting to place block");
-        PlaceBlock(this, cursorPos);
-
         CBlob@ carriedBlob = this.getCarriedBlob();
         if (carriedBlob !is null)
         {
-            u32 delay = getCurrentBuildDelay(this);
-			SetBuildDelay(this, delay);
-            PlaceBlob(this, carriedBlob, getBottomOfCursor(cursorPos, carriedBlob));
+            cursorPos = getBottomOfCursor(cursorPos, carriedBlob);   
         }
-            
+        
+        if (!genericPlaceCheck(this, cursorPos))
+        {
+            return;
+        }
+
+        PlaceBlock(this, cursorPos);
+        if (carriedBlob !is null)
+        {
+            PlaceBlob(this, carriedBlob, cursorPos);
+        }            
 	}
 }
 
 void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 {
-    BuildBlock@ block = getTileBlock(this);
+    BuildBlock@ block = GetTileBlock(this);
     if (block is null)
     {
         return;
     }
 
-	CBitStream missing;
-
-	CInventory@ inv = this.getInventory();
+    if (!hasBlockRequirements(this, block))
+    {
+        return;
+    }
 
 	bool validTile = block.tile > 0;
-	bool hasReqs = hasRequirements(inv, block.reqs, missing);
 	bool passesChecks = serverTileCheck(this, getBlockIndexByTile(this, block.tile), cursorPos);
 
-	if (validTile && hasReqs && passesChecks)
+	if (validTile && passesChecks)
 	{
 		DestroyScenary(cursorPos, cursorPos);
+        CInventory@ inv = this.getInventory();
 		server_TakeRequirements(inv, block.reqs);
 		getMap().server_SetTile(cursorPos, block.tile);
 
 		u32 delay = getCurrentBuildDelay(this);
-		SetBuildDelay(this, delay * 1.0f);
+		SetBuildDelay(this, delay);
 
 		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), block.tile));
 	}
@@ -124,15 +130,6 @@ void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 // Returns true if pos is valid
 bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 {
-	// Are we trying to place in a bad pos?
-	CMap@ map = getMap();
-
-	if (!(genericPlaceCheck(blob, cursorPos)))
-	{
-		return false;
-	}
-
-
 	CBlob @carryBlob = blob.getCarriedBlob();
 	if (carryBlob !is null)
 	{
@@ -140,6 +137,7 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 	}
 
 	// Make sure we actually have support at our cursor pos
+    CMap@ map = getMap();
 	if (!map.hasSupportAtPos(cursorPos)) 
 		return false;
 
@@ -157,48 +155,45 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 
 void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 {
-	if (blob !is null)
-	{
-		if (!serverBlobCheck(this, blob, cursorPos))
-			return;
+    if (!serverBlobCheck(this, blob, cursorPos))
+        return;
 
-		u32 delay = getCurrentBuildDelay(this);
-		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
+    u32 delay = getCurrentBuildDelay(this);
+    SetBuildDelay(this, delay * 2);
 
-		CShape@ shape = blob.getShape();
-		shape.server_SetActive(true);
+	BuildBlock@ block = GetBlobBlock(this);
+    if (!hasBlockRequirements(this, block))
+    {
+        return;
+    }
 
-		blob.Tag("temp blob placed");
-		if (blob.hasTag("has damage owner"))
-		{
-			blob.SetDamageOwnerPlayer(this.getPlayer());
-		}
+    CShape@ shape = blob.getShape();
+    shape.server_SetActive(true);
 
-		if (this.server_DetachFrom(blob))
-		{
-			blob.setPosition(cursorPos);
-			if (blob.isSnapToGrid())
-			{
-				shape.SetStatic(true);
-			}
-		}
+    blob.Tag("temp blob placed");
+    if (blob.hasTag("has damage owner"))
+    {
+        blob.SetDamageOwnerPlayer(this.getPlayer());
+    }
 
-		DestroyScenary(cursorPos, cursorPos);
-        SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), blob.getName()));
-	}
+    if (this.server_DetachFrom(blob))
+    {
+        blob.setPosition(cursorPos);
+        if (blob.isSnapToGrid())
+        {
+            shape.SetStatic(true);
+        }
+    }
+
+    DestroyScenary(cursorPos, cursorPos);
+    SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), blob.getName()));
 }
 
 // Returns true if pos is valid
 bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 {
-	CMap@ map = getMap();
-
-	if (!(genericPlaceCheck(blob, cursorPos)))
-	{
-		return false;
-	}
-
 	// Make sure we actually have support at our cursor pos
+	CMap@ map = getMap();
 	if (!(blobToPlace.getShape().getConsts().support > 0 ? map.hasSupportAtPos(cursorPos) : true)) 
 		return false;
 
