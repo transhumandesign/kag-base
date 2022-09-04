@@ -397,11 +397,14 @@ void PlaceBlob(CBlob@ this, CBlob@ blob, Vec2f cursorPos)
         return;
     }
 
-	BuildBlock@ block = GetBlobBlock(this);
-    if (!hasBlockRequirements(this, block))
-    {
-        return;
-    }
+	if (blob.getName() != "seed")
+	{
+		BuildBlock@ block = GetBlobBlock(this);
+		if (!hasBlockRequirements(this, block))
+		{
+			return;
+		}
+	}
 
     CShape@ shape = blob.getShape();
     shape.server_SetActive(true);

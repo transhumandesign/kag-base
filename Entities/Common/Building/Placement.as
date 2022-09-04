@@ -27,10 +27,16 @@ void onTick(CBlob@ this)
     CMap@ map = this.getMap();
 	Vec2f halftileoffset = Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
 	bc.rayBlocked = isBuildRayBlocked(this.getPosition(), bc.tileAimPos + halftileoffset, bc.rayBlockedPos);
-    bc.hasReqs = false;
 
     BuildBlock@ block = GetBlobBlock(this);
-    if (block is null)
+    if (block !is null && this.getCarriedBlob() !is null && this.getCarriedBlob().getName() == block.name)
+    {
+        bc.missing.Clear();
+        bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
+        //print(""+bc.hasReqs);
+        //print(""+block.name);
+    }
+    else
     {
         @block = GetTileBlock(this);
         if (block !is null)
@@ -39,10 +45,9 @@ void onTick(CBlob@ this)
             bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
         }
     }
-    else
+    if (block !is null)
     {
-        bc.missing.Clear();
-        bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
+        print(block.name);
     }
 
     TileType buildtile = this.get_TileType("buildtile");
@@ -85,7 +90,6 @@ Vec2f getBottomOfCursor(Vec2f cursorPos, CBlob@ carryBlob)
 
 /*
 TODO list:
-placing seeds
 clean code massively
 fix requirements text showing up buggily
 
