@@ -94,19 +94,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 {
-	TileType buildtile = this.get_TileType("buildtile");
-	if (buildtile <= 0)
-	{
-		return;
-	}
-	u8 blockIndex = getBlockIndexByTile(this, buildtile);
-	BuildBlock @block = getBlockByIndex(this, blockIndex);
-
-	if (block is null)
-	{
-		warn("BuildBlock is null " + blockIndex);
-		return;
-	}
+    BuildBlock@ block = getTileBlock(this);
+    if (block is null)
+    {
+        return;
+    }
 
 	CBitStream missing;
 
@@ -114,7 +106,7 @@ void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 
 	bool validTile = block.tile > 0;
 	bool hasReqs = hasRequirements(inv, block.reqs, missing);
-	bool passesChecks = serverTileCheck(this, blockIndex, cursorPos);
+	bool passesChecks = serverTileCheck(this, getBlockIndexByTile(this, block.tile), cursorPos);
 
 	if (validTile && hasReqs && passesChecks)
 	{

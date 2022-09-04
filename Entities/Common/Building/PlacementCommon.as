@@ -356,3 +356,15 @@ bool genericPlaceCheck(CBlob@ placer, Vec2f cursorPos)
 
 	return true;
 }
+
+BuildBlock@ getTileBlock(CBlob@ this)
+{
+	TileType buildtile = this.get_TileType("buildtile");
+	if (buildtile <= 0)
+	{
+		return null;
+	}
+
+	u8 blockIndex = getBlockIndexByTile(this, buildtile);
+	return getBlockByIndex(this, blockIndex);
+}
