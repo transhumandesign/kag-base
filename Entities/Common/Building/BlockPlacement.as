@@ -5,13 +5,19 @@
 #include "GameplayEvents.as"
 
 // Called server side
-void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
+void PlaceBlock(CBlob@ this, Vec2f cursorPos)
 {
-	BuildBlock @block = getBlockByIndex(this, index);
+	TileType buildtile = this.get_TileType("buildtile");
+	if (buildtile <= 0)
+	{
+		return;
+	}
+	u8 blockIndex = getBlockIndexByTile(this, buildtile);
+	BuildBlock @block = getBlockByIndex(this, blockIndex);
 
 	if (block is null)
 	{
-		warn("BuildBlock is null " + index);
+		warn("BuildBlock is null " + blockIndex);
 		return;
 	}
 
@@ -27,7 +33,7 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 
 	bool validTile = block.tile > 0;
 	bool hasReqs = hasRequirements(inv, block.reqs, missing);
-	bool passesChecks = serverTileCheck(this, index, cursorPos);
+	bool passesChecks = serverTileCheck(this, blockIndex, cursorPos);
 
 	if (!validTile)
 		warn(name + " tried to place an invalid tile");
@@ -158,7 +164,6 @@ void onTick(CBlob@ this)
 			if (bc.cursorClose && bc.buildable && bc.supported)
 			{
 				CBitStream params;
-				params.write_u8(blockIndex);
 				params.write_Vec2f(bc.tileAimPos);
 				this.SendCommand(this.getCommandID("placeBlock"), params);
 				u32 delay = getCurrentBuildDelay(this);
@@ -273,8 +278,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (getNet().isServer() && cmd == this.getCommandID("placeBlock"))
 	{
-		u8 index = params.read_u8();
 		Vec2f pos = params.read_Vec2f();
-		PlaceBlock(this, index, pos);
+		PlaceBlock(this, pos);
 	}
 }
