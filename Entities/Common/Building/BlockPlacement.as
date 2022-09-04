@@ -54,35 +54,22 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 // Returns true if pos is valid
 bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 {
-	// Pos check of about 8 tiles, accounts for people with lag
-	Vec2f pos = (blob.getPosition() - cursorPos) / 2;
-
-	if (pos.Length() > 30)
-		return false;
-    
-	// Are we still on cooldown?
-	if (isBuildDelayed(blob)) 
-		return false;
-
 	// Are we trying to place in a bad pos?
 	CMap@ map = getMap();
-	Tile backtile = map.getTile(cursorPos);
 
-	if (map.isTileBedrock(backtile.type) || map.isTileSolid(backtile.type) && map.isTileGroundStuff(backtile.type)) 
+	if (!(genericPlaceCheck(blob, cursorPos)))
+	{
 		return false;
+	}
 
 	// Make sure we actually have support at our cursor pos
 	if (!map.hasSupportAtPos(cursorPos)) 
 		return false;
 
-	// Is the pos currently collapsing?
-	if (map.isTileCollapsing(cursorPos))
-		return false;
-
 	// Is our tile solid and are we trying to place it into a no build area
 	if (map.isTileSolid(tileIndex))
 	{
-		pos = cursorPos + Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
+		Vec2f pos = cursorPos + Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
 
 		if (map.getSectorAtPosition(pos, "no build") !is null)
 			return false;

@@ -328,3 +328,26 @@ bool inNoBuildZone(CBlob@ blob, CMap@ map, Vec2f here, TileType buildTile)
 
 	return (!isLadder && (buildSolid || isSpikes) && map.getSectorAtPosition(here, "no build") !is null);
 }
+
+bool genericPlaceCheck(CBlob@ placer, Vec2f cursorPos)
+{
+	// Are we still on cooldown?
+	if (isBuildDelayed(placer)) 
+		return false;
+
+	// Pos check of about 8 tiles, accounts for people with lag
+	Vec2f pos = (placer.getPosition() - cursorPos) / 2;
+	if (pos.Length() > 30)
+		return false;
+
+	CMap@ map = getMap();
+	// Is the pos currently collapsing?
+	if (map.isTileCollapsing(cursorPos))
+		return false;
+	
+	Tile backtile = map.getTile(cursorPos);
+	if (map.isTileBedrock(backtile.type) || map.isTileSolid(backtile.type) && map.isTileGroundStuff(backtile.type)) 
+		return false;
+
+	return true;
+}
