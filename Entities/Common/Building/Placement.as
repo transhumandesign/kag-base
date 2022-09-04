@@ -33,8 +33,6 @@ void onTick(CBlob@ this)
     {
         bc.missing.Clear();
         bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
-        //print(""+bc.hasReqs);
-        //print(""+block.name);
     }
     else
     {
@@ -44,10 +42,6 @@ void onTick(CBlob@ this)
             bc.missing.Clear();
             bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
         }
-    }
-    if (block !is null)
-    {
-        print(block.name);
     }
 
     TileType buildtile = this.get_TileType("buildtile");
