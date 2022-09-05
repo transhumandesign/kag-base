@@ -4,6 +4,7 @@
 #include "StandardRespawnCommand.as"
 #include "StandardControlsCommon.as"
 #include "TunnelCommon.as"
+#include "Costs.as"
 
 const u8 respawn_immunity_time = 30 * 1; // 1 second
 
@@ -53,6 +54,9 @@ void onInit(CBlob@ this)
 	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
 	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 7, Vec2f(16, 16));
 	this.SetMinimapRenderAlways(true);
+	
+	InitCosts();
+	this.set_s32("gold building amount", CTFCosts::outpost_gold);
 }
 
 void onTick(CSprite@ this)
