@@ -37,21 +37,20 @@ void onTick(CBlob@ this)
         bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
     }
 
+    CBlob@ carryBlob = this.getCarriedBlob();
+    if (carryBlob !is null && carryBlob.getName() == "seed")
+    {
+        bc.hasReqs = true;
+    }
+
     TileType buildtile = this.get_TileType("buildtile");
     if (buildtile > 0)
     {
         bc.blockActive = true;
     }
-    else
+    else if (carryBlob !is null && carryBlob.isSnapToGrid())
     {
-        CBlob@ carriedBlob = this.getCarriedBlob();
-        if (carriedBlob !is null)
-        {
-            if (carriedBlob.isSnapToGrid())
-            {
-                bc.blobActive = true;
-            }
-        }
+        bc.blobActive = true;
     }
 
     if (!this.isInInventory()

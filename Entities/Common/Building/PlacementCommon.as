@@ -360,7 +360,8 @@ bool genericPlaceCheck(CBlob@ placer, Vec2f cursorPos)
 BuildBlock@ getCurrentBuildBlock(CBlob@ this)
 {
     BuildBlock@ block = GetBlobBlock(this);
-    if (this.getCarriedBlob() is null || this.getCarriedBlob().getName() != block.name)
+	CBlob@ carryBlob = this.getCarriedBlob();
+    if (carryBlob is null || block is null || carryBlob.getName() != block.name)
     {
         @block = GetTileBlock(this);
     }
