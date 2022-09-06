@@ -21,27 +21,20 @@ void onTick(CBlob@ this)
 	}
 
     SetTileAimpos(this, bc);
+
     bc.blockActive = false;
     bc.blobActive = false;
+    bc.hasReqs = false;
 
     CMap@ map = this.getMap();
 	Vec2f halftileoffset = Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
 	bc.rayBlocked = isBuildRayBlocked(this.getPosition(), bc.tileAimPos + halftileoffset, bc.rayBlockedPos);
 
-    BuildBlock@ block = GetBlobBlock(this);
-    if (block !is null && this.getCarriedBlob() !is null && this.getCarriedBlob().getName() == block.name)
+    BuildBlock@ block = getCurrentBuildBlock(this);
+    if (block !is null)
     {
         bc.missing.Clear();
         bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
-    }
-    else
-    {
-        @block = GetTileBlock(this);
-        if (block !is null)
-        {
-            bc.missing.Clear();
-            bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
-        }
     }
 
     TileType buildtile = this.get_TileType("buildtile");
@@ -75,7 +68,8 @@ void onTick(CBlob@ this)
 /*
 TODO list:
 clean code massively
-fix requirements text showing up buggily
+fix indentation
+rebase
 
 
 */

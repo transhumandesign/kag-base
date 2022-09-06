@@ -449,15 +449,17 @@ void onRender(CSprite@ this)
 			blob.get("blockCursor", @bc);
 			if (bc !is null)
 			{
-				if (bc.blockActive || bc.blobActive)
+				BuildBlock@ block = getCurrentBuildBlock(blob);
+				if (block !is null)
 				{
 					Vec2f pos = blob.getPosition();
 					Vec2f myPos =  blob.getInterpolatedScreenPos() + Vec2f(0.0f,(pos.y > blob.getAimPos().y) ? -blob.getRadius() : blob.getRadius());
 					Vec2f aimPos2D = getDriver().getScreenPosFromWorldPos( blob.getAimPos() + cam_offset );
 
-					if (!bc.hasReqs)
+					if (!hasRequirements(blob.getInventory(), block.reqs, bc.missing, not block.buildOnGround))
 					{
 						const string missingText = getButtonRequirementsText( bc.missing, true );
+						print(missingText);
 						Vec2f boxpos( myPos.x, myPos.y - 120.0f );
 						GUI::DrawText( getTranslatedString("Requires\n") + missingText, Vec2f(boxpos.x - 50, boxpos.y - 15.0f), Vec2f(boxpos.x + 50, boxpos.y + 15.0f), color_black, false, false, true );
 					}

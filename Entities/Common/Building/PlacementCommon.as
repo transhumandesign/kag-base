@@ -357,6 +357,16 @@ bool genericPlaceCheck(CBlob@ placer, Vec2f cursorPos)
 	return true;
 }
 
+BuildBlock@ getCurrentBuildBlock(CBlob@ this)
+{
+    BuildBlock@ block = GetBlobBlock(this);
+    if (this.getCarriedBlob() is null || this.getCarriedBlob().getName() != block.name)
+    {
+        @block = GetTileBlock(this);
+    }
+    return block;
+}
+
 BuildBlock@ GetTileBlock(CBlob@ this)
 {
 	TileType buildtile = this.get_TileType("buildtile");

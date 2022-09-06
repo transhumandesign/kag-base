@@ -199,10 +199,8 @@ bool canBuild(CBlob@ this, BuildBlock[]@ blocks, uint index)
 		return false;
 	}
 
-	bc.missing.Clear();
-	bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
-
-	return bc.hasReqs;
+	CBitStream missing;
+	return hasRequirements(this.getInventory(), block.reqs, missing, not block.buildOnGround);
 }
 
 void ClearCarriedBlock(CBlob@ this)
