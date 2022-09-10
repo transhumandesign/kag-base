@@ -6,7 +6,9 @@
 #include "BombCommon.as";
 #include "SplashWater.as";
 #include "TeamStructureNear.as";
-#include "KnockedCommon.as"
+#include "KnockedCommon.as";
+#include "ArrowCommon.as";
+#include "FireplaceCommon.as"
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
@@ -89,24 +91,6 @@ void onInit(CBlob@ this)
 		if (arrowType == ArrowType::bomb)
 			sprite.SetAnimation(anim);
 	}
-}
-
-void turnOffFire(CBlob@ this)
-{
-	this.SetLight(false);
-	this.set_u8("arrow type", ArrowType::normal);
-	this.Untag("fire source");
-	this.getSprite().SetAnimation("arrow");
-	this.getSprite().PlaySound("/ExtinguishFire.ogg");
-}
-
-void turnOnFire(CBlob@ this)
-{
-	this.SetLight(true);
-	this.set_u8("arrow type", ArrowType::fire);
-	this.Tag("fire source");
-	this.getSprite().SetAnimation("fire arrow");
-	this.getSprite().PlaySound("/FireFwoosh.ogg");
 }
 
 void onTick(CBlob@ this)
