@@ -27,6 +27,7 @@ class Flamer : Component
 	void Activate(CBlob@ this)
 	{
 		UpdateState(this, 1);
+		this.Tag("activated");
 	 }
 
 	void Deactivate(CBlob@ this)
@@ -47,6 +48,7 @@ void onInit(CBlob@ this)
 	this.set_TileType("background tile", CMap::tile_castle_back);
 	
 	//this.getCurrentScript().tickFrequency = 3; // arrow igniting requires frequency of 1
+	this.getCurrentScript().tickIfTag = "activated";
 	this.SetLightRadius(55.0f);
 	this.SetLight(false);
 	this.getSprite().SetEmitSound("Flamer.ogg");
@@ -105,6 +107,7 @@ void onTick(CBlob@ this)
 	{
 		this.SetLight(false);
 		this.getSprite().SetEmitSoundPaused(true);
+		this.Untag("activated");
 	}
 }
 
@@ -206,16 +209,22 @@ void CreateFlame(CBlob@ this)
 	
 	// burn flammable blobs that are inside the exit
 	if (!shouldBurn) 	{ return; }
-
-	// ignite arrow in wide radius
+	
 	CBlob@[] blobs;
 	map.getBlobsInRadius(pos2, 7.5f, @blobs);
-	for (uint j = 0; j < blobs.length; j++)
+	for (uint i = 0; i < blobs.length; i++)
 	{
-		CBlob@ blob = blobs[j];
+		CBlob@ blob = blobs[i];
 		
-		if (blob !is null 
-			&& blob.getName() == "arrow"
+		if (blob is null 
+			|| blob is this
+			|| blob.isInWater())	
+		{
+			continue;
+		}
+
+		//ignite arrows in a radius of 7.5
+		if (blob.getName() == "arrow"
 			&& this.get_u8("arrow type") == ArrowType::normal
 			&& !blob.getSprite().isAnimation("fire")
 			&& blob.getTickSinceCreated() > 1)
@@ -223,32 +232,30 @@ void CreateFlame(CBlob@ this)
 				turnOnFire(blob); // ArrowCommon.as
 				break;
 			}
-	}
-	
-	// ignite fireplace, cook food and apply damage in smaller radius
-	CBlob@[] blobs2;
-	map.getBlobsInRadius(pos2, 3.7f, @blobs2);
-	for (uint i = 0; i < blobs2.length; i++)
-	{
-		CBlob@ blob = blobs2[i];
-
-		if (blob !is null 
-			&& blob !is this
-			&& !blob.isInWater())
+		
+		//do something else with the other blobs if they are within radius 3.7
+		// ignite fireplace, cook food and apply damage
+		else 
 		{
-			if (blob.getName() == "fireplace" 
-				&& !blob.getSprite().isAnimation("fire")) // ignite fireplace
+			Vec2f distance = pos2 - blob.getPosition();
+			f32 p = distance.Length() - blob.getRadius() - 3.7f;
+		
+			if (p < 0)
 			{
-				Ignite(blob); // FireplaceCommon.as
-			}
-			else if (isServer())
-			{
-				cookFood(blob);
-				
-				if (!blob.hasTag("invincible"))
+				if (blob.getName() == "fireplace" 
+					&& !blob.getSprite().isAnimation("fire")) // ignite fireplace
 				{
-					blob.server_Hit(blob, blob.getPosition(), blob.getVelocity(), 0.0f, Hitters::fire);
-					blob.set_s16("burn timer", Maths::Ceil(blob.get_s16("burn timer") * 0.75f)); // slightly decrease fire duration
+					Ignite(blob); // FireplaceCommon.as
+				}
+				else if (isServer())
+				{
+					cookFood(blob);
+					
+					if (!blob.hasTag("invincible"))
+					{
+						blob.server_Hit(blob, blob.getPosition(), blob.getVelocity(), 0.0f, Hitters::fire);
+						blob.set_s16("burn timer", Maths::Ceil(blob.get_s16("burn timer") * 0.75f)); // slightly decrease fire duration
+					}
 				}
 			}
 		}
