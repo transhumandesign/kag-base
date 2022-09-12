@@ -171,6 +171,7 @@ namespace map_colors
 		kitchen                = 0xFFFFD9D9, // ARGB(255, 255, 217, 217);
 		nursery                = 0xFFD9FFDF, // ARGB(255, 217, 255, 223);
 		research               = 0xFFE1E1E1, // ARGB(255, 225, 225, 225);
+		bank                   = 0xFFFF6633, // ARGB(255, 225, 100,  55);
 
 		// MARKERS
 		blue_main_spawn        = 0xFF00FFFF, // ARGB(255,   0, 255, 255);

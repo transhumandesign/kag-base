@@ -25,7 +25,7 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f(0, 0));
-	this.set_Vec2f("shop menu size", Vec2f(4, 4));
+	this.set_Vec2f("shop menu size", Vec2f(4, 5));
 	this.set_string("shop description", "Construct");
 	this.set_u8("shop icon", 12);
 	this.Tag(SHOP_AUTOCLOSE);
@@ -74,6 +74,12 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::quarry_gold);
 		AddRequirement(s.requirements, "no more", "quarry", "Stone Quarry", CTFCosts::quarry_count);
 	}*/
+	{
+		ShopItem@ s = addShopItem(this, "Bank Deposit", getTeamIcon("bank", "Bank.png", team_num, Vec2f(40, 24), 3), "bank", Descriptions::bank);
+		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::bank_stone);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::bank_wood);
+		AddRequirement(s.requirements, "no more", "bank", "Bank", CTFCosts::bank_count);
+	}
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)

@@ -268,6 +268,7 @@ class PNGLoader
 			case map_colors::kitchen:         autotile(offset); spawnBlob(map, "kitchen",     offset); break;
 			case map_colors::nursery:         autotile(offset); spawnBlob(map, "nursery",     offset); break;
 			case map_colors::research:        autotile(offset); spawnBlob(map, "research",    offset); break;
+			case map_colors::bank:            autotile(offset); spawnBlob(map, "bank",        offset); break;
 
 			case map_colors::workbench:       autotile(offset); spawnBlob(map, "workbench",   offset, 255, true); break;
 			case map_colors::campfire:        autotile(offset); spawnBlob(map, "fireplace",   offset, 255); break;
