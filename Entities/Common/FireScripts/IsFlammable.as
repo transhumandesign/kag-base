@@ -86,6 +86,7 @@ void onTick(CBlob@ this)
 	//burnination
 	else if (burn_time > 0)
 	{
+		s16 burn_count = this.get_s16(burn_counter);
 		burn_count++;
 	
 		//burninating the other tiles
