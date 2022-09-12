@@ -28,12 +28,13 @@ void onInit(CBlob@ this)
 	this.addCommandID("withdraw");		// withdraw cash
 	this.addCommandID("deposit");		// deposit cash
 	
-	AddIconToken("$bank_deposit_all$", "BankIcons.png", Vec2f(32, 32), 3);
-	AddIconToken("$bank_deposit_hundred$", "BankIcons.png", Vec2f(32, 32), 4);
-	AddIconToken("$bank_deposit_twenty$", "BankIcons.png", Vec2f(32, 32), 5);
-	AddIconToken("$bank_withdraw_all$", "BankIcons.png", Vec2f(32, 32), 6);
-	AddIconToken("$bank_withdraw_hundred$", "BankIcons.png", Vec2f(32, 32), 7);
-	AddIconToken("$bank_withdraw_twenty$", "BankIcons.png", Vec2f(32, 32), 8);
+	int team = this.getTeamNum();
+	AddIconToken("$bank_deposit_all$", "BankIcons.png", Vec2f(32, 32), 3, team);
+	AddIconToken("$bank_deposit_hundred$", "BankIcons.png", Vec2f(32, 32), 4, team);
+	AddIconToken("$bank_deposit_twenty$", "BankIcons.png", Vec2f(32, 32), 5, team);
+	AddIconToken("$bank_withdraw_all$", "BankIcons.png", Vec2f(32, 32), 6, team);
+	AddIconToken("$bank_withdraw_hundred$", "BankIcons.png", Vec2f(32, 32), 7, team);
+	AddIconToken("$bank_withdraw_twenty$", "BankIcons.png", Vec2f(32, 32), 8, team);
 	
 	this.set_u16("coins in bank", 0);
 }
@@ -47,7 +48,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		CBitStream params;
 		params.write_u16(caller.getNetworkID());
-		CButton@ button = caller.CreateGenericButton(8, Vec2f(0,0), this, this.getCommandID("transaction"), getTranslatedString("Transaction"), params);
+		CButton@ button = caller.CreateGenericButton(25, Vec2f(0,0), this, this.getCommandID("transaction"), getTranslatedString("Transaction"), params);
 		if (button !is null)
 		{
 			button.SetEnabled(true);
@@ -67,6 +68,15 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("deposit"))
 	{
+		CBlob@ localBlob = getLocalPlayerBlob();	
+		if (!localBlob.isOverlapping(this))	
+		{
+			CGridMenu@ menu = getGridMenuByName("Make a transaction");
+			if (menu !is null)
+				menu.kill = true;
+			return;
+		}
+	
 		CBlob@ caller 		= getBlobByNetworkID(params.read_u16());
 		CPlayer@ p 			= caller.getPlayer();
 		u16 coins_in_bank 	= this.get_u16("coins in bank");
@@ -89,13 +99,22 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("withdraw"))
 	{
+		CBlob@ localBlob = getLocalPlayerBlob();	
+		if (!localBlob.isOverlapping(this))	
+		{
+			CGridMenu@ menu = getGridMenuByName("Make a transaction");
+			if (menu !is null)
+				menu.kill = true;
+			return;
+		}
+	
 		CBlob@ caller 		= getBlobByNetworkID(params.read_u16());
 		CPlayer@ p 			= caller.getPlayer();
 		u16 coins_in_bank 	= this.get_u16("coins in bank");
 		u16 coins_on_player	= p.getCoins();
 		u16 step 			= params.read_u16();
 		u16 amount 			= Maths::Min(coins_in_bank, step);
-		u16 available		= BALANCE_LIMIT - coins_on_player;
+		u16 available		= 32765 - coins_on_player;
 		amount				= (available < amount) ? available : amount;
 
 		if (isServer())
@@ -168,7 +187,7 @@ const string[] TRANSACTION_DESCRIPTIONS =
 	"Deposit all your coins",
 	"Deposit 100 coins",
 	"Deposit 20 coins",
-	"Withdraw all your coins",
+	"Withdraw all coins",
 	"Withdraw 100 coins",
 	"Withdraw 20 coins"
 };
@@ -200,7 +219,7 @@ void onRender(CSprite@ this)
 	CBlob@ blob = this.getBlob();	
 	CGridMenu@ menu = getGridMenuByName("Make a transaction");
 
-	if (localBlob is null || menu is null || !localBlob.isOverlapping(blob) || localBlob.isKeyPressed(key_inventory) ||
+	if (localBlob is null || menu is null || localBlob.isKeyPressed(key_inventory) ||
 		localBlob.isKeyJustPressed(key_left) || localBlob.isKeyJustPressed(key_right) || localBlob.isKeyJustPressed(key_up) ||
 		localBlob.isKeyJustPressed(key_down) || localBlob.isKeyJustPressed(key_action2) || localBlob.isKeyJustPressed(key_action3))
 	{
