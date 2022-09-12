@@ -9,6 +9,8 @@ const string burn_timer = "burn timer";
 const string burning_tag = "burning";
 const string spread_fire_tag = "spread fire";
 
+const string burn_counter = "burn counter";
+
 const int fire_wait_ticks = 4;
 const int burn_thresh = 70;
 
