@@ -44,6 +44,9 @@ void server_setFireOff(CBlob@ this)
 
 	this.set_s16(burn_timer, 0);
 	this.Sync(burn_timer, true);
+	
+	this.set_s16(burn_counter, 0);
+	this.Sync(burn_counter, true);
 
 	if (this.hasTag("had only fire flag"))
 		this.getCurrentScript().runFlags |= Script::tick_infire;
