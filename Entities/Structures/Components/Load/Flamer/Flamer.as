@@ -28,6 +28,7 @@ class Flamer : Component
 	{
 		UpdateState(this, 1);
 		this.Tag("activated");
+		this.set_u8("delayed start", 10);
 	 }
 
 	void Deactivate(CBlob@ this)
@@ -207,9 +208,24 @@ void CreateFlame(CBlob@ this)
 	// save blocked status for usage in onHit()
 	this.set_bool("blocked", blocked);
 	
-	// burn flammable blobs that are inside the exit
-	if (!shouldBurn) 	{ return; }
+	// checks to see if we should apply burning to blobs
+	if (!shouldBurn)
+	{ 
+		return; 
+	}
+	else 
+	{
+		u8 delayTimer = this.get_u8("delayed start");
+		
+		if (delayTimer > 0)	
+		{
+			delayTimer--;
+			this.set_u8("delayed start", delayTimer);
+			return; 
+		}
+	}
 	
+	// checks are passed, applying burning to blobs now
 	CBlob@[] blobs;
 	map.getBlobsInRadius(pos2, 7.5f, @blobs);
 	for (uint i = 0; i < blobs.length; i++)
@@ -235,6 +251,7 @@ void CreateFlame(CBlob@ this)
 		
 		//do something else with the other blobs if they are within radius 3.7
 		// ignite fireplace, cook food and apply damage
+		
 		else 
 		{
 			Vec2f distance = pos2 - blob.getPosition();
