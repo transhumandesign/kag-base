@@ -211,6 +211,7 @@ void CreateFlame(CBlob@ this)
 	// checks to see if we should apply burning to blobs
 	if (!shouldBurn)
 	{ 
+		this.set_u8("delayed start", 10);
 		return; 
 	}
 	else 
