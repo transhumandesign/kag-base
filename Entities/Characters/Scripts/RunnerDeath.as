@@ -10,7 +10,6 @@ const f32 HEAVY_CARRIED_BLOB_VEL_SCALE = 0.6;
 void onInit(CBlob@ this)
 {
 	this.set_f32("hit dmg modifier", 0.0f);
-	this.set_f32("hit dmg modifier", 0.0f);
 	this.getCurrentScript().tickFrequency = 0; // make it not run ticks until dead
 }
 
@@ -113,10 +112,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		this.server_DetachAll();
 
 		StuffFallsOut(this);
-	}
-	else
-	{
-		this.set_u32("death time", getGameTime());
 	}
 
 	return damage;
