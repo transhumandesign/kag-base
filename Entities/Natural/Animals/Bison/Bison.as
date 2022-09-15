@@ -2,6 +2,7 @@
 //script for a bison
 
 #include "AnimalConsts.as";
+#include "Hitters.as";
 
 const u8 DEFAULT_PERSONALITY = TAMABLE_BIT | DONT_GO_DOWN_BIT;
 const s16 MAD_TIME = 600;
@@ -18,7 +19,7 @@ void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
 
-	if (!blob.hasTag("dead"))
+	if (!blob.hasTag("dead")) 			// not dead
 	{
 		f32 x = blob.getVelocity().x;
 		if (Maths::Abs(x) > 0.2f)
@@ -30,9 +31,14 @@ void onTick(CSprite@ this)
 			this.SetAnimation("idle");
 		}
 	}
-	else
+	else if (!blob.hasTag("decomposed")) 	//dead but not decomposed
 	{
 		this.SetAnimation("dead");
+		this.getCurrentScript().tickFrequency = 30;
+	}
+	else 									// decomposed
+	{
+		this.SetAnimation("decomposed");
 		this.getCurrentScript().runFlags |= Script::remove_after_this;
 	}
 }
@@ -63,9 +69,14 @@ void onInit(CBlob@ this)
 	this.getShape().SetRotationsAllowed(false);
 
 	//for flesh hit
-	this.set_f32("gib health", -0.0f);
+	this.set_f32("gib health", -3.0f);
 
 	this.Tag("flesh");
+	this.Tag("can decompose");
+
+	this.set_string("death cry", "BisonDie.ogg");
+
+	this.Tag("collide with arrows"); // always get hit by arrows, even when dead
 
 	this.set_s16("mad timer", 0);
 
@@ -89,11 +100,13 @@ void onInit(CBlob@ this)
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
-	return false; //maybe make a knocked out state? for loading to cata?
+	return false;
 }
 
 void onTick(CBlob@ this)
 {
+	if (this.hasTag("dead"))	return;
+
 	f32 x = this.getVelocity().x;
 
 	if (Maths::Abs(x) > 1.0f)
@@ -102,14 +115,8 @@ void onTick(CBlob@ this)
 	}
 	else
 	{
-		if (this.isKeyPressed(key_left))
-		{
-			this.SetFacingLeft(true);
-		}
-		if (this.isKeyPressed(key_right))
-		{
-			this.SetFacingLeft(false);
-		}
+		this.SetFacingLeft(this.isKeyPressed(key_left));
+		this.SetFacingLeft(!this.isKeyPressed(key_right));
 	}
 
 	// relax the madness
@@ -123,13 +130,13 @@ void onTick(CBlob@ this)
 			if (mad < 0)
 			{
 				this.set_u8(personality_property, DEFAULT_PERSONALITY);
-				this.getSprite().PlaySound("/BisonBoo");
+				this.getSprite().PlaySound("/BisonBoo" + (1 + XORRandom(2)));
 			}
 			this.set_s16("mad timer", mad);
 		}
 
 		if (XORRandom(mad > 0 ? 3 : 12) == 0)
-			this.getSprite().PlaySound("/BisonBoo");
+			this.getSprite().PlaySound("/BisonBoo" + (1 + XORRandom(2)));
 	}
 
 	// footsteps
@@ -155,6 +162,8 @@ void onTick(CBlob@ this)
 
 void MadAt(CBlob@ this, CBlob@ hitterBlob)
 {
+	if (this.hasTag("dead"))	return;
+
 	const u16 damageOwnerId = (hitterBlob.getDamageOwnerPlayer() !is null && hitterBlob.getDamageOwnerPlayer().getBlob() !is null) ?
 	                          hitterBlob.getDamageOwnerPlayer().getBlob().getNetworkID() : 0;
 
@@ -179,22 +188,21 @@ void MadAt(CBlob@ this, CBlob@ hitterBlob)
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
+	if (this.hasTag("decomposed"))
+		this.getSprite().PlaySound("/WoodHit" + (1 + XORRandom(3)));
+
 	MadAt(this, hitterBlob);
 	return damage;
 }
 
-#include "Hitters.as";
-
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (blob.hasTag("dead"))
-		return false;
-	return true;
+	return (!blob.hasTag("dead"));
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (blob is null)
+	if (blob is null || blob.hasTag("dead"))
 		return;
 
 	const u16 friendId = this.get_netid(friend_property);
@@ -254,5 +262,13 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		Vec2f force = velocity * this.getMass() * 0.35f ;
 		force.y -= 100.0f;
 		hitBlob.AddForce(force);
+	}
+}
+
+void onDie(CBlob@ this)
+{
+	if (this.hasTag("decomposed"))
+	{
+		this.getSprite().PlaySound("/destroy_tree.ogg");
 	}
 }

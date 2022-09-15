@@ -64,7 +64,6 @@ void onTick(CBlob@ this)
 						this.setKeyPressed(key_up, ap.isKeyPressed(key_down));
 						this.setKeyPressed(key_down, ap.isKeyPressed(key_up));
 					}
-
 				}
 
 				// GET OUT

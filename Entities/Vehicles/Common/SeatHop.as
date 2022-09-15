@@ -34,7 +34,8 @@ void onTick(CBlob@ this)
 			        blob.hasTag("seats") &&
 			        blob !is carried &&
 			        (blob.getTeamNum() > 8 || blob.getTeamNum() == this.getTeamNum()) &&
-					!this.getMap().rayCastSolid(this.getPosition(), blob.getPosition()))
+					!this.getMap().rayCastSolid(this.getPosition(), blob.getPosition()) &&
+					!blob.hasTag("dead"))
 			{
 				//can't get into carried blob - can pick it up after they get in though
 				//(prevents dinghy rockets)
