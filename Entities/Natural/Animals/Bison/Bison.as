@@ -202,7 +202,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (blob is null || blob.hasTag("dead"))
+	if (blob is null || this.hasTag("dead"))
 		return;
 
 	const u16 friendId = this.get_netid(friend_property);
