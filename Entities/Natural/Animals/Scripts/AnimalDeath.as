@@ -1,11 +1,5 @@
-#include "Hitters.as"
-#include "GenericButtonCommon.as"
 
 const u32 VANISH_BODY_SECS = 45;
-const f32 CARRIED_BLOB_VEL_SCALE = 1.0;
-const f32 MEDIUM_CARRIED_BLOB_VEL_SCALE = 0.8;
-const f32 HEAVY_CARRIED_BLOB_VEL_SCALE = 0.6;
-
 
 void onInit(CBlob@ this)
 {
