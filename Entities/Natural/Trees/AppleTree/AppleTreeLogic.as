@@ -5,8 +5,8 @@
 
 const string spritefile = "Entities/Natural/Trees/AppleTree/AppleTree.png";
 
-const u8 APPLE_AMOUNT_LIMIT_PER_TREE = 5;
-const u8 APPLE_AMOUNT_LIMIT_PER_MAP = 40;
+const u8 APPLE_AMOUNT_LIMIT_PER_TREE = 4;
+const u8 APPLE_AMOUNT_LIMIT_PER_MAP = 30;
 const f32 APPLE_RADIUS_LIMIT = 8.0f;
 
 void onInit(CBlob@ this)
