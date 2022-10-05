@@ -64,7 +64,8 @@ void onInit(CBlob@ this)
 			PickupWheelOption("fishy"),
 			PickupWheelOption("grain"),
 			PickupWheelOption("steak"),
-			PickupWheelOption("egg")
+			PickupWheelOption("egg"),
+			PickupWheelOption("apple")
 		};
 		menu.add_entry(PickupWheelMenuEntry("Food", "$food$", food_options));
 		menu.add_entry(PickupWheelMenuEntry("Ballista Ammo", "$mat_bolts$", "mat_bolts"));

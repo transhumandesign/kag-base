@@ -179,7 +179,7 @@ bool DoCollapseWhenBelow(CBlob@ this, f32 hp)
 			this.set_u32("cut_down_time", fell_time);
 			fall_switch = this.get_bool("cut_down_fall_side");
 			// sound
-			this.getSprite().SetEmitSound("Entities/Natural/Trees/TreeFall.ogg");
+			this.getSprite().SetEmitSound("TreeFall.ogg");
 			this.getSprite().SetEmitSoundPaused(false);
 			//remove sectors
 			CMap@ map = getMap();
@@ -200,7 +200,7 @@ bool DoCollapseWhenBelow(CBlob@ this, f32 hp)
 
 		if (hitground)
 		{
-			this.getSprite().PlaySound("Entities/Natural/Trees/TreeDestruct.ogg");
+			this.getSprite().PlaySound("TreeDestruct.ogg");
 			this.getSprite().SetEmitSoundPaused(true);
 			this.Tag("felldown"); // so client stops falling tree and playing sound
 

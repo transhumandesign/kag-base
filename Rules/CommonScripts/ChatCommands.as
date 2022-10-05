@@ -126,13 +126,17 @@ bool onServerProcessChat(CRules@ this, const string& in text_in, string& out tex
 
 	if (sv_test)
 	{
-		if (text_in == "!tree") // pine tree (seed)
+		if (text_in == "!seed_pine") // pine tree (seed)
 		{
-			server_MakeSeed(pos, "tree_pine", 600, 1, 16);
+			server_MakeSeed(pos, "tree_pine", 600, 4, 4);
 		}
-		else if (text_in == "!btree") // bushy tree (seed)
+		else if (text_in == "!seed_bushy") // bushy tree (seed)
 		{
-			server_MakeSeed(pos, "tree_bushy", 400, 2, 16);
+			server_MakeSeed(pos, "tree_bushy", 400, 5, 4);
+		}
+		else if (text_in == "!seed_apple") // apple tree (seed)
+		{
+			server_MakeSeed(pos, "tree_apple", 500, 6, 4);
 		}
 		else if (text_in == "!allarrows") // 30 normal arrows, 2 water arrows, 2 fire arrows, 1 bomb arrow (full inventory for archer)
 		{

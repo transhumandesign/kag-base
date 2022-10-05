@@ -18,7 +18,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	{
 		this.getSprite().PlaySound(this.get_string("eat sound"));
 
-		if (getNet().isServer())
+		if (isServer())
 		{
 			u16 blob_id;
 			if (!params.saferead_u16(blob_id)) return;
@@ -74,7 +74,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		return;
 	}
 
-	if (getNet().isServer() && !blob.hasTag("dead"))
+	if (isServer() && !blob.hasTag("dead"))
 	{
 		Heal(blob, this);
 	}

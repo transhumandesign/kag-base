@@ -13,7 +13,7 @@ u8 getHealingAmount(CBlob@ food)
 		return 0;
 	}
 
-	if (food.getName() == "heart")	    // HACK
+	if (food.getName() == "heart" || food.getName() == "apple")	    // HACK
 	{
 		return 4; // 1 heart
 	}
@@ -24,7 +24,7 @@ u8 getHealingAmount(CBlob@ food)
 void Heal(CBlob@ this, CBlob@ food)
 {
 	bool exists = getBlobByNetworkID(food.getNetworkID()) !is null;
-	if (getNet().isServer() && this.hasTag("player") && this.getHealth() < this.getInitialHealth() && !food.hasTag("healed") && exists)
+	if (isServer() && this.hasTag("player") && this.getHealth() < this.getInitialHealth() && !food.hasTag("healed") && exists)
 	{
 		CBitStream params;
 		params.write_u16(this.getNetworkID());

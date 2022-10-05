@@ -3,27 +3,18 @@
 #include "canGrow.as";
 
 //sprites to load by index
-const string[] seed_sprites =
-{
-	"Entities/Natural/Seed/Seed.png",       //normal seed
-	"Entities/Natural/Seed/Seed.png",       //grain seed
-	"Entities/Natural/Trees/Trees.png",     //pine
-	"Entities/Natural/Trees/Trees.png",     //bushy
-	"Entities/Natural/Farming/Grain.png",   //grains
-	"Entities/Natural/Seed/Seed.png",  //bush
-	"Entities/Natural/Seed/Seed.png",  //flowers
-};
+const string seed_file = "Entities/Natural/Seed/Seed.png";
 
 // names of seeds
 const string[] seed_names =
 {
-	"Seed",           //normal seed
-	"Grain Seed",     //grain seed
-	"Pine Seed",        //pine
-	"Oak Seed",     //bushy
-	"Grain",       //grains
-	"Bush seed",    //bush
-	"Flower seed"   //flowers
+	"Seed",			//normal seed
+	"Grain Seed",	//grain seed
+	"Bush seed",	//bush
+	"Flower seed",	//flowers
+	"Pine Seed",	//pine tree
+	"Oak Seed",		//bushy tree
+	"Apple Seed"	//apple tree
 };
 
 const u32 OPT_TICK = 31;
@@ -34,10 +25,7 @@ void onInit(CBlob@ this)
 	{
 		u8 spriteIndex = this.get_u8("sprite index");
 
-		if (spriteIndex < seed_sprites.length)
-		{
-			LoadSprite(this, seed_sprites[spriteIndex], spriteIndex);
-		}
+		LoadSprite(this, seed_file, spriteIndex);
 
 		if (spriteIndex < seed_names.length)
 		{
@@ -46,7 +34,7 @@ void onInit(CBlob@ this)
 	}
 	else
 	{
-		LoadSprite(this, seed_sprites[0], 0);
+		LoadSprite(this, seed_file, 0);
 	}
 
 	if (!this.exists("created_blob_radius"))
@@ -74,32 +62,17 @@ void onInit(CBlob@ this)
 void LoadSprite(CBlob@ this, string filename, u8 spriteIndex)
 {
 	CSprite@ sprite = this.getSprite();
-	int frameWidth = 8, frameHeight = 8;
-
-	if (spriteIndex == 2 || spriteIndex == 3)
-	{
-		frameWidth = 16;
-		frameHeight = 16;
-	}
-
-	sprite.ReloadSprite(filename, frameWidth, frameHeight);
+	sprite.ReloadSprite(filename, 16, 16);
+	
 	Animation@ anim = sprite.addAnimation("loadedSeed", 0, false);
 
 	if (anim !is null)
 	{
-		switch (spriteIndex)
-		{
-			case 2: anim.AddFrame(20); anim.AddFrame(21); sprite.SetOffset(Vec2f(0, -2)); break;
-
-			case 3: anim.AddFrame(4); anim.AddFrame(5); sprite.SetOffset(Vec2f(0, -2)); break;
-
-			//case 4: anim.AddFrame(0); anim.AddFrame(1); sprite.SetOffset( Vec2f(0,2) ); break;
-
-			default: anim.AddFrame(0); anim.AddFrame(1); break;
-		}
+		anim.AddFrame(0 + 2 * spriteIndex); 
+		anim.AddFrame(1 + 2 * spriteIndex);
 
 		sprite.SetAnimation(anim);
-		this.SetInventoryIcon(filename, anim.getFrame(0), Vec2f(frameWidth, frameHeight));
+		this.SetInventoryIcon(filename, anim.getFrame(0), Vec2f(16, 16));
 	}
 }
 
@@ -158,4 +131,9 @@ void onTick(CBlob@ this)
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return blob.getShape().isStatic() && blob.isCollidable();
+}
+
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
+{
+	this.getSprite().SetFrameIndex(0);
 }
