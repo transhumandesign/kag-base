@@ -9,16 +9,17 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	f32 remaining_time;
-
+	u32 threshold_ticks = THRESHOLD_FLICKER * getTicksASecond();
+	
 	if (isServer()) // save server-only information "time to die" to blob, so client can fetch it
 	{
 		remaining_time = this.getTimeToDie();	
 		
-		if (remaining_time* getTicksASecond() < THRESHOLD_FLICKER * getTicksASecond() + 100)
-		{
-			this.set_bool("should tick often", true);
-			this.Sync("should tick often", true);
-		}
+		bool closeToThreshold = remaining_time * getTicksASecond() < threshold_ticks + 200;
+		bool remainderNotZero = remaining_time > 0;
+		bool shouldTickOften = (closeToThreshold && remainderNotZero) ? true : false;
+		this.set_bool("should tick often", shouldTickOften);
+		this.Sync("should tick often", true);
 		
 		this.set_f32("remaining_time", remaining_time);
 		this.Sync("remaining_time", true);
@@ -39,8 +40,5 @@ void onTick(CBlob@ this)
 		}
 	}
 	
-	if (this.get_bool("should tick often"))
-	{
-		this.getCurrentScript().tickFrequency = 1;
-	}
+	this.getCurrentScript().tickFrequency = this.get_bool("should tick often") ? 1 : 100;
 }
