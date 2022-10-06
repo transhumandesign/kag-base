@@ -1,5 +1,10 @@
 
-const f32 THRESHOLD_FLICKER = 4;
+const u8 THRESHOLD_FLICKER = 4;
+
+void onInit(CBlob@ this)
+{
+	this.getCurrentScript().tickFrequency = 100;
+}
 
 void onTick(CBlob@ this)
 {
@@ -7,9 +12,16 @@ void onTick(CBlob@ this)
 
 	if (isServer()) // save server-only information "time to die" to blob, so client can fetch it
 	{
-	remaining_time = this.getTimeToDie();
-	this.set_f32("remaining_time", remaining_time);
-	this.Sync("remaining_time", true);
+		remaining_time = this.getTimeToDie();	
+		
+		if (remaining_time* getTicksASecond() < THRESHOLD_FLICKER * getTicksASecond() + 100)
+		{
+			this.set_bool("should tick often", true);
+			this.Sync("should tick often", true);
+		}
+		
+		this.set_f32("remaining_time", remaining_time);
+		this.Sync("remaining_time", true);
 	}
 	
 	if (isClient()) // fetch "time to die" from blob, manage sprite flickering
@@ -25,5 +37,10 @@ void onTick(CBlob@ this)
 				s.SetVisible(!s.isVisible());
 			}
 		}
+	}
+	
+	if (this.get_bool("should tick often"))
+	{
+		this.getCurrentScript().tickFrequency = 1;
 	}
 }
