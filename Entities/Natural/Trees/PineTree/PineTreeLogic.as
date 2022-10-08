@@ -43,12 +43,34 @@ void onInit(CBlob@ this)
 	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", icon_frame, Vec2f(8, 32));
 	this.SetMinimapRenderAlways(true);
 	
-	this.getCurrentScript().tickFrequency = 60;
+	if (isServer())
+	{
+		this.set_u8("particle type", 1);	// 0: bushy, 1: pine
+		this.Sync("particle type", true);
+	}
 }
 
 void onTick(CBlob@ this)
 {
-	GrowCheck(this);
+	if (this.get_u16("grow check tick frequency") != 0 
+		&& this.getTickSinceCreated() % this.get_u16("grow check tick frequency") == 0)
+	{
+		GrowCheck(this);
+	}
+	
+	if (this.exists("cut_down_time")				// tree is falling
+		|| this.get_u8("wiggly leaves count") == 0)	// no leaves to wiggle
+	{
+		return;
+	}
+	
+	if (this.get_u16("leaf proximity check tick frequency") != 0
+		&& this.getTickSinceCreated() % this.get_u16("leaf proximity check tick frequency") == 0)
+	{
+		LeafProximityCheck(this);
+	}
+
+	ProcessLeafWiggle(this);
 }
 
 void GrowSprite(CSprite@ this, TreeVars@ vars)
@@ -118,7 +140,8 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 			}
 			else if (segment.grown_times == 2 && segment.height > 2)
 			{
-				CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i, spritefile, 32, 32, 0, 0);
+				string layerName = "leaves " + i;
+				CSpriteLayer@ newsegment = this.addSpriteLayer(layerName, spritefile, 32, 32, 0, 0);
 
 				if (newsegment !is null)
 				{
@@ -130,6 +153,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 					if (segment.r.NextRanged(2) == 0)
 					{
+						SaveWigglyLeaf(blob, layerName);
 						animGrow.AddFrame(6);
 					}
 					else
@@ -169,7 +193,8 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 				else if (segment.height > 2 && segment.height <= vars.max_height)  //add leaves
 				{
 					bool flipped = (segment.r.NextRanged(2) == 0);
-					CSpriteLayer@ newsegment1 = this.addSpriteLayer("leaves side " + i, spritefile, 32, 32, 0, 0);
+					string layerName = "leaves side " + i;
+					CSpriteLayer@ newsegment1 = this.addSpriteLayer(layerName, spritefile, 32, 32, 0, 0);
 
 					if (newsegment1 !is null)
 					{

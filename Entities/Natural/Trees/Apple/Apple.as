@@ -13,11 +13,6 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.getTickSinceCreated() % 60 == 0)
-	{
-		print(this.getNetworkID() + "  collidable: " + this.getShape().getConsts().collidable + " tagIgnoreArrow: " + this.hasTag("ignore_arrow"));
-	}
-
 	CSprite@ s 			= this.getSprite();
 	Animation@ anim 	= s.getAnimation("default");
 

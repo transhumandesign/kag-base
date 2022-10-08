@@ -51,20 +51,40 @@ void onInit(CBlob@ this)
 	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", icon_frame, Vec2f(8, 32));
 	this.SetMinimapRenderAlways(true);
 	
-	this.getCurrentScript().tickFrequency = 60;
+	if (isServer())
+	{
+		this.set_u8("particle type", 0);	// 0: bushy, 1: pine
+		this.Sync("particle type", true);
+	}
 }
 
 void onTick(CBlob@ this)
 {
-	GrowCheck(this);
-	
-	if (this.exists("cut_down_time")) // tree is falling
+	if (this.get_u16("grow check tick frequency") != 0 
+		&& this.getTickSinceCreated() % this.get_u16("grow check tick frequency") == 0)
+	{
+		GrowCheck(this);
+		
+		if (this.hasTag("growing apples") 
+			&& !this.exists("cut_down_time"))
+		{
+			GrowApples(this);
+		}
+	}
+
+	if (this.exists("cut_down_time"))	 // tree is falling
 	{
 		LoseApples(this);
 	}
-	else if (this.hasTag("growing apples")) // tree is not falling
+	else if (this.get_u8("wiggly leaves count") > 0) // wiggly leaves exist
 	{
-		GrowApples(this);
+		if (this.get_u16("leaf proximity check tick frequency") != 0
+		&& this.getTickSinceCreated() % this.get_u16("leaf proximity check tick frequency") == 0)
+		{
+			LeafProximityCheck(this);
+		}
+		
+		ProcessLeafWiggle(this);	
 	}
 }
 
@@ -81,6 +101,7 @@ void LoseApples(CBlob@ this)
 		{	
 			if (blob.hasTag("apple growth"))	// still a small apple, unspawn it
 			{
+				blob.getSprite().Gib();
 				blob.server_Die();
 				continue;
 			}
@@ -238,7 +259,8 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 				for (int spriteindex = 0; spriteindex < 3; spriteindex++)
 				{
-					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i + " " + spriteindex, spritefile, 32, 32, 0, 0);
+					string layerName = "leaves " + i + " " + spriteindex;
+					CSpriteLayer@ newsegment = this.addSpriteLayer(layerName, spritefile, 32, 32, 0, 0);
 
 					if (newsegment !is null)
 					{
@@ -251,6 +273,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 						}
 						else
 						{
+							SaveWigglyLeaf(blob, layerName);
 							animGrow.AddFrame(9);
 							z =  510.0f + (vars.height * 10.0f);
 						}
@@ -294,12 +317,14 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 			}
 			else if (segment.grown_times == 4 && i == vars.max_height - 1) //top of the tree
 			{
-				CSpriteLayer@ newsegment = this.addSpriteLayer("extra leaves top", spritefile, 32, 32, 0, 0);
+				string layerName = "extra leaves top";
+				CSpriteLayer@ newsegment = this.addSpriteLayer(layerName, spritefile, 32, 32, 0, 0);
 
 				if (newsegment !is null)
 				{
 					Animation@ animGrow = newsegment.addAnimation("grow", 0, false);
 					float z = -550.0f;
+					SaveWigglyLeaf(blob, layerName);
 					animGrow.AddFrame(9);
 					newsegment.SetAnimation(animGrow);
 					newsegment.ResetTransform();
@@ -319,7 +344,8 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 				for (int spriteindex = 0; spriteindex < 3; spriteindex++)
 				{
-					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i + " " + spriteindex, spritefile, 32, 32, 0, 0);
+					string layerName = "leaves " + i + " " + spriteindex;
+					CSpriteLayer@ newsegment = this.addSpriteLayer(layerName, spritefile, 32, 32, 0, 0);
 
 					if (newsegment !is null)
 					{
@@ -332,6 +358,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 						}
 						else
 						{
+							SaveWigglyLeaf(blob, layerName);
 							animGrow.AddFrame(9);
 							z =  500.0f + (vars.height * 10.0f);
 						}
