@@ -357,31 +357,3 @@ void SaveWigglyLeaf(CBlob@ this, string layerName)
 	this.set_u8("wiggly leaves count", wiggly_leaf_count);
 	this.set_string("wiggly leaf " + wiggly_leaf_count, layerName); // save reference to spritelayer
 }
-
-/*
-
-rustling leaves - https://pixabay.com/sound-effects/rustling-leaves-6875/
-rustling leaves 2 - https://pixabay.com/sound-effects/leaves-rustling-14633/
-
---> don't make pine early layers wiggly
---> bush wiggle
---> grass wiggle?
---> make explosions, slashes and other heavier objects set off wiggling
-
-[added] Leaf spritelayers on trees will shake, make a rustle sound and produce leaf particles, when players are touching them.
-[changed] Moved sounds and common scripts to respective subfolders.
-
-Apple tree and bushy tree will produce planty particles, pine tree will produce grassy particles.
-
-Performance seems good.
-I added the setting tag.
-lag becomes noticable at 260 blobs, depending if you are standing inside many.
-Without it, no lag even with 500 blobs.
-
-Describe all functions.
-
--> low todo: (only doing it if dev accept my pr)
-make apple tree particles olive green
-make apples bounce when layer bounces
-
-*/
