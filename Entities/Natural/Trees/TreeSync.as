@@ -54,7 +54,8 @@ void InitTree(CBlob@ this, TreeVars@ vars)
 			i++;
 		}
 
-		this.getCurrentScript().tickFrequency = 0;
+		if (!this.hasTag("growing apples"))
+			this.getCurrentScript().tickFrequency = 0;
 	}
 	else if (this.exists("grown_times"))
 	{
@@ -74,7 +75,13 @@ void InitTree(CBlob@ this, TreeVars@ vars)
 	}
 }
 
-void onTick(CBlob@ this)
+void onHealthChange(CBlob@ this, f32 oldhealth)
+{
+	GrowCheck(this);
+}
+
+
+void GrowCheck(CBlob@ this)
 {
 	if (!DoCollapseWhenBelow(this, 0.0f)) // if not collapsing
 	{
@@ -208,7 +215,7 @@ void DoGrow(CBlob@ this, TreeVars@ vars)
 	vars.grown_times++;
 	this.set_u8("grown_times", vars.grown_times);
 
-	if (vars.grown_times >= 15)
+	if (vars.grown_times >= 15 && !this.hasTag("growing apples"))
 		this.getCurrentScript().tickFrequency = 0;
 }
 

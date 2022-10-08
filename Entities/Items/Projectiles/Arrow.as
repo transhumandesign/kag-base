@@ -322,6 +322,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
+	//don't collide with blobs that have this tag
+	if (blob.hasTag("ignore_arrow"))
+	{
+		return false;
+	}
+
 	//don't collide with other projectiles
 	if (blob.hasTag("projectile"))
 	{
@@ -358,9 +364,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 			this.getShape().isStatic() ||
 			this.hasTag("collided") ||
 			//or they're dead
-			blob.hasTag("dead") ||
-			//or they ignore us
-			blob.hasTag("ignore_arrow")
+			blob.hasTag("dead")
 		) {
 			return false;
 		}
@@ -377,7 +381,7 @@ bool specialArrowHit(CBlob@ blob)
 {
 	string bname = blob.getName();
 	return (bname == "fishy" && blob.hasTag("dead") || bname == "food"
-		|| bname == "steak" || bname == "grain"/* || bname == "heart"*/); //no egg because logic
+		|| bname == "steak" || bname == "grain" || bname == "apple") /* || bname == "heart"*/; //no egg because logic
 }
 
 void Pierce(CBlob @this, CBlob@ blob = null)

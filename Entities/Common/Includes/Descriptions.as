@@ -50,8 +50,10 @@ namespace Descriptions
 	sack                       = getTranslatedString("A sack for storing more inventory on your back."), //OLD
 	tree_bushy                 = getTranslatedString("A seedling of an oak tree ready for planting."),
 	tree_pine                  = getTranslatedString("A seedling of a pine tree ready for planting."),
+	tree_apple                 = getTranslatedString("A seedling of an apple tree ready for planting."),
 	flower                     = getTranslatedString("A decorative flower seedling."),
 	grain                      = getTranslatedString("Grain used as food."),
+	apple                      = getTranslatedString("An apple used as food."),
 	wooden_door                = getTranslatedString("Wooden swing door."),
 	spikes                     = getTranslatedString("Stone spikes used as a defense around fortifications."),
 
