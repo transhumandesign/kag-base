@@ -57,7 +57,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		// stun on fall
 		const u8 knockdown_time = 12;
 
-		if (doknockdown && setKnocked(this, knockdown_time))
+		if (!this.hasTag("dead") && doknockdown && setKnocked(this, knockdown_time))
 		{
 			if (damage < this.getHealth()) //not dead
 				Sound::Play("/BreakBone", this.getPosition());
