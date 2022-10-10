@@ -62,29 +62,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 	if (cmd == this.getCommandID(toggle_id))
 	{
-		bool set = !getSawOn(this);
-		SetSawOn(this, set);
-
-		if (getNet().isClient()) //closed/opened gfx
-		{
-			CSprite@ sprite = this.getSprite();
-
-			u8 frame = set ? 0 : 1;
-
-			sprite.animation.frame = frame;
-
-			CSpriteLayer@ back = sprite.getSpriteLayer("back");
-			if (back !is null)
-			{
-				back.animation.frame = frame;
-			}
-
-			CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
-			if (chop !is null)
-			{
-				chop.SetOffset(Vec2f());
-			}
-		}
+		SetSawOn(this, !getSawOn(this));
+		UpdateFrame(this);
 	}
 }
 
@@ -128,7 +107,7 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 	// on saw player or dead body - disable the saw
 	if (
 		(tobeblended.getPlayer() !is null || //player
-		(tobeblended.hasTag("flesh") && tobeblended.hasTag("flesh"))) && //dead body
+		tobeblended.hasTag("flesh")) && //dead body
 		tobeblended.getTeamNum() == this.getTeamNum()) //same team as saw
 	{
 		CBitStream params;
@@ -146,9 +125,7 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 	//give no fucks about teamkilling
 	tobeblended.server_SetHealth(-1.0f);
 	tobeblended.server_Die();
-
 }
-
 
 bool canSaw(CBlob@ this, CBlob@ blob)
 {
@@ -158,21 +135,21 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 		return false;
 	}
 
-	string name = blob.getName();
+	string n = blob.getName();
 
 	if (
-	    name == "migrant" ||
-	    name == "wooden_door" ||
-	    name == "mat_wood" ||
-	    name == "tree_bushy" ||
-	    name == "tree_pine" ||
-	    (name == "mine" && blob.getTeamNum() == this.getTeamNum()))
+	    n == "migrant" ||
+	    n == "wooden_door" ||
+	    n == "mat_wood" ||
+	    n == "tree_bushy" ||
+	    n == "tree_pine" ||
+	    (n == "mine" && blob.getTeamNum() == this.getTeamNum()))
 	{
 		return false;
 	}
 
-	//flesh blobs have to be fed into the saw part
-	if (blob.hasTag("flesh") || (name=="mine"))
+	//flesh blobs or enemy mine has to be fed into the saw part
+	if (blob.hasTag("flesh") || (n == "mine"))
 	{
 		Vec2f pos = this.getPosition();
 		Vec2f bpos = blob.getPosition();
@@ -184,7 +161,7 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 
 		if (dot > 0.8f)
 		{
-			if (getNet().isClient() && !g_kidssafe) //add blood gfx
+			if (isClient() && blob.hasTag("flesh") && !g_kidssafe) //add blood gfx
 			{
 				CSprite@ sprite = this.getSprite();
 				CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
@@ -270,13 +247,38 @@ void onTick(CBlob@ this)
 	}
 }
 
+void UpdateFrame(CBlob@ this)
+{
+	bool set = getSawOn(this);
+
+	if (isClient()) //closed/opened gfx
+	{
+		CSprite@ s = this.getSprite();
+
+		u8 frame = set ? 0 : 1;
+
+		s.animation.frame = frame;
+
+		CSpriteLayer@ back = s.getSpriteLayer("back");
+		if (back !is null)
+		{
+			back.animation.frame = frame;
+		}
+
+		CSpriteLayer@ chop = s.getSpriteLayer("chop");
+		if (chop !is null)
+		{
+			chop.SetOffset(Vec2f());
+		}
+	}
+}
+
 //only pickable by enemies if they are _under_ this
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return (byBlob.getTeamNum() == this.getTeamNum() ||
 	        byBlob.getPosition().y > this.getPosition().y + 4);
 }
-
 
 //sprite update
 void onInit(CSprite@ this)
@@ -317,12 +319,19 @@ void onTick(CSprite@ this)
 
 	//spin saw blade
 	CSpriteLayer@ chop = this.getSpriteLayer("chop");
+	bool active = getSawOn(blob);
 
-	if (chop !is null && getSawOn(blob))
+	if (chop !is null && active)
 	{
 		chop.SetFacingLeft(false);
 
 		Vec2f around(0.5f, -0.5f);
 		chop.RotateBy(30.0f, around);
+	}
+	
+	// fixes wrong sprite on disabled saw on joining online server
+	if (this.animation.frame == 0 && !active)
+	{
+		UpdateFrame(blob);
 	}
 }
