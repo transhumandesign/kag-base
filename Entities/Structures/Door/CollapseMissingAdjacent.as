@@ -18,6 +18,7 @@ void onTick(CBlob@ this)
 	if (shouldCollapse(this))
 	{
 		this.getCurrentScript().tickFrequency = 4;
+		this.Tag("will_soon_collapse");
 
 		if (isClient())
 		{
@@ -45,6 +46,7 @@ void onTick(CBlob@ this)
 	}
 	else
 	{
+		this.Untag("will_soon_collapse");
 		this.getCurrentScript().runFlags |= Script::remove_after_this;
 
 		if (isClient())

@@ -75,6 +75,14 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 			this.SetDamageOwnerPlayer(null);
 		}
 	}
+
+	// Z is modified when attaching (offsetZ)
+	// So we set Z back
+	if (detached.hasTag("important-pickup")) 
+	{
+		f32 baseZ = detached.get_f32("important-pickup");
+	    detached.getSprite().SetZ(baseZ);
+	}
 }
 
 void InitSeatAttachment(AttachmentPoint@ ap)

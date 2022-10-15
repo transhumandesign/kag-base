@@ -82,7 +82,7 @@ void onInit(CBlob@ this)
 	this.Tag("player");
 	this.Tag("flesh");
 
-	this.addCommandID("get bomb");
+	this.addCommandID("activate/throw bomb");
 
 	this.push("names to activate", "keg");
 
@@ -309,9 +309,7 @@ void onTick(CBlob@ this)
 						}
 						else
 						{
-							CBitStream params;
-							params.write_u8(bombType);
-							this.SendCommand(this.getCommandID("get bomb"), params);
+							client_SendThrowOrActivateCommandBomb(this, bombType);
 							thrown = true;
 						}
 						break;
@@ -1072,59 +1070,7 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("get bomb"))
-	{
-		if (this.getCarriedBlob() !is null)
-			return;
-
-		const u8 bombType = params.read_u8();
-		if (bombType >= bombTypeNames.length)
-			return;
-
-		const string bombTypeName = bombTypeNames[bombType];
-		this.Tag(bombTypeName + " done activate");
-		if (hasItem(this, bombTypeName))
-		{
-			if (bombType == 0)
-			{
-				if (getNet().isServer())
-				{
-					CBlob @blob = server_CreateBlob("bomb", this.getTeamNum(), this.getPosition());
-					if (blob !is null)
-					{
-						TakeItem(this, bombTypeName);
-						this.server_Pickup(blob);
-					}
-				}
-			}
-			else if (bombType == 1)
-			{
-				if (getNet().isServer())
-				{
-					CBlob @blob = server_CreateBlob("waterbomb", this.getTeamNum(), this.getPosition());
-					if (blob !is null)
-					{
-						TakeItem(this, bombTypeName);
-						this.server_Pickup(blob);
-						blob.set_f32("map_damage_ratio", 0.0f);
-						blob.set_f32("explosive_damage", 0.0f);
-						blob.set_f32("explosive_radius", 92.0f);
-						blob.set_bool("map_damage_raycast", false);
-						blob.set_string("custom_explosion_sound", "/GlassBreak");
-						blob.set_u8("custom_hitter", Hitters::water);
-                        blob.Tag("splash ray cast");
-
-					}
-				}
-			}
-			else
-			{
-			}
-
-			SetFirstAvailableBomb(this);
-		}
-	}
-	else if (cmd == this.getCommandID("cycle"))  //from standardcontrols
+	if (cmd == this.getCommandID("cycle"))  //from standardcontrols
 	{
 		// cycle bombs
 		u8 type = this.get_u8("bomb type");
@@ -1152,6 +1098,74 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("activate/throw"))
 	{
+		SetFirstAvailableBomb(this);
+	}
+	else if (cmd == this.getCommandID("activate/throw bomb"))
+	{
+		if (isServer())
+		{
+			Vec2f pos = params.read_Vec2f();
+			Vec2f vector = params.read_Vec2f();
+			Vec2f vel = params.read_Vec2f();
+			u8 bombType = params.read_u8();
+
+			CBlob @carried = this.getCarriedBlob();
+
+			if (carried !is null)
+			{
+				bool holding_bomb = false;
+				// are we actually holding a bomb or something else?
+				for (uint i = 0; i < bombNames.length; i++)
+				{
+					if(carried.getName() == bombNames[i])
+					{
+						holding_bomb = true;
+						DoThrow(this, carried, pos, vector, vel);
+					}
+				}
+
+				if (!holding_bomb)
+				{
+					ActivateBlob(this, carried, pos, vector, vel);
+				}
+			}
+			else
+			{
+				if (bombType >= bombTypeNames.length)
+					return;
+
+				const string bombTypeName = bombTypeNames[bombType];
+				this.Tag(bombTypeName + " done activate");
+				if (hasItem(this, bombTypeName))
+				{
+					if (bombType == 0)
+					{
+						CBlob @blob = server_CreateBlob("bomb", this.getTeamNum(), this.getPosition());
+						if (blob !is null)
+						{
+							TakeItem(this, bombTypeName);
+							this.server_Pickup(blob);
+						}
+					}
+					else if (bombType == 1)
+					{
+						CBlob @blob = server_CreateBlob("waterbomb", this.getTeamNum(), this.getPosition());
+						if (blob !is null)
+						{
+							TakeItem(this, bombTypeName);
+							this.server_Pickup(blob);
+							blob.set_f32("map_damage_ratio", 0.0f);
+							blob.set_f32("explosive_damage", 0.0f);
+							blob.set_f32("explosive_radius", 92.0f);
+							blob.set_bool("map_damage_raycast", false);
+							blob.set_string("custom_explosion_sound", "/GlassBreak");
+							blob.set_u8("custom_hitter", Hitters::water);
+							blob.Tag("splash ray cast");
+						}
+					}
+				}
+			}
+		}
 		SetFirstAvailableBomb(this);
 	}
 	else
@@ -1218,71 +1232,91 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 	HitInfo@[] hitInfos;
 	if (map.getHitInfosFromArc(pos, aimangle, arcdegrees, radius + attack_distance, this, @hitInfos))
 	{
-		//HitInfo objects are sorted, first come closest hits
-		for (uint i = 0; i < hitInfos.length; i++)
+		// HitInfo objects are sorted, first come closest hits
+		// start from furthest ones to avoid doing too many redundant raycasts
+		for (int i = hitInfos.size() - 1; i >= 0; i--)
 		{
 			HitInfo@ hi = hitInfos[i];
 			CBlob@ b = hi.blob;
-			if (b !is null && !dontHitMore) // blob
+
+			if (b !is null)
 			{
 				if (b.hasTag("ignore sword")) continue;
+				if (!canHit(this, b)) continue;
+				if (knight_has_hit_actor(this, b)) continue;
 
-				//big things block attacks
-				const bool large = b.hasTag("blocks sword") && !b.isAttached() && b.isCollidable();
+				Vec2f hitvec = hi.hitpos - pos;
 
-				if (!canHit(this, b))
+				// we do a raycast to given blob and hit everything hittable between knight and that blob
+				// raycast is stopped if it runs into a "large" blob (typically a door)
+				// raycast length is slightly higher than hitvec to make sure it reaches the blob it's directed at
+				HitInfo@[] rayInfos;
+				map.getHitInfosFromRay(pos, -(hitvec).getAngleDegrees(), hitvec.Length() + 2.0f, this, rayInfos);
+
+				for (int j = 0; j < rayInfos.size(); j++)
 				{
-					// no TK
-					if (large)
-						dontHitMore = true;
+					CBlob@ rayb = rayInfos[j].blob;
+					
+					if (rayb is null) break; // means we ran into a tile, don't need blobs after it if there are any
+					if (b.hasTag("ignore sword")) continue;
+					if (!canHit(this, rayb)) continue;
 
-					continue;
-				}
-
-				if (knight_has_hit_actor(this, b))
-				{
-					if (large)
-						dontHitMore = true;
-
-					continue;
-				}
-
-				f32 temp_damage = damage;
-
-				knight_add_actor_limit(this, b);
-				if (!dontHitMore && (b.getName() != "log" || !dontHitMoreLogs))
-				{
-					Vec2f velocity = b.getPosition() - pos;
-
-					if (b.getName() == "log")
+					bool large = rayb.hasTag("blocks sword") && !rayb.isAttached() && rayb.isCollidable(); // usually doors, but can also be boats/some mechanisms
+					if (knight_has_hit_actor(this, rayb)) 
 					{
-						temp_damage /= 3;
-						dontHitMoreLogs = true;
-						CBlob@ wood = server_CreateBlobNoInit("mat_wood");
-						if (wood !is null)
+						// check if we hit any of these on previous ticks of slash
+						if (large) break;
+						if (rayb.getName() == "log")
 						{
-							int quantity = Maths::Ceil(float(temp_damage) * 20.0f);
-							int max_quantity = b.getHealth() / 0.024f; // initial log health / max mats
-							
-							quantity = Maths::Max(
-								Maths::Min(quantity, max_quantity),
-								0
-							);
-
-							wood.Tag('custom quantity');
-							wood.Init();
-							wood.setPosition(hi.hitpos);
-							wood.server_SetQuantity(quantity);
+							dontHitMoreLogs = true;
 						}
-
+						continue;
 					}
 
-					this.server_Hit(b, hi.hitpos, velocity, temp_damage, type, true);  // server_Hit() is server-side only
+					f32 temp_damage = damage;
+					
+					if (rayb.getName() == "log")
+					{
+						if (!dontHitMoreLogs)
+						{
+							temp_damage /= 3;
+							dontHitMoreLogs = true; // set this here to prevent from hitting more logs on the same tick
+							CBlob@ wood = server_CreateBlobNoInit("mat_wood");
+							if (wood !is null)
+							{
+								int quantity = Maths::Ceil(float(temp_damage) * 20.0f);
+								int max_quantity = rayb.getHealth() / 0.024f; // initial log health / max mats
+								
+								quantity = Maths::Max(
+									Maths::Min(quantity, max_quantity),
+									0
+								);
 
-					// end hitting if we hit something solid, don't if its flesh
+								wood.Tag('custom quantity');
+								wood.Init();
+								wood.setPosition(rayInfos[j].hitpos);
+								wood.server_SetQuantity(quantity);
+							}
+						}
+						else 
+						{
+							// print("passed a log on " + getGameTime());
+							continue; // don't hit the log
+						}
+					}
+					
+					knight_add_actor_limit(this, rayb);
+
+					
+					Vec2f velocity = rayb.getPosition() - pos;
+					velocity.Normalize();
+					velocity *= 12; // knockback force is same regardless of distance
+
+					this.server_Hit(rayb, rayInfos[j].hitpos, velocity, temp_damage, type, true);
+
 					if (large)
 					{
-						dontHitMore = true;
+						break; // don't raycast past the door after we do damage to it
 					}
 				}
 			}
@@ -1704,20 +1738,16 @@ void SetFirstAvailableBomb(CBlob@ this)
 bool canHit(CBlob@ this, CBlob@ b)
 {
 
-	if (b.hasTag("invincible"))
+	if (b.hasTag("invincible") || b.hasTag("temp blob"))
 		return false;
 
-	// Don't hit temp blobs and items carried by teammates.
-	if (b.isAttached())
+	// don't hit picked up items
+	CAttachment@ att = b.getAttachments();
+	if (att !is null)
 	{
-
-		CBlob@ carrier = b.getCarriedBlob();
-
-		if (carrier !is null)
-			if (carrier.hasTag("player")
-			        && (this.getTeamNum() == carrier.getTeamNum() || b.hasTag("temp blob")))
-				return false;
-
+		AttachmentPoint@ point = att.getAttachmentPointByName("PICKUP");
+		if (point !is null && !point.socket &&
+			b.isAttachedToPoint("PICKUP") && !b.hasTag("slash_while_in_hand")) return false;
 	}
 
 	if (b.hasTag("dead"))

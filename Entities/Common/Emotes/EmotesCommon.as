@@ -127,6 +127,18 @@ void set_emote(CBlob@ this, u8 emote, int time)
 		emote = Emotes::off;
 	}
 
+	// server side ignore
+	if (isServer()) 
+	{
+		CPlayer@ player = this.getPlayer();
+		if (player !is null && getSecurity().isPlayerIgnored(player))
+		{
+			// muted emote
+			print("Ignored emote from " + player.getUsername());
+			return;
+		}
+	}
+
 	this.set_u8("emote", emote);
 	this.set_u32("emotetime", getGameTime() + time);
 	bool client = this.getPlayer() !is null && this.isMyPlayer();

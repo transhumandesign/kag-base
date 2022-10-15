@@ -131,6 +131,22 @@ shared class CTFSpawns : RespawnSystem
 				p_info.team = 0;
 			}
 
+			// spawn as builder in warmup
+			if (getRules().isWarmup())
+			{
+				p_info.blob_name = "builder";
+			}
+
+			CBlob@ spawnBlob = getSpawnBlob(p_info);
+
+			if (spawnBlob !is null)
+			{
+				if (spawnBlob.exists("custom respawn immunity"))
+				{
+					p_info.customImmunityTime = spawnBlob.get_u8("custom respawn immunity");
+				}
+			}
+
 			CPlayer@ player = getPlayerByUsername(p_info.username); // is still connected?
 
 			if (player is null)
@@ -201,6 +217,36 @@ shared class CTFSpawns : RespawnSystem
 		}
 
 		return Vec2f(0, 0);
+	}
+
+	CBlob@ getSpawnBlob(PlayerInfo@ p_info)
+	{
+		CTFPlayerInfo@ c_info = cast < CTFPlayerInfo@ > (p_info);
+		if (c_info !is null)
+		{
+			CBlob@ pickSpawn = getBlobByNetworkID(c_info.spawn_point);
+			if (pickSpawn !is null &&
+			        pickSpawn.hasTag("respawn") && !isUnderRaid(pickSpawn) &&
+			        pickSpawn.getTeamNum() == p_info.team)
+			{
+				return pickSpawn;
+			}
+			else
+			{
+				CBlob@[] spawns;
+				PopulateSpawnList(spawns, p_info.team);
+
+				for (uint step = 0; step < spawns.length; ++step)
+				{
+					if (spawns[step].getTeamNum() == s32(p_info.team))
+					{
+						return spawns[step];
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 
 	void RemovePlayerFromSpawn(CPlayer@ player)
@@ -698,6 +744,24 @@ void onInit(CRules@ this)
 	this.set_s32("restart_rules_after_game_time", 30 * 30);
 }
 
+void onStateChange(CRules@ this, const u8 oldState)
+{
+	// we have to do it like this because warmup state is broken and not synced properly clientside
+	if(isServer())
+	{
+		if (this.getCurrentState() == WARMUP)
+		{
+			this.Tag("faster building");
+			this.Sync("faster building", true);
+		}
+		else
+		{
+			this.Untag("faster building");
+			this.Sync("faster building", true);
+		}
+	}
+}
+
 // had to add it here for tutorial cause something didnt work in the tutorial script
 void onBlobDie(CRules@ this, CBlob@ blob)
 {
@@ -709,5 +773,13 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 			server_DropCoins(blob.getPosition(), XORRandom(15) + 5);
 			blob.Tag("dropped coins");
 		}
+	}
+}
+
+void onBlobCreated(CRules@ this, CBlob@ blob)
+{
+	if (blob.getName() == "mat_gold")
+	{
+		blob.RemoveScript("DecayQuantity.as");
 	}
 }
