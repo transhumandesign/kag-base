@@ -5,6 +5,8 @@
 #include "KnockedCommon.as";
 #include "FallDamageCommon.as";
 
+const u8 knockdown_time = 12;
+
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
 	if (!solid || this.isInInventory())
@@ -54,10 +56,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			}
 		}
 
-		// stun on fall
-		const u8 knockdown_time = 12;
-
-		if (!this.hasTag("dead") && doknockdown && setKnocked(this, knockdown_time))
+		if (getGameTime() == this.get_u32("death sound time stamp") && doknockdown && setKnocked(this, knockdown_time))
 		{
 			if (damage < this.getHealth()) //not dead
 				Sound::Play("/BreakBone", this.getPosition());
@@ -66,5 +65,13 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				Sound::Play("/FallDeath.ogg", this.getPosition());
 			}
 		}
+	}
+}
+
+void onHealthChange(CBlob@ this, f32 health_old)
+{
+	if (health_old > 0.0f)
+	{
+		this.set_u32("death sound time stamp", getGameTime());
 	}
 }
