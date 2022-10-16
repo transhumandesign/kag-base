@@ -233,6 +233,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			case 3:	LoadMap(mvm.button3.filename); break;
 			default: LoadNextMap(); break;
 		}
+		this.minimap = true;
 	}
 }
 
@@ -252,4 +253,6 @@ void RenderRaw(int id)
 	Render::SetBackfaceCull(true);
 	Render::SetZBuffer(false, false);
 	mvm.Render();
+	
+	getRules().minimap = false;
 }
