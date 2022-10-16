@@ -56,7 +56,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			}
 		}
 
-		if (getGameTime() == this.get_u32("death sound time stamp") && doknockdown && setKnocked(this, knockdown_time))
+		if (this.get_bool("play fall damage sound") && doknockdown && setKnocked(this, knockdown_time))
 		{
 			if (damage < this.getHealth()) //not dead
 				Sound::Play("/BreakBone", this.getPosition());
@@ -72,6 +72,10 @@ void onHealthChange(CBlob@ this, f32 health_old)
 {
 	if (health_old > 0.0f)
 	{
-		this.set_u32("death sound time stamp", getGameTime());
+		this.set_bool("play fall damage sound", true);
+	}
+	else
+	{
+		this.set_bool("play fall damage sound", false);
 	}
 }
