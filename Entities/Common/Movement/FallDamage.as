@@ -7,6 +7,11 @@
 
 const u8 knockdown_time = 12;
 
+void onInit(CBlob@ this)
+{
+	this.getCurrentScript().tickIfTag = "dead";
+}
+
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
 	if (!solid || this.isInInventory())
@@ -56,9 +61,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			}
 		}
 
-		if (this.get_bool("play fall damage sound") && doknockdown && setKnocked(this, knockdown_time))
-		{
-			if (damage < this.getHealth()) //not dead
+		if (doknockdown)
+			setKnocked(this, knockdown_time);
+
+		if (!this.hasTag("should be silent"))
+		{				
+			if (this.getHealth() > damage) //not dead
 				Sound::Play("/BreakBone", this.getPosition());
 			else
 			{
@@ -68,14 +76,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	}
 }
 
-void onHealthChange(CBlob@ this, f32 health_old)
+void onTick(CBlob@ this)
 {
-	if (health_old > 0.0f)
-	{
-		this.set_bool("play fall damage sound", true);
-	}
-	else
-	{
-		this.set_bool("play fall damage sound", false);
-	}
+	this.Tag("should be silent");
+	this.getCurrentScript().tickFrequency = 0;
 }
