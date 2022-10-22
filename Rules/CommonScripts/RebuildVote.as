@@ -14,7 +14,7 @@ class PopupGUI
 {
 	string text1 = "A big balance update has been released recently.\n\nPlease take a moment to participate in the poll linked below.\n\n(You will have to log in to kagstats.com using your KAG account.)\n\nThe poll contains questions regarding all the meaningful changes.\n\nWhether a change stays or not will depend on the results of this poll.";
 	string text2 = "kagstats.com/cockcockcock\n";
-	string text3 = "This window will automatically close in {SEC} seconds.";
+	string text3 = "This window will automatically close in $S seconds.";
 	ClickButton@ website_button;
 	string website_text = "Take me there!";
 	Vec2f website_text_dim;
@@ -58,7 +58,7 @@ class PopupGUI
 
 		GUI::DrawText(text1, tl + Vec2f(10, 10), color_white);
 		GUI::DrawText(text2, tl + Vec2f(total_dim.x / 2 - text_dim_2.x / 2, text_dim_1.y - 3), SColor(255, 230, 100, 230));
-		GUI::DrawText(text3.replace("{SEC}", "" + seconds_left), tl + Vec2f(total_dim.x / 2 - text_dim_3.x / 2, text_dim_1.y + text_dim_2.y), color_white);
+		GUI::DrawText(text3.replace("$S", "" + seconds_left), tl + Vec2f(total_dim.x / 2 - text_dim_3.x / 2, text_dim_1.y + text_dim_2.y), color_white);
 
 		Vec2f button_tl = bl;
 
