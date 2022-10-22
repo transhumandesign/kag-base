@@ -161,7 +161,7 @@ u32 banner_time = 20 * getTicksASecond(); // 20 seconds
 
 void onInit(CRules@ this)
 {
-	if (Time() > 0 && Time() < 1668380400)
+	if (Time() > 1667080800 && Time() < 1668380400)
 	{
 		hide = false;
 		if (!GUI::isFontLoaded("slightly bigger text 2"))
