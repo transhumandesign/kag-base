@@ -1,6 +1,6 @@
 /* 
 	quick dirty pop-up GUI with 2 buttons for the rebuild poll written by Bunnie
-	can be safely removed from Base after the poll is done 
+	can be safely removed from CTF gamemode.cfg && Base after the poll is done 
 	start date: 30.10.2022
 	end date: 14.11.2022
 	(Need to talk to Verra about activating the poll before updating)
