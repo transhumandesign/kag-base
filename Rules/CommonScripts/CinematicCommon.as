@@ -135,74 +135,61 @@ CBlob@[] calculateImportance(CBlob@[] blobs)
 	return filtered_blobs;
 }
 
+class CompareBase
+{
+	CBlob@ blob;
+};
+
+class CompareImportanceWrapper : CompareBase
+{
+	int opCmp(const CompareImportanceWrapper &in other)
+	{
+		return blob.get_f32("cinematic importance") - other.blob.get_f32("cinematic importance");
+	}
+};
+
+/*class CompareXWrapper : CompareBase
+{
+	int opCmp(const CompareXWrapper &in other)
+	{
+		return blob.getPosition().x - other.blob.getPosition().x;
+	}
+};
+
+class CompareYWrapper : CompareBase
+{
+	int opCmp(const CompareYWrapper &in other)
+	{
+		return blob.getPosition().y - other.blob.getPosition().y;
+	}
+};*/
+
 void SortBlobsByImportance(CBlob@[]@ blobs)
 {
-	Quicksort(blobs, 0, blobs.length - 1, ComparisonType::cinematic_importance);
+	const int blobCount = blobs.length;
+	CompareImportanceWrapper[] wrappers(blobCount);
+	for (int i = 0; i < blobCount; ++i) { @wrappers[i].blob = @blobs[i]; }
+	wrappers.sortDesc();
+	for (int i = 0; i < blobCount; ++i) { @blobs[i] = @wrappers[i].blob; }
 }
 
-void SortBlobsByXPosition(CBlob@[]@ blobs)
+/*void SortBlobsByXPosition(CBlob@[]@ blobs)
 {
-	Quicksort(blobs, 0, blobs.length - 1, ComparisonType::x_position);
+	const int blobCount = blobs.length;
+	CompareXWrapper[] wrappers(blobCount);
+	for (int i = 0; i < blobCount; ++i) { @wrappers[i].blob = @blobs[i]; }
+	wrappers.sortAsc();
+	for (int i = 0; i < blobCount; ++i) { @blobs[i] = @wrappers[i].blob; }
 }
 
 void SortBlobsByYPosition(CBlob@[]@ blobs)
 {
-	Quicksort(blobs, 0, blobs.length - 1, ComparisonType::y_position);
-}
-
-int partition(CBlob@[]@ arr, int low, int high, u8 comparisonType)
-{
-	CBlob@ pivot = arr[high];
-	int i = low - 1; //index of smaller element
-	for (int j = low; j < high; j++)
-	{
-		bool shouldSwap = false;
-		switch (comparisonType)
-		{
-			case ComparisonType::cinematic_importance:
-				shouldSwap = arr[j].get_f32("cinematic importance") > pivot.get_f32("cinematic importance");
-				break;
-			case ComparisonType::x_position:
-				shouldSwap = arr[j].getPosition().x < pivot.getPosition().x;
-				break;
-			case ComparisonType::y_position:
-				shouldSwap = arr[j].getPosition().y < pivot.getPosition().y;
-				break;
-		}
-
-		if (shouldSwap)
-		{
-			i++;
-
-			//swap arr[i] and arr[j]
-			Swap(arr, i, j);
-		}
-	}
-
-	//swap arr[i+1] and arr[high] (or pivot)
-	Swap(arr, i + 1, high);
-
-	return i + 1;
-}
-
-void Swap(CBlob@[]@ arr, int index1, int index2)
-{
-	CBlob@ temp = arr[index1];
-	@arr[index1] = arr[index2];
-	@arr[index2] = temp;
-}
-
-void Quicksort(CBlob@[]@ arr, int low, int high, u8 comparisonType)
-{
-	if (low < high)
-	{
-		int pi = partition(arr, low, high, comparisonType);
-
-		//recursively sort elements
-		Quicksort(arr, low, pi - 1, comparisonType);
-		Quicksort(arr, pi + 1, high, comparisonType);
-	}
-}
+	const int blobCount = blobs.length;
+	CompareYWrapper[] wrappers(blobCount);
+	for (int i = 0; i < blobCount; ++i) { @wrappers[i].blob = @blobs[i]; }
+	wrappers.sortAsc();
+	for (int i = 0; i < blobCount; ++i) { @blobs[i] = @wrappers[i].blob; }
+}*/
 
 bool focusOnBlob(CBlob@[] blobs)
 {
