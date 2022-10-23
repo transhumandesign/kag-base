@@ -18,7 +18,7 @@ Vec2f posTarget;												//position which cinematic camera moves towards
 float zoomTarget = 1.0f;										//zoom level which camera zooms towards
 float timeToScroll = 0.0f;										//time until next able to scroll to zoom camera
 float timeToCinematic = 0.0f;									//time until camera automatically becomes cinematic
-CBlob@ currentTarget;											//the current target blob
+uint currentTarget;											    //the current target blob
 uint switchTarget;												//time when camera can move onto new target
 CBlob@[] importantBlobs;										//a list of important blobs sorted from most to least important
 

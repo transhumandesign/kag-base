@@ -24,7 +24,7 @@ void Reset(CRules@ this)
 
 	helptime = 0;
 	SetTimeToCinematic();
-	@currentTarget = null;
+	currentTarget = 0;
 	switchTarget = 0;
 }
 

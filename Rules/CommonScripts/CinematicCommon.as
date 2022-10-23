@@ -208,10 +208,12 @@ bool focusOnBlob(CBlob@[] blobs)
 {
 	const float CHANGE_FOCUS_DELAY = 1.5f; //time before camera moves on from focused blob
 
-	if (getGameTime() < switchTarget && currentTarget !is null && currentTarget.getHealth() <= 0)
+	CBlob@ targetBlob = getBlobByNetworkID(currentTarget);
+
+	if (getGameTime() < switchTarget && targetBlob !is null && targetBlob.getHealth() <= 0)
 	{
 		//stay at focus blob's position for a bit after they die
-		posTarget = currentTarget.getInterpolatedPosition();
+		posTarget = targetBlob.getInterpolatedPosition();
 		zoomTarget = 1.0f;
 		return true;
 	}
@@ -225,10 +227,10 @@ bool focusOnBlob(CBlob@[] blobs)
 
 			if (blob !is null)
 			{
-				if (getGameTime() < switchTarget && blob !is currentTarget)
+				if (getGameTime() < switchTarget && blob !is targetBlob)
 				{
 					//stay at focus blob's position for a bit before focusing on a more important blob
-					posTarget = currentTarget.getInterpolatedPosition();
+					posTarget = targetBlob.getInterpolatedPosition();
 					zoomTarget = 1.0f;
 				}
 				else
@@ -236,7 +238,7 @@ bool focusOnBlob(CBlob@[] blobs)
 					//follow important blob
 					posTarget = blob.getInterpolatedPosition();
 					zoomTarget = 1.0f;
-					@currentTarget = blob;
+					currentTarget = blob.getNetworkID();
 					switchTarget = getGameTime() + CHANGE_FOCUS_DELAY * getTicksASecond();
 				}
 
