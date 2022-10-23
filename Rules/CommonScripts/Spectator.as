@@ -1,4 +1,5 @@
-#include "CinematicCommon.as";
+#include "CinematicCommon.as"
+#include "MapVotesCommon.as"
 
 #define CLIENT_ONLY
 
@@ -39,12 +40,7 @@ void SetTargetPlayer(CPlayer@ p)
 }
 
 void Spectator(CRules@ this)
-{
-	if (this.isGameOver() && this.hasScript("PostGameMapVotes")) 
-	{
-		return; //prevent camera movement while map voting
-	}
-	
+{	
 	CCamera@ camera = getCamera();
 	CControls@ controls = getControls();
 	CMap@ map = getMap();
@@ -191,8 +187,12 @@ void Spectator(CRules@ this)
 	}
 	else if (!waitForRelease && controls.isKeyPressed(KEY_LBUTTON) && camera.getTarget() is null) //classic-like held mouse moving
 	{
-		// prevent camera moving when clicking to vote for map
-		if (!this.isGameOver() && !this.hasScript("PostGameMapVotes"))
+		// HACK: this is terrible and we need proper GUI and cursor capture shit
+		// ofc this is still an issue with the queue stuff now :upside_down:
+		MapVotesMenu@ mvm = null;
+		this.get("MapVotesMenu", @mvm);
+
+		if (mvm is null || !isMapVoteActive() || !mvm.screenPositionOverlaps(controls.getMouseScreenPos()))
         {
 		    pos += (mousePos - pos) / 8.0f * getRenderApproximateCorrectionFactor();
             setCinematicEnabled(false);
