@@ -32,107 +32,143 @@ void calculateZoomTarget(float distX, float distY)
 	zoomTarget = Maths::Clamp(zoomTarget, CINEMATIC_FURTHEST_ZOOM, CINEMATIC_CLOSEST_ZOOM);
 }
 
-CBlob@[] calculateImportance(CBlob@[] blobs)
+CBlob@[]@ buildImportanceList()
 {
+	// sinful spagghet code
+
+	// we look up different types of blobs we want to pay attention to.
+	// we want to keep the code relatively performant, hence
+	// - we reuse the `blobs` array (easy)
+	// - we avoid `getBlobs()`; use per name or per tag lookups instead
+
+	CBlob@[] blobs;
+	CBlob@[] importantBlobs;
+
 	CMap@ map = getMap();
-	CBlob@[] filtered_blobs;
 
-	for (uint i = 0; i < blobs.length; i++)
 	{
-		CBlob@ blob = blobs[i];
-		blob.set_f32("cinematic importance", -1);
-		bool importantBlob = false;
+		blobs.clear();
+		getBlobsByName("keg", @blobs);
+		const int blobCount = blobs.length;
 
-		//lit keg
-		if (blob.getName() == "keg" && blob.hasTag("exploding"))
+		for (int i = 0; i < blobCount; ++i)
 		{
-			//kegs about to explode are MORE important
-			float fuse = Maths::Max(blob.get_s32("explosion_timer") - getGameTime(), 0) / blob.get_f32("keg_time");
-			blob.set_f32("cinematic importance", ImportanceRank::lit_keg + 1 - fuse);
-			importantBlob = true;
+			CBlob@ blob = @blobs[i];
+
+			if (blob.hasTag("exploding"))
+			{
+				//kegs about to explode are MORE important
+				float fuse = Maths::Max(blob.get_s32("explosion_timer") - getGameTime(), 0) / blob.get_f32("keg_time");
+				blob.set_f32("cinematic importance", ImportanceRank::lit_keg + 1 - fuse);
+				importantBlobs.push_back(@blob);
+			}
 		}
+	}
 
-		//missing flag
-		if (blob.getName() == "ctf_flag")
+	{
+		blobs.clear();
+		getBlobsByName("ctf_flag", @blobs);
+		const int blobCount = blobs.length;
+
+		for (int i = 0; i < blobCount; ++i)
 		{
+			CBlob@ blob = @blobs[i];
+
 			CBlob@ flagbase = getBlobByNetworkID(blob.get_u16("base_id"));
 			if (flagbase !is null && !blob.isAttachedTo(flagbase))
 			{
 				//flags about to be returned are LESS important
 				float returnTime = float(blob.get_u16("return time")) / blob.get_u16("max return time");
 				blob.set_f32("cinematic importance", ImportanceRank::missing_flag + 1 - returnTime);
-				importantBlob = true;
+				importantBlobs.push_back(@blob);
 			}
 		}
+	}
 
-		//capturing blobs
-		if (blob.hasTag("under raid"))
+	{
+		blobs.clear();
+		getBlobsByTag("under raid", @blobs);
+		const int blobCount = blobs.length;
+
+		for (int i = 0; i < blobCount; ++i)
 		{
+			CBlob@ blob = @blobs[i];
+
 			//blobs closer to being captured are MORE important
 			float capture = float(blob.get_s16("capture ticks")) / blob.get_s16("max capture ticks");
 
-			if (blob.hasTag("vehicle") && blob.hasTag("respawn")) //ballista, warboat
+			if (blob.hasTag("vehicle") && blob.hasTag("respawn"))
 			{
 				blob.set_f32("cinematic importance", ImportanceRank::capturing_vehicle + 1 - capture);
-				importantBlob = true;
+				importantBlobs.push_back(@blob);
 			}
-
-			if (blob.getName() == "hall")
+			else if (blob.getName() == "hall" || blob.getName() == "outpost")
 			{
 				blob.set_f32("cinematic importance", ImportanceRank::capturing_hall + 1 - capture);
-				importantBlob = true;
+				importantBlobs.push_back(@blob);
 			}
 		}
+	}
 
-		Vec2f blobPos = blob.getInterpolatedPosition();
-		bool blobInLight = map.getTile(blobPos).light >= 0x20; //same as in MarkPlayers.as
-		if (blob.hasTag("player") && blobInLight)
+	{
+		blobs.clear();
+		getBlobsByTag("player", @blobs);
+		const int blobCount = blobs.length;
+
+		for (int i = 0; i < blobCount; ++i)
 		{
-			//player near enemy tent
-			CBlob@[] blobsInRadius;
-			map.getBlobsInRadius(blobPos, 28.0f * map.tilesize, blobsInRadius);
-			for (uint j = 0; j < blobsInRadius.length; j++)
-			{
-				CBlob@ b = blobsInRadius[j];
-				if (
-					b.getName() == "tent" &&
-					b.getTeamNum() != blob.getTeamNum()
-				) {
-					blob.set_f32("cinematic importance", ImportanceRank::player_near_tent);
-					importantBlob = true;
-					break;
-				}
-			}
+			CBlob@ blob = @blobs[i];
+			bool importantBlob = false;
 
-			//builder near enemy flag base
-			if (blob.getName() == "builder")
+			Vec2f blobPos = blob.getInterpolatedPosition();
+			bool blobInLight = map.getTile(blobPos).light >= 0x20; //same as in MarkPlayers.as
+			if (blobInLight)
 			{
+				//player near enemy tent
 				CBlob@[] blobsInRadius;
-				map.getBlobsInRadius(blobPos, 8.0f * map.tilesize, blobsInRadius);
+				map.getBlobsInRadius(blobPos, 28.0f * map.tilesize, blobsInRadius);
 				for (uint j = 0; j < blobsInRadius.length; j++)
 				{
 					CBlob@ b = blobsInRadius[j];
 					if (
-						b.getName() == "flag_base" &&
-						!b.hasTag("flag missing") &&
+						b.getName() == "tent" &&
 						b.getTeamNum() != blob.getTeamNum()
 					) {
-						blob.set_f32("cinematic importance", ImportanceRank::builder_near_flag);
+						blob.set_f32("cinematic importance", ImportanceRank::player_near_tent);
 						importantBlob = true;
 						break;
 					}
 				}
-			}
-		}
 
-		//add important blob to filtered list so sorting is quicker
-		if (importantBlob)
-		{
-			filtered_blobs.push_back(blob);
+				//builder near enemy flag base
+				if (blob.getName() == "builder")
+				{
+					CBlob@[] blobsInRadius;
+					map.getBlobsInRadius(blobPos, 8.0f * map.tilesize, blobsInRadius);
+					for (uint j = 0; j < blobsInRadius.length; j++)
+					{
+						CBlob@ b = blobsInRadius[j];
+						if (
+							b.getName() == "flag_base" &&
+							!b.hasTag("flag missing") &&
+							b.getTeamNum() != blob.getTeamNum()
+						) {
+							blob.set_f32("cinematic importance", ImportanceRank::builder_near_flag);
+							importantBlob = true;
+							break;
+						}
+					}
+				}
+			}
+
+			if (importantBlob)
+			{
+				importantBlobs.push_back(@blob);
+			}
 		}
 	}
 
-	return filtered_blobs;
+	return @importantBlobs;
 }
 
 class CompareBase

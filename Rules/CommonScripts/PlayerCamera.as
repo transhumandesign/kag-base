@@ -237,9 +237,7 @@ void onTick(CRules@ this)
 		{
 			if (getGameTime() % CINEMATIC_UPDATE_INTERVAL == 0)
 			{
-				CBlob@[] blobs;
-				getBlobs(@blobs);
-				blobs = calculateImportance(blobs);
+				CBlob@[]@ blobs = buildImportanceList();
 				SortBlobsByImportance(blobs);
 				importantBlobs = blobs;
 			}
