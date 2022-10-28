@@ -13,7 +13,7 @@ bool hide = true;
 class PopupGUI
 {
 	string text1 = "A big balance update has been released recently.\n\nPlease take a moment to participate in the poll linked below.\n\n(You will have to log in to kagstats.com using your KAG account.)\n\nThe poll contains questions regarding all the meaningful changes.\n\nWhether a change stays or not will depend on the results of this poll.";
-	string text2 = "kagstats.com/cockcockcock\n";
+	string text2 = "kagstats.com/#/survey";
 	string text3 = "This window will automatically close in $S seconds.";
 	ClickButton@ website_button;
 	string website_text = "Take me there!";
@@ -148,7 +148,7 @@ class ClickButton
 		if (hovered && mouseJustReleased)
 		{
 			hide = true;
-			if (id == 0) OpenWebsite("https://kagstats.com/");
+			if (id == 0) OpenWebsite("https://kagstats.com/#/survey");
 			Sound::Play("buttonclick.ogg");
 		}
 	}
@@ -161,7 +161,7 @@ u32 banner_time = 20 * getTicksASecond(); // 20 seconds
 
 void onInit(CRules@ this)
 {
-	if (Time() > 1667080800 && Time() < 1668380400)
+	if (Time() > 1667602800 && Time() < 1668726000)
 	{
 		hide = false;
 		if (!GUI::isFontLoaded("slightly bigger text 2"))
