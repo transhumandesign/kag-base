@@ -13,7 +13,7 @@ bool hide = true;
 class PopupGUI
 {
 	string text1 = "A big balance update has been released recently.\n\nPlease take a moment to participate in the poll linked below.\n\n(You will have to log in to kagstats.com using your KAG account.)\n\nThe poll contains questions regarding all the meaningful changes.\n\nWhether a change stays or not will depend on the results of this poll.";
-	string text2 = "kagstats.com/#/survey";
+	string text2 = "kagstats.com/#/survey\n";
 	string text3 = "This window will automatically close in $S seconds.";
 	ClickButton@ website_button;
 	string website_text = "Take me there!";
