@@ -6,6 +6,11 @@ const u32 collapse_time = 10 * getTicksASecond();
 
 void onInit(CBlob@ this)
 {
+	if (shouldCollapse(this))
+	{
+		this.Tag("will_soon_collapse");
+	}
+
 	this.getCurrentScript().tickFrequency = 30;
 }
 
