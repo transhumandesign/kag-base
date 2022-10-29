@@ -1738,7 +1738,7 @@ void SetFirstAvailableBomb(CBlob@ this)
 bool canHit(CBlob@ this, CBlob@ b)
 {
 
-	if (b.hasTag("invincible"))
+	if (b.hasTag("invincible") || b.hasTag("temp blob"))
 		return false;
 
 	// don't hit picked up items
