@@ -251,6 +251,13 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
         if(isServer())
         {
+        	if (blob.getName() == "waterbomb")
+        	{
+        		// hack; waterbombs have a mass of 200 (which gives them a special interaction with kegs)
+        		// but it's annoying here so we're giving it same mass as normal bombs
+        		blob.SetMass(20.0); 
+        	}
+
             // give a horizontal boost to the bombs coming from the top based on their original velocity
             f32 xboost = 60.0f * Maths::Clamp(oldVelocity.x / 8.0f, -1.0f, 1.0f) * (1.0f - ratio);
 
