@@ -260,7 +260,7 @@ void onTick(CRules@ this)
 	{
 		CBlob@[] spots;
 		getBlobsByName(base_name(),   @spots);
-		getBlobsByName("ballista",	@spots);
+		getBlobsByName("outpost",	@spots);
 		getBlobsByName("warboat",	 @spots);
 		getBlobsByName("buildershop", @spots);
 		getBlobsByName("archershop",  @spots);
