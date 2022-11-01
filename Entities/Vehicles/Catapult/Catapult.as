@@ -253,10 +253,10 @@ void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge
 
 		if (bullet.getName() == "boulder") // rock n' roll baby
 		{
-			bullet.getShape().getConsts().mapCollisions = false;
-			bullet.getShape().getConsts().collidable = false;
+			bullet.Tag("fragment on collide");
+			bullet.server_setTeamNum(this.getTeamNum());
 		}
-		if (bullet.hasTag("player"))
+		else if (bullet.hasTag("player"))
 		{
 			shot_player = true;
 		}

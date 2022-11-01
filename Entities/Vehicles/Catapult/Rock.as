@@ -37,6 +37,8 @@ void onInit(CBlob@ this)
 		this.getShape().getConsts().net_threshold_multiplier = 4.0f;
 		this.set_u32("last collided tile", -1);
 	}
+
+	this.Tag("can ricochet");
 }
 
 void onTick(CBlob@ this)
@@ -78,21 +80,6 @@ void onTick(CBlob@ this)
 	}
 
 	Pierce(this);
-}
-
-void MakeRockDustParticle(Vec2f pos, string file, Vec2f vel=Vec2f(0.0, 0.0), int animate_speed = 4)
-{
-	CParticle@ temp = ParticleAnimated(CFileMatcher(file).getFirst(), pos, vel, 0.0f, 1.0f, animate_speed, 0.0f, false);
-
-	if (temp !is null)
-	{
-		temp.rotation = Vec2f(-1, 0);
-		temp.rotation.RotateBy(_r.NextFloat() * 360.0f);
-		temp.rotates = true;
-
-		temp.width = 8;
-		temp.height = 8;
-	}
 }
 
 bool canHitBlob(CBlob@ this, CBlob@ blob)
@@ -295,7 +282,7 @@ void Pierce(CBlob @this)
 
 				// though if we're the client... we honestly don't really have a way to tell.
 				// so if we're the client, assume it's a ricochet and let the resync occur if we were wrong
-				ricochet = map.getTile(tilepos).type != 0 || !isServer();
+				ricochet = this.hasTag("can ricochet") && (map.getTile(tilepos).type != 0 || !isServer());
 
 				if (ricochet)
 				{
