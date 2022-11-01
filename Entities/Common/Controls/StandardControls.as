@@ -86,8 +86,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 bool putInHeld(CBlob@ owner)
 {
+	if (owner is null) return false;
+
 	CBlob@ held = owner.getCarriedBlob();
-	return owner !is null && held !is null && owner.server_PutInInventory(held);
+
+	if (held is null) return false;
+
+	return owner.server_PutInInventory(held);
 }
 
 bool ClickGridMenu(CBlob@ this, int button)
