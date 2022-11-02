@@ -8,12 +8,12 @@
 #include "Requirements.as"
 #include "RunnerTextures.as"
 
-void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos, bool repairing=false, CBlob@ repairBlob=null)
+bool PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos, bool repairing = false, CBlob@ repairBlob = null)
 {
 	if (blob !is null)
 	{
-		if (!serverBlobCheck(this, blob, cursorPos, repairing))
-			return;
+		if (!serverBlobCheck(this, blob, cursorPos, repairing, repairBlob))
+			return false;
 
 		u32 delay = getCurrentBuildDelay(this);
 		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
@@ -46,11 +46,15 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos, bool repairing=false, 
 		}
 
 		DestroyScenary(cursorPos, cursorPos);
+
+		return true;
 	}
+
+	return false;
 }
 
 // Returns true if pos is valid
-bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repairing = false)
+bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repairing = false, CBlob@ repairBlob = null)
 {
 	// Pos check of about 8 tiles, accounts for people with lag
 	Vec2f pos = (blob.getPosition() - cursorPos) / 2;
@@ -93,29 +97,18 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repa
 	}
 
 	// Are we trying to repair something we aren't supposed to?
-	if (repairing)
+	if (repairing && repairBlob !is null)
 	{
-		CBlob@[] blobsAtPos;
-		map.getBlobsAtPosition(cursorPos + Vec2f(1, 1), blobsAtPos);
-
-		for (int i = 0; i < blobsAtPos.size(); i++)
+		// Are we trying to repair a different blob?
+		if (repairBlob.getName() != blobToPlace.getName())
 		{
-			CBlob@ blobAtPos = blobsAtPos[i];
-			
-			if (blobAtPos !is null && blobAtPos.getHealth() > 0)
-			{
-				// Are we trying to repair a different blob?
-				if (blobAtPos.getName() != blobToPlace.getName())
-				{
-					return false;
-				}
+			return false;
+		}
 
-				// Are we trying to repair something at full health?
-				if (blobAtPos.getHealth() == blobAtPos.getInitialHealth())
-				{
-					return false;
-				}
-			}
+		// Are we trying to repair something at full health?
+		if (repairBlob.getHealth() == blobToPlace.getInitialHealth())
+		{
+			return false;
 		}
 	}
 
@@ -383,14 +376,29 @@ void onTick(CBlob@ this)
 				if (snap && bc.cursorClose && bc.hasReqs && bc.buildable && bc.supported)
 				{
 					CMap@ map = getMap();
-					CBlob@ blobAtPos = map.getBlobAtPosition(getBottomOfCursor(bc.tileAimPos, carryBlob));
+
+					CBlob@ currentBlobAtPos = null;
+
+					CBlob@[] blobsAtPos;
+					map.getBlobsAtPosition(getBottomOfCursor(bc.tileAimPos, carryBlob), blobsAtPos);
+
+					for (int i = 0; i < blobsAtPos.size(); i++)
+					{
+						CBlob@ blobAtPos = blobsAtPos[i];
+						
+						if (isRepairable(blobAtPos, carryBlob.getName() == "ladder"))
+						{
+							@currentBlobAtPos = getBlobByNetworkID(blobAtPos.getNetworkID());
+						}
+					}
 
 					CBitStream params;
 					params.write_u16(carryBlob.getNetworkID());
 					params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
 
-					if (blobAtPos !is null && carryBlob.getName() == blobAtPos.getName() && blobAtPos.getHealth() < blobAtPos.getInitialHealth() && blobAtPos.getName() != "ladder")
+					if (currentBlobAtPos !is null && carryBlob.getName() == currentBlobAtPos.getName() && currentBlobAtPos.getHealth() < currentBlobAtPos.getInitialHealth() && currentBlobAtPos.getName() != "ladder")
 					{
+						params.write_u16(currentBlobAtPos.getNetworkID());
 						this.SendCommand(this.getCommandID("repairBlob"), params);
 					}
 					else
@@ -517,7 +525,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob @carryBlob = getBlobByNetworkID(params.read_u16());
 		Vec2f pos = params.read_Vec2f();
 
-		CBlob @repairBlob = getMap().getBlobAtPosition(pos);
+		CBlob @repairBlob = getBlobByNetworkID(params.read_u16());
 
 		if (carryBlob !is null)
 		{
@@ -526,13 +534,17 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 			if (repairing) // is there a blobtile here?
 			{
-				PlaceBlob(this, carryBlob, pos, true, repairBlob);
-				SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), repairBlob.getName()));
+				if (PlaceBlob(this, carryBlob, pos, true, repairBlob))
+				{
+					SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), repairBlob.getName()));
+				}
 			}
 			else // there's nothing here so we can place a new one
 			{
-				PlaceBlob(this, carryBlob, pos);
-				SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), carryBlob.getName()));
+				if (PlaceBlob(this, carryBlob, pos))
+				{
+					SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), carryBlob.getName()));
+				}
 			}
 		}
 	}

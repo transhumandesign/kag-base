@@ -362,17 +362,24 @@ bool fakeHasTileSolidBlobs(Vec2f cursorPos, bool toPlaceIsLadder=false)
 	{
 		CBlob@ blobAtPos = blobsAtPos[i];
 		
-		// the getHealth() check is here because apparently a blob isn't null for a tick (?) after being destroyed
-		if (blobAtPos !is null && 
-		blobAtPos.getHealth() > 0 && (
-		blobAtPos.hasTag("door") || 
-		blobAtPos.getName() == "wooden_platform" || 
-		(blobAtPos.getName() == "ladder" && !toPlaceIsLadder) || 
-		blobAtPos.getName() == "bridge"))
+		if (isRepairable(blobAtPos, toPlaceIsLadder)) return true;
+	}
+
+	return false;
+}
+
+bool isRepairable(CBlob@ blob, bool toPlaceIsLadder=false)
+{
+	// the getHealth() check is here because apparently a blob isn't null for a tick (?) after being destroyed
+	if (blob !is null && 
+		blob.getHealth() > 0 && (
+		blob.hasTag("door") || 
+		blob.getName() == "wooden_platform" || 
+		(blob.getName() == "ladder" && !toPlaceIsLadder) || 
+		blob.getName() == "bridge"))
 		{
 			return true;
 		}
-	}
 
 	return false;
 }
