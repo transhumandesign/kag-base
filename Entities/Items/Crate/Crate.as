@@ -439,25 +439,13 @@ void Unpack(CBlob@ this)
 	if (blob !is null && blob.getShape() !is null)
 	{
 		CMap@ map = getMap();
-		Vec2f pos = this.getPosition() + Vec2f(0, (this.getHeight() - blob.getHeight()) / 2);
-		Vec2f adjusted_pos = pos;
-		if (blob.getName() == "outpost")
-		{
-			// i tried to avoid hardcode but fuck it
-			// prevents outpost from spawning 1 tile above ground
-			pos += Vec2f(0, map.tilesize);
-		}
 
-		if (map.rayCastSolid(this.getPosition(), this.getPosition() + Vec2f(0, 14.0f), adjusted_pos))
-		{
-			adjusted_pos -= Vec2f(0, blob.getHeight() / 2 + 4.0f);
-		}
-		else
-		{
-			adjusted_pos = pos;
-		}
+		Vec2f space = this.get_Vec2f(required_space);
+		Vec2f offsetPos = crate_getOffsetPos(this, map);
+		Vec2f center = offsetPos + (Vec2f(space.x * map.tilesize / 2, space.y * map.tilesize / 2));
 
-		blob.setPosition(adjusted_pos);
+		blob.setPosition(center);
+
 		//	if (!getMap().isInWater(this.getPosition() + Vec2f(0.0f, this.getRadius())))
 		//	blob.getShape().PutOnGround();
 		//	else
