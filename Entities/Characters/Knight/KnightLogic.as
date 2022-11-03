@@ -1312,7 +1312,10 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 					velocity.Normalize();
 					velocity *= 12; // knockback force is same regardless of distance
 
-					this.server_Hit(rayb, rayInfos[j].hitpos, velocity, temp_damage, type, true);
+					if (rayb.getTeamNum() != this.getTeamNum())
+					{
+						this.server_Hit(rayb, rayInfos[j].hitpos, velocity, temp_damage, type, true);
+					}
 
 					if (large)
 					{
@@ -1753,7 +1756,7 @@ bool canHit(CBlob@ this, CBlob@ b)
 	if (b.hasTag("dead"))
 		return true;
 
-	return b.getTeamNum() != this.getTeamNum();
+	return true;
 
 }
 
