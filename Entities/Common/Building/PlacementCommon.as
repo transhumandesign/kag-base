@@ -375,7 +375,6 @@ bool isRepairable(CBlob@ blob, bool toPlaceIsLadder=false)
 		blob.getHealth() > 0 && (
 		blob.hasTag("door") || 
 		blob.getName() == "wooden_platform" || 
-		(blob.getName() == "ladder" && toPlaceIsLadder) || 
 		blob.getName() == "bridge"))
 		{
 			return true;
