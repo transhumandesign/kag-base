@@ -516,8 +516,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (carryBlob !is null)
 		{
 			Vec2f pos = params.read_Vec2f();
-			PlaceBlob(this, carryBlob, pos);
-			SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), carryBlob.getName()));
+			
+			if (PlaceBlob(this, carryBlob, pos))
+			{
+				SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), carryBlob.getName()));
+			}
 		}
 	}
 	if (cmd == this.getCommandID("repairBlob"))
