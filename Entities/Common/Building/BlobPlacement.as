@@ -91,7 +91,7 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repa
 	}
 
 	// Are we trying to place a blob on a door/ladder/platform/bridge (usually due to lag)?
-	if (fakeHasTileSolidBlobs(cursorPos, blobToPlace.getName() == "ladder") && !repairing)
+	if (fakeHasTileSolidBlobs(cursorPos) && !repairing)
 	{
 		return false;
 	}
@@ -386,7 +386,7 @@ void onTick(CBlob@ this)
 					{
 						CBlob@ blobAtPos = blobsAtPos[i];
 						
-						if (isRepairable(blobAtPos, carryBlob.getName() == "ladder"))
+						if (isRepairable(blobAtPos))
 						{
 							@currentBlobAtPos = getBlobByNetworkID(blobAtPos.getNetworkID());
 						}

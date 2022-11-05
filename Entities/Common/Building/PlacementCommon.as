@@ -351,7 +351,7 @@ bool inNoBuildZone(CBlob@ blob, CMap@ map, Vec2f here, TileType buildTile)
 // This has to exist due to an engine issue where CMap.hasTileSolidBlobs() returns false if the blobtile was placed in the previous tick
 // and an engine issue where CMap.getBlobsFromTile() crashes the server 
 // wonderful game
-bool fakeHasTileSolidBlobs(Vec2f cursorPos, bool toPlaceIsLadder=false)
+bool fakeHasTileSolidBlobs(Vec2f cursorPos)
 {
 	CMap@ map = getMap();
 	CBlob@[] blobsAtPos;
@@ -362,13 +362,13 @@ bool fakeHasTileSolidBlobs(Vec2f cursorPos, bool toPlaceIsLadder=false)
 	{
 		CBlob@ blobAtPos = blobsAtPos[i];
 		
-		if (isRepairable(blobAtPos, toPlaceIsLadder)) return true;
+		if (isRepairable(blobAtPos)) return true;
 	}
 
 	return false;
 }
 
-bool isRepairable(CBlob@ blob, bool toPlaceIsLadder=false)
+bool isRepairable(CBlob@ blob)
 {
 	// the getHealth() check is here because apparently a blob isn't null for a tick (?) after being destroyed
 	if (blob !is null && 
