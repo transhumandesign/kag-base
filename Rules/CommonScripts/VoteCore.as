@@ -2,6 +2,13 @@
 
 #include "VoteCommon.as"
 
+const string favour_string = "IN FAVOUR";
+const string against_string = "AGAINST";
+
+bool g_have_voted = false;
+string favour_or_not = "";
+bool hide_vote_menu = false;
+
 //extended vote functionality
 const Vec2f dim(200, 116);
 
@@ -58,8 +65,16 @@ void onRender(CRules@ this)
 	GUI::DrawText(getTranslatedString("Cast by: {USER}").replace("{USER}", vote.byuser), tl + Vec2f(3, 3 + text_dim.y * 3), color_white);
 	GUI::DrawText(getTranslatedString("For: ") + vote.current_yes, tl + Vec2f(20, 3 + text_dim.y * 4), color_white);
 	GUI::DrawText(getTranslatedString("Against: ") + vote.current_no, tl + Vec2f(110, 3 + text_dim.y * 4), color_white);
-	GUI::DrawText(getTranslatedString("[O] - Yes"), tl + Vec2f(20, 3 + text_dim.y * 5), SColor(0xff30bf30));
-	GUI::DrawText(getTranslatedString("[P] - No"), tl + Vec2f(120, 3 + text_dim.y * 5), SColor(0xffbf3030));
+	if (!g_have_voted)
+	{
+		GUI::DrawText(getTranslatedString("[O] - Yes"), tl + Vec2f(20, 3 + text_dim.y * 5), SColor(0xff30bf30));
+		GUI::DrawText(getTranslatedString("[P] - No"), tl + Vec2f(120, 3 + text_dim.y * 5), SColor(0xffbf3030));
+	}
+	else
+	{
+		f32 favour_offset = favour_or_not == favour_string ? 24 : 30; // using DrawTextCentered messes it up
+		GUI::DrawText(getTranslatedString("Your vote: {OURVOTE}").replace("{OURVOTE}", getTranslatedString(favour_or_not)), tl + Vec2f(favour_offset, 3 + text_dim.y * 5), favour_or_not == favour_string ? SColor(0xff30bf30) : SColor(0xffbf3030));
+	}
 
 	if (can_force_pass)
 	{
@@ -73,9 +88,6 @@ void onRender(CRules@ this)
 
 	GUI::DrawText(getTranslatedString("Click to close ({TIMELEFT}s)").replace("{TIMELEFT}", "" + Maths::Ceil(vote.timeremaining / 30.0f)), br - Vec2f(175, 7 + text_dim.y), color_white);
 }
-
-bool g_have_voted = false;
-bool hide_vote_menu = false;
 
 void onTick(CRules@ this)
 {
@@ -159,6 +171,11 @@ void onTick(CRules@ this)
 
 	if (voted)
 	{
+		if (isClient()) 
+		{
+			favour_or_not = (favour == true ? favour_string : against_string);
+		}
+
 		CBitStream params;
 		params.write_u16(id);
 		rules.SendCommand(rules.getCommandID(favour ? vote_yes_id : vote_no_id), params);
