@@ -115,7 +115,6 @@ class ClickButton
 
 		if (hovered)
 		{
-			printf("yo");
 			f32 tint_factor = 0.80;
 			new_color = color.getInterpolated(color_white, tint_factor);
 		}
