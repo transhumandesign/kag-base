@@ -71,20 +71,16 @@ void onTick(CRules@ this)
 			if (map.rayCastSolid(top, bottom, end))
 			{
 				f32 y = end.y;
-				int i = 0;
-				while (i ++ < 3)
+
+				Vec2f spawn_position = Vec2f(x, y - map.tilesize);
+					
+				if (map.isBlobInRadius("mine", spawn_position, 16.0f) // don't spawn fishy inside mines
+				|| !map.isInWater(spawn_position)) // don't spawn fishy outside of water
 				{
-					Vec2f spawn_position = Vec2f(x, y - i * map.tilesize);
-					
-					if (map.isBlobInRadius("mine", spawn_position, 16.0f) // don't spawn fishy inside mines
-					|| !map.isInWater(spawn_position)) // don't spawn fishy outside of water
-					{
-						return;
-					}
-					
-					server_CreateBlob(fish_name, -1, spawn_position);
-					break;
+					return;
 				}
+					
+				server_CreateBlob(fish_name, -1, spawn_position);
 			}
 		}
 	}
