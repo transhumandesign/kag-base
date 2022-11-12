@@ -6,7 +6,7 @@ void defaultIdleAnim(CSprite@ this, CBlob@ blob, int direction)
 	{
 		this.SetAnimation("crouch");
 	}
-	else if (is_emote(blob, true))
+	else if (is_emote(blob) && canUseEmote())
 	{
 		this.SetAnimation("point");
 		this.animation.frame = 1 + direction;

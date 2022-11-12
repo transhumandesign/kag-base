@@ -170,7 +170,7 @@ bool is_emote(CBlob@ this, bool checkBlank = false)
 	string token = this.get_string("emote");
 	u32 time = this.get_u32("emotetime");
 
-	return time > getGameTime() && token != "" && (!checkBlank || (token != "dots"));
+	return time > getGameTime() && token != "" && (!checkBlank || (token != "dots")) && !isIgnored(this.getPlayer());
 }
 
 ConfigFile@ openEmoteBindingsConfig()
@@ -309,6 +309,11 @@ bool canUseEmote(CPlayer@ player, Emote@ emote)
 		//show patreon emote to patron
 		(!patreonEmote || patron)
 	);
+}
+
+bool isIgnored(CPlayer@ player)
+{
+	return player !is null && getSecurity().isPlayerIgnored(player);
 }
 
 Emote@[] getUsableEmotes(CPlayer@ player)
