@@ -527,8 +527,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
         this.set_s32("statue time", 0);
         this.set_u16("struggle count", 0);
 
-		if (blob.isAttached())
-			blob.server_DetachFromAll();
+        if (blob.isAttached()) { blob.server_DetachFromAll(); }
 		
         this.server_AttachTo(blob, this.getAttachmentPoint(0));
         this.setVelocity(Vec2f_zero);
