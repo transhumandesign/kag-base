@@ -15,6 +15,7 @@ void onInit(CBlob@ this)
 	this.set_u16("hover netid", 0);
 	this.set_bool("release click", false);
 	this.set_bool("can button tap", true);
+	this.set_bool("shop prevent attack", false);
 	this.addCommandID("pickup");
 	this.addCommandID("putinheld");
 	this.addCommandID("getout");
@@ -164,6 +165,8 @@ void onTick(CBlob@ this)
 		this.ClearMenus();
 		this.ShowInteractButtons();
 		this.set_bool("release click", true);
+		this.set_bool("shop prevent attack", false);
+		this.Sync("shop prevent attack", false);
 	}
 	else if (this.isKeyJustReleased(key_use))
 	{
@@ -295,6 +298,8 @@ void onTick(CBlob@ this)
 	   )
 	{
 		this.ClearMenus();
+		this.set_bool("shop prevent attack", false);
+		this.Sync("shop prevent attack", false);
 	}
 
 	//if (this.isKeyPressed(key_action1))

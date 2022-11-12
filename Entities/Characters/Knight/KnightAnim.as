@@ -400,7 +400,7 @@ void onTick(CSprite@ this)
 	{
 		blob.Tag("dead head");
 	}
-	else if (blob.isKeyPressed(key_action1))
+	else if (blob.isKeyPressed(key_action1) && !blob.get_bool("shop prevent attack"))
 	{
 		blob.Tag("attack head");
 		blob.Untag("dead head");
