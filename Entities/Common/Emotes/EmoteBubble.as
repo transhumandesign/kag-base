@@ -70,6 +70,8 @@ void onTick(CBlob@ blob)
 
 			if (correctPack && shouldDisplay && canDisplay)
 			{
+				blob.getCurrentScript().tickFrequency = 1;
+
 				visible = !isMouseOverEmote(layer);
 				layer.animation.frame = emote.index;
 
