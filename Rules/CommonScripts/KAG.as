@@ -8,7 +8,10 @@ void onInit(CRules@ this)
 	LoadDefaultMapLoaders();
 	LoadDefaultGUI();
 
-	getSecurity().reloadSecurity();
+	if (isServer())
+	{
+		getSecurity().reloadSecurity();
+	}
 
 	sv_gravity = 9.81f;
 	particles_gravity.y = 0.25f;
