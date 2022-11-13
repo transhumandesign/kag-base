@@ -139,7 +139,8 @@ bool doesFitAtTunnel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 
 void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 {
-	if (caller !is null && tunnel !is null)
+	CBlob@ thisTunnel = getBlobByNetworkID(this.getNetworkID());
+	if (thisTunnel !is null && caller !is null && tunnel !is null)
 	{
 		//(this should prevent travel when stunned, but actually
 		// causes issues on net)
