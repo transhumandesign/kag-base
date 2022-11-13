@@ -57,6 +57,10 @@ string getButtonRequirementsText(CBitStream& inout bs, bool missing)
 		{
 			text += getTranslatedString("{COINS_QUANTITY} $COIN$ required\n").replace("{COINS_QUANTITY}", "" + quantity);
 		}
+		else if (requiredType == "hurt")
+		{
+			text += getTranslatedString("$HEART$ Must be hurt\n");
+		}
 		else if (requiredType == "no more" && missing)
 		{
 			text += quantityColor;
@@ -103,11 +107,21 @@ void AddRequirement(CBitStream &inout bs, const string &in req, const string &in
 	bs.write_u16(quantity);
 }
 
+void AddHurtRequirement(CBitStream &inout bs)
+{
+	bs.write_string("hurt");
+}
+
 bool ReadRequirement(CBitStream &inout bs, string &out req, string &out blobName, string &out friendlyName, u16 &out quantity)
 {
 	if (!bs.saferead_string(req))
 	{
 		return false;
+	}
+
+	if (req == "hurt")
+	{
+		return true;
 	}
 
 	if (!bs.saferead_string(blobName))
@@ -169,6 +183,15 @@ bool hasRequirements(CInventory@ inv1, CInventory@ inv2, CBitStream &inout bs, C
 			if (sum < quantity)
 			{
 				AddRequirement(missingBs, req, blobName, friendlyName, quantity);
+				has = false;
+			}
+		}
+		else if (req == "hurt")
+		{
+			CBlob@ blob = inv1 !is null ? inv1.getBlob() : null;
+			if (blob is null || blob.getHealth() >= blob.getInitialHealth())
+			{
+				AddHurtRequirement(missingBs);
 				has = false;
 			}
 		}
