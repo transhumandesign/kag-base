@@ -28,7 +28,12 @@ void onInit(CBlob@ this)
 	string packed = this.get_string("packed");
 
 	this.set_u32("boobytrap_cooldown_time", 0);
-	this.set_s32("gold building amount", packed == "warboat" ? 50 : 0);
+	int goldAmount = 0;
+	if (packed == "warboat")
+	{
+		goldAmount = 50;
+	}
+	this.set_s32("gold building amount", goldAmount);
 
 	u8 frame = 0;
 	if (this.exists("frame"))
