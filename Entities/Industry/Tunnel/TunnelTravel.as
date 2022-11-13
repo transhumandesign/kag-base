@@ -148,7 +148,7 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 		//	return;
 
 		//dont travel if tunnel team has changed while tunnel menu was open
-		if (tunnel.getTeamNum() != caller.getTeamNum())
+		if (this.getTeamNum() != tunnel.getTeamNum())
 			return;
 
 		//dont travel if caller is attached to something (e.g. siege)
