@@ -146,6 +146,10 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 		//if (isKnockable(caller) && caller.get_u8("knocked") > 0)
 		//	return;
 
+		//dont travel if tunnel team has changed while tunnel menu was open
+		if (tunnel.getTeamNum() != caller.getTeamNum())
+			return;
+
 		//dont travel if caller is attached to something (e.g. siege)
 		if (caller.isAttached())
 			return;
