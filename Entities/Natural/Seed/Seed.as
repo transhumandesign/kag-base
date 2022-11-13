@@ -126,6 +126,7 @@ void onTick(CBlob@ this)
 	if (seed_grow_time <= OPT_TICK)
 	{
 		this.Tag("AdminAlertIgnore");
+		this.Sync("AdminAlertIgnore", true);
 		this.server_Die();
 
 		if (getNet().isServer())
