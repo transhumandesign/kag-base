@@ -64,6 +64,8 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 
 	this.Tag("bloody");
 
+	if (g_kidssafe) return;
+
 	CSpriteLayer@ layer = this.getSprite().getSpriteLayer("blood");
 	if (layer is null) return;
 
