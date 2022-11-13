@@ -4,10 +4,10 @@
 #include "CTF_Structs.as";
 
 const u32 materials_wait = 20; //seconds between free mats
-const u32 materials_wait_warmup = 30; //seconds between free mats
+const u32 materials_wait_warmup = 40; //seconds between free mats
 
-const int warmup_wood_amount = 300;
-const int warmup_stone_amount = 100;
+const int warmup_wood_amount = 250;
+const int warmup_stone_amount = 60;
 
 const int matchtime_wood_amount = 100;
 const int matchtime_stone_amount = 30;
