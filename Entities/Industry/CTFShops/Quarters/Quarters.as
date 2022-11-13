@@ -93,6 +93,7 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Beer - 1 Heart", "$quarters_beer$", "beer", Descriptions::beer, false);
 		s.spawnNothing = true;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::beer);
+		AddHurtRequirement(s.requirements);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Meal - Full Health", "$quarters_meal$", "meal", Descriptions::meal, false);
@@ -101,6 +102,7 @@ void onInit(CBlob@ this)
 		s.buttonwidth = 2;
 		s.buttonheight = 1;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::meal);
+		AddHurtRequirement(s.requirements);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Egg - Full Health", "$quarters_egg$", "egg", Descriptions::egg, false);
