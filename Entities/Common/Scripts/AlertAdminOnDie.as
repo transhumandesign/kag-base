@@ -15,11 +15,11 @@ void onDie(CBlob@ this)
 	string message;
 
 	string username = this.get_string("last held by");
-	CPlayer@ player = getPlayerByUsername(username);
-	if (player !is null)
+	CPlayer@ holder = getPlayerByUsername(username);
+	if (holder !is null)
 	{
 		message = getTranslatedString("{PLAYER} caused {COUNT} {MATERIAL} to fall into the void!")
-			.replace("{PLAYER}", formatPlayerName(player))
+			.replace("{PLAYER}", formatPlayerName(holder))
 			.replace("{COUNT}", "" + this.getQuantity())
 			.replace("{MATERIAL}", this.getInventoryName());
 	}
@@ -35,8 +35,8 @@ void onDie(CBlob@ this)
 		print(message, CHAT_COLOR);
 	}
 
-	@player = getLocalPlayer();
-	if (player !is null && player.isMod())
+	CPlayer@ localPlayer = getLocalPlayer();
+	if (localPlayer !is null && localPlayer.isMod())
 	{
 		client_AddToChat(message, CHAT_COLOR);
 	}
