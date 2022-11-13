@@ -12,6 +12,8 @@ void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 
 void onDie(CBlob@ this)
 {
+	if (this.hasTag("AdminAlertIgnore")) return;
+	
 	string message;
 
 	string username = this.get_string("last held by");
