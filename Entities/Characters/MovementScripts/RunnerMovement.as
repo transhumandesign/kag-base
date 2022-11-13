@@ -90,11 +90,11 @@ void onTick(CMovement@ this)
 		}*/
 	}
 
-	u8 crouch_through_platform = blob.get_u8("crouch_through_platform");
-	if (crouch_through_platform > 0)
+	u8 crouch_through = blob.get_u8("crouch_through");
+	if (crouch_through > 0)
 	{
-		crouch_through_platform--;
-		blob.set_u8("crouch_through_platform", crouch_through_platform);
+		crouch_through--;
+		blob.set_u8("crouch_through", crouch_through);
 	}
 
 	if (onground || blob.isInWater())  //also reset when vaulting
@@ -279,7 +279,7 @@ void onTick(CMovement@ this)
 		// crouch through platforms and crates
 		if (down && !onground && this.getVars().aircount > 2)
 		{
-			blob.set_u8("crouch_through_platform", 3);
+			blob.set_u8("crouch_through", 3);
 		}
 
 		if (blob.isKeyJustPressed(key_down))
@@ -292,7 +292,7 @@ void onTick(CMovement@ this)
 				{
 					b.getShape().checkCollisionsAgain = true;
 					blob.getShape().checkCollisionsAgain = true;
-					blob.set_u8("crouch_through_platform", 3);
+					blob.set_u8("crouch_through", 3);
 				}
 			}
 
@@ -307,7 +307,7 @@ void onTick(CMovement@ this)
 					{
 						b.getShape().checkCollisionsAgain = true;
 						blob.getShape().checkCollisionsAgain = true;
-						blob.set_u8("crouch_through_platform", 3);
+						blob.set_u8("crouch_through", 3);
 					}
 				}
 			}
