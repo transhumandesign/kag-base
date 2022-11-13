@@ -276,7 +276,7 @@ void onTick(CMovement@ this)
 
 		const f32 slidespeed = 2.45f;
 
-		// crouch through platforms
+		// crouch through platforms and crates
 		if (down && !onground && this.getVars().aircount > 2)
 		{
 			blob.set_u8("crouch_through_platform", 3);
@@ -288,7 +288,7 @@ void onTick(CMovement@ this)
 			for (int i = 0; i < touching; i++)
 			{
 				CBlob@ b = blob.getTouchingByIndex(i);
-				if (b.isPlatform() && b.getAngleDegrees() == 0.0f)
+				if ((b.isPlatform() && b.getAngleDegrees() == 0.0f) || b.getName() == "crate")
 				{
 					b.getShape().checkCollisionsAgain = true;
 					blob.getShape().checkCollisionsAgain = true;
@@ -303,7 +303,7 @@ void onTick(CMovement@ this)
 				for (int i = 0; i < blobs.size(); i++)
 				{
 					CBlob@ b = blobs[i];
-					if (b.isPlatform() && b.getAngleDegrees() == 0.0f)
+					if ((b.isPlatform() && b.getAngleDegrees() == 0.0f) || b.getName() == "crate")
 					{
 						b.getShape().checkCollisionsAgain = true;
 						blob.getShape().checkCollisionsAgain = true;
