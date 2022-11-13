@@ -57,14 +57,24 @@ void onRestart(CRules@ this)
 			, Holiday(scriptlist[2], 357 + server_leap - 2, 16)
 		};
 
-		s16 holiday_date;
-		u8 holiday_length;
+		s16 holiday_start;
+		s16 holiday_end;
 		for(u8 i = 0; i < calendar.length; i++)
 		{
-			holiday_date = calendar[i].m_date;
-			holiday_length = calendar[i].m_length;
+			holiday_start = calendar[i].m_date;
+			holiday_end = (holiday_start + calendar[i].m_length) % (365 + server_leap);
 
-			if(server_date - holiday_date >= 0 && server_date < holiday_date + holiday_length)
+			bool holiday_active = false;
+			if(holiday_start <= holiday_end)
+			{
+				holiday_active = server_date >= holiday_start && server_date < holiday_end;
+			}
+			else
+			{
+				holiday_active = server_date >= holiday_start || server_date < holiday_end;
+			}
+
+			if(holiday_active)
 			{
 				holiday = calendar[i].m_name;
 				print("Holiday: "+holiday);
