@@ -96,7 +96,7 @@ void setOpen(CBlob@ this, bool open)
 	else
 	{
 		sprite.SetZ(100.0f);
-		sprite.SetAnimation("default");
+		sprite.SetAnimation("destruction");
 		shape.getConsts().collidable = true;
 		sprite.PlaySound("bridge_close.ogg");
 
