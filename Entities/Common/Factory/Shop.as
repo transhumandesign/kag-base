@@ -450,8 +450,6 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 	this.set_string("open menu name", caption);
 	this.set_netid("open menu caller blob", caller.getNetworkID());
 
-	print("build shop menu " + getTranslatedString(description));
-
 	if (menu !is null)
 	{
 		if (!this.hasTag(SHOP_AUTOCLOSE))
