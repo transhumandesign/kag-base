@@ -727,8 +727,9 @@ void onRender(CSprite@ this)
 					);
 					*/
 
-					GUI::GetTextDimensions(b.getInventoryName(), dimensions);
-					GUI::DrawText(getTranslatedString(b.getInventoryName()), getDriver().getScreenPosFromWorldPos(b.getPosition() - Vec2f(0, -b.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);
+					string invName = getTranslatedString(b.getInventoryName());
+					GUI::GetTextDimensions(invName, dimensions);
+					GUI::DrawText(invName, getDriver().getScreenPosFromWorldPos(b.getPosition() - Vec2f(0, -b.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);
 
 					// draw mouse hover effect
 					//if (canBePicked)

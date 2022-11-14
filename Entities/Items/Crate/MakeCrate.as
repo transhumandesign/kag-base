@@ -10,7 +10,7 @@ shared CBlob@ server_MakeCrate(string blobName, string inventoryName, int frameI
 		crate.server_setTeamNum(team);
 		crate.setPosition(pos);
 		crate.set_string("packed", blobName);
-		crate.set_string("packed name", inventoryName);
+		crate.set_string("packed name", getTranslatedString(inventoryName));
 		crate.set_u8("frame", frameIndex);
 		if (init)
 			crate.Init();

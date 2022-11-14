@@ -60,7 +60,9 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 					params.ResetBitIndex();
 					params.write_netid(localID);
 					params.write_netid(respawn.getNetworkID());
-					CGridButton@ button2 = menu.AddButton("$" + respawnName + "$", "Spawn at " + respawn.getInventoryName(), this.getCommandID("pick spawn"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
+
+					string text = getTranslatedString("Spawn at {NAME}").replace("{NAME}", getTranslatedString(respawn.getInventoryName()));
+					CGridButton@ button2 = menu.AddButton("$" + respawnName + "$", text, this.getCommandID("pick spawn"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
 					if (button2 !is null)
 					{
 						button2.selectOneOnClick = true;
