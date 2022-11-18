@@ -39,6 +39,11 @@ void onInit(CBlob@ this)
 			this.set_u8("shop button radius", 16);
 		}
 	}
+
+	if (isClient() && !this.exists("open menu name"))
+	{
+		this.set_string("open menu name", "");
+	}
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -82,6 +87,45 @@ bool isInRadius(CBlob@ this, CBlob @caller)
 		offset = this.get_Vec2f("shop offset");
 	}
 	return ((this.getPosition() + Vec2f((this.isFacingLeft() ? -2 : 2)*offset.x, offset.y) - caller.getPosition()).Length() < caller.getRadius() / 2 + this.getRadius());
+}
+
+void updateShopGUI(CBlob@ shop)
+{
+	const string caption = shop.get_string("open menu name");
+	if (caption == "") { return; }
+
+	const int callerBlobID = shop.get_netid("open menu caller blob");
+	CBlob@ callerBlob = getBlobByNetworkID(callerBlobID);
+	if (callerBlob is null) { return; }
+
+	CGridMenu@ menu = getGridMenuByName(caption);
+	if (menu is null) { return; }
+	
+	ShopItem[]@ shop_items;
+	if (!shop.get(SHOP_ARRAY, @shop_items) || shop_items is null) { return; }
+
+	if (menu.getButtonsCount() != shop_items.length)
+	{
+		warn("expected " + menu.getButtonsCount() + " buttons, got " + shop_items.length + " items");
+		return;
+	}
+
+	for (uint i = 0; i < shop_items.length; ++i)
+	{
+		ShopItem@ item = @shop_items[i];
+		if (item is null) { continue; }
+
+		CGridButton@ button = @menu.getButtonOfIndex(i);
+		applyButtonProperties(@shop, @callerBlob, @button, @item);
+	}
+}
+
+void onTick(CBlob@ shop)
+{
+	if (isClient())
+	{
+		updateShopGUI(@shop);
+	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
@@ -298,6 +342,61 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 }
 
+void applyButtonProperties(CBlob@ shop, CBlob@ caller, CGridButton@ button, ShopItem@ s_item)
+{
+	if (s_item.producing)		  // !! no click for production items
+		button.clickable = false;
+
+	button.selectOnClick = true;
+
+	bool tookReqs = false;
+	CBlob@ storageReq = null;
+	// try taking from the caller + this shop first
+	CBitStream missing;
+	if (hasRequirements_Tech(shop.getInventory(), caller.getInventory(), s_item.requirements, missing))
+	{
+		tookReqs = true;
+	}
+	// try taking from caller + storages second
+	//if (!tookReqs)
+	//{
+	//	const s32 team = this.getTeamNum();
+	//	CBlob@[] storages;
+	//	if (getBlobsByTag( "storage", @storages ))
+	//		for (uint step = 0; step < storages.length; ++step)
+	//		{
+	//			CBlob@ storage = storages[step];
+	//			if (storage.getTeamNum() == team)
+	//			{
+	//				CBitStream missing;
+	//				if (hasRequirements_Tech( caller.getInventory(), storage.getInventory(), s_item.requirements, missing ))
+	//				{
+	//					@storageReq = storage;
+	//					break;
+	//				}
+	//			}
+	//		}
+	//}
+
+	const bool takeReqsFromStorage = (storageReq !is null);
+
+	if (s_item.ticksToMake > 0)		   // production
+		SetItemDescription_Tech(button, shop, s_item.requirements, s_item.description, shop.getInventory());
+	else
+	{
+		string desc = s_item.description;
+		//if (takeReqsFromStorage)
+		//	desc += "\n\n(Using resources from team storage)";
+
+		SetItemDescription_Tech(button, caller, s_item.requirements, getTranslatedString(desc), takeReqsFromStorage ? storageReq.getInventory() : shop.getInventory());
+	}
+
+	//if (s_item.producing) {
+	//	button.SetSelected( 1 );
+	//	menu.deleteAfterClick = false;
+	//}
+}
+
 //helper for building menus of shopitems
 
 void addShopItemsToMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
@@ -319,68 +418,16 @@ void addShopItemsToMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
 			params.write_u8(u8(i));
 			params.write_bool(false); //used hotkey?
 
-
 			CGridButton@ button;
 
 			if (s_item.customButton)
 				@button = menu.AddButton(s_item.iconName, getTranslatedString(s_item.name), this.getCommandID("shop buy"), Vec2f(s_item.buttonwidth, s_item.buttonheight), params);
 			else
 				@button = menu.AddButton(s_item.iconName, getTranslatedString(s_item.name), this.getCommandID("shop buy"), params);
-
-
+			
 			if (button !is null)
 			{
-				if (s_item.producing)		  // !! no click for production items
-					button.clickable = false;
-
-				button.selectOnClick = true;
-
-				bool tookReqs = false;
-				CBlob@ storageReq = null;
-				// try taking from the caller + this shop first
-				CBitStream missing;
-				if (hasRequirements_Tech(this.getInventory(), caller.getInventory(), s_item.requirements, missing))
-				{
-					tookReqs = true;
-				}
-				// try taking from caller + storages second
-				//if (!tookReqs)
-				//{
-				//	const s32 team = this.getTeamNum();
-				//	CBlob@[] storages;
-				//	if (getBlobsByTag( "storage", @storages ))
-				//		for (uint step = 0; step < storages.length; ++step)
-				//		{
-				//			CBlob@ storage = storages[step];
-				//			if (storage.getTeamNum() == team)
-				//			{
-				//				CBitStream missing;
-				//				if (hasRequirements_Tech( caller.getInventory(), storage.getInventory(), s_item.requirements, missing ))
-				//				{
-				//					@storageReq = storage;
-				//					break;
-				//				}
-				//			}
-				//		}
-				//}
-
-				const bool takeReqsFromStorage = (storageReq !is null);
-
-				if (s_item.ticksToMake > 0)		   // production
-					SetItemDescription_Tech(button, this, s_item.requirements, s_item.description, this.getInventory());
-				else
-				{
-					string desc = s_item.description;
-					//if (takeReqsFromStorage)
-					//	desc += "\n\n(Using resources from team storage)";
-
-					SetItemDescription_Tech(button, caller, s_item.requirements, getTranslatedString(desc), takeReqsFromStorage ? storageReq.getInventory() : this.getInventory());
-				}
-
-				//if (s_item.producing) {
-				//	button.SetSelected( 1 );
-				//	menu.deleteAfterClick = false;
-				//}
+				applyButtonProperties(@this, @caller, @button, @s_item);
 			}
 		}
 	}
@@ -395,9 +442,13 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 
 	if (!this.get(SHOP_ARRAY, @shopitems)) { return; }
 
+	const string caption = getTranslatedString(description);
 
 	CControls@ controls = caller.getControls();
-	CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + offset, this, Vec2f(slotsAdd.x, slotsAdd.y), getTranslatedString(description));
+	CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + offset, this, Vec2f(slotsAdd.x, slotsAdd.y), caption);
+
+	this.set_string("open menu name", caption);
+	this.set_netid("open menu caller blob", caller.getNetworkID());
 
 	if (menu !is null)
 	{
