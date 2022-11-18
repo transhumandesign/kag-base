@@ -39,11 +39,6 @@ void onInit(CBlob@ this)
 			this.set_u8("shop button radius", 16);
 		}
 	}
-
-	if (isClient() && !this.exists("open menu name"))
-	{
-		this.set_string("open menu name", "");
-	}
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -91,10 +86,10 @@ bool isInRadius(CBlob@ this, CBlob @caller)
 
 void updateShopGUI(CBlob@ shop)
 {
-	const string caption = shop.get_string("open menu name");
+	const string caption = getRules().get_string("shop open menu name");
 	if (caption == "") { return; }
 
-	const int callerBlobID = shop.get_netid("open menu caller blob");
+	const int callerBlobID = getRules().get_netid("shop open menu caller");
 	CBlob@ callerBlob = getBlobByNetworkID(callerBlobID);
 	if (callerBlob is null) { return; }
 
@@ -122,7 +117,7 @@ void updateShopGUI(CBlob@ shop)
 
 void onTick(CBlob@ shop)
 {
-	if (isClient())
+	if (isClient() && getRules().exists("shop open menu blob") && getRules().get_netid("shop open menu blob") == shop.getNetworkID())
 	{
 		updateShopGUI(@shop);
 	}
@@ -447,8 +442,9 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 	CControls@ controls = caller.getControls();
 	CGridMenu@ menu = CreateGridMenu(caller.getScreenPos() + offset, this, Vec2f(slotsAdd.x, slotsAdd.y), caption);
 
-	this.set_string("open menu name", caption);
-	this.set_netid("open menu caller blob", caller.getNetworkID());
+	getRules().set_netid("shop open menu blob", this.getNetworkID());
+	getRules().set_string("shop open menu name", caption);
+	getRules().set_netid("shop open menu caller", caller.getNetworkID());
 
 	if (menu !is null)
 	{
