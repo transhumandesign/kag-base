@@ -15,6 +15,12 @@ void onInit(CBlob@ this)
 	this.addCommandID(sawteammate_id);
 
 	SetSawOn(this, true);
+	
+	CRules@ rules = getRules();
+	if (!rules.hasScript("ToggleBloodyStuff.as"))
+	{
+		rules.AddScript("ToggleBloodyStuff.as");
+	}
 }
 
 //toggling on/off
@@ -64,7 +70,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		bool set = !getSawOn(this);
 		SetSawOn(this, set);
 
-		if (getNet().isClient()) //closed/opened gfx
+		if (isClient()) //closed/opened gfx
 		{
 			CSprite@ sprite = this.getSprite();
 
@@ -105,7 +111,7 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 	string blobname = tobeblended.getName();
 	if (blobname == "log" || blobname == "crate")
 	{
-		if (getNet().isServer())
+		if (isServer())
 		{
 			CBlob@ blob = server_CreateBlobNoInit('mat_wood');
 
@@ -184,16 +190,8 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 
 		if (dot > 0.8f)
 		{
-			if (getNet().isClient() && !g_kidssafe) //add blood gfx
-			{
-				CSprite@ sprite = this.getSprite();
-				CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
-
-				if (chop !is null)
-				{
-					chop.animation.frame = 1;
-				}
-			}
+			this.Tag("bloody");
+			UpdateFrame(this);	//add bloody spritelayer
 
 			return true;
 		}
@@ -204,6 +202,19 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 	}
 
 	return true;
+}
+
+void UpdateFrame(CBlob@ this)
+{
+	if (!isClient())	return;
+
+	CSprite@ sprite = this.getSprite();
+	CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
+
+	if (chop !is null)
+	{	
+		chop.animation.frame = this.hasTag("bloody") && !g_kidssafe ? 1 : 0;
+	}
 }
 
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
