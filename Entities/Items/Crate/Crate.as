@@ -109,8 +109,9 @@ void onInit(CBlob@ this)
 
 	if (this.exists("packed name"))
 	{
-		if (this.get_string("packed name").length > 1)
-			this.setInventoryName("Crate with " + this.get_string("packed name"));
+		string name = getTranslatedString(this.get_string("packed name"));
+		if (name.length > 1)
+			this.setInventoryName("Crate with " + name);
 	}
 
 	if (!this.exists(required_space))
