@@ -10,7 +10,7 @@ void OnCloseMenu(CRules@ this)
 	getBlobsByName("spikes", @blobs);
 	getBlobsByName("spike", @blobs);
 	
-	for (int i = 1; i < blobs.length; i++)
+	for (int i = 0; i < blobs.length; i++)
 	{
 		CBlob@ blob = blobs[i];
 		
