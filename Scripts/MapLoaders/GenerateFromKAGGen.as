@@ -510,7 +510,9 @@ CBlob@ SpawnBush(CMap@ map, Vec2f pos)
 
 CBlob@ SpawnTree(CMap@ map, Vec2f pos, bool high_altitude)
 {
-	CBlob@ tree = server_CreateBlobNoInit(high_altitude ? "tree_pine" : "tree_bushy");
+	// If a bushy tree is spawned, there is 12.5% chance it's an apple tree
+	string string_bushy = (XORRandom(8) > 0) ? "tree_bushy" : "tree_apple";
+	CBlob@ tree = server_CreateBlobNoInit(high_altitude ? "tree_pine" : string_bushy);
 	if (tree !is null)
 	{
 		tree.Tag("startbig");

@@ -2,6 +2,8 @@
 
 #include "TreeSync.as"
 
+const string spritefile = "Entities/Natural/Trees/PineTree/PineTree.png";
+
 void onInit(CBlob@ this)
 {
 	InitVars(this);
@@ -19,9 +21,7 @@ void onInit(CBlob@ this)
 		{
 			this.set_u32("tree_rand", seed);
 			this.Sync("tree_rand", true);
-
 		}
-
 	}
 
 	this.server_setTeamNum(-1);
@@ -37,11 +37,40 @@ void onInit(CBlob@ this)
 	InitTree(this, vars);
 	this.set("TreeVars", vars);
 
-	u8 icon_frame = 9;
+	u8 icon_frame = 11;
 	if (this.hasTag("startbig")) icon_frame = 13;
 
 	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", icon_frame, Vec2f(8, 32));
 	this.SetMinimapRenderAlways(true);
+	
+	if (isServer())
+	{
+		this.set_u8("particle type", 1);	// 0: bushy, 1: pine
+		this.Sync("particle type", true);
+	}
+}
+
+void onTick(CBlob@ this)
+{
+	if (this.get_u16("grow check tick frequency") != 0 
+		&& this.getTickSinceCreated() % this.get_u16("grow check tick frequency") == 0)
+	{
+		GrowCheck(this);
+	}
+	
+	if (this.exists("cut_down_time")				// tree is falling
+		|| this.get_u8("wiggly leaves count") == 0)	// no leaves to wiggle
+	{
+		return;
+	}
+	
+	if (this.get_u16("leaf proximity check tick frequency") != 0
+		&& this.getTickSinceCreated() % this.get_u16("leaf proximity check tick frequency") == 0)
+	{
+		LeafProximityCheck(this);
+	}
+
+	ProcessLeafWiggle(this);
 }
 
 void GrowSprite(CSprite@ this, TreeVars@ vars)
@@ -73,7 +102,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 			if (segment.grown_times == 1)
 			{
-				CSpriteLayer@ newsegment = this.addSpriteLayer("segment " + i, "Entities/Natural/Trees/Trees.png" , 16, 16, 0, 0);
+				CSpriteLayer@ newsegment = this.addSpriteLayer("segment " + i, spritefile, 16, 16, 0, 0);
 
 				if (newsegment !is null)
 				{
@@ -81,20 +110,20 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 					if (i == 0)
 					{
-						animGrow.AddFrame(49);
-						animGrow.AddFrame(49);
-						animGrow.AddFrame(65);
-						animGrow.AddFrame(81);
-						animGrow.AddFrame(96);
-						animGrow.AddFrame(112);
+						animGrow.AddFrame(9);
+						animGrow.AddFrame(9);
+						animGrow.AddFrame(17);
+						animGrow.AddFrame(25);
+						animGrow.AddFrame(32);
+						animGrow.AddFrame(40);
 					}
 					else
 					{
-						animGrow.AddFrame(48);
-						animGrow.AddFrame(48);
-						animGrow.AddFrame(64);
-						animGrow.AddFrame(80);
-						animGrow.AddFrame(96);
+						animGrow.AddFrame(8);
+						animGrow.AddFrame(8);
+						animGrow.AddFrame(16);
+						animGrow.AddFrame(24);
+						animGrow.AddFrame(32);
 					}
 
 					newsegment.SetAnimation(animGrow);
@@ -111,23 +140,25 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 			}
 			else if (segment.grown_times == 2 && segment.height > 2)
 			{
-				CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i, "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
+				string layerName = "leaves " + i;
+				CSpriteLayer@ newsegment = this.addSpriteLayer(layerName, spritefile, 32, 32, 0, 0);
 
 				if (newsegment !is null)
 				{
 					Animation@ animGrow = newsegment.addAnimation("grow", 0, false);
-					animGrow.AddFrame(26);
-					animGrow.AddFrame(26);
-					animGrow.AddFrame(27);
-					animGrow.AddFrame(28);
+					animGrow.AddFrame(9);
+					animGrow.AddFrame(9);
+					animGrow.AddFrame(10);
+					animGrow.AddFrame(11);
 
 					if (segment.r.NextRanged(2) == 0)
 					{
-						animGrow.AddFrame(19);
+						SaveWigglyLeaf(blob, layerName);
+						animGrow.AddFrame(6);
 					}
 					else
 					{
-						animGrow.AddFrame(20);
+						animGrow.AddFrame(7);
 					}
 
 					newsegment.SetAnimation(animGrow);
@@ -144,12 +175,12 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 				if (i == 0) //add roots
 				{
 					f32 flipsign = 1.0f;
-					CSpriteLayer@ newsegment = this.addSpriteLayer("roots", "Entities/Natural/Trees/Trees.png" , 32, 16, 0, 0);
+					CSpriteLayer@ newsegment = this.addSpriteLayer("roots", spritefile, 32, 16, 0, 0);
 
 					if (newsegment !is null)
 					{
 						Animation@ animGrow = newsegment.addAnimation("grow", 0, false);
-						animGrow.AddFrame(4 + (segment.r.NextRanged(2) == 0 ? 8 : 0));
+						animGrow.AddFrame((segment.r.NextRanged(2) == 0 ? 2 : 6));
 
 						newsegment.ResetTransform();
 						newsegment.SetRelativeZ(-80.0f);
@@ -161,41 +192,32 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 				}
 				else if (segment.height > 2 && segment.height <= vars.max_height)  //add leaves
 				{
-					bool flip = false;
-					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves side " + i, "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
+					bool flipped = (segment.r.NextRanged(2) == 0);
+					string layerName = "leaves side " + i;
+					CSpriteLayer@ newsegment1 = this.addSpriteLayer(layerName, spritefile, 32, 32, 0, 0);
 
-					if (newsegment !is null)
+					if (newsegment1 !is null)
 					{
-						Animation@ animGrow = newsegment.addAnimation("grow", 0, false);
-						animGrow.AddFrame(18);
-						newsegment.SetAnimation(animGrow);
-						newsegment.ResetTransform();
-						newsegment.SetRelativeZ(-550.0f - (vars.height * 10.0f));
-
-						bool flip = (segment.r.NextRanged(2) == 0);
-						newsegment.SetFacingLeft(flip);
-
-						newsegment.SetOffset(segment.start_pos + Vec2f(((vars.max_height - i * 2) + segment.r.NextRanged(8)) * 0.5 + 8.0f , 4.0f));
+						Animation@ animGrow = newsegment1.addAnimation("grow", 0, false);
+						animGrow.AddFrame(5);
+						newsegment1.SetAnimation(animGrow);
+						newsegment1.ResetTransform();
+						newsegment1.SetRelativeZ(-550.0f - (vars.height * 10.0f));
+						newsegment1.SetFacingLeft(flipped);
+						newsegment1.SetOffset(segment.start_pos + Vec2f(((vars.max_height - i * 2) + segment.r.NextRanged(8)) * 0.5 + 8.0f , 4.0f));
 					}
+					
+					CSpriteLayer@ newsegment2 = this.addSpriteLayer("leaves doubleside " + i, spritefile, 32, 32, 0, 0);
 
-					if (segment.r.NextRanged(2) == 0)
+					if (newsegment2 !is null)
 					{
-						CSpriteLayer@ secondnewsegment = this.addSpriteLayer("leaves doubleside " + i, "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
-
-						if (secondnewsegment !is null)
-						{
-							Animation@ animGrow = secondnewsegment.addAnimation("grow", 0, false);
-							animGrow.AddFrame(18);
-							secondnewsegment.SetAnimation(animGrow);
-							secondnewsegment.ResetTransform();
-							secondnewsegment.SetRelativeZ(-550.0f - (vars.height * 10.0f));
-
-							flip = !flip;
-
-							secondnewsegment.SetFacingLeft(flip);
-
-							secondnewsegment.SetOffset(segment.start_pos + Vec2f(((vars.max_height - i * 2) + segment.r.NextRanged(8)) * 0.5 + 8.0f , 4.0f));
-						}
+						Animation@ animGrow = newsegment2.addAnimation("grow", 0, false);
+						animGrow.AddFrame(5);
+						newsegment2.SetAnimation(animGrow);
+						newsegment2.ResetTransform();
+						newsegment2.SetRelativeZ(-550.0f - (vars.height * 10.0f));
+						newsegment2.SetFacingLeft(!flipped);
+						newsegment2.SetOffset(segment.start_pos + Vec2f(((vars.max_height - i * 2) + segment.r.NextRanged(8)) * 0.5 + 8.0f , 4.0f));
 					}
 				}
 			}
@@ -227,11 +249,11 @@ void UpdateMinimapIcon(CBlob@ this, TreeVars@ vars)
 {
 	if (vars.grown_times < 5)
 	{
-		this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 9, Vec2f(8, 32));
+		this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 11, Vec2f(8, 32));
 	}
 	else if (vars.grown_times < 10)
 	{
-		this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 11, Vec2f(8, 32));
+		this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 12, Vec2f(8, 32));
 	}
 	else
 	{

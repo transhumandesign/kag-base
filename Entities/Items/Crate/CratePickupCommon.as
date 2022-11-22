@@ -23,6 +23,7 @@ bool crateTake(CBlob@ this, CBlob@ blob)
         || blobName == "grain"
         || blobName == "food"
         || blobName == "egg"
+		|| blobName == "apple"
         )
     {
         return this.server_PutInInventory(blob);

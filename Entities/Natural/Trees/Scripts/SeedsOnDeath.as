@@ -4,7 +4,7 @@
 
 void onDie(CBlob@ this)
 {
-	if (!getNet().isServer()) return; //SERVER ONLY
+	if (!isServer()) return; //SERVER ONLY
 
 	Vec2f pos = this.getPosition();
 

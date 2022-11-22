@@ -3,7 +3,9 @@
 #include "FireCommon.as";
 #include "Help.as";
 
-f32 segment_length = 14.0f;
+const f32 segment_length = 14.0f;
+const u8 GROW_CHECK_TICK_FREQUENCY_DEFAULT = 60;
+const u8 LEAF_CHECK_TICK_FREQUENCY_DEFAULT = 10;
 
 void InitVars(CBlob@ this)
 {
@@ -35,11 +37,19 @@ void InitTree(CBlob@ this, TreeVars@ vars)
 	CMap@ map = this.getMap();
 	const f32 radius = map.tilesize / 2.0f;
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		this.set_s32("last_grew_time", vars.last_grew_time);
 		this.Sync("last_grew_time", true);
-
+		
+		this.set_u16("grow check tick frequency", GROW_CHECK_TICK_FREQUENCY_DEFAULT);
+		this.Sync("grow check tick frequency", true);
+		
+		this.set_u16("leaf proximity check tick frequency", LEAF_CHECK_TICK_FREQUENCY_DEFAULT);
+		this.Sync("leaf proximity check tick frequency", true);
+		
+		this.set_u8("wiggly leaves count", 0);
+		this.Sync("wiggly leaves count", true);
 	}
 
 	if (this.hasTag("startbig"))
@@ -54,7 +64,8 @@ void InitTree(CBlob@ this, TreeVars@ vars)
 			i++;
 		}
 
-		this.getCurrentScript().tickFrequency = 0;
+		if (!this.hasTag("growing apples"))
+			this.set_u16("grow check tick frequency", 0);
 	}
 	else if (this.exists("grown_times"))
 	{
@@ -70,11 +81,16 @@ void InitTree(CBlob@ this, TreeVars@ vars)
 		{
 			vars.last_grew_time = this.get_s32("last_grew_time");
 		}
-
 	}
 }
 
-void onTick(CBlob@ this)
+void onHealthChange(CBlob@ this, f32 oldhealth)
+{
+	GrowCheck(this);
+}
+
+
+void GrowCheck(CBlob@ this)
 {
 	if (!DoCollapseWhenBelow(this, 0.0f)) // if not collapsing
 	{
@@ -149,7 +165,6 @@ void DoGrow(CBlob@ this, TreeVars@ vars)
 
 			vars.height++;
 			addSegment(this, vars);
-
 		}
 	}
 
@@ -208,8 +223,8 @@ void DoGrow(CBlob@ this, TreeVars@ vars)
 	vars.grown_times++;
 	this.set_u8("grown_times", vars.grown_times);
 
-	if (vars.grown_times >= 15)
-		this.getCurrentScript().tickFrequency = 0;
+	if (vars.grown_times >= 15 && !this.hasTag("growing apples"))
+		this.set_u16("grow check tick frequency", 0);
 }
 
 void addSegment(CBlob@ this, TreeVars@ vars)

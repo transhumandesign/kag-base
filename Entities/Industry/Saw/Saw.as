@@ -166,6 +166,7 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 	    name == "mat_wood" ||
 	    name == "tree_bushy" ||
 	    name == "tree_pine" ||
+		name == "tree_apple" ||
 	    (name == "mine" && blob.getTeamNum() == this.getTeamNum()))
 	{
 		return false;

@@ -425,7 +425,14 @@ class PNGLoader
 			// load trees only at the ground
 			if(!map.isTileSolid(map.getTile(offset + map.tilemapwidth))) return;
 
-			CBlob@ tree = server_CreateBlobNoInit( map_random.NextRanged(35) < 21 ? "tree_pine" : "tree_bushy" );
+			uint random_val 	= map_random.NextRanged(50);
+			string tree_name;
+			
+			if (random_val < 21) 		tree_name = "tree_pine";
+			else if (random_val < 35)	tree_name = "tree_bushy";
+			else 						tree_name = "tree_apple";
+
+			CBlob@ tree = server_CreateBlobNoInit(tree_name);
 			if(tree !is null)
 			{
 				tree.Tag("startbig");
@@ -473,9 +480,9 @@ class PNGLoader
 		map.CreateSkyGradient("Sprites/skygradient.png"); // override sky color with gradient
 
 		// background
-		map.AddBackground("Sprites/Back/BackgroundPlains.png", Vec2f(0.0f, -40.0f), Vec2f(0.06f, 20.0f), color_white);
-		map.AddBackground("Sprites/Back/BackgroundTrees.png", Vec2f(0.0f,  -100.0f), Vec2f(0.18f, 70.0f), color_white);
-		map.AddBackground("Sprites/Back/BackgroundIsland.png", Vec2f(0.0f, -220.0f), Vec2f(0.3f, 180.0f), color_white);
+		map.AddBackground("Sprites/Back/BackgroundPlains.png", Vec2f(0.0f, -18.0f), Vec2f(0.3f, 0.3f), color_white);
+		map.AddBackground("Sprites/Back/BackgroundTrees.png", Vec2f(0.0f,  -5.0f), Vec2f(0.4f, 0.4f), color_white);
+		map.AddBackground("Sprites/Back/BackgroundIsland.png", Vec2f(0.0f, 0.0f), Vec2f(0.6f, 0.6f), color_white);
 
 		// fade in
 		SetScreenFlash(255,   0,   0,   0);
@@ -968,7 +975,7 @@ void getInfoFromBlob(CBlob@ this, SColor &out color, Vec2f &out offset)
 	{
 		color = map_colors::grain;
 	}
-	else if(name == "tree_pine" || name == "tree_bushy")
+	else if(name == "tree_pine" || name == "tree_bushy" || name == "tree_apple")
 	{
 		color = map_colors::tree;
 	}

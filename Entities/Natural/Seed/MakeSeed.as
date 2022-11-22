@@ -8,7 +8,7 @@
 
 CBlob@ server_MakeSeed(Vec2f atpos, string blobname, u16 growtime, u8 spriteIndex, u8 created_blob_radius)
 {
-	if (!getNet().isServer()) { return null; }
+	if (!isServer()) { return null; }
 
 	CBlob@ seed = server_CreateBlobNoInit("seed");
 
@@ -37,25 +37,29 @@ CBlob@ server_MakeSeed(Vec2f atpos, string blobname, u16 growtime)
 
 CBlob@ server_MakeSeed(Vec2f atpos, string blobname)
 {
-	if (blobname == "tree_pine")
-	{
-		return server_MakeSeed(atpos, blobname, 600, 2, 4);
-	}
-	else if (blobname == "tree_bushy")
-	{
-		return server_MakeSeed(atpos, blobname, 400, 3, 4);
-	}
-	else if (blobname == "grain_plant")
+	if (blobname == "grain_plant")
 	{
 		return server_MakeSeed(atpos, blobname, 300, 1, 4);
 	}
-	else if (blobname == "flowers")
-	{
-		return server_MakeSeed(atpos, blobname, 200, 6, 4);
-	}
 	else if (blobname == "bush")
 	{
-		return server_MakeSeed(atpos, blobname, 300, 5, 4);
+		return server_MakeSeed(atpos, blobname, 300, 2, 4);
+	}
+	else if (blobname == "flowers")
+	{
+		return server_MakeSeed(atpos, blobname, 200, 3, 4);
+	}
+	else if (blobname == "tree_pine")
+	{
+		return server_MakeSeed(atpos, blobname, 600, 4, 4);
+	}
+	else if (blobname == "tree_bushy")
+	{
+		return server_MakeSeed(atpos, blobname, 400, 5, 4);
+	}
+	else if (blobname == "tree_apple")
+	{
+		return server_MakeSeed(atpos, blobname, 500, 6, 4);
 	}
 
 	return server_MakeSeed(atpos, blobname, 100, 0, 4);

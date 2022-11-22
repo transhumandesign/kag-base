@@ -104,7 +104,6 @@ bool CollapseToGround(CBlob@ this, f32 angle)
 	}
 
 	// collide with map and blobs
-
 	if (segments.length > 2)
 	{
 		// offset the raycast angle so it doesnt look like it falls into the ground
@@ -166,7 +165,7 @@ bool DoCollapseWhenBelow(CBlob@ this, f32 hp)
 {
 	if (this.getHealth() <= hp && !this.exists("felldown"))
 	{
-		this.getCurrentScript().tickFrequency = 1;
+		this.set_u16("grow check tick frequency", 1);
 
 		f32 COLLAPSE_TIME = 200000.0f;
 		u32 fell_time;
@@ -179,7 +178,7 @@ bool DoCollapseWhenBelow(CBlob@ this, f32 hp)
 			this.set_u32("cut_down_time", fell_time);
 			fall_switch = this.get_bool("cut_down_fall_side");
 			// sound
-			this.getSprite().SetEmitSound("Entities/Natural/Trees/TreeFall.ogg");
+			this.getSprite().SetEmitSound("TreeFall.ogg");
 			this.getSprite().SetEmitSoundPaused(false);
 			//remove sectors
 			CMap@ map = getMap();
@@ -188,7 +187,7 @@ bool DoCollapseWhenBelow(CBlob@ this, f32 hp)
 			map.RemoveSectorsAtPosition(pos, "tree", this.getNetworkID());
 		}
 		else
-		{
+		{	
 			fell_time = this.get_u32("cut_down_time");
 			fall_switch = this.get_bool("cut_down_fall_side");
 		}
@@ -200,11 +199,11 @@ bool DoCollapseWhenBelow(CBlob@ this, f32 hp)
 
 		if (hitground)
 		{
-			this.getSprite().PlaySound("Entities/Natural/Trees/TreeDestruct.ogg");
+			this.getSprite().PlaySound("TreeDestruct.ogg");
 			this.getSprite().SetEmitSoundPaused(true);
 			this.Tag("felldown"); // so client stops falling tree and playing sound
 
-			if (getNet().isServer())
+			if (isServer())
 			{
 				this.server_SetHealth(-1.0f);
 				this.server_Die();                      // Tree dying too early? Did it spawn a bit underground?
@@ -215,4 +214,146 @@ bool DoCollapseWhenBelow(CBlob@ this, f32 hp)
 	}
 
 	return false;
+}
+
+void ProcessLeafWiggle(CBlob@ this)
+{	
+	if (!isClient() || this is null || v_fastrender)	return;
+
+	CSprite@ s = this.getSprite();
+	
+	if (s is null)	return;
+
+	u8 wiggly_leaf_count = this.get_u8("wiggly leaves count");
+	
+	for (u8 j = 1; j <= wiggly_leaf_count; j++)
+	{
+		if (!this.exists("wiggly leaf " + j))	break;
+		
+		string layerName = this.get_string("wiggly leaf " + j);
+		CSpriteLayer@ layer = s.getSpriteLayer(layerName);
+		
+		if (layer !is null 
+			&& this.exists("wiggly leaf duration " + j)
+			&& this.get_u8("wiggly leaf duration " + j) > 0)
+		{	
+			u8 wiggle_duration = this.get_u8("wiggly leaf duration " + j);
+			Vec2f offset = layer.getOffset();
+
+			if (wiggle_duration > 1)
+			{
+				bool rand = (getGameTime() % 4 == 0);
+								
+				int yshift = rand ? 1 : 0;
+				layer.SetOffset(Vec2f(offset.x, Maths::Min(offset.y + yshift, 2)));
+				
+			}
+			else 
+			{
+				layer.SetOffset(Vec2f(offset.x, 0));
+			}
+			wiggle_duration--;
+			this.set_u8("wiggly leaf duration " + j, wiggle_duration);
+		}
+	}
+}
+
+void LeafProximityCheck(CBlob@ this)
+{
+	if (!isClient() || this is null || v_fastrender)	return;
+
+	CSprite@ s = this.getSprite();
+	
+	if (s is null)	return;
+
+	TreeVars@ vars;
+	this.get("TreeVars", @vars);
+
+	CMap@ m = getMap();
+	float ts = m.tilesize;	
+	Vec2f pos = this.getPosition();
+	Vec2f tl = Vec2f(pos.x - 5 * ts, pos.y - (2 + vars.height * 2) * ts);
+	Vec2f br = Vec2f(pos.x + 5 * ts, pos.y + 1 * ts);
+
+	CBlob@[] nearby_blobs;
+	m.getBlobsInBox(tl, br, @nearby_blobs);
+	
+	// make this function tick often if player is close
+	u8 proximity_ticks = 10;
+	for (u16 i = 0; i < nearby_blobs.length; i++)
+	{
+		CBlob@ b = nearby_blobs[i];
+		
+		if (b is null)	continue;
+		
+		if (b.hasTag("player")) // player is near
+		{
+			proximity_ticks = 1;
+		}
+	}
+	this.set_u16("leaf proximity check tick frequency", proximity_ticks);
+	
+	// check if players are touching leaves
+	u8 wiggly_leaf_count = this.get_u8("wiggly leaves count");
+	for (u8 j = 1; j <= wiggly_leaf_count; j++)
+	{
+		if (!this.exists("wiggly leaf " + j))	break;
+		
+		string layerName = this.get_string("wiggly leaf " + j);
+		CSpriteLayer@ layer = s.getSpriteLayer(layerName);
+		if (layer !is null 
+			&& layer.isAnimationEnded()) // only shake fully grown leaf parts
+		{
+			Vec2f layerPos = layer.getWorldTranslation();
+		
+			CBlob@[] overlapped;
+			m.getBlobsInRadius(layerPos, 4.0f, @overlapped);
+			
+			for (u16 k = 0; k < overlapped.length; k++)
+			{
+				CBlob@ b = overlapped[k];
+				
+				if (b is null)	continue;
+				
+				if (b.hasTag("player") 
+					&& b.getShape().vellen > 1)
+				{
+					if (this.get_u8("wiggly leaf duration" + j) == 0)
+					{
+						this.set_u8("wiggly leaf duration " + j, 6);
+						
+						if (XORRandom(5) == 0)
+						{
+							this.getSprite().PlayRandomSound("LeafRustle");
+
+							CParticle@ p;
+							
+							if (this.get_u8("particle type") == 0)
+							{
+								@p = makeGibParticle("GenericGibs", layerPos, getRandomVelocity(100, 1 , 270), 
+								7, 3 + XORRandom(4), Vec2f(8, 8), 1.0f, 0, "", 0);
+							}
+							else
+							{
+								@p = makeGibParticle("grassparts", layerPos, getRandomVelocity(100, 1 , 270), 
+								0, XORRandom(5), Vec2f(4, 4), 1.0f, 0, "", 0);
+							}
+							
+							if (p !is null)
+							{
+								p.gravity = Vec2f(0, 0.1f);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void SaveWigglyLeaf(CBlob@ this, string layerName)
+{
+	u8 wiggly_leaf_count = this.get_u8("wiggly leaves count") + 1;
+	this.set_u8("wiggly leaves count", wiggly_leaf_count);
+	this.set_string("wiggly leaf " + wiggly_leaf_count, layerName); // save reference to spritelayer
 }
