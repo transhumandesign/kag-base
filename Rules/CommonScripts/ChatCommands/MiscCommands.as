@@ -34,6 +34,8 @@ class HelpCommand : ChatCommand
 			server_AddToChat(join(names, ", "), ConsoleColour::CRAZY, player);
 			server_AddToChat("   ↳ " + getTranslatedString(command.description), ConsoleColour::INFO, player);
 		}
+
+		server_AddToChat(getTranslatedString("Tip: Press Shift ↑/↓ keys while chat is focused to navigate through chat history"), ConsoleColour::GAME, player);
 	}
 }
 

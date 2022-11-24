@@ -4,8 +4,8 @@ class StartCommand : ChatCommand
 {
 	StartCommand()
 	{
-		super("start", "Start the game");
-		AddAlias("startgame");
+		super("startgame", "Start the game");
+		AddAlias("start");
 	}
 
 	void Execute(string[] args, CPlayer@ player)
@@ -28,8 +28,8 @@ class EndCommand : ChatCommand
 {
 	EndCommand()
 	{
-		super("end", "End the game");
-		AddAlias("endgame");
+		super("endgame", "End the game");
+		AddAlias("end");
 	}
 
 	void Execute(string[] args, CPlayer@ player)
@@ -44,6 +44,40 @@ class EndCommand : ChatCommand
 		else
 		{
 			server_AddToChat(getTranslatedString("Game has already ended"), ConsoleColour::ERROR, player);
+		}
+	}
+}
+
+class NextMapCommand : ChatCommand
+{
+	NextMapCommand()
+	{
+		super("nextmap", "Load the next map");
+		AddAlias("next");
+	}
+
+	void Execute(string[] args, CPlayer@ player)
+	{
+		if (isServer())
+		{
+			LoadNextMap();
+		}
+	}
+}
+
+class RestartMapCommand : ChatCommand
+{
+	RestartMapCommand()
+	{
+		super("restartmap", "Restart the current map");
+		AddAlias("restart");
+	}
+
+	void Execute(string[] args, CPlayer@ player)
+	{
+		if (isServer())
+		{
+			LoadMap(getMap().getMapName());
 		}
 	}
 }

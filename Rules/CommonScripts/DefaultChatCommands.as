@@ -14,6 +14,8 @@ void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 	//game state
 	manager.RegisterCommand(StartCommand());
 	manager.RegisterCommand(EndCommand());
+	manager.RegisterCommand(NextMapCommand());
+	manager.RegisterCommand(RestartMapCommand());
 
 	//common
 	if (manager.whitelistedClasses.size() > 0)
