@@ -294,14 +294,12 @@ void onTick(CRules@ this)
 				{
 					Vec2f spawn_position = tinfo.coords - Vec2f(0,tilesize);
 				
-					if (map.isBlobInRadius("mine", spawn_position, 16.0f) // don't spawn chicken inside mines
-						|| map.isInWater(spawn_position)) // don't spawn chicken inside water	
-					{
-						break;
+					if (!map.isBlobInRadius("mine", spawn_position, 16.0f) // don't spawn chicken inside mines
+						&& !map.isInWater(spawn_position)) // don't spawn chicken inside water	
+					{					
+						server_CreateBlob("chicken", -1, spawn_position);
+						chicken_count++;
 					}
-					
-					server_CreateBlob("chicken", -1, spawn_position);
-					chicken_count++;
 				}
 			}
 		}
