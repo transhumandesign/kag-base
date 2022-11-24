@@ -80,3 +80,47 @@ class WaterCommand : ChatCommand
 		}
 	}
 }
+
+class TipCommand : ChatCommand
+{
+	string[] tips;
+
+	TipCommand()
+	{
+		super("tip", "Show a useful tip to help you improve");
+		AddAlias("tips");
+		SetUsage("[tip #]");
+
+		ConfigFile cfg;
+		if (cfg.loadFile("HelpfulDeathTips.cfg"))
+		{
+			cfg.readIntoArray_string(tips, "tips");
+		}
+	}
+
+	bool canPlayerExecute(CPlayer@ player)
+	{
+		return ChatCommand::canPlayerExecute(player) && !tips.empty();
+	}
+
+	void Execute(string[] args, CPlayer@ player)
+	{
+		if (!isClient()) return;
+
+		int index = args.size() == 0
+			? XORRandom(tips.size())
+			: parseInt(args[0]) - 1;
+
+		if (index < 0 || index >= tips.size())
+		{
+			client_AddToChat(getTranslatedString("Specify a tip number between 1 and " + tips.size()), ConsoleColour::ERROR);
+			return;
+		}
+
+		string text = getTranslatedString("Tip #{NUMBER}: {TIP}")
+			.replace("{NUMBER}", "" + (index + 1))
+			.replace("{TIP}", getTranslatedString(tips[index]));
+
+		client_AddToChat(text, ConsoleColour::INFO);
+	}
+}

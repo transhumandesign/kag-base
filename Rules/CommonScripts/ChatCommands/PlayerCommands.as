@@ -8,6 +8,14 @@ class ClassCommand : ChatCommand
 		SetUsage("<name>");
 	}
 
+	bool canPlayerExecute(CPlayer@ player)
+	{
+		return (
+			ChatCommand::canPlayerExecute(player) &&
+			!ChatCommands::getManager().whitelistedClasses.empty()
+		);
+	}
+
 	void Execute(string[] args, CPlayer@ player)
 	{
 		if (!isServer()) return;

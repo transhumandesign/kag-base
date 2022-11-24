@@ -7,9 +7,12 @@
 #include "PlayerCommands.as"
 #include "UtilityCommands.as"
 
+//command register order is not important
+//actual order in help command is based on the order of commands in ChatCommands.cfg
 void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 {
 	manager.RegisterCommand(HelpCommand());
+	manager.RegisterCommand(TipCommand());
 
 	//game state
 	manager.RegisterCommand(StartCommand());
@@ -18,10 +21,7 @@ void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 	manager.RegisterCommand(RestartMapCommand());
 
 	//common
-	if (manager.whitelistedClasses.size() > 0)
-	{
-		manager.RegisterCommand(ClassCommand());
-	}
+	manager.RegisterCommand(ClassCommand());
 	manager.RegisterCommand(TeamCommand());
 	manager.RegisterCommand(CoinsCommand());
 	manager.RegisterCommand(HealCommand());
