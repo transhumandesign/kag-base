@@ -1,4 +1,4 @@
-#include "AbstractCommands.as"
+#include "ChatCommand.as"
 #include "MakeSeed.as";
 #include "MakeCrate.as";
 #include "MakeScroll.as"

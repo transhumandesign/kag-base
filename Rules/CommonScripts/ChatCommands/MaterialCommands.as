@@ -1,4 +1,4 @@
-#include "AbstractCommands.as"
+#include "ChatCommand.as"
 
 class AllMatsCommand : BlobCommand
 {

@@ -16,7 +16,7 @@ class AllArrowsCommand : BlobCommand
 	}
 }
 
-class AllBombsCommand : ChatCommand
+class AllBombsCommand : BlobCommand
 {
 	AllBombsCommand()
 	{
@@ -29,10 +29,11 @@ class AllBombsCommand : ChatCommand
 		{
 			server_CreateBlob("mat_bombs", -1, pos);
 		}
+		server_CreateBlob('mat_waterbombs', -1, pos);
 	}
 }
 
-class ArrowsCommand : ChatCommand
+class ArrowsCommand : BlobCommand
 {
 	ArrowsCommand()
 	{
@@ -48,7 +49,7 @@ class ArrowsCommand : ChatCommand
 	}
 }
 
-class BombsCommand : ChatCommand
+class BombsCommand : BlobCommand
 {
 	BombsCommand()
 	{

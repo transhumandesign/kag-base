@@ -36,7 +36,7 @@ class ClassCommand : ChatCommand
 
 		if (blob.getName() == className)
 		{
-			server_AddToChat(getTranslatedString("Your are already this class"), ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("You are already this class"), ConsoleColour::ERROR, player);
 			return;
 		}
 
@@ -81,6 +81,12 @@ class TeamCommand : ChatCommand
 		}
 
 		int team = parseInt(args[0]);
+		if (team == blob.getTeamNum())
+		{
+			server_AddToChat(getTranslatedString("You are already on this team"), ConsoleColour::ERROR, player);
+			return;
+		}
+
 		blob.server_setTeamNum(team);
 	}
 }

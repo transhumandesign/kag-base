@@ -76,3 +76,15 @@ void server_AddToChat(string message, SColor color, CPlayer@ player = null)
 		}
 	}
 }
+
+void CommandNotImplemented(string name, CPlayer@ player)
+{
+	if (isClient())
+	{
+		client_AddToChat(getTranslatedString("Unable to execute command"), ConsoleColour::ERROR);
+	}
+	else
+	{
+		print("Unable to execute !" + name + " command because it is not implemented", ConsoleColour::ERROR);
+	}
+}
