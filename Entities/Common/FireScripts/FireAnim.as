@@ -30,6 +30,7 @@ void onInit(CSprite@ this)
 
 void onTick(CSprite@ this)
 {
+	this.getCurrentScript().tickFrequency = 24;
 	CBlob@ blob = this.getBlob();
 	CSpriteLayer@ fire = this.getSpriteLayer("fire_animation_large");
 	
