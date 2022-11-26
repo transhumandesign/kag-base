@@ -60,7 +60,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		    && !owner.isInInventory()
 		    && !owner.isAttached()
 		    && pick !is null 
-		    && !pick.isAttached())
+		    && !pick.isAttached()
+		    && !pick.hasAttached())
 		{
 			owner.server_Pickup(pick);
 		}
