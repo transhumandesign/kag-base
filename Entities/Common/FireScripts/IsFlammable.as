@@ -81,6 +81,9 @@ void onTick(CBlob@ this)
 	{
 		server_setFireOff(this);
 		this.set_netid("burn starter blob", 0);
+		
+		CSprite@ sprite = this.getSprite();
+		sprite.PlaySound("/ExtinguishFire.ogg");
 	}
 
 	//burnination
@@ -118,4 +121,11 @@ void onTick(CBlob@ this)
 	}
 
 	// (flax roof cottages!)
+}
+
+void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
+{
+	// keep burning in inventory
+	this.doTickScripts = true;
+	
 }

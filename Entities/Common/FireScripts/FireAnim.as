@@ -30,9 +30,9 @@ void onInit(CSprite@ this)
 
 void onTick(CSprite@ this)
 {
-	this.getCurrentScript().tickFrequency = 24; // opt
 	CBlob@ blob = this.getBlob();
 	CSpriteLayer@ fire = this.getSpriteLayer("fire_animation_large");
+	
 	if (fire !is null)
 	{
 		//if we're burning
@@ -40,7 +40,8 @@ void onTick(CSprite@ this)
 		{
 			this.getCurrentScript().tickFrequency = 12;
 
-			fire.SetVisible(true);
+			if (!fire.isVisible())
+				fire.SetVisible(true);
 
 			//TODO: draw the fire layer with varying sizes based on var - may need sync spam :/
 			//fire.SetAnimation( "bigfire" );
@@ -53,11 +54,7 @@ void onTick(CSprite@ this)
 			}
 		}
 		else
-		{
-			if (fire.isVisible())
-			{
-				this.PlaySound("/ExtinguishFire.ogg");
-			}
+		{	
 			fire.SetVisible(false);
 		}
 	}
