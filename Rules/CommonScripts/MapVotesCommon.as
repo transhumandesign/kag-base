@@ -35,6 +35,11 @@ bool isMapVoteOver()
 	return ticksRemainingForMapVote() <= 0;
 }
 
+bool isMapVoteVisible()
+{
+	return ticksSinceGameOver() >= 5 * getTicksASecond();
+}
+
 class MapVotesMenu
 {
 	MapVoteButton@ button1;
@@ -140,7 +145,7 @@ class MapVotesMenu
 
 	void Update(CControls@ controls, u8 &out newSelectedNum)
 	{
-		if (isMapVoteOver()) { return; }
+		if (isMapVoteOver() || !isMapVoteVisible()) { return; }
 
 		Vec2f mousepos = controls.getMouseScreenPos();
 		const bool mousePressed = controls.isKeyPressed(KEY_LBUTTON);

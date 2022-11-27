@@ -243,7 +243,7 @@ void RenderRaw(int id)
 	if (!getRules().get("MapVotesMenu", @mvm)) return;
 	if (!getRules().isGameOver() || !mvm.isSetup) return;
 	if (!getNet().isClient()) return;
-	if (ticksSinceGameOver() < 5*getTicksASecond()) return;
+	if (!isMapVoteVisible()) return;
 
 	CRules@ rules = getRules();
 	rules.Untag("animateGameOver");
