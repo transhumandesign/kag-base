@@ -199,7 +199,7 @@ void displayResupply(CRules@ this, string player_class, string resupply_class, V
 
 		GUI::DrawTextCentered(text, Vec2f(x, y), color);
 	}
-	else if (this.getCurrentState() == GAME) // Available resupply & not warmup - shown above inventory GUI
+	else if (this.getCurrentState() == GAME && u_showtutorial) // Available resupply & not warmup - shown above inventory GUI
 	{
 		SColor color = SColor(200, 135, 185, 45);
 
