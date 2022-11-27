@@ -1,6 +1,7 @@
 //-- Written by Monkey_Feats 22/2/2020 --//
 #include "LoaderColors.as";
 
+const uint voteWaitDuration = 5 * getTicksASecond();
 const uint voteLockDuration = 3 * getTicksASecond();
 const string voteEndTag = "mapvote: ended";
 const string voteSelectMapTag = "mapvote: selectmap";
@@ -37,7 +38,7 @@ bool isMapVoteOver()
 
 bool isMapVoteVisible()
 {
-	return ticksSinceGameOver() >= 5 * getTicksASecond();
+	return ticksSinceGameOver() >= voteWaitDuration;
 }
 
 class MapVotesMenu
