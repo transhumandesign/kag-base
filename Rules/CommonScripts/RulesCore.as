@@ -283,7 +283,6 @@ shared class RulesCore
 				{
 					while (inv.getItemsCount() > 0)
 					{
-						print(getGameTime() + " inside remove Items loop");
 						CBlob@ item = inv.getItem(0);
 						blob.server_PutOutInventory(item);
 						item.server_Die();
