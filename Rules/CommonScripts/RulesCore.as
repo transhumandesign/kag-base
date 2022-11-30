@@ -274,6 +274,26 @@ shared class RulesCore
 		{
 			blob.server_SetPlayer(null);
 
+			// "no mats" fix
+			if (getGameTime() < 30)
+			{				
+				// remove previous items
+				CInventory@ inv = blob.getInventory();
+				if (inv !is null)
+				{
+					while (inv.getItemsCount() > 0)
+					{
+						print(getGameTime() + " inside remove Items loop");
+						CBlob@ item = inv.getItem(0);
+						blob.server_PutOutInventory(item);
+						item.server_Die();
+					}
+				}
+				
+				// make player eligible for spawn items once more
+				player.Tag("give spawn material again");
+			}
+
 			if (blob.getHealth() > 0.0f)
 				blob.server_Die();
 		}

@@ -18,7 +18,7 @@ const string SPAWN_ITEMS_TIMER_ARCHER  = "CTF SpawnItems Archer:";
 
 string base_name() { return "tent"; }
 
-bool SetMaterials(CBlob@ blob,  const string &in name, const int quantity, bool drop = false)
+bool SetMaterials(CBlob@ blob, const string &in name, const int quantity, bool drop = false)
 {
 	CInventory@ inv = blob.getInventory();
 	
@@ -99,6 +99,14 @@ void SetCTFTimer(CRules@ this, CPlayer@ p, s32 time, string classname)
 //prevents dying over and over, and allows getting more mats throughout the game
 void doGiveSpawnMats(CRules@ this, CPlayer@ p, CBlob@ b)
 {
+	// "no mats" fix
+	if (p.hasTag("give spawn material again"))
+	{
+		SetCTFTimer(this, p, 0, "builder");
+		SetCTFTimer(this, p, 0, "archer");
+		p.Untag("give spawn material again");
+	}
+
 	s32 gametime = getGameTime();
 	string name = b.getName();
 	
