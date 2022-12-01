@@ -359,7 +359,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			CInventory@ inv = this.getInventory();
 			u8 itemcount = inv.getItemsCount();
 			// Boobytrap if crate has enemy mine
-			CBlob@ mine = null;
 			for (int i = 0; i < inv.getItemsCount(); i++)
 			{
 				CBlob@ item = inv.getItem(i);
@@ -383,6 +382,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 
 			Vec2f velocity = caller.getVelocity();
+			
+			if (this.isAttachedTo(caller))
+			{
+				this.setPosition(caller.getPosition());
+			}
+			
 			this.server_PutInInventory( caller );
 			this.setVelocity(velocity);
 		}
