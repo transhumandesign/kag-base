@@ -434,7 +434,6 @@ void onTick(CRules@ this)
 				f32 random_grow = XORRandom(10000) * 0.0001f;
 				u32 ttype = castle_stuff.find(tinfo.tile.type);
 				f32 luck = tinfo.mossLuck();
-				f32 water = tinfo.mossLuck();
 				
 				if (ttype != -1)
 				{
