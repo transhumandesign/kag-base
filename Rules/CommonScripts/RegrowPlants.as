@@ -79,11 +79,15 @@ class TileInfo
 			bool mossyCastle = castle_moss_stuff.find(tile.type) != -1;
 
 			// to ignore min time restriction if tile is close to moss or water, otherwise you can prevent moss from spreading very very easily
-			if (mossyCastle || water)
+			if (water)
+			{
+				return true;
+			}
+			else if (mossyCastle)
 			{
 				TileInfo tinfo = castle_tiles[index];
 
-				if (tinfo.place_time != 0) // prevent mossification if castle tile has been there from the start
+				if (tinfo.place_time != 0) // prevent moss that was on the map since the beginning from spreading
 				{
 					return true;
 				}
