@@ -651,27 +651,10 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if (attached is null) return;
-	if (attached.getName().getHash() == 1346747564) // (attached.getName() == "seed")
+	if (attached !is null && attached.getName() == "seed")
 	{
-		// NOTE(hobey): 
-		// See issue: https://github.com/transhumandesign/kag-base/issues/1514
-		//
-		// The issue happened when:
-		//   - Put a (tree) seed in your inventory; (e.g. do "!tree_pine", then kill tree)
-		//   - Then you start building blobs (e.g. doors) until you run out ot mats for that blob;
-		//   - Then you take the seed out of your inventory
-		//   - Then you try to place the seed but you can't because you get a "Requires 30 wood" message;
-		//
-		// Setting the buildblob to -1 on seed-attach fixes this, 
+		// Setting the buildblob to -1 on seed-attach resolves issue #1514, 
 		// since the mat-requirement logic doesn't fire if buildblob is -1.
-		//
 		this.set_u8("buildblob", -1);
-		//
-		// Note that doing this for for all blobs instead of only for "seed" blobs causes "replenishing of build blobs" to not work (i.e. you will place a door but then you don't automatically get a second one in your hand
-		//
-		// https://youtu.be/VHu_iz9FrOE [Without fix]
-		// https://youtu.be/9Nq-5q5r3I0 [With fix]
-		// https://youtu.be/ie7KtTIHEvQ [Fix, but without the 'if' that filters for "seed" blobs only]
 	}
 }
