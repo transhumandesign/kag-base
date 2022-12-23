@@ -22,6 +22,7 @@ void onInit(CBlob@ this)
 		this.set('harvest', harvest);
 	}
 
+	this.Tag("can be sawed immediately");
 	this.Tag("pushedByDoor");
 }
 

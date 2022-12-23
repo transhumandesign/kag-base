@@ -149,11 +149,21 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 		//dont travel if caller is attached to something (e.g. siege)
 		if (caller.isAttached())
 			return;
+		
+		// assume destination is center bottom
+		Vec2f position = tunnel.getPosition();
+		position = Vec2f(position.x, position.y + tunnel.getHeight() / 2 - caller.getHeight() / 2);
+		
+		// apply offset (if it exists)
+		if (tunnel.exists("travel offset"))
+		{
+			Vec2f offset = tunnel.get_Vec2f("travel offset");
+			position += tunnel.isFacingLeft() ? -offset : offset;
+		}
 
 		// move caller
-		caller.setPosition(Vec2f(tunnel.getPosition().x, tunnel.getPosition().y + getMap().tilesize));
+		caller.setPosition(position);
 		caller.setVelocity(Vec2f_zero);
-		//caller.getShape().PutOnGround();
 
 		if (caller.isMyPlayer())
 		{

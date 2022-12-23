@@ -156,7 +156,7 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 		|| blob.getShape().isStatic() 
 		|| blob.hasTag("sawed") 
 		|| blob.hasTag("invincible")
-		|| (blob.hasTag("player") && blob.getTickSinceCreated() < 30)) // fix for getting insta-killed after changing class
+		|| (!blob.hasTag("can be sawed immediately") && blob.getTickSinceCreated() < 30)) // fix for getting insta-killed after changing class
 	{
 		return false;
 	}
