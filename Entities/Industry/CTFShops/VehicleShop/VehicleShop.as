@@ -17,6 +17,7 @@ void onInit(CBlob@ this)
 
 	//INIT COSTS
 	InitCosts();
+	this.set_s32("gold building amount", CTFCosts::vehicleshop_gold);
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
@@ -79,20 +80,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		{
 			return;
 		}
-		string name = params.read_string();
+		if (params.read_string() == "outpost")
 		{
-			if (name == "upgradebolts")
-			{
-				GiveFakeTech(getRules(), "bomb ammo", this.getTeamNum());
-			}
-			else if (name == "outpost")
-			{
-				CBlob@ crate = getBlobByNetworkID(item);
-				
-				crate.set_Vec2f("required space", Vec2f(5, 5));
-				crate.set_s32("gold building amount", CTFCosts::outpost_gold);
-				crate.Tag("unpack_check_nobuild");
-			}
+			// makes crate still drop gold if it breaks before it's unpacked
+			// Crate.as prevents gold from dropping if it dies after unpack
+			CBlob@ box = getBlobByNetworkID(item);
+			if (box !is null) box.set_s32("gold building amount", CTFCosts::outpost_gold);
 		}
 	}
 }

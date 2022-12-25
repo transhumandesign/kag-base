@@ -2,6 +2,7 @@
 //converts wood into ores
 
 #include "GenericButtonCommon.as"
+#include "Costs.as";
 
 const string fuel = "mat_wood";
 const string ore = "mat_stone";
@@ -71,7 +72,8 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().mapCollisions = false;
 
 	//gold building properties
-	this.set_s32("gold building amount", 100);
+	InitCosts();
+	this.set_s32("gold building amount", CTFCosts::quarry_gold);
 
 	//quarry properties
 	this.set_s16(fuel_prop, 0);
