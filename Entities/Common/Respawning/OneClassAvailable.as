@@ -16,7 +16,7 @@ void onInit(CBlob@ this)
 		CShape@ shape = this.getShape();
 		if (shape !is null)
 		{
-			this.set_u8("class button radius", Maths::Max(this.getRadius(), (shape.getWidth() + shape.getHeight()) / 2));
+			this.set_u8("class button radius", Maths::Max(this.getRadius(), Maths::Max(shape.getWidth(), shape.getHeight()) + 8));
 		}
 		else
 		{
