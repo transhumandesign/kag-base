@@ -83,7 +83,10 @@ void onTick(CBlob@ this)
 		this.set_netid("burn starter blob", 0);
 		
 		CSprite@ sprite = this.getSprite();
-		sprite.PlaySound("/ExtinguishFire.ogg");
+		if (sprite !is null)
+		{
+			sprite.PlaySound("/ExtinguishFire.ogg");
+		}
 	}
 
 	//burnination
