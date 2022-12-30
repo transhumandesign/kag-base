@@ -185,38 +185,40 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	bool isServer = (getNet().isServer());
+	bool isServer = isServer();
 
 	if (cmd == this.getCommandID("shop made item"))
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
+
 		u16 caller, item;
-		if (!params.saferead_netid(caller) || !params.saferead_netid(item))
+		string name;
+
+		if (!params.saferead_netid(caller) || !params.saferead_netid(item) || !params.saferead_string(name))
 		{
 			return;
 		}
-		string name = params.read_string();
+
+		CBlob@ callerBlob = getBlobByNetworkID(caller);
+		if (callerBlob is null)
 		{
-			CBlob@ callerBlob = getBlobByNetworkID(caller);
-			if (callerBlob is null)
+			return;
+		}
+
+		if (name == "beer")
+		{
+			this.getSprite().PlaySound("/Gulp.ogg");
+			if (isServer)
 			{
-				return;
+				callerBlob.server_Heal(beer_amount);
 			}
-			if (name == "beer")
+		}
+		else if (name == "meal")
+		{
+			this.getSprite().PlaySound("/Eat.ogg");
+			if (isServer)
 			{
-				this.getSprite().PlaySound("/Gulp.ogg");
-				if (isServer)
-				{
-					callerBlob.server_Heal(beer_amount);
-				}
-			}
-			else if (name == "meal")
-			{
-				this.getSprite().PlaySound("/Eat.ogg");
-				if (isServer)
-				{
-					callerBlob.server_SetHealth(callerBlob.getInitialHealth());
-				}
+				callerBlob.server_SetHealth(callerBlob.getInitialHealth());
 			}
 		}
 	}

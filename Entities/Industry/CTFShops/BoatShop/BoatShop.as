@@ -57,21 +57,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	if (cmd == this.getCommandID("shop made item"))
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
-		bool isServer = (getNet().isServer());
+
 		u16 caller, item;
-		if (!params.saferead_netid(caller) || !params.saferead_netid(item))
+		string name;
+
+		if (!params.saferead_netid(caller) || !params.saferead_netid(item) || !params.saferead_string(name))
 		{
 			return;
 		}
-		string name = params.read_string();
-		{
-			if (name == "warboat")
-			{
-				CBlob@ crate = getBlobByNetworkID(item);
 
-				crate.set_Vec2f("required space", Vec2f(10, 6));
-				crate.set_s32("gold building amount", CTFCosts::warboat_gold);
-			}
+		if (name == "warboat")
+		{
+			CBlob@ crate = getBlobByNetworkID(item);
+
+			crate.set_Vec2f("required space", Vec2f(10, 6));
+			crate.set_s32("gold building amount", CTFCosts::warboat_gold);
 		}
 	}
 }
