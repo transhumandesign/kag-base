@@ -84,27 +84,28 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 	if ((buildTile == CMap::tile_wood && backtile.type >= CMap::tile_wood_d1 && backtile.type <= CMap::tile_wood_d0) ||
 			(buildTile == CMap::tile_castle && backtile.type >= CMap::tile_castle_d1 && backtile.type <= CMap::tile_castle_d0))
 	{
-		//repair like tiles
+		// repair like tiles
 	}
 	else if (buildTile == CMap::tile_castle && backtile.type >= CMap::tile_wood && backtile.type <= CMap::tile_wood_d0 && !map.isInFire(p))
 	{
-		// can build stone on wood when not on fire, do nothing
+		// can build stone on wood when not on fire
+	}
+	else if (buildTile == CMap::tile_castle && backtile.type == CMap::tile_castle_moss)
+	{
+		// can build normal castle tile on moss castle tile
+	}
+	else if (backtile.type == CMap::tile_castle_back_moss)
+	{
+		// can build anything on moss back tiles
 	}
 	else if (buildTile == CMap::tile_wood_back && backtile.type == CMap::tile_castle_back)
 	{
-		//cant build wood on stone background
+		// can't build wood on stone background
 		return false;
 	}
 	else if (map.isTileSolid(backtile))
 	{
-		if (!buildSolid && !map.isTileSolid(backtile))
-		{
-			//skip onwards, platforms and doors don't block backwall
-		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
 	if (
@@ -124,18 +125,12 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 	if (blob is null || !blob.hasTag("ignore blocking actors"))
 	{
 		bool isLadder = false;
-		bool isSpikes = false;
-		bool isDoor = false;
-		bool isPlatform = false;
 		bool isSeed = false;
 
 		if (blob !is null)
 		{
 			const string bname = blob.getName();
 			isLadder = bname == "ladder";
-			isSpikes = bname == "spikes";
-			isDoor = bname == "wooden_door" || bname == "stone_door" || bname == "bridge";
-			isPlatform = bname == "wooden_platform";
 			isSeed = bname == "seed";
 		}
 
@@ -149,21 +144,32 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		CBlob@[] blobsAtPos;
 
 		// repairing blobs
-		if (map.getBlobsAtPosition(Vec2f(p.x, p.y), @blobsAtPos) && blob !is null && (isDoor || isPlatform))
+		if (map.getBlobsAtPosition(Vec2f(p.x, p.y), @blobsAtPos) && blob !is null && isRepairable(blob))
 		{
 			for (uint i = 0; i < blobsAtPos.length; i++)
 			{
 				CBlob@ blobAtPos = blobsAtPos[i];
-				if (blobAtPos.getName() == blob.getName() && 
-					blobAtPos.getTeamNum() == blob.getTeamNum() && 
-					blobAtPos.getHealth() != blobAtPos.getInitialHealth()) 
-				{	
+				
+				if (blobAtPos.getTeamNum() != blob.getTeamNum())	{ continue; }
+				
+				// replace if possible
+				if (canReplace(blob, blobAtPos))
+				{
+					blob.set_netid("blob to replace", blobAtPos.getNetworkID());
+					blob.set_bool("has blob to replace", true);
+					return true;
+				}
+				
+				// repair
+				if (blobAtPos.getName() == blob.getName() 
+					&& blobAtPos.getHealth() != blobAtPos.getInitialHealth())
+				{
 					return true;
 				}
 			}
 		}
 
-		if (!isSeed && !isLadder && (buildSolid || isSpikes || isDoor || isPlatform) && map.getSectorAtPosition(middle, "no build") !is null)
+		if (!isSeed && !isLadder && (buildSolid || isRepairable(blob)) && map.getSectorAtPosition(middle, "no build") !is null)
 		{
 			return false;
 		}
@@ -182,12 +188,12 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 				{
 					if (blob !is null || buildSolid)
 					{
-						if (b is this && b.getName() == "spikes") continue;
+						if (b is this) continue;
 
 						Vec2f bpos = b.getPosition();
 
 						bool cantBuild = isBlocking(b);
-						bool buildingOnTeam = isDoor && (b.getTeamNum() == this.getTeamNum() || b.getTeamNum() == 255) && !b.getShape().isStatic() && this !is b;
+						bool buildingOnTeam = isRepairable(b) && (b.getTeamNum() == this.getTeamNum() || b.getTeamNum() == 255) && !b.getShape().isStatic() && this !is b;		
 						bool ladderBuild = isLadder && !b.getShape().isStatic();
 
 						// cant place on any other blob
@@ -213,7 +219,6 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 			}
 		}
 
-
 		if (isSeed)
 		{
 			// from canGrow.as
@@ -235,7 +240,7 @@ bool isBlocking(CBlob@ blob)
 
 void DestroyScenary(Vec2f tl, Vec2f br)
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CMap@ map = getMap();
 
@@ -348,6 +353,23 @@ bool inNoBuildZone(CBlob@ blob, CMap@ map, Vec2f here, TileType buildTile)
 	return (!isLadder && (buildSolid || isSpikes) && map.getSectorAtPosition(here, "no build") !is null);
 }
 
+bool canReplace(CBlob@ this, CBlob@ blobToBeReplaced)
+{
+	if (this.hasTag("can replace"))
+	{
+		string[]@ names_to_replace;
+		this.get("names to replace", @names_to_replace);
+		for (uint j = 0; j < names_to_replace.length; ++j)
+		{
+			if (blobToBeReplaced.getName() == names_to_replace[j])
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 // This has to exist due to an engine issue where CMap.hasTileSolidBlobs() returns false if the blobtile was placed in the previous tick
 // and an engine issue where CMap.getBlobsFromTile() crashes the server 
 // wonderful game
@@ -355,7 +377,6 @@ bool fakeHasTileSolidBlobs(Vec2f cursorPos)
 {
 	CMap@ map = getMap();
 	CBlob@[] blobsAtPos;
-	
 	map.getBlobsAtPosition(cursorPos + Vec2f(1, 1), blobsAtPos);
 
 	for (int i = 0; i < blobsAtPos.size(); i++)
@@ -372,10 +393,8 @@ bool isRepairable(CBlob@ blob)
 {
 	// the getHealth() check is here because apparently a blob isn't null for a tick (?) after being destroyed
 	if (blob !is null && 
-		blob.getHealth() > 0 && (
-		blob.hasTag("door") || 
-		blob.getName() == "wooden_platform" || 
-		blob.getName() == "bridge"))
+		blob.getHealth() > 0 && 
+		blob.hasTag("repairable"))
 		{
 			return true;
 		}

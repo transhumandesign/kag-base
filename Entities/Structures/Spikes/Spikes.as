@@ -31,6 +31,7 @@ void onInit(CBlob@ this)
 	consts.mapCollisions = false;	 // we have our own map collision
 
 	this.Tag("place norotate");
+	this.Tag("repairable");
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	//dont set radius flags here so we orient to the ground first

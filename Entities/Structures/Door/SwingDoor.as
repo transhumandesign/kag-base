@@ -26,25 +26,31 @@ void onInit(CBlob@ this)
 	{
 		this.set_TileType("background tile", CMap::tile_castle_back);
 
-		if (getNet().isServer())
+		if (isServer())
 		{
 			dictionary harvest;
 			harvest.set('mat_stone', 10);
 			this.set('harvest', harvest);
 		}
+		
+		this.Tag("can replace");
+		string[] names_to_replace = {"wooden_door"};
+		this.set("names to replace", names_to_replace);
 	}
 	else
 	{
 		this.set_TileType("background tile", CMap::tile_wood_back);
 
-		if (getNet().isServer())
+		if (isServer())
 		{
 			dictionary harvest;
 			harvest.set('mat_wood', 10);
 			this.set('harvest', harvest);
 		}
 	}
+	
 	this.Tag("door");
+	this.Tag("repairable");
 	this.Tag("blocks water");
 	this.Tag("explosion always teamkill"); // ignore 'no teamkill' for explosives
 }

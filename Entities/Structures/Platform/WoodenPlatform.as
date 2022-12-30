@@ -17,10 +17,11 @@ void onInit(CBlob@ this)
 	this.set_s16(burn_duration , 300);
 	//transfer fire to underlying tiles
 	this.Tag(spread_fire_tag);
+	
+	this.Tag("repairable");
 
 	if (this.getName() == "wooden_platform")
 	{
-
 		if (getNet().isServer())
 		{
 			dictionary harvest;
