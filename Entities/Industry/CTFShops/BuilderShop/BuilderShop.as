@@ -118,7 +118,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			return;
 		}
 
-		if (name == "filled_bucket")
+		if (name == "filled_bucket" && isServer())
 		{
 			CBlob@ b = server_CreateBlobNoInit("bucket");
 			b.setPosition(callerBlob.getPosition());

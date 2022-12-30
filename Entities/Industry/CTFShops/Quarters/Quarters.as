@@ -118,7 +118,6 @@ void onTick(CBlob@ this)
 {
 	// TODO: Add stage based sleeping, rest(2 * 30) | sleep(heal_amount * (patient.getHealth() - patient.getInitialHealth())) | awaken(1 * 30)
 	// TODO: Add SetScreenFlash(rest_time, 19, 13, 29) to represent the player gradually falling asleep
-	bool isServer = getNet().isServer();
 	AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
 	if (bed !is null)
 	{
@@ -127,7 +126,7 @@ void onTick(CBlob@ this)
 		{
 			if (bed.isKeyJustPressed(key_up) || patient.getHealth() == 0)
 			{
-				if (isServer)
+				if (isServer())
 				{
 					patient.server_DetachFrom(this);
 				}
@@ -140,7 +139,7 @@ void onTick(CBlob@ this)
 					{
 						Sound::Play("Heart.ogg", patient.getPosition(), 0.5);
 					}
-					if (isServer)
+					if (isServer())
 					{
 						f32 oldHealth = patient.getHealth();
 						patient.server_Heal(heal_amount);
@@ -149,7 +148,7 @@ void onTick(CBlob@ this)
 				}
 				else
 				{
-					if (isServer)
+					if (isServer())
 					{
 						patient.server_DetachFrom(this);
 					}
@@ -185,8 +184,6 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	bool isServer = isServer();
-
 	if (cmd == this.getCommandID("shop made item"))
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
@@ -208,7 +205,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (name == "beer")
 		{
 			this.getSprite().PlaySound("/Gulp.ogg");
-			if (isServer)
+			if (isServer())
 			{
 				callerBlob.server_Heal(beer_amount);
 			}
@@ -216,7 +213,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		else if (name == "meal")
 		{
 			this.getSprite().PlaySound("/Eat.ogg");
-			if (isServer)
+			if (isServer())
 			{
 				callerBlob.server_SetHealth(callerBlob.getInitialHealth());
 			}
@@ -235,7 +232,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			if (bed !is null && bedAvailable(this))
 			{
 				CBlob@ carried = caller.getCarriedBlob();
-				if (isServer)
+				if (isServer())
 				{
 					if (carried !is null)
 					{
