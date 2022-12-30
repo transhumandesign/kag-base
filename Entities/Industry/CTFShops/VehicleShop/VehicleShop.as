@@ -74,8 +74,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
 
-		if (!getNet().isServer()) return; /////////////////////// server only past here
-
 		u16 caller, item;
 		string name;
 
