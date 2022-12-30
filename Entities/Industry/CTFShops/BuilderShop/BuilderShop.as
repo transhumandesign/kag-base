@@ -104,30 +104,28 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
 
-		if (!getNet().isServer()) return; /////////////////////// server only past here
-
 		u16 caller, item;
-		if (!params.saferead_netid(caller) || !params.saferead_netid(item))
+		string name;
+
+		if (!params.saferead_netid(caller) || !params.saferead_netid(item) || !params.saferead_string(name))
 		{
 			return;
 		}
-		string name = params.read_string();
-		{
-			CBlob@ callerBlob = getBlobByNetworkID(caller);
-			if (callerBlob is null)
-			{
-				return;
-			}
 
-			if (name == "filled_bucket")
-			{
-				CBlob@ b = server_CreateBlobNoInit("bucket");
-				b.setPosition(callerBlob.getPosition());
-				b.server_setTeamNum(callerBlob.getTeamNum());
-				b.Tag("_start_filled");
-				b.Init();
-				callerBlob.server_Pickup(b);
-			}
+		CBlob@ callerBlob = getBlobByNetworkID(caller);
+		if (callerBlob is null)
+		{
+			return;
+		}
+
+		if (name == "filled_bucket" && isServer())
+		{
+			CBlob@ b = server_CreateBlobNoInit("bucket");
+			b.setPosition(callerBlob.getPosition());
+			b.server_setTeamNum(callerBlob.getTeamNum());
+			b.Tag("_start_filled");
+			b.Init();
+			callerBlob.server_Pickup(b);
 		}
 	}
 }
