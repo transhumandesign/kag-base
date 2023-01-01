@@ -71,23 +71,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 	if (cmd == this.getCommandID("shop buy"))
 	{
-		u16 callerID;
-		if (!params.saferead_u16(callerID))
-			return;
-		bool spawnToInventory = params.read_bool();
-		bool spawnInCrate = params.read_bool();
-		bool producing = params.read_bool();
-		string blobName = params.read_string();
-		u8 s_index = params.read_u8();
-
-		// check spam
-		//if (blobName != "factory" && isSpammed( blobName, this.getPosition(), 12 ))
-		//{
-		//}
-		//else
-		{
-			this.getSprite().PlaySound("/ConstructShort");
-		}
+		this.getSprite().PlaySound("/ConstructShort");
 	}
 }
 
