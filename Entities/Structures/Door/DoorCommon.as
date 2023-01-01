@@ -20,7 +20,7 @@ bool canOpenDoor(CBlob@ this, CBlob@ blob)
 				for (u8 i = 0; i < aps.length; i++)
 				{
 					AttachmentPoint@ ap = aps[i];
-					if (ap.name != "ROWER" && ap.name != "DRIVER") continue;
+					if (ap.name != "ROWER" && ap.name != "DRIVER" && ap.name != "SAIL") continue;
 					if (ap.getOccupied() is null) continue;
 					
 					if (ap.isKeyPressed(key_left)) return true;
