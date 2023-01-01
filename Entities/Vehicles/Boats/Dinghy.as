@@ -24,7 +24,6 @@ void onInit(CBlob@ this)
 	                        0.0f, // movement sound volume modifier   0.0f = no manipulation
 	                        0.0f // movement sound pitch modifier     0.0f = no manipulation
 	                       );
-	this.getShape().SetOffset(Vec2f(0, 9));
 	this.getShape().SetCenterOfMassOffset(Vec2f(-1.5f, 4.5f));
 	this.getShape().getConsts().transports = true;
 	this.Tag("medium weight");
