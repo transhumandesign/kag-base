@@ -380,19 +380,14 @@ bool MakeLoadAmmoButton(CBlob@ this, CBlob@ caller, Vec2f offset, VehicleInfo@ v
 
 			if (ammoBlob !is null)
 			{
+				string text = getTranslatedString("Load {ITEM}").replace("{ITEM}", getTranslatedString(ammoBlob.getInventoryName()));
+
 				CBitStream callerParams;
 				callerParams.write_u16(caller.getNetworkID());
-				caller.CreateGenericButton("$" + ammoBlob.getName() + "$", offset + Vec2f(0, -4), this, this.getCommandID("load_ammo"), getTranslatedString("Load {ITEM}").replace("{ITEM}", ammoBlob.getInventoryName()), callerParams);
+				caller.CreateGenericButton("$" + ammoBlob.getName() + "$", offset + Vec2f(0, -4), this, this.getCommandID("load_ammo"), text, callerParams);
 				return true;
 			}
 		}
-
-		/*else
-		{
-		    CButton@ button = caller.CreateGenericButton( "$DISABLED$", offset, this, 0, "Needs " + ammoBlob.getInventoryName() );
-		    if (button !is null) button.enableRadius = 0.0f;
-		    return true;
-		}*/
 	}
 
 	return false;
