@@ -16,6 +16,7 @@ const string short_raid_tag = "short raid time";
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().tickFrequency = 15;
+	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	
 	if (isServer())
 	{
@@ -51,10 +52,16 @@ int GetCaptureTime(CBlob@ blob)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	if (!this.hasTag("convert on sit"))
-		return;
+	if (!isServer()) return;
 
-	if (attachedPoint.socket &&
+	if (this.isAttached() && this.hasTag(raid_tag))
+	{
+		ResetProperties(this);
+		SyncProperties(this);
+	}
+
+	if (this.hasTag("convert on sit") && 
+			attachedPoint.socket &&
 	        attached.getTeamNum() != this.getTeamNum() &&
 	        attached.hasTag("player"))
 	{
