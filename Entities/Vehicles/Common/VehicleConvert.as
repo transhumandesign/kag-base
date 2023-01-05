@@ -139,31 +139,34 @@ void onTick(CBlob@ this)
 
 void onChangeTeam(CBlob@ this, const int oldTeam)
 {
-	if (this.getTeamNum() >= 0 && this.getTeamNum() < 10)
+	ConvertPoints(this, "VEHICLE,BOW,DOOR");
+
+	if (this.getTeamNum() < 10)
 	{
 		CSprite@ sprite = this.getSprite();
 		if (sprite !is null)
 		{
 			sprite.PlaySound("/VehicleCapture");
 		}
-
-		ConvertPoint(this, "VEHICLE");
-		ConvertPoint(this, "DOOR");
 	}
 }
 
-void ConvertPoint(CBlob@ this, const string pointName)
+void ConvertPoints(CBlob@ this, const string pointNames)
 {
-	CAttachment@ att = this.getAttachments();
-	if (att is null) return;
-	AttachmentPoint@ point = att.getAttachmentPointByName(pointName);
-	if (point !is null)
+	if (!isServer()) return;
+
+	AttachmentPoint@[] aps;
+	if (!this.getAttachmentPoints(@aps)) return;
+
+	for (u8 i = 0; i < aps.length; i++)
 	{
+		AttachmentPoint@ point = aps[i];
 		CBlob@ blob = point.getOccupied();
-		if (blob !is null)
-		{
-			blob.server_setTeamNum(this.getTeamNum());
-		}
+		if (blob is null) continue;
+		
+		if (pointNames.find(point.name) == -1) continue;
+		
+		blob.server_setTeamNum(this.getTeamNum());
 	}
 }
 
