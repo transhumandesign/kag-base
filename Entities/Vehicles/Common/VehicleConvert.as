@@ -15,14 +15,40 @@ const string short_raid_tag = "short raid time";
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("convert");
 	this.getCurrentScript().tickFrequency = 15;
-	this.set_s16(counter_prop, GetCaptureTime(this));
-	this.set_s16(friendly_prop, 0);
-	this.set_s16(enemy_prop, 0);
+	
+	if (isServer())
+	{
+		ResetProperties(this);
+		SyncProperties(this);
+	}
 }
 
-//add
+void ResetProperties(CBlob@ this)
+{
+	this.set_u16(friendly_prop, 0);
+	this.set_u16(enemy_prop, 0);
+	this.set_u16(counter_prop, GetCaptureTime(this));
+	this.Untag(raid_tag);
+}
+
+void SyncProperties(CBlob@ this)
+{
+	this.Sync(friendly_prop, true);
+	this.Sync(enemy_prop, true);
+	this.Sync(counter_prop, true);
+	this.Sync(raid_tag, true);
+}
+
+int GetCaptureTime(CBlob@ blob)
+{
+	if (blob.hasTag(short_raid_tag))
+	{
+		return short_capture_half_seconds;
+	}
+	return capture_half_seconds;
+}
+
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	if (!this.hasTag("convert on sit"))
@@ -38,23 +64,19 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 void onTick(CBlob@ this)
 {
-	if (!getNet().isServer()) return;
+	if (!isServer()) return;
 
-	bool reset_timer = true;
-	bool sync = false;
+	u16 attackersCount = 0;
+	u16 friendlyCount = 0;
+	u8 attackerTeam = 255;
 
 	CBlob@[] blobsInRadius;
-	if (this.getMap().getBlobsInRadius(this.getPosition(), capture_radius, @blobsInRadius))
+	if (getMap().getBlobsInRadius(this.getPosition(), capture_radius, @blobsInRadius))
 	{
 		// count friendlies and enemies
-		int attackersCount = 0;
-		int friendlyCount = 0;
-
-		int attackerTeam = 255;
-		Vec2f pos = this.getPosition();
 		for (uint i = 0; i < blobsInRadius.length; i++)
 		{
-			CBlob @b = blobsInRadius[i];
+			CBlob@ b = blobsInRadius[i];
 			if (b !is this && b.hasTag("player") && !b.hasTag("dead"))
 			{
 				if (b.getTeamNum() != this.getTeamNum())
@@ -73,68 +95,44 @@ void onTick(CBlob@ this)
 				}
 			}
 		}
+	}
 
-		int ticks = GetCaptureTime(this);
-		if (this.hasTag(raid_tag))
+	int ticks = this.get_u16(counter_prop);
+
+	if (attackersCount > 0 || this.hasTag(raid_tag))
+	{
+		//convert
+		if (attackersCount > friendlyCount)
 		{
-			ticks = this.get_s16(counter_prop);
+			ticks--;
+		}
+		//un-convert gradually
+		else if (attackersCount < friendlyCount || attackersCount == 0)
+		{
+			ticks = Maths::Min(ticks + 1, GetCaptureTime(this));
 		}
 
-		if (attackersCount > 0 || ticks < GetCaptureTime(this))
+		this.set_u16(counter_prop, ticks);
+		this.Tag(raid_tag);
+
+		if (ticks <= 0)
 		{
-			//convert
-			if (attackersCount > friendlyCount)
-			{
-				ticks--;
-			}
-			//un-convert gradually
-			else if (attackersCount < friendlyCount || attackersCount == 0)
-			{
-				ticks = Maths::Min(ticks + 1, GetCaptureTime(this));
-			}
-
-			this.set_s16(counter_prop, ticks);
-			this.Tag(raid_tag);
-
-			if (ticks <= 0)
-			{
-				this.server_setTeamNum(attackerTeam);
-				reset_timer = true;
-			}
-			else
-			{
-				this.set_s16(friendly_prop, friendlyCount);
-				this.set_s16(enemy_prop, attackersCount);
-				reset_timer = false;
-			}
-
-			sync = true;
+			this.server_setTeamNum(attackerTeam);
+			ResetProperties(this);
 		}
+		else
+		{
+			this.set_u16(friendly_prop, friendlyCount);
+			this.set_u16(enemy_prop, attackersCount);
+			
+			if (attackersCount == 0 && ticks >= GetCaptureTime(this))
+			{
+				this.Untag(raid_tag);
+			}
+		}
+
+		SyncProperties(this);
 	}
-	else
-	{
-		this.Untag(raid_tag);
-	}
-
-	if (reset_timer)
-	{
-		this.set_s16(friendly_prop, 0);
-		this.set_s16(enemy_prop, 0);
-
-		this.set_s16(counter_prop, GetCaptureTime(this));
-		this.Untag(raid_tag);
-		sync = true;
-	}
-
-	if (sync)
-	{
-		this.Sync(friendly_prop, true);
-		this.Sync(enemy_prop, true);
-
-		this.Sync(counter_prop, true);
-		this.Sync(raid_tag, true);
-	}
-
 }
 
 void onChangeTeam(CBlob@ this, const int oldTeam)
@@ -170,16 +168,6 @@ void ConvertPoints(CBlob@ this, const string pointNames)
 	}
 }
 
-int GetCaptureTime(CBlob@ blob)
-{
-	if (blob.hasTag(short_raid_tag))
-	{
-		return short_capture_half_seconds;
-	}
-	return capture_half_seconds;
-}
-
-
 // alert and capture progress bar
 
 void onRender(CSprite@ this)
@@ -194,19 +182,19 @@ void onRender(CSprite@ this)
 
 	Vec2f pos2d = getDriver().getScreenPosFromWorldPos(blob.getPosition());
 
-	s16 friendlyCount = blob.get_s16(friendly_prop);
-	s16 enemyCount = blob.get_s16(enemy_prop);
+	const u16 friendlyCount = blob.get_u16(friendly_prop);
+	const u16 enemyCount = blob.get_u16(enemy_prop);
+	const f32 captureTime = blob.get_u16(counter_prop);
 
-	f32 hwidth = 45 + Maths::Max(0, Maths::Max(friendlyCount, enemyCount) - 3) * 8;
-	f32 hheight = 30;
+	const f32 hwidth = 45 + Maths::Max(0, Maths::Max(friendlyCount, enemyCount) - 3) * 8;
+	const f32 hheight = 30;
 
 	if (camera.targetDistance > 0.9) 			//draw bigger capture bar if zoomed in
 	{
 		pos2d.y -= 40;
-	 	f32 padding = 4.0f;
-	 	f32 shift = 29.0f;
-	 	s32 captureTime = blob.get_s16(counter_prop);
-	 	f32 progress = (1.1f - float(captureTime) / float(GetCaptureTime(blob)))*(hwidth*2-13); //13 is a magic number used to perfectly align progress
+	 	const f32 padding = 4.0f;
+	 	const f32 shift = 29.0f;
+	 	const f32 progress = (1.1f - captureTime / float(GetCaptureTime(blob)))*(hwidth*2-13); //13 is a magic number used to perfectly align progress
 	 	GUI::DrawPane(Vec2f(pos2d.x - hwidth + padding, pos2d.y + hheight - shift - padding),
 	 		      Vec2f(pos2d.x + hwidth - padding, pos2d.y + hheight - padding),
 			      SColor(175,200,207,197)); 				//draw capture bar background
@@ -226,11 +214,9 @@ void onRender(CSprite@ this)
 	{
 		//draw smaller capture bar if zoom is farthest
 		pos2d.y -= 37;
-		f32 padding = 2.0f;
- 		s32 captureTime = blob.get_s16(counter_prop);
- 		GUI::DrawProgressBar(Vec2f(pos2d.x - hwidth / 2, pos2d.y + hheight - 14 - padding),
- 	                      	     Vec2f(pos2d.x + hwidth / 2, pos2d.y + hheight - padding),
- 	                      	     1.0f - float(captureTime) / float(GetCaptureTime(blob)));
+		const f32 padding = 2.0f;
+ 		GUI::DrawProgressBar(Vec2f(pos2d.x - hwidth * 0.5f, pos2d.y + hheight - 14 - padding),
+ 	                      	     Vec2f(pos2d.x + hwidth * 0.5f, pos2d.y + hheight - padding),
+ 	                      	     1.0f - captureTime / float(GetCaptureTime(blob)));
 	}
-
 }
