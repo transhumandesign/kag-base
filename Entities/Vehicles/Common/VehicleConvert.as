@@ -6,7 +6,6 @@ const string counter_prop = "capture ticks";
 const string raid_tag = "under raid";
 const int capture_half_seconds = 30;
 const int short_capture_half_seconds = 10;
-const int capture_radius = 80;
 
 const string friendly_prop = "capture friendly count";
 const string enemy_prop = "capture enemy count";
@@ -17,11 +16,19 @@ void onInit(CBlob@ this)
 {
 	this.getCurrentScript().tickFrequency = 15;
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
-	
+
 	if (isServer())
 	{
 		ResetProperties(this);
 		SyncProperties(this);
+
+		CMap@ map = getMap();
+		if (map.getSector("capture zone "+this.getNetworkID()) is null)
+		{
+			//default capture zone
+			Vec2f corner(this.getRadius() - 4.0f, this.getRadius() - 4.0f);
+			map.server_AddMovingSector(corner*-1, corner, "capture zone "+this.getNetworkID(), this.getNetworkID());
+		}
 	}
 }
 
@@ -73,28 +80,27 @@ void onTick(CBlob@ this)
 {
 	if (!isServer()) return;
 
+	CMap@ map = getMap();
+	CMap::Sector@ capture_zone = map.getSector("capture zone "+this.getNetworkID());
+	if (capture_zone is null) return;
+
 	u16 attackersCount = 0;
 	u16 friendlyCount = 0;
 	u8 attackerTeam = 255;
 
-	CBlob@[] blobsInRadius;
-	if (getMap().getBlobsInRadius(this.getPosition(), capture_radius, @blobsInRadius))
+	CBlob@[] blobsInSector;
+	if (map.getBlobsInSector(capture_zone, @blobsInSector))
 	{
 		// count friendlies and enemies
-		for (uint i = 0; i < blobsInRadius.length; i++)
+		for (uint i = 0; i < blobsInSector.length; i++)
 		{
-			CBlob@ b = blobsInRadius[i];
+			CBlob@ b = blobsInSector[i];
 			if (b !is this && b.hasTag("player") && !b.hasTag("dead"))
 			{
 				if (b.getTeamNum() != this.getTeamNum())
 				{
-					Vec2f bpos = b.getPosition();
-					if (bpos.x > pos.x - this.getWidth() / 1.0f && bpos.x < pos.x + this.getWidth() / 1.0f &&
-					        bpos.y < pos.y + this.getHeight() / 1.0f && bpos.y > pos.y - this.getHeight() / 1.0f)
-					{
-						attackersCount++;
-						attackerTeam = b.getTeamNum();
-					}
+					attackersCount++;
+					attackerTeam = b.getTeamNum();
 				}
 				else
 				{
