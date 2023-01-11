@@ -734,12 +734,10 @@ bool canUnpackHere(CBlob@ this)
 
 Vec2f crate_getOffsetPos(CBlob@ blob, CMap@ map)
 {
-	Vec2f halfSize = blob.get_Vec2f(required_space) * 0.5f;
-
-	Vec2f alignedWorldPos = map.getAlignedWorldPos(blob.getPosition() + Vec2f(0, -2)) + (Vec2f(0.5f, 0.0f) * map.tilesize);
-	Vec2f offsetPos = alignedWorldPos - Vec2f(halfSize.x , halfSize.y) * map.tilesize;
-	offsetPos += blob.get_Vec2f("space_offset") * map.tilesize;
-	offsetPos = map.getAlignedWorldPos(offsetPos);
+	Vec2f space = blob.get_Vec2f("required space");
+	space.x *= 0.5f;
+	space.y -= 1;
+	Vec2f offsetPos = map.getAlignedWorldPos(blob.getPosition() + Vec2f(4, 6) - space * map.tilesize);
 	return offsetPos;
 }
 
