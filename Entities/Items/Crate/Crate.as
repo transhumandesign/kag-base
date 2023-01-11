@@ -9,6 +9,14 @@
 #include "GenericButtonCommon.as"
 #include "KnockedCommon.as"
 
+// crate tags and their uses
+
+// "parachute"      : this uses a parachute
+// "unpackall"       : this can unpack even if there is no "packed" blob
+// "unpack on land"    : this unpacks when touching ground
+// "destroy on touch"   : this dies when touching ground
+// "unpack_only_water"   : this can only unpack in water
+// "unpack_check_nobuild" : this can only unpack if block-type blobs arent in the way
 
 //proportion of distance allowed (1.0f == overlapping radius, 2.0f = within 1 extra radius)
 const f32 ally_allowed_distance = 2.0f;
