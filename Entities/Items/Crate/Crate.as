@@ -25,65 +25,39 @@ void onInit(CBlob@ this)
 	this.addCommandID("stop unpack");
 	this.addCommandID("boobytrap");
 
-	this.set_u32("boobytrap_cooldown_time", 0);
-
-	this.set_s32("gold building amount", 0);
-
-	u8 frame = 0;
-	if (this.exists("frame"))
+	const string packed = this.exists("packed") ? this.get_string("packed") : "";
+	if (!packed.isEmpty())
 	{
-		frame = this.get_u8("frame");
-		string packed = this.get_string("packed");
-
-		// GIANT HACK!!!
-		if (packed == "catapult" || packed == "bomber" || packed == "ballista" || packed == "outpost" || packed == "mounted_bow" || packed == "longboat" || packed == "warboat")
+		//pre-determined crates
+		switch(packed.getHash()) //switch doesn't work with strings, so we convert to integers
 		{
-			CSpriteLayer@ icon = this.getSprite().addSpriteLayer("icon", "/MiniIcons.png" , 16, 16, this.getTeamNum(), -1);
-			if (icon !is null)
-			{
-				Animation@ anim = icon.addAnimation("display", 0, false);
-				anim.AddFrame(frame);
-
-				icon.SetOffset(Vec2f(-2, 1));
-				icon.SetRelativeZ(1);
-			}
-			this.getSprite().SetAnimation("label");
-
-			// help
-			const string iconToken = "$crate_" + packed + "$";
-			AddIconToken("$crate_" + packed + "$", "/MiniIcons.png", Vec2f(16, 16), frame);
-			SetHelp(this, "help use", "", iconToken + getTranslatedString("Unpack {ITEM}   $KEY_E$").replace("{ITEM}", packed), "", 4);
+			case 777574257:   SetupCrate(this, FactoryFrame::longboat,    Vec2f(9, 4));     this.Tag("unpack_only_water");    break;
+			case 677722299:   SetupCrate(this, FactoryFrame::warboat,     Vec2f(9, 6), 50); this.Tag("unpack_only_water");    break;
+			case 1898442385:  SetupCrate(this, FactoryFrame::catapult,    Vec2f(5, 4));                                       break;
+			case -258437141:  SetupCrate(this, FactoryFrame::ballista,    Vec2f(5, 5));                                       break;
+			case -1071691608: SetupCrate(this, FactoryFrame::mounted_bow, Vec2f(3, 3));                                       break;
+			case 1262542481:  SetupCrate(this, FactoryFrame::outpost,     Vec2f(5, 5), 50); this.Tag("unpack_check_nobuild"); break;
 		}
-		else
+	}
+
+	if (this.exists("frame") && !packed.isEmpty())
+	{
+		const u8 frame = this.get_u8("frame");
+
+		CSpriteLayer@ icon = this.getSprite().addSpriteLayer("icon", "/MiniIcons.png", 16, 16, this.getTeamNum(), -1);
+		if (icon !is null)
 		{
-			u8 newFrame = 0;
+			Animation@ anim = icon.addAnimation("display", 0, false);
+			anim.AddFrame(frame);
+			icon.SetOffset(Vec2f(-2, 1));
+			icon.SetRelativeZ(1);
+		}
+		this.getSprite().SetAnimation("label");
 
-			if (packed == "kitchen")
-				newFrame = FactoryFrame::kitchen;
-			if (packed == "nursery")
-				newFrame = FactoryFrame::nursery;
-			if (packed == "tunnel")
-				newFrame = FactoryFrame::tunnel;
-			if (packed == "healing")
-				newFrame = FactoryFrame::healing;
-			if (packed == "factory")
-				newFrame = FactoryFrame::factory;
-			if (packed == "storage")
-				newFrame = FactoryFrame::storage;
-
-			if (newFrame > 0)
-			{
-				CSpriteLayer@ icon = this.getSprite().addSpriteLayer("icon", "/MiniIcons.png" , 16, 16, this.getTeamNum(), -1);
-				if (icon !is null)
-				{
-					icon.SetFrame(newFrame);
-					icon.SetOffset(Vec2f(-2, 1));
-					icon.SetRelativeZ(1);
-				}
-				this.getSprite().SetAnimation("label");
-			}
-
-		}	 //END OF HACK
+		// help
+		const string iconToken = "$crate_" + packed + "$";
+		AddIconToken(iconToken, "/MiniIcons.png", Vec2f(16, 16), frame);
+		SetHelp(this, "help use", "", iconToken + getTranslatedString("Unpack {ITEM}   $KEY_E$").replace("{ITEM}", packed), "", 4);
 	}
 	else
 	{
@@ -101,6 +75,7 @@ void onInit(CBlob@ this)
 	const uint unpackSecs = 3;
 	this.set_u32("unpack secs", unpackSecs);
 	this.set_u32("unpack time", 0);
+	this.set_u32("boobytrap_cooldown_time", 0);
 
 	if (this.exists("packed name"))
 	{
@@ -109,12 +84,24 @@ void onInit(CBlob@ this)
 			this.setInventoryName("Crate with " + name);
 	}
 
-	if (!this.exists(required_space))
+	if (!this.exists("required space"))
 	{
-		this.set_Vec2f(required_space, Vec2f(5, 4));
+		this.set_Vec2f("required space", Vec2f(5, 4));
+	}
+	
+	if (!this.exists("gold building amount"))
+	{
+		this.set_s32("gold building amount", 0);
 	}
 
 	this.getSprite().SetZ(-10.0f);
+}
+
+void SetupCrate(CBlob@ this, const u8 &in frame, const Vec2f &in requiredSpace, const int &in goldAmount = 0)
+{
+	this.set_u8("frame", frame);
+	this.set_Vec2f("required space", requiredSpace);
+	this.set_s32("gold building amount", goldAmount);
 }
 
 void onTick(CBlob@ this)
@@ -708,27 +695,24 @@ bool canUnpackHere(CBlob@ this)
 		}
 	}
 
-	string packed = this.get_string("packed");
-	//required vertical buffer for siege engines and boats
-	if (packed == "ballista" || packed == "catapult" || packed == "longboat" || packed == "warboat")
+	//no unpacking at map ceiling
+	if (pos.y + 4 < (space.y + 2) * map.tilesize)
 	{
-		if (pos.y < 40)
-		{
-			return false;
-		}
+		return false;
 	}
 
-	bool water = packed == "longboat" || packed == "warboat";
+	const bool water = this.hasTag("unpack_only_water");
+	bool inwater = this.isInWater() || map.isInWater(pos + Vec2f(0.0f, map.tilesize));
 	if (this.isAttached())
 	{
 		CBlob@ parent = this.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();
 		if (parent !is null)
 		{
-			return ((!water && parent.isOnGround()) || (water && map.isInWater(parent.getPosition() + Vec2f(0.0f, 8.0f))));
+			inwater = parent.isInWater() || map.isInWater(parent.getPosition() + Vec2f(0.0f, parent.getRadius()));
+			return ((!water && (parent.isOnGround() || inwater)) || (water && inwater));
 		}
 	}
-	bool inwater = map.isInWater(this.getPosition() + Vec2f(0.0f, 8.0f));
-	bool supported = ((!water && (this.isOnGround() || inwater)) || (water && inwater));
+	const bool supported = ((!water && (this.isOnGround() || inwater)) || (water && inwater));
 	return (supported);
 }
 
