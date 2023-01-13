@@ -184,6 +184,8 @@ shared class CTFSpawns : RespawnSystem
 
 		if (info is null) { warn("CTF LOGIC: Couldn't get player info ( in bool canSpawnPlayer(PlayerInfo@ p_info) ) "); return false; }
 
+		if (getGameTime() < 15) { return false; } //allow time for team balancing
+
 		if (force) { return true; }
 
 		return info.can_spawn_time <= 0;
