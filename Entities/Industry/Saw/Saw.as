@@ -17,6 +17,13 @@ void onInit(CBlob@ this)
 	SetSawOn(this, true);
 }
 
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	//joining clients use correct sprite frames
+	UpdateSprite(this);
+	return true;
+}
+
 //toggling on/off
 
 void SetSawOn(CBlob@ this, const bool on)
@@ -61,29 +68,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 	if (cmd == this.getCommandID(toggle_id))
 	{
-		bool set = !getSawOn(this);
-		SetSawOn(this, set);
-
-		if (getNet().isClient()) //closed/opened gfx
-		{
-			CSprite@ sprite = this.getSprite();
-
-			u8 frame = set ? 0 : 1;
-
-			sprite.animation.frame = frame;
-
-			CSpriteLayer@ back = sprite.getSpriteLayer("back");
-			if (back !is null)
-			{
-				back.animation.frame = frame;
-			}
-
-			CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
-			if (chop !is null)
-			{
-				chop.SetOffset(Vec2f());
-			}
-		}
+		SetSawOn(this, !getSawOn(this));
+		UpdateSprite(this);
 	}
 }
 
@@ -184,15 +170,10 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 
 		if (dot > 0.8f)
 		{
-			if (getNet().isClient() && !g_kidssafe) //add blood gfx
+			if (blob.hasTag("flesh"))
 			{
-				CSprite@ sprite = this.getSprite();
-				CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
-
-				if (chop !is null)
-				{
-					chop.animation.frame = 1;
-				}
+				this.Tag("bloody");
+				UpdateSprite(this);
 			}
 
 			return true;
@@ -304,6 +285,30 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
             sparks(blob.getPosition(), newVelocity.Angle(), 2.0f, 20.0f, 3.0f);
         }
     }
+}
+
+void UpdateSprite(CBlob@ this)
+{
+	if (isClient())
+	{
+		CSprite@ sprite = this.getSprite();
+
+		const u8 frame = getSawOn(this) ? 0 : 1;
+
+		sprite.animation.frame = frame;
+
+		CSpriteLayer@ back = sprite.getSpriteLayer("back");
+		if (back !is null)
+		{
+			back.animation.frame = frame;
+		}
+		
+		CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
+		if (chop !is null && this.hasTag("bloody") && !g_kidssafe)
+		{
+			chop.animation.frame = 1;
+		}
+	}
 }
 
 //only pickable by enemies if they are _under_ this
