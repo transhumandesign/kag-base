@@ -52,7 +52,7 @@ void onPlayerRequestSpawn(CRules@ this, CPlayer@ player)
 	RulesCore@ core;
 	this.get("core", @core);
 
-	if (core !is null)
+	if (core !is null && player.getBlob() is null)
 	{
 		core.AddPlayerSpawn(player);
 	}
