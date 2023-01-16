@@ -10,6 +10,8 @@ const string sawteammate_id = "sawteammate";
 void onInit(CBlob@ this)
 {
 	this.Tag("saw");
+	
+	this.getShape().SetRotationsAllowed(false);
 
 	this.addCommandID(toggle_id);
 	this.addCommandID(sawteammate_id);
@@ -42,7 +44,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (caller.getTeamNum() != this.getTeamNum() || this.getDistanceTo(caller) > 16) return;
 
-	string desc = getTranslatedString("Turn Saw " + (getSawOn(this) ? "Off" : "On"));
+	const string desc = getTranslatedString("Turn Saw " + (getSawOn(this) ? "Off" : "On"));
 	caller.CreateGenericButton(8, Vec2f(0, 0), this, this.getCommandID(toggle_id), desc);
 }
 
@@ -87,11 +89,11 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 	if ((tobeblended.getName() == "waterbomb" || tobeblended.getName() == "bomb") && tobeblended.hasTag("activated"))
 		return;
 
-	//make plankfrom wooden stuff
-	string blobname = tobeblended.getName();
+	//make plank from wooden stuff
+	const string blobname = tobeblended.getName();
 	if (blobname == "log" || blobname == "crate")
 	{
-		if (getNet().isServer())
+		if (isServer())
 		{
 			CBlob@ blob = server_CreateBlobNoInit('mat_wood');
 
@@ -116,7 +118,7 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 	// on saw player or dead body - disable the saw
 	if (
 		(tobeblended.getPlayer() !is null || //player
-		(tobeblended.hasTag("flesh") && tobeblended.hasTag("flesh"))) && //dead body
+		(tobeblended.hasTag("flesh"))) && //dead body
 		tobeblended.getTeamNum() == this.getTeamNum()) //same team as saw
 	{
 		CBitStream params;
@@ -144,29 +146,25 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 		return false;
 	}
 
-	string name = blob.getName();
-
+	const string name = blob.getName();
 	if (
 	    name == "migrant" ||
 	    name == "wooden_door" ||
-	    name == "mat_wood" ||
-	    name == "tree_bushy" ||
-	    name == "tree_pine" ||
 	    (name == "mine" && blob.getTeamNum() == this.getTeamNum()))
 	{
 		return false;
 	}
 
-	//flesh blobs have to be fed into the saw part
-	if (blob.hasTag("flesh") || (name=="mine"))
+	//flesh blobs & mines have to be fed into the saw part
+	if (blob.hasTag("flesh") || (name == "mine"))
 	{
 		Vec2f pos = this.getPosition();
 		Vec2f bpos = blob.getPosition();
 
 		Vec2f off = (bpos - pos);
-		f32 len = off.Normalize();
+		const f32 len = off.Normalize();
 
-		f32 dot = off * (Vec2f(0, -1).RotateBy(this.getAngleDegrees(), Vec2f()));
+		const f32 dot = off * (Vec2f(0, -1).RotateBy(this.getAngleDegrees(), Vec2f()));
 
 		if (dot > 0.8f)
 		{
@@ -219,10 +217,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
         Vec2f pos = this.getPosition();
         Vec2f bpos = blob.getPosition();
         this.server_Hit(blob, bpos, bpos - pos, 0.0f, Hitters::saw);
-        this.Tag("sawed");
     }
 
-    if ((blob.getName() == "waterbomb" || blob.getName() == "bomb") && blob.hasTag("activated"))
+	const string name = blob.getName();
+    if ((name == "waterbomb" || name == "bomb") && blob.hasTag("activated"))
     {
         Vec2f oldVelocity = blob.getVelocity();
         // bombs very close to the top of the saw have a ratio of 0 and most of the rest has a ratio of 1 
@@ -230,9 +228,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
         f32 ydiff = Maths::Max(this.getPosition().y - blob.getOldPosition().y + blob.getHeight(), 0.0f);
         f32 ratio = Maths::Clamp01(3.0f * (1.0f - ydiff/this.getHeight()));
 
-        if(isServer())
+        if (isServer())
         {
-        	if (blob.getName() == "waterbomb")
+        	if (name == "waterbomb")
         	{
         		// hack; waterbombs have a mass of 200 (which gives them a special interaction with kegs)
         		// but it's annoying here so we're giving it same mass as normal bombs
@@ -268,12 +266,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
             blob.Sync("bomb_timer", true);
         }
 
-        if(isClient())
+        if (isClient())
         {
             Vec2f newVelocity = blob.get_Vec2f("bombnado velocity");
 
             // play a hit sound with a pitch depending on some parameters for some audio clues
-            const f32 typePitchBoost = ((blob.getName() == "waterbomb") ? 0.25f : 0.0f);
+            const f32 typePitchBoost = ((name == "waterbomb") ? 0.25f : 0.0f);
             const f32 bottomHitPitchBoost = ratio * 0.06f;
             this.getSprite().PlaySound("ShieldHit", 1.0f, 1.07f + bottomHitPitchBoost + typePitchBoost);
 
@@ -317,14 +315,12 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 	        byBlob.getPosition().y > this.getPosition().y + 4);
 }
 
-
 //sprite update
 void onInit(CSprite@ this)
 {
 	this.SetZ(-10.0f);
 
 	CSpriteLayer@ chop = this.addSpriteLayer("chop", "/Saw.png", 16, 16);
-
 	if (chop !is null)
 	{
 		Animation@ anim = chop.addAnimation("default", 0, false);
@@ -335,7 +331,6 @@ void onInit(CSprite@ this)
 	}
 
 	CSpriteLayer@ back = this.addSpriteLayer("back", "/Saw.png", 24, 16);
-
 	if (back !is null)
 	{
 		Animation@ anim = back.addAnimation("default", 0, false);
@@ -344,8 +339,6 @@ void onInit(CSprite@ this)
 		back.SetAnimation(anim);
 		back.SetRelativeZ(-5.0f);
 	}
-
-	this.getBlob().getShape().SetRotationsAllowed(false);
 }
 
 void onTick(CSprite@ this)
@@ -357,7 +350,6 @@ void onTick(CSprite@ this)
 
 	//spin saw blade
 	CSpriteLayer@ chop = this.getSpriteLayer("chop");
-
 	if (chop !is null && getSawOn(blob))
 	{
 		chop.SetFacingLeft(false);
