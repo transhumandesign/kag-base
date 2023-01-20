@@ -4,18 +4,22 @@
 
 const string counter_prop = "capture ticks";
 const string raid_tag = "under raid";
+
+const string capture_time_prop = "capture time";
 const int capture_half_seconds = 30;
-const int short_capture_half_seconds = 10;
 
 const string friendly_prop = "capture friendly count";
 const string enemy_prop = "capture enemy count";
-
-const string short_raid_tag = "short raid time";
 
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().tickFrequency = 15;
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
+
+	if (!this.exists(capture_time_prop))
+	{
+		this.set_u16(capture_time_prop, capture_half_seconds);
+	}
 
 	if (isServer())
 	{
@@ -36,7 +40,7 @@ void ResetProperties(CBlob@ this)
 {
 	this.set_u16(friendly_prop, 0);
 	this.set_u16(enemy_prop, 0);
-	this.set_u16(counter_prop, GetCaptureTime(this));
+	this.set_u16(counter_prop, this.get_u16(capture_time_prop));
 	this.Untag(raid_tag);
 }
 
@@ -46,15 +50,6 @@ void SyncProperties(CBlob@ this)
 	this.Sync(enemy_prop, true);
 	this.Sync(counter_prop, true);
 	this.Sync(raid_tag, true);
-}
-
-int GetCaptureTime(CBlob@ blob)
-{
-	if (blob.hasTag(short_raid_tag))
-	{
-		return short_capture_half_seconds;
-	}
-	return capture_half_seconds;
 }
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
@@ -110,10 +105,11 @@ void onTick(CBlob@ this)
 		}
 	}
 
-	int ticks = this.get_u16(counter_prop);
-
 	if (attackersCount > 0 || this.hasTag(raid_tag))
 	{
+		int ticks = this.get_u16(counter_prop);
+		const u16 captureTime = this.get_u16(capture_time_prop);
+
 		//convert
 		if (attackersCount > friendlyCount)
 		{
@@ -122,7 +118,7 @@ void onTick(CBlob@ this)
 		//un-convert gradually
 		else if (attackersCount < friendlyCount || attackersCount == 0)
 		{
-			ticks = Maths::Min(ticks + 1, GetCaptureTime(this));
+			ticks = Maths::Min(ticks + 1, captureTime);
 		}
 
 		this.set_u16(counter_prop, ticks);
@@ -138,7 +134,7 @@ void onTick(CBlob@ this)
 			this.set_u16(friendly_prop, friendlyCount);
 			this.set_u16(enemy_prop, attackersCount);
 			
-			if (attackersCount == 0 && ticks >= GetCaptureTime(this))
+			if (attackersCount == 0 && ticks >= captureTime)
 			{
 				this.Untag(raid_tag);
 			}
@@ -197,7 +193,8 @@ void onRender(CSprite@ this)
 
 	const u16 friendlyCount = blob.get_u16(friendly_prop);
 	const u16 enemyCount = blob.get_u16(enemy_prop);
-	const f32 captureTime = blob.get_u16(counter_prop);
+	const f32 ticks = blob.get_u16(counter_prop);
+	const f32 captureTime = blob.get_u16(capture_time_prop);
 
 	const f32 hwidth = 45 + Maths::Max(0, Maths::Max(friendlyCount, enemyCount) - 3) * 8;
 	const f32 hheight = 30;
@@ -207,7 +204,7 @@ void onRender(CSprite@ this)
 		pos2d.y -= 40;
 	 	const f32 padding = 4.0f;
 	 	const f32 shift = 29.0f;
-	 	const f32 progress = (1.1f - captureTime / float(GetCaptureTime(blob)))*(hwidth*2-13); //13 is a magic number used to perfectly align progress
+	 	const f32 progress = (1.1f - ticks / captureTime)*(hwidth*2-13); //13 is a magic number used to perfectly align progress
 	 	GUI::DrawPane(Vec2f(pos2d.x - hwidth + padding, pos2d.y + hheight - shift - padding),
 	 		      Vec2f(pos2d.x + hwidth - padding, pos2d.y + hheight - padding),
 			      SColor(175,200,207,197)); 				//draw capture bar background
@@ -230,6 +227,6 @@ void onRender(CSprite@ this)
 		const f32 padding = 2.0f;
  		GUI::DrawProgressBar(Vec2f(pos2d.x - hwidth * 0.5f, pos2d.y + hheight - 14 - padding),
  	                      	     Vec2f(pos2d.x + hwidth * 0.5f, pos2d.y + hheight - padding),
- 	                      	     1.0f - captureTime / float(GetCaptureTime(blob)));
+ 	                      	     1.0f - ticks / captureTime);
 	}
 }

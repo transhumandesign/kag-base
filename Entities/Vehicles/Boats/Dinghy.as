@@ -27,7 +27,7 @@ void onInit(CBlob@ this)
 	this.getShape().SetCenterOfMassOffset(Vec2f(-1.5f, 4.5f));
 	this.getShape().getConsts().transports = true;
 	this.Tag("medium weight");
-	this.Tag("short raid time"); // captures quicker
+	this.set_u16("capture time", 10); // captures quicker
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
