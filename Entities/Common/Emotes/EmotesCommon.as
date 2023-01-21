@@ -58,6 +58,7 @@ namespace Emotes
 		sorry,
 		rat,
 		dismayed,  //50
+		chicken,
 
 
 		emotes_total,
@@ -116,7 +117,8 @@ namespace Emotes
 		"mine",
 		"sorry",
 		"rat",
-		"dismayed"
+		"dismayed",
+		"chicken"
 	};
 }
 
