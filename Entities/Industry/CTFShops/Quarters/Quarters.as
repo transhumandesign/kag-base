@@ -348,16 +348,14 @@ void updateLayer(CSprite@ sprite, string name, int index, bool visible, bool rem
 
 bool bedAvailable(CBlob@ this)
 {
+	if (this.getHealth() <= 0.0f) return false;
+
 	AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
 	if (bed !is null)
 	{
-		CBlob@ patient = bed.getOccupied();
-		if (patient !is null)
-		{
-			return false;
-		}
+		return bed.getOccupied() is null;
 	}
-	return true;
+	return false;
 }
 
 bool requiresTreatment(CBlob@ this, CBlob@ caller)
