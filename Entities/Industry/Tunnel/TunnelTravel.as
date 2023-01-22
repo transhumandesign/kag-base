@@ -5,6 +5,28 @@
 #include "KnockedCommon.as";
 #include "GenericButtonCommon.as";
 
+// Wrapper class that overrides opCmp to allow sorting by position
+class PositionComparableCBlobWrapper 
+{
+	CBlob@ blob;
+
+	PositionComparableCBlobWrapper(CBlob@ p_blob)
+	{
+		@blob = p_blob;
+	}
+
+	// Compare by x-coordinate, then y-coordinate
+	int opCmp(PositionComparableCBlobWrapper@ other)
+	{
+		int xDiff = blob.getPosition().x - other.blob.getPosition().x;
+		if (xDiff != 0)
+		{
+			return xDiff;
+		}
+		return blob.getPosition().y - other.blob.getPosition().y;
+	}
+}
+
 void onInit(CBlob@ this)
 {
 	this.addCommandID("travel");
@@ -50,61 +72,34 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	onTunnelCommand(this, cmd, params);
 }
 
-// get all team tunnels sorted by team distance
+// get all team tunnels sorted by position
 
 bool getTunnelsForButtons(CBlob@ this, CBlob@[]@ tunnels)
 {
 	CBlob@[] list;
 	getBlobsByTag("travel tunnel", @list);
-	Vec2f thisPos = this.getPosition();
 
-	// add left tunnels
+	PositionComparableCBlobWrapper@[] comparableList;
 	for (uint i = 0; i < list.length; i++)
 	{
 		CBlob@ blob = list[i];
-		if (blob !is this && blob.getTeamNum() == this.getTeamNum() && blob.getPosition().x < thisPos.x)
-		{
-			bool added = false;
-			const f32 distToBlob = (blob.getPosition() - thisPos).getLength();
-			for (uint tunnelInd = 0; tunnelInd < tunnels.length; tunnelInd++)
-			{
-				CBlob@ tunnel = tunnels[tunnelInd];
-				if ((tunnel.getPosition() - thisPos).getLength() < distToBlob)
-				{
-					tunnels.insert(tunnelInd, blob);
-					added = true;
-					break;
-				}
-			}
-			if (!added)
-				tunnels.push_back(blob);
-		}
+		PositionComparableCBlobWrapper wrapper(blob);
+		comparableList.push_back(wrapper);
 	}
 
-	tunnels.push_back(null);	// add you are here
+	comparableList.sortAsc();
 
-	// add right tunnels
-	const uint tunnelIndStart = tunnels.length;
-
-	for (uint i = 0; i < list.length; i++)
+	for (uint i = 0; i < comparableList.length; i++)
 	{
-		CBlob@ blob = list[i];
-		if (blob !is this && blob.getTeamNum() == this.getTeamNum() && blob.getPosition().x >= thisPos.x)
+		CBlob@ tunnel = comparableList[i].blob;
+		if (tunnel is this)
 		{
-			bool added = false;
-			const f32 distToBlob = (blob.getPosition() - thisPos).getLength();
-			for (uint tunnelInd = tunnelIndStart; tunnelInd < tunnels.length; tunnelInd++)
-			{
-				CBlob@ tunnel = tunnels[tunnelInd];
-				if ((tunnel.getPosition() - thisPos).getLength() > distToBlob)
-				{
-					tunnels.insert(tunnelInd, blob);
-					added = true;
-					break;
-				}
-			}
-			if (!added)
-				tunnels.push_back(blob);
+			// Add "You are here"
+			tunnels.push_back(null);
+		}
+		else if (tunnel.getTeamNum() == this.getTeamNum())
+		{
+			tunnels.push_back(tunnel);
 		}
 	}
 	return tunnels.length > 0;
