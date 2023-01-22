@@ -82,9 +82,12 @@ bool getTunnelsForButtons(CBlob@ this, CBlob@[]@ tunnels)
 	PositionComparableCBlobWrapper@[] comparableList;
 	for (uint i = 0; i < list.length; i++)
 	{
-		CBlob@ blob = list[i];
-		PositionComparableCBlobWrapper wrapper(blob);
-		comparableList.push_back(wrapper);
+		CBlob@ tunnel = list[i];
+		if (tunnel.getTeamNum() == this.getTeamNum())
+		{
+			PositionComparableCBlobWrapper wrapper(tunnel);
+			comparableList.push_back(wrapper);
+		}
 	}
 
 	comparableList.sortAsc();
@@ -97,8 +100,8 @@ bool getTunnelsForButtons(CBlob@ this, CBlob@[]@ tunnels)
 			// Add "You are here"
 			tunnels.push_back(null);
 		}
-		else if (tunnel.getTeamNum() == this.getTeamNum())
-		{
+		else 
+		{			
 			tunnels.push_back(tunnel);
 		}
 	}
