@@ -295,7 +295,7 @@ void onTick(CBlob@ this)
 
 	u8 blockIndex = this.get_u8("buildblob");
 	BuildBlock @block = getBlockByIndex(this, blockIndex);
-	if (block !is null) {
+	if (block !is null && block.name == carryBlob.getName()) {
 		bc.hasReqs = hasRequirements(this.getInventory(), block.reqs, bc.missing, not block.buildOnGround);
 	}
 
