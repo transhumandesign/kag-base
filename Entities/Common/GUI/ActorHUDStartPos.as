@@ -31,10 +31,13 @@ void DrawInventoryOnHUD(CBlob@ this, Vec2f tl)
 		const string name = item.getName();
 		if (drawn.find(name) == -1)
 		{
-			const int quantity = this.getBlobCount(name);
+			const int quantity = inv.getCount(name);
 			drawn.push_back(name);
 
-			GUI::DrawIcon(item.inventoryIconName, item.inventoryIconFrame, item.inventoryFrameDimension, tl + Vec2f(0 + (drawn.length - 1) * 40, -6), 1.0f);
+			Vec2f iconpos = tl + Vec2f((drawn.length - 1) * 40, -6);
+			iconpos.x += Maths::Clamp(16 - item.inventoryFrameDimension.x, -item.inventoryFrameDimension.x, item.inventoryFrameDimension.x);
+			iconpos.y += Maths::Max(16 - item.inventoryFrameDimension.y, 0);
+			GUI::DrawIcon(item.inventoryIconName, item.inventoryIconFrame, item.inventoryFrameDimension, iconpos, 1.0f, item.getTeamNum());
 
 			f32 ratio = float(quantity) / float(item.maxQuantity);
 			col = ratio > 0.4f ? SColor(255, 255, 255, 255) :
