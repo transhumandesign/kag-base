@@ -14,6 +14,7 @@ void onInit(CBlob@ this)
 		this.set_f32(rate_prop, 0.25f); //0.5 hearts per second
 
 	this.getCurrentScript().tickFrequency = 90;
+	this.getCurrentScript().removeIfTag = "dead";
 }
 
 void onTick(CBlob@ this)

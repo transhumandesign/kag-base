@@ -18,6 +18,7 @@ void onInit(CBlob@ this)
 	this.SetLightColor(SColor(255, 255, 240, 171));
 
 	this.Tag("fire source");
+	this.Tag("collide with arrows");
 	//this.server_SetTimeToDie(60*3);
 	this.getSprite().SetZ(-20.0f);
 

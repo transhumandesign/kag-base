@@ -322,16 +322,18 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
+	// blobs that have this tag: 
+	// fireplace - collide so normal arrows can be ignited
+	// bison - so dead bison can be hit
+	if (blob.hasTag("collide with arrows"))
+	{
+		return true;
+	}
+
 	//don't collide with other projectiles
 	if (blob.hasTag("projectile"))
 	{
 		return false;
-	}
-
-	//collide so normal arrows can be ignited
-	if (blob.getName() == "fireplace")
-	{
-		return true;
 	}
 
 	//anything to always hit

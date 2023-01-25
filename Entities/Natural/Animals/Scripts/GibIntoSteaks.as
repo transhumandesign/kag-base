@@ -9,7 +9,7 @@ void onInit(CBlob@ this)
 
 void onDie(CBlob@ this)
 {
-	if (getNet().isServer() && this.getHealth() < 0.0f)
+	if (isServer())
 	{
 		u8 steaks = this.get_u8("number of steaks");
 

@@ -19,6 +19,11 @@ void onRender(CSprite@ this)
 	}
 	CBlob@ blob = this.getBlob();
 
+	if (blob.hasTag("dead"))
+	{
+		return;
+	}
+
 	f32 arrowVisibleRadius = blob.getRadius() + 15.0f;
 
 	//too far away
