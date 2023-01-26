@@ -12,7 +12,10 @@ void onInit(CBlob@ this)
 	this.addCommandID("prevent emotes");
 
 	CPlayer@ me = getLocalPlayer();
-	emoteBinds = readEmoteBindings(me);
+	if (me !is null)
+	{
+		emoteBinds = readEmoteBindings(me);
+	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
