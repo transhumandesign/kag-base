@@ -2,27 +2,16 @@
 #include "EmotesCommon.as";
 
 string[] emoteBinds;
-const string emote_config_file = "EmoteBindings.cfg";
 
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
 
-	this.addCommandID("prevent emotes");
-
 	CPlayer@ me = getLocalPlayer();
 	if (me !is null)
 	{
 		emoteBinds = readEmoteBindings(me);
-	}
-}
-
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
-{
-	if (cmd == this.getCommandID("prevent emotes"))
-	{
-		set_emote(this, "");
 	}
 }
 
@@ -33,6 +22,11 @@ void onTick(CBlob@ this)
 	{
 		rules.Untag("reload emotes");
 		onInit(this);
+	}
+	
+	if (getHUD().hasMenus())
+	{
+		return;
 	}
 
 	CControls@ controls = getControls();
