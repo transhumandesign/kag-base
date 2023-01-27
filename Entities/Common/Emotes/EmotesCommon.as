@@ -152,17 +152,22 @@ void set_emote(CBlob@ this, string token)
 		if (inventoryblob !is null && inventoryblob.getName() == "crate"
 			&& inventoryblob.exists("emote"))
 		{
-			CBitStream params;
-			params.write_string(token);
-			params.write_u32(getGameTime() + 90);
-			inventoryblob.SendCommand(inventoryblob.getCommandID("emote"), params);
-			this.SendCommand(this.getCommandID("emote"), params);
+			set_emoteByCommand(this, token);
+			set_emoteByCommand(inventoryblob, token);
 		}
 	}
 	else
 	{
 		set_emote(this, token, 90);
 	}
+}
+
+void set_emoteByCommand(CBlob@ this, string token, int time = 90)
+{
+	CBitStream params;
+	params.write_string(token);
+	params.write_u32(getGameTime() + time);
+	this.SendCommand(this.getCommandID("emote"), params);
 }
 
 bool is_emote(CBlob@ this, bool checkBlank = false)
