@@ -28,9 +28,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void onTick(CBlob@ this)
 {
-	if (this.hasTag("reload emotes"))
+	CRules@ rules = getRules();
+	if (rules.hasTag("reload emotes"))
 	{
-		this.Untag("reload emotes");
+		rules.Untag("reload emotes");
 		onInit(this);
 	}
 
