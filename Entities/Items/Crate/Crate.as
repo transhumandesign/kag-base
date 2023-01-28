@@ -722,10 +722,10 @@ bool canUnpackHere(CBlob@ this)
 		if (parent !is null)
 		{
 			inwater = parent.isInWater() || map.isInWater(parent.getPosition() + Vec2f(0.0f, parent.getRadius()));
-			return ((!water && (parent.isOnGround() || inwater)) || (water && inwater));
+			return ((!water && parent.isOnGround()) || (water && inwater));
 		}
 	}
-	const bool supported = ((!water && (this.isOnGround() || inwater)) || (water && inwater));
+	const bool supported = ((!water && this.isOnGround()) || (water && inwater));
 	return (supported);
 }
 
