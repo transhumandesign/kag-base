@@ -24,6 +24,16 @@ const f32 ally_allowed_distance = 2.0f;
 //time it takes to unpack the crate
 const u32 unpackSecs = 3;
 
+Crate@[] base_presets = 
+{
+	Crate("longboat",    FactoryFrame::longboat,    Vec2f(9, 4),  0, "unpack_only_water"),
+	Crate("warboat",     FactoryFrame::warboat,     Vec2f(9, 6), 50, "unpack_only_water"),
+	Crate("catapult",    FactoryFrame::catapult,    Vec2f(5, 3)),
+	Crate("ballista",    FactoryFrame::ballista,    Vec2f(5, 5)),
+	Crate("mounted_bow", FactoryFrame::mounted_bow, Vec2f(3, 3)),
+	Crate("outpost",     FactoryFrame::outpost,     Vec2f(5, 5), 50, "unpack_check_nobuild")
+};
+
 void onInit(CBlob@ this)
 {
 	this.checkInventoryAccessibleCarefully = true;
@@ -37,15 +47,12 @@ void onInit(CBlob@ this)
 	const string packed = this.exists("packed") ? this.get_string("packed") : "";
 	if (!packed.isEmpty())
 	{
-		//pre-determined crates
-		switch(packed.getHash()) //switch doesn't work with strings, so we convert to integers
+		// use a preset if we can
+		Crate@[] presets;
+		getRules().get("crate presets", presets); //take from rules if applicable
+		if (!UseCratePreset(this, packed, presets))
 		{
-			case 777574257:   SetupCrate(this, FactoryFrame::longboat,    Vec2f(9, 4));     this.Tag("unpack_only_water");    break;
-			case 677722299:   SetupCrate(this, FactoryFrame::warboat,     Vec2f(9, 6), 50); this.Tag("unpack_only_water");    break;
-			case 1898442385:  SetupCrate(this, FactoryFrame::catapult,    Vec2f(5, 4));                                       break;
-			case -258437141:  SetupCrate(this, FactoryFrame::ballista,    Vec2f(5, 5));                                       break;
-			case -1071691608: SetupCrate(this, FactoryFrame::mounted_bow, Vec2f(3, 3));                                       break;
-			case 1262542481:  SetupCrate(this, FactoryFrame::outpost,     Vec2f(5, 5), 50); this.Tag("unpack_check_nobuild"); break;
+			UseCratePreset(this, packed, base_presets);
 		}
 	}
 
@@ -104,11 +111,25 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-10.0f);
 }
 
-void SetupCrate(CBlob@ this, const u8 &in frame, const Vec2f &in requiredSpace, const int &in goldAmount = 0)
+bool UseCratePreset(CBlob@ this, const string &in packed, Crate@[] presets)
 {
-	this.set_u8("frame", frame);
-	this.set_Vec2f("required space", requiredSpace);
-	this.set_s32("gold building amount", goldAmount);
+	for (int i = 0; i < presets.length; i++)
+	{
+		Crate@ preset = presets[i];
+		if (preset.name != packed) continue;
+
+		this.set_u8("frame", preset.frame);
+		this.set_Vec2f("required space", preset.space);
+		this.set_s32("gold building amount", preset.gold);
+
+		for (int i = 0; i < preset.tags.length; i++)
+		{
+			this.Tag(preset.tags[i]);
+		}
+
+		return true;
+	}
+	return false;
 }
 
 void onTick(CBlob@ this)
