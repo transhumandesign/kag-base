@@ -76,7 +76,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
 
-		u16 caller, item;
+		/*u16 caller, item;
 		string name;
 
 		if (!params.saferead_netid(caller) || !params.saferead_netid(item) || !params.saferead_string(name))
@@ -95,6 +95,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			crate.set_Vec2f("required space", Vec2f(5, 5));
 			crate.set_s32("gold building amount", CTFCosts::outpost_gold);
 			crate.Tag("unpack_check_nobuild");
-		}
+		}*/
 	}
 }
