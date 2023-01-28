@@ -73,6 +73,8 @@ void onInit(CBlob@ this)
 	this.addCommandID("rest");
 	this.getCurrentScript().runFlags |= Script::tick_hasattached;
 
+	this.Tag("has window");
+
 	//INIT COSTS
 	InitCosts();
 

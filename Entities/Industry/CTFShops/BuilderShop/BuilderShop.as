@@ -19,6 +19,8 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
+	this.Tag("has window");
+
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
 	this.set_Vec2f("shop menu size", Vec2f(4, 4));
