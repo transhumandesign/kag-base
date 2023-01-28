@@ -34,8 +34,8 @@ void NewEmotesMenu()
 
 void LoadIcons(CPlayer@ player)
 {
-	dictionary emotes;
-	getRules().get("emotes", emotes);
+	dictionary@ emotes;
+	getRules().get("emotes", @emotes);
 	string[] tokens = emotes.getKeys();
 
 	for (u16 i = 0; i < tokens.size(); i++)
@@ -78,8 +78,8 @@ void ShowEmotesMenu(CPlayer@ player)
 		menu.AddKeyCommand(KEY_ESCAPE, rules.getCommandID(EMOTE_CMD), params);
 		menu.SetDefaultCommand(rules.getCommandID(EMOTE_CMD), params);
 
-		dictionary packs;
-		rules.get("emote packs", packs);
+		dictionary@ packs;
+		rules.get("emote packs", @packs);
 		string[] tokens = packs.getKeys();
 
 		//display emote grid

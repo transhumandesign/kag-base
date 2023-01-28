@@ -10,8 +10,8 @@ void onInit(CBlob@ blob)
 	blob.set_string("emote", "");
 	blob.set_u32("emotetime", 0);
 
-	dictionary packs;
-	if (!getRules().get("emote packs", packs)) return;
+	dictionary@ packs;
+	if (!getRules().get("emote packs", @packs)) return;
 	string[] tokens = packs.getKeys();
 
 	for (uint i = 0; i < tokens.size(); i++)
@@ -48,8 +48,8 @@ void onTick(CBlob@ blob)
 
 	if (!blob.getShape().isStatic())
 	{
-		dictionary packs;
-		if (!getRules().get("emote packs", packs)) return;
+		dictionary@ packs;
+		if (!getRules().get("emote packs", @packs)) return;
 		string[] tokens = packs.getKeys();
 
 		Emote@ emote = getEmote(blob.get_string("emote"));

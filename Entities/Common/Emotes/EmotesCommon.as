@@ -66,16 +66,16 @@ void LoadEmotes(CRules@ this, ConfigFile@ cfg)
 		packsDict.set(pack.token, pack);
 	}
 
-	this.set("emote packs", packsDict);
-	this.set("emotes", emotesDict);
+	this.set("emote packs", @packsDict);
+	this.set("emotes", @emotesDict);
 }
 
 Emote@[] getWheelEmotes(CRules@ this, ConfigFile@ cfg)
 {
 	Emote@[] wheelEmotes;
 
-	dictionary emotes;
-	this.get("emotes", emotes);
+	dictionary@ emotes;
+	this.get("emotes", @emotes);
 
 	string[] data;
 	cfg.readIntoArray_string(data, "WHEEL");
@@ -115,8 +115,8 @@ Emote@ getEmote(string token)
 {
 	if (token != "")
 	{
-		dictionary emotes;
-		if (getRules().get("emotes", emotes))
+		dictionary@ emotes;
+		if (getRules().get("emotes", @emotes))
 		{
 			Emote@ emote;
 			if (emotes.get(token, @emote))
@@ -210,7 +210,7 @@ ConfigFile@ openEmoteBindingsConfig()
 }
 
 //helper - allow integer entries as well as name entries
-string read_emote(ConfigFile@ cfg, dictionary emotes, CPlayer@ player, string name, string default_value)
+string read_emote(ConfigFile@ cfg, const dictionary &in emotes, CPlayer@ player, const string &in name, const string &in default_value)
 {
 	Emote@ emote;
 
@@ -267,8 +267,8 @@ string[] readEmoteBindings(CPlayer@ player)
 {
 	ConfigFile@ cfg = openEmoteBindingsConfig();
 
-	dictionary emotes;
-	getRules().get("emotes", emotes);
+	dictionary@ emotes;
+	getRules().get("emotes", @emotes);
 
 	string[] emoteBinds = {
 		read_emote(cfg, emotes, player, "emote_1", "attn"),
@@ -325,8 +325,8 @@ Emote@[] getUsableEmotes(CPlayer@ player)
 {
 	Emote@[] usableEmotes;
 
-	dictionary emotes;
-	getRules().get("emotes", emotes);
+	dictionary@ emotes;
+	getRules().get("emotes", @emotes);
 	string[] tokens = emotes.getKeys();
 
 	for (uint i = 0; i < tokens.size(); i++)
