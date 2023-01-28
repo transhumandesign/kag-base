@@ -146,7 +146,7 @@ void onTick(CBlob@ this)
 
 void onChangeTeam(CBlob@ this, const int oldTeam)
 {
-	ConvertPoints(this, "VEHICLE,BOW,DOOR");
+	ConvertAttachments(this);
 
 	if (this.getTeamNum() < 10)
 	{
@@ -158,7 +158,9 @@ void onChangeTeam(CBlob@ this, const int oldTeam)
 	}
 }
 
-void ConvertPoints(CBlob@ this, const string pointNames)
+const string[] convertPoints = { "VEHICLE", "BOW", "DOOR" };
+
+void ConvertAttachments(CBlob@ this)
 {
 	if (!isServer()) return;
 
@@ -171,7 +173,7 @@ void ConvertPoints(CBlob@ this, const string pointNames)
 		CBlob@ blob = point.getOccupied();
 		if (blob is null) continue;
 		
-		if (pointNames.find(point.name) == -1) continue;
+		if (convertPoints.find(point.name) == -1) continue;
 		
 		blob.server_setTeamNum(this.getTeamNum());
 	}
