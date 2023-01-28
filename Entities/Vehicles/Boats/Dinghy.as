@@ -28,6 +28,8 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().transports = true;
 	this.Tag("medium weight");
 	this.set_u16("capture time", 10); // captures quicker
+	
+	getMap().server_AddMovingSector(Vec2f(-12.0f, -12.0f), Vec2f(12.0f, 0.0f), "capture zone "+this.getNetworkID(), this.getNetworkID());
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
