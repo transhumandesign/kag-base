@@ -31,7 +31,7 @@ void onInit(CBlob@ this)
 	//block knight sword
 	this.Tag("blocks sword");
 
-	this.getShape().SetOffset(Vec2f(-6, 16));
+	this.getShape().SetOffset(Vec2f(0, 16));
 	this.getShape().getConsts().bullet = false;
 	this.getShape().getConsts().transports = true;
 
@@ -109,6 +109,7 @@ void onInit(CBlob@ this)
 		int[] frames = { 0, 4, 5 };
 		front.animation.AddFrames(frames);
 		front.SetRelativeZ(55.0f);
+		front.SetOffset(Vec2f(-6, 0));
 	}
 
 	CSpriteLayer@ flag = sprite.addSpriteLayer("flag", sprite.getConsts().filename, 40, 56);
@@ -118,18 +119,18 @@ void onInit(CBlob@ this)
 		int[] frames = { 5, 4, 3 };
 		flag.animation.AddFrames(frames);
 		flag.SetRelativeZ(-5.0f);
-		flag.SetOffset(Vec2f(28, -24));
+		flag.SetOffset(Vec2f(22, -24));
 	}
 
 	this.set_f32("oar offset", 54.0f);
 
 	CMap@ map = getMap();
 	// add pole ladder
-	map.server_AddMovingSector(Vec2f(-28.0f, -32.0f), Vec2f(-12.0f, 0.0f), "ladder", this.getNetworkID());
+	map.server_AddMovingSector(Vec2f(-26.0f, -32.0f), Vec2f(-10.0f, 0.0f), "ladder", this.getNetworkID());
 	// add back ladder
-	map.server_AddMovingSector(Vec2f(-50.0f, 0.0f), Vec2f(-35.0f, 20.0f), "ladder", this.getNetworkID());
+	map.server_AddMovingSector(Vec2f(-48.0f, 0.0f), Vec2f(-33.0f, 20.0f), "ladder", this.getNetworkID());
 	// add custom capture zone
-	map.server_AddMovingSector(Vec2f(-40.0f, -30.0f), Vec2f(10.0f, 5.0f), "capture zone "+this.getNetworkID(), this.getNetworkID());
+	map.server_AddMovingSector(Vec2f(-34.0f, -30.0f), Vec2f(16.0f, 5.0f), "capture zone "+this.getNetworkID(), this.getNetworkID());
 
 	//set custom minimap icon
 	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
@@ -139,10 +140,9 @@ void onInit(CBlob@ this)
 	// mounted bow
 	if (isServer())// && hasTech( this, "mounted bow"))
 	{
-		CBlob@ bow = server_CreateBlob("mounted_bow");
+		CBlob@ bow = server_CreateBlob("mounted_bow", this.getTeamNum(), this.getPosition());
 		if (bow !is null)
 		{
-			bow.server_setTeamNum(this.getTeamNum());
 			this.server_AttachTo(bow, "BOW");
 			this.set_u16("bowid", bow.getNetworkID());
 		}
