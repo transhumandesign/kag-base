@@ -11,7 +11,7 @@ void onInit(CRules@ this)
 
 void onRestart(CRules@ this)
 {
-	getMap().SetDayTime(0.9);
+	getMap().SetDayTime(0.85);
     if(!this.exists("greg time"))
     {
         this.set_s32("greg time", greg_interval); //30 minutes

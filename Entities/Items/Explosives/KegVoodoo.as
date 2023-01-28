@@ -93,6 +93,38 @@ void Boom(CBlob@ this)
 {
 	this.server_SetHealth(-1.0f);
 	this.server_Die();
+
+	if (getNet().isClient()) {
+		// screenshake when close to a Keg
+
+		CBlob @blob = getLocalPlayerBlob();
+		CPlayer @player = getLocalPlayer();
+		Vec2f pos;
+
+	    CCamera @camera = getCamera();
+		if (camera !is null) {
+			
+			// If the player is a spectating, base their location off of their camera.	
+			if (player !is null && player.getTeamNum() == getRules().getSpectatorTeamNum())
+			{
+				pos = camera.getPosition();
+			}
+			else if (blob !is null)
+			{
+				pos = blob.getPosition();
+			} 
+			else 
+			{
+				return;
+			}
+
+			pos -= this.getPosition();
+			f32 dist = pos.Length();
+			if (dist < 300) {
+				ShakeScreen(200, 60, this.getPosition());
+			}
+		}
+	}
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)

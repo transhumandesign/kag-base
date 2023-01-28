@@ -19,8 +19,8 @@ void onInit(CMovement@ this)
 	moveVars.jumpCount = 0;
 	moveVars.canVault = true;
 	//swimming
-	moveVars.swimspeed = 1.2;
-	moveVars.swimforce = 30;
+	moveVars.swimspeed = 1.5;
+	moveVars.swimforce = 40;
 	moveVars.swimEdgeScale = 2.0f;
 	//the overall scale of movement
 	moveVars.overallScale = 1.0f;

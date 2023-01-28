@@ -59,6 +59,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 }
 
 // set the Z back
+// The baseZ is assumed to be 0
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
 	this.getSprite().SetZ(0.0f);

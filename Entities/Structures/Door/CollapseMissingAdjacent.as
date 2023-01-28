@@ -6,6 +6,11 @@ const u32 collapse_time = 10 * getTicksASecond();
 
 void onInit(CBlob@ this)
 {
+	if (shouldCollapse(this))
+	{
+		this.Tag("will_soon_collapse");
+	}
+
 	this.getCurrentScript().tickFrequency = 30;
 }
 
@@ -18,8 +23,9 @@ void onTick(CBlob@ this)
 	if (shouldCollapse(this))
 	{
 		this.getCurrentScript().tickFrequency = 4;
+		this.Tag("will_soon_collapse");
 
-		if (getNet().isClient())
+		if (isClient())
 		{
 			CSprite@ sprite = this.getSprite();
 
@@ -30,7 +36,7 @@ void onTick(CBlob@ this)
 			}
 		}
 
-		if (getNet().isServer())
+		if (isServer())
 		{
 			if (!this.exists(time_prop) || this.get_u32(time_prop) == 0)
 				this.set_u32(time_prop, getGameTime());
@@ -45,10 +51,10 @@ void onTick(CBlob@ this)
 	}
 	else
 	{
-
+		this.Untag("will_soon_collapse");
 		this.getCurrentScript().runFlags |= Script::remove_after_this;
 
-		if (getNet().isClient())
+		if (isClient())
 		{
 			CSprite@ sprite = this.getSprite();
 			if (sprite !is null)
@@ -71,5 +77,5 @@ bool shouldCollapse(CBlob@ this)
 	               map.isTileSolid(pos + Vec2f(0, -ts)) ||
 	               map.isTileSolid(pos + Vec2f(0, ts));
 
-	return !surface;
+	return getGameTime() > 30 && !surface;
 }

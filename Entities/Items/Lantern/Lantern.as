@@ -16,7 +16,6 @@ void onInit(CBlob@ this)
 	this.Tag("ignore fall");
 
 	this.getCurrentScript().runFlags |= Script::tick_inwater;
-	this.getCurrentScript().tickFrequency = 24;
 }
 
 void onTick(CBlob@ this)
@@ -46,6 +45,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("activate"))
 	{
+		if (this.isInWater()) return;
+		
 		Light(this, !this.isLight());
 	}
 
