@@ -5,14 +5,13 @@
 #include "ArcherCommon.as";
 #include "BombCommon.as";
 #include "SplashWater.as";
-#include "TeamStructureNear.as";
-#include "KnockedCommon.as"
+#include "KnockedCommon.as";
+#include "DoorCommon.as";
 #include "FireplaceCommon.as";
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
 const f32 arrowFastSpeed = 13.0f;
-//maximum is 15 as of 22/11/12 (see ArcherCommon.as)
 
 const f32 ARROW_PUSH_FORCE = 6.0f;
 const f32 SPECIAL_HIT_SCALE = 1.0f; //special hit on food items to shoot to team-mates
@@ -28,7 +27,7 @@ void onInit(CBlob@ this)
 {
 	CShape@ shape = this.getShape();
 	ShapeConsts@ consts = shape.getConsts();
-	consts.mapCollisions = false;	 // weh ave our own map collision
+	consts.mapCollisions = false;	 // we have our own map collision
 	consts.bullet = false;
 	consts.net_threshold_multiplier = 4.0f;
 	this.Tag("projectile");
@@ -156,7 +155,6 @@ void onTick(CBlob@ this)
 				shape.SetGravityScale(Maths::Min(1.0f, 1.0f / (shape.vellen * 0.1f)));
 			}
 
-
 			processSticking = false;
 		}
 
@@ -169,22 +167,46 @@ void onTick(CBlob@ this)
 
 	// sticking
 	if (processSticking)
-	{
-		//no collision
-		shape.getConsts().collidable = false;
-
-		if (!this.hasTag("_collisions"))
+	{	
+		if (isServer())
 		{
-			this.Tag("_collisions");
-			// make everyone recheck their collisions with me
-			const uint count = this.getTouchingCount();
-			for (uint step = 0; step < count; ++step)
+			if (this.exists("hitBlob")) 
 			{
-				CBlob@ _blob = this.getTouchingByIndex(step);
-				_blob.getShape().checkCollisionsAgain = true;
+				// structure blob: door, platform, team bridge, trap block etc.
+
+				CBlob@ gottenBlob = getBlobByNetworkID(this.get_u32("hitBlob"));
+
+				if (gottenBlob is null) // structure blob is gone
+				{
+					this.server_Die();
+				}
+				else 
+				{
+					string n = gottenBlob.getName();
+					bool isOpened = (isOpen(gottenBlob) && n.find("door") != -1 || n == "bridge" || n == "trap_block");
+				
+					if (gottenBlob.hasTag("fallen") || isOpened) // structure blob is collapsing or is an opening door/bridge/trap
+					{
+						this.server_Die();
+					}
+				}
+			}
+			else if (this.exists("hitWorldPoint"))
+			{
+				// maptile: stone, wood, dirt, obstructor etc.
+				
+				CMap@ map = getMap();
+				
+				Vec2f hitpos = this.get_Vec2f("hitWorldPoint");
+				Tile hitTile = map.getTile(hitpos);
+				
+				if (!map.isTileSolid(hitTile))
+					this.server_Die();	
 			}
 		}
-
+		
+		shape.getConsts().collidable = false;	//no collision
+		
 		angle = Maths::get360DegreesFrom256(this.get_u8("angle"));
 		this.setVelocity(Vec2f(0, 0));
 		this.setPosition(this.get_Vec2f("lock"));
@@ -384,12 +406,12 @@ bool specialArrowHit(CBlob@ blob)
 void Pierce(CBlob @this, CBlob@ blob = null)
 {
 	Vec2f end;
-	CMap@ map = this.getMap();
+	CMap@ map = getMap();
 	Vec2f position = blob is null ? this.getPosition() : blob.getPosition();
 
 	if (map.rayCastSolidNoBlobs(this.getShape().getVars().oldpos, position, end))
 	{
-		ArrowHitMap(this, end, this.getOldVelocity(), 0.5f, Hitters::arrow);
+		ArrowHitMap(this, end, this.getOldVelocity(), 0.5f, Hitters::arrow, blob);
 	}
 }
 
@@ -550,7 +572,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 		//stick into "map" blobs
 		if (hitBlob.getShape().isStatic())
 		{
-			ArrowHitMap(this, worldPoint, velocity, damage, Hitters::arrow);
+			ArrowHitMap(this, worldPoint, velocity, damage, Hitters::arrow, hitBlob);
 		}
 		//die otherwise
 		else
@@ -568,7 +590,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 	return damage;
 }
 
-void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 customData)
+void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 customData, CBlob@ hitBlob = null)
 {
 	if (velocity.Length() > arrowFastSpeed)
 	{
@@ -590,6 +612,19 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 	norm *= (1.5f * radius);
 	Vec2f lock = worldPoint - norm;
 	this.set_Vec2f("lock", lock);
+
+	// saving information on what was hit to determine when the arrow should collapse
+	if (isServer())
+	{
+		if (hitBlob is null) // map (stone, wood, dirt)
+		{
+			this.set_Vec2f("hitWorldPoint", worldPoint);
+		}
+		else // hitBlob (door, platform, etc.)
+		{
+			this.set_u32("hitBlob", hitBlob.getNetworkID());
+		}
+	}
 
 	this.Sync("lock", true);
 	this.Sync("angle", true);
@@ -622,7 +657,7 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 	//kill any grain plants we shot the base of
 	//ignite fireplace when fire arrow hits the base
 	CBlob@[] blobsInRadius;
-	if (this.getMap().getBlobsInRadius(worldPoint, this.getRadius() * 1.3f, @blobsInRadius))
+	if (getMap().getBlobsInRadius(worldPoint, this.getRadius() * 1.3f, @blobsInRadius))
 	{
 		for (uint i = 0; i < blobsInRadius.length; i++)
 		{
@@ -859,7 +894,6 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		}
 	}
 }
-
 
 f32 getArrowDamage(CBlob@ this, f32 vellen = -1.0f)
 {

@@ -1,6 +1,6 @@
-#include "Hitters.as"
-
-#include "FireCommon.as"
+#include "Hitters.as";
+#include "DoorCommon.as";
+#include "FireCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -64,11 +64,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.getCurrentScript().tickFrequency = 3;
 	this.getSprite().PlaySound("/build_wood.ogg");
-}
-
-bool isOpen(CBlob@ this)
-{
-	return !this.getShape().getConsts().collidable;
 }
 
 void setOpen(CBlob@ this, bool open)
