@@ -43,15 +43,18 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 
 void MakeDamageFrame(CBlob@ this, bool repaired = false)
 {
+	CSprite@ sprite = this.getSprite();
 	f32 hp = this.getHealth();
 	f32 full_hp = this.getInitialHealth();
-	int frame_count = this.getSprite().animation.getFramesCount();
+	int frame_count = sprite.animation.getFramesCount();
 	int frame = frame_count - frame_count * (hp / full_hp);
-	this.getSprite().animation.frame = frame;
+	string animation_string = isOpen(this) ? "open" : "destruction";
+	sprite.SetAnimation(animation_string);
+	sprite.animation.frame = frame;
 
 	if (repaired)
 	{
-		this.getSprite().PlaySound("/build_wood.ogg");
+		sprite.PlaySound("/build_wood.ogg");
 	}
 }
 
