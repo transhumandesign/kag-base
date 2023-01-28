@@ -7,6 +7,7 @@
 #include "SplashWater.as";
 #include "TeamStructureNear.as";
 #include "KnockedCommon.as"
+#include "FireplaceCommon.as";
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
@@ -619,6 +620,7 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 	}
 
 	//kill any grain plants we shot the base of
+	//ignite fireplace when fire arrow hits the base
 	CBlob@[] blobsInRadius;
 	if (this.getMap().getBlobsInRadius(worldPoint, this.getRadius() * 1.3f, @blobsInRadius))
 	{
@@ -628,6 +630,11 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 			if (b.getName() == "grain_plant")
 			{
 				this.server_Hit(b, worldPoint, Vec2f(0, 0), velocity.Length() / 7.0f, Hitters::arrow);
+				break;
+			}
+			if (b.getName() == "fireplace" && !b.getSprite().isAnimation("fire") && (arrowType == ArrowType::fire))
+			{
+				Ignite(b);
 				break;
 			}
 		}
@@ -664,7 +671,6 @@ void MakeFireCross(CBlob@ this, Vec2f burnpos)
 	/*
 	fire starting pattern
 	X -> fire | O -> not fire
-
 	[O] [X] [O]
 	[X] [X] [X]
 	[O] [X] [O]
