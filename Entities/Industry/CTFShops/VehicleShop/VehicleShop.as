@@ -48,7 +48,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::outpost_gold);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Ballista Ammo", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + Descriptions::ballista_ammo, false, false);
+		ShopItem@ s = addShopItem(this, "Ballista Bolts", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + Descriptions::ballista_ammo, false, false);
 		s.crate_icon = 5;
 		s.customButton = true;
 		s.buttonwidth = 2;
