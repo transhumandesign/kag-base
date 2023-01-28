@@ -8,7 +8,7 @@ const array<u8> EXCLUDED_EMOTES = {
 	Emotes::pickup
 };
 const u8 MENU_WIDTH = 9;
-const u8 MENU_HEIGHT = Maths::Ceil((Emotes::emotes_total - EXCLUDED_EMOTES.length - 1) / MENU_WIDTH) + 4;
+const u8 MENU_HEIGHT = Maths::Ceil((Emotes::emotes_total - EXCLUDED_EMOTES.length - 1) / MENU_WIDTH) + 6;
 const string SELECTED_PROP = "selected emote: ";
 
 const string EMOTE_CMD = "emote command";
@@ -51,11 +51,11 @@ void ShowEmotesMenu(CPlayer@ player)
 	getHUD().ClearMenus(true);
 
 	CRules@ rules = getRules();
-	Vec2f center = getDriver().getScreenCenterPos();
+	Vec2f menu_pos = getDriver().getScreenCenterPos() + Vec2f(MENU_WIDTH*16 + 160, 0); // offset from the center so that you can see your character, to try out emote keybinds.
 	string description = getTranslatedString("Emote Hotkey Binder");
 
 	//display main grid menu
-	CGridMenu@ menu = CreateGridMenu(center, null, Vec2f(MENU_WIDTH, MENU_HEIGHT), description);
+	CGridMenu@ menu = CreateGridMenu(menu_pos, null, Vec2f(MENU_WIDTH, MENU_HEIGHT), description);
 	if (menu !is null)
 	{
 		menu.deleteAfterClick = false;
@@ -70,8 +70,47 @@ void ShowEmotesMenu(CPlayer@ player)
 		menu.SetDefaultCommand(rules.getCommandID(EMOTE_CMD), params);
 
 		//display emote grid
-		for (int i = 0; i < Emotes::emotes_total; i++)
+		u8 [] index_map = {
+			Emotes::blueflag, Emotes::redflag,
+			Emotes::builder, Emotes::knight, Emotes::archer,
+			Emotes::fire, Emotes::sweat,
+			Emotes::ladder, Emotes::wall,
+			Emotes::rat, Emotes::mine,
+			Emotes::cog, Emotes::idea,
+			Emotes::attn, Emotes::question,
+			
+			Emotes::note,
+			
+			Emotes::right, Emotes::down,
+			
+			Emotes::derp, Emotes::drool,
+			Emotes::think, Emotes::raised, Emotes::wat,
+			
+			Emotes::frown, Emotes::cry,
+			Emotes::up, Emotes::left,
+			
+			Emotes::smile, Emotes::troll, Emotes::laugh, Emotes::awkward, Emotes::laughcry,
+			Emotes::check, Emotes::smug, Emotes::cross, Emotes::flex,
+			
+			Emotes::dismayed, Emotes::disappoint, Emotes::mad, Emotes::finger, Emotes::skull,
+			
+			Emotes::thumbsdown, Emotes::thumbsup, Emotes::okhand, Emotes::clap,
+			
+			Emotes::love, Emotes::kiss, Emotes::heart, Emotes::sorry,
+			
+			Emotes::dots,
+			Emotes::pickup
+		};
+		if (index_map.length != Emotes::emotes_total)
 		{
+			warn("Add your new emotes into the index_map (EmoteBinderMenu.as void ShowEmotesMenu(CPlayer@ player), you probably edited the Emote_Indices enum in EmotesCommon.as. {Emotes::emotes_total is "+Emotes::emotes_total+", index_map.length is "+index_map.length+"}");
+			for (int i = index_map.length; i < Emotes::emotes_total; i++) index_map.push_back(u8(Emotes::dots));
+		}
+		
+		for (int j = 0; j < Emotes::emotes_total; j++)
+		{
+			int i = index_map[j];
+			
 			if (EXCLUDED_EMOTES.find(i) > -1)
 			{
 				continue;
@@ -139,6 +178,14 @@ void ShowEmotesMenu(CPlayer@ player)
 				button.SetSelected(1);
 			}
 		}
+		
+		CGridButton@ info_box_1 = menu.AddTextButton(getTranslatedString("Press 1-9 on your keyboard for emotes from the 1st row"), Vec2f(MENU_WIDTH, 1)); // "The first row is bound to 1-9 above the letters on your keyboard"
+		info_box_1.clickable = false;
+		info_box_1.SetEnabled(false);
+		
+		CGridButton@ info_box_2 = menu.AddTextButton(getTranslatedString("Press Numpad1-Numpad9 for emotes from the 2nd row"), Vec2f(MENU_WIDTH, 1)); // "The second row is bound to Num1-Num9 on your numpad"
+		info_box_2.clickable = false;
+		info_box_2.SetEnabled(false);
 	}
 }
 
