@@ -123,10 +123,13 @@ void onInit(CBlob@ this)
 
 	this.set_f32("oar offset", 54.0f);
 
+	CMap@ map = getMap();
 	// add pole ladder
-	getMap().server_AddMovingSector(Vec2f(-28.0f, -32.0f), Vec2f(-12.0f, 0.0f), "ladder", this.getNetworkID());
+	map.server_AddMovingSector(Vec2f(-28.0f, -32.0f), Vec2f(-12.0f, 0.0f), "ladder", this.getNetworkID());
 	// add back ladder
-	getMap().server_AddMovingSector(Vec2f(-50.0f, 0.0f), Vec2f(-35.0f, 20.0f), "ladder", this.getNetworkID());
+	map.server_AddMovingSector(Vec2f(-50.0f, 0.0f), Vec2f(-35.0f, 20.0f), "ladder", this.getNetworkID());
+	// add custom capture zone
+	map.server_AddMovingSector(Vec2f(-40.0f, -30.0f), Vec2f(10.0f, 5.0f), "capture zone "+this.getNetworkID(), this.getNetworkID());
 
 	//set custom minimap icon
 	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
@@ -134,7 +137,7 @@ void onInit(CBlob@ this)
 	this.SetMinimapRenderAlways(true);
 
 	// mounted bow
-	if (getNet().isServer())// && hasTech( this, "mounted bow"))
+	if (isServer())// && hasTech( this, "mounted bow"))
 	{
 		CBlob@ bow = server_CreateBlob("mounted_bow");
 		if (bow !is null)

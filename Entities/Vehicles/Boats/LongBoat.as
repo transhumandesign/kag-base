@@ -28,6 +28,9 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().bullet = false;
 	this.set_f32("map dmg modifier", 150.0f);
 
+	// add custom capture zone
+	getMap().server_AddMovingSector(Vec2f(-30.0f, -16.0f), Vec2f(25.0f, 4.0f), "capture zone "+this.getNetworkID(), this.getNetworkID());
+
 	//block knight sword
 	this.Tag("blocks sword");
 
