@@ -183,7 +183,7 @@ void onTick(CBlob@ this)
 				else 
 				{
 					string n = gottenBlob.getName();
-					bool isOpened = (isOpen(gottenBlob) && n.find("door") != -1 || n == "bridge" || n == "trap_block");
+					bool isOpened = (isOpen(gottenBlob) && (n.find("door") != -1 || n == "bridge" || n == "trap_block"));
 				
 					if (gottenBlob.hasTag("fallen") || isOpened) // structure blob is collapsing or is an opening door/bridge/trap
 					{
