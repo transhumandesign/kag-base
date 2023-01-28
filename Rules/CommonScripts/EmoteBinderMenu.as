@@ -4,7 +4,6 @@
 #include "EmotesCommon.as";
 
 const u8 MENU_WIDTH = 9;
-const string SELECTED_PROP = "selected emote: ";
 
 const string EMOTE_CMD = "emote command";
 enum EMOTE_SUBCMD {
@@ -13,6 +12,8 @@ enum EMOTE_SUBCMD {
 	CLOSE_MENU,
 	EMOTE_SUBCMD_COUNT
 };
+
+u8 selected_keybind = 0;
 
 void onInit(CRules@ this)
 {
@@ -26,10 +27,6 @@ void NewEmotesMenu()
 	CPlayer@ player = getLocalPlayer();
 	if (player !is null && player.isMyPlayer())
 	{
-		//select first keybind to begin with
-		string propname = SELECTED_PROP + player.getUsername();
-		rules.set_u8(propname, 0);
-
 		LoadIcons(player);
 		ShowEmotesMenu(player);
 	}
@@ -118,9 +115,6 @@ void ShowEmotesMenu(CPlayer@ player)
 		CGridButton@ separator = menu.AddTextButton(getTranslatedString("Select a keybind below, then select the emote you want"), Vec2f(MENU_WIDTH, 1));
 		separator.SetEnabled(false);
 
-		string propname = SELECTED_PROP + player.getUsername();
-		u8 selected = rules.get_u8(propname);
-
 		//display row of current emote keybinds
 		for (int i = 0; i < emoteBinds.size(); i++)
 		{
@@ -136,7 +130,7 @@ void ShowEmotesMenu(CPlayer@ player)
 			// button.hoverText = "     Key " + (i + 1) + "\n";
 
 			//reselect keybind if one was selected before
-			if (selected == i)
+			if (selected_keybind == i)
 			{
 				button.SetSelected(1);
 			}
@@ -164,19 +158,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 
 		if (subcmd == BIND_EMOTE)
 		{
-			string propname = SELECTED_PROP + caller.getUsername();
-			u8 selected = this.get_u8(propname);
-
-			//must select keybind first
-			if (selected == -1)
-			{
-				return;
-			}
-
 			string token;
 			if(!params.saferead_string(token)) return;
 
-			string key = "emote_" + (selected + 1);
+			string key = "emote_" + (selected_keybind + 1);
 
 			//get emote bindings cfg file
 			ConfigFile@ cfg = openEmoteBindingsConfig();
@@ -193,22 +178,16 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 			u8 emote;
 			if(!params.saferead_u8(emote)) return;
 
-			string propname = SELECTED_PROP + caller.getUsername();
-			this.set_u8(propname, emote);
+			selected_keybind = emote;
 		}
 		else if (subcmd == CLOSE_MENU)
 		{
 			getHUD().ClearMenus(true);
 		}
 
-		//trigger a reload of the blob's emote bindings either way
-		CBlob@ cblob = caller.getBlob();
-		if (cblob !is null)
-		{
-			cblob.Tag("reload emotes");
-		}
+		//trigger a reload of our emote bindings either way
+		this.Tag("reload emotes");
 	}
-	
 }
 
 string getIconName(string token)

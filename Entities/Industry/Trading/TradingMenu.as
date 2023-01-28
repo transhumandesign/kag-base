@@ -194,11 +194,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (caller !is null)
 		{
-			if (hotkey)
-			{
-				caller.SendCommand(caller.getCommandID("prevent emotes"));
-			}
-
 			if (!isInRadius(this, caller))
 			{
 				caller.ClearMenus();
