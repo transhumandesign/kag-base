@@ -7,6 +7,7 @@ enum GameMusicTags
 	world_ambient,
 	world_ambient_underground,
 	world_ambient_mountain,
+	world_ambient_night,
 	world_intro,
 	world_home,
 	world_calm,
@@ -54,6 +55,7 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 	mixer.AddTrack("Sounds/Music/ambient_forest.ogg", world_ambient);
 	mixer.AddTrack("Sounds/Music/ambient_mountain.ogg", world_ambient_mountain);
 	mixer.AddTrack("Sounds/Music/ambient_cavern.ogg", world_ambient_underground);
+	mixer.AddTrack("Sounds/Music/ambient_night.ogg", world_ambient_night);
 	mixer.AddTrack("Sounds/Music/KAGWorldIntroShortA.ogg", world_intro);
 	mixer.AddTrack("Sounds/Music/KAGWorld1-1a.ogg", world_home);
 	mixer.AddTrack("Sounds/Music/KAGWorld1-2a.ogg", world_home);
@@ -95,15 +97,23 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 		if (timer % 48 != 0)
 			return;
 
+		bool isNight = map.getDayTime() > 0.85f && map.getDayTime() < 0.1f;
 		bool isUnderground = map.rayCastSolid(pos, Vec2f(pos.x, pos.y - 60.0f));
 		if (isUnderground)
+		{
 			changeMusic(mixer, world_ambient_underground, 2.0f, 4.0f);
+		}
+		else if (pos.y < 312.0f)
+		{
+			changeMusic(mixer, world_ambient_mountain, 2.0f, 4.0f);
+		}
+		else if (isNight)
+		{
+			changeMusic(mixer, world_ambient_night, 2.0f, 4.0f);
+		}
 		else
 		{
-			if (pos.y < 312.0f)
-				changeMusic(mixer, world_ambient_mountain, 2.0f, 4.0f);
-			else
-				changeMusic(mixer, world_ambient, 2.0f, 4.0f);
+			changeMusic(mixer, world_ambient, 2.0f, 4.0f);
 		}
 	}
 	//else if (rules.isBarrier())
@@ -124,7 +134,10 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 			if (timer % 24 != 0)
 				return;
 
-			if (mixer.isPlaying(world_ambient) || mixer.isPlaying(world_ambient_underground) || mixer.isPlaying(world_ambient_mountain))
+			if (mixer.isPlaying(world_ambient) 
+				|| mixer.isPlaying(world_ambient_underground) 
+				|| mixer.isPlaying(world_ambient_mountain)
+				|| mixer.isPlaying(world_ambient_night))
 			{
 				mixer.FadeOutAll(0.0f, 0.01f);
 			}

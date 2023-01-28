@@ -16,11 +16,12 @@ void onInit(CBlob@ this)
 	this.set_bool("release click", false);
 	this.set_bool("can button tap", true);
 	this.addCommandID("pickup");
-	this.addCommandID("putin");
+	this.addCommandID("putinheld");
 	this.addCommandID("getout");
 	this.addCommandID("detach");
 	this.addCommandID("cycle");
 	this.addCommandID("switch");
+	this.addCommandID("tap inventory key");
 
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
@@ -40,15 +41,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		return;
 	}
 
-	if (cmd == this.getCommandID("putin"))
+	if (cmd == this.getCommandID("putinheld"))
 	{
 		CBlob@ owner = getBlobByNetworkID(params.read_netid());
-		CBlob@ pick = getBlobByNetworkID(params.read_netid());
 
-		if (owner !is null && pick !is null)
+		putInHeld(owner);
+	}
+	else if (cmd == this.getCommandID("tap inventory key"))
+	{
+		CBlob@ owner = getBlobByNetworkID(params.read_netid());
+
+		if (!putInHeld(owner))
 		{
-			if (!owner.server_PutInInventory(pick))
-				owner.server_Pickup(pick);
+			this.SendCommand(this.getCommandID("cycle"));
 		}
 	}
 	else if (cmd == this.getCommandID("pickup"))
@@ -79,11 +84,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 }
 
+bool putInHeld(CBlob@ owner)
+{
+	if (owner is null) return false;
+
+	CBlob@ held = owner.getCarriedBlob();
+
+	if (held is null) return false;
+
+	return owner.server_PutInInventory(held);
+}
+
 bool ClickGridMenu(CBlob@ this, int button)
 {
 	CGridMenu @gmenu;
 	CGridButton @gbutton;
-	CBlob @pickBlob = this.getCarriedBlob();
 
 	if (this.ClickGridMenu(button, gmenu, gbutton))   // button gets pressed here - thing get picked up
 	{
@@ -91,9 +106,9 @@ bool ClickGridMenu(CBlob@ this, int button)
 		{
 			// if (gmenu.getName() == this.getInventory().getMenuName() && gmenu.getOwner() !is null)
 			{
-				if (pickBlob !is null && gbutton is null)    // carrying something, put it in
+				if (gbutton is null)    // carrying something, put it in
 				{
-					server_PutIn(this, gmenu.getOwner(), pickBlob);
+					server_PutInHeld(this, gmenu.getOwner());
 				}
 				else // take something
 				{
@@ -235,17 +250,9 @@ void onTick(CBlob@ this)
 		{
 			if (isTap(this, 7))     // tap - put thing in inventory
 			{
-				CInventory@ inv = this.getInventory();
-				if (carryBlob !is null && !carryBlob.hasTag("temp blob") && inv.canPutItem(carryBlob))
-				{
-					server_PutIn(this, this, carryBlob);
-				}
-				else
-				{
-					// send cycle command
-					CBitStream params;
-					this.SendCommand(this.getCommandID("cycle"), params);
-				}
+				CBitStream params;
+				params.write_netid(this.getNetworkID());
+				this.SendCommand(this.getCommandID("tap inventory key"), params);
 
 				this.ClearMenus();
 				return;
@@ -319,7 +326,7 @@ void onTick(CBlob@ this)
 
 void onDie(CBlob@ this)
 {
-	set_emote(this, Emotes::off);
+	set_emote(this, "");
 }
 
 // CAMERA

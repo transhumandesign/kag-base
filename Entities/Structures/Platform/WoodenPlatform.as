@@ -28,6 +28,29 @@ void onInit(CBlob@ this)
 			this.set('harvest', harvest);
 		}
 	}
+
+	MakeDamageFrame(this);
+}
+
+void onHealthChange(CBlob@ this, f32 oldHealth)
+{
+	f32 hp = this.getHealth();
+	bool repaired = (hp > oldHealth);
+	MakeDamageFrame(this, repaired);
+}
+
+void MakeDamageFrame(CBlob@ this, bool repaired = false)
+{
+	f32 hp = this.getHealth();
+	f32 full_hp = this.getInitialHealth();
+	int frame_count = this.getSprite().animation.getFramesCount();
+	int frame = frame_count - frame_count * (hp / full_hp);
+	this.getSprite().animation.frame = frame;
+
+	if (repaired)
+	{
+		this.getSprite().PlaySound("/build_wood.ogg");
+	}
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)

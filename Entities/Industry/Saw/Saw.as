@@ -2,6 +2,7 @@
 
 #include "Hitters.as"
 #include "GenericButtonCommon.as"
+#include "ParticleSparks.as"
 
 const string toggle_id = "toggle_power";
 const string sawteammate_id = "sawteammate";
@@ -9,8 +10,6 @@ const string sawteammate_id = "sawteammate";
 void onInit(CBlob@ this)
 {
 	this.Tag("saw");
-	this.set_u32("bomb_time", 0);
-	this.set_u8("bombs_exploded", 0);
 
 	this.addCommandID(toggle_id);
 	this.addCommandID(sawteammate_id);
@@ -97,6 +96,11 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 		return;
 	}
 
+	tobeblended.Tag("sawed");
+
+	if ((tobeblended.getName() == "waterbomb" || tobeblended.getName() == "bomb") && tobeblended.hasTag("activated"))
+		return;
+
 	//make plankfrom wooden stuff
 	string blobname = tobeblended.getName();
 	if (blobname == "log" || blobname == "crate")
@@ -123,8 +127,6 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 		this.getSprite().PlaySound("SawOther.ogg");
 	}
 
-	tobeblended.Tag("sawed");
-
 	// on saw player or dead body - disable the saw
 	if (
 		(tobeblended.getPlayer() !is null || //player
@@ -135,8 +137,7 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 		params.write_netid(tobeblended.getNetworkID());
 		this.SendCommand(this.getCommandID(sawteammate_id), params);
 	}
-
-
+	
 	CSprite@ s = tobeblended.getSprite();
 	if (s !is null)
 	{
@@ -146,7 +147,6 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 	//give no fucks about teamkilling
 	tobeblended.server_SetHealth(-1.0f);
 	tobeblended.server_Die();
-
 }
 
 
@@ -224,50 +224,85 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	return true;
 }
 
-//we have contact!
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (blob is null || !getNet().isServer() ||
-	        this.isAttached() || blob.isAttached() ||
-	        !getSawOn(this))
-	{
-		return;
-	}
+    if (blob is null ||
+            this.isAttached() || blob.isAttached() ||
+            !getSawOn(this))
+    {
+        return;
+    }
 
-	if (canSaw(this, blob))
-	{
-		Vec2f pos = this.getPosition();
-		Vec2f bpos = blob.getPosition();
-		this.Tag("sawed");
-		this.server_Hit(blob, bpos, bpos - pos, 0.0f, Hitters::saw);
+    if (canSaw(this, blob))
+    {
+        Vec2f pos = this.getPosition();
+        Vec2f bpos = blob.getPosition();
+        this.server_Hit(blob, bpos, bpos - pos, 0.0f, Hitters::saw);
+        this.Tag("sawed");
+    }
 
-		if (blob.getName() == "bomb")
-		{
-			if (this.get_u8("bombs_exploded") == 0)
-			{
-				this.set_u32("bomb_time", getGameTime());
-			}
+    if ((blob.getName() == "waterbomb" || blob.getName() == "bomb") && blob.hasTag("activated"))
+    {
+        Vec2f oldVelocity = blob.getVelocity();
+        // bombs very close to the top of the saw have a ratio of 0 and most of the rest has a ratio of 1 
+        // using the old bomb position is slightly more reliable when bombs fall from above
+        f32 ydiff = Maths::Max(this.getPosition().y - blob.getOldPosition().y + blob.getHeight(), 0.0f);
+        f32 ratio = Maths::Clamp01(3.0f * (1.0f - ydiff/this.getHeight()));
 
-			this.add_u8("bombs_exploded", 1);
-		}
-	}
-}
+        if(isServer())
+        {
+        	if (blob.getName() == "waterbomb")
+        	{
+        		// hack; waterbombs have a mass of 200 (which gives them a special interaction with kegs)
+        		// but it's annoying here so we're giving it same mass as normal bombs
+        		blob.SetMass(20.0); 
+        	}
 
-void onTick(CBlob@ this)
-{
-	if (this.get_u32("bomb_time") == 0) return;
+            // give a horizontal boost to the bombs coming from the top based on their original velocity
+            f32 xboost = 60.0f * Maths::Clamp(oldVelocity.x / 8.0f, -1.0f, 1.0f) * (1.0f - ratio);
 
-	if (getGameTime() - this.get_u32("bomb_time") > 8)
-	{
-		this.set_u32("bomb_time", 0);
+            // bear in mind bombs have custom physics that cap velocity *eventually*
+            // this is hacky but gives enough of a nice short boost
+            Vec2f newVelocity(
+                // mostly random x position, but keep some horizontal momentum when coming from the top
+                70.0f * ((float(XORRandom(100)) / 100.0f) - 0.5f) + xboost,
+                // small vertical boost to bombs coming from the top, big boost with some randomness for the others
+                -(Maths::Max(80.0f + XORRandom(30), 500.0f * ratio - XORRandom(300)))
+            );
+            
+            // make some sparks that go towards the direction the bomb was headed towards
+            sparks(blob.getPosition(), 180.0f - oldVelocity.Angle(), 0.5f, 60.0f, 0.5f);
+            // make some sparks that go the opposite direction the bomb is going to go *horizontally*
+            // this gives the nice feel that sparks were emitted from the collision point
+            sparks(blob.getPosition(), newVelocity.Angle(), 2.0f, 20.0f, 3.0f);
 
-		if (this.get_u8("bombs_exploded") >= 3)
-		{
-			this.server_Hit(this, this.getPosition(), this.getPosition(), 100.0f, Hitters::crush);
-		}
+            blob.setVelocity(Vec2f_zero);
+            blob.AddForce(newVelocity);
+            blob.set_Vec2f("bombnado velocity", newVelocity);
+            blob.Sync("bombnado velocity", true);
 
-		this.set_u8("bombs_exploded", 0);
-	}
+            // shorten the fuse quite significantly by a semi-random amount
+            const int fuseTicksLeft = blob.get_s32("bomb_timer") - getGameTime();
+            blob.set_s32("bomb_timer", getGameTime() + Maths::Min(fuseTicksLeft / 3 + XORRandom(6), fuseTicksLeft));
+            blob.Sync("bomb_timer", true);
+        }
+
+        if(isClient())
+        {
+            Vec2f newVelocity = blob.get_Vec2f("bombnado velocity");
+
+            // play a hit sound with a pitch depending on some parameters for some audio clues
+            const f32 typePitchBoost = ((blob.getName() == "waterbomb") ? 0.25f : 0.0f);
+            const f32 bottomHitPitchBoost = ratio * 0.06f;
+            this.getSprite().PlaySound("ShieldHit", 1.0f, 1.07f + bottomHitPitchBoost + typePitchBoost);
+
+            // make some sparks that go towards the direction the bomb was headed towards
+            sparks(blob.getPosition(), 180.0f - oldVelocity.Angle(), 0.5f, 60.0f, 0.5f);
+            // make some sparks that go the opposite direction the bomb is going to go *horizontally*
+            // this gives the nice feel that sparks were emitted from the collision point
+            sparks(blob.getPosition(), newVelocity.Angle(), 2.0f, 20.0f, 3.0f);
+        }
+    }
 }
 
 //only pickable by enemies if they are _under_ this

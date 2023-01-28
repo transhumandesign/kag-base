@@ -141,7 +141,7 @@ void onTick(CRules@ this)
 //hook after the change has been decided
 void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 {
-	if (player !is null && player.isMyPlayer())  //please stop ;(
+	if (player !is null && player.isMyPlayer() && this.isMatchRunning())
 	{
 		BuildRespawnMenu(this, player);
 

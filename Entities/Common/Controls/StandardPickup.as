@@ -64,8 +64,7 @@ void onInit(CBlob@ this)
 			PickupWheelOption("fishy"),
 			PickupWheelOption("grain"),
 			PickupWheelOption("steak"),
-			PickupWheelOption("egg"),
-			PickupWheelOption("flowers")
+			PickupWheelOption("egg")
 		};
 		menu.add_entry(PickupWheelMenuEntry("Food", "$food$", food_options));
 		menu.add_entry(PickupWheelMenuEntry("Ballista Ammo", "$mat_bolts$", "mat_bolts"));
@@ -94,44 +93,38 @@ void onTick(CBlob@ this)
 		{
 			set_active_wheel_menu(@menu);
 		}
+		
+		GatherPickupBlobs(this);
 
-		if (this.isKeyPressed(key_pickup))
+		CBlob@[]@ pickupBlobs;
+		this.get("pickup blobs", @pickupBlobs);
+
+		CBlob@[] available;
+		FillAvailable(this, available, pickupBlobs);
+
+		for (uint i = 0; i < menu.entries.length; i++)
 		{
-			GatherPickupBlobs(this);
+			PickupWheelMenuEntry@ entry = cast<PickupWheelMenuEntry>(menu.entries[i]);
+			entry.disabled = true;
 
-			CBlob@[]@ pickupBlobs;
-			this.get("pickup blobs", @pickupBlobs);
-
-			CBlob@[] available;
-			FillAvailable(this, available, pickupBlobs);
-
-			for (uint i = 0; i < menu.entries.length; i++)
+			for (uint j = 0; j < available.length; j++)
 			{
-				PickupWheelMenuEntry@ entry = cast<PickupWheelMenuEntry>(menu.entries[i]);
-				entry.disabled = true;
-
-				for (uint j = 0; j < available.length; j++)
+				string bname = available[j].getName();
+				for (uint k = 0; k < entry.options.length; k++)
 				{
-					string bname = available[j].getName();
-					for (uint k = 0; k < entry.options.length; k++)
+					if (entry.options[k].name == bname)
 					{
-						if (entry.options[k].name == bname)
-						{
-							entry.disabled = false;
-							break;
-						}
-					}
-
-					if (!entry.disabled)
-					{
+						entry.disabled = false;
 						break;
 					}
 				}
 
+				if (!entry.disabled)
+				{
+					break;
+				}
 			}
-
 		}
-
 	}
 	else if (this.isKeyJustPressed(key_pickup))
 	{
@@ -224,9 +217,7 @@ void onTick(CBlob@ this)
 						@closest = @GetBetterAlternativePickupBlobs(blobsInRadius, closest);
 						server_Pickup(this, this, closest);
 					}
-
 				}
-
 			}
 
 			return;
@@ -459,7 +450,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 
 		if (name == "mat_bombs" || name == "mat_waterbombs")
 		{
-			return knight ? factor_resource_useful : factor_resource_boring;
+			return knight ? factor_resource_useful_rare : factor_resource_useful;
 		}
 
 		const bool archer = (thisname == "archer");
@@ -472,7 +463,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 
 		if (name == "mat_waterarrows" || name == "mat_firearrows" || name == "mat_bombarrows")
 		{
-			return archer ? factor_resource_useful_rare : factor_resource_boring;
+			return archer ? factor_resource_useful_rare : factor_resource_useful;
 		}
 	}
 
@@ -521,7 +512,7 @@ CBlob@ getClosestAimedBlob(CBlob@ this, CBlob@[] available)
 		float cursorDistance = (this.getAimPos() - current.getPosition()).Length();
 
 		float radius = current.getRadius();
-		if (radius > 3.0f && cursorDistance > current.getRadius() * (current.hasTag("dead") ? 0.5f : 1.5f)) // corpses don't count unless you really try to aim at one
+		if (radius > 3.0f && cursorDistance > radius * (current.hasTag("dead") ? 0.5f : 1.5f)) // corpses don't count unless you really try to aim at one
 		{
 			continue;
 		}
@@ -536,9 +527,12 @@ CBlob@ getClosestAimedBlob(CBlob@ this, CBlob@[] available)
 	return closest;
 }
 
+
+
 CBlob@ getClosestBlob(CBlob@ this)
 {
 	CBlob@ closest;
+	CBlob@ target; // when hovering a blob
 
 	CBlob@[]@ pickupBlobs;
 	if (this.get("pickup blobs", @pickupBlobs))
@@ -558,14 +552,38 @@ CBlob@ getClosestBlob(CBlob@ this)
 		}
 
 		float closestScore = 999999.9f;
-
+		float drawOrderScore = -999999.9f;
 		for (uint i = 0; i < available.length; ++i)
 		{
 			CBlob @b = available[i];
+
 			Vec2f bpos = b.getPosition();
 			// consider corpse center to be lower than it actually is because otherwise centers of player and corpse are on the same level,
 			// which makes corpse priority skyrocket if player is standing too close 
 			if (b.hasTag("dead")) bpos += Vec2f(0, 6.0f);
+
+
+			Vec2f[]@ hoverShape;
+			bool isPointInsidePolygon = false;
+			
+			if (b.get("hover-poly", @hoverShape))
+			{
+				isPointInsidePolygon = pointInsidePolygon(this.getAimPos(),  hoverShape, bpos, b.isFacingLeft());
+			}
+			
+			if (isPointInsidePolygon || b.isPointInside(this.getAimPos())) 
+			{
+				// Let's just get the draw order of the sprite
+				CSprite @bs = b.getSprite();
+				float draworder = bs.getDrawOrder();
+
+				if (draworder > drawOrderScore)
+				{
+					drawOrderScore = draworder;
+					@target = @b;
+				}			
+			}
+
 
 			float maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
 
@@ -585,11 +603,16 @@ CBlob@ getClosestBlob(CBlob@ this)
 		}
 	}
 
+	if (target !is null)
+		return target;
+
 	return closest;
 }
 
 bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 {
+	if (!blob.canBePickedUp(this)) return false;
+
 	float maxDist = Maths::Max(this.getRadius() + blob.getRadius() + 20.0f, 36.0f);
 
 	Vec2f pos = this.getPosition() + Vec2f(0.0f, -this.getRadius() * 0.9f);
@@ -649,6 +672,7 @@ void onRender(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
 
+
 	// render item held when in inventory
 
 	if (blob.isKeyPressed(key_inventory))
@@ -703,8 +727,9 @@ void onRender(CSprite@ this)
 					);
 					*/
 
-					GUI::GetTextDimensions(b.getInventoryName(), dimensions);
-					GUI::DrawText(getTranslatedString(b.getInventoryName()), getDriver().getScreenPosFromWorldPos(b.getPosition() - Vec2f(0, -b.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);
+					string invName = getTranslatedString(b.getInventoryName());
+					GUI::GetTextDimensions(invName, dimensions);
+					GUI::DrawText(invName, getDriver().getScreenPosFromWorldPos(b.getPosition() - Vec2f(0, -b.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);
 
 					// draw mouse hover effect
 					//if (canBePicked)

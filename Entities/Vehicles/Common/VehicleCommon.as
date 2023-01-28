@@ -257,7 +257,8 @@ void swapAmmo(CBlob@ this, VehicleInfo@ v, u8 ammoIndex)
 
 AttachmentPoint@ getMagAttachmentPoint(CBlob@ this)
 {
-	return this.getAttachments().getAttachmentPointByName("MAG");
+	// returns the "MAG" point only if this blob is the socket
+	return this.getAttachments().getAttachmentPoint("MAG", true);
 }
 
 CBlob@ getMagBlob(CBlob@ this)
@@ -379,19 +380,14 @@ bool MakeLoadAmmoButton(CBlob@ this, CBlob@ caller, Vec2f offset, VehicleInfo@ v
 
 			if (ammoBlob !is null)
 			{
+				string text = getTranslatedString("Load {ITEM}").replace("{ITEM}", getTranslatedString(ammoBlob.getInventoryName()));
+
 				CBitStream callerParams;
 				callerParams.write_u16(caller.getNetworkID());
-				caller.CreateGenericButton("$" + ammoBlob.getName() + "$", offset + Vec2f(0, -4), this, this.getCommandID("load_ammo"), getTranslatedString("Load {ITEM}").replace("{ITEM}", ammoBlob.getInventoryName()), callerParams);
+				caller.CreateGenericButton("$" + ammoBlob.getName() + "$", offset + Vec2f(0, -4), this, this.getCommandID("load_ammo"), text, callerParams);
 				return true;
 			}
 		}
-
-		/*else
-		{
-		    CButton@ button = caller.CreateGenericButton( "$DISABLED$", offset, this, 0, "Needs " + ammoBlob.getInventoryName() );
-		    if (button !is null) button.enableRadius = 0.0f;
-		    return true;
-		}*/
 	}
 
 	return false;
@@ -1008,7 +1004,6 @@ void Vehicle_onAttach(CBlob@ this, VehicleInfo@ v, CBlob@ attached, AttachmentPo
 	{
 		attachedPoint.offset = v.mag_offset;
 		attachedPoint.offset.y += attached.getHeight() / 2.0f;
-		attachedPoint.offsetZ = -60.0f;
 	}
 
 	// sync current ammo index

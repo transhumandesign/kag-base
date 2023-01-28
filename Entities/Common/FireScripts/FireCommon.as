@@ -54,13 +54,3 @@ bool isIgniteHitter(u8 hitter)
 {
 	return hitter == Hitters::fire;
 }
-
-/**
- * Hitters that should put something out when hit
- */
-bool isWaterHitter(u8 hitter)
-{
-	return hitter == Hitters::water ||
-	       hitter == Hitters::water_stun ||
-	       hitter == Hitters::water_stun_force;
-}

@@ -25,6 +25,13 @@ string holiday = "";
 string holiday_cache = "";
 bool sync = false;
 
+// QUICK FIX: Whitelist scripts as a quick sanitization check
+string[] scriptlist = {
+	"Birthday",
+	"Halloween",
+	"Christmas",
+};
+
 void onInit(CRules@ this)
 {
 	this.addCommandID(SYNC_HOLIDAY_ID);
@@ -45,19 +52,29 @@ void onRestart(CRules@ this)
 		u8 server_leap = ((server_year % 4 == 0 && server_year % 100 != 0) || server_year % 400 == 0)? 1 : 0;
 
 		Holiday[] calendar = {
-			  Holiday("Birthday", 116 + server_leap - 1, 3)
-			, Holiday("Halloween", 301 + server_leap - 1, 8)
-			, Holiday("Christmas", 357 + server_leap - 2, 16)
+			  Holiday(scriptlist[0], 116 + server_leap - 1, 3)
+			, Holiday(scriptlist[1], 301 + server_leap - 1, 8)
+			, Holiday(scriptlist[2], 357 + server_leap - 2, 16)
 		};
 
-		s16 holiday_date;
-		u8 holiday_length;
+		s16 holiday_start;
+		s16 holiday_end;
 		for(u8 i = 0; i < calendar.length; i++)
 		{
-			holiday_date = calendar[i].m_date;
-			holiday_length = calendar[i].m_length;
+			holiday_start = calendar[i].m_date;
+			holiday_end = (holiday_start + calendar[i].m_length) % (365 + server_leap);
 
-			if(server_date - holiday_date >= 0 && server_date < holiday_date + holiday_length)
+			bool holiday_active = false;
+			if(holiday_start <= holiday_end)
+			{
+				holiday_active = server_date >= holiday_start && server_date < holiday_end;
+			}
+			else
+			{
+				holiday_active = server_date >= holiday_start || server_date < holiday_end;
+			}
+
+			if(holiday_active)
 			{
 				holiday = calendar[i].m_name;
 				print("Holiday: "+holiday);
@@ -92,6 +109,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		{
 			if(_holiday_cache != "")
 			{
+				if (scriptlist.find(_holiday_cache) == -1) {
+					warn("script " + _holiday_cache + " cache not found inside script list");
+					return;
+				} 
 				print("removing " + _holiday_cache + " holiday script");
 				//remove old holiday
 				this.RemoveScript(_holiday_cache + ".as");
@@ -102,6 +123,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			}
 			if(_holiday != "")
 			{
+				if (scriptlist.find(_holiday) == -1) {
+					warn("script " + _holiday + " not found inside script list");
+					return;
+				}
+
 				print("adding " + _holiday + " holiday script");
 				//adds the holiday script
 				this.AddScript(_holiday+".as");

@@ -11,7 +11,7 @@ shared class HelpText
 	u32 usedCount;
 	f32	fadeOut;
 	Vec2f drawSize;
-
+	bool showAlways;
 
 	HelpText()
 	{
@@ -21,11 +21,8 @@ shared class HelpText
 };
 
 // altText - when not recipient
-HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient, const string &in text, const string &in altText = "")
+HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient, const string &in text, const string &in altText = "", bool showAlways = false)
 {
-	if (!u_showtutorial)
-		return null;
-
 	if (!getNet().isClient())
 		return null;
 
@@ -44,6 +41,7 @@ HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient
 	ht.text = text;
 	ht.altText = altText;
 	ht.reduceAfterTimes = 1;
+	ht.showAlways = showAlways;
 	this.push(HELPS_ARRAY, ht);
 
 	HelpText@ p_ref;
@@ -51,11 +49,8 @@ HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient
 	return p_ref;
 }
 
-HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient, const string &in text, const string &in altText, const u32 reduceAfterTimes)
+HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient, const string &in text, const string &in altText, const u32 reduceAfterTimes, bool showAlways = false)
 {
-	if (!u_showtutorial)
-		return null;
-
 	if (!getNet().isClient())
 		return null;
 
@@ -74,6 +69,7 @@ HelpText@ SetHelp(CBlob@ this, const string &in name, const string &in recipient
 	ht.text = text;
 	ht.altText = altText;
 	ht.reduceAfterTimes = reduceAfterTimes;
+	ht.showAlways = showAlways;
 	this.push(HELPS_ARRAY, ht);
 
 	HelpText@ p_ref;
@@ -146,9 +142,6 @@ bool hasHelp(CBlob@ this, const string &in name)
 
 void RemoveHelps(CBlob@ this, const string &in name)
 {
-	if (!u_showtutorial)
-		return;
-
 	if (!getNet().isClient())
 		return;
 

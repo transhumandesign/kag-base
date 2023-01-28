@@ -14,7 +14,11 @@ class VoteFunctor
 class VoteCheckFunctor
 {
 	VoteCheckFunctor() {}
-	bool PlayerCanVote(CPlayer@ player) { return true; }
+	bool PlayerCanVote(CPlayer@ player)
+	{
+		//prevent duplicate players from voting
+		return !isDuplicatePlayer(player);
+	}
 };
 
 //shared
@@ -221,13 +225,26 @@ void Vote(VoteObject@ vote, CPlayer@ p, bool favour)
 		{
 			vote.current_no++;
 		}
-
-		if (CanPlayerVote(vote, getLocalPlayer()) || getNet().isServer()) //include all in server logs
+		
+		bool should_show_votes;
+		CPlayer@ player = getLocalPlayer();
+		if (player is null)
 		{
-
-
-			client_AddToChat(getTranslatedString("--- {USER} Voted {DECISION} ---").replace("{USER}", p.getUsername()).replace("{DECISION}", getTranslatedString(favour ? "In Favour" : "Against")), vote_message_colour());
+			should_show_votes = isServer();
 		}
+		else
+		{
+			should_show_votes = (player.isDev() || player.isGuard()
+				|| isServer() || player.isMod() || player.isRCON());
+		}
+		
+		string text = getTranslatedString("--- {USER} Voted {DECISION} ---")
+						.replace("{USER}", p.getUsername())
+						.replace("{DECISION}", getTranslatedString(favour ? "In Favour" : "Against")),
+					vote_message_colour();
+		
+		if (should_show_votes) // only let admins see what everyone votes for
+			client_AddToChat(text);
 	}
 }
 
@@ -241,4 +258,9 @@ void CalculateVoteThresholds(VoteObject@ vote)
 			vote.maximum_votes++;
 		}
 	}
+}
+
+bool isDuplicatePlayer(CPlayer@ player)
+{
+	return player.getUsername().find("~") > -1;
 }
