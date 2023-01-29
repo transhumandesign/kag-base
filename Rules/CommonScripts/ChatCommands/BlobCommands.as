@@ -56,9 +56,9 @@ class CrateCommand : BlobCommand
 		args.removeAt(0);
 
 		//TODO: make description kids safe
-		string description = join(args, " ");
+		string description = args.size() > 0 ? join(args, " ") : blobName;
 
-		if (isBlobBlacklisted(blobName))
+		if (isBlobBlacklisted(blobName, player))
 		{
 			server_AddToChat(getTranslatedString("Crates cannot be spawned containing this blacklisted blob"), ConsoleColour::ERROR, player);
 			return;
@@ -109,7 +109,7 @@ class SpawnCommand : BlobCommand
 
 		string blobName = args[0];
 
-		if (isBlobBlacklisted(blobName))
+		if (isBlobBlacklisted(blobName, player))
 		{
 			server_AddToChat(getTranslatedString("This blacklisted blob cannot be spawned"), ConsoleColour::ERROR, player);
 			return;

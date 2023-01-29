@@ -36,7 +36,7 @@ class ClassCommand : ChatCommand
 
 		string className = args[0];
 
-		if (!isClassWhitelisted(className))
+		if (!isClassWhitelisted(className, player))
 		{
 			server_AddToChat(getTranslatedString("Class not found or cannot be swapped to"), ConsoleColour::ERROR, player);
 			return;

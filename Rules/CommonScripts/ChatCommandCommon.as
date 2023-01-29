@@ -41,13 +41,25 @@ string removeExcessSpaces(string text)
 	return text;
 }
 
-bool isBlobBlacklisted(string name)
+bool isBlobBlacklisted(string name, CPlayer@ player)
 {
+	// Allow devs to bypass blacklist
+	if (player !is null && player.isDev())
+	{
+		return false;
+	}
+
 	return ChatCommands::getManager().blacklistedBlobs.find(name) != -1;
 }
 
-bool isClassWhitelisted(string name)
+bool isClassWhitelisted(string name, CPlayer@ player)
 {
+	// Allow devs to bypass blacklist
+	if (player !is null && player.isDev())
+	{
+		return true;
+	}
+
 	return ChatCommands::getManager().whitelistedClasses.find(name) != -1;
 }
 
