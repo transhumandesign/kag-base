@@ -1,5 +1,3 @@
-#include "AbstractCommand.as"
-
 class AllArrowsCommand : BlobCommand
 {
 	AllArrowsCommand()
