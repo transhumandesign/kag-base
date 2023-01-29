@@ -12,7 +12,7 @@ void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 
 void onDie(CBlob@ this)
 {
-	if (this.hasTag("AdminAlertIgnore")) return;
+	if (this.hasTag("AdminAlertIgnore") || this.getQuantity() == 0) return;
 
 	string message;
 
