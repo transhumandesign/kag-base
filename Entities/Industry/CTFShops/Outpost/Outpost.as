@@ -30,6 +30,9 @@ void onInit(CBlob@ this)
 	this.set_Vec2f("travel offset", Vec2f(-10, 0));
 	this.inventoryButtonPos = Vec2f(12, -12);
 
+	// add custom capture zone
+	getMap().server_AddMovingSector(Vec2f(-16.0f, -8.0f), Vec2f(16.0f, 16.0f), "capture zone "+this.getNetworkID(), this.getNetworkID());
+
 	CSprite@ sprite = this.getSprite();
 	CSpriteLayer@ flag = sprite.addSpriteLayer("flag layer", "Outpost.png", 32, 32);
 	if (flag !is null)

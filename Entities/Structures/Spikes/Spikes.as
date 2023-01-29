@@ -256,6 +256,7 @@ void onTick(CBlob@ this)
 	{
 		this.getCurrentScript().tickFrequency = 25;
 		this.getSprite().SetAnimation("default");
+		this.set_u8(state_prop, 0);
 		this.set_u8(timer_prop, 0);
 	}
 

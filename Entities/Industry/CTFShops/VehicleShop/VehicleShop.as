@@ -15,6 +15,8 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
+	this.Tag("has window");
+
 	//INIT COSTS
 	InitCosts();
 
@@ -46,7 +48,7 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::outpost_gold);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Ballista Ammo", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + Descriptions::ballista_ammo, false, false);
+		ShopItem@ s = addShopItem(this, "Ballista Bolts", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + Descriptions::ballista_ammo, false, false);
 		s.crate_icon = 5;
 		s.customButton = true;
 		s.buttonwidth = 2;
@@ -73,26 +75,26 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	if (cmd == this.getCommandID("shop made item"))
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
-		bool isServer = (getNet().isServer());
-		u16 caller, item;
-		if (!params.saferead_netid(caller) || !params.saferead_netid(item))
+
+		/*u16 caller, item;
+		string name;
+
+		if (!params.saferead_netid(caller) || !params.saferead_netid(item) || !params.saferead_string(name))
 		{
 			return;
 		}
-		string name = params.read_string();
+
+		if (name == "upgradebolts")
 		{
-			if (name == "upgradebolts")
-			{
-				GiveFakeTech(getRules(), "bomb ammo", this.getTeamNum());
-			}
-			else if (name == "outpost")
-			{
-				CBlob@ crate = getBlobByNetworkID(item);
-				
-				crate.set_Vec2f("required space", Vec2f(5, 5));
-				crate.set_s32("gold building amount", CTFCosts::outpost_gold);
-				crate.Tag("unpack_check_nobuild");
-			}
+			GiveFakeTech(getRules(), "bomb ammo", this.getTeamNum());
 		}
+		else if (name == "outpost")
+		{
+			CBlob@ crate = getBlobByNetworkID(item);
+				
+			crate.set_Vec2f("required space", Vec2f(5, 5));
+			crate.set_s32("gold building amount", CTFCosts::outpost_gold);
+			crate.Tag("unpack_check_nobuild");
+		}*/
 	}
 }

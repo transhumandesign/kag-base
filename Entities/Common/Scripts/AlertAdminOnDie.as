@@ -23,13 +23,13 @@ void onDie(CBlob@ this)
 		message = getTranslatedString("{PLAYER} caused {COUNT} {MATERIAL} to fall into the void!")
 			.replace("{PLAYER}", formatPlayerName(holder))
 			.replace("{COUNT}", "" + this.getQuantity())
-			.replace("{MATERIAL}", this.getInventoryName());
+			.replace("{MATERIAL}", getTranslatedString(this.getInventoryName()));
 	}
 	else
 	{
 		message = getTranslatedString("{COUNT} {MATERIAL} fell into the void!")
 			.replace("{COUNT}", "" + this.getQuantity())
-			.replace("{MATERIAL}", this.getInventoryName());
+			.replace("{MATERIAL}", getTranslatedString(this.getInventoryName()));
 	}
 
 	if (isServer())

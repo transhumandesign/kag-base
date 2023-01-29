@@ -262,7 +262,7 @@ string[] ChildDestruction(CBlob@ this, bool kill_kids)
 						this.server_Hit(blob, blob.getPosition(), Vec2f(0, 0), 100, Hitters::crush, true);
 					}
 
-					names.push_back(blob.getInventoryName());
+					names.push_back(getTranslatedString(blob.getInventoryName()));
 				}
 			}
 		}

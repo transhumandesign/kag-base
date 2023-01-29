@@ -151,11 +151,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			return;
 		}
 
-		if (hotkey)
-		{
-			caller.SendCommand(caller.getCommandID("prevent emotes"));
-		}
-
 		if (inv !is null && isInRadius(this, caller))
 		{
 			ShopItem[]@ shop_items;

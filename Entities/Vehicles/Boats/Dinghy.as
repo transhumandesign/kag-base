@@ -24,11 +24,12 @@ void onInit(CBlob@ this)
 	                        0.0f, // movement sound volume modifier   0.0f = no manipulation
 	                        0.0f // movement sound pitch modifier     0.0f = no manipulation
 	                       );
-	this.getShape().SetOffset(Vec2f(0, 9));
 	this.getShape().SetCenterOfMassOffset(Vec2f(-1.5f, 4.5f));
 	this.getShape().getConsts().transports = true;
 	this.Tag("medium weight");
-	this.Tag("short raid time"); // captures quicker
+	this.set_u16("capture time", 10); // captures quicker
+	
+	getMap().server_AddMovingSector(Vec2f(-12.0f, -12.0f), Vec2f(12.0f, 0.0f), "capture zone "+this.getNetworkID(), this.getNetworkID());
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
