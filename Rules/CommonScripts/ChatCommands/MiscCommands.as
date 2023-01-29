@@ -105,7 +105,7 @@ class TipCommand : ChatCommand
 
 	void Execute(string[] args, CPlayer@ player)
 	{
-		if (!isClient()) return;
+		if (!player.isMyPlayer()) return;
 
 		int index = args.size() == 0
 			? XORRandom(tips.size())
