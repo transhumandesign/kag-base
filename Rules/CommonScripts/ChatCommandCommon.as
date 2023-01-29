@@ -43,8 +43,8 @@ string removeExcessSpaces(string text)
 
 bool isBlobBlacklisted(string name, CPlayer@ player)
 {
-	// Allow devs to bypass blacklist
-	if (player !is null && player.isDev())
+	// Allow moderators to bypass blacklist
+	if (player !is null && player.isMod())
 	{
 		return false;
 	}
@@ -54,8 +54,8 @@ bool isBlobBlacklisted(string name, CPlayer@ player)
 
 bool isClassWhitelisted(string name, CPlayer@ player)
 {
-	// Allow devs to bypass blacklist
-	if (player !is null && player.isDev())
+	// Allow moderators to bypass blacklist
+	if (player !is null && player.isMod())
 	{
 		return true;
 	}
