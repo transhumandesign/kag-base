@@ -1,4 +1,5 @@
 // Halloween.as
+#include "HolidayCommon.as";
 
 Random spawnRand(Time());
 
@@ -12,14 +13,13 @@ void onInit(CRules@ this)
 void onRestart(CRules@ this)
 {
 	getMap().SetDayTime(0.85);
-    if(!this.exists("greg time"))
-    {
-        this.set_s32("greg time", greg_interval); //30 minutes
+    if (!this.exists("greg time"))
+		this.set_s32("greg time", greg_interval); //30 minutes
 
-    }
+	if (!this.exists(holiday_head_prop))
+		this.set_u8(holiday_head_prop, 73);
 
     this.addCommandID("necrolaugh");
-
 }
 
 void onPlayerDie( CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData )
