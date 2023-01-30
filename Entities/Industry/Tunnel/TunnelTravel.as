@@ -137,12 +137,17 @@ bool doesFitAtTunnel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 
 void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 {
-	if (caller !is null && tunnel !is null)
+	CBlob@ thisTunnel = getBlobByNetworkID(this.getNetworkID());
+	if (thisTunnel !is null && caller !is null && tunnel !is null)
 	{
 		//(this should prevent travel when stunned, but actually
 		// causes issues on net)
 		//if (isKnockable(caller) && caller.get_u8("knocked") > 0)
 		//	return;
+
+		//dont travel if tunnel team has changed while tunnel menu was open
+		if (this.getTeamNum() != tunnel.getTeamNum())
+			return;
 
 		//dont travel if caller is attached to something (e.g. siege)
 		if (caller.isAttached())
