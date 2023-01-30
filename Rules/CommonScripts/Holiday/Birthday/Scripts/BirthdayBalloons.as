@@ -10,9 +10,6 @@ void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
 
-	if (blob.exists(added_prop))
-		return;
-
 	Vec2f offset = Vec2f(blob.getWidth()/2 - frame_size/2, -blob.getHeight()/2 - frame_size/2);
 
 	if (blob.exists(offset_prop))
@@ -54,5 +51,5 @@ void onTick(CSprite@ this)
 		}
 	}
 
-	blob.set_bool(added_prop, true);
+	this.getCurrentScript().runFlags |= Script::remove_after_this;
 }

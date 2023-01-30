@@ -32,5 +32,4 @@ const Vec2f[] holiday_blob_offsets =
 	Vec2f(0.0f, 2.5f)
 };
 
-const string added_prop = "birthday activated";
 const string offset_prop = "additional balloon offset";
