@@ -8,6 +8,7 @@
 #include "RunnerTextures.as"
 #include "Accolades.as"
 #include "ShieldCommon.as"
+#include "CrouchCommon.as";
 
 const string shiny_layer = "shiny bit";
 
@@ -105,6 +106,7 @@ void onTick(CSprite@ this)
 	bool pressed_a2 = blob.isKeyPressed(key_action2);
 
 	bool walking = (blob.isKeyPressed(key_left) || blob.isKeyPressed(key_right));
+	bool crouching = isCrouching(blob);
 
 	aimpos = blob.getAimPos();
 	bool inair = (!blob.isOnGround() && !blob.isOnLadder());
@@ -151,7 +153,7 @@ void onTick(CSprite@ this)
 	// set facing
 	bool facingLeft = this.isFacingLeft();
 	// animations
-	bool ended = this.isAnimationEnded() || this.isAnimation("shield_raised");
+	bool ended = this.isAnimationEnded() || this.isAnimation("shield_raised") || this.isAnimation("shield_crouched");
 	bool wantsChopLayer = false;
 	s32 chopframe = 0;
 	f32 chopAngle = 0.0f;
@@ -193,9 +195,9 @@ void onTick(CSprite@ this)
 			case KnightStates::resheathing_slash:
 				this.SetAnimation("resheath_slash");
 			break;
-
+			
 			case KnightStates::resheathing_cut:
-				this.SetAnimation("draw_sword");
+				this.SetAnimation(crouching ? "draw_sword_crouched" : "draw_sword");
 			break;
 
 			case KnightStates::sword_cut_mid:
@@ -237,22 +239,22 @@ void onTick(CSprite@ this)
 			{
 				if (knight.swordTimer < KnightVars::slash_charge)
 				{
-					this.SetAnimation("draw_sword");
+					this.SetAnimation(crouching ? "draw_sword_crouched" : "draw_sword");
 				}
 				else if (knight.swordTimer < KnightVars::slash_charge_level2)
 				{
-					this.SetAnimation("strike_power_ready");
+					this.SetAnimation(crouching ? "strike_power_ready_crouched" : "strike_power_ready");
 					this.animation.frame = 0;
 				}
 				else if (knight.swordTimer < KnightVars::slash_charge_limit)
 				{
-					this.SetAnimation("strike_power_ready");
+					this.SetAnimation(crouching ? "strike_power_ready_crouched" : "strike_power_ready");
 					this.animation.frame = 1;
 					shinydot = true;
 				}
 				else
 				{
-					this.SetAnimation("draw_sword");
+					this.SetAnimation(crouching ? "draw_sword_crouched" : "draw_sword");
 				}
 			}
 			break;
@@ -279,7 +281,7 @@ void onTick(CSprite@ this)
 				}
 				else
 				{
-					this.SetAnimation("shield_raised");
+					this.SetAnimation(crouching ? "shield_crouched" : "shield_raised");
 
 					if (direction == 1)
 					{

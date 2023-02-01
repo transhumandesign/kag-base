@@ -245,12 +245,11 @@ bool onMapTileCollapse(CMap@ this, u32 offset)
 	return true;
 }
 
-u32 findTileByCoords(TileInfo@[] tiles, Vec2f coords)
+u32 findTileByCoords(const TileInfo@[] &in tiles, Vec2f coords)
 {
 	for (u32 i = 1; i < tiles.size(); i++)
 	{
-		TileInfo tile = tiles[i];
-		if (tile.coords == coords)
+		if (tiles[i].coords == coords)
 		{
 			return i;
 		}

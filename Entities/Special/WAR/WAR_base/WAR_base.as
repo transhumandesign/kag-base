@@ -158,7 +158,7 @@ void onTick(CBlob@ this)
 		int myteam = this.getTeamNum();
 		Vec2f pos = this.getPosition();
 		CBlob@[] blobs;
-		this.getMap().getBlobs(@blobs);
+		getBlobs(@blobs);
 
 		for (uint blob_step = 0; blob_step < blobs.length; ++blob_step)
 		{

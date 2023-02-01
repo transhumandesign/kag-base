@@ -281,7 +281,7 @@ void SetTileAimpos(CBlob@ this, BlockCursor@ bc)
 
 u32 getCurrentBuildDelay(CBlob@ this)
 {
-	return (getRules().hasTag("faster building") ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
+	return (getRules().getCurrentState() != GAME ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
 }
 
 f32 getMaxBuildDistance(CBlob@ this)
@@ -351,7 +351,7 @@ bool inNoBuildZone(CBlob@ blob, CMap@ map, Vec2f here, TileType buildTile)
 // This has to exist due to an engine issue where CMap.hasTileSolidBlobs() returns false if the blobtile was placed in the previous tick
 // and an engine issue where CMap.getBlobsFromTile() crashes the server 
 // wonderful game
-bool fakeHasTileSolidBlobs(Vec2f cursorPos, bool toPlaceIsLadder=false)
+bool fakeHasTileSolidBlobs(Vec2f cursorPos)
 {
 	CMap@ map = getMap();
 	CBlob@[] blobsAtPos;
@@ -362,17 +362,23 @@ bool fakeHasTileSolidBlobs(Vec2f cursorPos, bool toPlaceIsLadder=false)
 	{
 		CBlob@ blobAtPos = blobsAtPos[i];
 		
-		// the getHealth() check is here because apparently a blob isn't null for a tick (?) after being destroyed
-		if (blobAtPos !is null && 
-		blobAtPos.getHealth() > 0 && (
-		blobAtPos.hasTag("door") || 
-		blobAtPos.getName() == "wooden_platform" || 
-		(blobAtPos.getName() == "ladder" && !toPlaceIsLadder) || 
-		blobAtPos.getName() == "bridge"))
+		if (isRepairable(blobAtPos)) return true;
+	}
+
+	return false;
+}
+
+bool isRepairable(CBlob@ blob)
+{
+	// the getHealth() check is here because apparently a blob isn't null for a tick (?) after being destroyed
+	if (blob !is null && 
+		blob.getHealth() > 0 && (
+		blob.hasTag("door") || 
+		blob.getName() == "wooden_platform" || 
+		blob.getName() == "bridge"))
 		{
 			return true;
 		}
-	}
 
 	return false;
 }

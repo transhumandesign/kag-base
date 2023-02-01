@@ -4,10 +4,10 @@
 #include "CTF_Structs.as";
 
 const u32 materials_wait = 20; //seconds between free mats
-const u32 materials_wait_warmup = 30; //seconds between free mats
+const u32 materials_wait_warmup = 40; //seconds between free mats
 
-const int warmup_wood_amount = 300;
-const int warmup_stone_amount = 100;
+const int warmup_wood_amount = 250;
+const int warmup_stone_amount = 80;
 
 const int matchtime_wood_amount = 100;
 const int matchtime_stone_amount = 30;
@@ -260,7 +260,7 @@ void onTick(CRules@ this)
 	{
 		CBlob@[] spots;
 		getBlobsByName(base_name(),   @spots);
-		getBlobsByName("ballista",	@spots);
+		getBlobsByName("outpost",	@spots);
 		getBlobsByName("warboat",	 @spots);
 		getBlobsByName("buildershop", @spots);
 		getBlobsByName("archershop",  @spots);

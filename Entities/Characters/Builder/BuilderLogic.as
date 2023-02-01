@@ -142,7 +142,6 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 
 	if (blobID == 0)
 	{
-		// block
 		CMap@ map = getMap();
 		if (map !is null)
 		{
@@ -251,7 +250,7 @@ void Pickaxe(CBlob@ this)
 {
 	HitData@ hitdata;
 	CSprite @sprite = this.getSprite();
-	bool strikeAnim = sprite.isAnimation("strike") || sprite.isAnimation("chop");
+	bool strikeAnim = sprite.isAnimation("strike") || sprite.isAnimation("strike_fast") || sprite.isAnimation("chop") || sprite.isAnimation("chop_fast");
 
 	if (!strikeAnim)
 	{
@@ -579,7 +578,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	}
 
 	const u8 PAGE = this.get_u8("build page");
-	for(u8 i = 0; i < blocks[PAGE].length; i++)
+	for (u8 i = 0; i < blocks[PAGE].length; i++)
 	{
 		BuildBlock@ block = blocks[PAGE][i];
 		if (block !is null && block.name == detached.getName())
@@ -594,6 +593,8 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	// put out another one of the same
 	if (detached.hasTag("temp blob"))
 	{
+		detached.Untag("temp blob");
+		
 		if (!detached.hasTag("temp blob placed"))
 		{
 			detached.server_Die();

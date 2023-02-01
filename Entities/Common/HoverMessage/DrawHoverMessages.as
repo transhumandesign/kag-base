@@ -45,11 +45,15 @@ const string[] ignored_material_losses = {
 
 void updateCoinMessage(CPlayer@ player)
 {
-	const string prop_name = "old coin count";
+	string username = player.getUsername();
 
-	if (player.exists(prop_name))
+	const string prop_name = "old coin count " + username;
+
+	CRules@ rules = getRules();
+
+	if (rules.exists(prop_name))
 	{
-		const int quantity_diff = player.getCoins() - player.get_u32(prop_name);
+		const int quantity_diff = player.getCoins() - rules.get_u32(prop_name);
 
 		if (Maths::Abs(quantity_diff) > 0)
 		{
@@ -57,7 +61,7 @@ void updateCoinMessage(CPlayer@ player)
 		}
 	}
 
-	player.set_u32(prop_name, player.getCoins());
+	rules.set_u32(prop_name, player.getCoins());
 }
 
 void onInit(CBlob@ this)

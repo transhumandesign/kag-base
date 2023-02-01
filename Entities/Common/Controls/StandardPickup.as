@@ -450,7 +450,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 
 		if (name == "mat_bombs" || name == "mat_waterbombs")
 		{
-			return knight ? factor_resource_useful : factor_resource_boring;
+			return knight ? factor_resource_useful_rare : factor_resource_useful;
 		}
 
 		const bool archer = (thisname == "archer");
@@ -463,7 +463,7 @@ f32 getPriorityPickupScale(CBlob@ this, CBlob@ b)
 
 		if (name == "mat_waterarrows" || name == "mat_firearrows" || name == "mat_bombarrows")
 		{
-			return archer ? factor_resource_useful_rare : factor_resource_boring;
+			return archer ? factor_resource_useful_rare : factor_resource_useful;
 		}
 	}
 
@@ -727,8 +727,9 @@ void onRender(CSprite@ this)
 					);
 					*/
 
-					GUI::GetTextDimensions(b.getInventoryName(), dimensions);
-					GUI::DrawText(getTranslatedString(b.getInventoryName()), getDriver().getScreenPosFromWorldPos(b.getPosition() - Vec2f(0, -b.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);
+					string invName = getTranslatedString(b.getInventoryName());
+					GUI::GetTextDimensions(invName, dimensions);
+					GUI::DrawText(invName, getDriver().getScreenPosFromWorldPos(b.getPosition() - Vec2f(0, -b.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);
 
 					// draw mouse hover effect
 					//if (canBePicked)
