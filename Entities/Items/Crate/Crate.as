@@ -27,7 +27,7 @@ const u32 unpackSecs = 3;
 Crate@[] base_presets = 
 {
 	Crate("longboat",    FactoryFrame::longboat,    Vec2f(9, 4),  0, "unpack_only_water"),
-	Crate("warboat",     FactoryFrame::warboat,     Vec2f(9, 6), 50, "unpack_only_water"),
+	Crate("warboat",     FactoryFrame::warboat,     Vec2f(9, 6),  0, "unpack_only_water"),
 	Crate("catapult",    FactoryFrame::catapult,    Vec2f(5, 3)),
 	Crate("ballista",    FactoryFrame::ballista,    Vec2f(5, 5)),
 	Crate("mounted_bow", FactoryFrame::mounted_bow, Vec2f(3, 3)),
