@@ -133,12 +133,6 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		CInventory@ inv = caller.getInventory();
 		if (inv is null) return;
 
-		CBlob@ carried = caller.getCarriedBlob();
-		if (carried !is null && carried.hasTag("temp blob"))
-		{
-			carried.server_Die();
-		}
-
 		if (inv.getItemsCount() > 0)
 		{
 			CBitStream params;
@@ -156,6 +150,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		CBlob@ caller = getBlobByNetworkID(params.read_u16());
 		if (caller is null) return;
+
+		CBlob@ carried = caller.getCarriedBlob();
+		if (carried !is null && carried.hasTag("temp blob"))
+		{
+			carried.server_Die();
+		}
 
 		CInventory@ inv = caller.getInventory();
 		if (inv is null) return;
