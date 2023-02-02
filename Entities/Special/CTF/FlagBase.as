@@ -14,7 +14,6 @@ void onInit(CBlob@ this)
 		{
 			this.server_AttachTo(flag, "FLAG");
 			this.set_netid("flag id", flag.getNetworkID());
-			this.Sync("flag_id", true);
 		}
 	}
 
