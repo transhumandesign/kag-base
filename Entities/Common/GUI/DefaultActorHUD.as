@@ -89,7 +89,12 @@ void onRender(CSprite@ this)
 	renderBackBar(ul, dim.x, 1.0f);
 	u8 bar_width_in_slots = blob.get_u8("gui_HUD_slots_width");
 	f32 width = bar_width_in_slots * 40.0f;
-	renderFrontStone(ul + Vec2f(dim.x + 40, 0), width, 1.0f);
+
+	// additional space for drawing resupply icon
+	u32 offset = blob.getName() == "builder" ? 80 : 40;
+	u32 width_offset = blob.getName() == "builder" ? 1 * 40.0f : 0;
+
+	renderFrontStone(ul + Vec2f(dim.x + offset, 0), width + width_offset, 1.0f);
 	renderHPBar(blob, ul);
 	//GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 0, Vec2f(128,32), topLeft);
 }
