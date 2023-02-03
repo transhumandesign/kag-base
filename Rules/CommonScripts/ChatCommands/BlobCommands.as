@@ -64,7 +64,6 @@ class CrateCommand : BlobCommand
 			return;
 		}
 
-		//TODO: show correct crate icon for siege
 		server_MakeCrate(blobName, description, 0, team, pos);
 	}
 }

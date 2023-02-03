@@ -55,7 +55,6 @@ class ClassCommand : ChatCommand
 			return;
 		}
 
-		//TODO: fix bad snapshot in console when changing class
 		newBlob.server_SetPlayer(player);
 		blob.Tag("switch class");
 		blob.server_SetPlayer(null);
