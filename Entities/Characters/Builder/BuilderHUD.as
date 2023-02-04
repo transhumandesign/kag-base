@@ -60,7 +60,7 @@ void onRender(CSprite@ this)
 
 	// draw resupply icon
 
-	if (getRules().gamemode_name == "CTF" || getRules().gamemode_name == "SmallCTF")
+	if (shouldRenderResupplyIndicator(blob))
 	{
 		DrawResupplyOnHUD(blob, tl + Vec2f(8 + (slotsSize) * 40, -4));
 	}

@@ -2,6 +2,12 @@
 
 #include "CTF_GiveSpawnItems.as";
 
+bool shouldRenderResupplyIndicator(CBlob@ blob)
+{
+	return ((getRules().gamemode_name == "CTF" || getRules().gamemode_name == "SmallCTF") &&
+		(blob.getName() == "builder"));
+}
+
 f32 getHUDX()
 {
 	return getScreenWidth() / 3;
@@ -71,7 +77,7 @@ void DrawResupplyOnHUD(CBlob@ this, Vec2f tl)
 
 	Vec2f dim_res_unav;
 	GUI::GetTextDimensions(resupply_unavailable, dim_res_unav);
-	
+
 	string short_secs = secs + "s";
 
 	Vec2f icon_pos = tl;

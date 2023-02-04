@@ -82,6 +82,10 @@ void onRender(CSprite@ this)
 		return;
 
 	CBlob@ blob = this.getBlob();
+
+	if (blob is null)
+		return;
+
 	Vec2f dim = Vec2f(402, 64);
 	Vec2f ul(getHUDX() - dim.x / 2.0f, getHUDY() - dim.y + 12);
 	Vec2f lr(ul.x + dim.x, ul.y + dim.y);
@@ -91,8 +95,8 @@ void onRender(CSprite@ this)
 	f32 width = bar_width_in_slots * 40.0f;
 
 	// additional space for drawing resupply icon
-	u32 offset = blob.getName() == "builder" ? 80 : 40;
-	u32 width_offset = blob.getName() == "builder" ? 1 * 40.0f : 0;
+	u32 offset = (shouldRenderResupplyIndicator(blob) ? 80 : 40);
+	u32 width_offset = (shouldRenderResupplyIndicator(blob) ? 1 * 40.0f : 0);
 
 	renderFrontStone(ul + Vec2f(dim.x + offset, 0), width + width_offset, 1.0f);
 	renderHPBar(blob, ul);
