@@ -57,4 +57,11 @@ void onRender(CSprite@ this)
 	// draw class icon
 
 	GUI::DrawIcon(iconsFilename, 3, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -13), 1.0f);
+
+	// draw resupply icon
+
+	if (shouldRenderResupplyIndicator(blob))
+	{
+		DrawResupplyOnHUD(blob, tl + Vec2f(8 + (slotsSize) * 40, -4));
+	}
 }
