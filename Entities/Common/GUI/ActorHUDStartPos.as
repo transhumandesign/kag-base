@@ -60,12 +60,18 @@ void DrawResupplyOnHUD(CBlob@ this, Vec2f tl)
 		.replace("{WOOD}", "" + wood_amount)
 		.replace("{STONE}", "" + stone_amount);
 
+	Vec2f dim_res_av;
+	GUI::GetTextDimensions(resupply_available, dim_res_av);
+
 	string resupply_unavailable = getTranslatedString("Next resupply of {WOOD} wood and {STONE} stone in {SEC}{TIMESUFFIX}.")
 		.replace("{SEC}", "" + secs)
 		.replace("{TIMESUFFIX}", getTranslatedString(units))
 		.replace("{WOOD}", "" + wood_amount)
 		.replace("{STONE}", "" + stone_amount);
 
+	Vec2f dim_res_unav;
+	GUI::GetTextDimensions(resupply_unavailable, dim_res_unav);
+	
 	string short_secs = secs + "s";
 
 	Vec2f icon_pos = tl;
@@ -80,7 +86,7 @@ void DrawResupplyOnHUD(CBlob@ this, Vec2f tl)
 
 		if (hover)
 		{
-			GUI::DrawTextCentered(resupply_unavailable, icon_pos - Vec2f(0, 24), color_white);
+			GUI::DrawText(resupply_unavailable, icon_pos + Vec2f(icon_size.x * 2 - dim_res_unav.x + 8, -24), color_white);
 		}
 	}
 	else
@@ -89,7 +95,7 @@ void DrawResupplyOnHUD(CBlob@ this, Vec2f tl)
 
 		if (hover)
 		{
-			GUI::DrawTextCentered(resupply_available, icon_pos - Vec2f(0, 24), color_white);
+			GUI::DrawText(resupply_available, icon_pos + Vec2f(icon_size.x * 2 - dim_res_av.x + 8, -24), color_white);
 		}
 	}
 }
