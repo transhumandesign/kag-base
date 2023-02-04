@@ -27,7 +27,7 @@ bool hoverOnResupplyIcon(Vec2f icon_pos, Vec2f icon_size)
 	Vec2f mouse_pos = getControls().getMouseScreenPos();
 
 	return mouse_pos.x > icon_pos.x && mouse_pos.x < icon_pos.x + icon_size.x * 2
-		&& mouse_pos.y > icon_pos.y && mouse_pos.y < icon_pos.y + icon_size.y * 2;
+		&& mouse_pos.y > icon_pos.y && mouse_pos.y < icon_pos.y + icon_size.y * 2 + 6;
 }
 
 Vec2f getActorHUDStartPosition(CBlob@ blob, const u8 bar_width_in_slots)
