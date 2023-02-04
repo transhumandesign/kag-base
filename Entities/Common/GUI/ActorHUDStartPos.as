@@ -81,7 +81,7 @@ void DrawResupplyOnHUD(CBlob@ this, Vec2f tl)
 		if (next_items > getGameTime())
 		{
 			GUI::DrawIcon("Entities/Common/GUI/ResupplyIcon.png", 0, icon_size, icon_pos, 1.0f);
-			GUI::DrawTextCentered(short_secs, icon_pos + Vec2f(16, 38), color_white);
+			GUI::DrawTextCentered(short_secs, icon_pos + Vec2f(14, 36), color_white);
 
 			if (hover)
 			{

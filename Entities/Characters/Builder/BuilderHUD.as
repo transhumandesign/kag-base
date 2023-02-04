@@ -62,6 +62,6 @@ void onRender(CSprite@ this)
 
 	if (getRules().gamemode_name == "CTF" || getRules().gamemode_name == "SmallCTF")
 	{
-		DrawResupplyOnHUD(blob, tl + Vec2f(8 + (slotsSize) * 40, -5));
+		DrawResupplyOnHUD(blob, tl + Vec2f(8 + (slotsSize) * 40, -4));
 	}
 }
