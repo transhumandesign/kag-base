@@ -40,12 +40,20 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			}
 		}
 
-		// add pickup attachment so we can pickup body
+		// add/convert pickup attachment so we can pickup body
 		CAttachment@ a = this.getAttachments();
 
 		if (a !is null)
 		{
-			AttachmentPoint@ ap = a.AddAttachmentPoint("PICKUP", false);
+			AttachmentPoint@ point = a.getAttachmentPointByName("PICKUP");
+			if (point is null)
+			{
+				AttachmentPoint@ ap = a.AddAttachmentPoint("PICKUP", false);
+			}
+			else
+			{
+				point.socket = false;
+			}
 		}
 
 		// sound
