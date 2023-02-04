@@ -85,7 +85,7 @@ void DrawResupplyOnHUD(CBlob@ this, Vec2f tl)
 	}
 	else
 	{
-		GUI::DrawIcon("Entities/Common/GUI/ResupplyIcon.png", 1, icon_size, icon_pos, 1.0f);
+		GUI::DrawIcon("Entities/Common/GUI/ResupplyIcon.png", 1, icon_size, icon_pos + Vec2f(0, 6), 1.0f);
 
 		if (hover)
 		{
