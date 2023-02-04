@@ -41,58 +41,56 @@ void DrawResupplyOnHUD(CBlob@ this, Vec2f tl)
 
 	string propname = getCTFTimerPropertyName(p, "builder");
 
-	if (getRules().exists(propname)) 
+	if (!getRules().exists(propname)) return;
+
+	int wood_amount = matchtime_wood_amount;
+	int stone_amount = matchtime_stone_amount;
+	if (getRules().isWarmup())
 	{
-		int wood_amount = matchtime_wood_amount;
-		int stone_amount = matchtime_stone_amount;
-		if (getRules().isWarmup())
+		wood_amount = warmup_wood_amount;
+		stone_amount = warmup_stone_amount;
+	}
+
+	s32 next_items = getRules().get_s32(propname);
+
+	u32 secs = ((next_items - 1 - getGameTime()) / getTicksASecond()) + 1;
+	string units = ((secs != 1) ? " seconds" : " second");
+
+	string resupply_available = getTranslatedString("Go to a builder shop or a respawn point to get a resupply of {WOOD} wood and {STONE} stone.")
+		.replace("{WOOD}", "" + wood_amount)
+		.replace("{STONE}", "" + stone_amount);
+
+	string resupply_unavailable = getTranslatedString("Next resupply of {WOOD} wood and {STONE} stone in {SEC}{TIMESUFFIX}.")
+		.replace("{SEC}", "" + secs)
+		.replace("{TIMESUFFIX}", getTranslatedString(units))
+		.replace("{WOOD}", "" + wood_amount)
+		.replace("{STONE}", "" + stone_amount);
+
+	string short_secs = secs + "s";
+
+	Vec2f icon_pos = tl;
+	Vec2f icon_size = Vec2f(16, 16);
+
+	bool hover = hoverOnResupplyIcon(icon_pos, icon_size);
+
+	if (next_items > getGameTime())
+	{
+		GUI::DrawIcon("Entities/Common/GUI/ResupplyIcon.png", 0, icon_size, icon_pos, 1.0f);
+		GUI::DrawTextCentered(short_secs, icon_pos + Vec2f(14, 36), color_white);
+
+		if (hover)
 		{
-			wood_amount = warmup_wood_amount;
-			stone_amount = warmup_stone_amount;
+			GUI::DrawTextCentered(resupply_unavailable, icon_pos - Vec2f(0, 24), color_white);
 		}
+	}
+	else
+	{
+		GUI::DrawIcon("Entities/Common/GUI/ResupplyIcon.png", 1, icon_size, icon_pos, 1.0f);
 
-		s32 next_items = getRules().get_s32(propname);
-
-		u32 secs = ((next_items - 1 - getGameTime()) / getTicksASecond()) + 1;
-		string units = ((secs != 1) ? " seconds" : " second");
-
-		string resupply_available = getTranslatedString("Go to a builder shop or a respawn point to get a resupply of {WOOD} wood and {STONE} stone.")
-			.replace("{WOOD}", "" + wood_amount)
-			.replace("{STONE}", "" + stone_amount);
-
-		string resupply_unavailable = getTranslatedString("Next resupply of {WOOD} wood and {STONE} stone in {SEC}{TIMESUFFIX}.")
-			.replace("{SEC}", "" + secs)
-			.replace("{TIMESUFFIX}", getTranslatedString(units))
-			.replace("{WOOD}", "" + wood_amount)
-			.replace("{STONE}", "" + stone_amount);
-
-		string short_secs = secs + "s";
-
-		Vec2f icon_pos = tl;
-		Vec2f icon_size = Vec2f(16, 16);
-
-		bool hover = hoverOnResupplyIcon(icon_pos, icon_size);
-
-		if (next_items > getGameTime())
+		if (hover)
 		{
-			GUI::DrawIcon("Entities/Common/GUI/ResupplyIcon.png", 0, icon_size, icon_pos, 1.0f);
-			GUI::DrawTextCentered(short_secs, icon_pos + Vec2f(14, 36), color_white);
-
-			if (hover)
-			{
-				GUI::DrawTextCentered(resupply_unavailable, icon_pos - Vec2f(0, 24), color_white);
-			}
+			GUI::DrawTextCentered(resupply_available, icon_pos - Vec2f(0, 24), color_white);
 		}
-		else
-		{
-			GUI::DrawIcon("Entities/Common/GUI/ResupplyIcon.png", 1, icon_size, icon_pos, 1.0f);
-
-			if (hover)
-			{
-				GUI::DrawTextCentered(resupply_available, icon_pos - Vec2f(0, 24), color_white);
-			}
-		}
-
 	}
 }
 
