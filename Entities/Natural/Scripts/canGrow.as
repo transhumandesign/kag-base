@@ -54,6 +54,6 @@ bool canGrowAt(CBlob@ this, Vec2f pos)
 
 	}*/
 
-	Vec2f underneath = Vec2f(pos.x, pos.y + this.getHeight() / 2 + 4);
+	Vec2f underneath = Vec2f(pos.x, pos.y + (this.getHeight() + map.tilesize) * 0.5f);
 	return (map.isTileGround(map.getTile(underneath).type));
 }
