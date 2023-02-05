@@ -1742,24 +1742,23 @@ void SetFirstAvailableBomb(CBlob@ this)
 // Blame Fuzzle.
 bool canHit(CBlob@ this, CBlob@ b)
 {
-
 	if (b.hasTag("invincible") || b.hasTag("temp blob"))
 		return false;
+	
+	// don't hit picked up items (except players and specially tagged items)
+	return b.hasTag("player") || b.hasTag("slash_while_in_hand") || !isBlobBeingCarried(b);
+}
 
-	// don't hit picked up items
+bool isBlobBeingCarried(CBlob@ b)
+{	
 	CAttachment@ att = b.getAttachments();
-	if (att !is null)
+	if (att is null)
 	{
-		AttachmentPoint@ point = att.getAttachmentPointByName("PICKUP");
-		if (point !is null && !point.socket &&
-			b.isAttachedToPoint("PICKUP") && !b.hasTag("slash_while_in_hand")) return false;
+		return false;
 	}
 
-	if (b.hasTag("dead"))
-		return true;
-
-	return true;
-
+	// Look for a "PICKUP" attachment point where socket=false and occupied=true
+	return att.getAttachmentPoint("PICKUP", false, true) !is null;
 }
 
 void onRemoveFromInventory(CBlob@ this, CBlob@ blob)

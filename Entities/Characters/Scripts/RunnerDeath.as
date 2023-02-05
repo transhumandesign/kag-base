@@ -45,13 +45,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 		if (a !is null)
 		{
-			AttachmentPoint@ point = a.getAttachmentPointByName("PICKUP");
-			if (point !is null && point.socket)
-			{
-				// Invalidate existing pickup attachment
-				point.name = "PICKUP_OLD";
-			}
-
 			AttachmentPoint@ ap = a.AddAttachmentPoint("PICKUP", false);
 		}
 
