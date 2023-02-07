@@ -1,7 +1,6 @@
 void onInit(CBlob@ this)
 {
 	this.Tag("ignore_saw");
-	this.Tag("use inventory icon");
 
 	if (this.exists("food name"))
 	{

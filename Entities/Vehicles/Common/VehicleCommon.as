@@ -413,14 +413,14 @@ bool Vehicle_AddLoadAmmoButton(CBlob@ this, CBlob@ caller)
 	{
 		// put in what is carried
 		CBlob@ carryObject = caller.getCarriedBlob();
-		if (carryObject !is null && (!carryObject.isSnapToGrid() || carryObject.getName() == "seed"))  // not spikes or door, allow seeds
+		if (carryObject !is null && !carryObject.hasTag("temp blob"))
 		{
 			CBitStream callerParams;
 			callerParams.write_u16(caller.getNetworkID());
 			callerParams.write_u16(carryObject.getNetworkID());
 
 			string iconName = "$" + carryObject.getName() + "$";
-			if (carryObject.hasTag("use inventory icon"))
+			if (GUI::hasIconName("$" + carryObject.getInventoryName() + "$"))
 			{
 				iconName = "$" + carryObject.getInventoryName() + "$";
 			}

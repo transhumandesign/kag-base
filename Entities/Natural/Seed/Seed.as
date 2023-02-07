@@ -67,7 +67,6 @@ void onInit(CBlob@ this)
 
 	this.Tag("place norotate");
 	this.Tag("pushedByDoor");
-	this.Tag("use inventory icon");
 
 	this.getCurrentScript().tickFrequency = OPT_TICK;
 }
