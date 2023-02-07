@@ -409,12 +409,19 @@ bool Vehicle_AddLoadAmmoButton(CBlob@ this, CBlob@ caller)
 	{
 		// put in what is carried
 		CBlob@ carryObject = caller.getCarriedBlob();
-		if (carryObject !is null && !carryObject.isSnapToGrid())  // not spikes or door
+		if (carryObject !is null && !carryObject.hasTag("temp blob"))
 		{
 			CBitStream callerParams;
 			callerParams.write_u16(caller.getNetworkID());
 			callerParams.write_u16(carryObject.getNetworkID());
-			caller.CreateGenericButton("$" + carryObject.getName() + "$", getMagAttachmentPoint(this).offset, this, this.getCommandID("putin_mag"), getTranslatedString("Load {ITEM}").replace("{ITEM}", carryObject.getInventoryName()), callerParams);
+
+			string iconName = "$" + carryObject.getName() + "$";
+			if (GUI::hasIconName("$" + carryObject.getInventoryName() + "$"))
+			{
+				iconName = "$" + carryObject.getInventoryName() + "$";
+			}
+
+			caller.CreateGenericButton(iconName, getMagAttachmentPoint(this).offset, this, this.getCommandID("putin_mag"), getTranslatedString("Load {ITEM}").replace("{ITEM}", carryObject.getInventoryName()), callerParams);
 			return true;
 		}
 		else  // nothing in hands - take automatic
