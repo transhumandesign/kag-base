@@ -473,7 +473,7 @@
 	"Out of stock. Come back later.":"Stock épuisé. Revenez plus tard.",
 
 //HelpfulDeathTips.cfg
-	"To hide these tips, and other in-game help, hit F1.": "Pour cacher ces conseils et l'aide en jeu, appuyez sur F1.",
+	"To hide in-game help and tips, hit F1.": "Pour cacher ces conseils et l'aide en jeu, appuyez sur F1.",
 	"Enemies can use your tunnels so protect them well!": "Les ennemis peuvent utiliser vos tunnels! Vous devez bien les protéger.",
 	"Spikes will stun you for a short time.": "Les pointes vous étourdissent un court moment.",
 	"Saws will kill you instantly": "Les scies en marche vous tuent instantanément.",
@@ -502,7 +502,7 @@
 	"1 bomb can deal up to 3 hearts of damage.": "1 bombe peut causer 3 points de dégâts, donc blesser à mort n'importe quel archer ou constructeur.",
 	"Drills are a fast way to dig, but only yield 50%. Don't use them on precious gold or during build time!": "Les perceuses sont rapides, mais ne donnent que la moitié des ressources. Évitez de gaspiller l'or ou les ressources de votre base!",
 	"Good players can play any class when needed.": "Les meilleurs joueurs sont ceux qui peuvent jouer avec n'importe quelle classe quand il le faut.",
-	"Make sure you're helping your team advance; don't just hide out in the back!": "Ne vous cachez pas dans votre base, et aidez votre équipe à avancer!",
+	"Make sure you're helping your team advance. Don't just hide out in the back!": "Ne vous cachez pas dans votre base, et aidez votre équipe à avancer!",
 	"Ride a shark on land and press up to pick him up.": "Vous pouvez attraper un requin sur la terre ferme, en appuyant sur haut après de l'avoir chevauché.",
 	"A red name indicates a server admin - ask them for help if you need it.": "Les administrateurs ont leur pseudonyme en rouge. Si vous avez besoin d'aide, demandez leur-en.",
 	"A bush plus a mine equals happy fun time.": "Buisson + mine = un moment de fun inégalable.",

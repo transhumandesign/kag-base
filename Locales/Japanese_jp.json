@@ -492,7 +492,7 @@
 	"Out of stock. Come back later.":"売り切れ中。後で来てみよう",
 
 //HelpfulDeathTips.cfg
-	"To hide these tips, and other in-game help, hit F1.":
+	"To hide in-game help and tips, hit F1.":
 	"説明の表示、非表示はF１で切り替えられる",
 	"Enemies can use your tunnels so protect them well!":
 	"チャンネルは味方だけでなく敵も使えるのでしっかり守ってから設置しよう",
@@ -550,7 +550,7 @@
 	"ドリルは素早く掘ることができますが、獲得できる資源が半分になります。間違っても金の部分はドリルで掘らないで！",
 	"Good players can play any class when needed.":
 	"イカしてるプレイヤーの条件は、必要に応じてジョブを変えることができるプレイヤーだ。",
-	"Make sure you're helping your team advance; don't just hide out in the back!":
+	"Make sure you're helping your team advance. Don't just hide out in the back!":
 	"隠れていても仕方が無い。味方と共に前線へと進もう",
 	"Ride a shark on land and press up to pick him up.":
 	"サメに上から近づいてSキーで乗れる。さらにすばやくWを押すことでサメがあなたの手に！",
