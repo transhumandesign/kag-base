@@ -95,6 +95,7 @@ class SpawnCommand : BlobCommand
 	{
 		super("spawn", "Spawn a blob");
 		AddAlias("blob");
+		AddAlias("s");
 		SetUsage("<blob>");
 	}
 
