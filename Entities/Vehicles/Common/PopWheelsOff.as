@@ -14,6 +14,8 @@ void onInit(CBlob@ this)
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
+	
+	if (this.isAttached() || caller.isAttached()) return;
 
 	if (this.getAttachments().getAttachmentPointByName("DRIVER").getOccupied() !is null) return;
 
