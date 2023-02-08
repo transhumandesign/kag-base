@@ -166,8 +166,8 @@ void onTick(CBlob@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (blob.getShape().getConsts().platform)
-		return false;
+	//if (blob.getShape().getConsts().platform)
+		//return false;
 	return Vehicle_doesCollideWithBlob_boat(this, blob);
 }
 
