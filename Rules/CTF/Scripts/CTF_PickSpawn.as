@@ -3,7 +3,9 @@
 
 const int BUTTON_SIZE = 2;
 u16 LAST_PICK = 0;
-bool MENU_ALREADY = false;
+u16 RESPAWNS_COUNT = 0;
+bool REQUESTED_SPAWN = false;
+bool SHOW_MENU = false;
 
 void onInit(CRules@ this)
 {
@@ -11,131 +13,103 @@ void onInit(CRules@ this)
 	this.addCommandID("pick spawn");
 }
 
-void BuildRespawnMenu(CRules@ this, CPlayer@ player)
+CGridMenu@ getRespawnMenu()
 {
-	getHUD().ClearMenus(true); // kill all even modal
+	return getGridMenuByName(getTranslatedString("Pick spawn point"));
+}
 
-	const int teamNum = player.getTeamNum();
-	const u16 localID = getLocalPlayer().getNetworkID();
+void RemoveRespawnMenu()
+{
+	CGridMenu@ menu = getRespawnMenu();
+	if (menu !is null)
+		menu.kill = true;
+}
 
-    CBlob@ oldrespawn = getBlobByNetworkID(LAST_PICK);
-    if(oldrespawn !is null) //don't use last pick if it's under raid
-    {
-        if(isUnderRaid(oldrespawn))
-        {
-            LAST_PICK = 0;
+void BuildRespawnMenu(CRules@ this, CPlayer@ player, CBlob@[] respawns)
+{
+	RemoveRespawnMenu();
 
-        }
+	if (player.getTeamNum() == this.getSpectatorTeamNum()) return;
 
-    }
-
-	if (teamNum != this.getSpectatorTeamNum())
+	if (!REQUESTED_SPAWN)
 	{
+		REQUESTED_SPAWN = true;
+		player.client_RequestSpawn(LAST_PICK); // spawn even without pick
+	}
 
-		if (!MENU_ALREADY)
+	// if there are no options then just respawn
+	if (respawns.length <= 1)
+	{
+		LAST_PICK = 0;
+		return;
+	}
+
+	SortByPosition(@respawns);
+
+	// build menu for spawns
+	const Vec2f menupos = getDriver().getScreenCenterPos() + Vec2f(0.0f, getDriver().getScreenHeight() / 2.0f - BUTTON_SIZE - 46.0f);
+	CGridMenu@ menu = CreateGridMenu(menupos, null, Vec2f((respawns.length) * BUTTON_SIZE, BUTTON_SIZE), getTranslatedString("Pick spawn point"));
+	if (menu !is null)
+	{
+		menu.modal = true;
+		menu.deleteAfterClick = false;
+		const u16 localID = player.getNetworkID();
+		CBitStream params;
+		for (uint i = 0; i < respawns.length; i++)
 		{
-			MENU_ALREADY = true;
-			player.client_RequestSpawn(LAST_PICK);	// spawn even without pick
-		}
-
-		CBlob@[] respawns;
-		PopulateSpawnList(@respawns, teamNum);
-
-		SortByPosition(@respawns, teamNum);
-
-		// if there are no posts just respawn
-		if (respawns.length <= 1)
-		{
-			LAST_PICK = 0;
-			return;
-		}
-
-		CGridMenu@ oldmenu = getGridMenuByName("Pick spawn");
-
-		if (oldmenu !is null)
-		{
-			oldmenu.kill = true;
-		}
-
-		// build menu for spawns
-		CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos() + Vec2f(0.0f, getDriver().getScreenHeight() / 2.0f - BUTTON_SIZE - 46.0f), null, Vec2f((respawns.length) * BUTTON_SIZE, BUTTON_SIZE), getTranslatedString("Pick spawn point"));
-
-		if (menu !is null)
-		{
-			menu.modal = true;
-			menu.deleteAfterClick = false;
-			CBitStream params;
-			for (uint i = 0; i < respawns.length; i++)
+			CBlob@ respawn = respawns[i];
+			params.ResetBitIndex();
+			params.write_netid(localID);
+			params.write_netid(respawn.getNetworkID());
+			const string msg = getTranslatedString("Spawn at {ITEM}").replace("{ITEM}", getTranslatedString(respawn.getInventoryName()));
+			CGridButton@ button = menu.AddButton("$" + respawn.getName() + "$", msg, this.getCommandID("pick spawn"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
+			if (button !is null)
 			{
-				CBlob@ respawn = respawns[i];
-				const string respawnName = respawn.getName();
-				params.ResetBitIndex();
-				params.write_netid(localID);
-				params.write_netid(respawn.getNetworkID());
-				CGridButton@ button2 = menu.AddButton("$" + respawnName + "$", getTranslatedString("Spawn at {ITEM}").replace("{ITEM}", getTranslatedString(respawn.getInventoryName())), this.getCommandID("pick spawn"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
-                if (button2 !is null)
+				button.selectOneOnClick = true;
+
+				/*if (isUnderRaid(respawn))
 				{
-					button2.selectOneOnClick = true;
+					button.SetEnabled(false);
+					button.SetHoverText(getTranslatedString("respawn is contested"));
+				}*/
 
-                    if(isUnderRaid(respawn))
-                    {
-                        button2.SetEnabled(false);
-                        button2.SetHoverText(getTranslatedString("respawn is contested"));
-
-                    }
-
-					if (LAST_PICK == respawn.getNetworkID())
-					{
-						button2.SetSelected(1);
-					}
+				if (LAST_PICK == respawn.getNetworkID())
+				{
+					button.SetSelected(1);
 				}
 			}
-
-			// default behaviour on clicking anywhere else
-			if (respawns.length > 0)
-			{
-				params.ResetBitIndex();
-				params.write_netid(localID);
-				params.write_netid(LAST_PICK);
-				menu.SetDefaultCommand(this.getCommandID("pick default"), params);
-			}
 		}
+
+		// default behaviour on clicking anywhere else
+		params.ResetBitIndex();
+		params.write_netid(localID);
+		params.write_netid(LAST_PICK);
+		menu.SetDefaultCommand(this.getCommandID("pick default"), params);
 	}
 }
 
 void onTick(CRules@ this)
 {
-	/*if(getNet().isClient()) //if you can fix the infinite spawning, feel free to uncomment :)
+	CPlayer@ player = getLocalPlayer();
+	if (player is null || !player.isMyPlayer()) return;
+
+	if (SHOW_MENU)
 	{
-		CPlayer@ player = getLocalPlayer();
-		CControls@ controls = getControls();
-		if(player !is null && controls !is null && 	//got what we need
-			player.getBlob() is null)				//player blob dead
+		const string propname = "ctf spawn time " + player.getUsername();
+		if (this.exists(propname) && this.get_u8(propname) < 2 || this.isGameOver())
 		{
-			if(controls.ActionKeyPressed( AK_ACTION1 ) && !getHUD().hasMenus())
-			{
-				BuildRespawnMenu(this, player);
-			}
+			RemoveRespawnMenu();
+			SHOW_MENU = false;
 		}
-	}*/
 
-	CPlayer@ p = getLocalPlayer();
-
-	if (p is null || !p.isMyPlayer()) { return; }
-
-    string propname = "ctf spawn time " + p.getUsername();
-    if(this.exists(propname))
-    {
-        u8 spawn = this.get_u8(propname);
-        if(spawn < 2)
-        {
-            getHUD().ClearMenus(true);
-            return;
-
-        }
-
-    }
-
+		CBlob@[] respawns;
+		PopulateSpawnList(@respawns, player.getTeamNum());
+		if (RESPAWNS_COUNT != respawns.length || getRespawnMenu() is null)
+		{
+			RESPAWNS_COUNT = respawns.length;
+			BuildRespawnMenu(this, player, respawns);
+		}
+	}
 }
 
 //hook after the change has been decided
@@ -143,8 +117,8 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 {
 	if (player !is null && player.isMyPlayer() && this.isMatchRunning())
 	{
-		BuildRespawnMenu(this, player);
-
+		SHOW_MENU = true;
+		RESPAWNS_COUNT = -1;
 	}
 }
 
@@ -153,7 +127,8 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 {
 	if (victim !is null && victim.isMyPlayer() && !this.isGameOver())
 	{
-		BuildRespawnMenu(this, victim);
+		SHOW_MENU = true;
+		RESPAWNS_COUNT = -1;
 	}
 }
 
@@ -164,20 +139,20 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 	{
 		getHUD().ClearMenus(true); // kill all even modal
 
-		MENU_ALREADY = false;
+		REQUESTED_SPAWN = false;
+		SHOW_MENU = false;
 	}
-
 }
 
 void ReadPickCmd(CRules@ this, CBitStream @params)
 {
 	CPlayer@ player = getPlayerByNetworkId(params.read_netid());
 	const u16 pick = params.read_netid();
-    
+
 	if (player.isMyPlayer())
 	{
-        // Only set the respawn reference, after we've confirmed 
-        //  the involved player is our own. 
+		// Only set the respawn reference, after we've confirmed 
+		//  the involved player is our own. 
 		LAST_PICK = pick; 
 
 		if (player.getTeamNum() == this.getSpectatorTeamNum())
@@ -188,7 +163,6 @@ void ReadPickCmd(CRules@ this, CBitStream @params)
 		{
 			player.client_RequestSpawn(pick);
 		}
-		//getHUD().ClearMenus(true); // kill all even modal
 	}
 }
 
@@ -198,13 +172,9 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 	{
 		ReadPickCmd(this, params);
 	}
-	else if (cmd == this.getCommandID("pick default"))
-	{
-
-	}
 }
 
-void SortByPosition(CBlob@[]@ spawns, const int teamNum)
+void SortByPosition(CBlob@[]@ spawns)
 {
 	// Selection Sort
 	uint N = spawns.length;
@@ -215,11 +185,7 @@ void SortByPosition(CBlob@[]@ spawns, const int teamNum)
 		// Find the index of the minimum element
 		for (uint j = i + 1; j < N; j++)
 		{
-			if (
-			    (teamNum == 0 && spawns[j].getPosition().x < spawns[minIndex].getPosition().x)
-			    ||
-			    (teamNum == 1 && spawns[j].getPosition().x < spawns[minIndex].getPosition().x)
-			)
+			if (spawns[j].getPosition().x < spawns[minIndex].getPosition().x)
 			{
 				minIndex = j;
 			}
