@@ -186,15 +186,15 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v)) return;
 
+	// reset charge if gunner leaves while charging
+	if (attachedPoint.name == "GUNNER")
+	{
+		v.charge = 0;
+	}
+
 	// jump out
 	if (detached.hasTag("player") && attachedPoint.socket)
 	{
-		// reset charge if gunner leaves while charging
-		if (attachedPoint.name == "GUNNER")
-		{
-			v.charge = 0;
-		}
-
 		detached.setPosition(detached.getPosition() + Vec2f(0.0f, -4.0f));
 		detached.setVelocity(this.getVelocity() + v.out_vel);
 		detached.IgnoreCollisionWhileOverlapped(null);
