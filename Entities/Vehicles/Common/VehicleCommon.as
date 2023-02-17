@@ -24,12 +24,6 @@ class VehicleInfo
 	f32 turn_speed;             // speed required to change facing direction (left/right)
 	Vec2f out_vel;              // velocity at which players detach from the vehicle
 	bool inventoryAccess;       // allow inventory access
-	s32 fire_time;              // the next gametime we can shoot
-	s32 network_fire_time;      // the next gametime we can shoot locally
-	AmmoInfo[] ammo_types;      // array holding all our ammo info
-	u8 current_ammo_index;      // index of the ammunition this is using right now
-	u8 last_fired_index;        // index of the ammunition we fired previously with
-	f32 wep_angle;              // variable angle of the vehicle's weapon
 	f32 fly_speed;              // base speed for vertical movement
 	f32 fly_amount;             // variable speed for aerial vehicles
 	string ground_sound;        // emit sound name of ground vehicles
@@ -38,6 +32,14 @@ class VehicleInfo
 	string water_sound;         // emit sound name of boats
 	f32 water_volume;           // emit sound volume of boats
 	f32 water_pitch;            // emit sound pitch of boats
+
+	///WEAPON
+	AmmoInfo[] ammo_types;      // array holding all our ammo info
+	u8 current_ammo_index;      // index of the ammunition this is using right now
+	u8 last_fired_index;        // index of the ammunition we fired previously with
+	s32 fire_time;              // the next gametime we can shoot
+	s32 network_fire_time;      // the next gametime we can shoot locally
+	f32 wep_angle;              // variable angle of the vehicle's weapon
 	u16 charge;                 // variable storing the current weapon charge
 	u16 last_charge;            // variable storing the last fired weapon charge
 	u16 cooldown_time;          // variable for cooldown after firing
@@ -97,9 +99,9 @@ class VehicleInfo
 	}
 };
 
-void Vehicle_AddAmmo(CBlob@ this, VehicleInfo@ v, const int &in fireDelay, const int &in fireAmount, const int &in fireCost,
+void Vehicle_AddAmmo(CBlob@ this, VehicleInfo@ v, const u16 &in fireDelay, const u8 &in fireAmount, const u8 &in fireCost,
                      const string &in ammoConfigName, const string &in ammoInvName, const string &in bulletConfigName,
-                     const string &in fireSound, const string &in emptySound, Vec2f &in fireOffset = Vec2f_zero, const int &in chargeTime = 0)
+                     const string &in fireSound, const string &in emptySound, Vec2f &in fireOffset = Vec2f_zero, const u16 &in chargeTime = 0)
 {
 	AmmoInfo a;
 	a.loaded_ammo = 0;
@@ -148,23 +150,18 @@ void server_LoadAmmo(CBlob@ this, CBlob@ ammo, const u16 &in take, VehicleInfo@ 
 	v.getCurrentAmmo().loaded_ammo += available;
 	ammo.server_SetQuantity(amount - available);
 
-	// no ammo left - remove from inv and die
-	if (ammo.getQuantity() == 0)
-	{
-		this.server_PutOutInventory(ammo);
-		ammo.server_Die();
-	}
-
 	RecountAmmo(this, v);
 }
 
 void RecountAmmo(CBlob@ this, VehicleInfo@ v)
 {
+	CInventory@ inv = this.getInventory();
+	if (inv is null) return;
+
 	for (int i = 0; i < v.ammo_types.size(); ++i)
 	{
 		AmmoInfo@ ammo = v.ammo_types[i];
 		u16 ammoStocked = ammo.loaded_ammo;
-		CInventory@ inv = this.getInventory();
 
 		for (int i = 0; i < inv.getItemsCount(); i++)
 		{
@@ -189,18 +186,20 @@ void Vehicle_LoadAmmoIfEmpty(CBlob@ this, VehicleInfo@ v)
 	if (!isServer()) return;
 
 	AmmoInfo@ ammo = v.getCurrentAmmo();
-	if (ammo.loaded_ammo == 0)
+	if (ammo.loaded_ammo > 0) return;
+
+	CInventory@ inv = this.getInventory();
+	if (inv is null) return;
+
+	CBlob@ toLoad = inv.getItem(ammo.ammo_name);
+	if (toLoad !is null)
 	{
-		CBlob@ toLoad = this.getInventory().getItem(ammo.ammo_name);
-		if (toLoad !is null)
-		{
-			server_LoadAmmo(this, toLoad, ammo.fire_amount * ammo.fire_cost_per_amount, v);
-		}
-		else if (ammo.infinite_ammo)
-		{
-			ammo.loaded_ammo += ammo.fire_amount * ammo.fire_cost_per_amount;
-			RecountAmmo(this, v);
-		}
+		server_LoadAmmo(this, toLoad, ammo.fire_amount * ammo.fire_cost_per_amount, v);
+	}
+	else if (ammo.infinite_ammo)
+	{
+		ammo.loaded_ammo += ammo.fire_amount * ammo.fire_cost_per_amount;
+		RecountAmmo(this, v);
 	}
 }
 
@@ -222,13 +221,11 @@ bool Vehicle_AddFlipButton(CBlob@ this, CBlob@ caller, Vec2f &in offset = Vec2f(
 bool Vehicle_AddLoadAmmoButton(CBlob@ this, CBlob@ caller, Vec2f &in offset = Vec2f(0, -4))
 {
 	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-		return false;
+	if (!this.get("VehicleInfo", @v)) return false;
 
 	// find ammo in inventory
 	CInventory@ inv = caller.getInventory();
-	if (inv is null)
-		return false;
+	if (inv is null) return false;
 
 	for (int i = 0; i < v.ammo_types.size(); i++)
 	{
