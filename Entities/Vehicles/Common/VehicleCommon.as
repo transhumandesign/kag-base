@@ -46,32 +46,6 @@ class VehicleInfo
 
 	VehicleInfo(){}
 
-	void Setup(CBlob@ blob, const f32 &in move_speed, const f32 &in turn_speed = 0.31f, Vec2f &in out_vel = Vec2f_zero, const bool &in inventoryAccess = false)
-	{
-		this.move_speed = move_speed;
-		this.turn_speed = turn_speed;
-		this.out_vel = out_vel;
-		this.inventoryAccess = inventoryAccess;
-		this.fire_time = 0;
-		this.network_fire_time = 0;
-		this.charge = 0;
-		this.last_charge = 0;
-		this.cooldown_time = 0;
-		this.current_ammo_index = 0;
-		this.last_fired_index = 0;
-		this.wep_angle = 0.0f;
-
-		blob.addCommandID("fire");
-		blob.addCommandID("fire blob");
-		blob.addCommandID("flip_over");
-		blob.addCommandID("load_ammo");
-		blob.addCommandID("swap_ammo");
-		blob.addCommandID("recount ammo");
-		blob.Tag("vehicle");
-		blob.getShape().getConsts().collideWhenAttached = false;
-		blob.set("VehicleInfo", @this);
-	}
-
 	AmmoInfo@ getCurrentAmmo()
 	{
 		return ammo_types[current_ammo_index];
@@ -98,6 +72,33 @@ class VehicleInfo
 		// OVERLOAD ME
 	}
 };
+
+void Vehicle_Setup(CBlob@ this, const f32 &in move_speed, const f32 &in turn_speed = 0.31f, Vec2f &in out_vel = Vec2f_zero, const bool &in inventoryAccess = false,
+                   VehicleInfo v = VehicleInfo())
+{
+	v.move_speed = move_speed;
+	v.turn_speed = turn_speed;
+	v.out_vel = out_vel;
+	v.inventoryAccess = inventoryAccess;
+	v.fire_time = 0;
+	v.network_fire_time = 0;
+	v.charge = 0;
+	v.last_charge = 0;
+	v.cooldown_time = 0;
+	v.current_ammo_index = 0;
+	v.last_fired_index = 0;
+	v.wep_angle = 0.0f;
+
+	this.addCommandID("fire");
+	this.addCommandID("fire blob");
+	this.addCommandID("flip_over");
+	this.addCommandID("load_ammo");
+	this.addCommandID("swap_ammo");
+	this.addCommandID("recount ammo");
+	this.Tag("vehicle");
+	this.getShape().getConsts().collideWhenAttached = false;
+	this.set("VehicleInfo", @v);
+}
 
 void Vehicle_AddAmmo(CBlob@ this, VehicleInfo@ v, const u16 &in fireDelay, const u8 &in fireAmount, const u8 &in fireCost,
                      const string &in ammoConfigName, const string &in ammoInvName, const string &in bulletConfigName,

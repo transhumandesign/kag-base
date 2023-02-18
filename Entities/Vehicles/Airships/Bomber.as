@@ -5,13 +5,12 @@
 
 void onInit(CBlob@ this)
 {
-	VehicleInfo bomber();
-	bomber.Setup(this,
-	             47.0f, // move speed
-	             0.19f,  // turn speed
-	             Vec2f(0.0f, -5.0f), // jump out velocity
-	             true  // inventory access
-	            );
+	Vehicle_Setup(this,
+	              47.0f, // move speed
+	              0.19f,  // turn speed
+	              Vec2f(0.0f, -5.0f), // jump out velocity
+	              true  // inventory access
+	             );
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v)) return;
 	Vehicle_SetupAirship(this, v, -350.0f);

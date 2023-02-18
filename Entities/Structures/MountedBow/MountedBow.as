@@ -29,13 +29,13 @@ class MountedBowInfo : VehicleInfo
 
 void onInit(CBlob@ this)
 {
-	MountedBowInfo mountedbow();
-	mountedbow.Setup(this,
-	                 0.0f, // move speed
-	                 0.31f,  // turn speed
-	                 Vec2f(0.0f, 0.0f), // jump out velocity
-	                 false  // inventory access
-	                );
+	Vehicle_Setup(this,
+	              0.0f, // move speed
+	              0.31f,  // turn speed
+	              Vec2f(0.0f, 0.0f), // jump out velocity
+	              false,  // inventory access
+	              MountedBowInfo()
+	             );
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v)) return;
 

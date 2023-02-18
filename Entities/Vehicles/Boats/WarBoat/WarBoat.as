@@ -9,8 +9,7 @@
 
 void onInit(CBlob@ this)
 {
-	VehicleInfo warboat();
-	warboat.Setup(this,
+	Vehicle_Setup(this,
 	              307.0f, // move speed
 	              0.47f,  // turn speed
 	              Vec2f(0.0f, -5.0f), // jump out velocity

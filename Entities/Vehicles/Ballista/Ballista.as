@@ -70,13 +70,13 @@ void onInit(CBlob@ this)
 	AddIconToken("$Normal_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 0);
 	AddIconToken("$Explosive_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 1);
 
-	BallistaInfo ballista();
-	ballista.Setup(this,
-	               30.0f, // move speed
-	               0.31f,  // turn speed
-	               Vec2f(0.0f, 0.0f), // jump out velocity
-	               false  // inventory access
-	              );
+	Vehicle_Setup(this,
+	              30.0f, // move speed
+	              0.31f,  // turn speed
+	              Vec2f(0.0f, 0.0f), // jump out velocity
+	              false,  // inventory access
+	              BallistaInfo()
+	             );
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v)) return;
 

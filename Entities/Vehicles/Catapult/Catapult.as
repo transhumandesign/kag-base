@@ -112,12 +112,12 @@ class CatapultInfo : VehicleInfo
 
 void onInit(CBlob@ this)
 {
-	CatapultInfo catapult();
-	catapult.Setup(this,
+	Vehicle_Setup(this,
 	              30.0f, // move speed
 	              0.31f,  // turn speed
 	              Vec2f(0.0f, 0.0f), // jump out velocity
-	              false  // inventory access
+	              false,  // inventory access
+	              CatapultInfo()
 	             );
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v)) return;

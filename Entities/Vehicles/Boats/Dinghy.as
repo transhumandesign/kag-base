@@ -8,13 +8,12 @@ void onInit(CBlob@ this)
 	this.addCommandID("store inventory");
 	AddIconToken("$store_inventory$", "InteractionIcons.png", Vec2f(32, 32), 28);
 
-	VehicleInfo dinghy();
-	dinghy.Setup(this,
-	             250.0f, // move speed
-	             0.31f,  // turn speed
-	             Vec2f(0.0f, -2.5f), // jump out velocity
-	             true  // inventory access
-	            );
+	Vehicle_Setup(this,
+	              250.0f, // move speed
+	              0.31f,  // turn speed
+	              Vec2f(0.0f, -2.5f), // jump out velocity
+	              true  // inventory access
+	             );
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v)) return;
 
