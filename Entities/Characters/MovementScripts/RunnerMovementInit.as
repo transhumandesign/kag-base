@@ -31,9 +31,6 @@ void onInit(CMovement@ this)
 	//
 	moveVars.walljumped = false;
 	moveVars.walljumped_side = Walljump::NONE;
-	moveVars.wallrun_length = 2;
-	moveVars.wallrun_start = -1.0f;
-	moveVars.wallrun_current = -1.0f;
 	moveVars.wallclimbing = false;
 	moveVars.wallsliding = false;
 	//

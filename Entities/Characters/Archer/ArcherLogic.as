@@ -246,8 +246,6 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 						if (this.get("moveVars", @moveVars))
 						{
 							moveVars.walljumped_side = Walljump::NONE;
-							moveVars.wallrun_start = pos.y;
-							moveVars.wallrun_current = pos.y;
 						}
 					}
 				}

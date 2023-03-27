@@ -100,8 +100,6 @@ void onTick(CMovement@ this)
 	if (onground || blob.isInWater())  //also reset when vaulting
 	{
 		moveVars.walljumped_side = Walljump::NONE;
-		moveVars.wallrun_start = pos.y;
-		moveVars.wallrun_current = pos.y;
 		moveVars.fallCount = -1;
 	}
 
@@ -314,6 +312,12 @@ void onTick(CMovement@ this)
 
 		}
 
+		// cancel any further walljump if not pressing up
+		if (!up)
+		{
+			moveVars.wallrun_count = 1000;
+		}
+
 		//wall jumping/running
 		if (up && surface && 									//only on surface
 		        moveVars.walljumped_side != Walljump::BOTH &&		//do nothing if jammed
@@ -327,54 +331,72 @@ void onTick(CMovement@ this)
 
 			bool dust = false;
 
-			if (moveVars.jumpCount > 5) //wait some time to be properly in the air
+			if (moveVars.jumpCount > 3) //wait some time to be properly in the air
 			{
 				//set contact point
 				bool set_contact = false;
+				bool set_contact_candidate = false;
+
+				// only initiate a contact IF the player is not going to waste boosting if it was the first walljump attempt
+				// this has the unfortunate side effect that when wanting to climb 2 air gap large towers the walljump
+				// would ideally be initiated earlier.
+
+				// players can avoid this by tapping up shortly to make a small jump, which will make them reach minimal
+				// velocity faster.
+
+				// to mitigate part of this we also ensure this is only done for the first jump.
+				// this should assist with newbies climbing walls, while letting more advanced players begin walljumps as
+				// early as they want
+
 				if (left && surface_left && (moveVars.walljumped_side == Walljump::RIGHT || jumpedRIGHT || wasNONE))
 				{
-					moveVars.walljumped_side = Walljump::LEFT;
-					moveVars.wallrun_start = pos.y;
-					moveVars.wallrun_current = pos.y + 1.0f;
-					set_contact = true;
+					set_contact_candidate = true;
 				}
 				if (right && surface_right && (moveVars.walljumped_side == Walljump::LEFT || jumpedLEFT || wasNONE))
 				{
-					moveVars.walljumped_side = Walljump::RIGHT;
-					moveVars.wallrun_start = pos.y;
-					moveVars.wallrun_current = pos.y + 1.0f;
+					set_contact_candidate = true;
+				}
+
+				if (set_contact_candidate)
+				{
+					// print("contact candidate @" + getGameTime() + ": side was " + moveVars.walljumped_side);
+
+					// are we starting to hit the wall?
+					// then we want our first climb to be a contact
+					moveVars.wallrun_count = 1000;
+				}
+
+				if (set_contact_candidate && ((vel.y >= -0.0f && vel.y < slidespeed) || !wasNONE))
+				{
+					// print("candidate passes, & our velocity is " + vel.y);
+
+					// ready to hit the wall, and conditions align?
+					// reset wallclimb counters and let's start
+					moveVars.walljumped_side = left ? Walljump::LEFT : Walljump::RIGHT;
+					moveVars.wallrun_count = 0;
 					set_contact = true;
 				}
 
-				//wallrun
-				if (!surface_above && vel.y < slidespeed &&
+				// wallrun: is the player still trying to climb up, and is he not falling too fast to allow it
+				if (vel.y < slidespeed &&
 				        ((left && surface_left && !jumpedLEFT) || (right && surface_right && !jumpedRIGHT) || set_contact))
 				{
-					//within range
-					if (set_contact ||
-					        (pos.y - 1.0f < moveVars.wallrun_current &&
-					         pos.y + 1.0f > moveVars.wallrun_start - map.tilesize * moveVars.wallrun_length))
+					// allow 1st climb "unconditionally" (there were checks above)
+					// allow next climbs depending on a velocity condition
+					const bool should_trigger_climb = set_contact || (!set_contact_candidate && vel.y >= -2.0f);
+
+					// limit climbs to an arbitrarily choosen number
+					if (should_trigger_climb && moveVars.wallrun_count < 2)
 					{
-						moveVars.wallrun_current = Maths::Min(pos.y - 1.0f, moveVars.wallrun_current - 1.0f);
+						vel.Set(0, -moveVars.jumpMaxVel * 1.4f);
+						blob.setVelocity(vel);
 
+						// reduce sound spam, especially when climbing 2 air gap large towers
+						if (!set_contact) { blob.getSprite().PlayRandomSound("/StoneJump"); }
+						dust = true;
+
+						++moveVars.wallrun_count;
 						moveVars.walljumped = true;
-						if (set_contact || getGameTime() % 5 == 0)
-						{
-							dust = true;
-
-							f32 wallrun_speed = moveVars.jumpMaxVel * 1.2f;
-
-							if (vel.y > -wallrun_speed || set_contact)
-							{
-								vel.Set(0, -wallrun_speed);
-								blob.setVelocity(vel);
-							}
-
-							if (!set_contact)
-							{
-								blob.getSprite().PlayRandomSound("/StoneJump");
-							}
-						}
 					}
 					else
 					{
@@ -402,6 +424,13 @@ void onTick(CMovement@ this)
 					{
 						moveVars.walljumped_side = Walljump::JUMPED_RIGHT;
 					}
+				}
+
+				if (surface_above)
+				{
+					// prevent any new walljump on that wall if a wall is blocking us above
+					// but allow one to happen (as the code above will have run)
+					moveVars.wallrun_count = 1000;
 				}
 			}
 
@@ -498,8 +527,7 @@ void onTick(CMovement@ this)
 				moveVars.jumpCount = -3;
 
 				moveVars.walljumped_side = Walljump::NONE;
-				moveVars.wallrun_start = pos.y;
-				moveVars.wallrun_current = pos.y;
+				moveVars.wallrun_count = 1000;
 			}
 		}
 	}
