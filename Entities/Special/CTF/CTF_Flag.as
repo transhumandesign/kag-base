@@ -19,11 +19,6 @@ void onInit(CBlob@ this)
 	this.set_u16(return_prop, 0);
 
 	this.Tag("medium weight"); //slow carrier a little
-	
-	if (this.getTeamNum() == 0)
-	{
-		this.SetFacingLeft(true);
-	}
 
 	this.addCommandID("pickup");
 	this.addCommandID("capture");
@@ -255,6 +250,8 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	this.set_u16(return_prop, 0);
+
+	this.SetFacingLeft(attached.isFacingLeft());
 
     if (!isServer())
         return;

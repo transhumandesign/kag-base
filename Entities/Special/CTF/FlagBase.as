@@ -7,9 +7,12 @@ const string flag_name = "ctf_flag";
 
 void onInit(CBlob@ this)
 {
+	Vec2f pos = this.getPosition();
+	this.SetFacingLeft(pos.x < getMap().getMapDimensions().x * 0.5f); //face center of map
+
 	if (isServer())
 	{
-		CBlob@ flag = server_CreateBlob(flag_name, this.getTeamNum(), this.getPosition());
+		CBlob@ flag = server_CreateBlob(flag_name, this.getTeamNum(), pos);
 		if (flag !is null)
 		{
 			this.server_AttachTo(flag, "FLAG");
@@ -63,7 +66,6 @@ void onTick(CBlob@ this)
 				flag.SendCommand(flag.getCommandID("return"));
 
 				this.server_AttachTo(flag, "FLAG");
-				flag.SetFacingLeft(this.isFacingLeft());
 			}
 
 			if (flag.hasTag("stalemate_return"))
@@ -73,7 +75,6 @@ void onTick(CBlob@ this)
 				flag.Untag("stalemate_return"); //local
 
 				this.server_AttachTo(flag, "FLAG");
-				flag.SetFacingLeft(this.isFacingLeft());
 			}
 		}
 		else
