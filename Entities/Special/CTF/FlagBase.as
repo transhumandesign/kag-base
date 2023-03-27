@@ -27,29 +27,29 @@ void onTick(CBlob@ this)
 {
 	if (!isServer()) return;
 	
-	if (this.getTickSinceCreated() > 30)
+	if (this.getTickSinceCreated() > 30 && !this.hasTag("nobuild sector added"))
 	{
-		if (!this.hasTag("nobuild sector added"))
+		this.Tag("nobuild sector added");
+		Vec2f pos = this.getPosition();
+
+		CMap@ map = getMap();
+		map.server_AddSector(pos + Vec2f(-12, -32), pos + Vec2f(12, 16), "no build", "", this.getNetworkID());
+
+		//clear the no build zone so we dont get unbreakable blocks
+		for (int x = -12; x < 12; x += 8)
 		{
-			this.Tag("nobuild sector added");
-			Vec2f pos = this.getPosition();
-
-			CMap@ map = getMap();
-			map.server_AddSector(pos + Vec2f(-12, -32), pos + Vec2f(12, 16), "no build", "", this.getNetworkID());
-
-			//clear the no build zone so we dont get unbreakable blocks
-			for (int x = -12; x < 12; x += 8)
+			for (int y = -32; y < 8; y += 8)
 			{
-				for (int y = -32; y < 8; y += 8)
+				if (map.isTileSolid(pos + Vec2f(x, y)))
 				{
 					map.server_SetTile(pos + Vec2f(x, y), CMap::tile_empty);
 				}
 			}
-
-			map.server_SetTile(pos + Vec2f(-8, 12), CMap::tile_bedrock);
-			map.server_SetTile(pos + Vec2f(0, 12), CMap::tile_bedrock);
-			map.server_SetTile(pos + Vec2f(8, 12), CMap::tile_bedrock);
 		}
+
+		map.server_SetTile(pos + Vec2f(-8, 12), CMap::tile_bedrock);
+		map.server_SetTile(pos + Vec2f(0, 12), CMap::tile_bedrock);
+		map.server_SetTile(pos + Vec2f(8, 12), CMap::tile_bedrock);
 	}
 
 	if (!this.hasAttached())
