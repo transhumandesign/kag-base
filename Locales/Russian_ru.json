@@ -24,6 +24,7 @@
 	"Players: {PLAYERCOUNT}":"Игроков: {PLAYERCOUNT}",
 	"Player"                :"Игрок",
 	"Tier"                  :"Ранг",
+	"Age"                   :"Опыт",
 	"Accolades"             :"Достижения",
 	"Username"              :"Имя",
 	"Ping"                  :"Пинг",
@@ -496,7 +497,7 @@
 	"Out of stock. Come back later.":"Нет на складе. Приходите позже.",
 
 //HelpfulDeathTips.cfg
-	"To hide in-game help and tips, hit F1.":
+	"To hide these tips, and other in-game help, hit F1.":
 	"Чтобы скрыть эти подсказки и другие советы, нажмите F1.",
 	"Enemies can use your tunnels so protect them well!":
 	"Противники могут использовать ваши туннели, так что защищайте их!",
@@ -554,7 +555,7 @@
 	"Буры позволяют быстро копать, но они извлекают лишь 50% ресурсов. Не используйте их для добычи золота или во время строительной стадии игры.",
 	"Good players can play any class when needed.":
 	"Хорошие игроки могут играть любым классом в зависимости от ситуации.",
-	"Make sure you're helping your team advance. Don't just hide out in the back!":
+	"Make sure you're helping your team advance; don't just hide out in the back!":
 	"Помогайте своей команде. Не отсиживайтесь на базе!",
 	"Ride a shark on land and press up to pick him up.":
 	"Оседлайте акулу на суше и нажмите вверх, чтобы взять ее.",
@@ -860,6 +861,7 @@
 	"Connection failed": "Не удалось подключиться",
 	"Please check the address again and make sure the server is running.": "Пожалуйста, проверьте адрес ещё раз и убедитесь, что сервер запущен.",
 	"DISCONNECTED FROM SERVER": "ОТКЛЮЧЁН ОТ СЕРВЕРА",
+	"Waiting for scripts...":"Ожидание сценариев...",
 
 ////GLOBAL MESSAGES////
 	"Waiting for a hall capture before starting the game...":"Ожидание захвата базы для начала игры...",
@@ -936,9 +938,12 @@
 	"Multiplayer":"Сетевая игра",
 	"Settings":"Настройки",
 	"How to video":"Как записать видео",
+	"Finish Account Linking":"Завершить Привязку Аккаунта",
 	"Forum":"Форум",
 	"News":"Новости",
 	"Discord":"Discord",
+	"Leaderboards":"Доска лидеров",
+	"Server Rules":"Правила Сервера",
 	"IRC":"IRC",
 	"Wiki":"Wiki",
 	"Set account e-mail":"Привязать почту",
@@ -992,7 +997,7 @@
 	"Smooth shader"             :"Мягкий шейдер",
 	"Faster graphics"           :"Быстрая графика",
 	"Cap framerate"             :"Ограничить FPS",
-	"VSync - Requires Restart"  :"VSync - требуется рестарт",
+	"VSync - Requires Restart"  :"VSync - требуется перезапуск",
 	"Game music"                :"Игровая музыка",
 	"Sound Volume:"             :"Звуковые эффекты:",
 	"Music Volume:"             :"Музыка:",
@@ -1003,6 +1008,7 @@
 //	"Experimental feature warning": "Внимание! Экспериментальная функция",
 //	"Language support is still a work in progress!\nThe translations might be incomplete or inaccurate.\nSome translations will need a restart to apply.": "",
 	"Fixed camera"              :"Фиксированная камера",
+	"Disable screen shake"      :"Убрать тряску камеры",
 	"Kids safe"                 :"Режим для детей",
 	"Chat Filter"               :"Фильтр чата",
 	"Show Team-Mates Names"     :"Отображать имена игроков",
@@ -1256,6 +1262,7 @@
 // EmoteBinderMenu.as
 	"Bindings":"Привязки",
 	"Bind Emotes":"Привязка эмоций",
+	"Bind Builder Blocks":"Привязка Блоков Строителя",
 	"Emote Hotkey Binder":"Привязка клавиш для эмоций",
 	"Select a keybind below, then select the emote you want":"Выберите клавишу ниже, затем выберите эмоцию",
 	"Select key {KEY_NUM}":"Выбрать клавишу {KEY_NUM}",
