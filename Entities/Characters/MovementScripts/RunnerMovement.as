@@ -366,7 +366,8 @@ void onTick(CMovement@ this)
 					moveVars.wallrun_count = 1000;
 				}
 
-				if (set_contact_candidate && ((vel.y >= -0.0f && vel.y < slidespeed) || !wasNONE))
+				// set contact immediately if jumping at the wall from an angle; not immediately if hugging wall
+                if (set_contact_candidate && ((vel.y >= -0.0f && vel.y < slidespeed && Maths::Abs(blob.getOldVelocity().x) == 0) || Maths::Abs(blob.getOldVelocity().x) > 0 || !wasNONE))
 				{
 					// print("candidate passes, & our velocity is " + vel.y);
 
