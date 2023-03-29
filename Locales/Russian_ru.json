@@ -13,6 +13,7 @@
 // REMEMBER: You do **ONLY** need to change the right-side text. If translations suddenly stop working, check your `cl_locale` variable and make sure the JSON file structure was not damaged.
 
 {
+
 //// SCOREBOARD ////
 //ScoreboardCommon.as
   "Match time: {TIME}": "Время матча: {TIME}",
@@ -59,6 +60,7 @@
   "Back Wood Wall\nCheap extra support"                   :"Деревянная стена\nДешёвая опора",
   "Wooden Door\nPlace next to walls"                      :"Деревянная дверь\nСтавьте рядом со стенами",
   "Trap Block\nOnly enemies can pass"                     :"Блок-ловушка\nПроходят только враги",
+  "Trap Bridge\nOnly your team can stand on it"           :"Мост-ловушка\nТолько твоя команда может стоять на нём",
   "Ladder\nAnyone can climb it"                           :"Лестница\nЛюбой может подняться по ней",
   "Wooden Platform\nOne way platform"                     :"Деревянная платформа\nОдносторонняя платформа",
   "Spikes\nPlace on Stone Block\nfor Retracting Trap"     :"Шипы\nСтавьте на каменные блоки\nТак они будут выдвигаться\nпри контакте с врагом",
@@ -939,8 +941,8 @@
   "Settings":"Настройки",
   "How to video":"Как записать видео",
   "Forum":"Форум",
-  "Leaderboards":"Доска лидеров",
-  "Server Rules":"Правила Сервера",
+  "Leaderboards":"Доска\nЛидеров",
+  "Server Rules":"Правила\nСервера",
   "News":"Новости",
   "Discord":"Discord",
   "IRC":"IRC",
