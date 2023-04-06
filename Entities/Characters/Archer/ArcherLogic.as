@@ -645,7 +645,6 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 				}
 				else if (archer.charge_state != ArcherParams::legolas_ready && archer.charge_time > FULLSHOT_CHARGE) // Charging 3x
 				{
-					printf("test, charge_time: " + archer.charge_time + ", cock: " + int((archer.charge_time - FULLSHOT_CHARGE) / 4));
 					frame = 18 + int((archer.charge_time - FULLSHOT_CHARGE) / 4);
 				}
 			}
