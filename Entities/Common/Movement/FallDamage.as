@@ -33,32 +33,13 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	{
 		bool doknockdown = true;
 
-		if (damage > 0.0f)
+		if (damage > 0.1f)
 		{
-			// check if we aren't touching a trampoline
-			CBlob@[] overlapping;
-
-			if (this.getOverlapping(@overlapping))
-			{
-				for (uint i = 0; i < overlapping.length; i++)
-				{
-					CBlob@ b = overlapping[i];
-
-					if (b.hasTag("no falldamage"))
-					{
-						return;
-					}
-				}
-			}
-
-			if (damage > 0.1f)
-			{
-				this.server_Hit(this, point1, normal, damage, Hitters::fall);
-			}
-			else
-			{
-				doknockdown = false;
-			}
+			this.server_Hit(this, point1, normal, damage, Hitters::fall);
+		}
+		else if (damage > 0.0f)
+		{
+			doknockdown = false;
 		}
 
 		if (doknockdown)
