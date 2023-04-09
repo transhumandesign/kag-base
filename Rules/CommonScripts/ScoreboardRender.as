@@ -273,6 +273,8 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 				int age_icon_start = 32;
 				int icon = 0;
+				bool show_years = false;
+				int age = 0;
 				//less than a month?
 				if (days < 28)
 				{
@@ -355,6 +357,8 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 								{
 									icon -= 1;
 								}
+								show_years = true;
+								age = icon + 1; // icon frames start from 0
 								//ensure sane
 								icon = Maths::Clamp(icon, 0, 9);
 								//shift line
@@ -366,7 +370,15 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 				float x = bottomright.x - age_start + 8;
 				float extra = 8;
-				GUI::DrawIcon("AccoladeBadges", age_icon_start + icon, Vec2f(16, 16), Vec2f(x, topleft.y), 0.5f, p.getTeamNum());
+
+				if(show_years)
+				{
+					drawAgeIcon(age, Vec2f(x, topleft.y));
+				}
+				else
+				{
+					GUI::DrawIcon("AccoladeBadges", age_icon_start + icon, Vec2f(16, 16), Vec2f(x, topleft.y), 0.5f, p.getTeamNum());
+				}
 
 				if (playerHover && mousePos.x > x - extra && mousePos.x < x + 16 + extra)
 				{
@@ -734,6 +746,22 @@ void getMapName(CRules@ this)
 		this.set_string("map_name", mapName);
 		this.Sync("map_name",true);
 	}
+}
+
+void drawAgeIcon(int age, Vec2f position)
+{
+    int number_gap = 9;
+	int years_frame_start = 48;
+    if(age >= 10)
+    {
+        position.x -= number_gap - 4;
+        GUI::DrawIcon("AccoladeBadges", years_frame_start + (age / 10), Vec2f(16, 16), position, 0.5f, 0);
+        age = age % 10;
+        position.x += number_gap;
+    }
+    GUI::DrawIcon("AccoladeBadges", years_frame_start + age, Vec2f(16, 16), position, 0.5f, 0);
+    position.x += 4;
+    GUI::DrawIcon("AccoladeBadges", 58, Vec2f(16, 16), position, 0.5f, 0); // y letter
 }
 
 void DrawFancyCopiedText(string username, Vec2f mousePos, uint duration)
