@@ -18,7 +18,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 				map.server_SetTile(POSITION, this.get_TileType(Dummy::TILE));
 				server_setDummyGridNetworkID(map.getTileOffset(POSITION), this.getNetworkID());
 			}
-			else
+			else if (this.getHealth() == 0) //this check fixes Obstructor and Sensor breaking background
 			{
 				map.server_SetTile(POSITION, CMap::tile_empty);
 				server_setDummyGridNetworkID(map.getTileOffset(POSITION), 0);
