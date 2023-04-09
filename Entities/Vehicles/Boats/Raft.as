@@ -1,5 +1,3 @@
-#include "GenericButtonCommon.as"
-
 const f32 SPEED = 30.0f;
 
 void onInit(CBlob@ this)
