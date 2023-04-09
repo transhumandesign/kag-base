@@ -89,7 +89,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		
 	CBlob@ target = LOAD ? carried : item;
 	string iconName = "$" + target.getName() + "$";
-	if (target.hasTag("use inventory icon"))
+	if (GUI::hasIconName("$" + target.getInventoryName() + "$"))
 	{
 		iconName = "$" + target.getInventoryName() + "$";
 	}
