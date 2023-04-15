@@ -1,8 +1,10 @@
+const string return_prop = "return time";
+const u16 return_time = 600;
+
 bool canPickupFlag(CBlob@ blob)
 {
-
 	bool pick = !blob.hasAttached();
-		
+
 	if (!pick)
 	{
 		CBlob@ carried = blob.getCarriedBlob();
@@ -15,15 +17,14 @@ bool canPickupFlag(CBlob@ blob)
 			pick = true;
 		}
 	}
-	
-	
+
 	return pick;
 }
 
 bool shouldFastReturn(CBlob@ this)
 {
-	int team = this.getTeamNum();
-		
+	const int team = this.getTeamNum();
+
 	bool fast_return = false;
 	CBlob@[] overlapping;
 	if (this.getOverlapping(overlapping))
