@@ -67,24 +67,18 @@ void onTick(CRules@ this)
 {
 	if (!shouldBarrier(this))
 	{
-		if (IS_BARRIER_SET)
-			RemoveBarrier(this);
-
+		IS_BARRIER_SET = false;
 		return;
 	}
 
 	CMap@ map = getMap();
-	
-	CMap::Sector@ sector = map.getSector("barrier");
-	if (sector is null)
-		return;
 
 	const u16 x1 = this.get_u16("barrier_x1");
 	const u16 x2 = this.get_u16("barrier_x2");
 	const u16 middle = (x1 + x2) * 0.5f;
 
 	CBlob@[] blobsInBox;
-	if (map.getBlobsInSector(sector, @blobsInBox))
+	if (map.getBlobsInBox(Vec2f(x1, 0), Vec2f(x2, map.tilemapheight * map.tilesize), @blobsInBox))
 	{
 		for (uint i = 0; i < blobsInBox.length; i++)
 		{
@@ -221,14 +215,6 @@ void SetBarrierPosition(CRules@ this)
 
 	this.set_u16("barrier_x1", x1);
 	this.set_u16("barrier_x2", x2);
-
-	map.server_AddSector(Vec2f(x1, 0), Vec2f(x2,  map.tilemapheight * map.tilesize), "barrier");
-}
-
-void RemoveBarrier(CRules@ this)
-{	
-	IS_BARRIER_SET = false;
-	getMap().RemoveSectors("barrier");
 }
 
 // Sync barrier to said player
