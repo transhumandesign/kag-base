@@ -15,7 +15,6 @@ float scoreboardMargin = 52.0f;
 float scrollOffset = 0.0f;
 float scrollSpeed = 4.0f;
 float maxMenuWidth = 700;
-float screenMidX = getScreenWidth()/2;
 
 bool mouseWasPressed2 = false;
 
@@ -69,7 +68,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 	f32 lineheight = 16;
 	f32 padheight = 6;
 	f32 stepheight = lineheight + padheight;
-	Vec2f bottomright(Maths::Min(getScreenWidth() - 100, screenMidX+maxMenuWidth), topleft.y + (players.length + 5.5) * stepheight);
+	Vec2f bottomright(Maths::Min(getScreenWidth() - 100, getScreenWidth()/2 + maxMenuWidth), topleft.y + (players.length + 5.5) * stepheight);
 	GUI::DrawPane(topleft, bottomright, team.color);
 
 	//offset border
@@ -583,7 +582,7 @@ void onRenderScoreboard(CRules@ this)
 
 	@hoveredPlayer = null;
 
-	Vec2f topleft(Maths::Max( 100, screenMidX-maxMenuWidth), 150);
+	Vec2f topleft(Maths::Max( 100, getScreenWidth()/2 -maxMenuWidth), 150);
 	drawServerInfo(40);
 
 	// start the scoreboard lower or higher.
@@ -614,7 +613,7 @@ void onRenderScoreboard(CRules@ this)
 	{
 		//draw spectators
 		f32 stepheight = 16;
-		Vec2f bottomright(Maths::Min(getScreenWidth() - 100, screenMidX+maxMenuWidth), topleft.y + stepheight * 2);
+		Vec2f bottomright(Maths::Min(getScreenWidth() - 100, getScreenWidth()/2 + maxMenuWidth), topleft.y + stepheight * 2);
 		f32 specy = topleft.y + stepheight * 0.5;
 		GUI::DrawPane(topleft, bottomright, SColor(0xffc0c0c0));
 
