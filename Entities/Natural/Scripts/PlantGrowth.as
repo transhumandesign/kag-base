@@ -17,10 +17,8 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
-		Vec2f pos = this.getPosition();
-
 		u8 amount = this.get_u8(grown_amount);
 
 		u8 time = this.get_u8(growth_time);
@@ -32,7 +30,7 @@ void onTick(CBlob@ this)
 			this.Sync(grown_tag, true);
 			this.getCurrentScript().runFlags |= Script::remove_after_this;
 		}
-		else if (canGrowAt(this, (pos + Vec2f(0.0f, 6.0f))))
+		else if (canGrowAt(this, this.getPosition()))
 		{
 			if (XORRandom(this.get_u8(growth_chance)) == 0)
 			{
