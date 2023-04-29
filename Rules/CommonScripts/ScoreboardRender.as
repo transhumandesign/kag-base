@@ -711,10 +711,14 @@ void drawHoverExplanation(int hovered_accolade, int hovered_age, int hovered_tie
 
 void onTick(CRules@ this)
 {
-	if(isServer() && this.getCurrentState() == GAME)
+	if (this.getCurrentState() == GAME)
 	{
 		this.add_u32("match_time", 1);
-		this.Sync("match_time", true);
+
+		if (isServer() && this.get_u32("match_time") % (10 * getTicksASecond()) == 0)
+		{
+			this.Sync("match_time", true);
+		}
 	}
 }
 
