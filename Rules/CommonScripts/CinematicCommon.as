@@ -122,7 +122,7 @@ CBlob@[]@ buildImportanceList()
 			bool importantBlob = false;
 
 			Vec2f blobPos = blob.getInterpolatedPosition();
-			bool blobInLight = map.getTile(blobPos).light >= 0x20; //same as in MarkPlayers.as
+			bool blobInLight = map.getColorLight(blobPos).getLuminance() > 0.2f;
 			if (blobInLight)
 			{
 				//player near enemy tent
