@@ -1,3 +1,5 @@
+#include "CTF_FlagCommon.as"
+
 enum ImportanceRank
 {
 	capturing_vehicle,
@@ -74,11 +76,10 @@ CBlob@[]@ buildImportanceList()
 		{
 			CBlob@ blob = @blobs[i];
 
-			CBlob@ flagbase = getBlobByNetworkID(blob.get_u16("base_id"));
-			if (flagbase !is null && !blob.isAttachedTo(flagbase))
+			if (!blob.isAttachedToPoint("FLAG"))
 			{
 				//flags about to be returned are LESS important
-				float returnTime = float(blob.get_u16("return time")) / blob.get_u16("max return time");
+				float returnTime = float(blob.get_u16(return_prop)) / return_time;
 				blob.set_f32("cinematic importance", ImportanceRank::missing_flag + 1 - returnTime);
 				importantBlobs.push_back(@blob);
 			}
