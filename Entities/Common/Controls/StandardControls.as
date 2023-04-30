@@ -61,7 +61,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBlob@ owner = getBlobByNetworkID(params.read_netid());
 		CBlob@ pick = getBlobByNetworkID(params.read_netid());
 
-		if (owner !is null && pick !is null)
+		if (owner !is null 
+		    && !owner.isInInventory()
+		    && !owner.isAttached()
+		    && pick !is null 
+		    && !pick.isAttached()
+		    && pick.canBePickedUp(owner))
 		{
 			owner.server_Pickup(pick);
 		}
@@ -86,8 +91,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 bool putInHeld(CBlob@ owner)
 {
+	if (owner is null) return false;
+
 	CBlob@ held = owner.getCarriedBlob();
-	return owner !is null && held !is null && owner.server_PutInInventory(held);
+
+	if (held is null) return false;
+
+	return owner.server_PutInInventory(held);
 }
 
 bool ClickGridMenu(CBlob@ this, int button)
@@ -321,7 +331,7 @@ void onTick(CBlob@ this)
 
 void onDie(CBlob@ this)
 {
-	set_emote(this, Emotes::off);
+	set_emote(this, "");
 }
 
 // CAMERA

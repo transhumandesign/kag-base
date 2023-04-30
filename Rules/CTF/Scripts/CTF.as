@@ -99,7 +99,8 @@ shared class CTFSpawns : RespawnSystem
 			if (info.can_spawn_time > 0)
 			{
 				info.can_spawn_time--;
-				spawn_property = u8(Maths::Min(250, (info.can_spawn_time / 30)));
+				// Round time up (except for final few ticks)
+				spawn_property = u8(Maths::Min(250, ((info.can_spawn_time + getTicksASecond() - 5) / getTicksASecond())));
 			}
 
 			string propname = "ctf spawn time " + info.username;
@@ -742,24 +743,6 @@ void onInit(CRules@ this)
 {
 	Reset(this);
 	this.set_s32("restart_rules_after_game_time", 30 * 30);
-}
-
-void onStateChange(CRules@ this, const u8 oldState)
-{
-	// we have to do it like this because warmup state is broken and not synced properly clientside
-	if(isServer())
-	{
-		if (this.getCurrentState() == WARMUP)
-		{
-			this.Tag("faster building");
-			this.Sync("faster building", true);
-		}
-		else
-		{
-			this.Untag("faster building");
-			this.Sync("faster building", true);
-		}
-	}
 }
 
 // had to add it here for tutorial cause something didnt work in the tutorial script

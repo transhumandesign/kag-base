@@ -28,9 +28,11 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 				{
 					if (this.isOnGround() && occBlob.getName() != "mounted_bow")	  // HACK:
 					{
+						string text = getTranslatedString("Detach {ITEM}").replace("{ITEM}", getTranslatedString(occBlob.getInventoryName()));
+
 						CBitStream params;
 						params.write_netid(occBlob.getNetworkID());
-						caller.CreateGenericButton(1, ap.offset, this, this.getCommandID("detach vehicle"), getTranslatedString("Detach {ITEM}").replace("{ITEM}", occBlob.getInventoryName()), params);
+						caller.CreateGenericButton(1, ap.offset, this, this.getCommandID("detach vehicle"), text, params);
 					}
 				}
 			}

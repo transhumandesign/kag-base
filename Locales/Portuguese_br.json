@@ -1104,24 +1104,7 @@
 //Emote binder
 	"Select a keybind below, then select the emote you want": "Selecione a tecla embaixo, então escolha o emote",
 	"Emote Hotkey Binder": "Atalho de Emotes",
-	"Select key 1": "Selecione tecla 1",
-	"Select key 2": "Selecione tecla 2",
-	"Select key 3": "Selecione tecla 3",
-	"Select key 4": "Selecione tecla 4",
-	"Select key 5": "Selecione tecla 5",
-	"Select key 6": "Selecione tecla 6",
-	"Select key 7": "Selecione tecla 7",
-	"Select key 8": "Selecione tecla 8",
-	"Select key 9": "Selecione tecla 9",
-	"Select key 10": "Selecione tecla 10",
-	"Select key 11": "Selecione tecla 11",
-	"Select key 12": "Selecione tecla 12",
-	"Select key 13": "Selecione tecla 13",
-	"Select key 14": "Selecione tecla 14",
-	"Select key 15": "Selecione tecla 15",
-	"Select key 16": "Selecione tecla 16",
-	"Select key 17": "Selecione tecla 17",
-	"Select key 18": "Selecione tecla 18",
+	"Select key {KEY_NUM}": "Selecione tecla {KEY_NUM}",
 	
 //TauntAI.as
 	"haha!": "haha!",
@@ -1360,7 +1343,7 @@
 	"Build whatever your heart desires. Respect other folk's creations!": "Construa o que quiser. Respeite a construção dos outros!",
 
 //HelpfulDeathTips.cfg
-	"To hide these tips, and other in-game help, hit F1.": "Para esconder estas dicas e a ajuda, aperte F1.",
+	"To hide in-game help and tips, hit F1.": "Para esconder estas dicas e a ajuda, aperte F1.",
 	"Enemies can use your tunnels so protect them well!": "Os inimigos podem usar seus túneis, então proteja eles!",
 	"Spikes will stun you for a short time.": "Espinhos irão te atordoar por pouco tempo.",
 	"Saws will kill you instantly": "As serras te matam instantaneamente",
@@ -1389,7 +1372,7 @@
 	"1 bomb can deal up to 3 hearts of damage.": "1 bomba pode causar até 3 corações de dano.",
 	"Drills are a fast way to dig, but only yield 50%. Don't use them on precious gold or during build time!": "As brocas são rápidas para cavar, porém só deixam metade dos recursos, não use em ouro ou no tempo de construção!",
 	"Good players can play any class when needed.": "Bons jogadores podem usar qualquer classe quando necessário.",
-	"Make sure you're helping your team advance; don't just hide out in the back!": "Tenha certeza de ajudar sua equipe a avançar, não fique escondido!",
+	"Make sure you're helping your team advance. Don't just hide out in the back!": "Tenha certeza de ajudar sua equipe a avançar, não fique escondido!",
 	"Ride a shark on land and press up to pick him up.": "Um tubarão na terra pode ser montado e ao apertar para cima você pode segurar!",
 	"A red name indicates a server admin - ask them for help if you need it.": "Administradores tem nomes vermelhos, pergunte para eles por ajuda caso necessário.",
 	"A bush plus a mine equals happy fun time.": "Um arbusto mais uma mina é igual diversão.",

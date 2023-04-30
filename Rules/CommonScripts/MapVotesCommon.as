@@ -1,6 +1,7 @@
 //-- Written by Monkey_Feats 22/2/2020 --//
 #include "LoaderColors.as";
 
+const uint voteWaitDuration = 5 * getTicksASecond();
 const uint voteLockDuration = 3 * getTicksASecond();
 const string voteEndTag = "mapvote: ended";
 const string voteSelectMapTag = "mapvote: selectmap";
@@ -33,6 +34,11 @@ int ticksRemainingForMapVote()
 bool isMapVoteOver()
 {
 	return ticksRemainingForMapVote() <= 0;
+}
+
+bool isMapVoteVisible()
+{
+	return ticksSinceGameOver() >= voteWaitDuration;
 }
 
 class MapVotesMenu
@@ -148,7 +154,7 @@ class MapVotesMenu
 
 	void Update(CControls@ controls, u8 &out newSelectedNum)
 	{
-		if (isMapVoteOver()) { return; }
+		if (isMapVoteOver() || !isMapVoteVisible()) { return; }
 
 		Vec2f mousepos = controls.getMouseScreenPos();
 		const bool mousePressed = controls.isKeyPressed(KEY_LBUTTON);

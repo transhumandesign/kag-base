@@ -12,7 +12,7 @@ void onInit(CBlob@ this)
 	this.Tag("builder always hit");
 
 	// this script gets removed so onTick won't be run on client on server join, just onInit
-	if (this.hasTag("instant_grow"))
+	if (this.hasTag("instant_grow") || this.hasTag("has grain"))
 	{
 		GrowGrain(this);
 	}

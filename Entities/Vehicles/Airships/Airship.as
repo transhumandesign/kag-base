@@ -23,6 +23,9 @@ void onInit(CBlob@ this)
 	this.getShape().SetOffset(Vec2f(-6, 16));
 	this.getShape().getConsts().bullet = true;
 	this.getShape().getConsts().transports = true;
+	
+	// add custom capture zone
+	getMap().server_AddMovingSector(Vec2f(-40.0f, -16.0f), Vec2f(15.0f, 4.0f), "capture zone "+this.getNetworkID(), this.getNetworkID());
 
 	// additional shapes
 

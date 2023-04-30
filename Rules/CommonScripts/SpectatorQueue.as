@@ -305,6 +305,22 @@ class ClickButton
 	}
 }
 
+void SyncQueue(CRules@ this, CPlayer@ player)
+{
+	if (player is null) return;
+
+	CBitStream params;
+
+	params.write_s32(queue.length);
+	for (int i=0; i<queue.length; ++i)
+	{
+		params.write_string(queue[i].username);
+		params.write_s32(queue[i].team_num);
+	}
+
+	this.SendCommand(this.getCommandID("sync queue"), params, player);
+}
+
 void SetupQueueGUI(CRules@ this)
 {
 	if (!isClient()) return;
@@ -368,6 +384,7 @@ void onInit(CRules@ this)
 	}
 
 	this.addCommandID("queue action");
+	this.addCommandID("sync queue");
 
 	if (!GUI::isFontLoaded("slightly bigger text"))
 	{
@@ -400,12 +417,14 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 	// automatically add to queue 
 	if (this.getSpectatorTeamNum() == player.getTeamNum())
 	{
-		SetupQueueGUI(this);
+		AddToQueue(player);
 
-		if (getPlayersCount_NotSpectator() >= sv_maxplayers)
+		if (isServer())
 		{
-			AddToQueue(player);
+			SyncQueue(this, player);
 		}
+
+		SetupQueueGUI(this);
 	}
 }
 
@@ -470,6 +489,32 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 		QueueGUI@ GUI;
 		this.get("queuegui", @GUI);
 		if (GUI is null) return;
+	}
+	else if (cmd == this.getCommandID("sync queue") && isClient())
+	{
+		s32 length;
+		if (!params.saferead_s32(length)) return;
+
+		for (int i=0; i<length; ++i)
+		{
+			string username;
+			if (!params.saferead_string(username)) return;
+			s32 team_num;
+			if (!params.saferead_s32(team_num)) return;
+
+			CPlayer@ localplayer = getLocalPlayer();
+
+			if (localplayer !is null)
+			{
+				if (localplayer.getUsername() == username)
+				{
+					client_selected = team_num;
+					client_queue_pos = i;
+				}
+			}
+
+			queue.push_back(QueueEntry(username, team_num));
+		}
 	}
 }
 

@@ -65,47 +65,45 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (this.getDistanceTo(caller) > 16.0f || !this.getShape().isStatic()) return;
 
-	CBlob@ carried = caller.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();
-	if (carried !is null)
+	CBlob@ carried = caller.getCarriedBlob();
+	bool LOAD = carried !is null;
+
+	CBlob@ item = this.getInventory().getItem(0);
+
+	if (LOAD)
 	{
-		if (carried.getRadius() > 3.5f || !carried.canBePutInInventory(this)) return;
-
-		CBlob@ item = this.getInventory().getItem(0);
-		if (item !is null && (item.getName() != carried.getName() || item.getQuantity() == item.maxQuantity)) return;
-
-		CBitStream params;
-		params.write_u16(carried.getNetworkID());
-
-		CButton@ button = caller.CreateGenericButton(
-		"$"+carried.getName()+"$",              // icon token
-		Vec2f_zero,                             // button offset
-		this,                                   // button attachment
-		this.getCommandID("load"),              // command id
-		getTranslatedString("Load"),            // description
-		params);                                // cbitstream
-
-		button.radius = 8.0f;
-		button.enableRadius = 22.0f;
+		if 	(!carried.canBePutInInventory(this) 			// doesn't go in inventories to begin with
+			|| !this.getInventory().canPutItem(carried)  	// does go in inventories but doesn't fit
+			|| (item !is null && (item.getName() != carried.getName() || item.getQuantity() == item.maxQuantity)))
+		{
+			return;
+		}
 	}
-	else
+	else if (item is null)
 	{
-		CBlob@ item = this.getInventory().getItem(0);
-		if (item is null) return;
-
-		CBitStream params;
-		params.write_u16(caller.getNetworkID());
-
-		CButton@ button = caller.CreateGenericButton(
-		"$"+item.getName()+"$",                 // icon token
-		Vec2f_zero,                             // button offset
-		this,                                   // button attachment
-		this.getCommandID("unload"),            // command id
-		getTranslatedString("Unload"),          // description
-		params);                                // cbitstream
-
-		button.radius = 8.0f;
-		button.enableRadius = 22.0f;
+		return;
 	}
+
+	CBitStream params;
+	params.write_u16(LOAD ? carried.getNetworkID() : caller.getNetworkID());
+		
+	CBlob@ target = LOAD ? carried : item;
+	string iconName = "$" + target.getName() + "$";
+	if (GUI::hasIconName("$" + target.getInventoryName() + "$"))
+	{
+		iconName = "$" + target.getInventoryName() + "$";
+	}
+
+	CButton@ button = caller.CreateGenericButton(
+	iconName, 																									// icon token
+	Vec2f_zero,																									// button offset
+	this, 																										// button attachment
+	this.getCommandID(LOAD ? "load" : "unload"), 																// command id
+	getTranslatedString(LOAD ? "Load {ITEM}" : "Unload {ITEM}").replace("{ITEM}", target.getInventoryName()),	// description
+	params);																									// cbitstream
+		
+	button.radius = 8.0f;
+	button.enableRadius = 22.0f;
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)

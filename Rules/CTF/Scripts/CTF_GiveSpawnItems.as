@@ -4,10 +4,10 @@
 #include "CTF_Structs.as";
 
 const u32 materials_wait = 20; //seconds between free mats
-const u32 materials_wait_warmup = 30; //seconds between free mats
+const u32 materials_wait_warmup = 40; //seconds between free mats
 
-const int warmup_wood_amount = 300;
-const int warmup_stone_amount = 100;
+const int warmup_wood_amount = 250;
+const int warmup_stone_amount = 80;
 
 const int matchtime_wood_amount = 100;
 const int matchtime_stone_amount = 30;
@@ -144,76 +144,6 @@ void doGiveSpawnMats(CRules@ this, CPlayer@ p, CBlob@ b)
 	}
 }
 
-void displayResupply(CRules@ this, string player_class, string resupply_class, Vec2f offset, Vec2f offset_second, string propname)
-{
-	s32 next_items = this.get_s32(propname);
-
-	u32 secs = ((next_items - 1 - getGameTime()) / getTicksASecond()) + 1;
-	string units = ((secs != 1) ? " seconds" : " second");
-
-	string resupply_available;
-	string resupply_unavailable;
-
-	if (resupply_class == "archer")
-	{
-		// TODO: maybe only draw the cooldown/helptext for archer if low on arrows?
-		resupply_available = getTranslatedString("Go to an archer shop or a respawn point to get a resupply of 30 arrows.");
-
-		resupply_unavailable = getTranslatedString("Next resupply of 30 arrows in {SEC}{TIMESUFFIX}.")
-			.replace("{SEC}", "" + secs)
-			.replace("{TIMESUFFIX}", getTranslatedString(units));
-	}
-	else // default: builder
-	{
-		int wood_amount = matchtime_wood_amount;
-		int stone_amount = matchtime_stone_amount;
-		if (this.isWarmup())
-		{
-			wood_amount = warmup_wood_amount;
-			stone_amount = warmup_stone_amount;
-		}
-
-		string need_to_switch_string = "";
-		if (player_class != "builder") need_to_switch_string = getTranslatedString("and switch to builder ");
-
-		resupply_available = getTranslatedString("Go to a builder shop or a respawn point {SWITCH}to get a resupply of {WOOD} wood and {STONE} stone.")
-			.replace("{SWITCH}", need_to_switch_string)
-			.replace("{WOOD}", "" + wood_amount)
-			.replace("{STONE}", "" + stone_amount);
-
-		resupply_unavailable = getTranslatedString("Next resupply of {WOOD} wood and {STONE} stone in {SEC}{TIMESUFFIX}.")
-			.replace("{SEC}", "" + secs)
-			.replace("{TIMESUFFIX}", getTranslatedString(units))
-			.replace("{WOOD}", "" + wood_amount)
-			.replace("{STONE}", "" + stone_amount);
-	}
-		
-	if (next_items > getGameTime()) // Unavailable resupply - shown on upper center of screen
-	{
-		SColor color = SColor(255, 255, 55, 55);
-			
-		string text = resupply_unavailable;
-
-		float x = getScreenWidth() / 2;
-		float y = getScreenHeight() / 3 - offset_second.y;
-
-		GUI::DrawTextCentered(text, Vec2f(x, y), color);
-	}
-	else if (this.getCurrentState() == GAME) // Available resupply & not warmup - shown above inventory GUI
-	{
-		SColor color = SColor(200, 135, 185, 45);
-
-		string text = resupply_available;
-
-		float x = getScreenWidth() / 3 + offset.x;
-		float y = getScreenHeight() - offset.y;
-
-		GUI::DrawTextCentered(text, Vec2f(x, y), color);
-	}
-}
-
-// normal hooks
-
 void Reset(CRules@ this)
 {
 	//restart everyone's timers
@@ -260,7 +190,7 @@ void onTick(CRules@ this)
 	{
 		CBlob@[] spots;
 		getBlobsByName(base_name(),   @spots);
-		getBlobsByName("ballista",	@spots);
+		getBlobsByName("outpost",	@spots);
 		getBlobsByName("warboat",	 @spots);
 		getBlobsByName("buildershop", @spots);
 		getBlobsByName("archershop",  @spots);
@@ -292,43 +222,6 @@ void onTick(CRules@ this)
 				doGiveSpawnMats(this, p, overlapped);
 			}
 		}
-	}
-}
-
-// render gui for the player
-void onRender(CRules@ this)
-{
-	if (g_videorecording || this.isGameOver())
-		return;
-	
-	CPlayer@ p = getLocalPlayer();
-	if (p is null || !p.isMyPlayer()) return;
-	
-	CBlob@ b = p.getBlob();
-	if (b is null) return;
-	
-	string name = b.getName();
-
-	GUI::SetFont("menu");
-
-	// Display builder resupply text for everyone
-	string propname = getCTFTimerPropertyName(p, "builder");
-	if (this.exists(propname)) 
-	{
-		Vec2f offset = Vec2f(20, 64);
-		Vec2f offset_second = Vec2f(0, 70);
-		string resupply_class = "builder";
-		displayResupply(this, name, resupply_class, offset, offset_second, propname);
-	}
-	
-	// Display archer resupply text for archers
-	propname = getCTFTimerPropertyName(p, "archer");
-	if (name == "archer" && this.exists(propname))
-	{
-		Vec2f offset = Vec2f(20, 96);
-		Vec2f offset_second = Vec2f(0, 16);
-		string resupply_class = "archer";
-		displayResupply(this, name, resupply_class, offset, offset_second, propname);
 	}
 }
 

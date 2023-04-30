@@ -108,7 +108,6 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 				victimBlob.ClearMenus();
 				deathLock = victimBlob.getPosition();
 			}
-			deathTime = getGameTime() + 2 * getTicksASecond();
 			SetTimeToCinematic();
 		}
 		else
@@ -130,8 +129,8 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 				SetTimeToCinematic();
 
 			}
-			deathTime = getGameTime() + 2 * getTicksASecond();
 		}
+		deathTime = getGameTime() + 1 * getTicksASecond();
 	}
 }
 

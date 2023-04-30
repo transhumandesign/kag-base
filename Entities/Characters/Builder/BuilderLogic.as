@@ -593,6 +593,8 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	// put out another one of the same
 	if (detached.hasTag("temp blob"))
 	{
+		detached.Untag("temp blob");
+		
 		if (!detached.hasTag("temp blob placed"))
 		{
 			detached.server_Die();

@@ -1241,9 +1241,12 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 
 			if (b !is null)
 			{
-				if (b.hasTag("ignore sword")) continue;
-				if (!canHit(this, b)) continue;
-				if (knight_has_hit_actor(this, b)) continue;
+				if (b.hasTag("ignore sword") 
+				    || !canHit(this, b)
+				    || knight_has_hit_actor(this, b)) 
+				{
+					continue;
+				}
 
 				Vec2f hitvec = hi.hitpos - pos;
 
@@ -1258,8 +1261,7 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 					CBlob@ rayb = rayInfos[j].blob;
 					
 					if (rayb is null) break; // means we ran into a tile, don't need blobs after it if there are any
-					if (b.hasTag("ignore sword")) continue;
-					if (!canHit(this, rayb)) continue;
+					if (rayb.hasTag("ignore sword") || !canHit(this, rayb)) continue;
 
 					bool large = rayb.hasTag("blocks sword") && !rayb.isAttached() && rayb.isCollidable(); // usually doors, but can also be boats/some mechanisms
 					if (knight_has_hit_actor(this, rayb)) 
@@ -1312,7 +1314,10 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 					velocity.Normalize();
 					velocity *= 12; // knockback force is same regardless of distance
 
-					this.server_Hit(rayb, rayInfos[j].hitpos, velocity, temp_damage, type, true);
+					if (rayb.getTeamNum() != this.getTeamNum() || rayb.hasTag("dead player"))
+					{
+						this.server_Hit(rayb, rayInfos[j].hitpos, velocity, temp_damage, type, true);
+					}
 
 					if (large)
 					{
@@ -1737,24 +1742,23 @@ void SetFirstAvailableBomb(CBlob@ this)
 // Blame Fuzzle.
 bool canHit(CBlob@ this, CBlob@ b)
 {
-
 	if (b.hasTag("invincible") || b.hasTag("temp blob"))
 		return false;
+	
+	// don't hit picked up items (except players and specially tagged items)
+	return b.hasTag("player") || b.hasTag("slash_while_in_hand") || !isBlobBeingCarried(b);
+}
 
-	// don't hit picked up items
+bool isBlobBeingCarried(CBlob@ b)
+{	
 	CAttachment@ att = b.getAttachments();
-	if (att !is null)
+	if (att is null)
 	{
-		AttachmentPoint@ point = att.getAttachmentPointByName("PICKUP");
-		if (point !is null && !point.socket &&
-			b.isAttachedToPoint("PICKUP") && !b.hasTag("slash_while_in_hand")) return false;
+		return false;
 	}
 
-	if (b.hasTag("dead"))
-		return true;
-
-	return b.getTeamNum() != this.getTeamNum();
-
+	// Look for a "PICKUP" attachment point where socket=false and occupied=true
+	return att.getAttachmentPoint("PICKUP", false, true) !is null;
 }
 
 void onRemoveFromInventory(CBlob@ this, CBlob@ blob)

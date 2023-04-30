@@ -20,6 +20,8 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
+	this.Tag("has window");
+
 	//INIT COSTS
 	InitCosts();
 
