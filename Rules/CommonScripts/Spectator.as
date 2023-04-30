@@ -10,10 +10,10 @@ const float CINEMATIC_PAN_Y_EASE = 12.0f;						//amount of ease along the y-axis
 
 const float CINEMATIC_ZOOM_EASE = 14.0f;						//amount of ease when zooming while cinematic
 const float CINEMATIC_CLOSEST_ZOOM = 1.5f;						//how close the camera can zoom in while cinematic (default is 2.0f)
-const float CINEMATIC_FURTHEST_ZOOM = 0.75f;					//how far the camera can zoom out while cinematic (default is 0.5f)
+const float CINEMATIC_FURTHEST_ZOOM = 0.5f;						//how far the camera can zoom out while cinematic (default is 0.5f)
 
-const float AUTO_CINEMATIC_TIME = 0.0f;							//time until camera automatically becomes cinematic. set to zero to disable
-const uint CINEMATIC_UPDATE_INTERVAL = 3 * getTicksASecond();	//how often the cinematic camera updates its target position/zoom
+const float AUTO_CINEMATIC_TIME = 3.0f;							//time until camera automatically becomes cinematic. set to zero to disable
+const uint CINEMATIC_UPDATE_INTERVAL = 1 * getTicksASecond();	//how often the cinematic camera updates its target position/zoom
 
 Vec2f posTarget;												//position which cinematic camera moves towards
 float zoomTarget = 1.0f;										//zoom level which camera zooms towards
@@ -146,7 +146,7 @@ void Spectator(CRules@ this)
 
 		if (AUTO_CINEMATIC_TIME > 0)
 		{
-			timeToCinematic -= getRenderApproximateCorrectionFactor();
+			timeToCinematic -= getRenderSmoothDeltaTime();
 			if (timeToCinematic <= 0)
 			{
 				setCinematicEnabled(true);
