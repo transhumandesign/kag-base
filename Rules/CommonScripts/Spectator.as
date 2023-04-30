@@ -133,7 +133,7 @@ void Spectator(CRules@ this)
         waitForRelease = false;
     }
 
-	if (!isCinematicEnabled()) //player-controlled zoom
+	if (!isCinematicEnabled() || targetPlayer() !is null) //player-controlled zoom
 	{
 		if (Maths::Abs(camera.targetDistance - zoomTarget) > 0.001f)
 		{
@@ -206,7 +206,6 @@ void Spectator(CRules@ this)
 			camera.setTarget(targetPlayer().getBlob());
 		}
 		pos = camera.getPosition();
-		setCinematicEnabled(false);
 	}
 	else
 	{

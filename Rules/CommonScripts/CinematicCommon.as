@@ -284,25 +284,12 @@ void ViewEntireMap()
 	zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f);
 }
 
-void LoadCinematicConfig(CRules@ this)
-{
-	ConfigFile cfg = ConfigFile();
-	if (!cfg.loadFile("../Cache/cinematic_prefs.cfg") || !cfg.exists("cinematic_enabled"))
-	{
-		cfg.add_bool("cinematic_enabled", true);
-		cfg.saveFile("cinematic_prefs.cfg");
-	}
-
-	this.set("cinematic_cfg", cfg);
-}
+bool cinematicEnabled = true;
 
 void setCinematicEnabled(bool enabled)
 {
-	ConfigFile@ cfg;
-	getRules().get("cinematic_cfg", @cfg);
-	cfg.add_bool("cinematic_enabled", enabled);
-	cfg.saveFile("cinematic_prefs.cfg");
-
+	print("setCinematicEnabled(" + enabled + ")");
+	cinematicEnabled = enabled;
 	SetTimeToCinematic();
 }
 
@@ -313,15 +300,7 @@ void SetTimeToCinematic()
 
 bool isCinematicEnabled()
 {
-	ConfigFile@ cfg;
-	getRules().get("cinematic_cfg", @cfg);
-	if (cfg.exists("cinematic_enabled"))
-	{
-		return cfg.read_bool("cinematic_enabled");
-	}
-
-	LoadCinematicConfig(getRules());
-	return false; 
+	return cinematicEnabled;
 }
 
 bool isCinematic()

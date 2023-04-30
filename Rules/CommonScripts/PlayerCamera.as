@@ -23,9 +23,12 @@ void Reset(CRules@ this)
 	}
 
 	helptime = 0;
-	SetTimeToCinematic();
+	setCinematicEnabled(true);
 	currentTarget = 0;
 	switchTarget = 0;
+
+	//initially position camera to view entire map
+	ViewEntireMap();
 }
 
 void onRestart(CRules@ this)
@@ -35,7 +38,6 @@ void onRestart(CRules@ this)
 
 void onInit(CRules@ this)
 {
-	LoadCinematicConfig(this);
 	Reset(this);
 }
 
@@ -62,7 +64,7 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 		resetHelpText();
 		spectatorTeam = true;
 		camera.setTarget(null);
-		SetTimeToCinematic();
+		setCinematicEnabled(true);
 		if (playerBlob !is null)
 		{
 			playerBlob.ClearButtons();
@@ -129,7 +131,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 		}
 
 		deathTime = getGameTime() + 1 * getTicksASecond();
-		SetTimeToCinematic();
+		setCinematicEnabled(true);
 	}
 }
 
@@ -225,12 +227,6 @@ void onTick(CRules@ this)
 	{
 		Vec2f mapDim = getMap().getMapDimensions();
 
-		if (getGameTime() == 1)
-		{
-			//initially position camera to view entire map
-			ViewEntireMap();
-		}
-
 		if (this.isMatchRunning())
 		{
 			if (getGameTime() % CINEMATIC_UPDATE_INTERVAL == 0)
@@ -253,6 +249,9 @@ void onTick(CRules@ this)
 					{
 						CBlob@ blob = playerBlobs[i];
 						Vec2f pos = blob.getPosition();
+
+						CBlob@[] blobOverlaps;
+						blob.getOverlapping(@blobOverlaps);
 
 						//max distance along each axis
 						maxPos.x = Maths::Max(maxPos.x, pos.x);
