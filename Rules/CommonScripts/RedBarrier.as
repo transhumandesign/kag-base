@@ -78,7 +78,7 @@ void onTick(CRules@ this)
 	const u16 middle = (x1 + x2) * 0.5f;
 
 	CBlob@[] blobsInBox;
-	if (map.getBlobsInBox(Vec2f(x1, 0), Vec2f(x2, map.tilemapheight * map.tilesize), @blobsInBox))
+	if (map.getBlobsInBox(Vec2f(x1, -50 * map.tilesize), Vec2f(x2, map.tilemapheight * map.tilesize), @blobsInBox))
 	{
 		for (uint i = 0; i < blobsInBox.length; i++)
 		{
