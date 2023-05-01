@@ -131,6 +131,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 	for (u32 i = 0; i < players.length; i++)
 	{
 		CPlayer@ p = players[i];
+		CBlob@ b = p.getBlob(); // REMINDER: this can be null if you're using this down below
 
 		topleft.y += stepheight;
 		bottomright.y = topleft.y + lineheight;
@@ -173,24 +174,43 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 		GUI::DrawLine2D(Vec2f(topleft.x, bottomright.y + 1) + lineoffset, Vec2f(bottomright.x, bottomright.y + 1) + lineoffset, SColor(underlinecolor));
 		GUI::DrawLine2D(Vec2f(topleft.x, bottomright.y) + lineoffset, bottomright + lineoffset, SColor(playercolour));
 
-		string tex = "";
-		u16 frame = 0;
-		Vec2f framesize;
+		// class icon
+
+		string classTexture = "";
+		u16 classIndex = 0;
+		Vec2f classIconSize;
+		Vec2f classIconOffset = Vec2f(0, 0);
 		if (p.isMyPlayer())
 		{
-			tex = "ScoreboardIcons.png";
-			frame = 4;
-			framesize.Set(16, 16);
+			classTexture = "ScoreboardIcons.png";
+			classIndex = 4;
+			classIconSize = Vec2f(16, 16);
 		}
 		else
 		{
-			tex = p.getScoreboardTexture();
-			frame = p.getScoreboardFrame();
-			framesize = p.getScoreboardFrameSize();
+			classTexture = "playercardicons.png";
+			classIndex = 0;
+
+			// why are player-scoreboard functions hardcoded
+			// after looking into it let's not bother moving it to scripts for now
+			classIndex = p.getScoreboardFrame();
+
+			// knight is 3 but should be 0 for this texture
+			// fyi it's pure coincidence builder and archer are already a match
+			classIndex %= 3;
+			
+			classIconSize = Vec2f(16, 16);
+
+			if (b is null) // player dead
+			{
+				classIndex += 16;
+				classIconSize = Vec2f(8, 8);
+				classIconOffset = Vec2f(4, 4);
+			}
 		}
-		if (tex != "")
+		if (classTexture != "")
 		{
-			GUI::DrawIcon(tex, frame, framesize, topleft, 0.5f, p.getTeamNum());
+			GUI::DrawIcon(classTexture, classIndex, classIconSize, topleft + classIconOffset, 0.5f, p.getTeamNum());
 		}
 
 		string username = p.getUsername();
@@ -214,25 +234,25 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 		}
 
-		//head icon
+		// head icon
 
-		//TODO: consider maybe the skull emoji for dead players?
-		int headIndex = 0;
-		string headTexture = "";
+		string headTexture = "playercardicons.png";
+		int headIndex = 3;
 		int teamIndex = p.getTeamNum();
+		Vec2f headOffset = Vec2f(30, 0);
+		float headScale = 0.5f;
 
-		CBlob@ b = p.getBlob();
 		if (b !is null)
 		{
 			headIndex = b.get_s32("head index");
 			headTexture = b.get_string("head texture");
 			teamIndex = b.get_s32("head team");
+			headOffset += Vec2f(-8, -12);
+			headScale = 1.0f;
 		}
 
-		if (headTexture != "")
-		{
-			GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + Vec2f(22, -12), 1.0f, teamIndex);
-		}
+		GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + headOffset, headScale, teamIndex);
+
 
 		//have to calc this from ticks
 		s32 ping_in_ms = s32(p.getPing() * 1000.0f / 30.0f);

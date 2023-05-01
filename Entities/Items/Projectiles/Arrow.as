@@ -85,7 +85,7 @@ void onInit(CBlob@ this)
 	{
 		Animation@ anim = sprite.addAnimation("bomb arrow", 0, false);
 		anim.AddFrame(14);
-		anim.AddFrame(15); //TODO flash this frame before exploding
+		anim.AddFrame(15);
 		if (arrowType == ArrowType::bomb)
 			sprite.SetAnimation(anim);
 	}
@@ -157,6 +157,18 @@ void onTick(CBlob@ this)
 
 			processSticking = false;
 		}
+		
+		if (arrowType == ArrowType::bomb)
+		{
+			CSprite@ sprite = this.getSprite();
+
+			if (sprite !is null)
+			{
+				sprite.animation.time = 2;
+				sprite.animation.loop = true;
+			}
+		}
+
 
 		// ignite arrow
 		if (arrowType == ArrowType::normal && this.isInFlames())
