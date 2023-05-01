@@ -196,7 +196,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		CBlob@ caller = getBlobByNetworkID(params.read_u16());
 		CBlob@ blob = getBlobByNetworkID(params.read_u16());
-		if (caller !is null && blob !is null)
+		if 	(caller !is null 
+			&& blob !is null 
+			&& blob.isAttachedTo(caller))
 		{
 			// put what was in mag into inv
 			CBlob@ magBlob = getMagBlob(this);

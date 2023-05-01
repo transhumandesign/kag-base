@@ -18,10 +18,6 @@ void onTick(CBlob@ this)
 {
 	if (this.getTickSinceCreated() == 10)
 	{
-		// make window
-		Vec2f tilepos = this.getPosition() - Vec2f(0, 4);
-		getMap().server_SetTile(tilepos, CMap::tile_empty);
-
 		//check for overlapping buildings
 		CBlob@[] buildings;
 		if (getBlobsByTag("building", buildings))

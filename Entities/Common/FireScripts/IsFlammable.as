@@ -119,3 +119,8 @@ void onTick(CBlob@ this)
 
 	// (flax roof cottages!)
 }
+
+bool canBePutInInventory(CBlob@ this, CBlob@ inventoryBlob)
+{
+	return !this.hasTag(burning_tag);
+}

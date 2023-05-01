@@ -310,6 +310,7 @@
 	"A stone throwing, ridable siege engine, requiring a crew of two.":"Ein Steine werfendes, fahrbares Belagerungsgerät, welches zwei Mann Besatzung benötigt.",
 	"A bolt-firing pinpoint accurate siege engine, requiring a crew of two. Allows respawn and class change.":"Ein Bolzen schießendes und pfeilgenaues Belagerungsgerät. Man kann dort auch wiederbelebt werden.",
 	"Piercing bolts for ballista.":"Bolzen für die Balliste.",
+	"Explosive bolts for ballista.":"Explodierende Bolzen für die Balliste.",
 	"For Ballista\nTurns its piercing bolts into a shaped explosive charge.":"Für die Balliste\nÄndert die Bolzen in Explosivbolzen um.",
 
 	"A small boat with two rowing positions and a large space for cargo.":"Ein kleines Boot mit zwei Ruderplätzen und viel Platz für Güter.",
@@ -473,7 +474,7 @@
 	"Out of stock. Come back later.":"Ausverkauft. Komm später wieder.",
 
 //HelpfulDeathTips.cfg
-	"To hide these tips, and other in-game help, hit F1.": "Um diese Tipps zu verstecken, drücke F1.",
+	"To hide in-game help and tips, hit F1.": "Um diese Tipps zu verstecken, drücke F1.",
 	"Enemies can use your tunnels so protect them well!": "Feinde können deine Tunnel ebenfalls benutzen. Verteidige diese also gut.",
 	"Spikes will stun you for a short time.": "Stacheln betäuben dich für einen kurzen Moment.",
 	"Saws will kill you instantly": "Sägen töten dich sofort.",
@@ -502,18 +503,18 @@
 	"1 bomb can deal up to 3 hearts of damage.": "Eine Bombe kann bis zu drei Herzen Schaden zufügen.",
 	"Drills are a fast way to dig, but only yield 50%. Don't use them on precious gold or during build time!": "Bohrer beschleunigen das Graben, aber sie bringen nur 50% des Ertrages ein.",
 	"Good players can play any class when needed.": "Gute Spieler können jede Klasse spielen, wenn es gerade nötig ist.",
-	"Make sure you're helping your team advance; don't just hide out in the back!": "Stelle sicher, dass du dein Team unterstützt. Verstecke dich nicht nur.",
+	"Make sure you're helping your team advance. Don't just hide out in the back!": "Stelle sicher, dass du dein Team unterstützt. Verstecke dich nicht nur.",
 	"Ride a shark on land and press up to pick him up.": "Reite einen Hai an Land und drücke W um ihn zu fangen.",
 	"A red name indicates a server admin - ask them for help if you need it.": "Rote Namen indizieren Serveradmins. Bitte sie um Hilfe wenn du welche brauchst.",
 	"A bush plus a mine equals happy fun time.": "Ein Busch und eine Mine ergeben eine explosive Mischung Spaß.",
 	"Enemies can walk through your doors if open them. Don't let them in!":"Feinde können durch deine Türen gehen wenn du sie aufhältst.",
-	"If you see an object/body holding a door open - move it away!":"Siehst du ein etwas, das deine Tür blockiert, räume es weg!",
+	"If you see an object/body holding a door open - move it away!":"Siehst du etwas, das deine Tür blockiert, räume es weg!",
 	"Visit the KAG forums for more friendly help and advice!": "Besuch das KAG Forum für noch mehr freundliche Hilfe und Ratschläge.",
 	"A bomb's timer lasts four seconds before exploding": "Eine Bombe explodiert nach vier Sekunden.",
 	"When you light a bomb, let the fuse burn down before throwing it so your enemy can't react!": "Zündest du eine Bombe, warte kurz bevor du sie wirfst, damit deine Feinde nicht entkommen!",
 	"If you're throwing a bomb, jump in the direction that you're aiming to throw further!": "Wirfst du eine Bombe, spring dabei in die Richtung in die du wirfst, um sie noch weiter zu werfen.",
 	"Try bomb jumping: drop a bomb on the ground, then jump and shield downwards as it explodes!": "Versuch mal Bombjumping. Zünde dazu eine Bombe, lass sie fallen und stell dich mit dem Schild zur Bombe gerichtet drauf.",
-	"If your enemy throws a bomb too early, you can pick it up with [C] and throw it back!": "Wirft dein Feind eine Bombe zu früh, heb sie auf und schleuder sie zurück.",
+	"If your enemy throws a bomb too early, you can pick it up with [C] and throw it back!": "Wirft dein Feind eine Bombe zu früh, heb sie auf und wirf sie zurück.",
 	"You risk walking into mines or traps in dark tunnels - be careful or take a lantern!": "Im Dunkeln siehst du Fallen nicht so gut. Nimm dir also eine Laterne mit.",
 	"Retracting spikes deal less damage and have a delay, but are less likely to hurt your own team.": "Stacheln auf Stein machen zwar weniger Schaden, aber dafür verletzen sie seltener dein eigenes Team.",
 	"Supporting solid walls with backwalling is important but often overlooked.": "Du solltest Mauern durch Wände stützen. Viele machen es nicht, aber es ist ungemein wichtig.",
@@ -622,6 +623,7 @@
 	"Arrows":"Pfeile",
 	"Ballista Bolt":"Ballistenbolzen",
 	"Ballista Bolts":"Ballistenbolzen",
+	"Ballista Shells":"Ballistenbomben",
 	"Scroll":"Schriftrolle",
 	"Scroll of Drought":"Schriftrolle der Dürre",
 	"Scroll of Carnage":"Schriftrolle des Gemetzels",
@@ -715,9 +717,9 @@
 	"Loading blobs...": "Lade Blobs...",
 	"Loading configs...": "Lade Configs...",
 	"Receiving scripts...": "Empfange Skripts...",
-	"Determining changed scripts...": "Determiniere veränderte Skripts...",
-	"Building downloaded scripts...": "Generiere heruntergeladenen Skripts...",
-	"Be nice to each other, read books and do your homework.": "Seit nett zueinander, lest Bücher und macht eure Hausaufgaben!",
+	"Determining changed scripts...": "Finde veränderte Skripts...",
+	"Building downloaded scripts...": "Generiere heruntergeladene Skripts...",
+	"Be nice to each other, read books and do your homework.": "Seid nett zueinander, lest Bücher und macht eure Hausaufgaben!",
 	"Authenticating to server...": "Authentifiziere mit Server...",
 
 //Login
@@ -854,7 +856,7 @@
 	"Language (EXPERIMENTAL):": "Sprache (EXPERIMENTELL):",
 	"Language:": "Sprache:",
 	"Experimental feature warning": "Experimentelle Features Warnung",
-	"Language support is still EXPERIMENTAL!\nThe translations might be incomplete or inaccurate.\nSome translations will need a restart to apply.": "Sprachunterstützung ist noch EXPERIMENTELL!\nDie Übersetzungen sind möglicheerweise nicht vollständig oder fehlerhaft.\nEinige Übersetzungen benötigen einen Neustart um angewendet zu werden.",
+	"Language support is still EXPERIMENTAL!\nThe translations might be incomplete or inaccurate.\nSome translations will need a restart to apply.": "Sprachunterstützung ist noch EXPERIMENTELL!\nDie Übersetzungen sind möglicherweise nicht vollständig oder fehlerhaft.\nEinige Übersetzungen benötigen einen Neustart um angewendet zu werden.",
 
 //LANGUAGE NAMES
 	"French": "Französisch",

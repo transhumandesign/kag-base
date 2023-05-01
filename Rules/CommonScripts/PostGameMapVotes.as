@@ -123,7 +123,7 @@ void onTick( CRules@ this )
 	//--------------------- CLIENT -----------------------\\
 	if (isServer() && !isClient()) return; //not server, but also not localhost
 
-	if (isMapVoteOver()) return;
+	if (!isMapVoteActive() || isMapVoteOver()) return;
 
 	CControls@ controls = getControls();
 	if (controls is null) return;
@@ -233,16 +233,22 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			case 3:	LoadMap(mvm.button3.filename); break;
 			default: LoadNextMap(); break;
 		}
+		this.minimap = true;
 	}
 }
 
 void RenderRaw(int id)
 {
+	if (!isMapVoteActive())
+	{
+		return;
+	}
+
 	MapVotesMenu@ mvm;
 	if (!getRules().get("MapVotesMenu", @mvm)) return;
 	if (!getRules().isGameOver() || !mvm.isSetup) return;
 	if (!getNet().isClient()) return;
-	if (ticksSinceGameOver() < 5*getTicksASecond()) return;
+	if (!isMapVoteVisible()) return;
 
 	CRules@ rules = getRules();
 	rules.Untag("animateGameOver");
@@ -252,4 +258,6 @@ void RenderRaw(int id)
 	Render::SetBackfaceCull(true);
 	Render::SetZBuffer(false, false);
 	mvm.Render();
+	
+	getRules().minimap = false;
 }

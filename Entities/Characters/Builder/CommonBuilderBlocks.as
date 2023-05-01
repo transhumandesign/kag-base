@@ -255,7 +255,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		}
 		{
 			BuildBlock b(0, "magazine", "$magazine$", "Magazine");
-			AddRequirement(b.reqs, "blob", "mat_stone", "Wood", 20);
+			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 20);
 			blocks[3].push_back(b);
 		}
 		{
