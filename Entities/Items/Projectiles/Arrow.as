@@ -158,9 +158,6 @@ void onTick(CBlob@ this)
 		
 		if (arrowType == ArrowType::bomb)
 		{
-			if (this.getVelocity().y < 0)
-				return;
-
 			CSprite@ sprite = this.getSprite();
 
 			if (sprite !is null)
