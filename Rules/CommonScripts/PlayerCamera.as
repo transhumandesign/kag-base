@@ -289,10 +289,12 @@ void onTick(CRules@ this)
 			SetTargetPlayer(null);
 			setCinematicEnabled(true);
 			setCinematicForceDisabled(false);
+			Sound::Play("Sounds/GUI/menuclick.ogg");
 		}
 		else
 		{
 			setCinematicForceDisabled(true);
+			Sound::Play("Sounds/GUI/back.ogg");
 		}
 	}
 }
