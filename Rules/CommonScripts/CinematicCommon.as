@@ -288,7 +288,6 @@ bool cinematicEnabled = true;
 
 void setCinematicEnabled(bool enabled)
 {
-	print("setCinematicEnabled(" + enabled + ")");
 	cinematicEnabled = enabled;
 	SetTimeToCinematic();
 }
