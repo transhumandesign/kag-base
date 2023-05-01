@@ -285,11 +285,17 @@ void ViewEntireMap()
 }
 
 bool cinematicEnabled = true;
+bool cinematicForceDisabled = false;
 
 void setCinematicEnabled(bool enabled)
 {
 	cinematicEnabled = enabled;
 	SetTimeToCinematic();
+}
+
+void setCinematicForceDisabled(bool disabled)
+{
+	cinematicForceDisabled = disabled;
 }
 
 void SetTimeToCinematic()
@@ -299,7 +305,7 @@ void SetTimeToCinematic()
 
 bool isCinematicEnabled()
 {
-	return cinematicEnabled;
+	return cinematicEnabled && !cinematicForceDisabled;
 }
 
 bool isCinematic()

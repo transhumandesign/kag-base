@@ -24,6 +24,7 @@ void Reset(CRules@ this)
 
 	helptime = 0;
 	setCinematicEnabled(true);
+	setCinematicForceDisabled(false);
 	currentTarget = 0;
 	switchTarget = 0;
 
@@ -276,14 +277,22 @@ void onTick(CRules@ this)
 		}
 	}
 
-	//right click to enable cinematic camera
+	//right click to toggle cinematic camera
 	CControls@ controls = getControls();
 	if (
 		controls !is null &&								//controls exist
 		controls.isKeyJustPressed(KEY_RBUTTON) &&			//right clicked
 		(spectatorTeam || getLocalPlayerBlob() is null))	//is in spectator or dead
 	{
-		SetTargetPlayer(null);
-		setCinematicEnabled(true);
+		if (!isCinematicEnabled())
+		{
+			SetTargetPlayer(null);
+			setCinematicEnabled(true);
+			setCinematicForceDisabled(false);
+		}
+		else
+		{
+			setCinematicForceDisabled(true);
+		}
 	}
 }
