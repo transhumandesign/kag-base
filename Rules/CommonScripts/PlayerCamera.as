@@ -183,23 +183,17 @@ void onRender(CRules@ this)
 
 	const int endTime1 = helptime + (getTicksASecond() * 12);
 	const int endTime2 = helptime + (getTicksASecond() * 24);
-	const int endTime3 = helptime + (getTicksASecond() * 36);
 
 	string text = "";
 
 	if (time < endTime1)
 	{
-		text = "You can use the movement keys and clicking to move the camera.";
+		text = "You can use the movement keys and clicking to move the camera.\nToggle the cinematic camera by right clicking once.";
 	}
 	else if (time < endTime2)
 	{
 		text = "If you click on a player the camera will follow them.\nSimply press the movement keys or click again to stop following a player.";
 	}
-	else if (time < endTime3)
-	{
-		text = "Pressing right click enables cinematic camera.\nThe camera will automatically follow the action.";
-	}
-
 	if (text != "" && u_showtutorial)
 	{
 		//translate
