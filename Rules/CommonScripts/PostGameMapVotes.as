@@ -123,7 +123,7 @@ void onTick( CRules@ this )
 	//--------------------- CLIENT -----------------------\\
 	if (isServer() && !isClient()) return; //not server, but also not localhost
 
-	if (isMapVoteOver()) return;
+	if (!isMapVoteActive() || isMapVoteOver()) return;
 
 	CControls@ controls = getControls();
 	if (controls is null) return;
@@ -239,6 +239,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 void RenderRaw(int id)
 {
+	if (!isMapVoteActive())
+	{
+		return;
+	}
+
 	MapVotesMenu@ mvm;
 	if (!getRules().get("MapVotesMenu", @mvm)) return;
 	if (!getRules().isGameOver() || !mvm.isSetup) return;

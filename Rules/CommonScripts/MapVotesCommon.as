@@ -87,6 +87,14 @@ class MapVotesMenu
 		}
 	}
 
+	bool screenPositionOverlaps(Vec2f pos)
+	{
+		return pos.x >= topLeftCorner.x
+		    && pos.y >= topLeftCorner.y
+			&& pos.x < bottomRightCorner.x
+			&& pos.y < bottomRightCorner.y; 
+	}
+
 	void ClearVotes()
 	{
 		votes1.clear();
@@ -756,6 +764,16 @@ u8 type(SColor PixelCol, bool show_gold)
 		}
 	}
 	return ColTileType::Other;
+}
+
+bool isMapVoteActive()
+{
+	MapVotesMenu@ mvm;
+	return getRules().get("MapVotesMenu", @mvm)
+		&& getRules().isGameOver()
+		&& mvm.isSetup
+		&& getNet().isClient()
+		&& ticksSinceGameOver() >= 5*getTicksASecond();
 }
 
 enum colors
