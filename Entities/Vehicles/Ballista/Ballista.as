@@ -226,12 +226,15 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	if (isOverlapping(this, caller) && !caller.isAttached())
+	if (!isOverlapping(this, caller) || caller.isAttached()) return;
+
+	// must cap to use flip/ammo buttons
+	if (this.getTeamNum() != caller.getTeamNum()) return;
+
+	if (!Vehicle_AddFlipButton(this, caller))
 	{
-		if (!Vehicle_AddFlipButton(this, caller) && caller.getTeamNum() == this.getTeamNum())
-		{
-			Vehicle_AddLoadAmmoButton(this, caller);
-		}
+		// no flip button? try adding ammo load button
+		Vehicle_AddLoadAmmoButton(this, caller);
 	}
 }
 

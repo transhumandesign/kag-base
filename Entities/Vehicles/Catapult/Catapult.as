@@ -147,14 +147,20 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (!canSeeButtons(this, caller)) return;
 
 	CBlob@ occupiedBlob = this.getAttachments().getAttachmentPointByName("MAG").getOccupied();
-	if (
-		!Vehicle_AddFlipButton(this, caller) &&
-		this.getTeamNum() == caller.getTeamNum() &&
-		isOverlapping(this, caller) &&
-		!caller.isAttached() &&
-		(occupiedBlob is null || !occupiedBlob.hasTag("player"))
-	) {
-		Vehicle_AddLoadAmmoButton(this, caller);
+
+	// must cap to use flip/ammo buttons
+	if (this.getTeamNum() != caller.getTeamNum()) return;
+
+	if (!Vehicle_AddFlipButton(this, caller))
+	{
+		// no flip button? try adding ammo load button
+		if (
+			isOverlapping(this, caller) &&
+			!caller.isAttached() &&
+			(occupiedBlob is null || !occupiedBlob.hasTag("player"))
+		) {
+			Vehicle_AddLoadAmmoButton(this, caller);
+		}
 	}
 }
 
