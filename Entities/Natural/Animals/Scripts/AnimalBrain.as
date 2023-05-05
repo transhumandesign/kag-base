@@ -130,20 +130,44 @@ void onTick(CBrain@ this)
 					}
 				}
 			}
-			// has a friend
+			// has a befriended team, looking for closest friendly player to follow
 			else if (mode == MODE_FRIENDLY)
 			{
-				CBlob@ our_friend = getBlobByNetworkID(blob.get_netid(friend_property));
-				if (our_friend is null)
+				s16 friendTeam = blob.get_s16(friend_team);
+				CBlob@ closestFriend;
+				
+				float shortestDistance = 999999.9f;
+
+				for (int i = 0; i < getPlayersCount(); ++i)
+				{
+					if (getPlayer(i) !is null && getPlayer(i).getBlob() !is null) 
+					{
+						CBlob@ b = getPlayer(i).getBlob();
+						Vec2f bpos 	= b.getPosition();
+						
+						if (b.hasTag("dead") || b.getTeamNum() != friendTeam)
+							continue;
+								
+						float dist = (bpos - pos).getLength();
+						
+						if (dist < shortestDistance)
+						{
+							shortestDistance = dist;
+							@closestFriend = @b;
+						}
+					}
+				}
+								
+				if (closestFriend is null)
 				{
 					mode = MODE_IDLE;
 				}
 				else
 				{
-					Vec2f tpos = our_friend.getPosition();
+					Vec2f tpos = closestFriend.getPosition();
 					const f32 search_radius = blob.get_f32(target_searchrad_property);
 					const f32 dist = (tpos - pos).getLength();
-					if (dist >= search_radius * 3)
+					if (dist >= search_radius * 3.0f)
 					{
 						mode = MODE_IDLE;
 					}

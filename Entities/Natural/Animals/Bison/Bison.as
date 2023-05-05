@@ -10,8 +10,12 @@ const s16 MAD_TIME = 600;
 
 void onInit(CSprite@ this)
 {
-	this.ReloadSprites(0, 0); //always blue
-
+	this.ReloadSprites(0, 0); // always blue
+	
+	// saddle
+	CSpriteLayer@ saddle = this.addSpriteLayer("saddle", "/Saddle.png", 16, 16, 0, 0);
+	if (saddle !is null)
+		saddle.SetVisible(false);
 }
 
 void onTick(CSprite@ this)
@@ -35,6 +39,19 @@ void onTick(CSprite@ this)
 		this.SetAnimation("dead");
 		this.getCurrentScript().runFlags |= Script::remove_after_this;
 	}
+			
+	CSpriteLayer@ saddle = this.getSpriteLayer("saddle");
+	const s16 friendTeam = this.getBlob().get_s16(friend_team); 
+
+	if (friendTeam >= 0 && !saddle.isVisible())
+	{
+		saddle.SetVisible(true);
+		this.ReloadSprites(friendTeam, friendTeam);
+	}
+	else if (friendTeam < 0 && saddle.isVisible())
+	{
+		saddle.SetVisible(false);
+	}
 }
 
 //blob
@@ -55,6 +72,9 @@ void onInit(CBlob@ this)
 	this.set_u8(target_lose_random, 34);
 
 	this.getBrain().server_SetActive(true);
+
+	//befriended team
+	this.set_s16(friend_team, -1); // Please note, -1 here means "no team"
 
 	//for steaks
 	this.set_u8("number of steaks", 8);
@@ -89,7 +109,7 @@ void onInit(CBlob@ this)
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
-	return false; //maybe make a knocked out state? for loading to cata?
+	return false;
 }
 
 void onTick(CBlob@ this)
@@ -155,14 +175,21 @@ void onTick(CBlob@ this)
 
 void MadAt(CBlob@ this, CBlob@ hitterBlob)
 {
-	const u16 damageOwnerId = (hitterBlob.getDamageOwnerPlayer() !is null && hitterBlob.getDamageOwnerPlayer().getBlob() !is null) ?
-	                          hitterBlob.getDamageOwnerPlayer().getBlob().getNetworkID() : 0;
+	const s16 friendTeam 	= this.get_s16(friend_team);
+	
+	CPlayer@ damageOwner 	= hitterBlob.getDamageOwnerPlayer();
+	const u16 damageOwnerId = (damageOwner !is null && damageOwner.getBlob() !is null) ? damageOwner.getBlob().getNetworkID() : 0;
+	const s16 damageOwnerTeam = (damageOwner !is null && damageOwner.getBlob() !is null) ? damageOwner.getBlob().getTeamNum() : -1;
 
-	const u16 friendId = this.get_netid(friend_property);
-	if (friendId == hitterBlob.getNetworkID() || friendId == damageOwnerId) // unfriend
-		this.set_netid(friend_property, 0);
+	if (friendTeam == damageOwnerTeam || friendTeam == hitterBlob.getTeamNum()) // unfriend
+	{
+		this.set_s16(friend_team, -1);
+	}
 	else // now I'm mad!
 	{
+		if (friendTeam == damageOwnerTeam)
+			this.set_s16(friend_team, -1);
+	
 		if (this.get_s16("mad timer") <= MAD_TIME / 8)
 			this.getSprite().PlaySound("/BisonMad");
 		this.set_s16("mad timer", MAD_TIME);
@@ -197,9 +224,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	if (blob is null)
 		return;
 
-	const u16 friendId = this.get_netid(friend_property);
-	CBlob@ friend = getBlobByNetworkID(friendId);
-	if ((friend is null || blob.getTeamNum() != friend.getTeamNum()) && blob.getName() != this.getName() && blob.hasTag("flesh"))
+	const s16 friendTeam 	= this.get_s16(friend_team);
+	
+	if (blob.getTeamNum() != friendTeam && blob.getName() != this.getName() && blob.hasTag("flesh"))
 	{
 		const f32 vellen = this.getShape().vellen;
 		if (vellen > 0.1f)
@@ -216,31 +243,32 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				this.server_Hit(blob, point1, vel, power, Hitters::flying, false);
 			}
 		}
-
-		MadAt(this, blob);
 	}
 
 	// eat cake	and make friends
 	{
 		if (blob.getName() == "food")
 		{
+			// eat the food even at full health
 			this.getSprite().PlaySound("/Eat.ogg");
-			this.server_SetHealth(this.getInitialHealth());
+			this.server_SetHealth(Maths::Min(this.getHealth() + 4.0f, this.getInitialHealth()));
 			blob.server_Die();
 
-			//if (blob.getPosition().x < this.getPosition().x)crash
+			//if (blob.getPosition().x < this.getPosition().x)	crash
 			//	blob.setKeyPressed( key_left, true );
 			//else
 			//	blob.setKeyPressed( key_right, true );
 
 			CPlayer@ owner = blob.getDamageOwnerPlayer();
-			if (owner !is null)
+			if (owner !is null && owner.getBlob() !is null)
 			{
-				CBlob@ ownerblob = owner.getBlob();
-				if (ownerblob !is null)
+				u8 newFriendTeam = owner.getBlob().getTeamNum();
+				this.set_u8(state_property, MODE_FRIENDLY);
+				
+				if (this.get_s16(friend_team) != newFriendTeam)
 				{
-					this.set_u8(state_property, MODE_FRIENDLY);
-					this.set_netid(friend_property, ownerblob.getNetworkID());
+					this.set_s16(friend_team, newFriendTeam);
+					this.getSprite().ReloadSprites(newFriendTeam, newFriendTeam);
 				}
 			}
 		}

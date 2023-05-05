@@ -49,7 +49,7 @@ void onTick(CBlob@ this)
 			{
 				CBlob@ occ = ap.getOccupied();
 
-				CBlob@ friend = getBlobByNetworkID(this.get_netid(friend_property));
+				s16 friendTeam = this.get_s16(friend_team);
 
 				if (occ is null && seattime + ridetime > gametime)
 					ap.SetKeysToTake(0);
@@ -57,7 +57,7 @@ void onTick(CBlob@ this)
 				{
 					ap.SetKeysToTake(key_left | key_right | key_up | key_down | key_action1 | key_action2 | key_action3);
 
-					if ((occ !is null && occ is friend) || (XORRandom(3) == 0))
+					if ((occ !is null && occ.getTeamNum() == friendTeam) || (XORRandom(3) == 0))
 					{
 						this.setKeyPressed(key_left, ap.isKeyPressed(key_left));
 						this.setKeyPressed(key_right, ap.isKeyPressed(key_right));
@@ -68,7 +68,7 @@ void onTick(CBlob@ this)
 				}
 
 				// GET OUT
-				if (occ !is null && (ap.isKeyJustPressed(key_up) || (occ !is friend && (seattime + ridetime <= gametime) && this.getShape().vellen > 0.4f)))
+				if (occ !is null && (ap.isKeyJustPressed(key_up) || (occ.getTeamNum() != friendTeam && (seattime + ridetime <= gametime) && this.getShape().vellen > 0.4f)))
 				{
 					this.server_DetachFrom(occ);
 					// pickup shark after done riding on land

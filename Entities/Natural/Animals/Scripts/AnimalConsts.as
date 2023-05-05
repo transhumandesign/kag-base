@@ -2,7 +2,7 @@ const string delay_property = "brain_delay";
 const string state_property = "brain_state";
 
 const string target_property = "brain_target_id";
-const string friend_property = "brain_friend_id";
+const string friend_team = "brain_friend_team";
 
 const string target_searchrad_property = "brain_target_rad";
 

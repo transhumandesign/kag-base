@@ -188,13 +188,16 @@ void onTick(CBlob@ this)
 		{
 			this.getSprite().SetAnimation("hidden");
 			CBlob@[] blobsInRadius;
-			const int team = this.getTeamNum();
+
 			if (map.getBlobsInRadius(pos, this.getRadius() * 1.0f, @blobsInRadius))
 			{
 				for (uint i = 0; i < blobsInRadius.length; i++)
 				{
 					CBlob @b = blobsInRadius[i];
-					if (team != b.getTeamNum() && canStab(b))
+					
+					if (b is this)	continue;
+					
+					if (canStab(b, this))
 					{
 						state = stabbing;
 						timer = delay_stab;
@@ -219,13 +222,16 @@ void onTick(CBlob@ this)
 				this.getSprite().PlaySound("/SpikesOut.ogg");
 
 				CBlob@[] blobsInRadius;
-				const int team = this.getTeamNum();
+
 				if (map.getBlobsInRadius(pos, this.getRadius() * 2.0f, @blobsInRadius))
 				{
 					for (uint i = 0; i < blobsInRadius.length; i++)
 					{
 						CBlob @b = blobsInRadius[i];
-						if (canStab(b)) //even hurts team when stabbing
+
+						if (b is this)	continue;
+						
+						if (canHurt(b)) //even hurts team when stabbing
 						{
 							// hurt?
 							if (this.isOverlapping(b))
@@ -263,33 +269,34 @@ void onTick(CBlob@ this)
 	onHealthChange(this, this.getHealth());
 }
 
-bool canStab(CBlob@ b)
+bool canStab(CBlob@ b, CBlob@ this)
 {
-	return !b.hasTag("dead") && b.hasTag("flesh");
+	if (b.exists("brain_friend_team") && 
+		b.get_s16("brain_friend_team") == this.getTeamNum())	// friendly bison
+	{
+		return false;
+	}
+
+	return 	this.getTeamNum() != b.getTeamNum()
+			&& (!b.isAttached() && b.hasTag("flesh") && !b.hasTag("dead"));
+}
+
+bool canHurt(CBlob@ b)
+{
+	return b.hasTag("flesh") && !b.hasTag("dead");
 }
 
 //physics logic
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point)
 {
-	if (!getNet().isServer() || this.isAttached())
-	{
-		return;
-	}
-
-	//shouldn't be in here! collided with map??
-	if (blob is null)
-	{
-		return;
-	}
-
 	u8 state = this.get_u8(state_prop);
-	if (state == hidden || state == stabbing)
-	{
-		return;
-	}
 
-	// only hit living things
-	if (!blob.hasTag("flesh"))
+	if 	(!isServer() 
+		|| this.isAttached()
+		|| blob is null				//shouldn't be in here! collided with map??
+		|| state == hidden
+		|| state == stabbing
+		|| !blob.hasTag("flesh"))	// only hit living things
 	{
 		return;
 	}
