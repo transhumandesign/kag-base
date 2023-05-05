@@ -65,6 +65,9 @@ void onInit(CBlob@ this)
 	// used by TileBackground.as
 	this.set_TileType("background tile", CMap::tile_wood_back);
 
+	// background, let water overlap
+	this.getShape().getConsts().waterPasses = true;
+
 	if (getNet().isServer())
 	{
 		u16[] emitter;
