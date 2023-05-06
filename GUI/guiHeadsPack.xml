@@ -185,6 +185,7 @@ Proceeds go to continued development of King Arthur's Gold." />
           <bool name="TabGroup" value="true" />
           <int name="TabOrder" value="-1" />
           <bool name="NoClip" value="false" />
+          <bool name="RestrainTextInside" value="false" />
           <bool name="Border" value="false" />
           <bool name="OverrideColorEnabled" value="false" />
           <bool name="OverrideBGColorEnabled" value="false" />
