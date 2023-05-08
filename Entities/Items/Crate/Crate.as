@@ -325,7 +325,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		CBitStream params;
 		params.write_netid(caller.getNetworkID());
-		caller.CreateGenericButton( 4, Vec2f(0,0), this, this.getCommandID("getin"), getTranslatedString("Get inside"), params );
+		caller.CreateGenericButton(4, buttonpos, this, this.getCommandID("getin"), getTranslatedString("Get inside"), params);
 	}
 	else if (this.getTeamNum() != caller.getTeamNum() && !this.isOverlapping(caller))
 	{
