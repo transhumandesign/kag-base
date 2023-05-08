@@ -86,14 +86,17 @@ void onTick(CBlob@ this)
 	//burnination
 	else if (burn_time > 0)
 	{
+		s16 burn_count = this.get_s16(burn_counter);
+		burn_count++;
+	
 		//burninating the other tiles
-		if ((burn_time % 8) == 0 && this.hasTag(spread_fire_tag))
+		if ((burn_count % 8) == 0 && this.hasTag(spread_fire_tag))
 		{
 			BurnRandomNear(pos);
 		}
 
 		//burninating the actor
-		if ((burn_time % 7) == 0)
+		if ((burn_count % 7) == 0)
 		{
 			uint16 netid = this.get_netid("burn starter player");
 			CBlob@ blob = null;
@@ -113,8 +116,9 @@ void onTick(CBlob@ this)
 		//burninating the burning time
 		burn_time--;
 
-		//and making sure it's set correctly!
+		//making sure to set values correctly
 		this.set_s16(burn_timer, burn_time);
+		this.set_s16(burn_counter, burn_count);
 	}
 
 	// (flax roof cottages!)

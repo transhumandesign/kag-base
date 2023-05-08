@@ -9,6 +9,8 @@ const string burn_timer = "burn timer";
 const string burning_tag = "burning";
 const string spread_fire_tag = "spread fire";
 
+const string burn_counter = "burn counter";
+
 const int fire_wait_ticks = 4;
 const int burn_thresh = 70;
 
@@ -42,6 +44,9 @@ void server_setFireOff(CBlob@ this)
 
 	this.set_s16(burn_timer, 0);
 	this.Sync(burn_timer, true);
+	
+	this.set_s16(burn_counter, 0);
+	this.Sync(burn_counter, true);
 
 	if (this.hasTag("had only fire flag"))
 		this.getCurrentScript().runFlags |= Script::tick_infire;
