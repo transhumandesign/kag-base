@@ -14,13 +14,14 @@ void onInit(CBlob@ this)
 	if (!this.exists("class button radius"))
 	{
 		CShape@ shape = this.getShape();
+		f32 ts = getMap().tilesize;
 		if (shape !is null)
 		{
-			this.set_u8("class button radius", Maths::Max(this.getRadius(), (shape.getWidth() + shape.getHeight()) / 2));
+			this.set_u8("class button radius", Maths::Max(this.getRadius(), Maths::Max(shape.getWidth(), shape.getHeight()) + ts));
 		}
 		else
 		{
-			this.set_u8("class button radius", 16);
+			this.set_u8("class button radius", ts * 2);
 		}
 	}
 }

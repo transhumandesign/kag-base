@@ -33,6 +33,11 @@ shared class RespawnSystem
 			CBlob @newBlob = server_CreateBlob(p_info.blob_name, p_info.team, at);
 			newBlob.server_SetPlayer(player);
 			player.server_setTeamNum(p_info.team);
+
+			if (p_info.customImmunityTime >= 0)
+			{
+				newBlob.set_u32("custom immunity time", p_info.customImmunityTime);
+			}
 			return newBlob;
 		}
 
@@ -66,6 +71,12 @@ shared class RespawnSystem
 	{
 		/* OVERRIDE ME */
 		return Vec2f();
+	}
+
+	CBlob@ getSpawnBlob(PlayerInfo@ p_info)
+	{
+		/* OVERRIDE ME */
+		return null;
 	}
 
 	/*

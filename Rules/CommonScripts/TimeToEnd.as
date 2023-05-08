@@ -79,6 +79,6 @@ void onRender(CRules@ this)
 		drawRulesFont(getTranslatedString("Time left: {MIN}:{SEC}")
 						.replace("{MIN}", "" + ((MinutesToEnd < 10) ? "0" + MinutesToEnd : "" + MinutesToEnd))
 						.replace("{SEC}", "" + ((secondsToEnd < 10) ? "0" + secondsToEnd : "" + secondsToEnd)),
-		              SColor(255, 255, 255, 255), Vec2f(10, 140), Vec2f(getScreenWidth() - 20, 180), true, false);
+		              SColor(255, 255, 255, 255), Vec2f(10, 128), Vec2f(getScreenWidth() - 20, 180), true, false);
 	}
 }

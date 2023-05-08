@@ -1,4 +1,5 @@
 #include "ColoredNameToggleCommon.as"
+#include "ChatCommandCommon.as"
 
 bool ignoreInitial = false;
 
@@ -7,21 +8,12 @@ void onInit(CRules@ this)
     this.addCommandID(toggle_command);
     this.addCommandID(prefs_command);
 
+    ChatCommands::RegisterCommand(ToggleNameColorCommand());
+
     if(getNet().isClient())
     {
         ignoreInitial = true;
     }
-}
-
-void sendNameColorCommand(CRules@ rules, CPlayer@ player, bool nameColorOn)
-{
-	string toggleID = getToggleID(player);
-
-	CBitStream params;
-	params.write_string(toggleID);
-	params.write_bool(nameColorOn);
-	rules.SendCommand(rules.getCommandID(toggle_command), params);
-
 }
 
 void loadAdminPreferences(CRules@ rules)
@@ -57,21 +49,6 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
         params.write_string(player.getUsername());
         this.SendCommand(this.getCommandID(prefs_command), params);
     }
-}
-
-bool onServerProcessChat(CRules@ this, const string &in textIn, string &out textOut, CPlayer@ player)
-{
-    if (toggle_strings.find(textIn) > -1 && isSpecial(player))
-    {
-        string toggleID = getToggleID(player);
-        if (this.exists(toggleID))
-        {
-            bool visible = !this.get_bool(toggleID);
-            sendNameColorCommand(this, player, visible);
-            return false;
-        }
-    }
-    return true;
 }
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)

@@ -1,6 +1,7 @@
 //-- Written by Monkey_Feats 22/2/2020 --//
 #include "LoaderColors.as";
 
+const uint voteWaitDuration = 5 * getTicksASecond();
 const uint voteLockDuration = 3 * getTicksASecond();
 const string voteEndTag = "mapvote: ended";
 const string voteSelectMapTag = "mapvote: selectmap";
@@ -33,6 +34,11 @@ int ticksRemainingForMapVote()
 bool isMapVoteOver()
 {
 	return ticksRemainingForMapVote() <= 0;
+}
+
+bool isMapVoteVisible()
+{
+	return ticksSinceGameOver() >= voteWaitDuration;
 }
 
 class MapVotesMenu
@@ -79,6 +85,14 @@ class MapVotesMenu
 		{
 			random.Reset(Time());
 		}
+	}
+
+	bool screenPositionOverlaps(Vec2f pos)
+	{
+		return pos.x >= topLeftCorner.x
+		    && pos.y >= topLeftCorner.y
+			&& pos.x < bottomRightCorner.x
+			&& pos.y < bottomRightCorner.y; 
 	}
 
 	void ClearVotes()
@@ -140,7 +154,7 @@ class MapVotesMenu
 
 	void Update(CControls@ controls, u8 &out newSelectedNum)
 	{
-		if (isMapVoteOver()) { return; }
+		if (isMapVoteOver() || !isMapVoteVisible()) { return; }
 
 		Vec2f mousepos = controls.getMouseScreenPos();
 		const bool mousePressed = controls.isKeyPressed(KEY_LBUTTON);
@@ -750,6 +764,16 @@ u8 type(SColor PixelCol, bool show_gold)
 		}
 	}
 	return ColTileType::Other;
+}
+
+bool isMapVoteActive()
+{
+	MapVotesMenu@ mvm;
+	return getRules().get("MapVotesMenu", @mvm)
+		&& getRules().isGameOver()
+		&& mvm.isSetup
+		&& getNet().isClient()
+		&& ticksSinceGameOver() >= 5*getTicksASecond();
 }
 
 enum colors

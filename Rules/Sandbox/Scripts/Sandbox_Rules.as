@@ -88,7 +88,8 @@ shared class SandboxSpawns : RespawnSystem
 			if (info.can_spawn_time > 0)
 			{
 				info.can_spawn_time--;
-				spawn_property = u8(Maths::Min(250, (info.can_spawn_time / 30)));
+				// Round time up (except for final few ticks)
+				spawn_property = u8(Maths::Min(250, ((info.can_spawn_time + getTicksASecond() - 5) / getTicksASecond())));
 			}
 
 			string propname = "Sandbox spawn time " + info.username;

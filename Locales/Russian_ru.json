@@ -13,6 +13,7 @@
 // REMEMBER: You do **ONLY** need to change the right-side text. If translations suddenly stop working, check your `cl_locale` variable and make sure the JSON file structure was not damaged.
 
 {
+
 //// SCOREBOARD ////
 //ScoreboardCommon.as
 	"Match time: {TIME}": "Время матча: {TIME}",
@@ -24,6 +25,7 @@
 	"Players: {PLAYERCOUNT}":"Игроков: {PLAYERCOUNT}",
 	"Player"                :"Игрок",
 	"Tier"                  :"Ранг",
+	"Age"                   :"Опыт",
 	"Accolades"             :"Достижения",
 	"Username"              :"Имя",
 	"Ping"                  :"Пинг",
@@ -37,7 +39,7 @@
 //TeamMenu.as
 	"Spectator":"Зритель",
 	"Auto-pick teams":"Автоматический выбор",
-	"Change team":	"Сменить команду",
+	"Change team":  "Сменить команду",
 
 //ShowGameMode.as //You can translate here any game mode names
 	"  Gamemode: {GAMEMODE}":"  Игровой режим: {GAMEMODE}",
@@ -58,6 +60,7 @@
 	"Back Wood Wall\nCheap extra support"                   :"Деревянная стена\nДешёвая опора",
 	"Wooden Door\nPlace next to walls"                      :"Деревянная дверь\nСтавьте рядом со стенами",
 	"Trap Block\nOnly enemies can pass"                     :"Блок-ловушка\nПроходят только враги",
+	"Trap Bridge\nOnly your team can stand on it"           :"Мост-ловушка\nТолько твоя команда может стоять на нём",
 	"Ladder\nAnyone can climb it"                           :"Лестница\nЛюбой может подняться по ней",
 	"Wooden Platform\nOne way platform"                     :"Деревянная платформа\nОдносторонняя платформа",
 	"Spikes\nPlace on Stone Block\nfor Retracting Trap"     :"Шипы\nСтавьте на каменные блоки\nТак они будут выдвигаться\nпри контакте с врагом",
@@ -496,7 +499,7 @@
 	"Out of stock. Come back later.":"Нет на складе. Приходите позже.",
 
 //HelpfulDeathTips.cfg
-	"To hide these tips, and other in-game help, hit F1.":
+	"To hide in-game help and tips, hit F1.":
 	"Чтобы скрыть эти подсказки и другие советы, нажмите F1.",
 	"Enemies can use your tunnels so protect them well!":
 	"Противники могут использовать ваши туннели, так что защищайте их!",
@@ -554,7 +557,7 @@
 	"Буры позволяют быстро копать, но они извлекают лишь 50% ресурсов. Не используйте их для добычи золота или во время строительной стадии игры.",
 	"Good players can play any class when needed.":
 	"Хорошие игроки могут играть любым классом в зависимости от ситуации.",
-	"Make sure you're helping your team advance; don't just hide out in the back!":
+	"Make sure you're helping your team advance. Don't just hide out in the back!":
 	"Помогайте своей команде. Не отсиживайтесь на базе!",
 	"Ride a shark on land and press up to pick him up.":
 	"Оседлайте акулу на суше и нажмите вверх, чтобы взять ее.",
@@ -799,25 +802,25 @@
 	"Storage":"Хранилище",
 
 //// BUTTONS AND OTHER ////
-	"Builder":	"Строитель",
-	"Knight":	"Рыцарь",
-	"Archer":	"Лучник",
-	"Buy":		"Купить", 		//CTF Shops
-	"Construct":	"Построить",		//Building.as
-	"Shop":		"Магазин",		//Shop.as (menu desc) & TradingMenu.as (btn)
-	"Store":	"Выложить все вещи",	//Storage.as (btn)
-	"Rest":		"Отдохнуть",		//Quarters.as (btn)
-	"Add fuel":	"Добавить топливо",	//Quarry.as (btn)
-	"Research":	"Исследования",
-	"Immobilise":	"Открепить колёса",  	//PopWheelsOff.as (btn)
-	"Detach {ITEM}":"Открепить {ITEM}",	//VehicleAttachment.as (btn)
-	"Load {ITEM}":  "Загрузить {ITEM}",	//VehicleCommon.as (btn)
-	"Swap Class":	"Сменить класс", 	//OneClassAvailable.as & TentLogic.as (btns)
-	"Swap class":	"Сменить класс", 	//StandardRespawnCommand.as (menu desc)
-	"Change class": "Сменить класс",	//Hall.as, TDM_Ruins.as, WAR_base.as, Ballista.as, WarBoat.as
-	"Trade":	"Торговля",
-	"Build":	"Строительство",	//BuilderInventory.as
-	"Current bomb": "Выбранная бомба",	//KnightLogic.as
+	"Builder":  "Строитель",
+	"Knight": "Рыцарь",
+	"Archer": "Лучник",
+	"Buy":    "Купить",     //CTF Shops
+	"Construct":  "Построить",    //Building.as
+	"Shop":   "Магазин",    //Shop.as (menu desc) & TradingMenu.as (btn)
+	"Store":  "Выложить все вещи",  //Storage.as (btn)
+	"Rest":   "Отдохнуть",    //Quarters.as (btn)
+	"Add fuel": "Добавить топливо", //Quarry.as (btn)
+	"Research": "Исследования",
+	"Immobilise": "Открепить колёса",   //PopWheelsOff.as (btn)
+	"Detach {ITEM}":"Открепить {ITEM}", //VehicleAttachment.as (btn)
+	"Load {ITEM}":  "Загрузить {ITEM}", //VehicleCommon.as (btn)
+	"Swap Class": "Сменить класс",  //OneClassAvailable.as & TentLogic.as (btns)
+	"Swap class": "Сменить класс",  //StandardRespawnCommand.as (menu desc)
+	"Change class": "Сменить класс",  //Hall.as, TDM_Ruins.as, WAR_base.as, Ballista.as, WarBoat.as
+	"Trade":  "Торговля",
+	"Build":  "Строительство",  //BuilderInventory.as
+	"Current bomb": "Выбранная бомба",  //KnightLogic.as
 //Components
 	"Unload":"Разрядить", //Magazine.as (btn)
 	"Insert 60 coins":"Вставить 60 монет", //CoinSlot.as (btn)
@@ -860,6 +863,7 @@
 	"Connection failed": "Не удалось подключиться",
 	"Please check the address again and make sure the server is running.": "Пожалуйста, проверьте адрес ещё раз и убедитесь, что сервер запущен.",
 	"DISCONNECTED FROM SERVER": "ОТКЛЮЧЁН ОТ СЕРВЕРА",
+	"Waiting for scripts...":"Ожидание сценариев...",
 
 ////GLOBAL MESSAGES////
 	"Waiting for a hall capture before starting the game...":"Ожидание захвата базы для начала игры...",
@@ -937,12 +941,15 @@
 	"Settings":"Настройки",
 	"How to video":"Как записать видео",
 	"Forum":"Форум",
+	"Leaderboards":"Доска\nЛидеров",
+	"Server Rules":"Правила\nСервера",
 	"News":"Новости",
 	"Discord":"Discord",
 	"IRC":"IRC",
 	"Wiki":"Wiki",
 	"Set account e-mail":"Привязать почту",
 	"Quit":"Выйти",
+	"Finish Account Linking":"Завершить Привязку Аккаунта",
 	"Your KAG account e-mail and password":"Ваши e-mail и пароль от аккаунта KAG",
 	"You can use these credentials to login on kag2d.com and kagforums.com":"Вы можете использовать эти данные для входа на kag2d.com и kagforums.com",
 	"E-mail:":"E-mail",
@@ -986,12 +993,13 @@
 	"BUY {HEADS_PACK}"          :"КУПИТЬ {HEADS_PACK}",
 	"Flags of The World"        :"Флаги мира",
 	"High Fantasy"              :"Фэнтези",
+	"Community Pack 1"          :"Набор Сообщества",
 	"Change keys:"              :"Назначить клавиши:",
 	"(Unused keys, for mods)"   :"(Неиспользуемые клавиши, для модов)",
 	"Smooth shader"             :"Мягкий шейдер",
 	"Faster graphics"           :"Быстрая графика",
 	"Cap framerate"             :"Ограничить FPS",
-	"VSync - Requires Restart"  :"VSync - требуется рестарт",
+	"VSync - Requires Restart"  :"VSync - требуется перезапуск",
 	"Game music"                :"Игровая музыка",
 	"Sound Volume:"             :"Звуковые эффекты:",
 	"Music Volume:"             :"Музыка:",
@@ -999,9 +1007,10 @@
 	"Menu music"                :"Музыка в меню",
 	"Swap audio channels"       :"Поменять аудио каналы",
 	"Language (EXPERIMENTAL):"  :"Язык",
-//	"Experimental feature warning": "Внимание! Экспериментальная функция",
-//	"Language support is still a work in progress!\nThe translations might be incomplete or inaccurate.\nSome translations will need a restart to apply.": "",
+//  "Experimental feature warning": "Внимание! Экспериментальная функция",
+//  "Language support is still a work in progress!\nThe translations might be incomplete or inaccurate.\nSome translations will need a restart to apply.": "",
 	"Fixed camera"              :"Фиксированная камера",
+	"Disable screen shake"      :"Убрать тряску камеры",
 	"Kids safe"                 :"Режим для детей",
 	"Chat Filter"               :"Фильтр чата",
 	"Show Team-Mates Names"     :"Отображать имена игроков",
@@ -1115,18 +1124,18 @@
 	"Click to close ({TIMELEFT}s)":"Нажмите, чтобы закрыть ({TIMELEFT} с)",
 
 	//
-	"Start a Vote":			"Начать голосование",
-	"Can't Start Vote":			"Нельзя начать голосование",
+	"Start a Vote":     "Начать голосование",
+	"Can't Start Vote":     "Нельзя начать голосование",
 	"(Vote already in progress)":"(Голосование уже идёт)",
 	//vote kick menu
 	"Kick {USER}?":"Исключить {USER}?",
 	"Kick":"Исключить игрока",
-	"Vote Kick":				"Голосование за исключение",
-	"Griefer":				"Гриферство",
-	"Hacker":					"Читы",
-	"Teamkiller":				"Убийство своих",
-	"Chat Spam":				"Спам в чате",
-	"Non-Participation":		"Неучастие в игре",
+	"Vote Kick":"Голосование за исключение",
+	"Griefer":"Гриферство",
+	"Hacker":"Читы",
+	"Teamkiller":"Убийство своих",
+	"Chat Spam":"Спам в чате",
+	"Non-Participation":    "Неучастие в игре",
 	"Voting requires a {REQUIRED_MIN} min wait\nafter each started vote to\nprevent spamming/abuse.\n":"После каждого голосования\nнужно ждать {REQUIRED_MIN} мин,\nчтобы избежать спама или\nголосований без причины.",
 	"Vote to kick a player on your team\nout of the game.\n\n- use responsibly\n- report any abuse of this feature.\n\nTo Use:\n\n- select a reason from the\n     list (default is griefing).\n- select a name from the list.\n- everyone votes.\n":"Проголосовать за исключение\nиз игры игрока вашей команды.\n\n- использовать ответственно\n- сообщайте о любом злоупотреблении этой функцией.\n\nКак использовать:\n\n- Выберите причину из списка\n     (гриферство по умолчанию).\n- выберите имя из списка.\n- голосуют все.\n",
 	"Cannot kick {USER}":"Нельзя исключить {USER}",
@@ -1157,6 +1166,8 @@
 	"Vote Surrender":"Сдаться",
 	"Vote to end the game\nin favour of the enemy team.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select surrender if you're sure.\n- everyone votes.\n":"Голосование за окончание игры\nв пользу вражеской команды.\n\n- сообщайте о любом злоупотреблении этой функцией.\n\nКак использовать:\n\n- сдавайтесь только если вы уверены.\n- голосуют все.\n",
 	"We Surrender! (I'm sure)":"Мы сдаёмся! (Я уверен)",
+	//vote scramble
+	"Scramble":"Перемешать",
 	//vote chat messages
 	"Votekick passed! {USER} will be kicked out.":"Голосование прошло успешно! {USER} будет исключён из игры",
 	"{USER} left early, acting as if they were kicked.":"{USER} рано вышел из игры, сделав вид, что его кикнули.",
@@ -1174,43 +1185,43 @@
 	"Against":"против",
 
 //// ESC MENUS ////
-	"Back":					"Назад",
-	"Change Team":				"Сменить команду",
-	"Switch to Team {NUMBER}":		"Перейти в команду {NUMBER}", //(not used in vanilla)
-	// "Spectator":				"Зритель", //Already exists in TeamMenu.as
-	"Spectators":				"Зрители",
-	"Suicide":				"Самоубийство",
-	"Admin":				"Администрирование",
-	"Restart Map":				"Перезапустить карту",
-	"Administrate Players":			"Управление игроками",
-	"Ban":					"Забанить",
-	"Ban - 10 mins":			"Бан - 10 минут",
-	"Ban - 1 hour":				"Бан - 1 час",
-	"Ban - 1 day":				"Бан - 1 день",
-	"Ban - Permanent":			"Бан - навсегда",
-	"Mute":					"Заглушить",
-	"Mute - 10 mins":			"Заглушить - 10 минут",
-	"Mute - 1 hour":			"Заглушить - 1 час",
-	"Mute - 1 day":				"Заглушить - 1 день",
-	"Mute - Permanent":			"Заглушить - навсегда",
-	"Unmute":				"Не заглушать",
-	"Freeze":				"Заморозить",
-	"Unfreeze":				"Разморозить",
-	"Swap Team":				"Сменить команду",
-	"Assign Seclev":			"Назначить Seclev",
-	"Ignore Player":			"Игнорировать игрока",
-	"Ignore - 10 mins":			"Игнорировать - 10 минут",
-	"Ignore - 1 hour":			"Игнорировать - 1 час",
-	"Ignore - 1 day":			"Игнорировать - 1 день",
-	"Ignore - Permanent":			"Игнорировать - навсегда",
-	"Unignore":				"Не игнорировать",
-	"Servers":				"Серверы",
-	"Help":					"Помощь",
-	"Manual":				"Руководство",
-	"Map Utilities":			"Инструменты для карты",
-	"Map Filename":				"Имя файла",
-	"Save Map":				"Сохранить карту",
-	"Quit to Main Menu":			"Выйти в главное меню",
+	"Back":         "Назад",
+	"Change Team":        "Сменить команду",
+	"Switch to Team {NUMBER}":    "Перейти в команду {NUMBER}", //(not used in vanilla)
+	// "Spectator":       "Зритель", //Already exists in TeamMenu.as
+	"Spectators":       "Зрители",
+	"Suicide":        "Самоубийство",
+	"Admin":        "Администрирование",
+	"Restart Map":        "Перезапустить карту",
+	"Administrate Players":     "Управление игроками",
+	"Ban":          "Забанить",
+	"Ban - 10 mins":      "Бан - 10 минут",
+	"Ban - 1 hour":       "Бан - 1 час",
+	"Ban - 1 day":        "Бан - 1 день",
+	"Ban - Permanent":      "Бан - навсегда",
+	"Mute":         "Заглушить",
+	"Mute - 10 mins":     "Заглушить - 10 минут",
+	"Mute - 1 hour":      "Заглушить - 1 час",
+	"Mute - 1 day":       "Заглушить - 1 день",
+	"Mute - Permanent":     "Заглушить - навсегда",
+	"Unmute":       "Не заглушать",
+	"Freeze":       "Заморозить",
+	"Unfreeze":       "Разморозить",
+	"Swap Team":        "Сменить команду",
+	"Assign Seclev":      "Назначить Seclev",
+	"Ignore Player":      "Игнорировать игрока",
+	"Ignore - 10 mins":     "Игнорировать - 10 минут",
+	"Ignore - 1 hour":      "Игнорировать - 1 час",
+	"Ignore - 1 day":     "Игнорировать - 1 день",
+	"Ignore - Permanent":     "Игнорировать - навсегда",
+	"Unignore":       "Не игнорировать",
+	"Servers":        "Серверы",
+	"Help":         "Помощь",
+	"Manual":       "Руководство",
+	"Map Utilities":      "Инструменты для карты",
+	"Map Filename":       "Имя файла",
+	"Save Map":       "Сохранить карту",
+	"Quit to Main Menu":      "Выйти в главное меню",
 
 // EmoteMenu.as and WheelMenuCommon.as
 	"Select emote":"Выберите эмоцию",
@@ -1258,6 +1269,11 @@
 	"Emote Hotkey Binder":"Привязка клавиш для эмоций",
 	"Select a keybind below, then select the emote you want":"Выберите клавишу ниже, затем выберите эмоцию",
 	"Select key {KEY_NUM}":"Выбрать клавишу {KEY_NUM}",
+
+// BuilderBinderMenu.as
+	"Bind Builder Blocks":"Привязки Блоков Строителя",
+	"Builder Block Hotkey Binder":"Привязка Горячих Клавиш Строителя",
+	"Select a keybind below, then select the block you want":"Выберите привязку клавиш ниже, затем выберите нужный блок",
 
 // Accolades
 	"support tier: {SUPPORT_TIER}":"уровень поддержки: {SUPPORT_TIER}",

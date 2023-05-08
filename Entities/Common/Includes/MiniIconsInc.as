@@ -13,6 +13,7 @@ namespace FactoryFrame
 		catapult = 4,
 		ballista,
 		mounted_bow,
+		outpost,
 
 		saw = 8,
 		drill,

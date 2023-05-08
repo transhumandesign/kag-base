@@ -117,6 +117,8 @@ class VoteKickCheckFunctor : VoteCheckFunctor
 
 	bool PlayerCanVote(CPlayer@ player)
 	{
+		if (!VoteCheckFunctor::PlayerCanVote(player)) return false;
+
 		if (!getSecurity().checkAccess_Feature(player, "mark_player")) return false;
 
 		if (reason.find(kick_reason_string[kick_reason_griefer]) != -1 || //reason contains "Griefer"
@@ -234,6 +236,8 @@ class VoteNextmapCheckFunctor : VoteCheckFunctor
 
 	bool PlayerCanVote(CPlayer@ player)
 	{
+		if (!VoteCheckFunctor::PlayerCanVote(player)) return false;
+
 		return getSecurity().checkAccess_Feature(player, "map_vote");
 	}
 };
@@ -323,6 +327,8 @@ class VoteSurrenderCheckFunctor : VoteCheckFunctor
 
 	bool PlayerCanVote(CPlayer@ player)
 	{
+		if (!VoteCheckFunctor::PlayerCanVote(player)) return false;
+
 		//todo: seclevs? how would they look?
 
 		return player.getTeamNum() == team;
@@ -399,6 +405,8 @@ class VoteScrambleCheckFunctor : VoteCheckFunctor
 
 	bool PlayerCanVote(CPlayer@ player)
 	{
+		if (!VoteCheckFunctor::PlayerCanVote(player)) return false;
+
 		return player.getTeamNum() != getRules().getSpectatorTeamNum();
 	}
 };
@@ -455,10 +463,26 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 
 	bool can_skip_wait = getSecurity().checkAccess_Feature(me, "skip_votewait");
 
+	bool duplicatePlayer = isDuplicatePlayer(me);
+
 	//kick menu
 	if (getSecurity().checkAccess_Feature(me, "mark_player"))
 	{
-		if (g_lastVoteCounter < 60 * getTicksASecond()*required_minutes
+		if (duplicatePlayer)
+		{
+			Menu::addInfoBox(
+				kickmenu,
+				getTranslatedString("Can't Start Vote"),
+				getTranslatedString(
+					"Voting to kick a player\n" +
+					"is not allowed when playing\n" +
+					"with a duplicate instance of KAG.\n\n" +
+					"Try rejoining the server\n" +
+					"if this was unintentional."
+				)
+			);
+		}
+		else if (g_lastVoteCounter < 60 * getTicksASecond()*required_minutes
 				&& (!can_skip_wait || g_haveStartedVote))
 		{
 			string cantstart_info = getTranslatedString(
@@ -578,7 +602,21 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 	//nextmap menu
 	if (getSecurity().checkAccess_Feature(me, "map_vote"))
 	{
-		if (g_lastNextmapCounter < 60 * getTicksASecond()*required_minutes_nextmap
+		if (duplicatePlayer)
+		{
+			Menu::addInfoBox(
+				mapmenu,
+				getTranslatedString("Can't Start Vote"),
+				getTranslatedString(
+					"Voting for next map\n" +
+					"is not allowed when playing\n" +
+					"with a duplicate instance of KAG.\n\n" +
+					"Try rejoining the server\n" +
+					"if this was unintentional."
+				)
+			);
+		}
+		else if (g_lastNextmapCounter < 60 * getTicksASecond()*required_minutes_nextmap
 				&& (!can_skip_wait || g_haveStartedVote))
 		{
 			string cantstart_info = getTranslatedString(
@@ -625,7 +663,32 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 
 	//surrender menu
 	//(shares nextmap counter to prevent nextmap/surrender spam)
-	if (!this.isMatchRunning() && !can_skip_wait)
+	if (duplicatePlayer)
+	{
+		Menu::addInfoBox(
+			surrendermenu,
+			getTranslatedString("Can't Start Vote"),
+			getTranslatedString(
+				"Voting for surrender\n" +
+				"is not allowed when playing\n" +
+				"with a duplicate instance of KAG.\n\n" +
+				"Try rejoining the server\n" +
+				"if this was unintentional."
+		)
+		);
+	}
+	else if (me.getTeamNum() == rules.getSpectatorTeamNum())
+	{
+		Menu::addInfoBox(
+			surrendermenu,
+			getTranslatedString("Can't Start Vote"),
+			getTranslatedString(
+				"Voting for surrender\n" +
+				"is not available as a spectator\n"
+			)
+		);
+	}
+	else if (!this.isMatchRunning() && !can_skip_wait)
 	{
 		Menu::addInfoBox(
 			surrendermenu,
@@ -646,17 +709,6 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			"to prevent spamming.\n"
 		).replace("{NEXTMAP_MINS}", "" + required_minutes_nextmap);
 		Menu::addInfoBox(surrendermenu, getTranslatedString("Can't Start Vote"), cantstart_info);
-	}
-	else if (me.getTeamNum() == rules.getSpectatorTeamNum())
-	{
-		Menu::addInfoBox(
-			surrendermenu,
-			getTranslatedString("Can't Start Vote"),
-			getTranslatedString(
-				"Voting for surrender\n" +
-				"is not available as a spectator\n"
-			)
-		);
 	}
 	else
 	{
@@ -683,7 +735,32 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 	}
 	Menu::addSeparator(surrendermenu);
 
-	if (!this.isWarmup() && !can_skip_wait)
+	if (duplicatePlayer)
+	{
+		Menu::addInfoBox(
+			scramblemenu,
+			getTranslatedString("Can't Start Vote"),
+			getTranslatedString(
+				"Voting for team scramble\n" +
+				"is not allowed when playing\n" +
+				"with a duplicate instance of KAG.\n\n" +
+				"Try rejoining the server\n" +
+				"if this was unintentional."
+			)
+		);
+	}
+	else if (me.getTeamNum() == rules.getSpectatorTeamNum())
+	{
+		Menu::addInfoBox(
+			scramblemenu,
+			getTranslatedString("Can't Start Vote"),
+			getTranslatedString(
+				"Voting for team scramble\n" +
+				"is not available as a spectator\n"
+			)
+		);
+	}
+	else if (!this.isWarmup() && !can_skip_wait)
 	{
 		Menu::addInfoBox(
 			scramblemenu,
@@ -704,17 +781,6 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			"to prevent spamming.\n"
 		).replace("{NEXTMAP_MINS}", "" + required_minutes_nextmap);
 		Menu::addInfoBox(scramblemenu, getTranslatedString("Can't Start Vote"), cantstart_info);
-	}
-	else if (me.getTeamNum() == rules.getSpectatorTeamNum())
-	{
-		Menu::addInfoBox(
-			scramblemenu,
-			getTranslatedString("Can't Start Vote"),
-			getTranslatedString(
-				"Voting for team scramble\n" +
-				"is not available as a spectator\n"
-			)
-		);
 	}
 	else
 	{

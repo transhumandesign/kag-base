@@ -170,8 +170,9 @@ void SetupScrolls(CRules@ this)
 		def.level = 4.0f;
 		def.tier = -0.5f;
 		def.timeSecs = t * 650;
-		addScrollItemsToArray("Ballista", "ballista", 			m * 60, true, 1, @def.items);
-		addScrollItemsToArray("Ballista Bolts", "mat_bolts", 	m * 60, false, 1, @def.items);
+		addScrollItemsToArray("Ballista", "ballista", m * 60, true, 1, @def.items);
+		addScrollItemsToArray("Ballista Bolts", "mat_bolts", m * 60, false, 1, @def.items);
+		addScrollItemsToArray("Ballista Shells", "mat_bomb_bolts", m * 60, false, 1, @def.items);
 		all.scrolls.set("ballista", def);
 	}
 

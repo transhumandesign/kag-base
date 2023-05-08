@@ -442,7 +442,7 @@ void LinearExplosion(CBlob@ this, Vec2f _direction, f32 length, const f32 width,
 		//widthwise overlap
 		float q = Maths::Abs(v * normal) - rad - tilesize;
 
-		if (p > 0.0f && p < length && q < halfwidth)
+		if (p >= 0.0f && p < length && q < halfwidth)
 		{
 			HitBlob(this, m_pos, hit_blob, length, damage, hitter, false, should_teamkill);
 		}
@@ -580,7 +580,8 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
 	                hitter, hitter == Hitters::water || //hit with water
 	                isOwnerBlob(this, hit_blob) ||	//allow selfkill with bombs
 	                should_teamkill || hit_blob.hasTag("dead") || //hit all corpses ("dead" tag)
-					hit_blob.hasTag("explosion always teamkill") // check for override with tag
+					hit_blob.hasTag("explosion always teamkill") || // check for override with tag
+					(this.isInInventory() && this.getInventoryBlob() is hit_blob) //is the inventory container
 	               );
 	return true;
 }

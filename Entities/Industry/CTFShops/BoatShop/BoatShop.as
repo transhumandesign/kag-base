@@ -14,6 +14,8 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
+	this.Tag("has window");
+
 	//INIT COSTS
 	InitCosts();
 
@@ -42,7 +44,7 @@ void onInit(CBlob@ this)
 		string warboat_icon = getTeamIcon("warboat", "VehicleIcons.png", team_num, Vec2f(32, 32), 2);
 		ShopItem@ s = addShopItem(this, "War Boat", warboat_icon, "warboat", warboat_icon + "\n\n\n" + Descriptions::warboat, false, true);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::warboat);
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::warboat_gold);
+		//AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::warboat_gold);
 		s.crate_icon = 2;
 	}
 }
@@ -57,5 +59,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	if (cmd == this.getCommandID("shop made item"))
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
+
+		u16 caller, item;
+		string name;
+
+		if (!params.saferead_netid(caller) || !params.saferead_netid(item) || !params.saferead_string(name))
+		{
+			return;
+		}
+
+		if (name == "warboat")
+		{
+			CBlob@ crate = getBlobByNetworkID(item);
+
+			crate.set_Vec2f("required space", Vec2f(10, 6));
+			crate.set_s32("gold building amount", CTFCosts::warboat_gold);
+		}
 	}
 }
