@@ -305,14 +305,21 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		}
 	}
 	else if (isUnpacking(this))
-	{
-		const string msg = getTranslatedString("Stop {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name")));
-		caller.CreateGenericButton("$DISABLED$", buttonpos, this, this.getCommandID("stop unpack"), msg);
+	{		
+		string text = getTranslatedString("Stop {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name")));
+		CButton@ button = caller.CreateGenericButton("$DISABLED$", buttonpos, this, this.getCommandID("stop unpack"), text);
+		
+		button.enableRadius = 20.0f;
 	}
 	else if (hasSomethingPacked(this))
 	{
-		const string msg = getTranslatedString("Unpack {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name")));
-		caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), msg);
+		CBitStream params;
+		params.write_netid(caller.getNetworkID());
+		
+		string text = getTranslatedString("Unpack {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name")));
+		CButton@ button = caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), text, params);
+		
+		button.enableRadius = 20.0f;
 	}
 	else if (carried is this)
 	{
@@ -342,6 +349,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			{
 				this.set_u32("unpack time", getGameTime() + this.get_u32("unpack secs") * getTicksASecond());
 				this.getShape().setDrag(10.0f);
+
+				CBlob@ caller = getBlobByNetworkID(params.read_netid());
+				if (caller !is null) 
+				{ 
+					this.server_setTeamNum(caller.getTeamNum());
+				}
 			}
 		}
 		else
