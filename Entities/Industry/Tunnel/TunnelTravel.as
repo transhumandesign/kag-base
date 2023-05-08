@@ -1,4 +1,4 @@
-﻿// include file for blobs that use tunnel travel capabilities
+// include file for blobs that use tunnel travel capabilities
 // apply "travel tunnel" tag to use
 
 #include "TunnelCommon.as";
@@ -153,7 +153,12 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 		if (caller.isAttached())
 			return;
 
+
+		// assume destination is center bottom
 		Vec2f position = tunnel.getPosition();
+		position = Vec2f(position.x, position.y + tunnel.getHeight() / 2 - caller.getHeight() / 2);
+		
+		// apply offset (if it exists)
 		if (tunnel.exists("travel offset"))
 		{
 			Vec2f offset = tunnel.get_Vec2f("travel offset");
