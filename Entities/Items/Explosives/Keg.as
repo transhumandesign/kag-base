@@ -14,12 +14,11 @@ void onInit(CBlob@ this)
 	this.set_bool("map_damage_raycast", true);
 	this.set_f32("keg_time", 180.0f);  // 180.0f
 	this.Tag("medium weight");
+	this.Tag("slash_while_in_hand"); // allows knights to knock kegs off enemies' backs
 
 	this.set_u16("_keg_carrier_id", 0xffff);
 
 	CSprite@ sprite = this.getSprite();
-
-	sprite.SetZ(-10);
 
 	CSpriteLayer@ fuse = this.getSprite().addSpriteLayer("fuse", "Keg.png" , 16, 16, 0, 0);
 
@@ -31,6 +30,8 @@ void onInit(CBlob@ this)
 		fuse.SetOffset(Vec2f(3, -4));
 		fuse.SetRelativeZ(1);
 	}
+
+	this.set_f32("important-pickup", 30.0f);
 }
 
 //sprite update

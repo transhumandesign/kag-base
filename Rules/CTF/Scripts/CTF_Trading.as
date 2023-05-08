@@ -1,20 +1,24 @@
-#define SERVER_ONLY
+//not server only so the client also gets the game event setup stuff
 
 #include "GameplayEvents.as"
 #include "AssistCommon.as"
+#include "Hitters.as"
 
-const int coinsOnDamageAdd = 5;
-const int coinsOnAssistAdd = 7;
-const int coinsOnKillAdd = 10;
-const f32 killstreakFactor = 1.2f;
+const int coinsOnDamageAdd = 6;
+const int coinsOnAssistAdd = 8;
+const int coinsOnKillAdd = 12;
 
-const int coinsOnDeathLosePercent = 20;
-const int coinsOnTKLose = 50;
+// bonus for being an offensive builder
+const int coinsOnDamageAddBuilder = 8;
+const int coinsOnAssistAddBuilder = 10;
+const int coinsOnKillAddBuilder = 15;
+
+const int coinsOnDeathLosePercent = 15;
 
 const int coinsOnRestartAdd = 0;
 const bool keepCoinsOnRestart = false;
 
-const int coinsOnHitSiege = 5; //per heart of damage
+const int coinsOnHitSiege = 2; //per heart of damage
 const int coinsOnKillSiege = 20;
 
 const int coinsOnCapFlag = 100;
@@ -25,6 +29,8 @@ const int coinsOnBuildWood = 1;
 const int coinsOnBuildWorkshop = 10;
 
 const int warmupFactor = 3;
+
+const f32 killstreakFactor = 1.2f;
 
 string[] names;
 
@@ -54,6 +60,9 @@ void GiveRestartCoinsIfNeeded(CPlayer@ player)
 //extra coins on start to prevent stagnant round start
 void Reset(CRules@ this)
 {
+	if (!getNet().isServer())
+		return;
+
 	names.clear();
 
 	uint count = getPlayerCount();
@@ -78,6 +87,9 @@ void onInit(CRules@ this)
 //also given when plugging player -> on first spawn
 void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 {
+	if (!getNet().isServer())
+		return;
+
 	if (player !is null)
 	{
 		GiveRestartCoinsIfNeeded(player);
@@ -89,23 +101,29 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 {
+	if (!getNet().isServer())
+		return;
+
+	bool giveBuilderBonus = false;
+
+	if(customData == Hitters::drill || customData == Hitters::spikes || customData == Hitters::builder) 
+	{
+		giveBuilderBonus = true;
+	}
+
 	if (victim !is null)
 	{
 		if (killer !is null)
 		{
 			if (killer !is victim && killer.getTeamNum() != victim.getTeamNum())
 			{
-				killer.server_setCoins(killer.getCoins() + coinsOnKillAdd * Maths::Pow(killstreakFactor, killer.get_u8("killstreak")));
-			}
-			else if (killer !is victim && killer.getTeamNum() == victim.getTeamNum())
-			{
-				killer.server_setCoins(killer.getCoins() - coinsOnTKLose);
+				killer.server_setCoins(killer.getCoins() + ((giveBuilderBonus ? coinsOnKillAddBuilder : coinsOnKillAdd) * Maths::Pow(killstreakFactor, killer.get_u8("killstreak"))));
 			}
 			
 			CPlayer@ helper = getAssistPlayer (victim, killer);
 			if (helper !is null) 
 			{ 
-				helper.server_setCoins(helper.getCoins() + coinsOnAssistAdd);
+				helper.server_setCoins(helper.getCoins() + (giveBuilderBonus ? coinsOnAssistAddBuilder : coinsOnAssistAdd));
 			}
 		}
 		if (!this.isWarmup())	//only reduce coins if the round is on.
@@ -126,8 +144,18 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 
 f32 onPlayerTakeDamage(CRules@ this, CPlayer@ victim, CPlayer@ attacker, f32 DamageScale)
 {
+	if (!getNet().isServer())
+		return DamageScale;
+
+	bool giveBuilderBonus = false;
+
+
 	if (attacker !is null && attacker !is victim && attacker.getTeamNum() != victim.getTeamNum())
 	{
+		if(attacker.lastBlobConfig == "builder")
+		{
+			giveBuilderBonus = true;
+		}
         CBlob@ v = victim.getBlob();
         f32 health = 0.0f;
         if(v !is null)
@@ -135,7 +163,7 @@ f32 onPlayerTakeDamage(CRules@ this, CPlayer@ victim, CPlayer@ attacker, f32 Dam
         f32 dmg = DamageScale;
         dmg = Maths::Min(health, dmg);
 
-		attacker.server_setCoins(attacker.getCoins() + dmg * coinsOnDamageAdd / this.attackdamage_modifier);
+		attacker.server_setCoins(attacker.getCoins() + dmg * (giveBuilderBonus ? coinsOnDamageAddBuilder : coinsOnDamageAdd) / this.attackdamage_modifier);
 	}
 
 	return DamageScale;
@@ -144,6 +172,10 @@ f32 onPlayerTakeDamage(CRules@ this, CPlayer@ victim, CPlayer@ attacker, f32 Dam
 // coins for various game events
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
+	//only important on server
+	if (!getNet().isServer())
+		return;
+
 	if (cmd == getGameplayEventID(this))
 	{
 		GameplayEvent g(params);

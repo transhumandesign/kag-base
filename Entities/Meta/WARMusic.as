@@ -2,6 +2,8 @@
 
 #define CLIENT_ONLY
 
+#include "RulesCore.as";
+
 enum GameMusicTag
 {
 	world_ambient_start,
@@ -9,6 +11,7 @@ enum GameMusicTag
 	world_ambient,
 	world_ambient_underground,
 	world_ambient_mountain,
+	world_ambient_night,
 
 	world_ambient_end,
 
@@ -78,6 +81,7 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 	mixer.AddTrack("Sounds/Music/ambient_forest.ogg", world_ambient);
 	mixer.AddTrack("Sounds/Music/ambient_mountain.ogg", world_ambient_mountain);
 	mixer.AddTrack("Sounds/Music/ambient_cavern.ogg", world_ambient_underground);
+	mixer.AddTrack("Sounds/Music/ambient_night.ogg", world_ambient_night);
 	mixer.AddTrack("Sounds/Music/KAGWorldIntroShortA.ogg", world_intro);
 	mixer.AddTrack("Sounds/Music/KAGWorld1-1a.ogg", world_home);
 	mixer.AddTrack("Sounds/Music/KAGWorld1-2a.ogg", world_home);
@@ -122,18 +126,23 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 	//calc ambience
 	if (timer % 30 == 0)
 	{
+		bool isNight = map.getDayTime() > 0.75f;
 		bool isUnderground = map.rayCastSolid(pos, Vec2f(pos.x, pos.y - 60.0f));
 		if (isUnderground)
 		{
 			changeAmbience(mixer, world_ambient_underground, 4.0f, 4.0f);
 		}
+		else if (pos.y < map.tilemapheight * map.tilesize * 0.2f) // top one fifth of map is windy
+		{
+			changeAmbience(mixer, world_ambient_mountain, 4.0f, 4.0f);
+		}
+		else if (isNight)
+		{
+			changeAmbience(mixer, world_ambient_night, 4.0f, 4.0f);
+		}
 		else
 		{
-			//top one fifth is windy
-			if (pos.y < map.tilemapheight * map.tilesize * 0.2f)
-				changeAmbience(mixer, world_ambient_mountain, 4.0f, 4.0f);
-			else
-				changeAmbience(mixer, world_ambient, 4.0f, 4.0f);
+			changeAmbience(mixer, world_ambient, 4.0f, 4.0f);
 		}
 	}
 
@@ -147,8 +156,7 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 	{
 		if (!wasgame)
 		{
-			//TODO: less obnoxious game start sond
-			Sound::Play("/ResearchComplete.ogg");
+			Sound::Play("/fanfare_start.ogg");
 		}
 
 		wasgame = true;
@@ -166,7 +174,7 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 				{
 					if (base.getDistanceTo(blob) < 400.0f)
 					{
-						if (base.getTeamNum() > 8) //skip neutral bases
+						if (base.getTeamNum() == 255) //skip neutral bases
 							continue;
 
 						if (base.getTeamNum() != blob.getTeamNum())

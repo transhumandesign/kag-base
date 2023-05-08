@@ -9,6 +9,7 @@ shared class PlayerInfo
 	string blob_name;
 	int spawnsCount;
 	int lastSpawnRequest;
+	int customImmunityTime;
 
 	PlayerInfo() { Setup("", 0, ""); }
 	PlayerInfo(string _name, u8 _team, string _default_config) { Setup(_name, _team, _default_config); }
@@ -21,6 +22,7 @@ shared class PlayerInfo
 		spawnsCount = 0;
 		oldteam = 255;
 		lastSpawnRequest = 0;
+		customImmunityTime = -1;
 	}
 
 	void setTeam(u8 newTeam)

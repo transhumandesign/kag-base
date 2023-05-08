@@ -1009,24 +1009,24 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 	}
 	else if (name == "hall")
 	{
-		blob.RemoveScript("TunnelTravel");
-		blob.RemoveScript("PickupIntoStorage");
-		blob.RemoveScript("Researching");
+		blob.RemoveScript("TunnelTravel.as");
+		blob.RemoveScript("PickupIntoStorage.as");
+		blob.RemoveScript("Researching.as");
 		blob.Untag("change class store inventory");
 		blob.Tag("change class drop inventory");
 		blob.Tag("script added"); // so it wont add Researching.as on change team
 	}
 	else if (name == "catapult")
 	{
-		blob.RemoveScript("DecayInWater");
-		blob.RemoveScript("DecayIfLowHealth");
-		blob.RemoveScript("DecayIfFlipped");
-		blob.RemoveScript("DecayIfLeftAlone");
+		blob.RemoveScript("DecayInWater.as");
+		blob.RemoveScript("DecayIfLowHealth.as");
+		blob.RemoveScript("DecayIfFlipped.as");
+		blob.RemoveScript("DecayIfLeftAlone.as");
 	}
 
 	if (blob.hasTag("material"))
 	{
-		blob.RemoveScript("DecayQuantity");
+		blob.RemoveScript("DecayQuantity.as");
 	}
 }
 

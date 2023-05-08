@@ -1,5 +1,9 @@
 // HolidayCommon.as;
 
+const string holiday_prop = "holiday";
+const string holiday_head_prop = "holiday head num";
+const string holiday_head_texture_prop = "holiday head custom texture";
+
 shared class Holiday
 {
 	string m_name;

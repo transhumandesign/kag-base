@@ -1,7 +1,7 @@
 
 #define SERVER_ONLY;
 
-// Use `.set_u8('decay step', ..)` to
+// Use `.set_u8("decay step", ..)` to
 // define the quantity that should be
 // discarded each step
 
@@ -15,14 +15,14 @@ void onInit(CBlob@ this)
 	script.runFlags |= Script::tick_not_attached;
 	script.runFlags |= Script::tick_not_ininventory;
 
-	this.getCurrentScript().tickFrequency = (getRules().hasTag('quick decay') ? QUICK_FREQUENCY : FREQUENCY);
+	this.getCurrentScript().tickFrequency = (getRules().hasTag("quick decay") ? QUICK_FREQUENCY : FREQUENCY);
 }
 
 void onTick(CBlob@ this)
 {
-	if (this.getTickSinceCreated() < (getRules().hasTag('quick decay') ? QUICK_FREQUENCY : FREQUENCY)) return;
+	if (this.getTickSinceCreated() < (getRules().hasTag("quick decay") ? QUICK_FREQUENCY : FREQUENCY)) return;
 
-	uint8 step = this.get_u8('decay step');
+	uint8 step = this.get_u8("decay step");
 	uint16 quantity = this.getQuantity();
 
 	if (step >= quantity)
@@ -44,10 +44,10 @@ void onTick(CBlob@ this)
 
 void onAttach(CBlob@ this, CBlob@ blob, AttachmentPoint@ point)
 {
-	this.getCurrentScript().tickFrequency = (getRules().hasTag('quick decay') ? QUICK_FREQUENCY : FREQUENCY);
+	this.getCurrentScript().tickFrequency = (getRules().hasTag("quick decay") ? QUICK_FREQUENCY : FREQUENCY);
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ blob)
 {
-	this.getCurrentScript().tickFrequency = (getRules().hasTag('quick decay') ? QUICK_FREQUENCY : FREQUENCY);
+	this.getCurrentScript().tickFrequency = (getRules().hasTag("quick decay") ? QUICK_FREQUENCY : FREQUENCY);
 }

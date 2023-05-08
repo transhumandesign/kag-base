@@ -14,6 +14,12 @@ const int PICKUP_COOLDOWN = 15;
 const int fletch_num_arrows = 1;
 const int STAB_DELAY = 12;
 const int STAB_TIME = 20;
+// code for the following is a bit stupid, TODO: make it normal
+// x = WEAKSHOT_CHARGE
+const int WEAKSHOT_CHARGE = 11; // 12 (x+1) in reality
+const int MIDSHOT_CHARGE = 13; // 24 (x+13) in reality
+const int FULLSHOT_CHARGE = 25; // 36 (x+25) in reality
+const int TRIPLESHOT_CHARGE = 89; // 100 (x+89) in reality 
 
 void onInit(CBlob@ this)
 {
@@ -246,8 +252,6 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 						if (this.get("moveVars", @moveVars))
 						{
 							moveVars.walljumped_side = Walljump::NONE;
-							moveVars.wallrun_start = pos.y;
-							moveVars.wallrun_current = pos.y;
 						}
 					}
 				}
@@ -409,9 +413,17 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		moveVars.walkFactor *= 0.75f;
 		moveVars.canVault = false;
 
-		const bool just_action1 = this.isKeyJustPressed(key_action1);
+		bool just_action1 = this.isKeyJustPressed(key_action1);
 
 		//	printf("charge_state " + charge_state );
+		if (hasarrow && charge_state == ArcherParams::no_arrows)
+		{
+			// (when key_action1 is down) reset charge state when:
+			// * the player has picks up arrows when inventory is empty
+			// * the player switches arrow type while charging bow
+			charge_state = ArcherParams::not_aiming;
+			just_action1 = true;
+		}
 
 		if ((just_action1 || this.wasKeyPressed(key_action2) && !pressed_action2) &&
 		        (charge_state == ArcherParams::not_aiming || charge_state == ArcherParams::fired || charge_state == ArcherParams::stabbing))
@@ -499,7 +511,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 				charge_time++;
 			}
 
-			if (charge_time >= ArcherParams::legolas_period)
+			if (charge_time >= TRIPLESHOT_CHARGE)
 			{
 				// Legolas state
 
@@ -608,38 +620,35 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 	if (responsible)
 	{
 		// set cursor
-
 		if (ismyplayer && !getHUD().hasButtons())
 		{
 			int frame = 0;
-			//	print("archer.charge_time " + archer.charge_time + " / " + ArcherParams::shoot_period );
-			if (archer.charge_state == ArcherParams::readying)
+			if (archer.charge_state != ArcherParams::readying && archer.charge_state != ArcherParams::charging && archer.charge_state != ArcherParams::legolas_charging && archer.charge_state != ArcherParams::legolas_ready)
 			{
-				//readying shot
-				frame = 2 + int((float(archer.charge_time) / float(ArcherParams::shoot_period + ArcherParams::ready_time)) * 8) * 2.0f;
+				frame = 0;
 			}
-			else if (archer.charge_state == ArcherParams::charging)
+			else if (archer.charge_state == ArcherParams::readying) // Charging weak shot
 			{
-				if (archer.charge_time < ArcherParams::shoot_period)
+				frame = 0 + int(archer.charge_time / 2);
+			}
+			else if (archer.charge_time > 0 && archer.charge_state == ArcherParams::charging)
+			{
+				if (archer.charge_time >= 1 && archer.charge_time <= 2) // Weakest shot charged (charge_time resets to 0 when that happens for some reason..)
 				{
-					//charging shot
-					frame = 2 + int((float(ArcherParams::ready_time + archer.charge_time) / float(ArcherParams::shoot_period + ArcherParams::ready_time)) * 8) * 2;
+					frame = 6;
 				}
-				else
+				else if (archer.charge_state != ArcherParams::legolas_ready && archer.charge_time <= FULLSHOT_CHARGE) // Charging midshot & fullshot
 				{
-					//charging legolas
-					frame = 1 + int((float(archer.charge_time - ArcherParams::shoot_period) / (ArcherParams::legolas_period - ArcherParams::shoot_period)) * 9) * 2;
+					frame = 6 + int((archer.charge_time - 1) / 2);
+				}
+				else if (archer.charge_state != ArcherParams::legolas_ready && archer.charge_time > FULLSHOT_CHARGE) // Charging 3x
+				{
+					frame = 18 + int((archer.charge_time - FULLSHOT_CHARGE) / 4);
 				}
 			}
-			else if (archer.charge_state == ArcherParams::legolas_ready)
+			else // 3x charged
 			{
-				//legolas ready
-				frame = 19;
-			}
-			else if (archer.charge_state == ArcherParams::legolas_charging)
-			{
-				//in between shooting multiple legolas shots
-				frame = 1;
+				frame = 34;
 			}
 			getHUD().SetCursorFrame(frame);
 		}
@@ -797,11 +806,11 @@ void ClientFire(CBlob@ this, const s8 charge_time, const bool hasarrow, const u8
 	{
 		f32 arrowspeed;
 
-		if (charge_time < ArcherParams::ready_time / 2 + ArcherParams::shoot_period_1)
+		if (charge_time < MIDSHOT_CHARGE)
 		{
 			arrowspeed = ArcherParams::shoot_max_vel * (1.0f / 3.0f);
 		}
-		else if (charge_time < ArcherParams::ready_time / 2 + ArcherParams::shoot_period_2)
+		else if (charge_time < FULLSHOT_CHARGE)
 		{
 			arrowspeed = ArcherParams::shoot_max_vel * (4.0f / 5.0f);
 		}

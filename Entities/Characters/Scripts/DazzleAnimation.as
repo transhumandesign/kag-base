@@ -3,7 +3,7 @@
 
 void onInit(CSprite@ this)
 {
-	CSpriteLayer@ stars = this.addSpriteLayer("dazzle stars", "Dazzle.png" , 16, 8, 0, 0);
+	CSpriteLayer@ stars = this.addSpriteLayer("dazzle stars", "Dazzle.png" , 16, 9, 0, 0);
 	if (stars !is null)
 	{
 		Animation@ anim = stars.addAnimation("default", 3, true);

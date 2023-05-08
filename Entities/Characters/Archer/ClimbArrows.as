@@ -33,6 +33,8 @@ void onTick(CBlob@ this)
 
 				if (vel.LengthSquared() < 1)
 				{
+					moveVars.walljumped_side = Walljump::NONE;
+
 					moveVars.jumpCount = -1;
 					Vec2f vel = this.getVelocity();
 					if (vel.y > 0)

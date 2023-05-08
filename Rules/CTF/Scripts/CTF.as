@@ -99,7 +99,8 @@ shared class CTFSpawns : RespawnSystem
 			if (info.can_spawn_time > 0)
 			{
 				info.can_spawn_time--;
-				spawn_property = u8(Maths::Min(250, (info.can_spawn_time / 30)));
+				// Round time up (except for final few ticks)
+				spawn_property = u8(Maths::Min(250, ((info.can_spawn_time + getTicksASecond() - 5) / getTicksASecond())));
 			}
 
 			string propname = "ctf spawn time " + info.username;
@@ -129,6 +130,22 @@ shared class CTFSpawns : RespawnSystem
 			if (getRules().hasTag("singleplayer"))
 			{
 				p_info.team = 0;
+			}
+
+			// spawn as builder in warmup
+			if (getRules().isWarmup())
+			{
+				p_info.blob_name = "builder";
+			}
+
+			CBlob@ spawnBlob = getSpawnBlob(p_info);
+
+			if (spawnBlob !is null)
+			{
+				if (spawnBlob.exists("custom respawn immunity"))
+				{
+					p_info.customImmunityTime = spawnBlob.get_u8("custom respawn immunity");
+				}
 			}
 
 			CPlayer@ player = getPlayerByUsername(p_info.username); // is still connected?
@@ -201,6 +218,36 @@ shared class CTFSpawns : RespawnSystem
 		}
 
 		return Vec2f(0, 0);
+	}
+
+	CBlob@ getSpawnBlob(PlayerInfo@ p_info)
+	{
+		CTFPlayerInfo@ c_info = cast < CTFPlayerInfo@ > (p_info);
+		if (c_info !is null)
+		{
+			CBlob@ pickSpawn = getBlobByNetworkID(c_info.spawn_point);
+			if (pickSpawn !is null &&
+			        pickSpawn.hasTag("respawn") && !isUnderRaid(pickSpawn) &&
+			        pickSpawn.getTeamNum() == p_info.team)
+			{
+				return pickSpawn;
+			}
+			else
+			{
+				CBlob@[] spawns;
+				PopulateSpawnList(spawns, p_info.team);
+
+				for (uint step = 0; step < spawns.length; ++step)
+				{
+					if (spawns[step].getTeamNum() == s32(p_info.team))
+					{
+						return spawns[step];
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 
 	void RemovePlayerFromSpawn(CPlayer@ player)
@@ -709,5 +756,13 @@ void onBlobDie(CRules@ this, CBlob@ blob)
 			server_DropCoins(blob.getPosition(), XORRandom(15) + 5);
 			blob.Tag("dropped coins");
 		}
+	}
+}
+
+void onBlobCreated(CRules@ this, CBlob@ blob)
+{
+	if (blob.getName() == "mat_gold")
+	{
+		blob.RemoveScript("DecayQuantity.as");
 	}
 }

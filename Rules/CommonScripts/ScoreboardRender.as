@@ -15,7 +15,6 @@ float scoreboardMargin = 52.0f;
 float scrollOffset = 0.0f;
 float scrollSpeed = 4.0f;
 float maxMenuWidth = 700;
-float screenMidX = getScreenWidth()/2;
 
 bool mouseWasPressed2 = false;
 
@@ -69,7 +68,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 	f32 lineheight = 16;
 	f32 padheight = 6;
 	f32 stepheight = lineheight + padheight;
-	Vec2f bottomright(Maths::Min(getScreenWidth() - 100, screenMidX+maxMenuWidth), topleft.y + (players.length + 5.5) * stepheight);
+	Vec2f bottomright(Maths::Min(getScreenWidth() - 100, getScreenWidth()/2 + maxMenuWidth), topleft.y + (players.length + 5.5) * stepheight);
 	GUI::DrawPane(topleft, bottomright, team.color);
 
 	//offset border
@@ -132,6 +131,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 	for (u32 i = 0; i < players.length; i++)
 	{
 		CPlayer@ p = players[i];
+		CBlob@ b = p.getBlob(); // REMINDER: this can be null if you're using this down below
 
 		topleft.y += stepheight;
 		bottomright.y = topleft.y + lineheight;
@@ -174,24 +174,43 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 		GUI::DrawLine2D(Vec2f(topleft.x, bottomright.y + 1) + lineoffset, Vec2f(bottomright.x, bottomright.y + 1) + lineoffset, SColor(underlinecolor));
 		GUI::DrawLine2D(Vec2f(topleft.x, bottomright.y) + lineoffset, bottomright + lineoffset, SColor(playercolour));
 
-		string tex = "";
-		u16 frame = 0;
-		Vec2f framesize;
+		// class icon
+
+		string classTexture = "";
+		u16 classIndex = 0;
+		Vec2f classIconSize;
+		Vec2f classIconOffset = Vec2f(0, 0);
 		if (p.isMyPlayer())
 		{
-			tex = "ScoreboardIcons.png";
-			frame = 4;
-			framesize.Set(16, 16);
+			classTexture = "ScoreboardIcons.png";
+			classIndex = 4;
+			classIconSize = Vec2f(16, 16);
 		}
 		else
 		{
-			tex = p.getScoreboardTexture();
-			frame = p.getScoreboardFrame();
-			framesize = p.getScoreboardFrameSize();
+			classTexture = "playercardicons.png";
+			classIndex = 0;
+
+			// why are player-scoreboard functions hardcoded
+			// after looking into it let's not bother moving it to scripts for now
+			classIndex = p.getScoreboardFrame();
+
+			// knight is 3 but should be 0 for this texture
+			// fyi it's pure coincidence builder and archer are already a match
+			classIndex %= 3;
+			
+			classIconSize = Vec2f(16, 16);
+
+			if (b is null) // player dead
+			{
+				classIndex += 16;
+				classIconSize = Vec2f(8, 8);
+				classIconOffset = Vec2f(4, 4);
+			}
 		}
-		if (tex != "")
+		if (classTexture != "")
 		{
-			GUI::DrawIcon(tex, frame, framesize, topleft, 0.5f, p.getTeamNum());
+			GUI::DrawIcon(classTexture, classIndex, classIconSize, topleft + classIconOffset, 0.5f, p.getTeamNum());
 		}
 
 		string username = p.getUsername();
@@ -215,25 +234,25 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 		}
 
-		//head icon
+		// head icon
 
-		//TODO: consider maybe the skull emoji for dead players?
-		int headIndex = 0;
-		string headTexture = "";
+		string headTexture = "playercardicons.png";
+		int headIndex = 3;
 		int teamIndex = p.getTeamNum();
+		Vec2f headOffset = Vec2f(30, 0);
+		float headScale = 0.5f;
 
-		CBlob@ b = p.getBlob();
 		if (b !is null)
 		{
 			headIndex = b.get_s32("head index");
 			headTexture = b.get_string("head texture");
 			teamIndex = b.get_s32("head team");
+			headOffset += Vec2f(-8, -12);
+			headScale = 1.0f;
 		}
 
-		if (headTexture != "")
-		{
-			GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + Vec2f(22, -12), 1.0f, teamIndex);
-		}
+		GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + headOffset, headScale, teamIndex);
+
 
 		//have to calc this from ticks
 		s32 ping_in_ms = s32(p.getPing() * 1000.0f / 30.0f);
@@ -273,6 +292,8 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 				int age_icon_start = 32;
 				int icon = 0;
+				bool show_years = false;
+				int age = 0;
 				//less than a month?
 				if (days < 28)
 				{
@@ -355,6 +376,8 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 								{
 									icon -= 1;
 								}
+								show_years = true;
+								age = icon + 1; // icon frames start from 0
 								//ensure sane
 								icon = Maths::Clamp(icon, 0, 9);
 								//shift line
@@ -366,7 +389,15 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 				float x = bottomright.x - age_start + 8;
 				float extra = 8;
-				GUI::DrawIcon("AccoladeBadges", age_icon_start + icon, Vec2f(16, 16), Vec2f(x, topleft.y), 0.5f, p.getTeamNum());
+
+				if(show_years)
+				{
+					drawAgeIcon(age, Vec2f(x, topleft.y));
+				}
+				else
+				{
+					GUI::DrawIcon("AccoladeBadges", age_icon_start + icon, Vec2f(16, 16), Vec2f(x, topleft.y), 0.5f, p.getTeamNum());
+				}
 
 				if (playerHover && mousePos.x > x - extra && mousePos.x < x + 16 + extra)
 				{
@@ -571,7 +602,7 @@ void onRenderScoreboard(CRules@ this)
 
 	@hoveredPlayer = null;
 
-	Vec2f topleft(Maths::Max( 100, screenMidX-maxMenuWidth), 150);
+	Vec2f topleft(Maths::Max( 100, getScreenWidth()/2 -maxMenuWidth), 150);
 	drawServerInfo(40);
 
 	// start the scoreboard lower or higher.
@@ -602,7 +633,7 @@ void onRenderScoreboard(CRules@ this)
 	{
 		//draw spectators
 		f32 stepheight = 16;
-		Vec2f bottomright(Maths::Min(getScreenWidth() - 100, screenMidX+maxMenuWidth), topleft.y + stepheight * 2);
+		Vec2f bottomright(Maths::Min(getScreenWidth() - 100, getScreenWidth()/2 + maxMenuWidth), topleft.y + stepheight * 2);
 		f32 specy = topleft.y + stepheight * 0.5;
 		GUI::DrawPane(topleft, bottomright, SColor(0xffc0c0c0));
 
@@ -700,10 +731,14 @@ void drawHoverExplanation(int hovered_accolade, int hovered_age, int hovered_tie
 
 void onTick(CRules@ this)
 {
-	if(isServer() && this.getCurrentState() == GAME)
+	if (this.getCurrentState() == GAME)
 	{
 		this.add_u32("match_time", 1);
-		this.Sync("match_time", true);
+
+		if (isServer() && this.get_u32("match_time") % (10 * getTicksASecond()) == 0)
+		{
+			this.Sync("match_time", true);
+		}
 	}
 }
 
@@ -734,6 +769,22 @@ void getMapName(CRules@ this)
 		this.set_string("map_name", mapName);
 		this.Sync("map_name",true);
 	}
+}
+
+void drawAgeIcon(int age, Vec2f position)
+{
+    int number_gap = 9;
+	int years_frame_start = 48;
+    if(age >= 10)
+    {
+        position.x -= number_gap - 4;
+        GUI::DrawIcon("AccoladeBadges", years_frame_start + (age / 10), Vec2f(16, 16), position, 0.5f, 0);
+        age = age % 10;
+        position.x += number_gap;
+    }
+    GUI::DrawIcon("AccoladeBadges", years_frame_start + age, Vec2f(16, 16), position, 0.5f, 0);
+    position.x += 4;
+    GUI::DrawIcon("AccoladeBadges", 58, Vec2f(16, 16), position, 0.5f, 0); // y letter
 }
 
 void DrawFancyCopiedText(string username, Vec2f mousePos, uint duration)

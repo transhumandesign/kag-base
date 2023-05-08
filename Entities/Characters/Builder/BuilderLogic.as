@@ -142,26 +142,44 @@ bool RecdHitCommand(CBlob@ this, CBitStream@ params)
 
 	if (blobID == 0)
 	{
-		// block
 		CMap@ map = getMap();
 		if (map !is null)
 		{
 			uint16 type = map.getTile(tilepos).type;
 			if (!inNoBuildZone(map, tilepos, type))
 			{
-				if (getNet().isServer())
-				{
-					map.server_DestroyTile(tilepos, 1.0f, this);
+				CBlob@[] blobs_here;
+				map.getBlobsAtPosition(tilepos + Vec2f(1, 1), blobs_here);
 
-					Material::fromTile(this, type, 1.0f);
+				bool no_dmg = false;
+
+				// dont dmg backwall if it's behind a blob-block
+				// hack: fixes the issue where with specific timing you can damage backwall behind blob-blocks right after placing it
+				for(int i=0; i < blobs_here.size(); ++i)
+				{
+					CBlob@ current_blob = blobs_here[i];
+					if (current_blob !is null && (current_blob.hasTag("door") || current_blob.getName() == "bridge" || current_blob.getName() == "wooden_platform"))
+					{
+						no_dmg = true;
+					}
 				}
 
-				if (getNet().isClient())
+				if (!no_dmg)
 				{
-					if (map.isTileBedrock(type))
+					if (getNet().isServer())
 					{
-						this.getSprite().PlaySound("/metal_stone.ogg");
-						sparks(tilepos, attackVel.Angle(), 1.0f);
+						map.server_DestroyTile(tilepos, 1.0f, this);
+
+						Material::fromTile(this, type, 1.0f);
+					}
+
+					if (getNet().isClient())
+					{
+						if (map.isTileBedrock(type))
+						{
+							this.getSprite().PlaySound("/metal_stone.ogg");
+							sparks(tilepos, attackVel.Angle(), 1.0f);
+						}
 					}
 				}
 			}
@@ -232,7 +250,7 @@ void Pickaxe(CBlob@ this)
 {
 	HitData@ hitdata;
 	CSprite @sprite = this.getSprite();
-	bool strikeAnim = sprite.isAnimation("strike") || sprite.isAnimation("chop");
+	bool strikeAnim = sprite.isAnimation("strike") || sprite.isAnimation("strike_fast") || sprite.isAnimation("chop") || sprite.isAnimation("chop_fast");
 
 	if (!strikeAnim)
 	{
@@ -560,7 +578,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	}
 
 	const u8 PAGE = this.get_u8("build page");
-	for(u8 i = 0; i < blocks[PAGE].length; i++)
+	for (u8 i = 0; i < blocks[PAGE].length; i++)
 	{
 		BuildBlock@ block = blocks[PAGE][i];
 		if (block !is null && block.name == detached.getName())
@@ -575,6 +593,8 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	// put out another one of the same
 	if (detached.hasTag("temp blob"))
 	{
+		detached.Untag("temp blob");
+		
 		if (!detached.hasTag("temp blob placed"))
 		{
 			detached.server_Die();

@@ -41,7 +41,7 @@ void onTick(CBlob@ this)
 
 		if (this.exists(back))
 		{
-			AddTilesBySector(ul, lr, "no build", this.get_TileType(back), CMap::tile_castle_back);
+			AddTilesBySector(ul, lr, "no build", this.get_TileType(back), CMap::tile_castle_back, this.hasTag("has window"));
 		}
 		else
 		{
