@@ -1,5 +1,6 @@
 #include "/Entities/Common/Attacks/Hitters.as";
 #include "/Entities/Common/Attacks/LimitedAttacks.as";
+#include "MakeDustParticle.as"
 
 const int pierce_amount = 8;
 
@@ -25,17 +26,6 @@ void onInit(CBlob @ this)
 	this.getCurrentScript().tickFrequency = 3;
 }
 
-void onTick(CBlob@ this)
-{
-	//rock and roll mode
-	if (!this.getShape().getConsts().collidable)
-	{
-		Vec2f vel = this.getVelocity();
-		f32 angle = vel.Angle();
-		Slam(this, angle, vel, this.getShape().vellen * 1.5f);
-	}
-}
-
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
 	this.set_u8("launch team", detached.getTeamNum());
@@ -50,121 +40,73 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 	if (attached.getName() != "catapult") // end of rock and roll
 	{
-		this.getShape().getConsts().mapCollisions = true;
-		this.getShape().getConsts().collidable = true;
+		this.Untag("fragment on collide");
 	}
 	this.set_u8("launch team", attached.getTeamNum());
 }
 
-void Slam(CBlob @this, f32 angle, Vec2f vel, f32 vellen)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (vellen < 0.1f)
-		return;
-
-	CMap@ map = this.getMap();
-	Vec2f pos = this.getPosition();
-	HitInfo@[] hitInfos;
-	u8 team = this.get_u8("launch team");
-
-	if (map.getHitInfosFromArc(pos, -angle, 30, vellen, this, true, @hitInfos))
+	if (this.hasTag("fragment on collide"))
 	{
-		for (uint i = 0; i < hitInfos.length; i++)
-		{
-			HitInfo@ hi = hitInfos[i];
-			f32 dmg = 2.0f;
+		if (!solid) { return; }
 
-			if (hi.blob is null) // map
-			{
-				if (BoulderHitMap(this, hi.hitpos, hi.tileOffset, vel, dmg, Hitters::cata_boulder))
-					return;
-			}
-			else if (team != u8(hi.blob.getTeamNum()))
-			{
-				this.server_Hit(hi.blob, pos, vel, dmg, Hitters::cata_boulder, true);
-				this.setVelocity(vel * 0.9f); //damp
+		Vec2f hitVelocity = this.getOldVelocity();
 
-				// die when hit something large
-				if (hi.blob.getRadius() > 32.0f)
-				{
-					this.server_Hit(this, pos, vel, 10, Hitters::cata_boulder, true);
-				}
-			}
-		}
-	}
+		Vec2f hitvec = point1 - this.getPosition();
+		f32 coef = hitvec * hitVelocity;
 
-	// chew through backwalls
-
-	Tile tile = map.getTile(pos);
-	if (map.isTileBackgroundNonEmpty(tile))
-	{
-		if (map.getSectorAtPosition(pos, "no build") !is null)
+		if (coef < 0.706f) // check we were flying at it
 		{
 			return;
 		}
-		map.server_DestroyTile(pos + Vec2f(7.0f, 7.0f), 10.0f, this);
-		map.server_DestroyTile(pos - Vec2f(7.0f, 7.0f), 10.0f, this);
-	}
-}
 
-bool BoulderHitMap(CBlob@ this, Vec2f worldPoint, int tileOffset, Vec2f velocity, f32 damage, u8 customData)
-{
-	//check if we've already hit this tile
-	u32[]@ offsets;
-	this.get("tileOffsets", @offsets);
+		Vec2f normalizedHitVelocity = hitVelocity;
+		normalizedHitVelocity.Normalize();
 
-	if (offsets.find(tileOffset) >= 0) { return false; }
-
-	this.getSprite().PlaySound("ArrowHitGroundFast.ogg");
-	f32 angle = velocity.Angle();
-	CMap@ map = getMap();
-	TileType t = map.getTile(tileOffset).type;
-	u8 blocks_pierced = this.get_u8("blocks_pierced");
-	bool stuck = false;
-
-	if (map.isTileCastle(t) || map.isTileWood(t))
-	{
-		Vec2f tpos = this.getMap().getTileWorldPosition(tileOffset);
-		if (map.getSectorAtPosition(tpos, "no build") !is null)
+		Random r(this.getNetworkID());
+		for (int i = 0; i < 20; ++i)
 		{
-			return false;
+			const float maxDistanceFromOrigin = 5.0; // spawn the fragment from that far of the origin at a maximum
+			const float baseVelocityAmplitude = 1.5; // how much velocity the fragment will inherit from the boulder
+			const float velocityJitterAmplitude = hitVelocity.Length() * 0.3; // how much we randomize the velocity
+
+			Vec2f positionJitter = Vec2f(r.NextFloat() - 0.5, r.NextFloat() - 0.5) * 2.0 * maxDistanceFromOrigin;
+			Vec2f rockPosition = (this.getPosition() - hitVelocity * (r.NextFloat() - 0.3) * 6.0) + positionJitter;
+
+			Vec2f baseVelocity = hitVelocity * baseVelocityAmplitude;
+			Vec2f velocityJitter = Vec2f(r.NextFloat() - 0.5, r.NextFloat() * 0.5) * velocityJitterAmplitude;
+			Vec2f rockVelocity = baseVelocity + velocityJitter;
+
+			if (isServer())
+			{
+				CBlob@ rock = server_CreateBlob("cata_rock", this.getTeamNum(), rockPosition);
+				rock.Untag("can ricochet");
+				rock.setVelocity(rockVelocity);
+				rock.server_SetTimeToDie(1);
+				rock.server_SetHealth(0.5f);
+			}
+			
+			if (isClient())
+			{
+				MakeRockDustParticle(
+					rockPosition,
+					"Smoke.png",
+					rockVelocity * 0.1 * ((r.NextFloat()) + 0.5),
+					XORRandom(9) + 3);
+			}
 		}
 
-		//make a shower of gibs here
-
-		map.server_DestroyTile(tpos, 100.0f, this);
-		Vec2f vel = this.getVelocity();
-		this.setVelocity(vel * 0.8f); //damp
-		this.push("tileOffsets", tileOffset);
-
-		if (blocks_pierced < pierce_amount)
+		if (isClient())
 		{
-			blocks_pierced++;
-			this.set_u8("blocks_pierced", blocks_pierced);
+			Sound::Play("dig_stone?.ogg", this.getPosition(), 1.3f);
+			Sound::Play("metal_stone.ogg", this.getPosition(), 1.3f);
 		}
-		else
-		{
-			stuck = true;
-		}
-	}
-	else
-	{
-		stuck = true;
+
+		this.server_Die();
+		return;
 	}
 
-	if (velocity.LengthSquared() < 5)
-		stuck = true;
-
-	if (stuck)
-	{
-		this.server_Hit(this, worldPoint, velocity, 10, Hitters::crush, true);
-	}
-
-	return stuck;
-}
-
-
-void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
-{
 	if (solid && blob !is null)
 	{
 		Vec2f hitvel = this.getOldVelocity();
