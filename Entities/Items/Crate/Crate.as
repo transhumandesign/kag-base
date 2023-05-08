@@ -350,7 +350,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				this.set_u32("unpack time", getGameTime() + this.get_u32("unpack secs") * getTicksASecond());
 				this.getShape().setDrag(10.0f);
 
-				CBlob@ caller = getBlobByNetworkID(params.read_u16());
+				CBlob@ caller = getBlobByNetworkID(params.read_netid());
 				if (caller !is null) 
 				{ 
 					this.server_setTeamNum(caller.getTeamNum());
