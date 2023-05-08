@@ -74,6 +74,11 @@ void onInit(CBlob@ this)
 				ammo.server_Die();
 		}
 	}
+
+	CMap@ map = getMap();
+	if (map is null) return;
+
+	this.SetFacingLeft(this.getPosition().x > (map.tilemapwidth * map.tilesize) / 2);
 }
 
 f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
