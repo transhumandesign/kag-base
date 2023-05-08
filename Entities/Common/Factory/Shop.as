@@ -129,25 +129,26 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 	if (cmd == this.getCommandID("shop buy"))
 	{
-		if (this.hasTag("shop disabled"))
-			return;
+		if (!isServer) { return; }
 
-		u16 callerID;
-		if (!params.saferead_u16(callerID))
-			return;
+		if (this.hasTag("shop disabled")) { return; }
+
 		bool spawnToInventory = params.read_bool();
 		bool spawnInCrate = params.read_bool();
 		bool producing = params.read_bool();
 		u8 s_index = params.read_u8();
 		bool hotkey = params.read_bool();
 
-		CBlob@ caller = getBlobByNetworkID(callerID);
+		CPlayer@ callerPlayer = getNet().getActiveCommandPlayer();
+		if (callerPlayer is null) { return; }
+
+		CBlob@ caller = callerPlayer.getBlob();
 		if (caller is null) { return; }
+
 		CInventory@ inv = caller.getInventory();
 
 		if (this.getHealth() <= 0)
 		{
-			caller.ClearMenus();
 			return;
 		}
 
@@ -401,7 +402,6 @@ void addShopItemsToMenu(CBlob@ this, CGridMenu@ menu, CBlob@ caller)
 			if (s_item is null || caller is null) { continue; }
 			CBitStream params;
 
-			params.write_u16(caller.getNetworkID());
 			params.write_bool(s_item.spawnToInventory);
 			params.write_bool(s_item.spawnInCrate);
 			params.write_bool(s_item.producing);
@@ -454,7 +454,6 @@ void BuildShopMenu(CBlob@ this, CBlob @caller, string description, Vec2f offset,
 		for (uint i = 0; i < keybindCount; i++)
 		{
 			CBitStream params;
-			params.write_u16(caller.getNetworkID());
 			params.write_bool(shopitems[i].spawnToInventory);
 			params.write_bool(shopitems[i].spawnInCrate);
 			params.write_bool(shopitems[i].producing);
