@@ -14,7 +14,7 @@ void onInit(CBlob@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (!solid || this.isInInventory())
+	if (!solid || this.isInInventory() || this.hasTag("invincible"))
 	{
 		return;
 	}

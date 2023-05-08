@@ -23,9 +23,9 @@ void onInit(CBlob@ this)
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if (isIgniteHitter(customData) ||					 	   // Fire arrows
-	        (this.isOverlapping(hitterBlob) &&
-	         hitterBlob.isInFlames() && !this.isInFlames()))	   // Flaming enemy
+	if (
+		isIgniteHitter(customData) ||		// Fire arrows
+		(this.isOverlapping(hitterBlob) && hitterBlob.isInFlames() && !this.isInFlames())) 	// Flaming enemy
 	{
 		server_setFireOn(this);
 		if (hitterBlob.getDamageOwnerPlayer() !is null){
@@ -70,7 +70,7 @@ void onTick(CBlob@ this)
 
 	s16 burn_time = this.get_s16(burn_timer);
 	//check if we should be getting set on fire or put out
-	if (burn_time < (burn_thresh / fire_wait_ticks) && this.isInFlames())
+	if (burn_time < (burn_thresh / fire_wait_ticks) && this.isInFlames() && !this.hasTag("invincible"))
 	{
 		server_setFireOn(this);
 		burn_time = this.get_s16(burn_timer);
