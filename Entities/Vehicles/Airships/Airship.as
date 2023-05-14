@@ -11,10 +11,7 @@ void onInit(CBlob@ this)
 	              true  // inventory access
 	             );
 	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
+	if (!this.get("VehicleInfo", @v)) return;
 	Vehicle_SetupAirship(this, v, -900.0f);
 
 	Vec2f pos_off(0, 0);
@@ -91,13 +88,10 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.hasAttached() || this.getTickSinceCreated() < 30) //driver, seat or gunner, or just created
+	if (this.hasAttached())
 	{
 		VehicleInfo@ v;
-		if (!this.get("VehicleInfo", @v))
-		{
-			return;
-		}
+		if (!this.get("VehicleInfo", @v)) return;
 
 		Vehicle_StandardControls(this, v);
 
@@ -145,17 +139,9 @@ void onTick(CBlob@ this)
 	}
 }
 
-void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 charge) {}
-bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool wasActionPressed, u8 &out chargeValue) {return false;}
-
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return Vehicle_doesCollideWithBlob_boat(this, blob);
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }
 
 // SPRITE

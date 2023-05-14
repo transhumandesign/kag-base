@@ -16,10 +16,8 @@ void onInit(CBlob@ this)
 	              true  // inventory access
 	             );
 	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
+	if (!this.get("VehicleInfo", @v)) return;
+
 	Vehicle_SetupWaterSound(this, v, "BoatRowing",  // movement sound
 	                        0.0f, // movement sound volume modifier   0.0f = no manipulation
 	                        0.0f // movement sound pitch modifier     0.0f = no manipulation
@@ -151,36 +149,25 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	const int time = this.getTickSinceCreated();
-	if (this.hasAttached() || time < 30) //driver, seat or gunner, or just created
+	if (this.hasAttached()) //driver, seat or gunner, or just created
 	{
 		VehicleInfo@ v;
-		if (!this.get("VehicleInfo", @v))
-		{
-			return;
-		}
+		if (!this.get("VehicleInfo", @v)) return;
+
 		Vehicle_StandardControls(this, v);
 	}
 
-	if (time % 12 == 0)
+	if (this.getTickSinceCreated() % 12 == 0)
 	{
 		Vehicle_DontRotateInWater(this);
 	}
 }
 
-void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 charge) {}
-bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool wasActionPressed, u8 &out chargeValue) {return false;}
-
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (blob.getShape().getConsts().platform)
-		return false;
+	//if (blob.getShape().getConsts().platform)
+		//return false;
 	return Vehicle_doesCollideWithBlob_boat(this, blob);
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }
 
 void onTick(CSprite@ this)
@@ -189,27 +176,6 @@ void onTick(CSprite@ this)
 	CBlob@ blob = this.getBlob();
 	this.animation.setFrameFromRatio(1.0f - (blob.getHealth() / blob.getInitialHealth()));
 }
-
-void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
-{
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
-	Vehicle_onAttach(this, v, attached, attachedPoint);
-}
-
-void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
-{
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
-	Vehicle_onDetach(this, v, detached, attachedPoint);
-}
-
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
