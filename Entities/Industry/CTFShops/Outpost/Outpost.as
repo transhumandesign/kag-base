@@ -37,8 +37,8 @@ void onInit(CBlob@ this)
 	CSpriteLayer@ flag = sprite.addSpriteLayer("flag layer", "Outpost.png", 32, 32);
 	if (flag !is null)
 	{
-		flag.addAnimation("default", 5, true);
-		int[] frames = { 11, 10, 9 };
+		flag.addAnimation("default", XORRandom(3) + 3, true);
+		int[] frames = { 9, 10, 11 };
 		flag.animation.AddFrames(frames);
 		flag.SetRelativeZ(0.8f);
 		flag.SetOffset(Vec2f(10.5f, -12.0f));
