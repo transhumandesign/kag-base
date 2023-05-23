@@ -29,6 +29,9 @@ void onInit(CBlob@ this)
 	//block knight sword
 	this.Tag("blocks sword");
 
+	//bomb arrow damage value
+	this.set_f32("bomb resistance", 3.1f);
+
 	this.getShape().SetOffset(Vec2f(0, 16));
 	this.getShape().getConsts().bullet = false;
 	this.getShape().getConsts().transports = true;

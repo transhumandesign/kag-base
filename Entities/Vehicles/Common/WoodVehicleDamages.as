@@ -31,7 +31,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			break;
 
 		case Hitters::bomb_arrow:
-			dmg *= 8.0f;
+			dmg *= this.exists("bomb resistance") ? this.get_f32("bomb resistance") : 8.0f;
 			break;
 
 		case Hitters::arrow:
