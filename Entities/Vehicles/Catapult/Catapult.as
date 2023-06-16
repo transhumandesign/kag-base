@@ -229,13 +229,17 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			CBitStream callerParams;
 			callerParams.write_netid(caller.getNetworkID());
 			callerParams.write_netid(carried.getNetworkID());
+
 			string name = carried.getInventoryName();
 			const string msg = getTranslatedString("Load {ITEM}").replace("{ITEM}", name);
-			if (!GUI::hasIconName(name))
+
+			string iconName = carried.getName(); 
+			if (GUI::hasIconName("$" + carried.getInventoryName() + "$"))
 			{
-				name = carried.getName();
+				iconName = "$" + carried.getInventoryName() + "$";
 			}
-			caller.CreateGenericButton("$" + name + "$", mag.offset, this, this.getCommandID("putin_mag"), msg, callerParams);
+
+			caller.CreateGenericButton(iconName, mag.offset, this, this.getCommandID("putin_mag"), msg, callerParams);
 			return;
 		}
 
