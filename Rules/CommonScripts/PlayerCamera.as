@@ -136,7 +136,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 	}
 }
 
-void onRender(CRules@ this)
+void SpecCamera(CRules@ this)
 {
 	//death effect
 	CCamera@ camera = getCamera();
@@ -158,6 +158,14 @@ void onRender(CRules@ this)
 		{
 			Spectator(this);
 		}
+	}
+}
+
+void onRender(CRules@ this)
+{
+	if (!v_capped)
+	{
+		SpecCamera(this);
 	}
 
 	if (targetPlayer() !is null && getLocalPlayerBlob() is null)
@@ -218,6 +226,11 @@ void onRender(CRules@ this)
 
 void onTick(CRules@ this)
 {
+	if (v_capped)
+	{
+		SpecCamera(this);
+	}
+
 	if (isCinematic())
 	{
 		Vec2f mapDim = getMap().getMapDimensions();
