@@ -237,12 +237,8 @@ void onTick(CRules@ this)
 
 		if (this.isMatchRunning())
 		{
-			if (getGameTime() % CINEMATIC_UPDATE_INTERVAL == 0)
-			{
-				CBlob@[]@ blobs = buildImportanceList();
-				SortBlobsByImportance(blobs);
-				importantBlobs = blobs;
-			}
+			CBlob@[]@ importantBlobs = buildImportanceList();
+			SortBlobsByImportance(importantBlobs);
 
 			if (!FOCUS_ON_IMPORTANT_BLOBS || !focusOnBlob(importantBlobs))
 			{
