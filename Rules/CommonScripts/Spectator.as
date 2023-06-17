@@ -13,7 +13,6 @@ const float CINEMATIC_CLOSEST_ZOOM = 1.5f;						//how close the camera can zoom 
 const float CINEMATIC_FURTHEST_ZOOM = 0.5f;						//how far the camera can zoom out while cinematic (default is 0.5f)
 
 const float AUTO_CINEMATIC_TIME = 3.0f;							//time until camera automatically becomes cinematic. set to zero to disable
-const uint CINEMATIC_UPDATE_INTERVAL = 1 * getTicksASecond();	//how often the cinematic camera updates its target position/zoom
 
 Vec2f posTarget;												//position which cinematic camera moves towards
 float zoomTarget = 1.0f;										//zoom level which camera zooms towards
@@ -21,7 +20,6 @@ float timeToScroll = 0.0f;										//time until next able to scroll to zoom cam
 float timeToCinematic = 0.0f;									//time until camera automatically becomes cinematic
 uint currentTarget;											    //the current target blob
 uint switchTarget;												//time when camera can move onto new target
-CBlob@[] importantBlobs;										//a list of important blobs sorted from most to least important
 
 bool justClicked = false;
 string _targetPlayer;
