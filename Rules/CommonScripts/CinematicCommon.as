@@ -96,7 +96,14 @@ CBlob@[]@ buildImportanceList()
 			CBlob@ blob = @blobs[i];
 
 			//blobs closer to being captured are MORE important
-			float capture = float(blob.get_s16("capture ticks")) / blob.get_s16("max capture ticks");
+			const s16 capture_time = blob.get_s16("capture time");
+
+			if (capture_time <= 0)
+			{
+				continue;
+			}
+
+			float capture = float(blob.get_s16("capture ticks")) / capture_time;
 
 			if (blob.hasTag("vehicle") && blob.hasTag("respawn"))
 			{
