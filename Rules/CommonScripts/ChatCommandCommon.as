@@ -97,6 +97,6 @@ void CommandNotImplemented(string name, CPlayer@ player)
 	}
 	else
 	{
-		print("Unable to execute !" + name + " command because it is not implemented", ConsoleColour::ERROR);
+		print("Unable to execute /" + name + " command because it is not implemented", ConsoleColour::ERROR);
 	}
 }
