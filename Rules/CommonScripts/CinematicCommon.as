@@ -288,7 +288,7 @@ void ViewEntireMap()
 
 	if (map !is null)
 	{
-		Vec2f mapDim = getMap().getMapDimensions();
+		Vec2f mapDim = map.getMapDimensions();
 		posTarget = mapDim / 2.0f;
 		Vec2f zoomLevel = calculateZoomLevel(mapDim.x, mapDim.y);
 		zoomTarget = Maths::Min(zoomLevel.x, zoomLevel.y);
