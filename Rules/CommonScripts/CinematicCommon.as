@@ -258,7 +258,7 @@ bool focusOnBlob(CBlob@[] blobs)
 
 			if (blob !is null)
 			{
-				if (getGameTime() < switchTarget && blob !is targetBlob)
+				if (getGameTime() < switchTarget && targetBlob !is null && blob !is targetBlob)
 				{
 					//stay at focus blob's position for a bit before focusing on a more important blob
 					posTarget = targetBlob.getInterpolatedPosition();
