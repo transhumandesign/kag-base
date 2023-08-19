@@ -150,6 +150,9 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 	if (
 	    name == "migrant" ||
 	    name == "wooden_door" ||
+	   	name == "mat_wood" ||
+	    name == "tree_bushy" ||
+	    name == "tree_pine" ||
 	    (name == "mine" && blob.getTeamNum() == this.getTeamNum()))
 	{
 		return false;
