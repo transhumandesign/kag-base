@@ -773,7 +773,7 @@ void getMapName(CRules@ this)
 
 void drawAgeIcon(int age, Vec2f position)
 {
-    int number_gap = 9;
+    int number_gap = 8;
 	int years_frame_start = 48;
     if(age >= 10)
     {
@@ -784,6 +784,7 @@ void drawAgeIcon(int age, Vec2f position)
     }
     GUI::DrawIcon("AccoladeBadges", years_frame_start + age, Vec2f(16, 16), position, 0.5f, 0);
     position.x += 4;
+	if(age == 1) position.x -= 1; // fix y letter offset for number 1
     GUI::DrawIcon("AccoladeBadges", 58, Vec2f(16, 16), position, 0.5f, 0); // y letter
 }
 
