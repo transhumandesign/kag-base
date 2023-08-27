@@ -81,7 +81,7 @@ void onTick(CRules@ this)
 		else if (kickImmunity)
 		{
 			joinNewSpecTeam(this, p); //Force-swap to spec team.
-			client_AddToChat("You have just been swapped to spectator team, type !m to get back.", SColor(255,0,0,0));
+			client_AddToChat("You have just been swapped to spectator team, type /m to get back.", SColor(255,0,0,0));
 		}
 		else
 		{
