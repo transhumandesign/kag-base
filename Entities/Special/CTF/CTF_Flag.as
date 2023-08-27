@@ -174,12 +174,21 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	return 0.0f;
 }
 
+bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+{
+	return !this.isAttached() &&
+	       byBlob.hasTag("player") &&
+	       this.getTeamNum() != byBlob.getTeamNum() &&
+	       canPickupFlag(byBlob) &&
+	       this.getDistanceTo(byBlob) < 32.0f;
+}
+
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (blob is null) return;
 
 	if (!this.isAttached() &&
-		blob.hasTag("player") &&
+	    blob.hasTag("player") &&
 	    this.getTeamNum() != blob.getTeamNum() &&
 	    canPickupFlag(blob))
 	{

@@ -1,4 +1,3 @@
-#include "AdminLogic.as"
 #include "ChatCommand.as"
 
 // time (in seconds) between repeated reports
@@ -129,6 +128,8 @@ CPlayer@ getPlayerByCharactername(string name)
 	return null;
 }
 
+u8 nonSpecTeam = 0;	//Sandbox' default team.
+
 class ModerateCommand : ChatCommand
 {
 	ModerateCommand()
@@ -147,11 +148,18 @@ class ModerateCommand : ChatCommand
 		if (player.getTeamNum() == rules.getSpectatorTeamNum()) // is in spec team?
 		{
 			rules.set_bool(player.getUsername()+"_moderator", false);
-			swapSpecTeam(rules, player, nonSpecTeam, true); // swap him back to his nonSpecTeam.
+			player.client_ChangeTeam(nonSpecTeam);  // swap him back to his nonSpecTeam.
 		}
 		else
 		{
-			joinNewSpecTeam(rules, player); // create a spec/mod team even if it doesn't exist in the gamemode.
+			getRules().set_bool(player.getUsername() + "_moderator", true);
+			nonSpecTeam = player.getTeamNum();	//note the admin previous team.
+			player.client_ChangeTeam(rules.getSpectatorTeamNum());
+			
+			CCamera@ camera = getCamera();	//camera and visuals.
+			CMap@ map = getMap();
+			camera.setPosition(Vec2f(map.getMapDimensions().x / 2, map.getMapDimensions().y / 2));
+			getHUD().ClearMenus();
 		}
 	}
 }

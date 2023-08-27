@@ -96,14 +96,14 @@ CBlob@[]@ buildImportanceList()
 			CBlob@ blob = @blobs[i];
 
 			//blobs closer to being captured are MORE important
-			const s16 capture_time = blob.get_s16("capture time");
+			const s16 capture_time = blob.get_u16("capture time");
 
 			if (capture_time <= 0)
 			{
 				continue;
 			}
 
-			float capture = float(blob.get_s16("capture ticks")) / capture_time;
+			float capture = float(blob.get_u16("capture ticks")) / capture_time;
 
 			if (blob.hasTag("vehicle") && blob.hasTag("respawn"))
 			{
@@ -258,7 +258,7 @@ bool focusOnBlob(CBlob@[] blobs)
 
 			if (blob !is null)
 			{
-				if (getGameTime() < switchTarget && blob !is targetBlob)
+				if (getGameTime() < switchTarget && targetBlob !is null && blob !is targetBlob)
 				{
 					//stay at focus blob's position for a bit before focusing on a more important blob
 					posTarget = targetBlob.getInterpolatedPosition();
@@ -284,11 +284,16 @@ bool focusOnBlob(CBlob@[] blobs)
 
 void ViewEntireMap()
 {
-	Vec2f mapDim = getMap().getMapDimensions();
-	posTarget = mapDim / 2.0f;
-	Vec2f zoomLevel = calculateZoomLevel(mapDim.x, mapDim.y);
-	zoomTarget = Maths::Min(zoomLevel.x, zoomLevel.y);
-	zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f);
+	CMap@ map = getMap();
+
+	if (map !is null)
+	{
+		Vec2f mapDim = map.getMapDimensions();
+		posTarget = mapDim / 2.0f;
+		Vec2f zoomLevel = calculateZoomLevel(mapDim.x, mapDim.y);
+		zoomTarget = Maths::Min(zoomLevel.x, zoomLevel.y);
+		zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f);
+	}
 }
 
 bool cinematicEnabled = true;

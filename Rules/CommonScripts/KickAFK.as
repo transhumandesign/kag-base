@@ -4,7 +4,6 @@
 // move people into spec if seeding servers -gingerbeard
 
 #define CLIENT_ONLY
-#include "AdminLogic.as"
 
 bool warned = false;
 int warnTime = 0;
@@ -80,7 +79,7 @@ void onTick(CRules@ this)
 		}
 		else if (kickImmunity)
 		{
-			joinNewSpecTeam(this, p); //Force-swap to spec team.
+			p.client_ChangeTeam(this.getSpectatorTeamNum());  //Force-swap to spec team.
 			client_AddToChat("You have just been swapped to spectator team, type /m to get back.", SColor(255,0,0,0));
 		}
 		else
