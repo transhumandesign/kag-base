@@ -1,5 +1,4 @@
 // spawn resources
-
 const u32 materials_wait = 20; //seconds between free mats
 const u32 materials_wait_warmup = 40; //seconds between free mats
 
@@ -15,8 +14,7 @@ const string SPAWN_ITEMS_TIMER_ARCHER  = "CTF SpawnItems Archer:";
 
 string base_name() { return "tent"; }
 
-//resupply stuff
-
+//resupply timers
 string getCTFTimerPropertyName(CPlayer@ p, string classname)
 {
 	if (classname == "builder")
