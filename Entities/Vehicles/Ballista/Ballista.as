@@ -203,7 +203,7 @@ f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
 
 void onTick(CBlob@ this)
 {
-	if (this.hasAttached())
+	if (this.hasAttached() || this.getTickSinceCreated() < 30)
 	{
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v)) return;

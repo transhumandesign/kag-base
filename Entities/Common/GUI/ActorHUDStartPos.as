@@ -1,6 +1,6 @@
 //for use with DefaultActorHUD.as based HUDs
 
-#include "CTF_GiveSpawnItems.as";
+#include "CTF_Common.as";
 
 bool shouldRenderResupplyIndicator(CBlob@ blob)
 {
