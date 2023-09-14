@@ -342,7 +342,8 @@ class MapVotesMenu
 
 		if (shouldNag)
 		{
-			GUI::DrawRectangle(Vec2f_zero, ScreenDim, SColor(0, 0, 0, 0)); //end game taint screen
+			// rationale for disabling: https://github.com/transhumandesign/kag-base/pull/1675
+			// GUI::DrawRectangle(Vec2f_zero, ScreenDim, SColor(200, 0, 0, 0)); //end game taint screen
 		}
 
 		GUI::SetFont("menu");
