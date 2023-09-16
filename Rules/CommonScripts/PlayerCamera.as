@@ -214,7 +214,11 @@ void onRender(CRules@ this)
 	float cursorProximity = cursorDiff.Length();
 	cursorProximity = Maths::Clamp01((cursorProximity - 128) / 64.0f);
 
-	float timeToCinematicFactor = timeToCinematic / AUTO_CINEMATIC_TIME;
+	float timeToCinematicFactor = (
+		!cinematicForceDisabled
+		? timeToCinematic / AUTO_CINEMATIC_TIME
+		: 0.0f
+	);
 
 	// hide the tip if the cursor is far AND if the help tip was shown for a
 	// while
