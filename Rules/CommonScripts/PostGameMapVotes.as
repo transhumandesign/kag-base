@@ -3,8 +3,10 @@
 
 void onInit(CRules@ rules)
 {
-	rules.addCommandID(voteSelectMapTag);
-	rules.addCommandID(voteUnselectMapTag);
+	rules.addCommandID(voteRequestSelectMapTag);
+	rules.addCommandID(voteRequestUnselectMapTag);
+	rules.addCommandID(voteInfoSelectMapTag);
+	rules.addCommandID(voteInfoUnselectMapTag);
 	rules.addCommandID(voteSyncTag);
 
 	MapVotesMenu mvm();
@@ -49,6 +51,8 @@ void onRestart(CRules@ rules)
 
 void onNewPlayerJoin(CRules@ rules, CPlayer@ player)
 {
+	if (!isServer()) { return; }
+
 	MapVotesMenu@ mvm;
 	if (!rules.get("MapVotesMenu", @mvm))
 	{
@@ -61,10 +65,12 @@ void onNewPlayerJoin(CRules@ rules, CPlayer@ player)
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
+	if (!isServer()) { return; }
+
 	CBitStream params;
 	u16 id = player.getNetworkID();
 	params.write_u16(id);
-	this.SendCommand(this.getCommandID(voteUnselectMapTag), params);
+	this.SendCommand(this.getCommandID(voteInfoUnselectMapTag), params);
 }
 
 void onTick( CRules@ this )
@@ -117,11 +123,8 @@ void onTick( CRules@ this )
 
 	if (newSelectedNum != 0)
 	{
-		CPlayer@ me = getLocalPlayer();
-		u16 id = me.getNetworkID();
-		params.write_u16(id);
 		params.write_u8(newSelectedNum);
-		this.SendCommand(this.getCommandID(voteSelectMapTag), params);
+		this.SendCommand(this.getCommandID(voteRequestSelectMapTag), params);
 	}
 }
 
@@ -130,23 +133,39 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	MapVotesMenu@ mvm;
 	if (!this.get("MapVotesMenu", @mvm)) return;
 
-	if (cmd == this.getCommandID(voteSelectMapTag))
+	if (cmd == this.getCommandID(voteRequestSelectMapTag))
 	{
-		u16 id = params.read_u16();
+		if (!isServer()) { return; }
+
+		CPlayer@ sender = getNet().getActiveCommandPlayer();
+		if (sender is null) { return; }
+		u16 id = sender.getNetworkID();
+
 		u8 selected = params.read_u8();
 
-		// FIXME: if this is sent by a client, we should use a different
-		// command that reads from the command sender instead of relying on the
-		// ID
+		mvm.RemoveVotesFrom(id);
+		if (selected < mvm.votes.size())
+		{
+			mvm.votes[selected].push_back(id);
+		}
+
+		CBitStream params;
+		params.write_netid(id);
+		params.write_u8(selected);
+		this.SendCommand(this.getCommandID(voteInfoSelectMapTag), params);
+	}
+	else if (cmd == this.getCommandID(voteInfoSelectMapTag))
+	{
+		if (!isClient()) { return; }
+
+		u16 id = params.read_netid();
+		u8 selected = params.read_u8();
+
 		mvm.RemoveVotesFrom(id);
 
 		if (selected < mvm.votes.size())
 		{
 			mvm.votes[selected].push_back(id);
-		}
-		else if (selected != 255)
-		{
-			warn("Got invalid vote idx " + selected);
 		}
 
 		CPlayer@ player = getPlayerByNetworkId(id);
@@ -156,8 +175,20 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			Sound::Play("buttonclick.ogg");
 		}
 	}
-	else if (cmd == this.getCommandID(voteUnselectMapTag))
+	else if (cmd == this.getCommandID(voteRequestUnselectMapTag))
 	{
+		if (!isServer()) { return; }
+
+		CPlayer@ sender = getNet().getActiveCommandPlayer();
+		if (sender is null) { return; }
+		u16 id = sender.getNetworkID();
+
+		mvm.RemoveVotesFrom(id);
+	}
+	else if (cmd == this.getCommandID(voteInfoUnselectMapTag))
+	{
+		if (!isClient()) { return; }
+
 		u16 id = params.read_u16();
 		mvm.RemoveVotesFrom(id);
 	}

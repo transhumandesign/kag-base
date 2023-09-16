@@ -3,9 +3,18 @@
 
 const uint voteWaitDuration = 5 * getTicksASecond();
 const uint voteLockDuration = 3 * getTicksASecond();
-const string voteSelectMapTag = "mapvote: selectmap";
-const string voteUnselectMapTag = "mapvote: unselectmap";
+
+// client->server request
+const string voteRequestSelectMapTag = "mapvote: requestselectmap";
+const string voteRequestUnselectMapTag = "mapvote: requestunselectmap";
+
+// server->client info
+const string voteInfoSelectMapTag = "mapvote: infoselectmap";
+const string voteInfoUnselectMapTag = "mapvote: infounselectmap";
+
+// server->client sync
 const string voteSyncTag = "mapvote: sync";
+
 const string gameEndTimePointTag = "restart_rules_after_game";
 const string gameRestartDelayTag = "restart_rules_after_game_time";
 const string gameOverTimeTag = "game_over_time";
