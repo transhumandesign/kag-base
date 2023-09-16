@@ -89,6 +89,8 @@ class MapVotesMenu
 		{
 			random.Reset(Time());
 		}
+
+		ClearVotes();
 	}
 
 	// Returns the most voted option.
@@ -146,6 +148,11 @@ class MapVotesMenu
 
 	void RemoveVotesFrom(u16 netid)
 	{
+		if (isMapVoteOver())
+		{
+			return;
+		}
+
 		for (int i = 0; i < votes.length; ++i)
 		{
 			int netid_idx = votes[i].find(netid);
@@ -252,16 +259,6 @@ class MapVotesMenu
 					}
 				}
 			}
-		}
-
-		if (ticksRemainingForMapVote() == 1 && isServer())
-		{
-			mostVoted = selectMostVoted();
-			CRules@ rules = getRules();
-
-			CBitStream params;
-			params.write_u8(mostVoted);
-			rules.SendCommand(rules.getCommandID(voteInfoWonMapTag), params);
 		}
 	}
 
@@ -423,7 +420,8 @@ class MapVotesMenu
 		GUI::SetFont("menu");
 		GUI::DrawFramedPane(topLeftCorner, bottomRightCorner);
 
-		if (isMapVoteOver())
+		// workaround due to when the mostVoted gets synced from server
+		if (ticksRemainingForMapVote() <= -1)
 		{
 			string winner = getButton(mostVoted).displayname;
 			string text = getTranslatedString("Map Voting Has Ended.. Loading: {MAP}").replace("{MAP}", winner);

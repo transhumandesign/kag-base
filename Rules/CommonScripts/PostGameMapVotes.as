@@ -43,13 +43,12 @@ void onRestart(CRules@ rules)
 		return;
 	}
 
+	mvm.ClearVotes();
 	if (isServer())
 	{
     	mvm.Randomize();
 		mvm.Sync();
 	}
-
-	mvm.ClearVotes();
 }
 
 void onNewPlayerJoin(CRules@ rules, CPlayer@ player)
@@ -68,10 +67,19 @@ void onNewPlayerJoin(CRules@ rules, CPlayer@ player)
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
-	if (!isServer()) { return; }
+	if (!isServer() || player is null) { return; }
+
+	MapVotesMenu@ mvm;
+	if (!this.get("MapVotesMenu", @mvm))
+	{
+		warn("MapVotesMenu null in onPlayerLeave");
+		return;
+	}
+
+	u16 id = player.getNetworkID();
+	mvm.RemoveVotesFrom(id);
 
 	CBitStream params;
-	u16 id = player.getNetworkID();
 	params.write_u16(id);
 	this.SendCommand(this.getCommandID(voteInfoUnselectMapTag), params);
 }
@@ -104,6 +112,15 @@ void onTick( CRules@ this )
 		mvm.Refresh();
 		lastSavedScrenSize = currentScreenSize;
 		return;
+	}
+
+	if (ticksRemainingForMapVote() == 0 && isServer())
+	{
+		mvm.mostVoted = mvm.selectMostVoted();
+
+		CBitStream params;
+		params.write_u8(mvm.mostVoted);
+		this.SendCommand(this.getCommandID(voteInfoWonMapTag), params);
 	}
 
 	CBitStream params;
@@ -147,6 +164,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		u16 id = sender.getNetworkID();
 
 		u8 selected = params.read_u8();
+
+		if (isMapVoteOver())
+		{
+			return;
+		}
 
 		mvm.RemoveVotesFrom(id);
 		if (selected < mvm.votes.size())
