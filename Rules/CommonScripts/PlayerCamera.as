@@ -84,10 +84,7 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 
 void resetHelpText()
 {
-	if (u_showtutorial)
-	{
-		helptime = getGameTime();
-	}
+	helptime = getGameTime();
 }
 
 //Change to spectator cam on death
@@ -190,38 +187,32 @@ void onRender(CRules@ this)
 
 	GUI::SetFont("menu");
 
-	const int endTime1 = helptime + (getTicksASecond() * 12);
-	const int endTime2 = helptime + (getTicksASecond() * 24);
+	const Vec2f screenSize = getDriver().getScreenDimensions();
+	Vec2f noticeOrigin(128, screenSize.y - 22);
 
-	string text = "";
+	const string textEnable = getTranslatedString("Enable cinematic camera");
+	const string textDisable = getTranslatedString("Disable cinematic camera");
 
-	if (time < endTime1)
-	{
-		text = "You can use the movement keys and clicking to move the camera.\nToggle the cinematic camera by right clicking once.";
-	}
-	else if (time < endTime2)
-	{
-		text = "If you click on a player the camera will follow them.\nSimply press the movement keys or click again to stop following a player.";
-	}
-	if (text != "" && u_showtutorial)
-	{
-		//translate
-		text = getTranslatedString(text);
-		//position post translation so centering works properly
-		Vec2f ul, lr;
-		ul = Vec2f(getScreenWidth() / 2.0, 3.0 * getScreenHeight() / 4);
-		Vec2f size;
-		GUI::GetTextDimensions(text, size);
-		ul -= size * 0.5;
-		lr = ul + size;
-		//wiggle up and down
-		float wave = Maths::Sin(getGameTime() / 10.0f) * 5.0f;
-		ul.y += wave;
-		lr.y += wave;
-		//draw
-		GUI::DrawButtonPressed(ul - Vec2f(10, 10), lr + Vec2f(10, 10));
-		GUI::DrawText(text, ul, SColor(0xffffffff));
-	}
+	string text = cinematicForceDisabled ? textEnable : textDisable;
+
+	Vec2f textEnableSize, textDisableSize;
+	GUI::GetTextDimensions(textEnable, textEnableSize);
+	GUI::GetTextDimensions(textDisable, textDisableSize);
+	Vec2f textMaxSize(
+		Maths::Max(textEnableSize.x, textDisableSize.x),
+		Maths::Max(textEnableSize.y, textDisableSize.y)
+	);
+
+	Vec2f iconOrigin = noticeOrigin + Vec2f(0, -4);
+	Vec2f textOrigin = noticeOrigin + Vec2f(32, 4);
+	Vec2f noticeSize(
+		textOrigin.x - noticeOrigin.x + textMaxSize.x + 12,
+		28
+	);
+
+	GUI::DrawPane(noticeOrigin, noticeOrigin + noticeSize);
+	GUI::DrawIconByName("$RMB$", iconOrigin);
+	GUI::DrawText(text, textOrigin, SColor());
 }
 
 void onTick(CRules@ this)
