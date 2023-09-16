@@ -141,7 +141,7 @@ class MapVotesMenu
 		votes.clear();
 		votes.resize(buttons.size());
 		isSetup = false;
-		selectedOption = 0;
+		selectedOption = 255;
 	}
 
 	void RemoveVotesFrom(u16 netid)
@@ -199,6 +199,7 @@ class MapVotesMenu
 
 	void Update(CControls@ controls, u8 &out newSelectedNum)
 	{
+		newSelectedNum = 255;
 		if (isMapVoteOver() || !isMapVoteVisible()) { return; }
 
 		if (isClient())
@@ -411,7 +412,7 @@ class MapVotesMenu
 	{
 		Vec2f ScreenDim = getDriver().getScreenDimensions();
 
-		const bool shouldNag = selectedOption == 0 && !isMapVoteOver();
+		const bool shouldNag = selectedOption == 255 && !isMapVoteOver();
 
 		if (shouldNag)
 		{
@@ -434,12 +435,6 @@ class MapVotesMenu
 		 	GUI::DrawText(text, topLeftCorner + Vec2f(22, 16), color_white);
 		}
 
-		for (uint i = 0; i < buttons.size(); ++i)
-		{
-			MapVoteButton@ button = getButton(i);
-			button.RenderGUI();
-		}
-
 		GUI::SetFont("AveriaSerif-Bold_22");
 		for (uint i = 0; i < buttons.size(); ++i)
 		{
@@ -458,6 +453,13 @@ class MapVotesMenu
 				),
 				color_white
 			);
+		}
+
+		GUI::SetFont("menu");
+		for (uint i = 0; i < buttons.size(); ++i)
+		{
+			MapVoteButton@ button = getButton(i);
+			button.RenderGUI();
 		}
 	}
 
@@ -532,6 +534,7 @@ class MapVoteButton
 			clickableOrigin.y + clickableSize.y - 48
 		);
 
+		GUI::SetFont("menu");
 		GUI::DrawTextCentered(displayname, NameMid, color_white);
 	}
 
@@ -579,11 +582,16 @@ string PrettifyMapName(string name)
 	return name;
 }
 
+const bool LARGE_PREVIEW_ALLOW = true;
+const float LARGE_PREVIEW_ZOOM_SCALE = 3.0;
+
 class MapImageVoteButton : MapVoteButton
 {
 	Vertex[] maptex_raw;
 	string filename;
 	string shortname;
+
+	u16 mapW, mapH;
 
 	MapImageVoteButton()
 	{
@@ -600,8 +608,8 @@ class MapImageVoteButton : MapVoteButton
 		{
 			ImageData@ edit = Texture::data(shortname);
 
-			const u16 mapW = edit.width();
-			const u16 mapH = edit.height();
+			mapW = edit.width();
+			mapH = edit.height();
 
 			clickableOrigin = Vec2f(MenuWidth, 0.0f);
 			previewSize = Vec2f(mapW, mapH);
@@ -622,6 +630,20 @@ class MapImageVoteButton : MapVoteButton
 		}
 	}
 
+	bool shouldDoLargePreview()
+	{
+		return (
+			LARGE_PREVIEW_ALLOW
+			&& state == ButtonStates::Hovered
+			&& !isMapVoteOver()
+		);
+	}
+
+	void RenderGUI()
+	{
+		MapVoteButton::RenderGUI();
+	}
+
 	void RenderRaw()
 	{
 		const u16[] square_IDs = {0,1,2,2,3,0};
@@ -631,6 +653,41 @@ class MapImageVoteButton : MapVoteButton
 		Matrix::SetTranslation(model, previewOrigin.x, previewOrigin.y, 0);
 		Render::SetModelTransform(model);
 		Render::RawTrianglesIndexed(shortname, maptex_raw, square_IDs);
+
+		// Yes, some should ideally be in RenderGUI, but we want to render text
+		// over the map at the end
+		if (shouldDoLargePreview())
+		{
+			Vec2f screenCenter = getDriver().getScreenDimensions() * 0.5;
+			const float zoomScale = LARGE_PREVIEW_ZOOM_SCALE;
+
+			Vec2f padding = Vec2f(4, 4);
+			Vec2f scaledSize = Vec2f(mapW, mapH) * zoomScale + padding * 2.0;
+
+			const Vec2f tl = screenCenter - scaledSize * 0.5;
+			const Vec2f br = screenCenter + scaledSize * 0.5;
+
+			GUI::DrawWindow(tl, br);
+
+			Matrix::MakeIdentity(model);
+			Matrix::SetScale(model, zoomScale, zoomScale, 1.0);
+			Matrix::SetTranslation(
+				model,
+				screenCenter.x - mapW * zoomScale * 0.5,
+				screenCenter.y - mapH * zoomScale * 0.5,
+				0.0
+			);
+			Render::SetModelTransform(model);
+			Render::RawTrianglesIndexed(shortname, maptex_raw, square_IDs);
+
+			GUI::SetFont("AveriaSerif-Bold_22");
+			Vec2f textDim;
+			GUI::GetTextDimensions(displayname, textDim);
+			Vec2f textOrigin(screenCenter.x, br.y - 4.0f);
+			Vec2f textPadding(12.0, 6.0);
+			GUI::DrawPane(textOrigin - textDim * 0.5 - textPadding, textOrigin + textDim * 0.5 + textPadding);
+			GUI::DrawTextCentered(displayname, textOrigin, color_white);
+		}
 	}
 
 	void loadMap()

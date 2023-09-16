@@ -123,10 +123,10 @@ void onTick( CRules@ this )
 	CControls@ controls = getControls();
 	if (controls is null) return;
 
-	u8 newSelectedNum = 0;
+	u8 newSelectedNum;
 	mvm.Update(controls, newSelectedNum);
 
-	if (newSelectedNum != 0)
+	if (newSelectedNum != 255)
 	{
 		params.write_u8(newSelectedNum);
 		this.SendCommand(this.getCommandID(voteRequestSelectMapTag), params);
