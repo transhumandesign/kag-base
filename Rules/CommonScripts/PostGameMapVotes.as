@@ -140,13 +140,13 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		// ID
 		mvm.RemoveVotesFrom(id);
 
-		if (id < mvm.votes.size())
+		if (selected < mvm.votes.size())
 		{
 			mvm.votes[selected].push_back(id);
 		}
-		else if (id != 255)
+		else if (selected != 255)
 		{
-			warn("Got invalid vote idx " + id);
+			warn("Got invalid vote idx " + selected);
 		}
 
 		CPlayer@ player = getPlayerByNetworkId(id);
