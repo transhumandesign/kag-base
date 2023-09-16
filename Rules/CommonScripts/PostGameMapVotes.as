@@ -32,6 +32,8 @@ void onInit(CRules@ rules)
 //       as a workaround, we make it call on the first tick that occurs after onInit.
 bool shouldCallOnRestart = false;
 
+Vec2f lastSavedScrenSize;
+
 void onRestart(CRules@ rules)
 {
 	MapVotesMenu@ mvm;
@@ -96,9 +98,11 @@ void onTick( CRules@ this )
 		return;
 	}
 
-	if (!mvm.isSetup)
+	Vec2f currentScreenSize = getDriver().getScreenDimensions();
+	if (!mvm.isSetup || lastSavedScrenSize != currentScreenSize)
 	{
 		mvm.Refresh();
+		lastSavedScrenSize = currentScreenSize;
 		return;
 	}
 

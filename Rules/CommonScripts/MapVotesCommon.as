@@ -163,8 +163,8 @@ class MapVotesMenu
 
 		//Refresh menu pos/size after getting button sizes
 		Vec2f screenCenter = getDriver().getScreenDimensions()/2;
-		topLeftCorner = Vec2f(screenCenter.x - menuSize.x / 2, 16);
-		bottomRightCorner = Vec2f(screenCenter.x + menuSize.x / 2, 16 + menuSize.y);
+		topLeftCorner = Vec2f(screenCenter.x - menuSize.x / 2, -8);
+		bottomRightCorner = Vec2f(screenCenter.x + menuSize.x / 2, -8 + menuSize.y);
 
 		//Process button position relative to size
 		for (uint i = 0; i < buttons.size(); ++i)
@@ -426,12 +426,12 @@ class MapVotesMenu
 		{
 			string winner = getButton(mostVoted).displayname;
 			string text = getTranslatedString("Map Voting Has Ended.. Loading: {MAP}").replace("{MAP}", winner);
-		 	GUI::DrawText(text, topLeftCorner + Vec2f(22, 10), color_white);
+		 	GUI::DrawText(text, topLeftCorner + Vec2f(22, 16), color_white);
 		}
 		else
 		{
 			string text = getTranslatedString("Map Voting Ends In: {TIME}").replace("{TIME}", "" + (ticksRemainingForMapVote() / getTicksASecond()));
-		 	GUI::DrawText(text, topLeftCorner + Vec2f(22, 10), color_white);
+		 	GUI::DrawText(text, topLeftCorner + Vec2f(22, 16), color_white);
 		}
 
 		for (uint i = 0; i < buttons.size(); ++i)
@@ -540,6 +540,45 @@ class MapVoteButton
 	void loadMap() {}
 };
 
+string PrettifyMapName(string name)
+{
+	name = (name == "test.kaggen") ? "Generated Map" : name;
+
+	string[] splitName = name.split("_");
+
+	if (splitName.size() == 1)
+	{
+		// no underscore in name, nothing to do
+		return splitName[0];
+	}
+
+	// transform:
+	// 	Author_Blah_Blah
+	// to:
+	// 	Author's Blah Blah
+	name = splitName[0];
+
+	if (name.size() > 0)
+	{
+		if (name.substr(name.size() - 1) == "s")
+		{
+			// GuyWithANameThatEndOnS'
+			name += "'";
+		}
+		else
+		{
+			// GuyWithSomeName's
+			name += "'s";
+		}
+	}
+
+	// add map name
+	splitName.removeAt(0);
+	name += " " + join(splitName, " ");
+
+	return name;
+}
+
 class MapImageVoteButton : MapVoteButton
 {
 	Vertex[] maptex_raw;
@@ -569,7 +608,7 @@ class MapImageVoteButton : MapVoteButton
 
 			// Expand frame if the name is too long
 			Vec2f dim;
-			displayname = shortname == "test.kaggen" ? "Generated Map" : shortname;
+			displayname = PrettifyMapName(shortname);
 			GUI::SetFont("menu");
 			GUI::GetTextDimensions(displayname, dim);
 
