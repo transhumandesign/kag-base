@@ -113,7 +113,7 @@ void onInit(CBlob@ this)
 	CSpriteLayer@ flag = sprite.addSpriteLayer("flag", sprite.getConsts().filename, 40, 56);
 	if (flag !is null)
 	{
-		flag.addAnimation("default", 3, true);
+		flag.addAnimation("default", XORRandom(3) + 3, true);
 		int[] frames = { 5, 4, 3 };
 		flag.animation.AddFrames(frames);
 		flag.SetRelativeZ(-5.0f);
