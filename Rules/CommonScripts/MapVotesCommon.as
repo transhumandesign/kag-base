@@ -634,8 +634,7 @@ class MapImageVoteButton : MapVoteButton
 	{
 		return (
 			LARGE_PREVIEW_ALLOW
-			&& state == ButtonStates::Hovered
-			&& !isMapVoteOver()
+			&& isHovered(getControls().getMouseScreenPos())
 		);
 	}
 
