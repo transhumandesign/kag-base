@@ -184,14 +184,15 @@ void onRender(CRules@ this)
 	}
 
 	int time = getGameTime();
+	const int endTime1 = helptime + (getTicksASecond() * 1);
 
 	GUI::SetFont("menu");
 
-	const Vec2f screenSize = getDriver().getScreenDimensions();
-	Vec2f noticeOrigin(128, screenSize.y - 22);
+	Vec2f screenSize = getDriver().getScreenDimensions();
+	Vec2f mousePos = getControls().getMouseScreenPos();
 
-	const string textEnable = getTranslatedString("Enable cinematic camera");
-	const string textDisable = getTranslatedString("Disable cinematic camera");
+	const string textEnable = getTranslatedString("Cinematic camera disabled");
+	const string textDisable = getTranslatedString("Cinematic camera enabled");
 
 	string text = cinematicForceDisabled ? textEnable : textDisable;
 
@@ -203,12 +204,40 @@ void onRender(CRules@ this)
 		Maths::Max(textEnableSize.y, textDisableSize.y)
 	);
 
+	Vec2f noticeOrigin(128, screenSize.y - 22);
 	Vec2f iconOrigin = noticeOrigin + Vec2f(0, -4);
 	Vec2f textOrigin = noticeOrigin + Vec2f(32, 4);
 	Vec2f noticeSize(
 		textOrigin.x - noticeOrigin.x + textMaxSize.x + 12,
 		28
 	);
+
+	Vec2f proximityCheckOrigin(
+		noticeOrigin.x + noticeSize.x * 0.5,
+		screenSize.y
+	);
+	// stretch Y to reduce false positives
+	Vec2f cursorDiff = mousePos - proximityCheckOrigin;
+	cursorDiff *= Vec2f(1.0f, 2.5f); // cause no dot opMul lmao.
+	float cursorProximity = cursorDiff.Length();
+	cursorProximity = Maths::Clamp01((cursorProximity - 128) / 64.0f);
+
+	// hide the tip if the cursor is far AND if the help tip was shown for a
+	// while
+	float hidingFactor = Maths::Min(
+		cursorProximity, 
+		Maths::Clamp01((time - endTime1) / 2.0)
+	);
+
+	if (hidingFactor > 0.99f)
+	{
+		return;
+	}
+
+	Vec2f addedOffset = Vec2f(0.0, 18.0) * hidingFactor;
+	noticeOrigin += addedOffset;
+	iconOrigin += addedOffset;
+	textOrigin += addedOffset;
 
 	GUI::DrawPane(noticeOrigin, noticeOrigin + noticeSize);
 	GUI::DrawIconByName("$RMB$", iconOrigin);
@@ -289,11 +318,13 @@ void onTick(CRules@ this)
 			SetTargetPlayer(null);
 			setCinematicEnabled(true);
 			setCinematicForceDisabled(false);
+			resetHelpText();
 			Sound::Play("Sounds/GUI/menuclick.ogg");
 		}
 		else
 		{
 			setCinematicForceDisabled(true);
+			resetHelpText();
 			Sound::Play("Sounds/GUI/back.ogg");
 		}
 	}
