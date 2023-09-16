@@ -112,6 +112,8 @@ class MapVotesMenu
 			}
 			else if (currentVoteCount == mostVotedCount)
 			{
+				// note this codepath may be reached if we didn't encounter a
+				// vote > 0, which is ok
 				mostVotedIdx.push_back(i);
 			}
 		}
@@ -196,63 +198,65 @@ class MapVotesMenu
 
 	void Update(CControls@ controls, u8 &out newSelectedNum)
 	{
-		if (ticksRemainingForMapVote() == 0 && isServer())
-		{
-			mostVoted = selectMostVoted();
-			Sync();
-		}
-
 		if (isMapVoteOver() || !isMapVoteVisible()) { return; }
 
-		if (!isClient()) { return; }
-
-		Vec2f mousepos = controls.getMouseScreenPos();
-		const bool mousePressed = controls.isKeyPressed(KEY_LBUTTON);
-		const bool mouseJustReleased = controls.isKeyJustReleased(KEY_LBUTTON);
-
-		for (uint i = 0; i < buttons.size(); ++i)
+		if (isClient())
 		{
-			MapVoteButton@ button = @getButton(i);
+			Vec2f mousepos = controls.getMouseScreenPos();
+			const bool mousePressed = controls.isKeyPressed(KEY_LBUTTON);
+			const bool mouseJustReleased = controls.isKeyJustReleased(KEY_LBUTTON);
 
-			if (button.isHovered(mousepos))
+			for (uint i = 0; i < buttons.size(); ++i)
 			{
-				if (button.state == ButtonStates::Selected)
-				{
-					continue;
-				}
+				MapVoteButton@ button = @getButton(i);
 
-				if (button.state == ButtonStates::None)
+				if (button.isHovered(mousepos))
 				{
-					button.state = ButtonStates::Hovered;
-					Sound::Play("select.ogg");
-				}
-
-				if (mousePressed)
-				{
-					button.state = ButtonStates::Pressed;
-				}
-				else if (mouseJustReleased)
-				{
-					newSelectedNum = i;
-					button.state = ButtonStates::Selected;
-
-					// unselect rest
-					for (uint j = 0; j < buttons.size(); ++j)
+					if (button.state == ButtonStates::Selected)
 					{
-						// don't unselect self
-						if (i == j) { continue; }
+						continue;
+					}
 
-						getButton(j).state = ButtonStates::None;
+					if (button.state == ButtonStates::None)
+					{
+						button.state = ButtonStates::Hovered;
+						Sound::Play("select.ogg");
+					}
+
+					if (mousePressed)
+					{
+						button.state = ButtonStates::Pressed;
+					}
+					else if (mouseJustReleased)
+					{
+						newSelectedNum = i;
+						button.state = ButtonStates::Selected;
+
+						// unselect rest
+						for (uint j = 0; j < buttons.size(); ++j)
+						{
+							// don't unselect self
+							if (i == j) { continue; }
+
+							getButton(j).state = ButtonStates::None;
+						}
+					}
+				}
+				else
+				{
+					if (button.state != ButtonStates::Selected)
+					{
+						button.state = ButtonStates::None;
 					}
 				}
 			}
-			else
-			{
-				if (button.state != ButtonStates::Selected)
-				{
-					button.state = ButtonStates::None;
-				}
-			}
+		}
+
+		if (ticksRemainingForMapVote() == 1 && isServer())
+		{
+			// Resync for good measure to make sure clients see what they should
+			mostVoted = selectMostVoted();
+			Sync();
 		}
 	}
 
