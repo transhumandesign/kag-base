@@ -97,5 +97,14 @@ void LoadDefaultGUI()
 
 		// vehicles
 		AddIconToken("$LoadAmmo$", interaction, Vec2f(16, 16), 7, 7);
+
+		// indicators
+		AddIconToken("$SmallIndicatorInactive$", "GUI/MenuItems.png", Vec2f(8, 8), 13);
+		AddIconToken("$SmallIndicatorOn$", "GUI/MenuItems.png", Vec2f(8, 8), 14);
+		AddIconToken("$SmallIndicatorOff$", "GUI/MenuItems.png", Vec2f(8, 8), 15);
+
+		AddIconToken("$IndicatorInactive$", "GUI/MenuItems.png", Vec2f(16, 16), 10*8+1);
+		AddIconToken("$IndicatorOff$", "GUI/MenuItems.png", Vec2f(16, 16), 11*8+0);
+		AddIconToken("$IndicatorOn$", "GUI/MenuItems.png", Vec2f(16, 16), 11*8+1);
 	}
 }

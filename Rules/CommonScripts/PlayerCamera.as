@@ -183,30 +183,22 @@ void onRender(CRules@ this)
 		return;
 	}
 
-	int time = getGameTime();
-	const int endTime1 = helptime + (getTicksASecond() * 1);
+	int time = getGameTime() + getInterpolationFactor();
+	const int endTime1 = helptime + (getTicksASecond() * 1.5);
 
 	GUI::SetFont("menu");
 
 	Vec2f screenSize = getDriver().getScreenDimensions();
 	Vec2f mousePos = getControls().getMouseScreenPos();
 
-	const string textEnable = getTranslatedString("Cinematic camera disabled");
-	const string textDisable = getTranslatedString("Cinematic camera enabled");
-
-	string text = cinematicForceDisabled ? textEnable : textDisable;
-
-	Vec2f textEnableSize, textDisableSize;
-	GUI::GetTextDimensions(textEnable, textEnableSize);
-	GUI::GetTextDimensions(textDisable, textDisableSize);
-	Vec2f textMaxSize(
-		Maths::Max(textEnableSize.x, textDisableSize.x),
-		Maths::Max(textEnableSize.y, textDisableSize.y)
-	);
+	string text = "Cinematic camera";
+	Vec2f textMaxSize;
+	GUI::GetTextDimensions(text, textMaxSize);
 
 	Vec2f noticeOrigin(128, screenSize.y - 22);
-	Vec2f iconOrigin = noticeOrigin + Vec2f(0, -4);
-	Vec2f textOrigin = noticeOrigin + Vec2f(32, 4);
+	Vec2f rmbIconOrigin = noticeOrigin + Vec2f(0, -4);
+	Vec2f indIconOrigin = noticeOrigin + Vec2f(38, 4);
+	Vec2f textOrigin = noticeOrigin + Vec2f(56, 3);
 	Vec2f noticeSize(
 		textOrigin.x - noticeOrigin.x + textMaxSize.x + 12,
 		28
@@ -218,7 +210,7 @@ void onRender(CRules@ this)
 	);
 	// stretch Y to reduce false positives
 	Vec2f cursorDiff = mousePos - proximityCheckOrigin;
-	cursorDiff *= Vec2f(1.0f, 2.5f); // cause no dot opMul lmao.
+	cursorDiff *= Vec2f(1.0f, 3.5f); // cause no dot opMul lmao.
 	float cursorProximity = cursorDiff.Length();
 	cursorProximity = Maths::Clamp01((cursorProximity - 128) / 64.0f);
 
@@ -236,11 +228,19 @@ void onRender(CRules@ this)
 
 	Vec2f addedOffset = Vec2f(0.0, 18.0) * hidingFactor;
 	noticeOrigin += addedOffset;
-	iconOrigin += addedOffset;
+	rmbIconOrigin += addedOffset;
+	indIconOrigin += addedOffset;
 	textOrigin += addedOffset;
 
+	string indicatorToken = (
+		cinematicForceDisabled
+		? "$SmallIndicatorInactive$"
+		: "$SmallIndicatorOn$"
+	);
+
 	GUI::DrawPane(noticeOrigin, noticeOrigin + noticeSize);
-	GUI::DrawIconByName("$RMB$", iconOrigin);
+	GUI::DrawIconByName("$RMB$", rmbIconOrigin);
+	GUI::DrawIconByName(indicatorToken, indIconOrigin);
 	GUI::DrawText(text, textOrigin, SColor());
 }
 
@@ -313,7 +313,7 @@ void onTick(CRules@ this)
 		controls.isKeyJustPressed(KEY_RBUTTON) &&			//right clicked
 		(spectatorTeam || getLocalPlayerBlob() is null))	//is in spectator or dead
 	{
-		if (!isCinematicEnabled())
+		if (cinematicForceDisabled)
 		{
 			SetTargetPlayer(null);
 			setCinematicEnabled(true);
