@@ -77,11 +77,6 @@ void onTick(CRules@ this)
 		{
 			getNet().DisconnectClient();
 		}
-		else if (kickImmunity)
-		{
-			p.client_ChangeTeam(this.getSpectatorTeamNum());  //Force-swap to spec team.
-			client_AddToChat("You have just been swapped to spectator team, type /m to get back.", SColor(255,0,0,0));
-		}
 		else
 		{
 			p.client_ChangeTeam(this.getSpectatorTeamNum());
