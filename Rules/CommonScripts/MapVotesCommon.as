@@ -82,6 +82,7 @@ class MapVotesMenu
 		@buttons[0] = @imageButtons[0];
 		@buttons[1] = @imageButtons[1];
 		@buttons[2] = @imageButtons[2];
+		//@buttons[3] = MapRandomVoteButton();
 
 		if (isServer())
 		{
