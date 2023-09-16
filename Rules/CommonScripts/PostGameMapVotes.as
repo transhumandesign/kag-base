@@ -8,6 +8,7 @@ void onInit(CRules@ rules)
 	rules.addCommandID(voteInfoSelectMapTag);
 	rules.addCommandID(voteInfoUnselectMapTag);
 	rules.addCommandID(voteSyncTag);
+	rules.addCommandID(voteInfoWonMapTag);
 
 	MapVotesMenu mvm();
 	rules.set("MapVotesMenu", @mvm);
@@ -192,8 +193,11 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		u16 id = params.read_u16();
 		mvm.RemoveVotesFrom(id);
 	}
-	else if (isClient() && cmd == this.getCommandID(voteSyncTag))
+	else if (cmd == this.getCommandID(voteSyncTag))
 	{
+		if (!isClient()) { return; }
+
+		mvm.ClearVotes();
 		mvm.ParseFromStream(params);
 
 		for (uint i = 0; i < mvm.imageButtons.size(); ++i)
@@ -204,8 +208,12 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 				CreateMapTexture(button.shortname, button.filename);
 			}
 		}
+	}
+	else if (cmd == this.getCommandID(voteInfoWonMapTag))
+	{
+		if (!isClient()) { return; }
 
-		mvm.ClearVotes();
+		params.saferead_u8(mvm.mostVoted);
 	}
 }
 

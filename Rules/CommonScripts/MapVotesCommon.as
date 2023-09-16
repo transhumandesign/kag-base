@@ -11,6 +11,7 @@ const string voteRequestUnselectMapTag = "mapvote: requestunselectmap";
 // server->client info
 const string voteInfoSelectMapTag = "mapvote: infoselectmap";
 const string voteInfoUnselectMapTag = "mapvote: infounselectmap";
+const string voteInfoWonMapTag = "mapvote: infowonmaptag";
 
 // server->client sync
 const string voteSyncTag = "mapvote: sync";
@@ -254,9 +255,12 @@ class MapVotesMenu
 
 		if (ticksRemainingForMapVote() == 1 && isServer())
 		{
-			// Resync for good measure to make sure clients see what they should
 			mostVoted = selectMostVoted();
-			Sync();
+			CRules@ rules = getRules();
+
+			CBitStream params;
+			params.write_u8(mostVoted);
+			rules.SendCommand(rules.getCommandID(voteInfoWonMapTag), params);
 		}
 	}
 
