@@ -3,7 +3,6 @@
 
 void onInit(CRules@ rules)
 {
-	rules.addCommandID(voteEndTag);
 	rules.addCommandID(voteSelectMapTag);
 	rules.addCommandID(voteUnselectMapTag);
 	rules.addCommandID(voteSyncTag);
@@ -96,28 +95,13 @@ void onTick( CRules@ this )
 		return;
 	}
 
-	u8 count1 = mvm.votes1.length();
-	u8 count2 = mvm.votes2.length();
-	u8 count3 = mvm.votes3.length();
-
-	if (count1 > count2 && count1 > count3)
-	{	//map 1 got the most votes
-		mvm.mostVoted = 1;
-	}
-	else if (count3 > count1 && count3 > count2)
-	{	//map 3 got the most votes
-		mvm.mostVoted = 3;
-	}
-	else
-	{	//random map got the most votes or inconclusive
-		mvm.mostVoted = 2;
-	}
-
 	CBitStream params;
 	if (isServer() && ticksRemainingBeforeRestart() <= 0)
 	{
-		params.write_u8(mvm.mostVoted);
-		this.SendCommand(this.getCommandID(voteEndTag), params);
+		// FIXME: this is not correct anymore! needed for kagstats, probably.
+		// tcpr("(MapVotes) Map1: "+mvm.button1.shortname+" = "+mvm.votes1.length()+" Map2: "+mvm.button3.shortname+" = "+mvm.votes3.length()+" Random = "+mvm.votes2.length());
+		mvm.getButton(mvm.mostVoted).loadMap();
+		this.minimap = true;
 	}
 
 	//--------------------- CLIENT -----------------------\\
@@ -151,23 +135,22 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		u16 id = params.read_u16();
 		u8 selected = params.read_u8();
 
-		int p1 = mvm.votes1.find(id);
-		if (p1 != -1) mvm.votes1.removeAt(p1);
-		int p2 = mvm.votes2.find(id);
-		if (p2 != -1) mvm.votes2.removeAt(p2);
-		int p3 = mvm.votes3.find(id);
-		if (p3 != -1) mvm.votes3.removeAt(p3);
+		// FIXME: if this is sent by a client, we should use a different
+		// command that reads from the command sender instead of relying on the
+		// ID
+		mvm.RemoveVotesFrom(id);
 
-		switch (selected)
+		if (id < mvm.votes.size())
 		{
-			case 0: break;
-			case 1: if (p1 == -1) mvm.votes1.push_back(id); break;
-			case 2: if (p2 == -1) mvm.votes2.push_back(id); break;
-			case 3: if (p3 == -1) mvm.votes3.push_back(id); break;
+			mvm.votes[selected].push_back(id);
+		}
+		else if (id != 255)
+		{
+			warn("Got invalid vote idx " + id);
 		}
 
 		CPlayer@ player = getPlayerByNetworkId(id);
-		if (getNet().isClient() && player !is null && player.isMyPlayer())
+		if (isClient() && player !is null && player.isMyPlayer())
 		{
 			mvm.selectedOption = selected;
 			Sound::Play("buttonclick.ogg");
@@ -176,64 +159,22 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	else if (cmd == this.getCommandID(voteUnselectMapTag))
 	{
 		u16 id = params.read_u16();
-		int p1 = mvm.votes1.find(id);
-		if (p1 != -1) mvm.votes1.removeAt(p1);
-		int p2 = mvm.votes2.find(id);
-		if (p2 != -1) mvm.votes2.removeAt(p2);
-		int p3 = mvm.votes3.find(id);
-		if (p3 != -1) mvm.votes3.removeAt(p3);
+		mvm.RemoveVotesFrom(id);
 	}
-	else if (getNet().isClient() && cmd == this.getCommandID(voteSyncTag))
+	else if (isClient() && cmd == this.getCommandID(voteSyncTag))
 	{
-		mvm.button1.filename = params.read_string();
-		mvm.button3.filename = params.read_string();
-		mvm.button1.shortname = params.read_string();
-		mvm.button3.shortname = params.read_string();
-		mvm.mostVoted = params.read_u8();
+		mvm.ParseFromStream(params);
 
-		u8 l1 = params.read_u8();
-		u8 l2 = params.read_u8();
-		u8 l3 = params.read_u8();
-
-		for (uint i = 0; i < l1; i++)
+		for (uint i = 0; i < mvm.imageButtons.size(); ++i)
 		{
-			mvm.votes1.push_back(params.read_u8());
-		}
-
-		for (uint i = 0; i < l2; i++)
-		{
-			mvm.votes2.push_back(params.read_u8());
-		}
-
-		for (uint i = 0; i < l3; i++)
-		{
-			mvm.votes3.push_back(params.read_u8());
-		}
-
-		if (!Texture::exists(mvm.button1.shortname))
-		{
-			CreateMapTexture(mvm.button1.shortname, mvm.button1.filename);
-		}
-
-		if (!Texture::exists(mvm.button3.shortname))
-		{
-			CreateMapTexture(mvm.button3.shortname, mvm.button3.filename);
+			MapImageVoteButton@ button = @mvm.imageButtons[i];
+			if (!Texture::exists(button.shortname))
+			{
+				CreateMapTexture(button.shortname, button.filename);
+			}
 		}
 
 		mvm.ClearVotes();
-	}
-	else if (getNet().isServer() && cmd == this.getCommandID(voteEndTag))
-	{
-		tcpr("(MapVotes) Map1: "+mvm.button1.shortname+" = "+mvm.votes1.length()+" Map2: "+mvm.button3.shortname+" = "+mvm.votes3.length()+" Random = "+mvm.votes2.length());
-
-		u8 mostVoted = params.read_u8();
-		switch (mostVoted)
-		{
-			case 1: LoadMap(mvm.button1.filename); break;
-			case 3:	LoadMap(mvm.button3.filename); break;
-			default: LoadNextMap(); break;
-		}
-		this.minimap = true;
 	}
 }
 
