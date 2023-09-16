@@ -195,7 +195,7 @@ void onRender(CRules@ this)
 	Vec2f textMaxSize;
 	GUI::GetTextDimensions(text, textMaxSize);
 
-	Vec2f noticeOrigin(128, screenSize.y - 22);
+	Vec2f noticeOrigin(128, screenSize.y - 23);
 	Vec2f rmbIconOrigin = noticeOrigin + Vec2f(0, -4);
 	Vec2f indIconOrigin = noticeOrigin + Vec2f(38, 4);
 	Vec2f textOrigin = noticeOrigin + Vec2f(56, 3);
@@ -214,10 +214,15 @@ void onRender(CRules@ this)
 	float cursorProximity = cursorDiff.Length();
 	cursorProximity = Maths::Clamp01((cursorProximity - 128) / 64.0f);
 
+	float timeToCinematicFactor = timeToCinematic / AUTO_CINEMATIC_TIME;
+
 	// hide the tip if the cursor is far AND if the help tip was shown for a
 	// while
 	float hidingFactor = Maths::Min(
-		cursorProximity, 
+		Maths::Min(
+			cursorProximity,
+			Maths::Clamp01(1.0f - timeToCinematicFactor * 16.0)
+		),
 		Maths::Clamp01((time - endTime1) / 2.0)
 	);
 
@@ -242,6 +247,18 @@ void onRender(CRules@ this)
 	GUI::DrawIconByName("$RMB$", rmbIconOrigin);
 	GUI::DrawIconByName(indicatorToken, indIconOrigin);
 	GUI::DrawText(text, textOrigin, SColor());
+
+	if (timeToCinematicFactor > 0.01)
+	{
+		for (int yoff = 1; yoff <= 2; ++yoff)
+		{
+			GUI::DrawLine2D(
+				Vec2f(noticeOrigin.x, screenSize.y - yoff),
+				Vec2f(noticeOrigin.x + (noticeSize.x * timeToCinematicFactor), screenSize.y - yoff),
+				SColor(255, 255, 200, 0)
+			);
+		}
+	}
 }
 
 void onTick(CRules@ this)
