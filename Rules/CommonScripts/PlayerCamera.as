@@ -215,7 +215,7 @@ void onRender(CRules@ this)
 	cursorProximity = Maths::Clamp01((cursorProximity - 128) / 64.0f);
 
 	float timeToCinematicFactor = (
-		!cinematicForceDisabled
+		!cinematicForceDisabled && !cinematicEnabled
 		? timeToCinematic / AUTO_CINEMATIC_TIME
 		: 0.0f
 	);
