@@ -34,7 +34,7 @@ void onInit(CBlob@ this)
 	int team_num = this.getTeamNum();
 
 	{
-		ShopItem@ s = addShopItem(this, "Drill", "$drill$", "drill", Descriptions::drill, false);
+		ShopItem@ s = addShopItem(this, "Drill", getTeamIcon("drill", "Drill.png", team_num, Vec2f(32, 16), 0), "drill", Descriptions::drill, false);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::drill_stone);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::drill);
 	}
