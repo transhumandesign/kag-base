@@ -189,6 +189,11 @@ void onRender(CRules@ this)
 		return;
 	}
 
+	if (!v_camera_cinematic)
+	{
+		return;
+	}
+
 	int time = getGameTime() + getInterpolationFactor();
 	const int endTime1 = helptime + (getTicksASecond() * 1);
 
@@ -345,6 +350,7 @@ void onTick(CRules@ this)
 	//right click to toggle cinematic camera
 	CControls@ controls = getControls();
 	if (
+		v_camera_cinematic &&                               //user didn't perma disable
 		controls !is null &&								//controls exist
 		controls.isKeyJustPressed(KEY_RBUTTON) &&			//right clicked
 		(spectatorTeam || getLocalPlayerBlob() is null))	//is in spectator or dead

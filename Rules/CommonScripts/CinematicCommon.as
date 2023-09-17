@@ -317,7 +317,7 @@ void SetTimeToCinematic()
 
 bool isCinematicEnabled()
 {
-	return cinematicEnabled && !cinematicForceDisabled;
+	return cinematicEnabled && !cinematicForceDisabled && v_camera_cinematic;
 }
 
 bool isCinematic()
