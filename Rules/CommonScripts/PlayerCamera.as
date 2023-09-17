@@ -303,10 +303,10 @@ void onTick(CRules@ this)
 
 			if (!FOCUS_ON_IMPORTANT_BLOBS || !focusOnBlob(importantBlobs))
 			{
+				Vec2f newTarget = Vec2f_zero;
 				CBlob@[] playerBlobs;
 				if (getBlobsByTag("player", @playerBlobs))
 				{
-					posTarget = Vec2f_zero;
 					Vec2f minPos = mapDim;
 					Vec2f maxPos = Vec2f_zero;
 
@@ -325,15 +325,49 @@ void onTick(CRules@ this)
 						minPos.y = Maths::Min(minPos.y, pos.y);
 
 						//sum player positions
-						posTarget += pos;
+						newTarget += pos;
 					}
 
 					//mean position of all players
-					posTarget /= playerBlobs.length;
+					newTarget /= playerBlobs.length;
 
-					//zoom target
-					Vec2f maxDist = maxPos - minPos;
-					calculateZoomTarget(maxDist.x, maxDist.y);
+					const float distanceFromCenter = (newTarget - mapDim * 0.5f).Length();
+					// is the target fairly close to the center of the map?
+					// if so, then just snap to that
+					if (distanceFromCenter <= 256.0f)
+					{
+						if (distanceFromCenter <= 128.0f)
+						{
+							newTarget = mapDim * 0.5f;
+						}
+
+						Vec2f maxDist = getMap().getMapDimensions();
+						calculateZoomTarget(maxDist.x * 0.5f, maxDist.y * 0.5f);
+					}
+
+					// has the target moved substantially? if yes:
+					// only unlock from the center if it moved any significantly
+					// otherwise the camera might go crazy and swap between
+					// locking and unlocking from the center
+					//
+					// or are we tracking sufficiently few people that the
+					// camera doesn't turn into a vomit-o-tron if it updates
+					// every single tick?
+					if (
+						(
+							(newTarget - posTarget).Length() >= 128.0f
+							&& distanceFromCenter >= 256.0f
+						)
+						|| (playerBlobs.length <= 3)
+					)
+					{
+						// move now
+						posTarget = newTarget;
+
+						//zoom target
+						Vec2f maxDist = maxPos - minPos;
+						calculateZoomTarget(maxDist.x, maxDist.y);
+					}
 				}
 				else //no player blobs
 				{
