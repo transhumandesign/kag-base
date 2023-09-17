@@ -14,6 +14,7 @@ const float CINEMATIC_FURTHEST_ZOOM = 0.5f;						//how far the camera can zoom o
 
 const float AUTO_CINEMATIC_TIME = 3.0f;							//time until camera automatically becomes cinematic. set to zero to disable
 
+Vec2f pos;
 Vec2f posTarget;												//position which cinematic camera moves towards
 float zoomTarget = 1.0f;										//zoom level which camera zooms towards
 float timeToScroll = 0.0f;										//time until next able to scroll to zoom camera

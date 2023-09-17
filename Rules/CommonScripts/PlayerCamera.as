@@ -11,8 +11,6 @@ Vec2f deathLock;
 int helptime = 0;
 bool spectatorTeam;
 
-Vec2f pos;
-
 void Reset(CRules@ this)
 {
 	SetTargetPlayer(null);
@@ -20,16 +18,19 @@ void Reset(CRules@ this)
 	if (camera !is null)
 	{
 		camera.setTarget(null);
+		// start fairly unzoomed, so we have a nice zoom-in effect
+		camera.targetDistance = 0.25f;
 	}
 
-	helptime = 0;
-	setCinematicEnabled(true);
-	setCinematicForceDisabled(false);
 	currentTarget = 0;
 	switchTarget = 0;
 
 	//initially position camera to view entire map
 	ViewEntireMap();
+	// force lock camera position immediately, even if not cinematic
+	pos = posTarget;
+
+	timeToCinematic = 0;
 }
 
 void onRestart(CRules@ this)
@@ -39,6 +40,9 @@ void onRestart(CRules@ this)
 
 void onInit(CRules@ this)
 {
+	helptime = 0;
+	setCinematicEnabled(true);
+	setCinematicForceDisabled(false);
 	Reset(this);
 }
 
@@ -97,7 +101,9 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 	//Player died to someone
 	if (camera !is null && victim is getLocalPlayer())
 	{
-		resetHelpText();
+		// let's only bother with the info pane on switching to spec
+		// resetHelpText();
+
 		//Player killed themselves
 		if (victim is attacker || attacker is null)
 		{
@@ -184,7 +190,7 @@ void onRender(CRules@ this)
 	}
 
 	int time = getGameTime() + getInterpolationFactor();
-	const int endTime1 = helptime + (getTicksASecond() * 1.5);
+	const int endTime1 = helptime + (getTicksASecond() * 1);
 
 	GUI::SetFont("menu");
 
@@ -196,12 +202,20 @@ void onRender(CRules@ this)
 	GUI::GetTextDimensions(text, textMaxSize);
 
 	Vec2f noticeOrigin(128, screenSize.y - 23);
-	Vec2f rmbIconOrigin = noticeOrigin + Vec2f(0, -4);
-	Vec2f indIconOrigin = noticeOrigin + Vec2f(38, 4);
-	Vec2f textOrigin = noticeOrigin + Vec2f(56, 3);
+	Vec2f rmbIconOrigin = noticeOrigin + Vec2f(0, -2);
+	Vec2f indIconOrigin = noticeOrigin + Vec2f(34, 4);
+	Vec2f textOrigin = noticeOrigin + Vec2f(52, 3);
 	Vec2f noticeSize(
 		textOrigin.x - noticeOrigin.x + textMaxSize.x + 12,
 		28
+	);
+	Vec2f indicatorOrigin(
+		noticeOrigin.x + 24,
+		screenSize.y
+	);
+	Vec2f indicatorSize(
+		noticeOrigin.x + noticeSize.x - indicatorOrigin.x,
+		2.0f
 	);
 
 	Vec2f proximityCheckOrigin(
@@ -212,7 +226,7 @@ void onRender(CRules@ this)
 	Vec2f cursorDiff = mousePos - proximityCheckOrigin;
 	cursorDiff *= Vec2f(1.0f, 3.5f); // cause no dot opMul lmao.
 	float cursorProximity = cursorDiff.Length();
-	cursorProximity = Maths::Clamp01((cursorProximity - 128) / 64.0f);
+	cursorProximity = Maths::Clamp01((cursorProximity - 96) / 64.0f);
 
 	float timeToCinematicFactor = (
 		!cinematicForceDisabled && !cinematicEnabled
@@ -247,22 +261,23 @@ void onRender(CRules@ this)
 		: "$SmallIndicatorOn$"
 	);
 
-	GUI::DrawPane(noticeOrigin, noticeOrigin + noticeSize);
-	GUI::DrawIconByName("$RMB$", rmbIconOrigin);
+	GUI::DrawPane(noticeOrigin + Vec2f(8.0, 0.0), noticeOrigin + noticeSize);
 	GUI::DrawIconByName(indicatorToken, indIconOrigin);
 	GUI::DrawText(text, textOrigin, SColor());
 
 	if (timeToCinematicFactor > 0.01)
 	{
-		for (int yoff = 1; yoff <= 2; ++yoff)
+		for (int yoff = 1; yoff <= indicatorSize.y; ++yoff)
 		{
 			GUI::DrawLine2D(
-				Vec2f(noticeOrigin.x, screenSize.y - yoff),
-				Vec2f(noticeOrigin.x + (noticeSize.x * timeToCinematicFactor), screenSize.y - yoff),
+				Vec2f(indicatorOrigin.x, indicatorOrigin.y - yoff),
+				Vec2f(indicatorOrigin.x + (indicatorSize.x * timeToCinematicFactor), indicatorOrigin.y - yoff),
 				SColor(255, 255, 200, 0)
 			);
 		}
 	}
+
+	GUI::DrawIconByName("$RMB$", rmbIconOrigin);
 }
 
 void onTick(CRules@ this)
