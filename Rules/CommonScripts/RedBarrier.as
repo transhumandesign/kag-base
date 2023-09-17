@@ -1,3 +1,5 @@
+#include "RedBarrierCommon.as"
+
 ////  VARS  ////
 
 // Server owners should edit the value inside RedBarrierVars.cfg
@@ -63,6 +65,7 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 		SyncVarsToPlayer(this, player);
 }
 
+
 void onTick(CRules@ this)
 {
 	if (!shouldBarrier(this))
@@ -73,12 +76,11 @@ void onTick(CRules@ this)
 
 	CMap@ map = getMap();
 
-	const u16 x1 = this.get_u16("barrier_x1");
-	const u16 x2 = this.get_u16("barrier_x2");
-	const u16 middle = (x1 + x2) * 0.5f;
+	Vec2f tl, br;
+	getBarrierRect(@this, tl, br);
 
 	CBlob@[] blobsInBox;
-	if (map.getBlobsInBox(Vec2f(x1, -50 * map.tilesize), Vec2f(x2, map.tilemapheight * map.tilesize), @blobsInBox))
+	if (map.getBlobsInBox(tl, br, @blobsInBox))
 	{
 		for (uint i = 0; i < blobsInBox.length; i++)
 		{
@@ -88,7 +90,7 @@ void onTick(CRules@ this)
 				(b.getTeamNum() < 100 || b.hasTag("no barrier pass") || 
 				 b.hasTag("material") || b.getName() == "spikes"))
 			{
-				PushBlob(b, middle, x1, x2);
+				PushBlob(b, (tl.x + br.x) * 0.5, tl.x, br.x);
 			}
 		}
 	}
@@ -237,9 +239,4 @@ void SyncVarsToPlayer(CRules@ this, CPlayer@ player)
 	stream.write_f32(VEL_PUSHBACK);
 
 	this.SendCommand(this.getCommandID("set_barrier_vars"), stream, player);
-}
-
-const bool shouldBarrier(CRules@ this)
-{
-	return this.isIntermission() || this.isWarmup() || this.isBarrier();
 }

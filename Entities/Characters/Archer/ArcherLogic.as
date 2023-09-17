@@ -8,6 +8,7 @@
 #include "ShieldCommon.as";
 #include "Help.as";
 #include "BombCommon.as";
+#include "RedBarrierCommon.as"
 
 const int FLETCH_COOLDOWN = 45;
 const int PICKUP_COOLDOWN = 15;
@@ -718,9 +719,20 @@ void onTick(CBlob@ this)
 	//print("state after: " + archer.charge_state);
 }
 
+bool checkGrappleBarrier(Vec2f pos)
+{
+	CRules@ rules = getRules();
+	if (!shouldBarrier(@rules)) { return false; }
+
+	Vec2f tl, br;
+	getBarrierRect(@rules, tl, br);
+
+	return (pos.x > tl.x && pos.x < br.x);
+}
+
 bool checkGrappleStep(CBlob@ this, ArcherInfo@ archer, CMap@ map, const f32 dist)
 {
-	if (map.getSectorAtPosition(archer.grapple_pos, "barrier") !is null)  //red barrier
+	if (checkGrappleBarrier(archer.grapple_pos)) // red barrier
 	{
 		if (canSend(this))
 		{
