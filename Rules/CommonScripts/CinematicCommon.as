@@ -133,20 +133,25 @@ CBlob@[]@ buildImportanceList()
 			if (blobInLight)
 			{
 				//player near enemy tent
-				CBlob@[] blobsInRadius;
-				map.getBlobsInRadius(blobPos, 28.0f * map.tilesize, blobsInRadius);
-				for (uint j = 0; j < blobsInRadius.length; j++)
-				{
-					CBlob@ b = blobsInRadius[j];
-					if (
-						b.getName() == "tent" &&
-						b.getTeamNum() != blob.getTeamNum()
-					) {
-						blob.set_f32("cinematic importance", ImportanceRank::player_near_tent);
-						importantBlob = true;
-						break;
-					}
-				}
+				// currently disabled, because it produces too many false
+				// positives (e.g. consider some player camping beneath an
+				// enemy tent in a sky map), and it is generally not interesting
+				// at a macro level
+
+				// CBlob@[] blobsInRadius;
+				// map.getBlobsInRadius(blobPos, 28.0f * map.tilesize, blobsInRadius);
+				// for (uint j = 0; j < blobsInRadius.length; j++)
+				// {
+				// 	CBlob@ b = blobsInRadius[j];
+				// 	if (
+				// 		b.getName() == "tent" &&
+				// 		b.getTeamNum() != blob.getTeamNum()
+				// 	) {
+				// 		blob.set_f32("cinematic importance", ImportanceRank::player_near_tent);
+				// 		importantBlob = true;
+				// 		break;
+				// 	}
+				// }
 
 				//builder near enemy flag base
 				if (blob.getName() == "builder")
