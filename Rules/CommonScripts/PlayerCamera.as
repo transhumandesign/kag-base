@@ -353,7 +353,8 @@ void onTick(CRules@ this)
 		v_camera_cinematic &&                               //user didn't perma disable
 		controls !is null &&								//controls exist
 		controls.isKeyJustPressed(KEY_RBUTTON) &&			//right clicked
-		(spectatorTeam || getLocalPlayerBlob() is null))	//is in spectator or dead
+		(spectatorTeam || getLocalPlayerBlob() is null) && //is in spectator or dead
+		getGameTime() > deathTime)
 	{
 		if (cinematicForceDisabled)
 		{
