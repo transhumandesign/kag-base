@@ -92,17 +92,27 @@ void onTick( CRules@ this )
 		shouldCallOnRestart = false;
 	}
 
-	MapVotesMenu@ mvm;
-	if (!this.get("MapVotesMenu", @mvm))
-	{
-		warn("MapVotesMenu null in onTick");
-		return;
-	}
-
 	if (!this.isGameOver())
 	{
 		this.set_s32(gameEndTimePointTag, getGameTime() + this.get_s32(gameRestartDelayTag));
 		this.set_s32(gameOverTimeTag, getGameTime());
+		return;
+	}
+
+	if (this.hasTag("tutorial"))
+	{
+		// this is turbojank but let's just handle tutorial nextmap here
+		if (isServer() && this.isGameOver() && ticksRemainingBeforeRestart() <= 0)
+		{
+			LoadNextMap();
+		}
+		return;
+	}
+
+	MapVotesMenu@ mvm;
+	if (!this.get("MapVotesMenu", @mvm))
+	{
+		warn("MapVotesMenu null in onTick");
 		return;
 	}
 
