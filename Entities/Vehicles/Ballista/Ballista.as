@@ -125,6 +125,8 @@ void onInit(CBlob@ this)
 	string[] autograb_blobs = {"mat_bolts", "mat_bomb_bolts"};
 	this.set("autograb blobs", autograb_blobs);
 
+	this.set_bool("facing", true);
+
 	// auto-load on creation
 	if (isServer())
 	{
@@ -203,14 +205,14 @@ f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
 
 void onTick(CBlob@ this)
 {
-	if (this.hasAttached() || this.getTickSinceCreated() < 30)
+	if (this.hasAttached() || this.getTickSinceCreated() < 30 || this.get_bool("facing") != this.isFacingLeft())
 	{
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v)) return;
 
 		Vehicle_StandardControls(this, v);
 
-		if (v.cooldown_time > 0)
+		if (this.hasAttached() && v.cooldown_time > 0)
 		{
 			v.cooldown_time--;
 		}
@@ -227,6 +229,7 @@ void onTick(CBlob@ this)
 			//arm.animation.frame = v.getCurrentAmmo().loaded_ammo > 0 ? 1 : 0;
 		}
 	}
+	this.set_bool("facing", this.isFacingLeft());
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
