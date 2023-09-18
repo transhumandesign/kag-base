@@ -96,7 +96,14 @@ CBlob@[]@ buildImportanceList()
 			CBlob@ blob = @blobs[i];
 
 			//blobs closer to being captured are MORE important
-			float capture = float(blob.get_s16("capture ticks")) / blob.get_s16("max capture ticks");
+			const s16 capture_time = blob.get_u16("capture time");
+
+			if (capture_time <= 0)
+			{
+				continue;
+			}
+
+			float capture = float(blob.get_u16("capture ticks")) / capture_time;
 
 			if (blob.hasTag("vehicle") && blob.hasTag("respawn"))
 			{
@@ -126,20 +133,25 @@ CBlob@[]@ buildImportanceList()
 			if (blobInLight)
 			{
 				//player near enemy tent
-				CBlob@[] blobsInRadius;
-				map.getBlobsInRadius(blobPos, 28.0f * map.tilesize, blobsInRadius);
-				for (uint j = 0; j < blobsInRadius.length; j++)
-				{
-					CBlob@ b = blobsInRadius[j];
-					if (
-						b.getName() == "tent" &&
-						b.getTeamNum() != blob.getTeamNum()
-					) {
-						blob.set_f32("cinematic importance", ImportanceRank::player_near_tent);
-						importantBlob = true;
-						break;
-					}
-				}
+				// currently disabled, because it produces too many false
+				// positives (e.g. consider some player camping beneath an
+				// enemy tent in a sky map), and it is generally not interesting
+				// at a macro level
+
+				// CBlob@[] blobsInRadius;
+				// map.getBlobsInRadius(blobPos, 28.0f * map.tilesize, blobsInRadius);
+				// for (uint j = 0; j < blobsInRadius.length; j++)
+				// {
+				// 	CBlob@ b = blobsInRadius[j];
+				// 	if (
+				// 		b.getName() == "tent" &&
+				// 		b.getTeamNum() != blob.getTeamNum()
+				// 	) {
+				// 		blob.set_f32("cinematic importance", ImportanceRank::player_near_tent);
+				// 		importantBlob = true;
+				// 		break;
+				// 	}
+				// }
 
 				//builder near enemy flag base
 				if (blob.getName() == "builder")
@@ -251,7 +263,7 @@ bool focusOnBlob(CBlob@[] blobs)
 
 			if (blob !is null)
 			{
-				if (getGameTime() < switchTarget && blob !is targetBlob)
+				if (getGameTime() < switchTarget && targetBlob !is null && blob !is targetBlob)
 				{
 					//stay at focus blob's position for a bit before focusing on a more important blob
 					posTarget = targetBlob.getInterpolatedPosition();
@@ -277,11 +289,16 @@ bool focusOnBlob(CBlob@[] blobs)
 
 void ViewEntireMap()
 {
-	Vec2f mapDim = getMap().getMapDimensions();
-	posTarget = mapDim / 2.0f;
-	Vec2f zoomLevel = calculateZoomLevel(mapDim.x, mapDim.y);
-	zoomTarget = Maths::Min(zoomLevel.x, zoomLevel.y);
-	zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f);
+	CMap@ map = getMap();
+
+	if (map !is null)
+	{
+		Vec2f mapDim = map.getMapDimensions();
+		posTarget = mapDim / 2.0f;
+		Vec2f zoomLevel = calculateZoomLevel(mapDim.x, mapDim.y);
+		zoomTarget = Maths::Min(zoomLevel.x, zoomLevel.y);
+		zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f);
+	}
 }
 
 bool cinematicEnabled = true;
@@ -305,7 +322,7 @@ void SetTimeToCinematic()
 
 bool isCinematicEnabled()
 {
-	return cinematicEnabled && !cinematicForceDisabled;
+	return cinematicEnabled && !cinematicForceDisabled && v_camera_cinematic;
 }
 
 bool isCinematic()

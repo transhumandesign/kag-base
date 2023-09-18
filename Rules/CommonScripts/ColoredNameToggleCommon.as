@@ -3,7 +3,6 @@
 const string toggle_id_string = " status toggle";
 const string toggle_command = "toggle colored name command";
 const string prefs_command = "request admin prefs";
-const array<string> toggle_strings = { "!toggle color", "!toggle colour", "!toggle name" };
 
 bool isAdmin(CPlayer@ player)
 {

@@ -161,7 +161,7 @@ void onInit(CBlob@ this)
 	CSpriteLayer@ flag = sprite.addSpriteLayer("flag layer", sprite.getConsts().filename, 32, 32);
 	if (flag !is null)
 	{
-		flag.addAnimation("default", 3, true);
+		flag.addAnimation("default", XORRandom(3) + 3, true);
 		int[] frames = { 15, 14, 13 };
 		flag.animation.AddFrames(frames);
 		flag.SetRelativeZ(-0.8f);
@@ -205,7 +205,7 @@ f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
 
 void onTick(CBlob@ this)
 {
-	if (this.hasAttached() || this.get_bool("facing") != this.isFacingLeft())
+	if (this.hasAttached() || this.getTickSinceCreated() < 30 || this.get_bool("facing") != this.isFacingLeft())
 	{
 		VehicleInfo@ v;
 		if (!this.get("VehicleInfo", @v)) return;
