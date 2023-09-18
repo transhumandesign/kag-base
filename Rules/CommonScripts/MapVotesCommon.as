@@ -101,7 +101,7 @@ class MapVotesMenu
 	// i actually care enough
 	u8 selectMostVoted()
 	{
-		u8[] mostVotedIdx = 0;
+		u8[] mostVotedIdx;
 		uint mostVotedCount = 0;
 
 		for (int i = 0; i < votes.size(); ++i)
