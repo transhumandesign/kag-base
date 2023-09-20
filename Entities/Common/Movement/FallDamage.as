@@ -9,7 +9,8 @@ const u8 knockdown_time = 12;
 
 void onInit(CBlob@ this)
 {
-	this.getCurrentScript().tickIfTag = "dead";
+	this.getCurrentScript().tickIfTag = "will_go_oof";
+	this.set_u32("safe_from_fall", 0); // Tick to prevent fall damage
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
@@ -31,53 +32,76 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	f32 damage = FallDamageAmount(vely);
 	if (damage != 0.0f) //interesting value
 	{
-		bool doknockdown = true;
+		print("hit ground " + getGameTime());
 
-		if (damage > 0.0f)
+		bool wait_to_oof = false;
+		CBlob@[] groundblobs;
+		if (getMap().getBlobsInRadius(point1, this.getRadius(), @groundblobs))
 		{
-			// check if we aren't touching a trampoline
-			CBlob@[] overlapping;
-
-			if (this.getOverlapping(@overlapping))
+			for (int i = 0; i < groundblobs.length; ++i)
 			{
-				for (uint i = 0; i < overlapping.length; i++)
-				{
-					CBlob@ b = overlapping[i];
+				CBlob@ b = groundblobs[i];
 
-					if (b.hasTag("no falldamage"))
+				if (b.hasTag("no falldamage"))
+				{
+					return;
+				}
+
+				if (b.hasTag("can_prevent_fall"))
+				{
+					if (getGameTime() - this.get_u32("safe_from_fall") <= 1)
 					{
+						print("Saved!");
 						return;
 					}
+					wait_to_oof = true;
 				}
-			}
-
-			if (damage > 0.1f)
-			{
-				this.server_Hit(this, point1, normal, damage, Hitters::fall);
-			}
-			else
-			{
-				doknockdown = false;
 			}
 		}
 
-		if (doknockdown)
-			setKnocked(this, knockdown_time);
-
-		if (!this.hasTag("should be silent"))
-		{				
-			if (this.getHealth() > damage) //not dead
-				Sound::Play("/BreakBone", this.getPosition());
-			else
-			{
-				Sound::Play("/FallDeath.ogg", this.getPosition());
-			}
+		if (wait_to_oof)
+		{
+			FallInfo fall(point1, normal, damage, getGameTime());
+			this.set("fallInfo", @fall);
+			this.Tag("will_go_oof");
+		}
+		else
+		{
+			print("Normal oof");
+			Oof(this, point1, normal, damage);
 		}
 	}
 }
 
 void onTick(CBlob@ this)
 {
-	this.Tag("should be silent");
-	this.getCurrentScript().tickFrequency = 0;
+	FallInfo@ fall;
+	if (!this.get("fallInfo", @fall)) return;
+
+	// Wait a tick
+	if (getGameTime() - fall.tick < 2) return;
+
+	print("Delayed oof " + getGameTime());
+	this.Untag("will_go_oof");
+	Oof(this, fall.pos, fall.vel, fall.damage);
+}
+
+void Oof(CBlob@ this, Vec2f pos, Vec2f vel, f32 damage)
+{
+	if (!this.hasTag("dead"))
+	{				
+		if (this.getHealth() > damage) //not dead
+			Sound::Play("/BreakBone", this.getPosition());
+		else
+		{
+			Sound::Play("/FallDeath.ogg", this.getPosition());
+		}
+	}
+
+	if (damage > 0.1f)
+	{
+		this.server_Hit(this, pos, vel, damage, Hitters::fall);
+	}
+
+	setKnocked(this, knockdown_time);
 }

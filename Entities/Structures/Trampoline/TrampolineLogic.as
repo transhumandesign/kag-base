@@ -1,4 +1,5 @@
 #include "Help.as";
+#include "FallDamageCommon.as";
 
 namespace Trampoline
 {
@@ -21,7 +22,9 @@ void onInit(CBlob@ this)
 	this.set(Trampoline::TIMER, cooldowns);
 	this.getShape().getConsts().collideWhenAttached = true;
 
-	this.Tag("no falldamage");
+	// doesn't always cancel falldamage
+	// this.Tag("no falldamage");
+	this.Tag("can_prevent_fall");
 	this.Tag("medium weight");
 	// Because BlobPlacement.as is *AMAZING*
 	this.Tag("place norotate");
@@ -81,6 +84,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	//cant bounce while held by something attached to something else
 	if (holder !is null && holder.isAttached()) return;
 
+	print("hit tramp " + getGameTime());
+
 	//prevent knights from flying using trampolines
 
 	//get angle difference between entry angle and the facing angle
@@ -138,6 +143,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			velocity.RotateBy(angle);
 
 			blob.setVelocity(velocity);
+			ProtectFromFall(blob);
 
 			CSprite@ sprite = this.getSprite();
 			if (sprite !is null)

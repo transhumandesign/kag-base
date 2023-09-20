@@ -1,8 +1,3 @@
-//get the fall damage amount for a given vertical velocity
-//returns
-//  0 for no damage, no stun
-//  <0 for stun only
-//  >0 for damage amount
 
 f32 BaseFallSpeed()
 {
@@ -10,11 +5,15 @@ f32 BaseFallSpeed()
 	return getRules().exists("fall vel modifier") ? getRules().get_f32("fall vel modifier") * BASE_FALL_VEL : BASE_FALL_VEL;
 }
 
+//get the fall damage amount for a given vertical velocity
+//returns
+//  0 for no damage, no stun
+//  <0 for stun only
+//  >0 for damage amount
 f32 FallDamageAmount(float vely)
 {
 	const f32 base = BaseFallSpeed();
 	const f32 ramp = 1.2f;
-	bool doknockdown = false;
 
 	if (vely > base)
 	{
@@ -22,7 +21,6 @@ f32 FallDamageAmount(float vely)
 		if (vely > base * ramp)
 		{
 			f32 damage = 0.0f;
-			doknockdown = true;
 
 			if (vely < base * Maths::Pow(ramp, 1))
 			{
@@ -53,4 +51,30 @@ f32 FallDamageAmount(float vely)
 		return -1.0f;
 	}
 	return 0.0f;
+}
+
+shared class FallInfo
+{
+	Vec2f pos;
+	Vec2f vel;
+	f32 damage;
+	u32 tick;
+
+	FallInfo(Vec2f _pos, Vec2f _vel, f32 _damage, u32 _tick)
+	{
+		pos = _pos;
+		vel = _vel;
+		damage = _damage;
+		tick = _tick;
+	}
+}
+
+void ProtectFromFall(CBlob@ blob)
+{
+	if (blob.hasTag("will_go_oof"))
+	{
+		print("Un-oofed!");
+		blob.Untag("will_go_oof");
+	}
+	blob.set_u32("safe_from_fall", getGameTime());
 }
