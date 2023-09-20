@@ -339,7 +339,7 @@ void onTick(CRules@ this)
 					panEaseModifier = 1.0 / Maths::Min(8.0f, playerBlobs.length + 1.0f);
 
 					// try to curb shakiness when players move a lot
-					if ((newTarget - posTarget).Length() > 4.0f * Maths::Min(16, playerBlobs.length + 1) / 2.0f)
+					if ((newTarget - posTarget).Length() > 6.0f * Maths::Min(16, playerBlobs.length + 1))
 					{
 						// move now
 						posTarget = newTarget;
