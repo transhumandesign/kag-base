@@ -461,7 +461,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 				acc.participation,      3,     1,         1,
 
 				//(final dummy)
-				0, 0, 0, 0,
+				0, 0, 0, 0
 			};
 			//encoding per-group
 			int[] group_encode = {
