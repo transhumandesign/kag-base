@@ -22,9 +22,7 @@ void onInit(CBlob@ this)
 	this.set(Trampoline::TIMER, cooldowns);
 	this.getShape().getConsts().collideWhenAttached = true;
 
-	// doesn't always cancel falldamage
-	// this.Tag("no falldamage");
-	this.Tag("can_prevent_fall");
+	this.Tag("no falldamage");
 	this.Tag("medium weight");
 	// Because BlobPlacement.as is *AMAZING*
 	this.Tag("place norotate");

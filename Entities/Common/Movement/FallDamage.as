@@ -42,11 +42,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 				if (b.hasTag("no falldamage"))
 				{
-					return;
-				}
-
-				if (b.hasTag("can_prevent_fall"))
-				{
 					if (getGameTime() - this.get_u32("safe_from_fall") <= 1)
 					{
 						return;
