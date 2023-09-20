@@ -30,6 +30,9 @@ void Reset(CRules@ this)
 	// force lock camera position immediately, even if not cinematic
 	pos = posTarget;
 
+	panEaseModifier = 1.0f;
+	zoomEaseModifier = 1.0f;
+
 	timeToCinematic = 0;
 }
 
@@ -301,6 +304,8 @@ void onTick(CRules@ this)
 			CBlob@[]@ importantBlobs = buildImportanceList();
 			SortBlobsByImportance(importantBlobs);
 
+			panEaseModifier = 1.0f;
+
 			if (!FOCUS_ON_IMPORTANT_BLOBS || !focusOnBlob(importantBlobs))
 			{
 				Vec2f newTarget = Vec2f_zero;
@@ -331,35 +336,10 @@ void onTick(CRules@ this)
 					//mean position of all players
 					newTarget /= playerBlobs.length;
 
-					const float distanceFromCenter = (newTarget - mapDim * 0.5f).Length();
-					// is the target fairly close to the center of the map?
-					// if so, then just snap to that
-					if (distanceFromCenter <= 256.0f)
-					{
-						if (distanceFromCenter <= 128.0f)
-						{
-							newTarget = mapDim * 0.5f;
-						}
+					panEaseModifier = 1.0 / Maths::Min(8.0f, playerBlobs.length + 1.0f);
 
-						Vec2f maxDist = getMap().getMapDimensions();
-						calculateZoomTarget(maxDist.x * 0.5f, maxDist.y * 0.5f);
-					}
-
-					// has the target moved substantially? if yes:
-					// only unlock from the center if it moved any significantly
-					// otherwise the camera might go crazy and swap between
-					// locking and unlocking from the center
-					//
-					// or are we tracking sufficiently few people that the
-					// camera doesn't turn into a vomit-o-tron if it updates
-					// every single tick?
-					if (
-						(
-							(newTarget - posTarget).Length() >= 128.0f
-							&& distanceFromCenter >= 256.0f
-						)
-						|| (playerBlobs.length <= 3)
-					)
+					// try to curb shakiness when players move a lot
+					if ((newTarget - posTarget).Length() > 4.0f * Maths::Min(16, playerBlobs.length + 1) / 2.0f)
 					{
 						// move now
 						posTarget = newTarget;

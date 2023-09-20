@@ -5,11 +5,11 @@
 
 const bool FOCUS_ON_IMPORTANT_BLOBS = true;						//whether camera should focus on important blobs
 
-const float CINEMATIC_PAN_X_EASE = 12.0f;						//amount of ease along the x-axis while cinematic
-const float CINEMATIC_PAN_Y_EASE = 12.0f;						//amount of ease along the y-axis while cinematic
+const float CINEMATIC_PAN_X_EASE = 6.0f;						//amount of ease along the x-axis while cinematic
+const float CINEMATIC_PAN_Y_EASE = 6.0f;						//amount of ease along the y-axis while cinematic
 
-const float CINEMATIC_ZOOM_EASE = 14.0f;						//amount of ease when zooming while cinematic
-const float CINEMATIC_CLOSEST_ZOOM = 1.5f;						//how close the camera can zoom in while cinematic (default is 2.0f)
+const float CINEMATIC_ZOOM_EASE = 16.0f;						//amount of ease when zooming while cinematic
+const float CINEMATIC_CLOSEST_ZOOM = 1.0f;						//how close the camera can zoom in while cinematic (default is 2.0f)
 const float CINEMATIC_FURTHEST_ZOOM = 0.5f;						//how far the camera can zoom out while cinematic (default is 0.5f)
 
 const float AUTO_CINEMATIC_TIME = 3.0f;							//time until camera automatically becomes cinematic. set to zero to disable
@@ -19,6 +19,8 @@ Vec2f posTarget;												//position which cinematic camera moves towards
 float zoomTarget = 1.0f;										//zoom level which camera zooms towards
 float timeToScroll = 0.0f;										//time until next able to scroll to zoom camera
 float timeToCinematic = 0.0f;									//time until camera automatically becomes cinematic
+float panEaseModifier = 1.0f;                                   //by how much the x/y ease values are multiplied
+float zoomEaseModifier = 1.0f;                                  //by how much the zoom ease values are multiplied
 uint currentTarget;											    //the current target blob
 uint switchTarget;												//time when camera can move onto new target
 
@@ -29,6 +31,40 @@ bool waitForRelease = false;
 CPlayer@ targetPlayer()
 {
 	return getPlayerByUsername(_targetPlayer);
+}
+
+const Vec2f[] easePosLerpTable = {
+	Vec2f(0.0,   1.0),
+	Vec2f(8.0,   1.0),
+	Vec2f(16.0,  0.8),
+	Vec2f(64.0,  0.6),
+	Vec2f(96.0,  0.8),
+	Vec2f(128.0, 1.0),
+};
+
+float ease(float current, float target, float factor)
+{
+	const float diff = target - current;
+	const float linearCorrection = diff * factor * panEaseModifier;
+
+	const float x = Maths::Abs(diff);
+
+	float cubicCorrectionMod = 1.0;
+	for (int i = 1; i < easePosLerpTable.size(); ++i)
+	{
+		Vec2f a = easePosLerpTable[i-1];
+		Vec2f b = easePosLerpTable[i];
+		if (x >= a.x && x < b.x)
+		{
+			const float f = (x - a.x) / (b.x - a.x);
+			cubicCorrectionMod = Maths::Lerp(a.y, b.y, f);
+			break;
+		}
+	}
+
+	const float finalCorrection = linearCorrection * cubicCorrectionMod;
+
+	return current + linearCorrection * cubicCorrectionMod;
 }
 
 void SetTargetPlayer(CPlayer@ p)
@@ -154,9 +190,11 @@ void Spectator(CRules@ this)
 	}
 	else //cinematic camera
 	{
-		camera.targetDistance += (zoomTarget - camera.targetDistance) / CINEMATIC_ZOOM_EASE * getRenderApproximateCorrectionFactor();
-		pos.x += (posTarget.x - pos.x) / CINEMATIC_PAN_X_EASE * getRenderApproximateCorrectionFactor();
-		pos.y += (posTarget.y - pos.y) / CINEMATIC_PAN_Y_EASE * getRenderApproximateCorrectionFactor();
+		const float corrFactor = getRenderApproximateCorrectionFactor();
+		camera.targetDistance += (zoomTarget - camera.targetDistance) / CINEMATIC_ZOOM_EASE * corrFactor * zoomEaseModifier;
+
+		pos.x = ease(pos.x, posTarget.x, corrFactor / CINEMATIC_PAN_X_EASE);
+		pos.y = ease(pos.y, posTarget.y, corrFactor / CINEMATIC_PAN_Y_EASE);
 	}
 
 	//click on players to track them or set camera to mousePos
