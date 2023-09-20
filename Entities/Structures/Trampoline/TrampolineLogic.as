@@ -84,8 +84,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	//cant bounce while held by something attached to something else
 	if (holder !is null && holder.isAttached()) return;
 
-	print("hit tramp " + getGameTime());
-
 	//prevent knights from flying using trampolines
 
 	//get angle difference between entry angle and the facing angle

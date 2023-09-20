@@ -73,7 +73,6 @@ void ProtectFromFall(CBlob@ blob)
 {
 	if (blob.hasTag("will_go_oof"))
 	{
-		print("Un-oofed!");
 		blob.Untag("will_go_oof");
 	}
 	blob.set_u32("safe_from_fall", getGameTime());

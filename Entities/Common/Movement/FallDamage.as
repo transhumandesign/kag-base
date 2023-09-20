@@ -32,8 +32,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	f32 damage = FallDamageAmount(vely);
 	if (damage != 0.0f) //interesting value
 	{
-		print("hit ground " + getGameTime());
-
 		bool wait_to_oof = false;
 		CBlob@[] groundblobs;
 		if (getMap().getBlobsInRadius(point1, this.getRadius(), @groundblobs))
@@ -51,7 +49,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				{
 					if (getGameTime() - this.get_u32("safe_from_fall") <= 1)
 					{
-						print("Saved!");
 						return;
 					}
 					wait_to_oof = true;
@@ -67,7 +64,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		}
 		else
 		{
-			print("Normal oof");
 			Oof(this, point1, normal, damage);
 		}
 	}
@@ -81,7 +77,6 @@ void onTick(CBlob@ this)
 	// Wait a tick
 	if (getGameTime() - fall.tick < 2) return;
 
-	print("Delayed oof " + getGameTime());
 	this.Untag("will_go_oof");
 	Oof(this, fall.pos, fall.vel, fall.damage);
 }
