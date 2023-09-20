@@ -141,13 +141,26 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 			if (Trampoline::PHYSICS)
 			{
-				velocity_old.RotateBy(-angle);
-				velocity.x = velocity_old.x * Trampoline::PERPENDICULAR_BOUNCE;
-				velocity *= Trampoline::SCALAR / velocity.getLength();
-				// velocity_old.RotateBy(angle); // change velocity_old back?
-			}
+				Vec2f new_vel = velocity;
 
-			velocity.RotateBy(angle);
+				velocity_old.RotateBy(-angle);
+				new_vel.x = velocity_old.x * Trampoline::PERPENDICULAR_BOUNCE;
+				new_vel *= Trampoline::SCALAR / new_vel.getLength();
+				// velocity_old.RotateBy(angle); // change velocity_old back?
+
+				new_vel.RotateBy(angle);
+				velocity.RotateBy(angle);
+
+				if (!(velocity.y < 0 && new_vel.y > velocity.y
+				      && blob.hasTag("player") && blob.isKeyPressed(key_up)))
+				{
+					velocity = new_vel;
+				}
+			}
+			else
+			{
+				velocity.RotateBy(angle);
+			}
 
 			blob.setVelocity(velocity);
 
