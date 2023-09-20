@@ -14,7 +14,7 @@ const float CINEMATIC_FURTHEST_ZOOM = 0.5f;						//how far the camera can zoom o
 
 const float AUTO_CINEMATIC_TIME = 3.0f;							//time until camera automatically becomes cinematic. set to zero to disable
 
-Vec2f pos;
+Vec2f posActual;
 Vec2f posTarget;												//position which cinematic camera moves towards
 float zoomTarget = 1.0f;										//zoom level which camera zooms towards
 float timeToScroll = 0.0f;										//time until next able to scroll to zoom camera
@@ -140,25 +140,25 @@ void Spectator(CRules@ this)
 	//move camera using action movement keys
 	if (controls.ActionKeyPressed(AK_MOVE_LEFT))
 	{
-		pos.x -= camSpeed;
+		posActual.x -= camSpeed;
 		SetTargetPlayer(null);
 		setCinematicEnabled(false);
 	}
 	if (controls.ActionKeyPressed(AK_MOVE_RIGHT))
 	{
-		pos.x += camSpeed;
+		posActual.x += camSpeed;
 		SetTargetPlayer(null);
 		setCinematicEnabled(false);
 	}
 	if (controls.ActionKeyPressed(AK_MOVE_UP))
 	{
-		pos.y -= camSpeed;
+		posActual.y -= camSpeed;
 		SetTargetPlayer(null);
 		setCinematicEnabled(false);
 	}
 	if (controls.ActionKeyPressed(AK_MOVE_DOWN))
 	{
-		pos.y += camSpeed;
+		posActual.y += camSpeed;
 		SetTargetPlayer(null);
 		setCinematicEnabled(false);
 	}
@@ -193,8 +193,8 @@ void Spectator(CRules@ this)
 		const float corrFactor = getRenderApproximateCorrectionFactor();
 		camera.targetDistance += (zoomTarget - camera.targetDistance) / CINEMATIC_ZOOM_EASE * corrFactor * zoomEaseModifier;
 
-		pos.x = ease(pos.x, posTarget.x, corrFactor / CINEMATIC_PAN_X_EASE);
-		pos.y = ease(pos.y, posTarget.y, corrFactor / CINEMATIC_PAN_Y_EASE);
+		posActual.x = ease(posActual.x, posTarget.x, corrFactor / CINEMATIC_PAN_X_EASE);
+		posActual.y = ease(posActual.y, posTarget.y, corrFactor / CINEMATIC_PAN_Y_EASE);
 	}
 
 	//click on players to track them or set camera to mousePos
@@ -231,7 +231,7 @@ void Spectator(CRules@ this)
 
 		if (mvm is null || !isMapVoteActive() || !mvm.screenPositionOverlaps(controls.getMouseScreenPos()))
         {
-		    pos += (mousePos - pos) / 8.0f * getRenderApproximateCorrectionFactor();
+		    posActual += (mousePos - posActual) / 8.0f * getRenderApproximateCorrectionFactor();
             setCinematicEnabled(false);
         }
 	}
@@ -242,7 +242,7 @@ void Spectator(CRules@ this)
 		{
 			camera.setTarget(targetPlayer().getBlob());
 		}
-		pos = camera.getPosition();
+		posActual = camera.getPosition();
 	}
 	else
 	{
@@ -260,9 +260,9 @@ void Spectator(CRules@ this)
 	//keep camera within map boundaries
 	float borderMarginX = map.tilesize * 2.0f / zoomTarget;
 	float borderMarginY = map.tilesize * 2.0f / zoomTarget;
-	pos.x = Maths::Clamp(pos.x, borderMarginX, mapDim.x - borderMarginX);
-	pos.y = Maths::Clamp(pos.y, borderMarginY, mapDim.y - borderMarginY);
+	posActual.x = Maths::Clamp(posActual.x, borderMarginX, mapDim.x - borderMarginX);
+	posActual.y = Maths::Clamp(posActual.y, borderMarginY, mapDim.y - borderMarginY);
 
 	//set camera position
-	camera.setPosition(pos);
+	camera.setPosition(posActual);
 }

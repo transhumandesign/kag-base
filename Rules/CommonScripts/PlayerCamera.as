@@ -28,7 +28,7 @@ void Reset(CRules@ this)
 	//initially position camera to view entire map
 	ViewEntireMap();
 	// force lock camera position immediately, even if not cinematic
-	pos = posTarget;
+	posActual = posTarget;
 
 	panEaseModifier = 1.0f;
 	zoomEaseModifier = 1.0f;
@@ -54,8 +54,8 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 	CCamera@ camera = getCamera();
 	if (camera !is null && player !is null && player is getLocalPlayer())
 	{
-		pos = blob.getPosition();
-		camera.setPosition(pos);
+		posActual = blob.getPosition();
+		camera.setPosition(posActual);
 		camera.setTarget(blob);
 		camera.mousecamstyle = 1; //follow
 	}
@@ -78,8 +78,8 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 			playerBlob.ClearButtons();
 			playerBlob.ClearMenus();
 
-			pos = playerBlob.getPosition();
-			camera.setPosition(pos);
+			posActual = playerBlob.getPosition();
+			camera.setPosition(posActual);
 			deathTime = getGameTime();
 		}
 	}
@@ -153,7 +153,7 @@ void SpecCamera(CRules@ this)
 		if (!spectatorTeam && diffTime > 0)
 		{
 			//lock camera
-			pos = deathLock;
+			posActual = deathLock;
 			camera.setPosition(deathLock);
 			//zoom in for a bit
 			const float zoom_target = 2.0f;
