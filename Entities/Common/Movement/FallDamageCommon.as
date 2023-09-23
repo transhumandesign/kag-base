@@ -71,6 +71,9 @@ shared class FallInfo
 
 void ProtectFromFall(CBlob@ blob)
 {
+	// have to init this prop for blobs to be saveable
+	if (!blob.exists("safe_from_fall")) return;
+
 	if (blob.hasTag("will_go_oof"))
 	{
 		blob.Untag("will_go_oof");
