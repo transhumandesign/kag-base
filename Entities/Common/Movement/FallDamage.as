@@ -9,8 +9,9 @@ const u8 knockdown_time = 12;
 
 void onInit(CBlob@ this)
 {
+	// Init saveable from fall damage
 	this.getCurrentScript().tickIfTag = "will_go_oof";
-	this.set_u32("safe_from_fall", 0); // Tick to prevent fall damage
+	this.set_u32("safe_from_fall", 0); // Tick granted temp fall immunity
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
@@ -32,26 +33,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	f32 damage = FallDamageAmount(vely);
 	if (damage != 0.0f) //interesting value
 	{
-		bool wait_to_oof = false;
-		CBlob@[] groundblobs;
-		if (getMap().getBlobsInRadius(point1, this.getRadius(), @groundblobs))
-		{
-			for (int i = 0; i < groundblobs.length; ++i)
-			{
-				CBlob@ b = groundblobs[i];
+		if (isSavedFromFall(this)) return;
 
-				if (b.hasTag("no falldamage"))
-				{
-					if (getGameTime() - this.get_u32("safe_from_fall") <= 1)
-					{
-						return;
-					}
-					wait_to_oof = true;
-				}
-			}
-		}
-
-		if (wait_to_oof)
+		if (shouldFallDamageWait(point1, this))
 		{
 			FallInfo fall(point1, normal, damage, getGameTime());
 			this.set("fallInfo", @fall);

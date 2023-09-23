@@ -74,9 +74,34 @@ void ProtectFromFall(CBlob@ blob)
 	// have to init this prop for blobs to be saveable
 	if (!blob.exists("safe_from_fall")) return;
 
+	// have to use this tag to indicate fall damage was delayed
 	if (blob.hasTag("will_go_oof"))
 	{
 		blob.Untag("will_go_oof");
 	}
 	blob.set_u32("safe_from_fall", getGameTime());
+}
+
+bool isSavedFromFall(CBlob@ blob)
+{
+	return (blob.exists("safe_from_fall")
+			&& getGameTime() - blob.get_u32("safe_from_fall") <= 1);
+}
+
+bool shouldFallDamageWait(Vec2f groundpos, CBlob@ blob)
+{
+	CBlob@[] groundblobs;
+	if (getMap().getBlobsInRadius(groundpos, blob.getRadius(), @groundblobs))
+	{
+		for (int i = 0; i < groundblobs.length; ++i)
+		{
+			CBlob@ b = groundblobs[i];
+
+			if (b !is null && b.hasTag("no falldamage"))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
