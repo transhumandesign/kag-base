@@ -37,30 +37,34 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 		if (shouldFallDamageWait(point1, this))
 		{
-			FallInfo fall(point1, normal, damage, getGameTime());
-			this.set("fallInfo", @fall);
+			this.set_u32("tick_to_oof", getGameTime() + 2);
+			this.set_f32("oof_damage", damage);
 			this.Tag("will_go_oof");
 		}
 		else
 		{
-			Oof(this, point1, normal, damage);
+			Oof(this, damage);
 		}
 	}
 }
 
 void onTick(CBlob@ this)
 {
-	FallInfo@ fall;
-	if (!this.get("fallInfo", @fall)) return;
+	if (!this.exists("tick_to_oof"))
+	{
+		this.Untag("will_go_oof");
+		return;
+	}
 
-	// Wait a tick
-	if (getGameTime() - fall.tick < 2) return;
+	if (getGameTime() >= this.get_u32("tick_to_oof"))
+	{
+		this.Untag("will_go_oof");
+		Oof(this, this.get_f32("oof_damage"));
+	}
 
-	this.Untag("will_go_oof");
-	Oof(this, fall.pos, fall.vel, fall.damage);
 }
 
-void Oof(CBlob@ this, Vec2f pos, Vec2f vel, f32 damage)
+void Oof(CBlob@ this, f32 damage)
 {
 	if (!this.hasTag("dead"))
 	{				
@@ -74,7 +78,7 @@ void Oof(CBlob@ this, Vec2f pos, Vec2f vel, f32 damage)
 
 	if (damage > 0.1f)
 	{
-		this.server_Hit(this, pos, vel, damage, Hitters::fall);
+		this.server_Hit(this, this.getPosition(), Vec2f(0.0f, -1.0f), damage, Hitters::fall);
 	}
 
 	setKnocked(this, knockdown_time);

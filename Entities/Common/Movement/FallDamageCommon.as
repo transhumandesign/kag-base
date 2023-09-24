@@ -53,22 +53,6 @@ f32 FallDamageAmount(float vely)
 	return 0.0f;
 }
 
-shared class FallInfo
-{
-	Vec2f pos;
-	Vec2f vel;
-	f32 damage;
-	u32 tick;
-
-	FallInfo(Vec2f _pos, Vec2f _vel, f32 _damage, u32 _tick)
-	{
-		pos = _pos;
-		vel = _vel;
-		damage = _damage;
-		tick = _tick;
-	}
-}
-
 void ProtectFromFall(CBlob@ blob)
 {
 	// have to init this prop for blobs to be saveable
