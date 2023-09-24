@@ -4,8 +4,8 @@ namespace Trampoline
 {
 	const string TIMER = "trampoline_timer";
 	const u16 COOLDOWN = 7;
-	const f32 SCALAR = 7;
-	const f32 UP_BOOST = 3;
+	const f32 SCALAR = 8;
+	const f32 UP_BOOST = 4;
 	const u8 BOOST_RANGE = 60;
 	const bool SAFETY = true;
 	const int COOLDOWN_LIMIT = 8;
@@ -139,7 +139,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
 			velocity.RotateBy(angle);
 
-			velocity *= scaleWithUpBoost(velocity);
+			if (!blob.hasTag("player") || blob.isKeyPressed(key_up))
+			{
+				velocity *= scaleWithUpBoost(velocity);
+			}
 			blob.setVelocity(velocity);
 
 			CSprite@ sprite = this.getSprite();
