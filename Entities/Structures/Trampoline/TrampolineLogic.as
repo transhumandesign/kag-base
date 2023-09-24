@@ -4,7 +4,9 @@ namespace Trampoline
 {
 	const string TIMER = "trampoline_timer";
 	const u16 COOLDOWN = 7;
-	const u8 SCALAR = 10;
+	const f32 SCALAR = 7;
+	const f32 UP_BOOST = 3;
+	const u8 BOOST_RANGE = 60;
 	const bool SAFETY = true;
 	const int COOLDOWN_LIMIT = 8;
 }
@@ -137,6 +139,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
 			velocity.RotateBy(angle);
 
+			velocity *= scaleWithUpBoost(velocity);
 			blob.setVelocity(velocity);
 
 			CSprite@ sprite = this.getSprite();
@@ -175,4 +178,25 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return !this.hasTag("no pickup");
+}
+
+f32 scaleWithUpBoost(Vec2f vel)
+{
+	f32 boost = 0.0f;
+	if (Trampoline::UP_BOOST != 0)
+	{
+		// boost factor
+		boost = (Trampoline::BOOST_RANGE - Maths::Abs(180 - ((vel.getAngleDegrees() + 90) % 360))) // range - degrees from up
+		        / (1.0f * Trampoline::BOOST_RANGE);                                                // / max boost range
+		if (boost > 0)
+		{
+			boost *= Trampoline::UP_BOOST;
+		}
+		else
+		{
+			boost = 0.0f;
+		}
+	}
+
+	return (Trampoline::SCALAR + boost) / vel.getLength();
 }
