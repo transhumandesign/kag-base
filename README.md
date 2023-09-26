@@ -5,9 +5,6 @@
   <a href = 'https://discord.gg/kag'>
       <img src = 'https://img.shields.io/badge/%23development-on Discord-7289DA.svg'>
   </a>
-  <a href = 'http://webchat.quakenet.org/?channels=#thd'>
-    <img src = 'https://img.shields.io/badge/%23thd-on Quakenet-lightgray.svg'>
-  </a>
 </p>
 
 ### Contributions
