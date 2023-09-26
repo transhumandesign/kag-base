@@ -61,7 +61,8 @@ class ChatCommandManager
 
 		if (commandNames.size() > 0)
 		{
-			print("Loaded chat commands: !" + join(commandNames, ", !"), ConsoleColour::CRAZY);
+			string prefix = ChatCommands::getPrefix();
+			print("Loaded chat commands: " + prefix + join(commandNames, ", " + prefix), ConsoleColour::CRAZY);
 		}
 		else
 		{
@@ -105,7 +106,8 @@ class ChatCommandManager
 
 	bool processCommand(string text, ChatCommand@ &out command, string[] &out args)
 	{
-		if (text.substr(0, 1) != "!") return false;
+		string prefix = ChatCommands::getPrefix();
+		if (text.substr(0, prefix.size()) != prefix) return false;
 
 		string name = text.substr(1, 1);
 		if (name == "" || name == " ") return false;

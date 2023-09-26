@@ -32,6 +32,9 @@ void onInit(CBlob@ this)
 	//block knight sword
 	this.Tag("blocks sword");
 
+	//bomb arrow damage value
+	this.set_f32("bomb resistance", 2.5f);
+
 	// additional shape
 
 	Vec2f[] frontShape;
