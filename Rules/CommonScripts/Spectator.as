@@ -5,19 +5,22 @@
 
 const bool FOCUS_ON_IMPORTANT_BLOBS = true;						//whether camera should focus on important blobs
 
-const float CINEMATIC_PAN_X_EASE = 12.0f;						//amount of ease along the x-axis while cinematic
-const float CINEMATIC_PAN_Y_EASE = 12.0f;						//amount of ease along the y-axis while cinematic
+const float CINEMATIC_PAN_X_EASE = 6.0f;						//amount of ease along the x-axis while cinematic
+const float CINEMATIC_PAN_Y_EASE = 6.0f;						//amount of ease along the y-axis while cinematic
 
-const float CINEMATIC_ZOOM_EASE = 14.0f;						//amount of ease when zooming while cinematic
-const float CINEMATIC_CLOSEST_ZOOM = 1.5f;						//how close the camera can zoom in while cinematic (default is 2.0f)
+const float CINEMATIC_ZOOM_EASE = 16.0f;						//amount of ease when zooming while cinematic
+const float CINEMATIC_CLOSEST_ZOOM = 1.0f;						//how close the camera can zoom in while cinematic (default is 2.0f)
 const float CINEMATIC_FURTHEST_ZOOM = 0.5f;						//how far the camera can zoom out while cinematic (default is 0.5f)
 
 const float AUTO_CINEMATIC_TIME = 3.0f;							//time until camera automatically becomes cinematic. set to zero to disable
 
+Vec2f posActual;
 Vec2f posTarget;												//position which cinematic camera moves towards
 float zoomTarget = 1.0f;										//zoom level which camera zooms towards
 float timeToScroll = 0.0f;										//time until next able to scroll to zoom camera
 float timeToCinematic = 0.0f;									//time until camera automatically becomes cinematic
+float panEaseModifier = 1.0f;                                   //by how much the x/y ease values are multiplied
+float zoomEaseModifier = 1.0f;                                  //by how much the zoom ease values are multiplied
 uint currentTarget;											    //the current target blob
 uint switchTarget;												//time when camera can move onto new target
 
@@ -28,6 +31,40 @@ bool waitForRelease = false;
 CPlayer@ targetPlayer()
 {
 	return getPlayerByUsername(_targetPlayer);
+}
+
+const Vec2f[] easePosLerpTable = {
+	Vec2f(0.0,   1.0),
+	Vec2f(8.0,   1.0),
+	Vec2f(16.0,  0.8),
+	Vec2f(64.0,  0.6),
+	Vec2f(96.0,  0.8),
+	Vec2f(128.0, 1.0),
+};
+
+float ease(float current, float target, float factor)
+{
+	const float diff = target - current;
+	const float linearCorrection = diff * factor * panEaseModifier;
+
+	const float x = Maths::Abs(diff);
+
+	float cubicCorrectionMod = 1.0;
+	for (int i = 1; i < easePosLerpTable.size(); ++i)
+	{
+		Vec2f a = easePosLerpTable[i-1];
+		Vec2f b = easePosLerpTable[i];
+		if (x >= a.x && x < b.x)
+		{
+			const float f = (x - a.x) / (b.x - a.x);
+			cubicCorrectionMod = Maths::Lerp(a.y, b.y, f);
+			break;
+		}
+	}
+
+	const float finalCorrection = linearCorrection * cubicCorrectionMod;
+
+	return current + linearCorrection * cubicCorrectionMod;
 }
 
 void SetTargetPlayer(CPlayer@ p)
@@ -103,25 +140,25 @@ void Spectator(CRules@ this)
 	//move camera using action movement keys
 	if (controls.ActionKeyPressed(AK_MOVE_LEFT))
 	{
-		pos.x -= camSpeed;
+		posActual.x -= camSpeed;
 		SetTargetPlayer(null);
 		setCinematicEnabled(false);
 	}
 	if (controls.ActionKeyPressed(AK_MOVE_RIGHT))
 	{
-		pos.x += camSpeed;
+		posActual.x += camSpeed;
 		SetTargetPlayer(null);
 		setCinematicEnabled(false);
 	}
 	if (controls.ActionKeyPressed(AK_MOVE_UP))
 	{
-		pos.y -= camSpeed;
+		posActual.y -= camSpeed;
 		SetTargetPlayer(null);
 		setCinematicEnabled(false);
 	}
 	if (controls.ActionKeyPressed(AK_MOVE_DOWN))
 	{
-		pos.y += camSpeed;
+		posActual.y += camSpeed;
 		SetTargetPlayer(null);
 		setCinematicEnabled(false);
 	}
@@ -153,9 +190,11 @@ void Spectator(CRules@ this)
 	}
 	else //cinematic camera
 	{
-		camera.targetDistance += (zoomTarget - camera.targetDistance) / CINEMATIC_ZOOM_EASE * getRenderApproximateCorrectionFactor();
-		pos.x += (posTarget.x - pos.x) / CINEMATIC_PAN_X_EASE * getRenderApproximateCorrectionFactor();
-		pos.y += (posTarget.y - pos.y) / CINEMATIC_PAN_Y_EASE * getRenderApproximateCorrectionFactor();
+		const float corrFactor = getRenderApproximateCorrectionFactor();
+		camera.targetDistance += (zoomTarget - camera.targetDistance) / CINEMATIC_ZOOM_EASE * corrFactor * zoomEaseModifier;
+
+		posActual.x = ease(posActual.x, posTarget.x, corrFactor / CINEMATIC_PAN_X_EASE);
+		posActual.y = ease(posActual.y, posTarget.y, corrFactor / CINEMATIC_PAN_Y_EASE);
 	}
 
 	//click on players to track them or set camera to mousePos
@@ -192,7 +231,7 @@ void Spectator(CRules@ this)
 
 		if (mvm is null || !isMapVoteActive() || !mvm.screenPositionOverlaps(controls.getMouseScreenPos()))
         {
-		    pos += (mousePos - pos) / 8.0f * getRenderApproximateCorrectionFactor();
+		    posActual += (mousePos - posActual) / 8.0f * getRenderApproximateCorrectionFactor();
             setCinematicEnabled(false);
         }
 	}
@@ -203,7 +242,7 @@ void Spectator(CRules@ this)
 		{
 			camera.setTarget(targetPlayer().getBlob());
 		}
-		pos = camera.getPosition();
+		posActual = camera.getPosition();
 	}
 	else
 	{
@@ -221,9 +260,9 @@ void Spectator(CRules@ this)
 	//keep camera within map boundaries
 	float borderMarginX = map.tilesize * 2.0f / zoomTarget;
 	float borderMarginY = map.tilesize * 2.0f / zoomTarget;
-	pos.x = Maths::Clamp(pos.x, borderMarginX, mapDim.x - borderMarginX);
-	pos.y = Maths::Clamp(pos.y, borderMarginY, mapDim.y - borderMarginY);
+	posActual.x = Maths::Clamp(posActual.x, borderMarginX, mapDim.x - borderMarginX);
+	posActual.y = Maths::Clamp(posActual.y, borderMarginY, mapDim.y - borderMarginY);
 
 	//set camera position
-	camera.setPosition(pos);
+	camera.setPosition(posActual);
 }
