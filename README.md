@@ -7,6 +7,11 @@
   </a>
 </p>
 
+### Helpful links
+
+- **[PRs ready for review or discussion](https://github.com/transhumandesign/kag-base/pulls?q=is%3Aopen+is%3Apr+-label%3Aabandoned+draft%3Afalse)**
+- **[Issues and PRs that require community discussion](https://github.com/transhumandesign/kag-base/labels/discussion)**
+
 ### Contributions
 
 Want to contribute? Great!
