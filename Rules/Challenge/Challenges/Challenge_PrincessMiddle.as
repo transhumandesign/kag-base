@@ -32,6 +32,7 @@ void onInit(CMap@ this)
 		rules.Sync("endpoint", true);
 	}
 	rules.set_bool("drop coins", true);
+	rules.Tag("no auto fanfare");
 
 	AddRulesScript(rules);
 }
