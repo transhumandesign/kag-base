@@ -174,7 +174,9 @@ void onTick(CBlob@ this)
 	{
 		if (this.get_bool("release click"))
 		{
-			ButtonOrMenuClick(this, this.getPosition(), true, isTap(this) && this.get_bool("can button tap"));
+			CBlob@ carry = this.getCarriedBlob();
+			ButtonOrMenuClick(this, carry !is null? carry.getPosition() : this.getPosition(),
+							  true, isTap(this) && this.get_bool("can button tap"));
 		}
 
 		this.ClearButtons();
