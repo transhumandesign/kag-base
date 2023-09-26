@@ -26,8 +26,10 @@ void onInit(CBlob@ this)
 	// Because BlobPlacement.as is *AMAZING*
 	this.Tag("place norotate");
 
+	this.addCommandID("freeze_angle_at");
+
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
-	point.SetKeysToTake(key_action1 | key_action2);
+	point.SetKeysToTake(key_action1 | key_action2 | key_action3);
 
 	this.getCurrentScript().runFlags |= Script::tick_attached;
 }
@@ -40,13 +42,10 @@ void onTick(CBlob@ this)
 	if (holder is null) return;
 
 	f32 angle;
-	if (this.hasTag("activated") && this.exists("freeze_angle"))
+	if (this.hasTag("tramp_freeze") && this.exists("frozen_angle"))
 	{
-		angle = this.get_f32("freeze_angle");
-		this.setAngleDegrees(angle);
-		return;
+		angle = this.get_f32("frozen_angle");
 	}
-
 	else if (point.isKeyPressed(key_action2))
 	{
 		// set angle to what was on previous tick
@@ -65,6 +64,30 @@ void onTick(CBlob@ this)
 	}
 	this.setAngleDegrees(angle);
 	this.set_f32("old angle", angle);
+
+	if (point.isKeyJustPressed(key_action3))
+	{
+		if (this.hasTag("tramp_freeze"))
+		{
+			this.Untag("tramp_freeze");
+			if (holder.isMyPlayer())
+			{
+				Sound::Play("bone_fall.ogg", this.getPosition());
+			}
+		}
+		else
+		{
+			this.Tag("tramp_freeze");
+			this.set_f32("frozen_angle", angle);
+			if (holder.isMyPlayer())
+			{
+				Sound::Play("hit_wood.ogg", this.getPosition());
+				CBitStream params;
+				params.write_f32(angle);
+				this.SendCommand(this.getCommandID("freeze_angle_at"), params);
+			}
+		}
+	}
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1, Vec2f point2)
@@ -154,17 +177,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("activate"))
+	if (cmd == this.getCommandID("freeze_angle_at"))
 	{
-		if (getNet().isServer())
-		{
-			AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
-			CBlob@ holder = point.getOccupied();
-			if (holder is null) return;
+		f32 angle;
+		if (!params.saferead_f32(angle)) return;
 
-			this.set_f32("freeze_angle", this.getAngleDegrees());
-			this.Sync("freeze_angle", true);
-		}
+		this.set_f32("frozen_angle", angle);
 	}
 }
 
@@ -179,7 +197,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
-	this.Untag("activated");
+	this.Untag("tramp_freeze");
 
 	if (!detached.isMyPlayer()) return;
 	RemoveHelps(detached, "trampoline help lmb");
