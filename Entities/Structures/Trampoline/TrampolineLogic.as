@@ -42,9 +42,28 @@ void onTick(CBlob@ this)
 	if (holder is null) return;
 
 	f32 angle;
-	if (this.hasTag("tramp_freeze") && this.exists("frozen_angle"))
+	if (this.hasTag("tramp_freeze"))
 	{
-		angle = this.get_f32("frozen_angle");
+		if (point.isKeyJustPressed(key_action3)) // unfreeze
+		{
+			this.set_f32("old angle", angle);
+			this.Untag("tramp_freeze");
+			this.getShape().SetRotationsAllowed(true);
+			if (holder.isMyPlayer())
+			{
+				Sound::Play("bone_fall.ogg", this.getPosition());
+			}
+			if (isClient())
+			{
+				// do not show me your feet
+				CSprite@ sprite = this.getSprite();
+				sprite.SetAnimation("default");
+				sprite.getSpriteLayer("left_foot").SetVisible(false);
+				sprite.getSpriteLayer("right_foot").SetVisible(false);
+			}
+		}
+
+		return;
 	}
 	else if (point.isKeyPressed(key_action2))
 	{
@@ -62,30 +81,20 @@ void onTick(CBlob@ this)
 		// follow cursor normally
 		angle = getHoldAngle(this, holder);
 	}
+
 	this.setAngleDegrees(angle);
 	this.set_f32("old angle", angle);
 
-	if (point.isKeyJustPressed(key_action3))
+	if (point.isKeyJustPressed(key_action3)) // wasn't already frozen, so freeze
 	{
-		if (this.hasTag("tramp_freeze"))
+		this.Tag("tramp_freeze");
+		this.getShape().SetRotationsAllowed(false);
+		if (holder.isMyPlayer())
 		{
-			this.Untag("tramp_freeze");
-			if (holder.isMyPlayer())
-			{
-				Sound::Play("bone_fall.ogg", this.getPosition());
-			}
-		}
-		else
-		{
-			this.Tag("tramp_freeze");
-			this.set_f32("frozen_angle", angle);
-			if (holder.isMyPlayer())
-			{
-				Sound::Play("hit_wood.ogg", this.getPosition());
-				CBitStream params;
-				params.write_f32(angle);
-				this.SendCommand(this.getCommandID("freeze_angle_at"), params);
-			}
+			Sound::Play("hit_wood.ogg", this.getPosition());
+			CBitStream params;
+			params.write_f32(angle);
+			this.SendCommand(this.getCommandID("freeze_angle_at"), params);
 		}
 	}
 }
@@ -182,7 +191,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		f32 angle;
 		if (!params.saferead_f32(angle)) return;
 
-		this.set_f32("frozen_angle", angle);
+		this.setAngleDegrees(angle);
+
+		if (isClient())
+		{
+			ShowMeYourFeet(this.getSprite(), angle);
+		}
 	}
 }
 
@@ -197,8 +211,6 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
-	this.Untag("tramp_freeze");
-
 	if (!detached.isMyPlayer()) return;
 	RemoveHelps(detached, "trampoline help lmb");
 	RemoveHelps(detached, "trampoline help rmb");
@@ -216,5 +228,97 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 
 f32 getHoldAngle(CBlob@ this, CBlob@ holder)
 {
-	return -1.0f * (holder.getAimPos() - this.getPosition()).Angle() + 90;
+	return (-1.0f * (holder.getAimPos() - this.getPosition()).Angle() + 90 + 360) % 360;
+}
+
+void onInit(CSprite@ this)
+{
+	CSpriteLayer@ left = this.addSpriteLayer("left_foot", "Trampoline.png", 8, 8);
+	if (left !is null)
+	{
+		left.addAnimation("default", 0, false);
+		left.animation.AddFrame(8);
+
+		left.SetRelativeZ(-1);
+		left.SetVisible(false);
+		left.SetIgnoreParentFacing(true);
+	}
+
+	CSpriteLayer@ right = this.addSpriteLayer("right_foot", "Trampoline.png", 8, 8);
+	if (right !is null)
+	{
+		right.addAnimation("default", 0, false);
+		right.animation.AddFrame(9);
+
+		right.SetRelativeZ(-1);
+		right.SetVisible(false);
+		right.SetIgnoreParentFacing(true);
+	}
+}
+
+void ShowMeYourFeet(CSprite@ sprite, f32 tramp_angle)
+{
+	f32 tilt = tramp_angle;
+	if (tilt > 180)
+		tilt = 360 - tilt;
+
+	tilt *= 0.0174533f; // radians
+
+	f32 height = tilt < 0.9506f ? 7.38241f * Maths::Sin(tilt + 0.49394f) - 2.5f // match bottom vertex
+								: 12.0208f * Maths::Sin(tilt - 0.29544f) - 2.5f; // match side vertex
+
+	Vec2f left_offset = Vec2f(0, height);
+	Vec2f right_offset = Vec2f(0, height);
+
+	f32 halfwidth = 8 * Maths::Abs(Maths::Cos(tilt));
+
+	if (tramp_angle < 100) // normal
+	{
+		left_offset.x = -halfwidth;
+		right_offset.x = halfwidth;
+	}
+	else if (tramp_angle < 155) // right spotlight
+	{
+		left_offset.x = -halfwidth - 1;
+		right_offset.x = -halfwidth + 3;
+	}
+	else if (tramp_angle < 205) // upside down
+	{
+		// i give up
+		// nah this is juust too weird
+		sprite.SetAnimation("legs");
+		return;
+	}
+	else if (tramp_angle < 260) // left spotlight
+	{
+		right_offset.x = halfwidth + 1;
+		left_offset.x = halfwidth - 3;
+	}
+	else // normal
+	{
+		left_offset.x = -halfwidth;
+		right_offset.x = halfwidth;
+	}
+
+	CSpriteLayer@ left = sprite.getSpriteLayer("left_foot");
+	left.ResetTransform();
+	left.TranslateBy(left_offset);
+	left.SetVisible(true);
+
+	CSpriteLayer@ right = sprite.getSpriteLayer("right_foot");
+	right.ResetTransform();
+	right.TranslateBy(right_offset);
+	right.SetVisible(true);
+
+	// cancel angle so the offset is normal
+	if (tilt > 180)
+	{
+		left.RotateBy(-tramp_angle, Vec2f_zero);
+		right.RotateBy(-tramp_angle, Vec2f_zero);
+	}
+	else
+	{
+		left.RotateBy(-tramp_angle, Vec2f_zero);
+		right.RotateBy(-tramp_angle, Vec2f_zero);
+	}
 }
