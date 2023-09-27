@@ -229,7 +229,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		hitdata.tilepos = params.read_Vec2f();
 		hitdata.blobID = params.read_netid();
 	}
-	
+	else if (cmd == this.getCommandID("cycle"))
+	{
+		tryPullDrill(@this);
+	}
 }
 
 //helper class to reduce function definition cancer
@@ -647,4 +650,46 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 	{
 		SetHelp(this, "help inventory", "builder", "$Help_Block1$$Swap$$Help_Block2$           $KEY_HOLD$$KEY_F$", "", 3);
 	}
+}
+
+// attempt to pull a drill from the inventory, or cycle through drills if one
+// is currently being held.
+CBlob@ tryPullDrill(CBlob@ blob)
+{
+	if (!isServer()) { return null; }
+
+	CInventory@ inventory = blob.getInventory();
+	if (inventory is null) { return null; }
+
+	CBlob@ alreadyCarriedBlob = blob.getCarriedBlob();
+	const bool isHoldingSomething = alreadyCarriedBlob !is null;
+	const bool isHoldingDrill = isHoldingSomething && alreadyCarriedBlob.getName() == "drill";
+
+	if (isHoldingSomething && !isHoldingDrill)
+	{
+		// something else is clobbering the player's hands and we cannot stash
+		// it away into their inventory without pulling out a drill first
+		// (otherwise we wouldn't have received the `cycle` command).
+		//
+		// we could try to pull out the drill to check if we can insert the
+		// materials but this seems unexpected so let's not do it.
+		return null;
+	}
+
+	// if there are multiple, this would pick the one in the earliest slot
+	CBlob@ inventoryDrill = inventory.getItem("drill");
+	if (inventoryDrill is null) { return null; }
+
+	blob.server_Pickup(@inventoryDrill);
+
+	if (isHoldingSomething)
+	{
+		// store the old drill in inventory if we've just swapped one
+		// because this puts back the drill at the first free slot, this means
+		// the earlier pickup logic will properly cycle through drills in the
+		// inventory.
+		blob.server_PutInInventory(@alreadyCarriedBlob);
+	}
+
+	return @inventoryDrill;
 }
