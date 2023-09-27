@@ -24,6 +24,7 @@ void onInit(CBlob@ this)
 
 	this.Tag("no falldamage");
 	this.Tag("medium weight");
+	this.Tag("ignore_attach_facing");
 	// Because BlobPlacement.as is *AMAZING*
 	this.Tag("place norotate");
 
@@ -48,19 +49,12 @@ void onTick(CBlob@ this)
 		if (point.isKeyJustPressed(key_action3)) // unfreeze
 		{
 			this.set_f32("old angle", angle);
-			this.Untag("tramp_freeze");
-			this.getShape().SetRotationsAllowed(true);
+
+			RemoveFeet(this);
+
 			if (holder.isMyPlayer())
 			{
 				Sound::Play("bone_fall.ogg", this.getPosition());
-			}
-			if (isClient())
-			{
-				// do not show me your feet
-				CSprite@ sprite = this.getSprite();
-				sprite.SetAnimation("default");
-				sprite.getSpriteLayer("left_foot").SetVisible(false);
-				sprite.getSpriteLayer("right_foot").SetVisible(false);
 			}
 		}
 
@@ -193,11 +187,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (!params.saferead_f32(angle)) return;
 
 		this.setAngleDegrees(angle);
-
-		if (isClient())
-		{
-			ShowMeYourFeet(this.getSprite(), angle);
-		}
+		ShowMeYourFeet(this, angle);
 	}
 }
 
@@ -221,8 +211,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 {
 	if (isExplosionHitter(customData) && !this.isAttached())
 	{
-		this.Untag("tramp_freeze");
-		this.getShape().SetRotationsAllowed(true);
+		RemoveFeet(this);
+
 		if (isClient())
 		{
 			makeGibParticle("TrampFeet.png", this.getPosition(),
@@ -231,11 +221,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			makeGibParticle("TrampFeet.png", this.getPosition(),
 							this.getVelocity() + getRandomVelocity(90, 3, 80) + Vec2f(0.0f, -2.0f),
 							0, 1, Vec2f(8, 8), 2.0f, 20, "material_drop.ogg");
-
-			CSprite@ sprite = this.getSprite();
-			sprite.SetAnimation("default");
-			sprite.getSpriteLayer("left_foot").SetVisible(false);
-			sprite.getSpriteLayer("right_foot").SetVisible(false);
 		}
 	}
 	return damage;
@@ -281,8 +266,10 @@ void onInit(CSprite@ this)
 	}
 }
 
-void ShowMeYourFeet(CSprite@ sprite, f32 tramp_angle)
+void ShowMeYourFeet(CBlob@ this, f32 tramp_angle)
 {
+	CSprite@ sprite = this.getSprite();
+
 	f32 tilt = tramp_angle;
 	if (tilt > 180)
 		tilt = 360 - tilt;
@@ -325,6 +312,45 @@ void ShowMeYourFeet(CSprite@ sprite, f32 tramp_angle)
 		right_offset.x = halfwidth;
 	}
 
+	if (!lame_legs)
+	{
+		Vec2f[] legShape;
+		Vec2f offset;
+		Vec2f center;
+
+		// Left foot
+		legShape.clear();
+		offset = left_offset;
+		offset.RotateBy(-tramp_angle);
+		center = Vec2f(11.5f, 3.5f) + offset;
+		// legShape.push_back(center + Vec2f(-3.5f, -3.5f));
+		legShape.push_back(center + Vec2f(3.5f, -3.5f));
+		legShape.push_back(center + Vec2f(3.5f, 3.5f));
+		legShape.push_back(center + Vec2f(-3.5f, 3.5f));
+		for (int i = 0; i < legShape.size(); ++i)
+		{
+			legShape[i].RotateBy(-tramp_angle, center);
+		}
+		this.getShape().AddShape(legShape);
+
+		// Right foot
+		legShape.clear();
+		offset = right_offset;
+		offset.RotateBy(-tramp_angle);
+		center = Vec2f(11.5f, 3.5f) + offset;
+		legShape.push_back(center + Vec2f(-3.5f, -3.5f));
+		// legShape.push_back(center + Vec2f(3.5f, -3.5f));
+		legShape.push_back(center + Vec2f(3.5f, 3.5f));
+		legShape.push_back(center + Vec2f(-3.5f, 3.5f));
+		for (int i = 0; i < legShape.size(); ++i)
+		{
+			legShape[i].RotateBy(-tramp_angle, center);
+		}
+		this.getShape().AddShape(legShape);
+	}
+
+	if (!isClient()) return;
+
 	CSpriteLayer@ left = sprite.getSpriteLayer("left_foot");
 	left.ResetTransform();
 	left.TranslateBy(left_offset);
@@ -347,5 +373,21 @@ void ShowMeYourFeet(CSprite@ sprite, f32 tramp_angle)
 	{
 		left.RotateBy(-tramp_angle, Vec2f_zero);
 		right.RotateBy(-tramp_angle, Vec2f_zero);
+	}
+}
+
+void RemoveFeet(CBlob@ this)
+{
+	this.Untag("tramp_freeze");
+	this.getShape().SetRotationsAllowed(true);
+	this.getShape().RemoveShape(1);
+	this.getShape().RemoveShape(1);
+
+	if (isClient())
+	{
+		CSprite@ sprite = this.getSprite();
+		sprite.SetAnimation("default");
+		sprite.getSpriteLayer("left_foot").SetVisible(false);
+		sprite.getSpriteLayer("right_foot").SetVisible(false);
 	}
 }

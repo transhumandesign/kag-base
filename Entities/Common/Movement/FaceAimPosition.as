@@ -22,7 +22,8 @@ void onTick(CMovement@ this)
 			for (uint i = 0; i < aps.length; i++)
 			{
 				AttachmentPoint@ ap = aps[i];
-				if (ap.socket && ap.getOccupied() !is null)
+				if (ap.socket && ap.getOccupied() !is null
+					&& !ap.getOccupied().hasTag("ignore_attach_facing"))
 				{
 					ap.getOccupied().SetFacingLeft(facing);
 				}
