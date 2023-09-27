@@ -1,4 +1,5 @@
 #include "Help.as";
+#include "Hitters.as";
 
 namespace Trampoline
 {
@@ -216,6 +217,30 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	RemoveHelps(detached, "trampoline help rmb");
 }
 
+f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
+{
+	if (isExplosionHitter(customData) && !this.isAttached())
+	{
+		this.Untag("tramp_freeze");
+		this.getShape().SetRotationsAllowed(true);
+		if (isClient())
+		{
+			makeGibParticle("TrampFeet.png", this.getPosition(),
+							this.getVelocity() + getRandomVelocity(90, 3, 80) + Vec2f(0.0f, -2.0f),
+							0, 0, Vec2f(8, 8), 2.0f, 20, "material_drop.ogg");
+			makeGibParticle("TrampFeet.png", this.getPosition(),
+							this.getVelocity() + getRandomVelocity(90, 3, 80) + Vec2f(0.0f, -2.0f),
+							0, 1, Vec2f(8, 8), 2.0f, 20, "material_drop.ogg");
+
+			CSprite@ sprite = this.getSprite();
+			sprite.SetAnimation("default");
+			sprite.getSpriteLayer("left_foot").SetVisible(false);
+			sprite.getSpriteLayer("right_foot").SetVisible(false);
+		}
+	}
+	return damage;
+}
+
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return blob.getShape().isStatic();
@@ -233,22 +258,22 @@ f32 getHoldAngle(CBlob@ this, CBlob@ holder)
 
 void onInit(CSprite@ this)
 {
-	CSpriteLayer@ left = this.addSpriteLayer("left_foot", "Trampoline.png", 8, 8);
+	CSpriteLayer@ left = this.addSpriteLayer("left_foot", "TrampFeet.png", 8, 8);
 	if (left !is null)
 	{
 		left.addAnimation("default", 0, false);
-		left.animation.AddFrame(8);
+		left.animation.AddFrame(0);
 
 		left.SetRelativeZ(-1);
 		left.SetVisible(false);
 		left.SetIgnoreParentFacing(true);
 	}
 
-	CSpriteLayer@ right = this.addSpriteLayer("right_foot", "Trampoline.png", 8, 8);
+	CSpriteLayer@ right = this.addSpriteLayer("right_foot", "TrampFeet.png", 8, 8);
 	if (right !is null)
 	{
 		right.addAnimation("default", 0, false);
-		right.animation.AddFrame(9);
+		right.animation.AddFrame(1);
 
 		right.SetRelativeZ(-1);
 		right.SetVisible(false);
