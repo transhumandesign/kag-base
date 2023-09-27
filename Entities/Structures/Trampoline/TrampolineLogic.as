@@ -297,6 +297,7 @@ void ShowMeYourFeet(CSprite@ sprite, f32 tramp_angle)
 
 	f32 halfwidth = 8 * Maths::Abs(Maths::Cos(tilt));
 
+	bool lame_legs = false;
 	if (tramp_angle < 100) // normal
 	{
 		left_offset.x = -halfwidth;
@@ -309,10 +310,9 @@ void ShowMeYourFeet(CSprite@ sprite, f32 tramp_angle)
 	}
 	else if (tramp_angle < 205) // upside down
 	{
-		// i give up
-		// nah this is juust too weird
-		sprite.SetAnimation("legs");
-		return;
+		left_offset = Vec2f(-8, 0);
+		right_offset = Vec2f(8, 0);
+		lame_legs = true;
 	}
 	else if (tramp_angle < 260) // left spotlight
 	{
@@ -334,6 +334,8 @@ void ShowMeYourFeet(CSprite@ sprite, f32 tramp_angle)
 	right.ResetTransform();
 	right.TranslateBy(right_offset);
 	right.SetVisible(true);
+
+	if (lame_legs) return; // don't rotate
 
 	// cancel angle so the offset is normal
 	if (tilt > 180)
