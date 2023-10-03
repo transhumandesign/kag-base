@@ -112,18 +112,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 	//prevent knights from flying using trampolines
 
-	//get angle difference between entry angle and the facing angle
-	Vec2f pos_delta = (blob.getPosition() - this.getPosition()).RotateBy(90);
-	float delta_angle = Maths::Abs(-pos_delta.Angle() - this.getAngleDegrees());
-	if (delta_angle > 180)
-	{
-		delta_angle = 360 - delta_angle;
-	}
-	//if more than 90 degrees out, no bounce
-	if (delta_angle > 90)
-	{
-		return;
-	}
+	// Blob needs to be coming towards bouncy side (4 pixels above center pos)
+	Vec2f offset = blob.getOldPosition() - this.getPosition();
+	offset.RotateBy(-this.getAngleDegrees());
+	if (offset.y > -4) return;
 
 	TrampolineCooldown@[]@ cooldowns;
 	if (!this.get(Trampoline::TIMER, @cooldowns)) return;
@@ -156,9 +148,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		Vec2f direction = Vec2f(0.0f, -1.0f);
 		direction.RotateBy(angle);
 
-		float velocity_angle = direction.AngleWith(velocity_old);
-
-		if (Maths::Abs(velocity_angle) > 90)
+		// // Unnecessary after earlier offset check
+		// float velocity_angle = direction.AngleWith(velocity_old);
+		// if (Maths::Abs(velocity_angle) > 90)
 		{
 			TrampolineCooldown cooldown(netid, getGameTime() + Trampoline::COOLDOWN);
 			cooldowns.push_back(cooldown);
@@ -167,6 +159,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			velocity.RotateBy(angle);
 
 			blob.setVelocity(velocity);
+			if (blob.getName() == "arrow")
+			{
+				blob.setPosition(point1);
+			}
 
 			CSprite@ sprite = this.getSprite();
 			if (sprite !is null)
