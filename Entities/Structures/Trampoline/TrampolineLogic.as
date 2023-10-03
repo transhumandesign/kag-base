@@ -48,8 +48,6 @@ void onTick(CBlob@ this)
 	{
 		if (point.isKeyJustPressed(key_action3)) // unfreeze
 		{
-			this.set_f32("old angle", angle);
-
 			RemoveFeet(this);
 
 			if (holder.isMyPlayer())
@@ -182,6 +180,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		f32 angle;
 		if (!params.saferead_f32(angle)) return;
 
+		this.set_f32("old_angle", angle);
+
 		this.setAngleDegrees(angle);
 		ShowMeYourFeet(this, angle);
 	}
@@ -266,6 +266,7 @@ void ShowMeYourFeet(CBlob@ this, f32 tramp_angle)
 {
 	CSprite@ sprite = this.getSprite();
 
+	tramp_angle = (tramp_angle + 360) % 360;
 	f32 tilt = tramp_angle;
 	if (tilt > 180)
 		tilt = 360 - tilt;
