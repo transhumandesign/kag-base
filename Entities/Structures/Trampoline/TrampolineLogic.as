@@ -1,4 +1,5 @@
 #include "Help.as";
+#include "FallDamageCommon.as";
 
 namespace Trampoline
 {
@@ -138,6 +139,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			velocity.RotateBy(angle);
 
 			blob.setVelocity(velocity);
+			ProtectFromFall(blob);
 
 			CSprite@ sprite = this.getSprite();
 			if (sprite !is null)

@@ -23,6 +23,9 @@ void onInit(CBlob @ this)
 	// damage
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().tickFrequency = 3;
+
+	// Init savable from fall damage
+	this.set_u32("safe_from_fall", 0); // Tick granted temp fall immunity
 }
 
 void onTick(CBlob@ this)
