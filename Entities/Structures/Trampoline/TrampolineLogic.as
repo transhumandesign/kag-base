@@ -152,9 +152,17 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				velocity.RotateBy(angle);
 
 				// If a player is holding the opposite direction of the angle adjustment, use normal velocity
-				if (!(velocity.y < 0 && blob.hasTag("player")
-						&& ((new_vel.x > velocity.x && blob.isKeyPressed(key_left))
-							|| (new_vel.x < velocity.x && blob.isKeyPressed(key_right)))))
+				if (blob.hasTag("player") && velocity.y < 0)
+				{
+					bool escaped = (new_vel.y - velocity.y >= 2 && blob.isKeyPressed(key_up))
+					            || (new_vel.x > velocity.x && blob.isKeyPressed(key_left))
+					            || (new_vel.x < velocity.x && blob.isKeyPressed(key_right));
+					if (!escaped)
+					{
+						velocity = new_vel;
+					}	
+				}
+				else
 				{
 					velocity = new_vel;
 				}
