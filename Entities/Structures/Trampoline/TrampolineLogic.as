@@ -137,6 +137,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
 			velocity.RotateBy(angle);
 
+			if (blob.hasTag("player") && Maths::Abs(velocity.x) > 5)
+			{
+				blob.Tag("stop_air_fast");
+			}
 			blob.setVelocity(velocity);
 
 			CSprite@ sprite = this.getSprite();

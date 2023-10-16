@@ -4,6 +4,7 @@
 #include "MakeDustParticle.as";
 #include "FallDamageCommon.as";
 #include "KnockedCommon.as";
+#include "Hitters.as";
 
 void onInit(CMovement@ this)
 {
@@ -735,6 +736,22 @@ void onTick(CMovement@ this)
 					stop_force.x *= moveVars.overallScale * 30.0f * moveVars.stoppingFactor *
 					                (onground ? moveVars.stoppingForce : moveVars.stoppingForceAir);
 
+					if (blob.hasTag("stop_air_fast"))
+					{
+						if (absx < 5.0f)
+						{
+							blob.Untag("stop_air_fast");
+						}
+						else if (!onground)
+						{
+							stop_force.x *= 1.2f / moveVars.stoppingForceAir;
+							if (moveVars.stoppingFactor < 1)
+							{
+								stop_force.x /= moveVars.stoppingFactor;
+							}
+						}
+					}
+
 					if (absx > 3.0f)
 					{
 						f32 extra = (absx - 3.0f);
@@ -770,6 +787,16 @@ void onTick(CMovement@ this)
 
 	CleanUp(this, blob, moveVars);
 }
+
+f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
+{
+	if (isExplosionHitter(customData))
+	{
+		this.Untag("stop_air_fast");
+	}
+	return damage;
+}
+
 
 //some specific helpers
 
