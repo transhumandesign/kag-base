@@ -336,7 +336,21 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
-	return !this.hasTag("no pickup");
+	if (this.hasTag("no pickup"))
+	{
+		return false;
+	}
+	else if (byBlob.getTeamNum() == this.getTeamNum())
+	{
+		return true;
+	}
+	else
+	{
+		// Can only be picked up from non-bouncy side
+		Vec2f offset = byBlob.getPosition() - this.getPosition();
+		offset.RotateBy(-this.getAngleDegrees());
+		return (offset.y > 4);
+	}
 }
 
 f32 scaleWithUpBoost(Vec2f vel)
