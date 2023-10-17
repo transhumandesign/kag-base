@@ -4,8 +4,9 @@ namespace Trampoline
 {
 	const string TIMER = "trampoline_timer";
 	const u16 COOLDOWN = 7;
-	const f32 SCALAR = 8;
-	const f32 UP_BOOST = 4;
+	const f32 SCALAR = 10;
+	const f32 SOFT_SCALAR = 8; // Cap for bouncing without holding W
+	const f32 UP_BOOST = 1.5f;
 	const u8 BOOST_RANGE = 60;
 	const bool SAFETY = true;
 	const int COOLDOWN_LIMIT = 8;
@@ -139,7 +140,21 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
 			velocity.RotateBy(angle);
 
-			if (!blob.hasTag("player") || blob.isKeyPressed(key_up))
+			if (blob.hasTag("player"))
+			{
+				if (blob.isKeyPressed(key_up))
+				{
+					velocity *= scaleWithUpBoost(velocity);
+				}
+				else
+				{
+					if (velocity.y < -Trampoline::SOFT_SCALAR)
+					{
+						velocity.y = -Trampoline::SOFT_SCALAR;
+					}
+				}
+			}
+			else
 			{
 				velocity *= scaleWithUpBoost(velocity);
 			}
