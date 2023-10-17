@@ -42,7 +42,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("unfreeze_tramp");
 
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
-	point.SetKeysToTake(key_action1 | key_action2 | key_action3);
+	point.SetKeysToTake(key_action1 | key_action3);
 
 	if (this.hasTag("tramp_freeze"))
 	{
@@ -119,17 +119,17 @@ void onTick(CBlob@ this)
 	{
 		angle = this.get_f32("old_angle");
 	}
-	else if (point.isKeyPressed(key_action2))
-	{
-		angle = this.get_f32("old_angle");
-	}
+	// else if (point.isKeyPressed(key_action2))
+	// {
+	// 	angle = this.get_f32("old_angle");
+	// }
 	else
 	{
 		angle = getHoldAngle(this, holder, point);
 	}
 
 	this.setAngleDegrees(angle);
-	this.set_f32("old_angle", angle);
+	// this.set_f32("old_angle", angle);
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1, Vec2f point2)
@@ -298,7 +298,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	if (!attached.isMyPlayer()) return;
 
 	SetHelp(attached, "trampoline help lmb", "", getTranslatedString("$trampoline$ Lock to 45° steps  $KEY_HOLD$$LMB$"), "", 3, true);
-	SetHelp(attached, "trampoline help rmb", "", getTranslatedString("$trampoline$ Lock current angle  $KEY_HOLD$$RMB$"), "", 3, true);
+	// SetHelp(attached, "trampoline help rmb", "", getTranslatedString("$trampoline$ Lock current angle  $KEY_HOLD$$RMB$"), "", 3, true);
 	SetHelp(attached, "trampoline help space", "", getTranslatedString("$trampoline$ Add/remove feet  $KEY_TAP$$KEY_SPACE$"), "", 3, true);
 }
 
@@ -306,7 +306,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
 	if (!detached.isMyPlayer()) return;
 	RemoveHelps(detached, "trampoline help lmb");
-	RemoveHelps(detached, "trampoline help rmb");
+	// RemoveHelps(detached, "trampoline help rmb");
 	RemoveHelps(detached, "trampoline help space");
 }
 
@@ -383,10 +383,10 @@ f32 getHoldAngle(CBlob@ this, CBlob@ holder, AttachmentPoint@ point)
 		angle = -Maths::Floor((angle - 67.5f) / 45) * 45;
 		return angle;
 	}
-	else if (point.isKeyPressed(key_action2))
-	{
-		return this.get_f32("old_angle");
-	}
+	// else if (point.isKeyPressed(key_action2))
+	// {
+	// 	return this.get_f32("old_angle");
+	// }
 	else
 	{
 		return (-1.0f * (holder.getAimPos() - this.getPosition()).Angle() + 90 + 360) % 360;
