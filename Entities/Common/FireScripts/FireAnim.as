@@ -41,6 +41,7 @@ void onTick(CSprite@ this)
 			this.getCurrentScript().tickFrequency = 12;
 
 			fire.SetVisible(true);
+			if (blob !is null)	{ blob.SetLight(true); }
 
 			//TODO: draw the fire layer with varying sizes based on var - may need sync spam :/
 			//fire.SetAnimation( "bigfire" );
@@ -59,6 +60,7 @@ void onTick(CSprite@ this)
 				this.PlaySound("/ExtinguishFire.ogg");
 			}
 			fire.SetVisible(false);
+			if (blob !is null)	{ blob.SetLight(false); }
 		}
 	}
 }
