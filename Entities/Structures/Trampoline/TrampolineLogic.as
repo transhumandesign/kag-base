@@ -22,6 +22,22 @@ void onInit(CBlob@ this)
 	this.set(Trampoline::TIMER, cooldowns);
 	this.getShape().getConsts().collideWhenAttached = true;
 
+	// Fix TDM map trampolines (I'm assuming these have "no pickup")
+	if (this.getTeamNum() == 255)
+	{
+		Animation@ anim = this.getSprite().getAnimation("default");
+		anim.AddFrame(5);
+		anim.RemoveFrame(0);
+
+		Vec2f[] shape;
+		shape.push_back(Vec2f(0, 0));
+		shape.push_back(Vec2f(23, 0));
+		shape.push_back(Vec2f(23, 7));
+		shape.push_back(Vec2f(0, 7));
+		// this.getShape().SetShape(shape); // immediately crashes
+		this.getShape().AddShape(shape);
+	}
+
 	this.Tag("no falldamage");
 	this.Tag("medium weight");
 	this.Tag("ignore_attach_facing");
