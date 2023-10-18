@@ -179,7 +179,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	if (!block)
 	{
 		Vec2f velocity_old = blob.getOldVelocity();
-		if (velocity_old.Length() < 1.0f) return;
+		if (velocity_old.Length() + this.getVelocity().Length() < 1.0f) return;
 
 		float angle = this.getAngleDegrees();
 
