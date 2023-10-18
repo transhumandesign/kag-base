@@ -15,6 +15,11 @@ namespace ChatCommands
 	{
 		ChatCommands::getManager().RegisterCommand(command);
 	}
+
+	string getPrefix()
+	{
+		return "/";
+	}
 }
 
 string removeExcessSpaces(string text)
@@ -97,6 +102,6 @@ void CommandNotImplemented(string name, CPlayer@ player)
 	}
 	else
 	{
-		print("Unable to execute !" + name + " command because it is not implemented", ConsoleColour::ERROR);
+		print("Unable to execute " + ChatCommands::getPrefix() + name + " command because it is not implemented", ConsoleColour::ERROR);
 	}
 }

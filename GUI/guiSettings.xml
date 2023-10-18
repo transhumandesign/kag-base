@@ -1096,8 +1096,8 @@
 
 				<attributes>
 					<int name="Id" value="13510" />
-					<string name="Caption" value="Fixed camera" />
-					<rect name="Rect" value="40, 55, 180, 90" />
+					<string name="Caption" value="Fixed Camera" />
+					<rect name="Rect" value="40, 40, 180, 60" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1118,9 +1118,55 @@
 			<element type="checkBox">
 
 				<attributes>
+					<int name="Id" value="13560" />
+					<string name="Caption" value="Snap Camera to Pixel" />
+					<rect name="Rect" value="40, 65, 250, 85" />
+					<position name="MinSize" value="1, 1" />
+					<position name="MaxSize" value="0, 0" />
+					<enum name="LeftAlign" value="upperLeft" />
+					<enum name="RightAlign" value="upperLeft" />
+					<enum name="TopAlign" value="upperLeft" />
+					<enum name="BottomAlign" value="upperLeft" />
+					<bool name="Visible" value="true" />
+					<bool name="Enabled" value="true" />
+					<bool name="TabStop" value="true" />
+					<bool name="TabGroup" value="false" />
+					<int name="TabOrder" value="9" />
+					<bool name="NoClip" value="false" />
+					<bool name="Checked" value="false" />
+				</attributes>
+
+			</element>
+
+			<element type="checkBox">
+
+				<attributes>
 					<int name="Id" value="13515" />
-					<string name="Caption" value="Disable screen shake" />
-					<rect name="Rect" value="40, 110, 250, 140" />
+					<string name="Caption" value="Disable Screen Shake" />
+					<rect name="Rect" value="40, 90, 250, 110" />
+					<position name="MinSize" value="1, 1" />
+					<position name="MaxSize" value="0, 0" />
+					<enum name="LeftAlign" value="upperLeft" />
+					<enum name="RightAlign" value="upperLeft" />
+					<enum name="TopAlign" value="upperLeft" />
+					<enum name="BottomAlign" value="upperLeft" />
+					<bool name="Visible" value="true" />
+					<bool name="Enabled" value="true" />
+					<bool name="TabStop" value="true" />
+					<bool name="TabGroup" value="false" />
+					<int name="TabOrder" value="8" />
+					<bool name="NoClip" value="false" />
+					<bool name="Checked" value="false" />
+				</attributes>
+
+			</element>
+
+			<element type="checkBox">
+
+				<attributes>
+					<int name="Id" value="13555" />
+					<string name="Caption" value="Allow Cinematic Camera" />
+					<rect name="Rect" value="40, 115, 250, 135" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1142,8 +1188,8 @@
 
 				<attributes>
 					<int name="Id" value="13520" />
-					<string name="Caption" value="Kids safe" />
-					<rect name="Rect" value="40, 160, 200, 190" />
+					<string name="Caption" value="Kids Safe" />
+					<rect name="Rect" value="40, 160, 200, 180" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1166,7 +1212,7 @@
 				<attributes>
 					<int name="Id" value="13525" />
 					<string name="Caption" value="Chat Filter" />
-					<rect name="Rect" value="40, 210, 250, 240" />
+					<rect name="Rect" value="40, 185, 250, 205" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1190,7 +1236,7 @@
 				<attributes>
 					<int name="Id" value="13540" />
 					<string name="Caption" value="Show Team-Mates Names" />
-					<rect name="Rect" value="40, 250, 250, 290" />
+					<rect name="Rect" value="40, 210, 250, 230" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1213,7 +1259,7 @@
 				<attributes>
 					<int name="Id" value="13530" />
 					<string name="Caption" value="Show Minimap" />
-					<rect name="Rect" value="40, 300, 250, 340" />
+					<rect name="Rect" value="40, 235, 250, 255" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1236,30 +1282,7 @@
 				<attributes>
 					<int name="Id" value="13550" />
 					<string name="Caption" value="Show Chat Bubbles" />
-					<rect name="Rect" value="40, 350, 250, 390" />
-					<position name="MinSize" value="1, 1" />
-					<position name="MaxSize" value="0, 0" />
-					<enum name="LeftAlign" value="upperLeft" />
-					<enum name="RightAlign" value="upperLeft" />
-					<enum name="TopAlign" value="upperLeft" />
-					<enum name="BottomAlign" value="upperLeft" />
-					<bool name="Visible" value="true" />
-					<bool name="Enabled" value="true" />
-					<bool name="TabStop" value="true" />
-					<bool name="TabGroup" value="false" />
-					<int name="TabOrder" value="9" />
-					<bool name="NoClip" value="false" />
-					<bool name="Checked" value="false" />
-				</attributes>
-
-			</element>
-
-			<element type="checkBox">
-
-				<attributes>
-					<int name="Id" value="13560" />
-					<string name="Caption" value="Snap Camera To Pixel" />
-					<rect name="Rect" value="40, 400, 250, 440" />
+					<rect name="Rect" value="40, 260, 250, 280" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />

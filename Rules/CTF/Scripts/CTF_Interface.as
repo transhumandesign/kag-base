@@ -177,7 +177,7 @@ void onRender(CRules@ this)
 	{
 		u8 spawn = this.get_u8(propname);
 
-		if (spawn != 255)
+		if (this.isMatchRunning() && spawn != 255)
 		{
 			string spawn_message = getTranslatedString("Respawning in: {SEC}").replace("{SEC}", ((spawn > 250) ? getTranslatedString("approximatively never") : ("" + spawn)));
 

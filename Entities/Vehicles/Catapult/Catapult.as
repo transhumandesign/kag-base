@@ -50,8 +50,10 @@ class CatapultInfo : VehicleInfo
 			{
 				if (isServer())
 				{
+					this.server_DetachFrom(occupied); //detach before sending the command to avoid velocity issues
 					CBitStream params;
 					params.write_netid(caller.getNetworkID());
+					params.write_netid(occupied.getNetworkID());
 					params.write_u8(charge);
 					this.SendCommand(this.getCommandID("fire mag blob"), params);
 				}
@@ -75,7 +77,6 @@ class CatapultInfo : VehicleInfo
 			const f32 player_launch_modifier = 0.75f;
 			const f32 other_launch_modifier = 1.1f;
 
-			this.server_DetachFrom(bullet);
 			const f32 sign = this.isFacingLeft() ? -1.0f : 1.0f;
 			Vec2f vel = Vec2f(sign, -0.5f) * temp_charge * 0.3f;
 			vel += (Vec2f((_r.NextFloat() - 0.5f) * 128, (_r.NextFloat() - 0.5f) * 128) * 0.01f);
@@ -83,7 +84,7 @@ class CatapultInfo : VehicleInfo
 
 			if (bullet.hasTag("player"))
 			{
-				delay *= f32(cooldown_time_player) / cooldown_time;
+				delay *= f32(cooldown_time_player) / cooldown_time_ammo;
 				bullet.setVelocity(vel * player_launch_modifier);
 			}
 			else
@@ -150,6 +151,8 @@ void onInit(CBlob@ this)
 	string[] autograb_blobs = {"mat_stone"};
 	this.set("autograb blobs", autograb_blobs);
 
+	this.set_bool("facing", true);
+
 	// auto-load on creation
 	if (isServer())
 	{
@@ -170,7 +173,7 @@ void onTick(CBlob@ this)
 
 	AmmoInfo@ ammo = v.getCurrentAmmo();
 	const f32 time_til_fire = Maths::Max(0, Maths::Min(v.fire_time - getGameTime(), ammo.fire_delay));
-	if (this.hasAttached() || this.get_bool("hadattached") || this.getTickSinceCreated() < 30 || time_til_fire > 0)
+	if (this.hasAttached() || this.get_bool("hadattached") || this.get_bool("facing") != this.isFacingLeft() || time_til_fire > 0)
 	{
 		Vehicle_StandardControls(this, v);
 
@@ -207,6 +210,7 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
+	this.set_bool("facing", this.isFacingLeft());
 	this.set_bool("hadattached", this.hasAttached());
 }
 
@@ -233,7 +237,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			string name = carried.getInventoryName();
 			const string msg = getTranslatedString("Load {ITEM}").replace("{ITEM}", name);
 
-			string iconName = carried.getName(); 
+			string iconName = "$" + carried.getName() + "$"; 
 			if (GUI::hasIconName("$" + carried.getInventoryName() + "$"))
 			{
 				iconName = "$" + carried.getInventoryName() + "$";
@@ -260,8 +264,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID("fire mag blob"))
 	{
 		CBlob@ caller = getBlobByNetworkID(params.read_netid());
+		CBlob@ occupied = getBlobByNetworkID(params.read_netid());
 		const u8 charge = params.read_u8();
-		CBlob@ occupied = this.getAttachments().getAttachmentPoint("MAG").getOccupied();
+
 		if (caller !is null && occupied !is null && !occupied.hasTag("player"))
 			occupied.SetDamageOwnerPlayer(caller.getPlayer());
 

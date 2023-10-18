@@ -29,6 +29,9 @@ void onInit(CBlob@ this)
 	//block knight sword
 	this.Tag("blocks sword");
 
+	//bomb arrow damage value
+	this.set_f32("bomb resistance", 3.1f);
+
 	this.getShape().SetOffset(Vec2f(0, 16));
 	this.getShape().getConsts().bullet = false;
 	this.getShape().getConsts().transports = true;
@@ -113,7 +116,7 @@ void onInit(CBlob@ this)
 	CSpriteLayer@ flag = sprite.addSpriteLayer("flag", sprite.getConsts().filename, 40, 56);
 	if (flag !is null)
 	{
-		flag.addAnimation("default", 3, true);
+		flag.addAnimation("default", XORRandom(3) + 3, true);
 		int[] frames = { 5, 4, 3 };
 		flag.animation.AddFrames(frames);
 		flag.SetRelativeZ(-5.0f);

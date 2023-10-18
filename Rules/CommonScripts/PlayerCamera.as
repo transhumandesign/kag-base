@@ -11,8 +11,6 @@ Vec2f deathLock;
 int helptime = 0;
 bool spectatorTeam;
 
-Vec2f pos;
-
 void Reset(CRules@ this)
 {
 	SetTargetPlayer(null);
@@ -20,16 +18,22 @@ void Reset(CRules@ this)
 	if (camera !is null)
 	{
 		camera.setTarget(null);
+		// start fairly unzoomed, so we have a nice zoom-in effect
+		camera.targetDistance = 0.25f;
 	}
 
-	helptime = 0;
-	setCinematicEnabled(true);
-	setCinematicForceDisabled(false);
 	currentTarget = 0;
 	switchTarget = 0;
 
 	//initially position camera to view entire map
 	ViewEntireMap();
+	// force lock camera position immediately, even if not cinematic
+	posActual = posTarget;
+
+	panEaseModifier = 1.0f;
+	zoomEaseModifier = 1.0f;
+
+	timeToCinematic = 0;
 }
 
 void onRestart(CRules@ this)
@@ -39,6 +43,9 @@ void onRestart(CRules@ this)
 
 void onInit(CRules@ this)
 {
+	helptime = 0;
+	setCinematicEnabled(true);
+	setCinematicForceDisabled(false);
 	Reset(this);
 }
 
@@ -47,8 +54,8 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 	CCamera@ camera = getCamera();
 	if (camera !is null && player !is null && player is getLocalPlayer())
 	{
-		pos = blob.getPosition();
-		camera.setPosition(pos);
+		posActual = blob.getPosition();
+		camera.setPosition(posActual);
 		camera.setTarget(blob);
 		camera.mousecamstyle = 1; //follow
 	}
@@ -71,8 +78,8 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 			playerBlob.ClearButtons();
 			playerBlob.ClearMenus();
 
-			pos = playerBlob.getPosition();
-			camera.setPosition(pos);
+			posActual = playerBlob.getPosition();
+			camera.setPosition(posActual);
 			deathTime = getGameTime();
 		}
 	}
@@ -84,10 +91,7 @@ void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 
 void resetHelpText()
 {
-	if (u_showtutorial)
-	{
-		helptime = getGameTime();
-	}
+	helptime = getGameTime();
 }
 
 //Change to spectator cam on death
@@ -100,7 +104,9 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
 	//Player died to someone
 	if (camera !is null && victim is getLocalPlayer())
 	{
-		resetHelpText();
+		// let's only bother with the info pane on switching to spec
+		// resetHelpText();
+
 		//Player killed themselves
 		if (victim is attacker || attacker is null)
 		{
@@ -147,7 +153,7 @@ void SpecCamera(CRules@ this)
 		if (!spectatorTeam && diffTime > 0)
 		{
 			//lock camera
-			pos = deathLock;
+			posActual = deathLock;
 			camera.setPosition(deathLock);
 			//zoom in for a bit
 			const float zoom_target = 2.0f;
@@ -186,42 +192,100 @@ void onRender(CRules@ this)
 		return;
 	}
 
-	int time = getGameTime();
+	if (!v_camera_cinematic)
+	{
+		return;
+	}
+
+	int time = getGameTime() + getInterpolationFactor();
+	const int endTime1 = helptime + (getTicksASecond() * 1);
 
 	GUI::SetFont("menu");
 
-	const int endTime1 = helptime + (getTicksASecond() * 12);
-	const int endTime2 = helptime + (getTicksASecond() * 24);
+	Vec2f screenSize = getDriver().getScreenDimensions();
+	Vec2f mousePos = getControls().getMouseScreenPos();
 
-	string text = "";
+	string text = "Cinematic camera";
+	Vec2f textMaxSize;
+	GUI::GetTextDimensions(text, textMaxSize);
 
-	if (time < endTime1)
+	Vec2f noticeOrigin(128, screenSize.y - 23);
+	Vec2f rmbIconOrigin = noticeOrigin + Vec2f(0, -2);
+	Vec2f indIconOrigin = noticeOrigin + Vec2f(34, 4);
+	Vec2f textOrigin = noticeOrigin + Vec2f(52, 3);
+	Vec2f noticeSize(
+		textOrigin.x - noticeOrigin.x + textMaxSize.x + 12,
+		28
+	);
+	Vec2f indicatorOrigin(
+		noticeOrigin.x + 24,
+		screenSize.y
+	);
+	Vec2f indicatorSize(
+		noticeOrigin.x + noticeSize.x - indicatorOrigin.x,
+		2.0f
+	);
+
+	Vec2f proximityCheckOrigin(
+		noticeOrigin.x + noticeSize.x * 0.5,
+		screenSize.y
+	);
+	// stretch Y to reduce false positives
+	Vec2f cursorDiff = mousePos - proximityCheckOrigin;
+	cursorDiff *= Vec2f(1.0f, 3.5f); // cause no dot opMul lmao.
+	float cursorProximity = cursorDiff.Length();
+	cursorProximity = Maths::Clamp01((cursorProximity - 96) / 64.0f);
+
+	float timeToCinematicFactor = (
+		!cinematicForceDisabled && !cinematicEnabled
+		? timeToCinematic / AUTO_CINEMATIC_TIME
+		: 0.0f
+	);
+
+	// hide the tip if the cursor is far AND if the help tip was shown for a
+	// while
+	float hidingFactor = Maths::Min(
+		Maths::Min(
+			cursorProximity,
+			Maths::Clamp01(1.0f - timeToCinematicFactor * 16.0)
+		),
+		Maths::Clamp01((time - endTime1) / 2.0)
+	);
+
+	if (hidingFactor > 0.99f)
 	{
-		text = "You can use the movement keys and clicking to move the camera.\nToggle the cinematic camera by right clicking once.";
+		return;
 	}
-	else if (time < endTime2)
+
+	Vec2f addedOffset = Vec2f(0.0, 18.0) * hidingFactor;
+	noticeOrigin += addedOffset;
+	rmbIconOrigin += addedOffset;
+	indIconOrigin += addedOffset;
+	textOrigin += addedOffset;
+
+	string indicatorToken = (
+		cinematicForceDisabled
+		? "$SmallIndicatorInactive$"
+		: "$SmallIndicatorOn$"
+	);
+
+	GUI::DrawPane(noticeOrigin + Vec2f(8.0, 0.0), noticeOrigin + noticeSize);
+	GUI::DrawIconByName(indicatorToken, indIconOrigin);
+	GUI::DrawText(text, textOrigin, SColor());
+
+	if (timeToCinematicFactor > 0.01)
 	{
-		text = "If you click on a player the camera will follow them.\nSimply press the movement keys or click again to stop following a player.";
+		for (int yoff = 1; yoff <= indicatorSize.y; ++yoff)
+		{
+			GUI::DrawLine2D(
+				Vec2f(indicatorOrigin.x, indicatorOrigin.y - yoff),
+				Vec2f(indicatorOrigin.x + (indicatorSize.x * timeToCinematicFactor), indicatorOrigin.y - yoff),
+				SColor(255, 255, 200, 0)
+			);
+		}
 	}
-	if (text != "" && u_showtutorial)
-	{
-		//translate
-		text = getTranslatedString(text);
-		//position post translation so centering works properly
-		Vec2f ul, lr;
-		ul = Vec2f(getScreenWidth() / 2.0, 3.0 * getScreenHeight() / 4);
-		Vec2f size;
-		GUI::GetTextDimensions(text, size);
-		ul -= size * 0.5;
-		lr = ul + size;
-		//wiggle up and down
-		float wave = Maths::Sin(getGameTime() / 10.0f) * 5.0f;
-		ul.y += wave;
-		lr.y += wave;
-		//draw
-		GUI::DrawButtonPressed(ul - Vec2f(10, 10), lr + Vec2f(10, 10));
-		GUI::DrawText(text, ul, SColor(0xffffffff));
-	}
+
+	GUI::DrawIconByName("$RMB$", rmbIconOrigin);
 }
 
 void onTick(CRules@ this)
@@ -240,12 +304,14 @@ void onTick(CRules@ this)
 			CBlob@[]@ importantBlobs = buildImportanceList();
 			SortBlobsByImportance(importantBlobs);
 
+			panEaseModifier = 1.0f;
+
 			if (!FOCUS_ON_IMPORTANT_BLOBS || !focusOnBlob(importantBlobs))
 			{
+				Vec2f newTarget = Vec2f_zero;
 				CBlob@[] playerBlobs;
 				if (getBlobsByTag("player", @playerBlobs))
 				{
-					posTarget = Vec2f_zero;
 					Vec2f minPos = mapDim;
 					Vec2f maxPos = Vec2f_zero;
 
@@ -264,15 +330,24 @@ void onTick(CRules@ this)
 						minPos.y = Maths::Min(minPos.y, pos.y);
 
 						//sum player positions
-						posTarget += pos;
+						newTarget += pos;
 					}
 
 					//mean position of all players
-					posTarget /= playerBlobs.length;
+					newTarget /= playerBlobs.length;
 
-					//zoom target
-					Vec2f maxDist = maxPos - minPos;
-					calculateZoomTarget(maxDist.x, maxDist.y);
+					panEaseModifier = 1.0 / Maths::Min(8.0f, playerBlobs.length + 1.0f);
+
+					// try to curb shakiness when players move a lot
+					if ((newTarget - posTarget).Length() > 6.0f * Maths::Min(16, playerBlobs.length + 1))
+					{
+						// move now
+						posTarget = newTarget;
+
+						//zoom target
+						Vec2f maxDist = maxPos - minPos;
+						calculateZoomTarget(maxDist.x, maxDist.y);
+					}
 				}
 				else //no player blobs
 				{
@@ -289,20 +364,24 @@ void onTick(CRules@ this)
 	//right click to toggle cinematic camera
 	CControls@ controls = getControls();
 	if (
+		v_camera_cinematic &&                               //user didn't perma disable
 		controls !is null &&								//controls exist
 		controls.isKeyJustPressed(KEY_RBUTTON) &&			//right clicked
-		(spectatorTeam || getLocalPlayerBlob() is null))	//is in spectator or dead
+		(spectatorTeam || getLocalPlayerBlob() is null) && //is in spectator or dead
+		getGameTime() > deathTime)
 	{
-		if (!isCinematicEnabled())
+		if (cinematicForceDisabled)
 		{
 			SetTargetPlayer(null);
 			setCinematicEnabled(true);
 			setCinematicForceDisabled(false);
+			resetHelpText();
 			Sound::Play("Sounds/GUI/menuclick.ogg");
 		}
 		else
 		{
 			setCinematicForceDisabled(true);
+			resetHelpText();
 			Sound::Play("Sounds/GUI/back.ogg");
 		}
 	}

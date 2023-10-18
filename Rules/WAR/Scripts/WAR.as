@@ -1004,7 +1004,8 @@ void onRestart(CRules@ this)
 void onInit(CRules@ this)
 {
 	Reset(this);
-	this.set_s32("restart_rules_after_game_time", 30 * 30);
+	const int restart_after = (!this.hasTag("tutorial") ? 30 : 5) * 30;
+	this.set_s32("restart_rules_after_game_time", restart_after);
 }
 
 void DoUpdateTeamsLost()
