@@ -733,23 +733,34 @@ void onTick(CMovement@ this)
 					stopped = true;
 					stop_force.x -= (absx - lim) * (greater ? 1 : -1);
 
-					stop_force.x *= moveVars.overallScale * 30.0f * moveVars.stoppingFactor *
-					                (onground ? moveVars.stoppingForce : moveVars.stoppingForceAir);
+					stop_force.x *= moveVars.overallScale * 30.0f * moveVars.stoppingFactor;
 
 					if (blob.hasTag("stop_air_fast"))
 					{
-						if (absx < 5.0f)
+						if (absx < moveVars.stoppingFastCap)
 						{
 							blob.Untag("stop_air_fast");
 						}
-						else if (!onground)
+						else 
 						{
-							stop_force.x *= 1.2f / moveVars.stoppingForceAir;
-							if (moveVars.stoppingFactor < 1)
+							if (onground)
 							{
-								stop_force.x /= moveVars.stoppingFactor;
+								stop_force.x *= moveVars.stoppingForce;
+							}
+							else
+							{
+								stop_force.x *= moveVars.stoppingForceAirFast;
+
+								if (moveVars.stoppingFactor < 1)
+								{
+									stop_force.x /= moveVars.stoppingFactor;
+								}
 							}
 						}
+					}
+					else
+					{
+						stop_force.x *= onground ? moveVars.stoppingForce : moveVars.stoppingForceAir;
 					}
 
 					if (absx > 3.0f)

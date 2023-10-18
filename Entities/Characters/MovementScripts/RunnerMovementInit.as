@@ -27,6 +27,8 @@ void onInit(CMovement@ this)
 	//stopping forces
 	moveVars.stoppingForce = 0.80f; //function of mass
 	moveVars.stoppingForceAir = 0.30f; //function of mass
+	moveVars.stoppingForceAirFast = 1.20f; //function of mass
+	moveVars.stoppingFastCap = 5.0f; // vel.x at which to cancel strong stopping force
 	moveVars.stoppingFactor = 1.0f;
 	//
 	moveVars.walljumped = false;
