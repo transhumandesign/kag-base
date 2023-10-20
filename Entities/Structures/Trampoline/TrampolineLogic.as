@@ -45,11 +45,17 @@ void onInit(CBlob@ this)
 	this.Tag("place norotate");
 
 	this.addCommandID("freeze_angle_at");
+	this.addCommandID("unfreeze_tramp");
 
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 	point.SetKeysToTake(key_action1 | key_action2 | key_action3);
 
 	this.getCurrentScript().runFlags |= Script::tick_attached;
+
+	if (this.hasTag("tramp_freeze"))
+	{
+		ShowMeYourFeet(this, this.get_f32("old_angle"), true);
+	}
 }
 
 void onTick(CBlob@ this)
@@ -59,53 +65,58 @@ void onTick(CBlob@ this)
 	CBlob@ holder = point.getOccupied();
 	if (holder is null) return;
 
-	f32 angle;
-	if (this.hasTag("tramp_freeze"))
+	if (holder.isMyPlayer() && point.isKeyJustPressed(key_action3))
 	{
-		if (point.isKeyJustPressed(key_action3)) // unfreeze
+		if (this.hasTag("feet_active"))
 		{
-			RemoveFeet(this);
-
-			if (holder.isMyPlayer())
+			if (!this.hasTag("tramp_freeze"))
 			{
-				Sound::Play("bone_fall.ogg", this.getPosition());
+				return; // already sent command
 			}
+
+			this.Untag("tramp_freeze");
+			Sound::Play("bone_fall.ogg", this.getPosition());
+
+			this.SendCommand(this.getCommandID("unfreeze_tramp"));
 		}
-
-		return;
-	}
-	else if (point.isKeyPressed(key_action2))
-	{
-		// set angle to what was on previous tick
-		angle = this.get_f32("old angle");
-	}
-	else if (point.isKeyPressed(key_action1))
-	{
-		// rotate in 45 degree steps
-		angle = (holder.getAimPos() - this.getPosition()).Angle();
-		angle = -Maths::Floor((angle - 67.5f) / 45) * 45;
-	}
-	else
-	{
-		// follow cursor normally
-		angle = getHoldAngle(this, holder);
-	}
-
-	this.setAngleDegrees(angle);
-	this.set_f32("old angle", angle);
-
-	if (point.isKeyJustPressed(key_action3)) // wasn't already frozen, so freeze
-	{
-		this.Tag("tramp_freeze");
-		this.getShape().SetRotationsAllowed(false);
-		if (holder.isMyPlayer())
+		else
 		{
+			if (this.hasTag("tramp_freeze"))
+			{
+				return; // already sent command
+			}
+
+			this.Tag("tramp_freeze");
+			this.getShape().SetRotationsAllowed(false);
 			Sound::Play("hit_wood.ogg", this.getPosition());
+
 			CBitStream params;
+			f32 angle = (point.isKeyPressed(key_action2)) 
+							? this.get_f32("old_angle")
+							: getHoldAngle(this, holder, point.isKeyPressed(key_action1));
 			params.write_f32(angle);
 			this.SendCommand(this.getCommandID("freeze_angle_at"), params);
 		}
 	}
+
+	if (this.hasTag("tramp_freeze") || this.hasTag("feet_active"))
+	{
+		// this.setAngleDegrees(this.get_f32("old_angle"));
+		return;
+	}
+
+	f32 angle;
+	if (point.isKeyPressed(key_action2))
+	{
+		angle = this.get_f32("old_angle");
+	}
+	else
+	{
+		angle = getHoldAngle(this, holder, point.isKeyPressed(key_action1));
+	}
+
+	this.setAngleDegrees(angle);
+	this.set_f32("old_angle", angle);
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1, Vec2f point2)
@@ -197,9 +208,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (!params.saferead_f32(angle)) return;
 
 		this.set_f32("old_angle", angle);
-
 		this.setAngleDegrees(angle);
 		ShowMeYourFeet(this, angle);
+	}
+	else if (cmd == this.getCommandID("unfreeze_tramp"))
+	{
+		RemoveFeet(this);
 	}
 }
 
@@ -248,9 +262,19 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 	return !this.hasTag("no pickup");
 }
 
-f32 getHoldAngle(CBlob@ this, CBlob@ holder)
+f32 getHoldAngle(CBlob@ this, CBlob@ holder, bool step = false)
 {
-	return (-1.0f * (holder.getAimPos() - this.getPosition()).Angle() + 90 + 360) % 360;
+	if (step)
+	{
+		f32 angle;
+		angle = (holder.getAimPos() - this.getPosition()).Angle();
+		angle = -Maths::Floor((angle - 67.5f) / 45) * 45;
+		return angle;
+	}
+	else
+	{
+		return (-1.0f * (holder.getAimPos() - this.getPosition()).Angle() + 90 + 360) % 360;
+	}
 }
 
 void onInit(CSprite@ this)
@@ -276,12 +300,16 @@ void onInit(CSprite@ this)
 		right.SetVisible(false);
 		right.SetIgnoreParentFacing(true);
 	}
+
+	CBlob@ blob = this.getBlob();
+	if (blob.hasTag("tramp_freeze"))
+	{
+		ShowMeYourFeet(blob, blob.get_f32("old_angle"), false, true);
+	}
 }
 
-void ShowMeYourFeet(CBlob@ this, f32 tramp_angle)
+void ShowMeYourFeet(CBlob@ this, f32 tramp_angle, bool skip_sprite=false, bool skip_shape=false)
 {
-	CSprite@ sprite = this.getSprite();
-
 	tramp_angle = (tramp_angle + 360) % 360;
 	f32 tilt = tramp_angle;
 	if (tilt > 180)
@@ -325,7 +353,14 @@ void ShowMeYourFeet(CBlob@ this, f32 tramp_angle)
 		right_offset.x = halfwidth;
 	}
 
-	if (!lame_legs)
+	if (!skip_shape)
+	{
+		this.Tag("feet_active");
+		this.Tag("tramp_freeze");
+		this.getShape().SetRotationsAllowed(false);
+	}
+
+	if (!lame_legs && !skip_shape)
 	{
 		Vec2f[] legShape;
 		Vec2f offset;
@@ -362,7 +397,9 @@ void ShowMeYourFeet(CBlob@ this, f32 tramp_angle)
 		this.getShape().AddShape(legShape);
 	}
 
-	if (!isClient()) return;
+	if (!isClient() || skip_sprite) return;
+
+	CSprite@ sprite = this.getSprite();
 
 	CSpriteLayer@ left = sprite.getSpriteLayer("left_foot");
 	left.ResetTransform();
@@ -392,6 +429,7 @@ void ShowMeYourFeet(CBlob@ this, f32 tramp_angle)
 void RemoveFeet(CBlob@ this)
 {
 	this.Untag("tramp_freeze");
+	this.Untag("feet_active");
 	this.getShape().SetRotationsAllowed(true);
 	this.getShape().RemoveShape(1);
 	this.getShape().RemoveShape(1);
