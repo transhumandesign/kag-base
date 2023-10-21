@@ -105,21 +105,23 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				damage = 100.0f;
 			}
 
-			// check if we aren't touching a trampoline
-			CBlob@[] overlapping;
+			// Could use FallDamageCommon.as prevention instead of the following
 
-			if (this.getOverlapping(@overlapping))
-			{
-				for (uint i = 0; i < overlapping.length; i++)
-				{
-					CBlob@ b = overlapping[i];
-
-					if (b.hasTag("no falldamage"))
-					{
-						return;
-					}
-				}
-			}
+			// // check if we aren't touching a trampoline
+			// CBlob@[] overlapping;
+			// 
+			// if (this.getOverlapping(@overlapping))
+			// {
+			// 	for (uint i = 0; i < overlapping.length; i++)
+			// 	{
+			// 		CBlob@ b = overlapping[i];
+			// 
+			// 		if (b.hasTag("no falldamage"))
+			// 		{
+			// 			return;
+			// 		}
+			// 	}
+			// }
 
 			this.server_Hit(this, point1, normal, damage, Hitters::fall);
 		}
