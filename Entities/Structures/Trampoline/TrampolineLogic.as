@@ -130,6 +130,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			velocity.RotateBy(angle);
 
 			blob.setVelocity(velocity);
+			if (blob.getName() == "arrow")
+			{
+				blob.setPosition(point1);
+			}
 
 			CSprite@ sprite = this.getSprite();
 			if (sprite !is null)
