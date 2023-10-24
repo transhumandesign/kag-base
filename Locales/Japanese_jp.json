@@ -15,6 +15,7 @@
 {
 	"GUI/Fonts/DejaVu/DejaVuSans.ttf": "GUI/Fonts/GenShinGothic/GenShinGothic-P-Medium.ttf",
 	"GUI/Fonts/DejaVu/DejaVuSans-Bold.ttf": "GUI/Fonts/GenShinGothic/GenShinGothic-P-Medium.ttf",
+	"GUI/Fonts/AveriaSerif-Bold.ttf": "GUI/Fonts/GenShinGothic/GenShinGothic-P-Medium.ttf",
 //// SCOREBOARD ////
 //ScoreboardCommon.as
 	"Match time: {TIME}": "対戦経過時間: {TIME}",
@@ -53,6 +54,11 @@
 //BuilderInventory.as
 	"Stop building\n": "建築中止\n",
 	"Requires\n": "要求数\n",
+	"Type":"タイプ",
+	"Building":"建築",
+	"Component":"コンポーネント",
+	"Source":"エネルギー源",
+	"Device":"デバイス",
 
 //CommonBuilderBlocks.as
 	"Stone Block\nBasic building block"                     :"石ブロック\n基本的な建築ブロック",
@@ -254,6 +260,12 @@
 	" seconds"                                     :"秒",
 	" second"                                      :"秒",
 
+//ActorHUDStartPos.as
+	"Go to a builder shop or a respawn point to get a resupply of {WOOD} wood and {STONE} stone.":"ビルダーショップかリスポーン地点へ行って木材{WOOD}個と石材{STONE}個の補給を得られる。",
+	"Next resupply of {WOOD} wood and {STONE} stone in {SEC}{TIMESUFFIX}.":"次の木材{WOOD}個と石材{STONE}個の補給まで{SEC}{TIMESUFFIX}。",
+	//" seconds"                                     :"秒",
+	//" second"                                      :"秒",
+
 //// RESPAWNING ////
 //CTF_Interface.as
 //WAR_Interface.as
@@ -266,6 +278,17 @@
 	"Spawn at {ITEM}"      :"{ITEM}から復活する",
 	"respawn is contested" :"復活地点は争奪中",
 	"No spawns available!" :"復活地点を全て失った!",
+
+//CTF_Banners.as
+	"Increased build speed and resupplies":"建築速度と再補給が向上",
+//they don't work because of the font
+	/*
+	"Build defenses!":"防御を建てろ!",
+	"Capture the flag!":"旗を奪え!",
+	"{TEAM} team wins":"{TEAM}チームの勝利",
+	"Blue":"ブルー",
+	"RED":"レッド",
+	*/
 
 //WAR_Interface.as
 	"DEFEND THE HALL!"                           :"拠点を守れ！",
@@ -519,8 +542,8 @@
 //HelpfulDeathTips.cfg
 	"To hide in-game help and tips, hit F1.":
 	"ヘルプの表示、非表示はF１で切り替えられる",
-	"Enemies can use your tunnels so protect them well!":
-	"トンネルは敵も使えるのでしっかり守ってから設置しよう",
+	"Enemies can go through your tunnels so protect them well!":
+	"トンネルは敵も通れるのでしっかり守ってから設置しよう",
 	"Spikes will stun you for a short time.":
 	"トゲが刺さることで一瞬無防備になってしまう。",
 	"Saws will kill you instantly":
@@ -962,6 +985,7 @@
 	"TTH":"TTH",
 	"Challenge":"チャレンジ",
 	"Build whatever your heart desires. Respect other folk's creations!":"気の赴くままに建築できる。他人の創作も尊重しよう!",
+	"SmallCTF":"スモールCTF",
 
 //// IRRLICHT GUI ////
 //guiConnect.xml
@@ -1091,7 +1115,21 @@
 	"DOWN":"↓",
 	"PRIOR":"PageUp",
 	"NEXT":"PageDown",
-	//"":"",// add numpad buttons?
+	"NUMPAD /":"テンキー /",
+	"NUMPAD *":"テンキー *",
+	"NUMPAD -":"テンキー -",
+	"NUMPAD +":"テンキー +",
+	"NUMPAD .":"テンキー .",
+	"NUMPAD 0":"テンキー 0",
+	"NUMPAD 1":"テンキー 1",
+	"NUMPAD 2":"テンキー 2",
+	"NUMPAD 3":"テンキー 3",
+	"NUMPAD 4":"テンキー 4",
+	"NUMPAD 5":"テンキー 5",
+	"NUMPAD 6":"テンキー 6",
+	"NUMPAD 7":"テンキー 7",
+	"NUMPAD 8":"テンキー 8",
+	"NUMPAD 9":"テンキー 9",
 	"(Unused keys, for mods)"   :"(未使用キー、MOD用に)",
 	"Smooth shader"             :"スムーズシェーダー",
 	"Faster graphics"           :"高速描写",
@@ -1243,6 +1281,7 @@
 	"Teamkiller":				"チームキラー",
 	"Chat Spam":				"チャットスパム",
 	"Non-Participation":		"ゲーム放棄",
+	"Voting for kick a player\nis not allowed when playing\nwith a duplicate instance of KAG.\n\nTry rejoining the server\nif this was unintentional.":"KAGを多重起動してプレイしている場合\nプレイヤーのキック投票は利用できない\n\n意図的でない場合\nサーバーに再接続を試そう。",
 	"Voting requires a {REQUIRED_MIN} min wait\nafter each started vote to\nprevent spamming/abuse.\n":"連続投票による迷惑行為や悪用を防ぐために、\n投票を開始するには、投票が開始されるたびに\n{REQUIRED_MIN}分待つ必要がある。\n",
 	"Vote to kick a player on your team\nout of the game.\n\n- use responsibly\n- report any abuse of this feature.\n\nTo Use:\n\n- select a reason from the\n     list (default is griefing).\n- select a name from the list.\n- everyone votes.\n":"あなたのチームのプレイヤーを\nゲームから追放する投票。\n\n- 責任をもって使おう\n- この機能の悪用があれな通報を。\n\n使い方:\n\n- 理由をリストから\n     選ぶ (デフォルトはゲーム妨害)。\n- リストから名前を選ぶ。\n- 皆で投票する。\n",
 	"Cannot kick {USER}":"{USER}はキックできない",
@@ -1260,21 +1299,32 @@
 	"Stalemate":"スチールメイト",
 	"Game Bugged":"ゲームにバグが発生",
 	"Skip to next map?":"スキップして次のマップに行く?",
-	"Voting for next map\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"連続投票による迷惑行為を防ぐため\n次のマップに投票するには\n投票が開始されるたびに\n{NEXTMAP_MINS}分待つ必要がある。\n",
+	"Voting for next map\nis not allowed when playing\nwith a duplicate instance of KAG.\n\nTry rejoining the server\nif this was unintentional.":"KAGを多重起動してプレイしている場合\n次のマップの投票は利用できない\n\n意図的でない場合\nサーバーに再接続を試そう。",
+	"Voting for next map\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"連続投票による迷惑行為を防ぐため\n次のマップの投票をするには\n投票が開始されるたびに\n{NEXTMAP_MINS}分待つ必要がある。\n",
 	"Vote to change the map\nto the next in cycle.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select a reason from the list.\n- everyone votes.\n":"サイクル内の別のマップに\n変更する投票\n\n- この機能の悪用があれば通報を。\n\n使い方:\n\n- 理由をリストから選ぶ。\n- みんなで投票する。\n ",
 	"Vote Next Map":"次のマップへスキップ投票",
 	"You are not allowed to vote\nto change the map on this server\n":"このサーバーであなたは\n次のマップへスキップ投票が許可されていない\n",
 	//vote surrender menu
 	"Surrender":"降伏",
 	"Surrender to the enemy?":"敵チームに降伏する？",
-	"Voting for surrender\nis not allowed before the game starts.\n":"降伏の投票はゲーム開始前には許可されていない",
+	"Voting for surrender\nis not allowed when playing\nwith a duplicate instance of KAG.\n\nTry rejoining the server\nif this was unintentional.":"KAGを多重起動してプレイしている場合\n降伏投票は利用できない\n\n意図的でない場合\nサーバーに再接続を試そう。",
+	"Voting for surrender\nis not allowed before the game starts.\n":"降伏の投票は\nゲーム開始前には許可されていない。\n",
 	"Voting for surrender\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"連続投票による迷惑行為を防ぐため\n降伏を投票するには\n投票が開始されるたびに\n{NEXTMAP_MINS}分待つ必要がある。",
-	"Voting for surrender\nis not available as a spectator\n":"降伏の投票は観客者は利用できない",
+	"Voting for surrender\nis not available as a spectator\n":"降伏の投票は\n観客者は利用できない",
 	"Vote Surrender":"降伏投票",
-	"Vote to end the game\nin favour of the enemy team.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select surrender if you're sure.\n- everyone votes.\n":"敵に好印象を持たせて\nこのゲームを終わらせる投票\n\n- この機能の悪用があれば報告を。\n\n使い方:\n\n- 本当に良いなら幸福を選ぶ。\n- みんなで投票する。\n",
+	"Vote to end the game\nin favour of the enemy team.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select surrender if you're sure.\n- everyone votes.\n":"敵に好印象を持たせて\nこのゲームを終わらせる投票\n\n- この機能の悪用があれば報告を。\n\n使い方:\n\n- 本当に良いなら降伏を選ぶ。\n- みんなで投票する。\n",
 	"We Surrender! (I'm sure)":"降伏します! (私は確かです)",
 	//vote scramble
 	"Scramble":"チームの再抽選",
+	"Scramble the teams?":"チームを再抽選する?",
+	"Voting for team scramble\nis not allowed when playing\nwith a duplicate instance of KAG.\n\nTry rejoining the server\nif this was unintentional.":"KAGを多重起動してプレイしている場合\nチームの再抽選投票は利用できない\n\n意図的でない場合\nサーバーに再接続を試そう。",
+	"Voting for team scramble\nis not available as a spectator\n":"チームの再抽選の投票は\n観客者は利用できない\n",
+	"Voting for team scramble\nis not allowed after the game starts.\n":"チームの再抽選の投票は\nゲーム開始後には許可されていない。\n",
+	"Voting for team scramble\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"連続投票による迷惑行為を防ぐため\nチームの再抽選を投票するには\n投票が開始されるたびに\n{NEXTMAP_MINS}分待つ必要がある。",
+	"Vote team scramble":"",
+	"Vote to scramble teams\nto hopefully make them balanced.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select scramble if you're sure.\n- everyone votes.\n":
+	"チームを再抽選する投票\n上手くいけばチームのバランスが取れる。\n\n- この機能の悪用があれば報告を。\n\n使い方:\n\n- 本当に良いなら再抽選を選ぶ。\n- みんなで投票する。\n",
+	"Rebalance Teams! (I'm sure)":"チームのバランスを取り直す! (私は確かです)",
 	//vote chat messages
 	"Votekick passed! {USER} will be kicked out.":"キック投票可決! {USER} はキックされる。",
 	"{USER} left early, acting as if they were kicked.":"{USER} はキックされる前に自ら退室した",
