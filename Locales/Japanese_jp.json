@@ -21,6 +21,7 @@
 	"h ": "時間 ",
 	"m ": "分 ",
 	"s ": "秒 ",
+	"Map name : "           :"マップ名 : ",
 
 //ScoreboardRender.as
 	"Players: {PLAYERCOUNT}":"プレイヤー: {PLAYERCOUNT}",
@@ -134,6 +135,9 @@
 
 //ShowTipOnDeath.as
 	"Tip: {TIP}": "Tips: {TIP}",
+
+//DrawHoverMessages
+	"Coins": "コイン",
 
 //// SOLO GAME MODES ////
 //Tutorial01.as
@@ -276,10 +280,24 @@
 //Descriptions.as
 	"Bombs for Knight only.":
 	"ナイト専用の爆弾。",
-	"Arrows for Archer and mounted bow.":
-	"アーチャーと固定弓台専用の矢。",
+	"Water bomb for Knight. Can extinguish fires and stun enemies.":
+	"ナイト用の水の爆弾。消火と敵のスタンが可能。",
+	"An explosive mine. Triggered by contact with an enemy.":
+	"爆発する地雷。敵に触れると作動する。",
 	"Highly explosive powder keg for Knight only.":
 	"ナイト専用の、強烈な火薬入りのタル。",
+	"Fire satchel for Knight only.":
+	"ナイト専用の火の鞄。",
+	"Arrows for Archer and mounted bow.":
+	"アーチャーと固定弓台専用の矢。",
+	"Water arrows for Archer. Can extinguish fires and stun enemies.":
+	"アーチャー用の水の矢。消火と敵のスタンが可能。",
+	"Fire arrows used to set wooden structures on fire.":
+	"木造建築を火事にするための火の矢。",
+	"Bomb arrows for Archer.":
+	"アーチャー用の爆弾の矢。",
+	"A siege engine designed to break open walls and fortifications.":
+	"要塞や壁をぶち破るように設計された攻城兵器。",
 	"A stone throwing, ridable siege engine, requiring a crew of two.":
 	"投石と操縦の可能な攻城兵器、二人の操縦士を必要とする。",
 	"A bolt-firing pinpoint accurate siege engine, requiring a crew of two.":
@@ -290,35 +308,42 @@
 	"バリスタ専用の爆発する弾。",
 	"For Ballista\nTurns its piercing bolts into a shaped explosive charge.":
 	"バリスタの弾を強化\nバリスタの弾が爆発し、破壊できる範囲が広がるように。",
-	"A small boat with two rowing positions and a large space for cargo.":
-	"2つの漕ぐ席と大きい荷物スペースのある小型ボート。",
-	"A fast rowing boat used for quickly getting across water.":
-	"水上を素早く移動できる漕ぎ船。",
-	"A slow armoured boat which acts also as a water base for respawn and class change.":
-	"クラスチェンジと復活の可能な水上基地として機能する、遅くて装甲持ちの船。",
-	//"A siege engine designed to break open walls and fortifications.":"複数人で漕ぐことで、高速移動できる。\nその勢いでブロックを破壊可能だ。",
+	"A deployable respawn point that allows class change. Has a storage and a tunnel that allows fast travel.":
+	"クラスチェンジの可能な展開できるリスポーンポイント。倉庫と素早い移動が可能なトンネル付き。",
 	"Raw stone material.":
 	"石の素材.",
 	"Raw wood material.":
 	"木の素材.",
 	"Lanterns help with mining in the dark, and lighten the mood.":
 	"ランタンは暗所での採掘に役立つ、それと気分を明るくするのにも。",
-	"A circular saw that turns tree logs into wood material.":
-	"丸太を木材に製剤する丸鋸。",
-	//"A trading post. Requires a trader to reside inside.":"商店は、商人がいないと機能しない.",
-	//"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies."
-	"A simple wooden ladder for climbing over defenses.":
-	"敵の防御を乗り越えるための単純な木製はしご。",
+	"Bucket for storing water. Useful for fighting fires.":
+	"水を蓄えるためのバケツ。消火に役立つ。",
+	"A wooden bucket pre-filled with water for fighting fires.":
+	"消火のためにすでに水を蓄えたバケツ。",
+	"Water absorbing sponge. Useful for unflooding tunnels and reducing water stuns.":
+	"水を吸収するスポンジ。トンネルの水抜きと水によるスタンの軽減に役立つ。",
 	"A stone boulder useful for crushing enemies.":
 	"敵を潰すのに有用な岩の玉。",
+	"A trampoline used for bouncing and jumping over enemy walls.":
+	"跳ねて敵の壁を乗り越えるのに使うトランポリン。",
+	"A circular saw that turns tree logs into wood material.":
+	"丸太を木材に製剤する丸鋸。",
+	"A mining drill. Increases speed of digging and gathering resources, but gains only half the possible resources.":
+	"採掘用ドリル。掘削と資材採集の速度が速まるが本来の半分の資材しか手に入らない。",
 	"An empty wooden crate for storing and transporting inventory.":
 	"荷物を入れて運べる空の木箱。",
-	"An explosive mine. Triggered by contact with an enemy.":
-	"爆発する地雷。敵に触れると作動する。",
-	//"Fire satchel for Knight only.":"ナイトのみ点火可能.",
+	"For healing. Don't think about this too much.":
+	"回復用。これについて深く考えない事。",
+	"A trading post. Requires a trader to reside inside.":
+	"交易所。商人が中に住んでいる必要がある。",
+	"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies.":
+	"エクスカリバーはアーサー王の伝説の剣。全ての敵を征する魔法の力を持つと言われている。",
+	"A simple wooden ladder for climbing over defenses.":
+	"敵の防御を乗り越えるための単純な木製はしご。",
 	"A health regenerating heart.":
 	"体力を回復できるハート。",
-	//"A sack for storing more inventory on your back.":"",
+	"A sack for storing more inventory on your back.":
+	"背中にもっとものをしまうための袋。",
 	"A seedling of an oak tree ready for planting.":
 	"植えられる樫の木の苗木。",
 	"A seedling of a pine tree ready for planting.":
@@ -331,44 +356,38 @@
 	"木製のドア。",
 	"Stone spikes used as a defense around fortifications.":
 	"要塞周りを守るために使う石のトゲ。",
-	"A trampoline used for bouncing and jumping over enemy walls.":
-	"跳ねて敵の壁を乗り越えるのに使うトランポリン。",
 	"A stationary arrow-firing death machine.":
 	"固定された、矢を発射する殺人マシン。",
-	"Fire arrows used to set wooden structures on fire.":
-	"木造建築を火事にするための火の矢。",
+	"A small boat with two rowing positions and a large space for cargo.":
+	"2つの漕ぐ席と大きい荷物スペースのある小型ボート。",
+	"A fast rowing boat used for quickly getting across water.":
+	"水上を素早く移動できる漕ぎ船。",
+	"A slow armoured boat which acts also as a water base for respawn and class change.":
+	"クラスチェンジと復活の可能な水上基地として機能する、遅くて装甲持ちの船。",
 	"A tunnel for quick transportation.":
 	"素早く移動するためのトンネル。",
-	"Bucket for storing water. Useful for fighting fires.":
-	"水を蓄えるためのバケツ。消火に役立つ。",
-	"A wooden bucket pre-filled with water for fighting fires.":
-	"消火のためにすでに水を蓄えたバケツ。",
 	"A generic factory. Requires Research Room, technology upgrade and big enough population to produce items.":
 	"汎用的な工場。研究室を必要とし、技術アップグレードと十分な人口でアイテム製造が可能。",
-	//"Kitchen produces food which heal wounds.":"キッチンでは体力回復アイテムが購入できる",
-	//"A plant nursery with grain, oak and pine tree seeds.":"種生成所では、木の苗を作成できる",
-	//"Barracks allow changing class to Archer or Knight.":"バラックではアーチャーかナイトに変更できる",
-	//"A storage than can hold materials and items and share them with other storages.":"ストレージは付近の素材やアイテムを自動的に保存する。\n近くでFキー、右のアイコンで中のものを回収できる",
-	"A mining drill. Increases speed of digging and gathering resources, but gains only half the possible resources.":
-	"採掘用ドリル。掘削と資材採集の速度が速まるが本来の半分の資材しか手に入らない。",
+	"Kitchen produces food which heal wounds.":
+	"キッチンは傷を癒す料理を製造する。",
+	"A plant nursery with grain, oak and pine tree seeds.":
+	"穀物、樫と松の木の種の育種所。",
+	"Barracks allow changing class to Archer or Knight.":
+	"兵舎ではアーチャーかナイトにクラスを変更できる。",
+	"A storage than can hold materials and items and share them with other storages.":
+	"資材やアイテムを格納し、他の倉庫と共有できる倉庫。",
 	"Bombs for Knights & arrows for Archers.\nAutomatically distributed on respawn.":
 	"ナイト用の爆弾とアーチャー用の矢。\nリスポーン時に自動的に補給される。",
 	"Items used for blowing stuff up.":
 	"爆破用のアイテム。",
 	"Items used for lighting things on fire.":
 	"火で物を照らすためのアイテム.",
-	//"When team is in possession of stone construction technology it allows builders to make stone walls, doors, traps and spikes.":""
-	//"Dorm increases population count and allows spawning and healing inside. Requires a migrant.":"寮は人口を増やし、産卵と内部の治癒を可能にします。 移民が必要です"
+	"When team is in possession of stone construction technology it allows builders to make stone walls, doors, traps and spikes.":
+	"チームが石造建築の技術を所有するとビルダーが石の壁、ドア、罠とトゲを建築できるようになる。",
+	"Dorm increases population count and allows spawning and healing inside. Requires a migrant.":
+	"寮は人口を増やし、中で復活と回復が可能。 移民が必要。",
 	"Research room.":
-	"研究所。",
-	"Water arrows for Archer. Can extinguish fires and stun enemies.":
-	"アーチャー用の水の矢。消火と敵のスタンが可能。",
-	"Bomb arrows for Archer.":
-	"アーチャー用の爆弾の矢。",
-	"Water bomb for Knight. Can extinguish fires and stun enemies.":
-	"ナイト用の水の爆弾。消火と敵のスタンが可能。",
-	"Water absorbing sponge. Useful for unflooding tunnels and reducing water stuns.":
-	"水を吸収するスポンジ。トンネルの水抜きと水によるスタンの軽減に役立つ。",
+	"研究室。",
 	"Builder workshop for building utilities and changing class to Builder":
 	"便利な道具を作ったりビルダーにクラスチェンジするためのビルダーワークショップ。",
 	"Knight workshop for building explosives and changing class to Knight":
@@ -397,8 +416,6 @@
 	"この魔法の巻物は付近の敵全員を血まみれの肉片の山にする",
 	"This magic scroll will evaporate all water in a large surrounding orb.":
 	"この魔法の巻物は付近の水を一気に蒸発させることができる",
-	//"Fire satchel for Knight only.":"火のサッチェル（ナイト専用）",
-
 
 //// HELPS ////
 //DrawHelp.as
@@ -440,9 +457,10 @@
 	"$workshop$Convert workshop    $KEY_E$": "$workshop$ワークショップを変換    $KEY_E$",
 	"Check production    $KEY_E$": "製造状況を確認    $KEY_E$",
 	"Requires a free worker from Hall":"待機中の労働者が砦に必要",
+	"Convert Factory":"工場を変換",
 	"Convert Workshop":"ワークショップを変換",
 	"Convert Workshop\n\n$RED$Requires {TECH_NAME}\n from Hall\n$RED$            $RESEARCH$\n\n":"ワークショップを変換\n\n$RED$砦で {TECH_NAME}\n の技術が必要\n$RED$                 $RESEARCH$\n\n",
-	"Upgrade to...":"～へアップグレード...",
+	"Upgrade to...":"アップグレード...",
 
 	//"Saw":"裁断機", //in blobs
 	//"Ballista":"バリスタ", //in blobs
@@ -712,15 +730,15 @@
 	"Hall":"砦",
 	"Barracks":"兵舎", //OLD
 	"Bed":"ベッド",
-	//"Dormitory":"", //OLD
+	"Dormitory":"寮", //OLD
 	"Kitchen":"キッチン", //OLD
 	"Seeds":"種",
 	"Nursery":"育種所", //OLD
-	//"Research":"研究所", //OLD
+	"Research":"研究所", //OLD
 	"Mill Saw":"製材ノコギリ",
 	"Saw":"ノコギリ",
 	"Trader":"商人",
-	"Trading Post":"商店",
+	"Trading Post":"交易所",
 	"Travel Tunnel":"トンネル",
 	"Transport Tunnel":"トンネル",
 	"Boulder":"岩玉",
@@ -737,7 +755,7 @@
 	"Heart":"ハート",
 	"Lantern":"ランタン",
 	"Wood Log":"丸太",
-	//"Powerup":"", //OLD
+	"Powerup":"パワーアップ", //OLD
 	"Arrow":"矢",
 	"Arrows":"矢束",
 	"Ballista Bolt":"バリスタのボルト",
@@ -766,6 +784,9 @@
 	"Seed":"種",
 	"Pine Seed":"松の種",
 	"Oak Seed":"樫の種",
+	"Grain Seed":"穀物の種",
+	"Bush seed":"茂みの種",
+	"Flower seed":"花の種",
 	"Bushy Tree":"もじゃもじゃな木",
 	"Pine Tree":"松の木",
 	"Very Important Flag":"重要な旗",
@@ -792,6 +813,21 @@
 	"Large Door":"大きな扉", //OLD
 	"Catapult":"カタパルト",
 	"Catapult Rock":"カタパルトの投石",
+	"Outpost":"前哨基地",
+	"greg":"グレッグ",
+
+// MakeFood.as
+	"Cooked Fish":"調理した魚",
+	"Cooked Steak":"調理したステーキ",
+	"Bread":"パン",
+	"Cake":"ケーキ",
+
+// Kitchen.as
+	"Shark steak":"サメのステーキ",
+	"Shark Chop":"シャークチョップ",
+	"fishy":"お魚",
+	"   Russian":"   ロシア人",
+	"Russian Burger":"ロシアンバーガー",
 
 //// INVENTORY NAMES ////
 	"Backpack":"バックパック",
@@ -811,21 +847,26 @@
 	"Shop":		"お店",		//Shop.as (menu desc) & TradingMenu.as (btn)
 	"Storage":	"倉庫",	//Storage.as (btn)
 	"Rest":		"休息",		//Quarters.as (btn)
+	"Store":    "しまう",//Storage.as (btn)
 	"Add fuel":	"燃料追加",	//Quarry.as (btn)
+	"Open":	"開ける",//Chset.as (btn)
+	"Open your Christmas present":	"クリスマスプレゼントを開ける",//Present.as (btn)
 	"Research":	"研究",
 	"Immobilise":	"固定",  	//PopWheelsOff.as (btn)
 	"Detach {ITEM}":"{ITEM}を切り離す",	//VehicleAttachment.as (btn)
-	"Load {ITEM}":  "{ITEM}を積載する",	//VehicleCommon.as (btn)
+	"Load {ITEM}":  "{ITEM}を積載する",	//VehicleCommon.as (btn) & Magazine.as (btn)
 	"Swap Class":	"クラスチェンジ", 	//OneClassAvailable.as & TentLogic.as (btns)
 	"Swap class":	"クラスチェンジ", 	//StandardRespawnCommand.as (menu desc)
 	"Change class": "クラスチェンジ",	//Hall.as, TDM_Ruins.as, WAR_base.as, Ballista.as, WarBoat.as
-	"Trade":	"取引",
+	"Trade":	"取引", //WAR.as (menu desc)
+	"Buy weapons":	"武器を購入", //Challenge.as (menu desc) & TDM_Trading.as (menu desc)
 	"Build":	"建築",	//BuilderInventory.as
 	"Current bomb": "現在の爆弾",	//KnightLogic.as
 //Components
-	"Unload":"取り出す", //Magazine.as (btn)
+	"Unload {ITEM}":"{ITEM}を取り出す", //Magazine.as (btn)
 	"Insert 60 coins":"60コイン入れる", //CoinSlot.as (btn)
-	"Activate":"起動", //PushButton.as (btn)
+	"Activate":"起動", //PushButton.as (btn) & Lever.as (btn)
+	"Deactivate":"停止", //Lever.as (btn)
 //ArcherLogic.as
 	"Current arrow":"現在の矢",
 	"Regular arrows":"普通の矢",
@@ -857,6 +898,12 @@
 	"{USERNAME} connected as {PLAYER}": "{USERNAME} が {PLAYER} として接続",
 	"{USERNAME} is now known as {PLAYER}": "{USERNAME} は {PLAYER} の名で知られている",
 	"Map: {MAP}": "マップ名: {MAP}",
+
+//Powerup.as
+	"{NAME} picked up '{TAG}'": "{NAME}は'{TAG}'を拾った",
+	"powerup superjump": "パワーアップ スーパージャンプ",
+	"powerup slash timestop": "パワーアップ スラッシュタイムストップ",
+	"powerup fast arrow": "パワーアップ ファストアロー",
 
 //// SERVER CONNECTION EVENTS ////
 	"Connecting to {SERVER}...": " {SERVER}に接続中...",
@@ -908,10 +955,10 @@
 ////GAMEMODE INFO////
 	"All Gamemodes":"全てのゲームを表示",
 	"Challenges":"チャレンジモード",
-	"Capture The Flag":"キャプチャー・ザ・フラッグ (CTF)",
+	"Capture the Flag":"キャプチャー・ザ・フラッグ",
 	"CTF":"CTF",
 	"Team Deathmatch":"チームデスマッチ",
-	"Take The Halls":"テイク・ザ・ホール (TTH)",
+	"Take the Halls":"テイク・ザ・ホール",
 	"TTH":"TTH",
 	"Challenge":"チャレンジ",
 	"Build whatever your heart desires. Respect other folk's creations!":"気の赴くままに建築できる。他人の創作も尊重しよう!",
@@ -936,6 +983,8 @@
 	"Offline":"オフライン",
 	"Forgot?":"忘れた?",
 	"PLAY":"ゲーム開始",
+	"Restore":"修復",
+	"Minimize":"最小化",
 //guiMain.xml
 	"Solo":"ソロモード",
 	"Multiplayer":"マルチプレイ",
@@ -946,15 +995,19 @@
 	"Server Rules":"サーバールール",
 	"News":"ニュース",
 	"Discord":"Discord",
+	"Patreon":"Patreon",
+	"Github":"Github",
 	"IRC":"IRC",
 	"Wiki":"ウィキ",
 	"Set account e-mail":"Eメールアカウント設定",
 	"Quit":"終了",
 	"Finish Account Linking":"アカウントの連帯",
 	"Your KAG account e-mail and password":"あなたのKAGでのEメールアドレスとパスワード",
-	"You can use these credentials to login on kag2d.com and kagforums.com":"このアカウントとパスワードで kag2d.com と kagforums.com にもログインできる",
-	"E-mail:":"E-mail",
+	"You can use these credentials to login on kag2d.com":"このアカウントとパスワードでkag2d.comにログインできます",
+	"You can use these credentials to login on kag2d.com and kagforums.com":"このアカウントとパスワードでkag2d.comとkagforums.comにログインできます",
+	"E-mail:":"Eメール",
 	"Submit":"承認",
+	"Open external web browser?":"外部のWEBブラウザを開きますか?",
 //guiMulti.xml
 	"Simple Join":"クイックプレイ",
 	"Browse servers":"サーバー検索",
@@ -1018,27 +1071,57 @@
 	"Misc Menu"                 :"その他のメニュー",
 	"Build Modifier"            :"建築の特殊用途",
 	"Pickup Modifier"           :"ピックアップの特殊用途",
-	//"":"",
+	"SPACE":"スペース",
+	"MOUSE LEFT":"マウス左ボタン",
+	"MOUSE RIGHT":"マウス右ボタン",
+	"MOUSE MIDDLE":"マウス中ボタン",
+	"MOUSE SCROLL UP":"マウススクロール上",
+	"MOUSE SCROLL DOWN":"マウススクロール下",
+	"LEFT SHIFT":"左SHIFT",
+	"LEFT CTRL":"左CTRL",
+	"LEFT ALT":"左ALT",
+	"RIGHT SHIFT":"右SHIFT",
+	"RIGHT CTRL":"右CTRL",
+	"RIGHT ALT":"右ALT",
+	"NONCONVERT":"無変換",
+	"CONVERT":"変換",
+	"LEFT":"←",
+	"RIGHT":"→",
+	"UP":"↑",
+	"DOWN":"↓",
+	"PRIOR":"PageUp",
+	"NEXT":"PageDown",
+	//"":"",// add numpad buttons?
 	"(Unused keys, for mods)"   :"(未使用キー、MOD用に)",
 	"Smooth shader"             :"スムーズシェーダー",
 	"Faster graphics"           :"高速描写",
+	"Check this if the game is choppy or slow":"ゲームが途切れたり遅い状態になる場合こちらを有効にしてください",
 	"Cap framerate"             :"FPS制限",
+	"Check this to sync the framerate with the tickrate (30FPS).\nWhen unchecked, interpolation may induce an extra 1/30 second frame lag.\nTick this if you experience low performance.":
+	"有効にするとフレームレートをティックレートと同期させます(30FPS)。\n無効にした場合、補間による追加の1/30秒のフレームラグが発生する可能性があります。\n低パフォーマンスを経験した場合お試しください。",
 	"VSync - Requires Restart"  :"垂直同期 - 設定後再起動が必要",
+	"Sync rendering with monitor refresh rate (prevents tearing)":"描写をモニターの更新速度を同期させます(ティアリングの防止)",
 	"Game music"                :"ゲーム音楽",
+	"Turn on\\off the game music.":"ゲーム音楽のオン/オフ。",
 	"Sound Volume:"             :"効果音音量:",
 	"Music Volume:"             :"音楽音量:",
 	"Volume:"                   :"ボリューム:",
 	"Menu music"                :"メニュー音楽",
+	"Turn on\\off the menu music.":"メニュー音楽のオン/オフ。",
 	"Swap audio channels"       :"オーディオチャンネル変更",
+	"Tick this if your sound is backwards.":"音声が逆になっている場合にお試しください。",
 	"Language (EXPERIMENTAL):"  :"言語 (試験的)",
 	"Fixed Camera"              :"固定カメラ",
+	"Fixed camera = platform style; Not fixed camera = Soldat/mouse look style":"固定カメラ = プラットフォームスタイル; 非固定カメラ = Soldat/マウス視点スタイル",
 	"Snap Camera to Pixel"      :"ピクセル単位でカメラスナップ",
 	"Allow Cinematic Camera"    :"シネマティックカメラを許可",
 	"Disable Screen Shake"      :"画面を揺らさない",
+	"Disable the screen shaking effect":"画面の揺れるエフェクトを無効化",
 	"Kids Safe"                 :"残酷描写カット",
 	"Chat Filter"               :"チャットフィルター",
 	"Show Team-Mates Names"     :"チームメイトの名前表示",
 	"Show Minimap"              :"ミニマップ表示",
+	"Checking this might improve game performance":"有効にするとゲームパフォーマンスが向上する可能性があります",
 	"Show Chat Bubbles"         :"チャットの吹き出し表示",
 //guiSocial.xml
 	"KAG World":"KAG World",
@@ -1049,8 +1132,8 @@
 	"Challenges!":"チャレンジ!",
 	"Tutorials":"チュートリアル",
 	"Basics":"基礎",
-	"Capture the Flag":"キャプチャー・ザ・フラッグ",  //Already exists in GAMEMODE INFO, but it's Capture "The" Flag
-	"Take the Halls":"テイク・ザ・ホール", 　　　　//Already exists in GAMEMODE INFO, but it's Take "The" Halls
+	//"Capture the Flag":"キャプチャー・ザ・フラッグ",  //Already exists in GAMEMODE INFO
+	//"Take the Halls":"テイク・ザ・ホール", 　　　　//Already exists in GAMEMODE INFO
 //guiStarter.xml
 	"King Arthur's Gold":"King Arthur's Gold",
 	"KAG Community":"KAGコミュニティー",
@@ -1079,7 +1162,7 @@
 
 //Server Browser + guiBrowser.xml
 	"Server Browser":                                "サーバー検索",
-	"{SERVERS} servers with {PLAYERS} players":      ": {SERVERS}のサーバーが稼働　プレイヤーは{PLAYERS}人",
+	"{SERVERS} servers with {PLAYERS} players":      "{SERVERS}のサーバーが稼働　プレイヤーは{PLAYERS}人",
 	"Play":                                          "プレイする",
 	"Spectate":                                      "観戦者数",
 	"OK":                                            "OK",
@@ -1096,7 +1179,8 @@
 	"Refresh":                                       "再検索",
 	"Players (%):":                                  "プレイヤー人数 (%):",
 	"Game Mode:":                                    "ゲームモード:",
-	"Instant Search...":                             "検索中...",
+	" Instant Search...":                            " 検索...",
+	"Waiting...":                                    "待機中...",
 	"Players: {CURRENT} / {MAXIMUM}":                "人数: {CURRENT} / {MAXIMUM}",
 	"Players: {CURRENT} / {MAXIMUM} (FULL)":         "人数: {CURRENT} / {MAXIMUM} (満室)",
 	"Spectator Slots: {CURRENT} / {MAXIMUM}":        "観戦数: {CURRENT} / {MAXIMUM}",
@@ -1166,7 +1250,7 @@
 	"Kick {USER}":"{USER}をキック",
 	"Kicking {USER}":"{USER}をキックする",
 	"Make sure you're voting to kick\nthe person you meant.\n":"キック投票している相手が正しいか確認しよう。",
-	"Yes, I'm sure":"はい、その通りです",
+	"Yes, I'm sure":"はい、私は確かです",
 	"(No-one available)":"(投票対象がいない)",
 	"Can't vote":"投票不可能",
 	"You are now allowed to votekick\nplayers on this server\n":"このサーバーでサーバー内のプレイヤーを\nキック投票をすることが許可された\n",
@@ -1188,7 +1272,7 @@
 	"Voting for surrender\nis not available as a spectator\n":"降伏の投票は観客者は利用できない",
 	"Vote Surrender":"降伏投票",
 	"Vote to end the game\nin favour of the enemy team.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select surrender if you're sure.\n- everyone votes.\n":"敵に好印象を持たせて\nこのゲームを終わらせる投票\n\n- この機能の悪用があれば報告を。\n\n使い方:\n\n- 本当に良いなら幸福を選ぶ。\n- みんなで投票する。\n",
-	"We Surrender! (I'm sure)":"降伏します! (その通りです)",
+	"We Surrender! (I'm sure)":"降伏します! (私は確かです)",
 	//vote scramble
 	"Scramble":"チームの再抽選",
 	//vote chat messages
@@ -1246,13 +1330,17 @@
 	"Save Map":				"マップ保存",
 	"Quit to Main Menu":			"終了してメニューへ",
 
+// WheelMenuCommon.as
+	"Select option":"オプションを選択",// menu default, unused
+	"(no selection)":"(未選択)",
+
 // EmotesCommon.as
 	"Show emoticon":"エモートを表示",
 	"Skull":"ドクロ",
 	"Blue flag":"青い旗",
 	"Musical note":"音符",
 	"Point right":"右を差す",
-	"Smiling":"笑顔",
+	"Smile":"笑顔",
 	"Red flag":"赤い旗",
 	"Flex":"腕曲げ",
 	"Point down":"下を差す",
@@ -1264,7 +1352,7 @@
 	//"Archer":"",
 	"Sweat drop":"汗",
 	"Point up":"上を差す",
-	"Laughing":"笑い",
+	"Laugh":"笑い",
 	//"Knight":"",
 	"Question":"？",
 	"Thumbs up":"サムズアップ",
@@ -1298,7 +1386,10 @@
 	"Mine":"地雷",
 	"Sorry":"ソーリー",
 	"Rat":"ラット",
-	"Dismay":"唖然",
+	"Dismay":"呆れ",
+
+// EmoteMenu.as
+	"Select emote":"エモートを選択",
 
 // EmoteBinderMenu.as
 	"Bindings":"バインディング",
@@ -1311,6 +1402,78 @@
 	"Bind Builder Blocks":"ビルダーのブロックをバインド",
 	"Builder Block Hotkey Binder":"ビルダーのブロックホットキーバインダー",
 	"Select a keybind below, then select the block you want":"キーバインドを選んでから、使いたいブロックを選ぶ",
+
+// TauntsCommon.as
+	"Answer":"返答",
+	//"Build":"",//Already exists in Button descriptions
+	"Need":"要求",
+	"Taunt":"挑発",
+	"Order":"指示",
+	"Alarm":"警告",
+	/* We shouldn't translate them, because when use the taunts, affects the chat in non english language
+	"Yes":"イエス",
+	"Sometimes":"時々",
+	"Always":"いつでも",
+	"Maybe":"多分",
+	"No":"ノー",
+	"Rarely":"たまに",
+	"Never":"絶対ない",
+	"I am unsure":"不確かだが",
+	"Build a wall here":"ここに壁を建てろ",
+	"Build a door here":"ここにドアを建てろ",
+	"Build a bridge here":"ここに橋を掛けろ",
+	"Build a ladder here":"ここにはしごを掛けろ",
+	"Build a tunnel here":"ここにトンネルを建てろ",
+	"Build a trap here":"ここに罠を建てろ",
+	"Build a quarters":"宿舎を建てろ",
+	"Build a knight shop":"ナイトショップを建てろ",
+	"Build an archer shop":"アーチャーショップを建てろ",
+	"Build a builder shop":"ビルダーショップを建てろ",
+	"Need knights!":"ナイトが必要だ!",
+	"Need archers!":"アーチャーが必要だ!",
+	"Need builders!":"ビルダーが必要だ!",
+	"Need bombs!":"爆弾が必要だ!",
+	"Need arrows!":"矢が必要だ!",
+	"Need materials!":"建材が必要だ!",
+	"Need gold!":"金塊が必要だ!",
+	"Need food!":"食料が必要だ!",
+	"For the King!":"王のために!",
+	"Run for your life!":"命がけで突っ込め!",
+	"Chicken!":"チキンめ!",
+	"Your mother was a hamster!":"お前のかーちゃんハムスター!",
+	"Your father smelt of elderberries!":"お前のとーちゃんエルダーベリーみたいに臭いぞ!",
+	"I fart in your general direction!":"お前の方に屁をしてやったぜ!",
+	"I am invincible!":"俺は無敵だ!",
+	"None shall pass!":"何も通さぬぞ!",
+	"Our team always triumphs!":"俺らのチームが必ず勝つ!",
+	"My sword is bigger than your sword!":"俺の剣はお前のよりでかいぞ!",
+	"Go and boil your bottoms!":"ズボンを蒸らしな!",
+	"Bloody peasant!":"クソ百姓め!",
+	"Cover me":"援護を頼む",
+	"Hold position":"場所を保持しろ",
+	"Fall back":"後退だ",
+	"Move!":"動け!",
+	"Follow me":"付いて来い",
+	"Go, go, go!":"行け、行け、行け!",
+	"Rush!":"ラッシュ!",
+	"Repair the castle":"城を直せ",
+	"Load the siege":"攻城兵器を準備しろ",
+	"Stick together":"団結して行くぞ",
+	"Incoming!":"来るぞ!",
+	"Under siege fire!":"包囲攻撃されてる!",
+	"Enemies!":"敵だ!",
+	"Trap!":"罠だ!",
+	"Rats!":"ラットだ!",
+	"Flag!":"旗!",
+	"Keg!":"タルだ!",
+	"Mine!":"地雷だ!",
+	"Fire!":"火事だ!",
+	"Help!":"助けてくれ!",
+	*/
+
+// TauntMenu.as
+	"Select category":"カテゴリーを選択",
+	"Select phrase":"フレーズを選択",
 
 // Accolades
 	"support tier: {SUPPORT_TIER}":"サポート階級: {SUPPORT_TIER}",
