@@ -232,14 +232,17 @@
 	"もし２つ以上の砦があれば、その間を素早く移動することが出来る。\n$KEY_E$を押しながら\n\n青い矢印を選択",
 	"Those are the basics you need to know about Take the Halls. The rest can be learned when playing online by observation. This game mode is simple but complexity comes from great strategy. See you on the battlefield!\n\nPress $KEY_ESC$ to get out.":
 	"これらが知っておくべきTTHの基本。残りはオンラインでのプレイで学ぶことが出来るだろう。このゲームモードはシンプルながら戦略性が奥深い。戦場で待ってるぞ!\n\n$KEY_ESC$を押してゲームを出よう。",
-//Challenge_PrincessStart
+//Challenge_PrincessStart.as
 	"   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.":
 	"   険しき崖の上にそびえ立つのは、猛々しい戦士による軍隊により守られし「邪悪なる将軍セジウィック」の城である。セジウィックは城の最も奥深くに、麗しき姫「ゲティ姫」が囚われの身となっている。\n\nあなたは王に仕える騎士。たった一人、剣と盾だけで、セジウィックを倒し美しいゲティ姫を救出しなければならない。\n\n恐怖を打ち捨て、 ただ目的の為に進み、死を覚悟し、強くあれ。これが騎士の道だ。",
+//Challenge_PrincessEnd.as
 	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .":
 	"   そして冒険は終わりを迎えた。「邪悪なる将軍セジウィック」は倒され、美しいゲティ姫はあなたの腕の中に守られている。記憶の中で初めて、国は平和の日の光を受けている。しかし、忘れてはならない: 王に仕える騎士の戦う時はまた来ることを. . . .",
 	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .":
 	"   そして冒険は終わりを迎えた。邪悪なる将軍セジウィック」は倒されたが、美しいゲティ姫はあなたの足元で動かなくなっている。記憶の中で初めて、国は平和の日の光を受けている。しかし私たちの最愛の姫を弔いながら. . . .",
-
+	"The End.":"おしまい。",
+	"For more adventures there is an entire multiplayer world ready to explore. If you've purchased the game just launch the servers browser in Multiplayer":
+	"さらなる冒険のために探険可能な全てのマルチプレイヤーの世界がある。もしゲームを購入したならマルチプレイヤーにてサーバーブラウザを起動しよう",
 //Sandbox.as
 	"Welcome to King Arthur's Gold":"King Arthur's Goldへようこそ",
 	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"これはサンドボックスモードです。\nあなたは思うがままに、自由に、建築を試してみましょう。\n[ESC]を押して、設定を確認できます。\nごゆっくりどうぞ!",
@@ -504,9 +507,12 @@
 //Crate.as
 	"Unpack all":"中身をすべて出す",
 	"Stop {ITEM}":"止める {ITEM}",
-	"Unpack {ITEM}":" {ITEM}を取りだす",
-	"Unpack {ITEM}   $KEY_E$": " {ITEM} を取り出す   $KEY_E$",
-	"Can't unpack {ITEM} here": "ここでは取り出せない {ITEM} ",
+	"Unpack {ITEM}":"{ITEM}を取りだす",
+	"Unpack {ITEM}   $KEY_E$": " {ITEM}を取り出す   $KEY_E$",
+	"Can't unpack {ITEM} here": "ここで{ITEM}は取り出せない",
+	"Get out": "出る",
+	"Get inside": "中に入る",
+	"Crate with {ITEM}": "{ITEM}入りの箱",
 
 //Scroll.as
 	"$scroll$Pick up    $KEY_C$": "$scroll$拾う    $KEY_C$",
@@ -766,8 +772,10 @@
 	"Transport Tunnel":"トンネル",
 	"Boulder":"岩玉",
 	"Bucket":"バケツ",
-	"Filled Bucket":"水入りバケツ",
+	"Filled Bucket":"水入りバケツ", //BuilderShop.as
 	"Crate":"木箱",
+	"Crate (wood)":"木箱 (木材)",//BuilderShop.as
+	"Crate (coins)":"木箱 (コイン)",//BuilderShop.as
 	"Bomb":"爆弾",
 	"Keg":"タル",
 	"Mine":"地雷",
@@ -789,6 +797,7 @@
 	"Scroll of Carnage":"惨殺の巻物",
 	"Sponge":"スポンジ",
 	"Bomb Arrow":"爆弾の矢",
+	"Bomb Arrows":"爆弾の矢",//StandardPickup.as
 	"Fire Arrows":"火の矢",
 	"Water Arrows":"水の矢",
 	"Gold":"金塊",
@@ -826,6 +835,7 @@
 	"Spikes":"トゲ",
 	"Trampoline":"トランポリン",
 	"Trap Block":"トラップブロック",
+	"Bridge":"ブリッジ",
 	"Airship":"飛行機", // OLD
 	"Bomber":"爆撃機", //OLD
 	"Ballista":"バリスタ",
@@ -1260,8 +1270,13 @@
 //// VOTES ////
 
 	//VoteCore.as
+	"IN FAVOUR:":"賛成",
+	"AGAINST:":"反対",
 	"Reason: {REASON}"            :"投票理由: {REASON}",
 	"Cast by: {USER}"             :"投票提案者: {USER}",
+	"For:":"賛成:",
+	"Against:":"反対:",
+	"Your vote: {OURVOTE}:":"あなたの投票: {OURVOTE}",
 	"[O] - Yes"                   :"[O] - 賛成",
 	"[P] - No"                    :"[P] - 反対",
 	"Ctrl+O Pass"                 :"Ctrl+O 強制可決",
@@ -1340,6 +1355,11 @@
 	"--- {USER} Voted {DECISION} ---":"--- {USER}は{DECISION}に投票 ---",
 	"In Favour":"賛成",
 	"Against":"反対",
+
+// MapVotesCommon.as
+	"Map Voting Has Ended.. Loading: {MAP}":"マップ投票終了.. ロード中: {MAP}",
+	"Map Voting Ends In: {TIME}":"マップ投票終了まで: {TIME}",
+	//"Please vote for a map!":"マップを投票しよう!",
 
 //// ESC MENUS ////
 	"Back":					"戻る",
@@ -1524,6 +1544,9 @@
 // TauntMenu.as
 	"Select category":"カテゴリーを選択",
 	"Select phrase":"フレーズを選択",
+
+// StandardPickup.as
+	"pickup":"拾う",
 
 // Accolades
 	"support tier: {SUPPORT_TIER}":"サポート階級: {SUPPORT_TIER}",
