@@ -56,7 +56,7 @@ void Bounce(CBlob@ this, CBlob@ blob, Vec2f point1 = Vec2f_zero)
 
 	if (blob.hasTag("player"))
 	{
-		if (blob.isKeyPressed(key_up))
+		if (blob.isKeyPressed(key_up) && !blob.isKeyJustPressed(key_up))
 		{
 			velocity *= scaleWithUpBoost(velocity);
 		}
