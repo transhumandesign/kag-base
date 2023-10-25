@@ -1,13 +1,5 @@
 #include "Help.as";
-
-namespace Trampoline
-{
-	const string TIMER = "trampoline_timer";
-	const u16 COOLDOWN = 7;
-	const u8 SCALAR = 10;
-	const bool SAFETY = true;
-	const int COOLDOWN_LIMIT = 8;
-}
+#include "TrampolineCommon.as";
 
 class TrampolineCooldown{
 	u16 netid;
@@ -134,18 +126,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			TrampolineCooldown cooldown(netid, getGameTime() + Trampoline::COOLDOWN);
 			cooldowns.push_back(cooldown);
 
-			Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
-			velocity.RotateBy(angle);
-
-			blob.setVelocity(velocity);
-
-			CSprite@ sprite = this.getSprite();
-			if (sprite !is null)
-			{
-				sprite.SetAnimation("default");
-				sprite.SetAnimation("bounce");
-				sprite.PlaySound("TrampolineJump.ogg");
-			}
+			Bounce(this, blob, point1);
 		}
 	}
 }
