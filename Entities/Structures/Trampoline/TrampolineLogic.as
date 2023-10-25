@@ -87,32 +87,30 @@ void onTick(CBlob@ this)
 			}
 
 			this.Tag("tramp_freeze");
-			this.getShape().SetRotationsAllowed(false);
+			// this.getShape().SetRotationsAllowed(false);
 			Sound::Play("hit_wood.ogg", this.getPosition());
 
 			CBitStream params;
 			f32 angle = (point.isKeyPressed(key_action2)) 
 							? this.get_f32("old_angle")
-							: getHoldAngle(this, holder, point.isKeyPressed(key_action1));
+							: getHoldAngle(this, holder, point);
 			params.write_f32(angle);
 			this.SendCommand(this.getCommandID("freeze_angle_at"), params);
 		}
 	}
 
+	f32 angle;
 	if (this.hasTag("tramp_freeze") || this.hasTag("feet_active"))
 	{
-		// this.setAngleDegrees(this.get_f32("old_angle"));
-		return;
+		angle = this.get_f32("old_angle");
 	}
-
-	f32 angle;
-	if (point.isKeyPressed(key_action2))
+	else if (point.isKeyPressed(key_action2))
 	{
 		angle = this.get_f32("old_angle");
 	}
 	else
 	{
-		angle = getHoldAngle(this, holder, point.isKeyPressed(key_action1));
+		angle = getHoldAngle(this, holder, point);
 	}
 
 	this.setAngleDegrees(angle);
@@ -262,14 +260,18 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 	return !this.hasTag("no pickup");
 }
 
-f32 getHoldAngle(CBlob@ this, CBlob@ holder, bool step = false)
+f32 getHoldAngle(CBlob@ this, CBlob@ holder, AttachmentPoint@ point)
 {
-	if (step)
+	if (point.isKeyPressed(key_action1))
 	{
 		f32 angle;
 		angle = (holder.getAimPos() - this.getPosition()).Angle();
 		angle = -Maths::Floor((angle - 67.5f) / 45) * 45;
 		return angle;
+	}
+	else if (point.isKeyPressed(key_action2))
+	{
+		return this.get_f32("old_angle");
 	}
 	else
 	{
@@ -357,7 +359,10 @@ void ShowMeYourFeet(CBlob@ this, f32 tramp_angle, bool skip_sprite=false, bool s
 	{
 		this.Tag("feet_active");
 		this.Tag("tramp_freeze");
-		this.getShape().SetRotationsAllowed(false);
+		Vec2f centerofmass = (left_offset + right_offset) / 2;
+		centerofmass.RotateBy(-tramp_angle);
+		this.getShape().SetCenterOfMassOffset(centerofmass);
+		// this.getShape().SetRotationsAllowed(false);
 	}
 
 	if (!lame_legs && !skip_shape)
@@ -430,7 +435,8 @@ void RemoveFeet(CBlob@ this)
 {
 	this.Untag("tramp_freeze");
 	this.Untag("feet_active");
-	this.getShape().SetRotationsAllowed(true);
+	// this.getShape().SetRotationsAllowed(true);
+	this.getShape().SetCenterOfMassOffset(Vec2f_zero);
 	this.getShape().RemoveShape(1);
 	this.getShape().RemoveShape(1);
 
