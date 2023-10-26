@@ -794,7 +794,6 @@ shared class TDMCore : RulesCore
 					CBlob @b = blobsInRadius[i];
 					if (b.getName() == "mat_arrows")
 					{
-						found = true;
 						if (!found)
 						{
 							blob.server_PutInInventory(b);
@@ -803,6 +802,7 @@ shared class TDMCore : RulesCore
 						{
 							b.server_Die();
 						}
+						found = true;
 					}
 				}
 			}
