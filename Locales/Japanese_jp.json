@@ -985,10 +985,13 @@
 	"Use this to make all visible enemies instantly turn into a pile of gibs.":"使用すると見える敵全て肉片の山にする。",
 
 //// TEAMS ////
+/* ignore them for chat font issue
 	"Blue Team": "ブルーチーム",
 	"Red Team": "レッドチーム",
+*/
 
 //// CHAT EVENTS ////
+/* ignore them for chat font issue
 	"{PLAYER} is now spectating": "{PLAYER} は観戦中",
 	"{PLAYER} ({USERNAME}) is now spectating": "{PLAYER} ({USERNAME}) は観戦中",
 	"{PLAYER} has joined {TEAM}": "{PLAYER} が {TEAM}に参加",
@@ -1001,6 +1004,7 @@
 	"{USERNAME} connected as {PLAYER}": "{USERNAME} が {PLAYER} として接続",
 	"{USERNAME} is now known as {PLAYER}": "{USERNAME} は {PLAYER} の名で知られている",
 	"Map: {MAP}": "マップ名: {MAP}",
+*/
 
 //Powerup.as
 	"{NAME} picked up '{TAG}'": "{NAME}は'{TAG}'を拾った",
@@ -1415,12 +1419,13 @@
 	"チームを再抽選する投票\n上手くいけばチームのバランスが取れる。\n\n- この機能の悪用があれば報告を。\n\n使い方:\n\n- 本当に良いなら再抽選を選ぶ。\n- みんなで投票する。\n",
 	"Rebalance Teams! (I'm sure)":"チームのバランスを取り直す! (私は確かです)",
 	//vote chat messages
+	/*ignore them for chat font issue
 	"Votekick passed! {USER} will be kicked out.":"キック投票可決! {USER} はキックされる。",
 	"{USER} left early, acting as if they were kicked.":"{USER} はキックされる前に自ら退室した",
 	"{USER} needs to take a spoonful of cement! Play on!":"{USER} はスプーン一杯のセメントが要るみたいだ!続けたまえ!",
 	"--- A vote was started by {USER} ---":"--- {USER} が投票を開始 ---",
 	"--- Vote \"{TITLE}\" was started by {USER}. Reason: {REASON} ---":"--- {USER} が投票を開始。案件: {TITLE} 理由: {REASON} ---",
-	"--- Vote {OUTCOME}: {YESCOUNT} vs {NOCOUNT} (out of {MAXVOTES}) ---":"--- 投票数 {OUTCOME}: {YESCOUNT} 対 {NOCOUNT} ({MAXVOTES}人中) ---",
+	"--- Vote {OUTCOME}: {YESCOUNT} vs {NOCOUNT} (out of {MAXVOTES}) ---":"--- 投票は{OUTCOME}: {YESCOUNT} 対 {NOCOUNT} ({MAXVOTES}人中) ---",
 	"passed":"可決された",
 	"failed":"否決された",
 	"--- Admin {USER} forced vote to pass ---":"--- 権限者{USER}によって投票を強制的に可決された ---",
@@ -1429,7 +1434,7 @@
 	"--- {USER} Voted {DECISION} ---":"--- {USER}は{DECISION}に投票 ---",
 	"In Favour":"賛成",
 	"Against":"反対",
-
+	*/
 // MapVotesCommon.as
 	"Map Voting Has Ended.. Loading: {MAP}":"マップ投票終了.. ロード中: {MAP}",
 	"Map Voting Ends In: {TIME}":"マップ投票終了まで: {TIME}",
