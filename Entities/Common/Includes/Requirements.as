@@ -40,17 +40,13 @@ string getButtonRequirementsText(CBitStream& inout bs, bool missing)
 		else if (requiredType == "tech" && missing)
 		{
 			text += " \n$"; text += name; text += "$ ";
-			text += quantityColor;
-			text += friendlyName;
-			text += quantityColor;
-			text += "\n\ntechnology required.\n";
+			text += getTranslatedString("{COLOR}{NAME}{COLOR}\n\ntechnology required.\n").replace("{COLOR}", quantityColor).replace("{NAME}", getTranslatedString(friendlyName));
 		}
 		else if (requiredType == "not tech" && missing)
 		{
 			text += " \n";
 			text += quantityColor;
-			text += friendlyName;
-			text += " technology already acquired.\n";
+			text += getTranslatedString("{NAME} technology already acquired.\n").replace("{NAME}", getTranslatedString(friendlyName));
 			text += quantityColor;
 		}
 		else if (requiredType == "coin")
