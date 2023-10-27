@@ -73,8 +73,8 @@
 	"Wooden Platform\nOne way platform"                     :"木の足場\n一方通行のプラットフォーム",
 	"Spikes\nPlace on Stone Block\nfor Retracting Trap"     :"トゲ\n石ブロックに設置すると\n反応型トラップになる",
 	"Workshop\nStand in an open space\nand tap this button.":"ワークショップ\n十分な広さの場所で\n選択することで建築できる",
-	"Workshop"                                              :"ワークショップ",
-	"Workbench"                                             :"ワークベンチ",
+	"Factory\nAn item-producing factory\nRequires migrant"  :"工場\nアイテムを製造する工場\n移住者が必要",
+	"Workbench\nCreate trampolines, saws, and more"         :"ワークベンチ\nトランポリン、ノコギリなどを作れる",
 	"Wire"          :"ワイヤー",
 	"Elbow"         :"L字ワイヤー",
 	"Tee"           :"T字ワイヤー",
@@ -102,19 +102,20 @@
 
 //Production.as
 	"\n\nrequires\n{MISSING}\nAdd materials in storage.":"\n\n{MISSING}が必要\n材料を入れてください",
-	"Producing {ITEM}..."                               :"{ITEM}を製造中...",
-	"{ITEM} available on respawn"                       :"{ITEM}が復活地点に存在",
-	"{ITEM} limit reached."                             :"{ITEM}は最大数まで生産された",
+	"Producing {ITEM}..."                               :"{ITEM}を\n製造中...",//line issue
+	"{ITEM} available on respawn"                       :"{ITEM}が\n復活地点に存在",//line issue
+	"{ITEM} limit reached."                             :"{ITEM}は\n最大数まで\n生産された",//line issue
 
 //FactoryAnim.as
-	"Requires a Worker from the Hall to work here.":"ここで働かせるために砦に労働者の追加が必要",
+	"Requires a Worker from the Hall to work here.":"ここで働かせるために\n砦に労働者の追加が必要",//line issue
 
 //Hall.as
 	"Units"                                   :"ユニット",
 	"Another worker has been hired!"          :"新しく労働者が雇われた!",
-	"Supplies will drop at your halls."       :"補給が砦へ落された.", // TODO accent support
+	"Supplies will drop at your halls."       :"補給が砦へ落される。", 
 	"Buy a worker for {MIGRANT_COST} Gold"    :"労働者を金塊{MIGRANT_COST}で雇用",
 	"Buy worker: Requires {MIGRANT_COST} Gold":"労働者雇用: 金塊が{MIGRANT_COST}必要",
+	"Units"                                   :"ユニット",
 
 //TunnelTravel.as
 	"Travel":"移動",
@@ -133,8 +134,11 @@
 	"(researching - {TIME}s)"                                         :"(研究完了まで - {TIME}秒)",
 	"(click to vote)"                                                 :"(クリックで投票)",
 
+//Researching.as
+	"Use scroll":"巻物を使う",
+
 //Sign.as
-	"The big brown fox jumped over the shaggy chocolate.": "いろはにほへと、ちりぬるを、わかよたれそ、つねならむ、うゐのおくやま、けふこえて、あさきゆめみし、ゑひもせすん",
+	"The big brown fox jumped over the shaggy chocolate.": "いろはにほへと ちりぬるを わかよたれそ つねならむ うゐのおくやま けふこえて あさきゆめみし ゑひもせすん",
 
 //PlayerCamera.as
 	"Following {CHARACTERNAME} ({USERNAME})": "カメラ追跡中・・・ {CHARACTERNAME} ({USERNAME})",
@@ -150,99 +154,101 @@
 	"Walk & Jump $KEY_A$ $KEY_W$ $KEY_D$":"歩行、ジャンプ\n\n$KEY_A$ $KEY_W$ $KEY_D$",
 	"$sign$Go to the right and\n\nbe sure to read these signs.":"$sign$右に進んで\n\n次の看板を確認しよう。",
 	"$Jab$Practice the sword JAB\n\non the dummy.\n\nAim with mouse and tap $LMB$":"$Jab$剣によるジャブ攻撃\n\nカカシがあるので、\n\nマウスカーソルをターゲットに向けて$LMB$ 左クリックで攻撃してみよう。",
-	"Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!":"溜め攻撃を習得しよう。\n\n $LMB$を長押しで剣を引き、\n\n$Tutorial_Slash$このように剣を後ろに構えたら、\n\nボタンを離そう!",
+	"Practice the sword SLASH.\n\nHOLD $LMB$ to draw sword\n\nuntil you see this pose$Tutorial_Slash$\n\nand RELEASE!":"溜め攻撃を習得しよう。\n\n $LMB$を長押しで剣を引き、\n\nこのように剣を後ろに構えたら、$Tutorial_Slash$\n\nボタンを離そう!",//line issue
 	"Practice the DOUBLE SLASH.\n\nHOLD $LMB$ until spark$Tutorial_Slash2$\n\n\nQuickly TAP $LMB$ 2 times!":"二段溜め攻撃を習得しよう。\n\n$LMB$を長押しし、光ったら$Tutorial_Slash2$\n\n$LMB$を二度押し!",
 	"Before entering this room charge your sword $Tutorial_Slash2$\n\nand then quickly\nwalk inside and slash!":"敵がいる部屋に突撃する前に、 しっかりと二段階溜めして $Tutorial_Slash2$\n\nそして素早く\n中に入ってスラッシュ!",
 	"HOLD $RMB$ to shield.\n\nUse mouse to aim shield.":	" $RMB$を押している間は盾を構える。\n\nマウスで盾の向きを変えられる。",
-	"Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$":"壁に向かって走りジャンプを長押しで壁を駆け上れる。\n\n$KEY_D$と$KEY_W$を同時に押しっぱなし",
-	"Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$":"ナイトの攻撃は木のブロックや扉、土を破壊することができる。 壁に向けてジャブ攻撃して突破しよう $LMB$",
-	"Automatically pickup things used by your class.":"各クラス専用のアイテムは、対応するクラス状態で近づくことで自動的にインベントリに回収される。",
+	"Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$":"壁に向かって走りジャンプを長押しで\n壁を駆け上れる。\n\n$KEY_D$$KEY_W$を同時に押しっぱなし",//line issue
+	"Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$":"ナイトの攻撃は木のブロックや扉、\n土を破壊することができる。 \n壁に向けてジャブ攻撃して突破しよう$LMB$",//line issue
+	"Automatically pickup things used by your class.":"各クラス専用のアイテムは、\n対応するクラス状態で近づくことで\n自動的にインベントリに回収される。",//line issue
 	"Press $KEY_SPACE$ to light bomb\n\nAim with mouse.\n\nAgain $KEY_SPACE$ throw it.":"$KEY_SPACE$(スペースキー)で爆弾に点火\n\nマウスで狙い\n再び$KEY_SPACE$を押すことで投げる。",
 	"Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.":"盾による滑空$Tutorial_Glide$\n\n\n谷の上をジャンプし空中で:\nカーソルを上に持っていき\n$RMB$押しっぱなしで盾を使う。",
 
 //Tutorial02.as
-	"Stand on the enemy hall$hall$ to capture it.":"敵の砦$hall$に立ち止まって制圧しよう。",
-	"Halls are respawn points and can be used to switch class.":"砦は復活地点になり、クラスチェンジができる",
-	"In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.":"試しに砦でアーチャーに変更してみよう。$ARCHER$\n\n $KEY_E$(使用キー)を長押ししながら、\n\nカーソルを$CLASSCHANGE$に合わせてから離すことで選択できる",
+	"Stand on the enemy hall$hall$ to capture it.":"敵の砦に立ち止まって制圧しよう。$hall$",//line issue?
+	"Halls are respawn points and can be used to switch class.":"砦は復活地点になり、\nクラスチェンジができる",//line issue
+	"In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.":"試しに砦でアーチャーに変更してみよう。\n$ARCHER$\n\n $KEY_E$(使用キー)を長押ししながら、\n\nカーソルを$CLASSCHANGE$に合わせてから離すことで選択できる",//line issue
 	"As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!":
 	"アーチャー $Tutorial_Archer$\n\n\nマウスで狙い、\n\n$LMB$を長押ししてチャージ\n\n離して矢を発射!",
 	"Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$":"グラップリングフックを使ってみよう。$Tutorial_Grapple$\n\n\nカーソルを天井に合わせ、天井をつかむ\n\n$RMB$を長押し\n\n$KEY_D$で右に揺れてみよう",
-	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"グラップリングと壁の駆け上りで通り抜けよう。\n\n$RMB$長押し\n\nで\n\nジャンプと歩行を長押し$KEY_D$$KEY_W$",
-	"HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!":"$LMB$を輝きが出るまで長押し溜めしておき$Tutorial_Archer2$\n\n\n$LMB$を離すと\n\nトリプルショット!",
-	"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!":"$Tutorial_Archer2$\n\n\n練習したら、扉に入る前に溜めておこう。そして扉の向こうのナイトにトリプルショットを喰らわせよう！",
+	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"グラップリングと壁の駆け上りで\n通り抜けよう。\n\n$RMB$長押しで\n\nジャンプと歩行を長押し$KEY_D$$KEY_W$",//line issue
+	"HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!":"$LMB$を\n\n輝きが出るまで長押し溜めしておき\n\n$Tutorial_Archer2$\n\n\n$LMB$を離すと\n\nトリプルショット!近距離で有効!",//line issue
+	"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!":"$Tutorial_Archer2$\n\n\n練習したら、扉に入る前に溜めておこう。\nそして扉の向こうのナイトに\nトリプルショットを喰らわせよう！",//line issue
 	"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.":"$Tutorial_Grapple$フックで穴を越えてみよう。\n\n\n$RMB$長押しで\n\n$lantern$ランタンの位置にフックを刺し、\n\n$KEY_D$で右に勢いをつけてから\n\n止まる前にフックを離そう。",
 
 //Tutorial03.as
 	"$lantern$\nPickup the lantern $KEY_C$":"$lantern$\nランタンを拾う $KEY_C$",
 	"Drop is the same as pickup $KEY_C$":"離すのも同じ $KEY_C$",
-	"Activate/Deactivate things\n   $KEY_SPACE$\n\n\n$lantern$ On/Off":"手にあるものを有効化/無効化\n   $KEY_SPACE$\n\n\n$lantern$",
-	"By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$":"ところで:画面上部にミニマップがある。$KEY_M$を押すことで非表示にしたり広範囲を見る事が出来る",
-	"Switch class to BUILDER  $BUILDER$\n\nGo to Hall. HOLD $KEY_E$ and mouse over$CLASSCHANGE$":"$BUILDER$ ビルダーになってみよう\n\n砦に立ち、$KEY_E$を押しながら$CLASSCHANGE$にカーソルを合わせて離す",
-	"The passage is blocked here. As builder, dig your way through.\n\nPoint mouse at block\n\nHOLD $RMB$":"ここの通路が塞がれている。しかし、ビルダーならば掘り進むことができる。\n\nブロックにカーソルを合わせ\n\n$RMB$を押し続ける",
+	"Activate/Deactivate things\n   $KEY_SPACE$\n\n\n$lantern$ On/Off":"手にあるものを有効化/無効化\n   $KEY_SPACE$\n\n\n$lantern$ オン/オフ",
+	"By the way: you can see a minimap at the top of the screen. You can hide or expand the minimap by pressing $KEY_M$":"ところで:画面上部にミニマップがある。\n\n$KEY_M$を押すことで非表示にしたり\n\n広範囲を見る事が出来る",//line issue
+	"Switch class to BUILDER  $BUILDER$\n\nGo to Hall. HOLD $KEY_E$ and mouse over$CLASSCHANGE$":"$BUILDER$ ビルダーになってみよう\n\n砦に立ち、$KEY_E$を押しながら\n\n$CLASSCHANGE$にカーソルを合わせて離す",//line issue
+	"The passage is blocked here. As builder, dig your way through.\n\nPoint mouse at block\n\nHOLD $RMB$":"ここの通路が塞がれている。\nしかし、ビルダーならば\n掘り進むことができる。\n\nブロックにカーソルを合わせ\n\n$RMB$を押し続ける",//line issue
 	"$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.":"$Tree$\n\n木を切り倒してみよう\n\n木にカーソルを合わせながら$RMB$を長押し",
-	"$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":"$log$\n\n丸太を割って\n木材にしよう$mat_wood$\n丸太にカーソルを合わせながら$RMB$を長押し",
-	"$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)":"$ladder$\n\nはしごを選んで架けてみよう。\n\n$KEY_F$(インベントリキー)を長押し\n\nカーソルをはしごに合わせてインベントリキーを離す\n\n(はしごの設置には木材$mat_wood$が必要)",
+	"$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":"$log$\n\n丸太を割って\n木材にしよう$mat_wood$\n\n丸太にカーソルを合わせながら$RMB$を長押し",
+	"$ladder$\n\nSelect a ladder to build.\n\nHOLD $KEY_F$ (inventory key)\n\nPut cursor over ladder and release inventory key.\n\n(you need$mat_wood$for this)":"$ladder$\n\nはしごを選んで架けてみよう。\n\n$KEY_F$(インベントリキー)を長押し\n\nカーソルをはしごに合わせて\nインベントリキーを離す\n\n(はしごの設置には木材$mat_wood$が必要)",//line issue
 	"Place by pointing with mouse and pressing $LMB$":"カーソルを置きたい位置に合わせ$LMB$を押すことで設置できる",
-	"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.":"$Pick$\n\n橋を架けてみよう。\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nそれ以外のブロックも試して挙動を確認しておこう。",
-	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"水平方向への建築には限界がある事に注意。下から支えを建築する事でさらに横に伸ばす事が可能。",
+	"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.":"$Pick$\n\n橋を架けてみよう。\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nそれ以外のブロックも試して\n挙動を確認しておこう。",//line issue
+	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"水平方向への建築には\n限界がある事に注意。\n下から支えを建築する事で\nさらに横に伸ばす事が可能。",//line issue
 	"$Pick$  $BlockStone$\n\nMine some stone $RMB$":"$Pick$  $BlockStone$\n\n$RMB$で石土を掘って石材を集めよう",
-	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\nカタパルトに石材を積み込もう。\n\n$KEY_E$の長押し後に石マーク$mat_stone$を選択",
+	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\nカタパルトに石材を積み込もう。\n\n$KEY_E$の長押し後に\n\n石マーク$mat_stone$を選択",//line issue
 	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$\n\n\nカタパルトの後方の発射席に乗ろう\n($down_arrow$表示部分に近付いて乗りこめる)\n\n乗りこむには$KEY_S$を押そう\n\n\n$LMB$を長押しすることでアームを引く\n\n\n(中心は操縦席、上は発射台)",
-	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"最後に。\n\nマルチプレイでは分からないことがあったら気軽に質問してみよう。\n\n$KEY_ENTER$でチャット欄が左下に表示される。\n\n\nそれとエモートも使ってみよう!\n\n$KEY_Q$を長押し",
-	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"これにて基本的なチュートリアルは完了。ゲームを遊んで更に色んなことを学ぼう。\n\n他のソロモードを試したり、マルチプレイヤーに参加しよう!",
+	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"最後に。\n\nマルチプレイでは分からないことが\nあったら気軽に質問してみよう。\n\n$KEY_ENTER$で\n\nチャット欄が左下に表示される。\n\n\nそれとエモートも使ってみよう!\n\n$KEY_Q$を長押し",//line issue
+	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"これにて基本的なチュートリアルは完了。\nゲームを遊んで更に色んなことを学ぼう。\n\n他のソロモードを試したり、\nマルチプレイヤーに参加しよう!",//line issue
 
 //TutorialCTF01.as
 	"Capture the Flag is the simplest game mode for beginners. The goal is to simply retrieve the enemy flag and bring it to your flag.":
-	"キャプチャー・ザ・フラッグは初心者におススメのモード。このモードの目的は、敵陣の旗を獲得し、自軍の旗まで持って帰ること。",
+	"キャプチャー・ザ・フラッグは\n初心者におススメのモード。\nこのモードの目的は、\n敵陣の旗を獲得し、\n自軍の旗まで持って帰ること。",//line issue
 	"Killing enemies, building structures and generally being useful for your team will give you coins.\n\nCoins allow you to purchase ammo, weapons & tools in workshops. First thing, as an example on how it will look when you kill an enemy:\n\nKill those chicken and get their coins!\n\n$chicken$":
-	"敵を殺したり、建築したりチームに貢献する行動でコインが貯まる。\n\nコインはワークショップで矢弾、武器や道具を買うのに使える。最初に、敵を倒すとどんな感じか:\n\nニワトリを倒してコインを手に入れよう!\n\n$chicken$",
-	"Go to the Tent and switch class to BUILDER.\n\nPress $KEY_E$ while standing\n\non the Tent.\n\n\n\n$tent$\n\n\n":"テントに行きビルダーにクラスを変更してみましょう。\n\nテントの近くに行き、\n\n$KEY_E$を押す\n\n\n\n$tent$\n\n\n",
-	"If you've switched to builder in the Tent now you can build workshops for your team.\n\n\nHold $KEY_F$ and select $building$":"ビルダーになったら、あなたはチームの為にワークショップを作ることができる。\n\n\n$KEY_F$を押しっぱなしにしたまま$building$を選択",
-	"If you don't have wood:\n$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.\n\n\n$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":"もし十分な木材が無かったら:\n$Tree$\n\n木を切り倒す\n\n木を狙い$RMB$を長押し\n\n\n$log$\n\n丸太を叩き割り\n木材に$mat_wood$\n\n丸太を狙い$RMB$を長押し。",
-	"Press $KEY_E$ on the frame\n\nto convert it to a proper workshop. Some will require additional resources, go gather them!":"店枠前で$KEY_E$を押して\n\n機能するワークショップにできる。追加で資材を必要にするので、集めに行こう!",
+	"敵を殺したり、建築したり\nチームに貢献する行動でコインが貯まる。\n\nコインはワークショップで\n矢弾、武器や道具を買うのに使える。\n最初に、敵を倒すとどんな感じか:\n\nニワトリを倒してコインを手に入れよう!\n\n$chicken$",//line issue
+	"Go to the Tent and switch class to BUILDER.\n\nPress $KEY_E$ while standing\n\non the Tent.\n\n\n\n$tent$\n\n\n":"テントに行きビルダーに\nクラスを変更してみよう。\n\nテントの近くに行き、\n\n$KEY_E$を押す\n\n\n\n$tent$\n\n\n",//line issue
+	"If you've switched to builder in the Tent now you can build workshops for your team.\n\n\nHold $KEY_F$ and select $building$":"ビルダーになったら、\nあなたはチームの為に\nワークショップを作ることができる。\n\n\n$KEY_F$を押しっぱなしにしたまま\n\n$building$を選択",//line issue
+	"If you don't have wood:\n$Tree$\n\nChop down a tree\n\nHOLD $RMB$ and point at the tree.\n\n\n$log$\n\nChop down logs\ninto WOOD $mat_wood$\n\nHOLD $RMB$ and point at log.":"もし十分な木材が無かったら:\n\n$Tree$\n\n木を切り倒す\n\n木を狙い$RMB$を長押し\n\n\n$log$\n\n丸太を叩き割り\n木材に$mat_wood$\n\n丸太を狙い$RMB$を長押し。",//line issue?
+	"Press $KEY_E$ on the frame\n\nto convert it to a proper workshop. Some will require additional resources, go gather them!":"店枠前で$KEY_E$を押して\n\n機能するワークショップにできる。\n追加で資材を必要にするので、\n集めに行こう!",//line issue
 	"Workshops allow you to buy items in them for coins which you get for doing useful things for your team.\n\nClass workshops allow you to switch class in them.\n\nThe tunnel allows you to quickly move from place to place (at least 2 required).\n\nTry them out!\n\n\n$tunnel$\n":
-	"ワークショップではアイテムが、チームに貢献する事で手に入るコインで購入できる。\n\n各クラスの店ではそのクラスになる事が可能。\n\nトンネルを使えば場所を素早く移動する事ができる(最低でも2つ必要)。\n\n色々試してみよう！\n\n\n$tunnel$\n",
+	"ワークショップではアイテムが、\nチームに貢献する事で手に入る\nコインで購入できる。\n\n各クラスの店では\nそのクラスになる事が可能。\n\nトンネルを使えば場所を素早く移動する\n事ができる(最低でも2つ必要)。\n\n色々試してみよう！\n\n\n$tunnel$\n",//line issue
 	"To conclude this tutorial go get the red flag and bring it back to your blue flag. \n\nPress $KEY_ESC$ to go to menu\n\nand exit after you're done.":
-	"チュートリアルの締めに、赤い旗を自チームの青い旗へ持っていこう。\n\nやる事を成したら\n\n$KEY_ESC$を押してメニューを開きゲームを出よう。",
+	"チュートリアルの締めに、\n赤い旗を\n自チームの青い旗へ持っていこう。\n\nやる事を成したら\n\n$KEY_ESC$を押して\n\nメニューを開きゲームを出よう。",//line issue
 
 //TutorialTTH01.as
 	"The goal of Take the Halls is for your team to capture all the halls on the map.\n\nYou can easily see them in the minimap on top of the screen.\n\n$KEY_M$ to toggle the\n\nminimap.":
-	"テイク・ザ・ホールの目的はマップ中全ての砦を制圧すること。\n\n画面上部のミニマップで砦を簡単に確認できる。\n\n$KEY_M$で\n\n拡大して表示。",
+	"テイク・ザ・ホールの目的は\nマップ中全ての砦を制圧すること。\n\n画面上部のミニマップで\n砦を簡単に確認できる。\n\n$KEY_M$で\n\n拡大して表示。",//line issue
 	"A white colored Hall is neutral. It belongs to the people of this land. Capture it by standing inside of it.":
-	"白色の拠点は中立の砦。この地の人々のもの。中に居すわる事で制圧可能。",
+	"白色の拠点は中立の砦。\nこの地の人々のもの。\n中に居すわる事で制圧可能。",//line issue
 	"Hold $KEY_E$ and press $CLASSCHANGE$\n\nto change class to BUILDER\n\n\n$RESEARCH$\n\n\nPress this button to view your teams research tree.\n\nThe whole team can vote here on what technology they want. Not all techs can be achieved, decide wisely!":
-	"$KEY_E$を長押ししながら$CLASSCHANGE$を選択し\n\nビルダーにクラスを変更しよう\n\n\n$RESEARCH$\n\n\nこのボタンを押すとチームの研究ツリーを見れる。\n\n欲しい技術をチームで投票する事が出来る。全ての技術を研究するわけでは無いので、賢く選ぼう!",
-	"$crate$\n\nPress $KEY_E$ on the crate'\n\n(if it has dropped from the sky) to get supply materials!":
+	"$KEY_E$を長押ししながら\n\n$CLASSCHANGE$を選択し\n\nビルダーにクラスを変更しよう\n\n\n$RESEARCH$\n\n\nこのボタンを押すと\bチームの研究ツリーを見れる。\n\n欲しい技術をチームで\b投票する事が出来る。\b全ての技術を研究するわけでは無いので、\b賢く選ぼう!",//line issue
+	"$crate$\n\nPress $KEY_E$ on the crate\n\n(if it has dropped from the sky) to get supply materials!":
 	"$crate$\n\n$KEY_E$を箱の近くで押して\n\n(空から降ってきたものだった場合) 補給の建材を手に入れよう!",
 	"If you've switched to builder in the Hall now you can build workshops for your team.\n\nWorkshops are basically factories which make ammo & weapons automatically for you.\n\nGo to an empty spot.\n\nHold $KEY_F$ and select $building$.":
-	"ビルダーになったら、チームのためにワークショップを建てる事が可能。\n\nワークショップは矢弾や兵器を自動で製造する工場として機能する。\n\n開けた場所に出て、\n\n$KEY_F$を押したまま$building$を選択。",
+	"ビルダーになったら、チームのために\nワークショップを建てる事が可能。\n\nワークショップは矢弾や兵器を\n自動で製造する工場として機能する。\n\n開けた場所に出て、\n\n$KEY_F$を押したまま$building$を選択。",//line issue
 	"After converting to a workshop you can see a worker appeared inside of it.\n$migrant$\n\n\nHe came from the hall.\n\nYou can only build as many functional workshops as there are workers in your hall.":
-	"ワークショップを建造すると、労働者が中に現れる。\n$migrant$\n\n\nその人は砦からやってきた。\n\n機能するワークショップは、砦にいる労働者の数だけ建てられる。",
+	"ワークショップを建造すると、\n労働者が中に現れる。\n$migrant$\n\n\nその人は砦からやってきた。\n\n機能するワークショップは、\n砦にいる労働者の数だけ建てられる。",//line issue
 	"Press $KEY_E$ on the frame\n\n$building$\n\nto convert it to a proper workshop. Select one (the unavailable ones are waiting for research in the hall to complete).":
-	"店枠前で$KEY_E$を押すことで\n\n$building$\n\n機能するワークショップを作成できる。どれか選択してみよう(選べないのは砦での研究が終わるまで待つ必要がある)。",
+	"店枠前で$KEY_E$を押すことで\n\n$building$\n\n機能するワークショップを作成できる。\nどれか選択してみよう\n(選べないのは砦での研究が\n終わるまで待つ必要がある)。",//line issue
 	"Hold $KEY_E$ on a workshop to see\n\nwhat it is producing. Green indicates it's done.\n\n\nTry out the different shops!":
-	"ワークショップ前で$KEY_E$を押している間\n\n何がどれだけ生産されているかを見れる。緑のゲージは完成したもの。\n\n\n色々なワークショップを試してみよう!",
+	"ワークショップ前で$KEY_E$を押している間\n\n何がどれだけ生産されているかを見れる。\n緑のゲージは完成したもの。\n\n\n色々なワークショップを試してみよう!",//line issue
 	"$trader$\n\n\nYou see a trader in his shop below.\n\nPress $KEY_E$ on the trader to buy.\n\nYou can buy the following:\n\nTechnology scrolls - give you quick access to a tech without the need for long research\n\nMagic scrolls - check the descriptions!\n\nExchange materials for gold and vice versa. This is useful when one of the resources is lacking on the map.":
-	"$trader$\n\n\n商人が店の前にいる。\n\n近くで$KEY_E$を押すことで購入できる。\n\n買えるものは:\n\n技術の巻物 - 長い研究時間抜きに即技術を手に入れられる\n\n魔法の巻物 - 説明を確認しておこう!\n\n金塊を建材と交換。マップから資源が枯渇した時に有用。",
+	"$trader$\n\n\n商人が店の前にいる。\n\n近くで$KEY_E$を押すことで購入できる。\n\n買えるものは:\n\n技術の巻物 - 長い研究時間抜きに\n即技術を手に入れられる\n\n魔法の巻物 - 説明を確認しておこう!\n\n金塊を建材と交換。\nマップから資源が枯渇した時に有用。",//line issue
 	"Dig the gold $RMB$.\n\nGet enough to buy the Scroll of Drought from the trader.\n\n$scroll$":
-	"金塊を採掘しよう。$RMB$\n\n掘ることで手に入ります。\n\n金塊を集めて商人から干ばつの巻物を購入してみよう。\n\n$scroll$",
+	"金塊を採掘しよう。$RMB$\n\n掘ることで手に入る。\n\n金塊を集めて商人から\n干ばつの巻物を購入してみよう。\n\n$scroll$",//line issue
 	"$scroll$\n\nOnce you have the scroll press $KEY_E$ to use it!":
 	"$scroll$\n\n巻物は$KEY_E$を押す事で使える!",
 	"If you have more than one hall you can quickly move between them.\n\nHold $KEY_E$ and\n\nselect the blue travel button.":
-	"もし２つ以上の砦があれば、その間を素早く移動することが出来る。\n$KEY_E$を押しながら\n\n青い矢印を選択",
+	"もし２つ以上の砦があれば、\nその間を素早く移動することが出来る。\n\n$KEY_E$を押しながら\n\n青い矢印を選択",//line issue
 	"Those are the basics you need to know about Take the Halls. The rest can be learned when playing online by observation. This game mode is simple but complexity comes from great strategy. See you on the battlefield!\n\nPress $KEY_ESC$ to get out.":
-	"これらが知っておくべきTTHの基本。残りはオンラインでのプレイで学ぶことが出来るだろう。このゲームモードはシンプルながら戦略性が奥深い。戦場で待ってるぞ!\n\n$KEY_ESC$を押してゲームを出よう。",
+	"これらが知っておくべきTTHの基本。\n残りはオンラインでの\nプレイで学ぶことが出来るだろう。\nこのゲームモードはシンプルながら\n戦略性が奥深い。\n戦場で待ってるぞ!\n\n$KEY_ESC$を押してゲームを出よう。",//line issue
 //Challenge_PrincessStart.as
 	"   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.":
-	"   険しき崖の上にそびえ立つのは、猛々しい戦士による軍隊により守られし「邪悪なる将軍セジウィック」の城である。セジウィックは城の最も奥深くに、麗しき姫「ゲティ姫」が囚われの身となっている。\n\nあなたは王に仕える騎士。たった一人、剣と盾だけで、セジウィックを倒し美しいゲティ姫を救出しなければならない。\n\n恐怖を打ち捨て、 ただ目的の為に進み、死を覚悟し、強くあれ。これが騎士の道だ。",
+	"   険しき崖の上にそびえ立つのは、猛々しい戦士による軍隊により守られし「邪悪なる将軍セジウィック」の城である。\nセジウィックは城の最も奥深くに、麗しき姫「ゲティ姫」が囚われの身となっている。\n\nあなたは王に仕える騎士。たった一人、剣と盾だけで、セジウィックを倒し美しいゲティ姫を救出しなければならない。\n\n恐怖を打ち捨て、 ただ目的の為に進み、死を覚悟し、強くあれ。これが騎士の道だ。",//line issue
 //Challenge_PrincessEnd.as
 	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .":
-	"   そして冒険は終わりを迎えた。「邪悪なる将軍セジウィック」は倒され、美しいゲティ姫はあなたの腕の中に守られている。記憶の中で初めて、国は平和の日の光を受けている。しかし、忘れてはならない: 王に仕える騎士の戦う時はまた来ることを. . . .",
+	"   そして冒険は終わりを迎えた。「邪悪なる将軍セジウィック」は倒され、\n美しいゲティ姫はあなたの腕の中に守られている。\n記憶の中で初めて、国は平和の日の光を受けている。\nしかし、忘れてはならない: \n王に仕える騎士の戦う時はまた来ることを. . . .",//line issue
 	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .":
-	"   そして冒険は終わりを迎えた。邪悪なる将軍セジウィック」は倒されたが、美しいゲティ姫はあなたの足元で動かなくなっている。記憶の中で初めて、国は平和の日の光を受けている。しかし私たちの最愛の姫を弔いながら. . . .",
-	"The End.":"おしまい。",
-	"For more adventures there is an entire multiplayer world ready to explore. If you've purchased the game just launch the servers browser in Multiplayer":
-	"さらなる冒険のために探険可能な全てのマルチプレイヤーの世界がある。もしゲームを購入したならマルチプレイヤーにてサーバーブラウザを起動しよう",
+	"   そして冒険は終わりを迎えた。邪悪なる将軍セジウィック」は倒されたが、\n美しいゲティ姫はあなたの足元で動かなくなっている。\n記憶の中で初めて、国は平和の日の光を受けている。\nしかし私たちの最愛の姫を弔いながら. . . .",//line issue
+//Ending dialog
+//Get garbled characters, fix it plz
+	//"The End.":"おしまい。",
+	//"For more adventures there is an entire multiplayer world ready to explore. If you've purchased the game just launch the servers browser in Multiplayer":
+	//"さらなる冒険のために探険可能な全てのマルチプレイヤーの世界がある。もしゲームを購入したならマルチプレイヤーにてサーバーブラウザを起動しよう",
 //Sandbox.as
 	"Welcome to King Arthur's Gold":"King Arthur's Goldへようこそ",
 	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"これはサンドボックスモードです。\nあなたは思うがままに、自由に、建築を試してみましょう。\n[ESC]を押して、設定を確認できます。\nごゆっくりどうぞ!",
@@ -307,59 +313,59 @@
 	"Bombs for Knight only.":
 	"ナイト専用の爆弾。",
 	"Water bomb for Knight. Can extinguish fires and stun enemies.":
-	"ナイト用の水の爆弾。消火と敵のスタンが可能。",
+	"ナイト用の水の爆弾。\n消火と\n敵のスタンが可能。",//line issue
 	"An explosive mine. Triggered by contact with an enemy.":
-	"爆発する地雷。敵に触れると作動する。",
+	"爆発する地雷。\n敵に触れると作動する。",//line issue
 	"Highly explosive powder keg for Knight only.":
-	"ナイト専用の、強烈な火薬入りのタル。",
+	"ナイト専用の、\n強烈な火薬入りのタル。",//line issue
 	"Fire satchel for Knight only.":
 	"ナイト専用の火の鞄。",
 	"Arrows for Archer and mounted bow.":
-	"アーチャーと固定弓台専用の矢。",
+	"アーチャーと固定弓台\n専用の矢。",//line issue
 	"Water arrows for Archer. Can extinguish fires and stun enemies.":
-	"アーチャー用の水の矢。消火と敵のスタンが可能。",
+	"アーチャー用の水の矢。\n消火と\n敵のスタンが可能。",//line issue
 	"Fire arrows used to set wooden structures on fire.":
-	"木造建築を火事にするための火の矢。",
+	"木造建築を火事に\nするための火の矢。",//line issue
 	"Bomb arrows for Archer.":
-	"アーチャー用の爆弾の矢。",
+	"アーチャー用の\n爆弾の矢。",//line issue
 	"A siege engine designed to break open walls and fortifications.":
 	"要塞や壁をぶち破るように設計された攻城兵器。",
 	"A stone throwing, ridable siege engine, requiring a crew of two.":
-	"投石と操縦の可能な攻城兵器、二人の操縦士を必要とする。",
+	"投石と操縦の可能な攻城兵器、\n二人の操縦士を必要とする。",//line issue
 	"A bolt-firing pinpoint accurate siege engine, requiring a crew of two.":
-	"ボルトをピンポイントで放てる攻城兵器、二人の操縦士を必要とする。",
+	"ボルトをピンポイントで放てる攻城兵器、\n二人の操縦士を必要とする。",//line issue
 	"Piercing bolts for ballista.":
-	"バリスタ専用の弾。",
+	"バリスタ専用の\n貫通するボルト。",//line issue
 	"Explosive bolts for ballista.":
-	"バリスタ専用の爆発する弾。",
+	"バリスタ専用の\n爆発するボルト。",//line issue
 	"For Ballista\nTurns its piercing bolts into a shaped explosive charge.":
 	"バリスタの弾を強化\nバリスタの弾が爆発し、破壊できる範囲が広がるように。",
 	"A deployable respawn point that allows class change. Has a storage and a tunnel that allows fast travel.":
-	"クラスチェンジの可能な展開できるリスポーンポイント。倉庫と素早い移動が可能なトンネル付き。",
+	"クラスチェンジの可能な展開できる\nリスポーンポイント。倉庫と\n素早い移動が可能なトンネル付き。",//line issue
 	"Raw stone material.":
 	"石の素材.",
 	"Raw wood material.":
 	"木の素材.",
 	"Lanterns help with mining in the dark, and lighten the mood.":
-	"ランタンは暗所での採掘に役立つ、それと気分を明るくするのにも。",
+	"ランタンは暗所での採掘に役立つ、\nそれと気分を明るくするのにも。",//line issue
 	"Bucket for storing water. Useful for fighting fires.":
 	"水を蓄えるためのバケツ。消火に役立つ。",
 	"A wooden bucket pre-filled with water for fighting fires.":
 	"消火のためにすでに水を蓄えたバケツ。",
 	"Water absorbing sponge. Useful for unflooding tunnels and reducing water stuns.":
-	"水を吸収するスポンジ。トンネルの水抜きと水によるスタンの軽減に役立つ。",
+	"水を吸収するスポンジ。\nトンネルの水抜きと\n水によるスタンの\n軽減に役立つ。",//line issue
 	"A stone boulder useful for crushing enemies.":
-	"敵を潰すのに有用な岩の玉。",
+	"敵を潰すのに有用な\n岩の玉。",//line issue
 	"A trampoline used for bouncing and jumping over enemy walls.":
 	"跳ねて敵の壁を乗り越えるのに使うトランポリン。",
 	"A circular saw that turns tree logs into wood material.":
-	"丸太を木材に製剤する丸鋸。",
+	"丸太を木材に製材する丸鋸。",
 	"A mining drill. Increases speed of digging and gathering resources, but gains only half the possible resources.":
-	"採掘用ドリル。掘削と資材採集の速度が速まるが本来の半分の資材しか手に入らない。",
+	"採掘用ドリル。\n掘削と資材採集の速度が速まるが\n本来の半分の資材しか手に入らない。",//line issue
 	"An empty wooden crate for storing and transporting inventory.":
 	"荷物を入れて運べる空の木箱。",
 	"For healing. Don't think about this too much.":
-	"回復用。これについて深く考えない事。",
+	"回復用。\nこれについて\n深く考えない事。",//line issue
 	"A trading post. Requires a trader to reside inside.":
 	"交易所。商人が中に住んでいる必要がある。",
 	"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies.":
@@ -385,11 +391,11 @@
 	"A stationary arrow-firing death machine.":
 	"固定された、矢を発射する殺人マシン。",
 	"A small boat with two rowing positions and a large space for cargo.":
-	"2つの漕ぐ席と大きい荷物スペースのある小型ボート。",
+	"2つの漕ぐ席と\n大きい荷物スペースのある小型ボート。",//line issue
 	"A fast rowing boat used for quickly getting across water.":
 	"水上を素早く移動できる漕ぎ船。",
 	"A slow armoured boat which acts also as a water base for respawn and class change.":
-	"クラスチェンジと復活の可能な水上基地として機能する、遅くて装甲持ちの船。",
+	"クラスチェンジと復活の可能な\n水上基地として機能する、\n遅くて装甲持ちの船。",//line issue
 	"A tunnel for quick transportation.":
 	"素早く移動するためのトンネル。",
 	"A generic factory. Requires Research Room, technology upgrade and big enough population to produce items.":
@@ -415,13 +421,13 @@
 	"Research room.":
 	"研究室。",
 	"Builder workshop for building utilities and changing class to Builder":
-	"便利な道具を作ったりビルダーにクラスチェンジするためのビルダーワークショップ。",
+	"便利な道具を作ったりビルダーにクラスチェンジ\nするためのビルダーワークショップ。",//line issue
 	"Knight workshop for building explosives and changing class to Knight":
-	"爆発物を作ったりナイトにクラスチェンジするためのナイトワークショップ。",
+	"爆発物を作ったりナイトにクラスチェンジ\nするためのナイトワークショップ。",//line issue
 	"Archer workshop for building arrows and changing class to Archer":
-	"矢を作ったりアーチャーにクラスチェンジするためのアーチャーワークショップ。",
+	"矢を作ったりアーチャーにクラスチェンジ\nするためのアーチャーワークショップ。",//line issue
 	"Siege workshop for building wheeled siege engines":
-	"車輪付き攻城兵器を作るための攻城兵器ワークショップ。",
+	"車輪付き攻城兵器を作るための\n攻城兵器ワークショップ。",//line issue
 	"Naval workshop for building boats":
 	"船を作るための海軍ワークショップ",
 	"Place of merriment and healing":
@@ -435,18 +441,20 @@
 	"A hearty meal to get you back on your feet.":
 	"心のこもった料理で元気モリモリ。",
 	"A suspiciously undercooked egg, maybe it will hatch.":
-	"妙な未調理の卵。孵るかもしれない。",
+	"妙な未調理の卵。\n孵るかもしれない。",//line issue
 	"A burger to go.":
 	"お持ち帰りのハンバーガー。",
 	"This magic scroll when cast will turn all nearby enemies into a pile of bloody gibs.":
-	"この魔法の巻物は付近の敵全員を血まみれの肉片の山にする",
+	"この魔法の巻物は\n付近の敵全員を血まみれの肉片の山にする。",//line issue
 	"This magic scroll will evaporate all water in a large surrounding orb.":
-	"この魔法の巻物は付近の水を一気に蒸発させることができる",
+	"この魔法の巻物は\n付近の水を一気に蒸発させることができる。",//line issue
+	"Exchange 100 Gold for 500 Wood":"金塊100個を木材500個と交換",//from WAR.as
+	"Exchange 200 Gold for 500 Stone":"金塊200個を石材500個と交換",//from WAR.as
 
 //// HELPS ////
 //DrawHelp.as
 	"$!!!$$GREEN$WATCH THESE FOR          .          GAMEPLAY HELP$GREEN$\n\n\n$KEY_ESC$ CHECK CONTROLS\n\n$KEY_F1$ HELP ON/OFF\n\n(click to remove this)\n\n      $DEFEND_THIS$":
-	"$!!!$$GREEN$ここを 見てね                           ゲームプレイヘルプ$GREEN$\n\n\n$KEY_ESC$ 操作確認\n\n$KEY_F1$ ヘルプON/OFF\n\n(クリックでこれを消す)\n\n      $DEFEND_THIS$",
+	"$!!!$$GREEN$\n\nここを 見てね\nゲームプレイヘルプ$GREEN$\n\n\n$KEY_ESC$ 操作確認\n\n$KEY_F1$ ヘルプのオン/オフ\n\n(クリックでこれを消す)\n\n      $DEFEND_THIS$",//line issue
 
 //BasicHelps.as
 	" $down_arrow$ Hop inside  $KEY_S$"                :" $down_arrow$ 乗る $KEY_S$",
@@ -459,7 +467,7 @@
 	"$wooden_platform$  $Rotate$ Rotate    $KEY_SPACE$":"$wooden_platform$  $Rotate$ 回転    $KEY_SPACE$",
 	"$ladder$  $Rotate$ Rotate    $KEY_SPACE$"         :"$ladder$  $Rotate$ 回転 $KEY_SPACE$",
 	"Change class    $KEY_E$"                          :"クラス変更 $KEY_E$",
-	"$lantern$ On/Off     $KEY_SPACE$"                 :"$lantern$ ON/OFF $KEY_SPACE$",
+	"$lantern$ On/Off     $KEY_SPACE$"                 :"$lantern$ オン/オフ $KEY_SPACE$",
 	"$lantern$ Pick up    $KEY_C$"                     :"$lantern$ 拾う $KEY_C$",
 	//"$satchel$ Light     $KEY_SPACE$"                :"$satchel$ 点火 $KEY_SPACE$",               //NOT USED
 	//"$satchel$ Only KNIGHT can light satchel"        :"$satchel$ ナイトのみ点火可能", //NOT USED
@@ -480,7 +488,7 @@
 	"$building$Use    $KEY_E$"                         :"$building$使う    $KEY_E$",
 
 //Factory.as
-	"$workshop$Convert workshop    $KEY_E$": "$workshop$ワークショップを変換    $KEY_E$",
+	"$workshop$Convert factory    $KEY_E$": "$workshop$工場を変換    $KEY_E$",
 	"Check production    $KEY_E$": "製造状況を確認    $KEY_E$",
 	"Requires a free worker from Hall":"待機中の労働者が砦に必要",
 	"Convert Factory":"工場を変換",
@@ -559,9 +567,9 @@
 	"As an archer you can move faster using the grappling hook.":
 	"アーチャーはグラップリングで素早く移動することができる。",
 	"You can put out fires using water bombs or water arrows (as well as a bucket of water)!":
-	"水の矢や水の爆弾で消火活動ができる(バケツの水と同様)!",
-	"As a knight, jabbing isn't always effective, try charging for a slash!":
-	"ナイトのジャブ攻撃は効率が悪い時もある。長押しによるスラッシュ攻撃を試そう!",
+	"水の矢や水の爆弾で消火活動ができる(バケツの水と同様に)!",
+	"As a knight, jabbing stuns you if you hit enemy shield. Try charging for a slash!":
+	"ナイトのジャブ攻撃が敵の盾に当たるとこちらがスタンしてしまう。長押しによるスラッシュ攻撃を試そう!",
 	"A builder can be more useful on the front lines than in his base. But keep your eyes open over there!":
 	"ビルダーは拠点よりも前線の方が活躍できる。ただし全体をよく見て!",
 	"Wood blocks and backwalls can be set on fire, try using stone alongside the wood!":
@@ -582,8 +590,8 @@
 	"攻城兵器が相手の手に奪われないようにしよう!",
 	"Immobilise siege weapons to prevent them from accidentally falling off a cliff!":
 	"攻城兵器を固定して、高所からの落下事故を防ごう!",
-	"Press [SPACE] to light and throw a bomb, [C] to pickup.":
-	" [SPACE]キーで爆弾の着火、投げつけ、[C]爆弾を拾うことができる。",
+	"Press [SPACE] to light a bomb, [C] or [SPACE] to throw it.":
+	" [SPACE]キーで爆弾の着火、投げつけ、[C]か[SPACE]で爆弾を投げる事ができる。",
 	"Keep your ballistae safe - if an enemy takes it, they can use it against you!":
 	"バリスタの周りを安全に - 敵が奪取した場合、こちらに対して扱えるぞ!",
 	"Drills can be cooled down by jumping into water or running around.":
@@ -592,16 +600,16 @@
 	"建築したワークショップは敵も使える。拠点で爆発物を買われないようにしよう!",
 	"Teamwork is the key to success!":
 	"味方と協力することが成功への近道だ。",
-	"Try to help your team mates if the situation gets tight.":
-	"きつそうな味方がいたら助けに行ってみよう。",
+	"Try to help your team mates.":
+	"味方の助けになる事を試そう。",
 	"As a knight, you can put your shield up in the air to glide.":
 	"ナイトは空中で盾を上することで滑空が可能。",
 	"Wood blocks are cheaper than stone blocks, but are also weaker and can catch fire.":
 	"木のブロックは石ブロックよりも安価だが、脆く火も燃え広がってしまう。",
-	"1 bomb can deal up to 3 hearts of damage.":
-	"1つの爆弾はハート3つ分のダメージを与える。",
-	"Drills are a fast way to dig, but only yield 50%. Don't use them on precious gold or during build time!":
-	"ドリルは素早く掘ることがでるが、獲得できる資源が半分になる。金相手や準備期間に使わないように!",
+	"A bomb can deal up to 3 hearts of damage.":
+	"爆弾はハート3つ分のダメージを与える。",
+	"Drills only yield 75% of stone, but 100% of gold.":
+	"ドリルは石に対して本来の75%の獲得量しか無いが、金に対しては100%獲得できる。",
 	"Good players can play any class when needed.":
 	"イカしてるプレイヤーの条件は、必要に応じてジョブを変えることができるプレイヤーだ。",
 	"Make sure you're helping your team advance. Don't just hide out in the back!":
@@ -616,10 +624,10 @@
 	"あなたが扉をあけている間は敵が入ってきてしまう。中に入れないよう注意!",
 	"If you see an object/body holding a door open - move it away!":
 	"もし扉を何かもの/死体が開けっぱなしにしてるのを見たら - 排除しよう!",
-	"Visit the KAG forums for more friendly help and advice!":
-	"KAGのフォーラムに訪れて、さらにフレンドリーなヘルプやアドバイスを受けよう!",
-	"A bomb's timer lasts four seconds before exploding":
-	"爆弾が点火から爆発するまでは4秒",
+	"Visit the KAG Discord for more friendly help and advice!":
+	"KAGのDiscordに訪れて、さらにフレンドリーなヘルプやアドバイスを受けよう!",
+	"A lit bomb lasts four seconds before exploding.":
+	"爆弾が点火から爆発するまでは4秒。",
 	"When you light a bomb, let the fuse burn down before throwing it so your enemy can't react!":
 	"爆発するタイミングで相手に投げつければ、相手は投げ返すことができないぞ！",
 	"If you're throwing a bomb, jump in the direction that you're aiming to throw further!":
@@ -660,10 +668,10 @@
 	"アーチャーなら、インベントリに地雷を持っておき、敵の建物をグラップルで越え、そこに仕掛けることもできる。",
 	"If you put a mine in your inventory, it can pop out when you die, potentially killing enemies and destroying structures.":
 	"バックパックに入れておいた地雷は、あなたが死んでしまった後その場にばら撒かれる。敵を倒したり建物を破壊するポテンシャルがある。",
-	"Hearts, dead fish, grain, burgers and steaks all heal you.":
-	"ハートに、死んだ魚、穀物、ハンバーガー、ステーキ全てが回復に使える。",
-	"Always try and have a few water buckets ready in case anything catches on fire.":
-	"火事に備えて水の入ったバケツを用意しておこう。",
+	"Hearts heal you for 1 heart, but dead fish, grain, burgers and steaks heal you to full health.":
+	"ハートはハート1つ分しか回復できないが、死んだ魚、穀物、ハンバーガー、ステーキは全回復が可能。",
+	"Always have a few water buckets ready in your base in case anything catches on fire.":
+	"火事に備えて常に水の入ったバケツをいくつか用意しておこう。",
 	"Archers shouldn't be afraid to get up close and personal when the situation requires it.":
 	"アーチャーは敵に近づいて一人で戦う事を恐れるべきではない、状況によっては。",
 	"Kegs can hurt both your team and the enemy - use them wisely.":
@@ -682,7 +690,7 @@
 	"ハッキングや荒らし行為を権限者に報告する前に、ビデオ録画して証拠を残す事を試そう。",
 	"Press E around dead bodies to check for useful things in enemy (or ally) corpses!":
 	"Press E around dead bodies to check for useful things in enemy (or ally) corpses!", // OUTDATED!
-	"Charged arrows from close range will stun enemies, even if they shield!":
+	"Charged arrows will stun enemies at close range, even if they shield!":
 	"フルチャージしたアーチャーの矢は近距離で敵をスタンできる、例え盾を構えていたとしても!",
 	"Falling blocks can damage you - be careful!":
 	"落下してくるブロックはダメージを与えてくる - 気を付けよう!",
@@ -732,14 +740,52 @@
 	"扉や攻城兵器は爆発物に弱い。",
 	"Bison can be tamed with burgers.":
 	"バイソンはハンバーガーで手懐ける事ができる。",
-	"Resources can be resupplied by changing classes in workshops, not just at the tent!":
-	"物資の再補給は、スタート拠点だけでなくビルダーやアーチャーにチェンジした際、ビルダーやアーチャーショップ前でも受け取ることができます。",
+	"You can get resupplies from class workshops, not just at the tent!":
+	"再補給はクラスのワークショップでも得られる、テントだけではない!",
+	"You can highlight useful items for your class by holding the pickup key.":
+	"ピックアップキーを推している間、あなたのクラスに有用なアイテムがハイライトされる。",
+	"As a knight, you can always jab the enemy after successfully slashing them to deal extra heart of damage.":
+	"ナイトを使う場合、相手にスラッシュを当てた後にジャブを当てる事でさらなるダメージを与えられる。",
+	"It is advantageous to have one transport tunnel near your tent and another one at front base for quick transportation.":
+	"トンネルの片方をテントの近くに、もう片方を前線の拠点に建てると有利。",
+	"It's a good idea to protect your transport tunnels from enemies by creating a trap at the entrance of your tunnel.":
+	"トンネルの入口をトラップで敵から守るのは良いアイデア。",
+	"You can throw saws at logs to quickly turn them into usable wood.":
+	"丸太の集まりにノコギリを投げると使える木材に素早く製材できる。",
+	"Knights can cut down trees quicker than builders. If your team has a tree farm, cut down trees as knight to save time for your builders.":
+	"ナイトはビルダーより早く木を切り倒せる。チームが木のファームを作ったら、ナイトとして切り倒しビルダーの時間を節約しよう。",
+	"Double slashing deals damage faster than normal slashing or jabbing.":
+	"ダブルスラッシュは通常のスラッシュやジャブより早くダメージを叩き出せる。",
+	"A drill will overheat very quickly when drilling doors and platforms.":
+	"ドリルはドアや足場を破壊すると非常に早くオーバーヒートしてしまう。",
+	"You can use a water bucket to extinguish lit kegs.":
+	"水入りバケツでタルの消火が可能。",
+	"Carrying a sponge in your inventory greatly reduces the length of stuns from water bombs or water arrows.":
+	"スポンジをインベントリに持っていると、水爆弾や水の矢によるスタンの時間を大幅に減らせる。",
+	"Shielding water bombs and water arrows halves the stun time.":
+	"水爆弾や水の矢を盾で受けるとスタンの時間が半減する。",
+	"Stone doors are durable, but very expensive - dont place too many of them in one doorway.":
+	"石のドアは頑丈だがとても高価 - 1つの通り道に使いすぎないようにしよう。",
+	"Placing a mine on your flag will make it difficult for the enemy to take it without dying.":
+	"地雷を旗の場所に置くと、敵が死なずに旗を奪う事が難しくなる。",
+	"As an archer, you can shoot enemy mines to blow them up. But be careful, as the explosion can still kill you and your teammates!":
+	"アーチャーは敵の地雷を撃ちぬいて爆破させる事が出来る。ただし気を付けて、その爆発はチームメイトを傷つける能力がある!",
+	"You can blow up enemy mines by throwing bodies of your teammates at them.":
+	"敵の地雷に味方の死体を投げる事で爆破させる事が出来る。",
+	"Throwing an enemy body into an enemy saw disables it.":
+	"敵の死体を敵のノコギリに投げる事で停止させる事が出来る。",
 
 //Requirements.as
 	//"Wood":"木材",
 	//"Stone":"石材",
 	//"Gold":"金塊",
-	"{COINS_QUANTITY} $COIN$ required\n":"必要コイン {COINS_QUANTITY} $COIN$",
+	"{COINS_QUANTITY} $COIN$ required\n":"{COINS_QUANTITY} $COIN$コインが必要",
+	"{COLOR}{NAME}{COLOR}\n\ntechnology required.\n":"{COLOR}{NAME}{COLOR}\n\n技術が必要。\n",
+
+//Workbench.as
+	"Drill Technology":"ドリル",
+	"Saw Technology":"ノコギリ",
+	"Dinghy Technology":"小舟",
 
 //// BLOB NAMES ////
 	"Migrant":"移住者",
@@ -777,15 +823,18 @@
 	"Crate (wood)":"木箱 (木材)",//BuilderShop.as
 	"Crate (coins)":"木箱 (コイン)",//BuilderShop.as
 	"Bomb":"爆弾",
+	"Bombs":"爆弾",//WAR_Technology.as
 	"Keg":"タル",
 	"Mine":"地雷",
 	"Satchel":"サッチェル", //OLD
 	"Water Bomb":"水の爆弾",
 	"Water Bombs":"水の爆弾",
 	"Burger":"ハンバーガー",
+	"Food":"食料",//StandardPickup.as
 	"Heart":"ハート",
 	"Lantern":"ランタン",
 	"Wood Log":"丸太",
+	"Log":"丸太",//StandardPickup.as
 	"Powerup":"パワーアップ", //OLD
 	"Arrow":"矢",
 	"Arrows":"矢束",
@@ -795,11 +844,13 @@
 	"Scroll":"巻物",
 	"Scroll of Drought":"干ばつの巻物",
 	"Scroll of Carnage":"惨殺の巻物",
+	"Scroll of Midas":"ミダスの巻物",
 	"Sponge":"スポンジ",
 	"Bomb Arrow":"爆弾の矢",
 	"Bomb Arrows":"爆弾の矢",//StandardPickup.as
 	"Fire Arrows":"火の矢",
-	"Water Arrows":"水の矢",
+	"Water Arrow":"水の矢",
+	"Water Arrows":"水の矢",//StandardPickup.as
 	"Gold":"金塊",
 	"Stone":"石材",
 	"Wood":"木材",
@@ -848,6 +899,25 @@
 	"Catapult Rock":"カタパルトの投石",
 	"Outpost":"前哨基地",
 	"greg":"グレッグ",
+	"Ballista Factory":"バリスタの工場",
+	"Bomb Ammo Factory":"爆弾の矢弾の工場",
+	"Catapult Factory":"カタパルトの工場",
+	"Demolition Factory":"爆破解体の工場",
+	"Bakery Factory":"ベーカリーの工場",
+	"Longboat Factory":"ロングボートの工場",
+	"Military Supplies Factory":"軍事補給の工場",
+	"Pyrotechnics Factory":"花火製造の工場",
+	"War Boat Factory":"戦艦の工場",
+	"Water Ammo Factory":"水の矢弾の工場",
+	"Workshop":"ワークショップ",
+	"Workbench":"ワークベンチ",
+
+// Quarters.as
+	"Beer - 1 Heart":"ビール - 1ハート",
+	"Meal - Full Health":"料理 - 全体力",
+	"Egg - Full Health":"卵 - 全体力",
+	"Burger - Full Health":"ハンバーガー - 全体力",
+	"$HEART$ Must be hurt\n":"$HEART$ 傷ついている必要がある\n",//Requirements.as
 
 // MakeFood.as
 	"Cooked Fish":"調理した魚",
@@ -975,13 +1045,17 @@
 	"Find the longboat!":"ロングボートを発見せよ!",
 	"Get to the top right of the castle!":"城の右上まで突き進め!",
 	"Take the red hall!":"レッドチームの拠点を奪え!",
+	"Climb the tower!":"タワーを登れ!",
 	"Time passed!":"時間切れだ!",
 	"Round lost!":"ラウンド失敗!",
+	"You made it!":"成し遂げた!",
+	"You won!":"君の勝ちだ!",
 
 	"Kill'em All!":"皆殺しだ!",
 	"Kill the Necromancer":"ネクロマンサーを倒せ",
 	"Parkour":"走りぬけろ",
 	"Save the Princess!":"姫を救出せよ!",
+	"Save the princess!":"姫を救出せよ!",
 	"Save the Princess":"姫を救出せよ",
 	"Take the Hall":"拠点制圧せよ",
 
@@ -1075,12 +1149,12 @@
 	"Golden Tools"              :"黄金のツール",
 	"Standard"                  :"標準",
 	"Royal Guard Cape"          :"王宮衛兵のマント",
-	"UNLOCK Royal Guard Cape"   :"王宮衛兵のマントを解禁",
+	"UNLOCK {ARMOUR_PACK}"      :"{ARMOUR_PACK}を解禁",
 	"Head:"                     :"ヘッド:",
 	"Set Default Head"          :"デフォルトのヘッドにする",
 	"Head packs:"               :"ヘッドパック:",
 	"Classic Heads"             :"クラシックヘッド",
-	"BUY {HEADS_PACK}"          :"{HEADS_PACK} を購入",
+	"BUY {HEADS_PACK}"          :"{HEADS_PACK}を購入",
 	"Flags of The World"        :"国旗",
 	"High Fantasy"              :"ハイ・ファンタジー",
 	"Community Pack 1"          :"コミュニティパック1",
@@ -1259,13 +1333,13 @@
 	"WHITE = vanilla server":   "白色 = 通常のサーバー",
 	"BLUE = modded server":     "青色 = MODを使用したサーバー",
 	"Instant Search: searches for servers containing the query in the server name, description, game mode, IP address, or any player on the server (exact match only for players).":
-	"クイック検索：検索ワードと一致する、サーバー名、説明、ゲームモード、IPアドレス、またはサーバー上のプレーヤーがいるサーバーを検索(プレーヤー名の場合は完全一致)。",
+	"クイック検索：検索ワードと一致する\nサーバー名、説明、ゲームモード、IPアドレス、\nまたはサーバー上のプレーヤーがいるサーバーを検索\n(プレーヤー名の場合は完全一致)。",//line issue
 	"e.g. entering 'Shadlington' will find any servers that Shadlington is playing on, or that have 'Shadlington' in the name/description.":
-	"例えば「Shadlington」と入力すると、Shadlingtonがプレイしているサーバー、または名前/説明に「Shadlington」があるサーバーが検索される。",
+	"例えば「Shadlington」と入力すると、\nShadlingtonがプレイしているサーバー、\nまたは名前/説明に「Shadlington」があるサーバーが検索される。",//line issue
 	"Players (%) slider: Use this to set the min and max percent full you want servers to be.":
-	"人数（％）スライダー：これを使用して、検索するサーバーのn最小人数と最大人数の割合を設定。",
+	"人数（％）スライダー：これを使用して、\n検索するサーバーの最小人数と最大人数の割合を設定。",//line issue
 	"e.g. set it to 1% min and 99% max to find servers that are not empty and not full, or set it to 50% to 100% to find servers that are 'at least half full'.":
-	"例えば 1％以上99％以下に設定すると、空でも満杯でもないサーバーを見つけることができる。または、50％から100％に設定して、少なくとも半分以上のサーバーを見つけることができる。",
+	"例えば 1％以上99％以下に設定すると、\n空でも満杯でもないサーバーを見つけることができる。\nまたは、50％から100％に設定して、\n少なくとも半分以上のサーバーを見つけることができる。",//line issue
 	"Map Preview can be dragged with the mouse.": "マップのプレビューはマウスでドラッグ可能。",
 //// VOTES ////
 
