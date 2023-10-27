@@ -550,7 +550,7 @@
 	"$Tree$Climb tree    $KEY_W$": "$Tree$木に登る    $KEY_W$",
 
 //TradingMenu.as
-	"Out of stock. Come back later.":"売り切れ中。後で来てみよう。",
+	"Out of stock. Come back later.":"売り切れ中。\n後で来てみよう。",//line issue
 
 //HelpfulDeathTips.cfg
 	"To hide in-game help and tips, hit F1.":
