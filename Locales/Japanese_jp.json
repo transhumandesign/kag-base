@@ -115,7 +115,6 @@
 	"Supplies will drop at your halls."       :"補給が砦へ落される。", 
 	"Buy a worker for {MIGRANT_COST} Gold"    :"労働者を金塊{MIGRANT_COST}で雇用",
 	"Buy worker: Requires {MIGRANT_COST} Gold":"労働者雇用: 金塊が{MIGRANT_COST}必要",
-	"Units"                                   :"ユニット",
 
 //TunnelTravel.as
 	"Travel":"移動",
