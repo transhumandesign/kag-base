@@ -25,19 +25,20 @@
 	"Map name : "           :"マップ名 : ",
 
 //ScoreboardRender.as
-	"Players: {PLAYERCOUNT}":"プレイヤー: {PLAYERCOUNT}",
-	"Player"                :"プレイヤー",
-	"Tier"                  :"階級",
-	"Age"                   :"年数",
-	"Accolades"             :"栄誉",
-	"Username"              :"ユーザー名",
-	"Ping"                  :"Ping",
-	"Kills"                 :"キル",
-	"Deaths"                :"デス",
-	"Assists"               :"アシスト",
-	"KDR"                   :"キルデス比",
-	"Spectators:"           :"観戦者",
-	"and more ..."          :"他...",
+	"Players: {PLAYERCOUNT}" :"プレイヤー: {PLAYERCOUNT}",
+	"Player"                 :"プレイヤー",
+	"Tier"                   :"階級",
+	"Age"                    :"年数",
+	"Accolades"              :"栄誉",
+	"Username"               :"ユーザー名",
+	"Ping"                   :"Ping",
+	"Kills"                  :"キル",
+	"Deaths"                 :"デス",
+	"Assists"                :"アシスト",
+	"KDR"                    :"キルデス比",
+	"Spectators:"            :"観戦者",
+	"and more ..."           :"他...",
+	"Username copied: {NAME}":"ユーザー名をコピー: {NAME}",
 
 //TeamMenu.as
 	"Spectator":"観戦者",
@@ -1334,7 +1335,7 @@
 	"Instant Search: searches for servers containing the query in the server name, description, game mode, IP address, or any player on the server (exact match only for players).":
 	"クイック検索：検索ワードと一致する\nサーバー名、説明、ゲームモード、IPアドレス、\nまたはサーバー上のプレーヤーがいるサーバーを検索\n(プレーヤー名の場合は完全一致)。",//line issue
 	"e.g. entering 'Shadlington' will find any servers that Shadlington is playing on, or that have 'Shadlington' in the name/description.":
-	"例えば「Shadlington」と入力すると、\nShadlingtonがプレイしているサーバー、\nまたは名前/説明に「Shadlington」があるサーバーが検索される。",//line issue
+	"例えば「Shadlington」と入力すると、\nShadlingtonがプレイしているサーバー、または\n名前/説明に「Shadlington」があるサーバーが検索される。",//line issue
 	"Players (%) slider: Use this to set the min and max percent full you want servers to be.":
 	"人数（％）スライダー：これを使用して、\n検索するサーバーの最小人数と最大人数の割合を設定。",//line issue
 	"e.g. set it to 1% min and 99% max to find servers that are not empty and not full, or set it to 50% to 100% to find servers that are 'at least half full'.":
