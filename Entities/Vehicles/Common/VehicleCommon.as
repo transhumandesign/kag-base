@@ -246,7 +246,7 @@ bool Vehicle_AddLoadAmmoButton(CBlob@ this, CBlob@ caller, Vec2f &in offset = Ve
 		{
 			CBitStream params;
 			params.write_netid(caller.getNetworkID());
-			const string msg = getTranslatedString("Load {ITEM}").replace("{ITEM}", ammoBlob.getInventoryName());
+			const string msg = getTranslatedString("Load {ITEM}").replace("{ITEM}",  getTranslatedString(ammoBlob.getInventoryName()));
 			caller.CreateGenericButton("$" + ammoBlob.getName() + "$", offset, this, this.getCommandID("load_ammo"), msg, params);
 			return true;
 		}
