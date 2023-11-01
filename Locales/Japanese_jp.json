@@ -102,7 +102,7 @@
 	"Spiker"        :"スパイカー",
 
 //Production.as
-	"\n\nrequires\n{MISSING}\nAdd materials in storage.":"\n\n{MISSING}が必要\n材料を入れてください",
+	"\n\nrequires\n{MISSING}\nAdd materials in storage.":"\n\n{MISSING}が必要\n材料を入れよう。",
 	"Producing {ITEM}..."                               :"{ITEM}を\n製造中...",//line issue
 	"{ITEM} available on respawn"                       :"{ITEM}が\n復活地点に存在",//line issue
 	"{ITEM} limit reached."                             :"{ITEM}は\n最大数まで\n生産された",//line issue
@@ -112,8 +112,8 @@
 
 //Hall.as
 	"Units"                                   :"ユニット",
-	"Another worker has been hired!"          :"新しく労働者が雇われた!",
-	"Supplies will drop at your halls."       :"補給が砦へ落される。", 
+	//"Another worker has been hired!"          :"新しく労働者が雇われた!", //chat message
+	//"Supplies will drop at your halls."       :"補給が砦へ落される。", //chat message
 	"Buy a worker for {MIGRANT_COST} Gold"    :"労働者を金塊{MIGRANT_COST}で雇用",
 	"Buy worker: Requires {MIGRANT_COST} Gold":"労働者雇用: 金塊が{MIGRANT_COST}必要",
 
@@ -125,6 +125,10 @@
 	"Travel right":"右へ移動",
 	"Travel left":"左へ移動",
 	"You are here":"現在地",
+
+//ResearchCommon.as
+	//chat messsage
+	//"{NAME} available.":"{NAME}の研究完了。",
 
 //ResearchGUI.as
 	"Click the items you vote to research!"                           :"使えるようにしたい研究対象のアイテムをクリックで選択しよう!",
@@ -166,12 +170,12 @@
 
 //Tutorial02.as
 	"Stand on the enemy hall$hall$ to capture it.":"敵の砦に立ち止まって制圧しよう。$hall$",//line issue?
-	"Halls are respawn points and can be used to switch class.":"砦は復活地点になり、\nクラスチェンジができる",//line issue
-	"In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.":"試しに砦でアーチャーに変更してみよう。\n$ARCHER$\n\n $KEY_E$(使用キー)を長押ししながら、\n\nカーソルを$CLASSCHANGE$に合わせてから離すことで選択できる",//line issue
+	"Halls are respawn points and can be used to switch class.":"砦は復活地点になり、\nクラスチェンジができる。",//line issue
+	"In the hall switch class to ARCHER  $ARCHER$\n\nHOLD $KEY_E$ (use key).\n\nHover mouse over the$CLASSCHANGE$button and release\nthe use key.":"試しに砦でアーチャーに変更してみよう。\n$ARCHER$\n\n $KEY_E$(使用キー)を長押し。\n\nカーソルを$CLASSCHANGE$に合わせてから使用キーを離す。",//line issue
 	"As archer $Tutorial_Archer$\n\n\nAim with mouse.\n\nHOLD$LMB$ to charge\n\nRELEASE to fire arrow!":
 	"アーチャー $Tutorial_Archer$\n\n\nマウスで狙い、\n\n$LMB$を長押ししてチャージ\n\n離して矢を発射!",
 	"Use your grappling hook$Tutorial_Grapple$\n\n\nAim mouse up to catch the ceiling\n\nHOLD$RMB$\n\nSwing to the right $KEY_D$":"グラップリングフックを使ってみよう。$Tutorial_Grapple$\n\n\nカーソルを天井に合わせ、天井をつかむ\n\n$RMB$を長押し\n\n$KEY_D$で右に揺れてみよう",
-	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"グラップリングと壁の駆け上りで\n通り抜けよう。\n\n$RMB$長押しで\n\nジャンプと歩行を長押し$KEY_D$$KEY_W$",//line issue
+	"Use a combination of grappling hook and wall running to get across here\n\nHOLD$RMB$\n\nHOLD jump & run $KEY_D$$KEY_W$":"グラップリングと壁の駆け上りで\n通り抜けよう。\n\n$RMB$を長押し\n\nジャンプと歩行を長押し$KEY_D$$KEY_W$",//line issue
 	"HOLD $LMB$ until spark$Tutorial_Archer2$\n\n\nThen $LMB$ again for\n\nTRIPLE SHOT! Good in close range!":"$LMB$を\n\n輝きが出るまで長押し溜めしておき\n\n$Tutorial_Archer2$\n\n\n$LMB$を離すと\n\nトリプルショット!近距離で有効!",//line issue
 	"$Tutorial_Archer2$\n\n\nPractice and then charge your shot before opening this door and TRIPLE SHOOT the knight!":"$Tutorial_Archer2$\n\n\n練習したら、扉に入る前に溜めておこう。\nそして扉の向こうのナイトに\nトリプルショットを喰らわせよう！",//line issue
 	"Use your grappling hook$Tutorial_Grapple$ to swing over.\n\nHOLD$RMB$\n\nCatch the ceiling at the point where the lantern is$lantern$\n\nHOLD $KEY_D$\n\nRELEASE hook before stopping.":"$Tutorial_Grapple$フックで穴を越えてみよう。\n\n\n$RMB$長押しで\n\n$lantern$ランタンの位置にフックを刺し、\n\n$KEY_D$で右に勢いをつけてから\n\n止まる前にフックを離そう。",
@@ -190,7 +194,7 @@
 	"$Pick$\n\nBuild a bridge.\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nAlso try out the different blocks and see what they do.":"$Pick$\n\n橋を架けてみよう。\n\n$KEY_F$   $Swap$$Help_Block1$\n\n\nそれ以外のブロックも試して\n挙動を確認しておこう。",//line issue
 	"Please note that when building horizontally you will reach a limit. You will need to build support from below to continue.":"水平方向への建築には\n限界がある事に注意。\n下から支えを建築する事で\nさらに横に伸ばす事が可能。",//line issue
 	"$Pick$  $BlockStone$\n\nMine some stone $RMB$":"$Pick$  $BlockStone$\n\n$RMB$で石土を掘って石材を集めよう",
-	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\nカタパルトに石材を積み込もう。\n\n$KEY_E$の長押し後に\n\n石マーク$mat_stone$を選択",//line issue
+	"$catapult$\n\n\nLoad the catapult with stone.\n\n HOLD $KEY_E$ PRESS $mat_stone$":"$catapult$\n\n\nカタパルトに石材を積み込もう。\n\n$KEY_E$の長押し後に\n\n$mat_stone$を選択",//line issue
 	"$Tutorial_Catapult$\n\n\nStand in the gunner position\n(where $down_arrow$is on the picture)\n\nPress $KEY_S$ to get in.\n\n\nHOLD $LMB$ to charge.\n\n\n(Driver is in the center\nTop is bowl)":"$Tutorial_Catapult$\n\n\nカタパルトの後方の発射席に乗ろう\n($down_arrow$表示部分に近付いて乗りこめる)\n\n乗りこむには$KEY_S$を押そう\n\n\n$LMB$を長押しすることでアームを引く\n\n\n(中心は操縦席、上は発射台)",
 	"One last thing.\n\nWhen playing multiplayer don't be afraid to ask for help\n\n$KEY_ENTER$for chat.\n\n\nAlso use emotes!\n\nHOLD $KEY_Q$":"最後に。\n\nマルチプレイでは分からないことが\nあったら気軽に質問してみよう。\n\n$KEY_ENTER$で\n\nチャット欄が左下に表示される。\n\n\nそれとエモートも使ってみよう!\n\n$KEY_Q$を長押し",//line issue
 	"This concludes the basic tutorials. You'll surely learn more as you play the game.\n\nNow try the other solo modes or join multiplayer!":"これにて基本的なチュートリアルは完了。\nゲームを遊んで更に色んなことを学ぼう。\n\n他のソロモードを試したり、\nマルチプレイヤーに参加しよう!",//line issue
@@ -243,7 +247,7 @@
 	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .":
 	"   そして冒険は終わりを迎えた。「邪悪なる将軍セジウィック」は倒され、\n美しいゲティ姫はあなたの腕の中に守られている。\n記憶の中で初めて、国は平和の日の光を受けている。\nしかし、忘れてはならない: \n王に仕える騎士の戦う時はまた来ることを. . . .",//line issue
 	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .":
-	"   そして冒険は終わりを迎えた。邪悪なる将軍セジウィック」は倒されたが、\n美しいゲティ姫はあなたの足元で動かなくなっている。\n記憶の中で初めて、国は平和の日の光を受けている。\nしかし私たちの最愛の姫を弔いながら. . . .",//line issue
+	"   そして冒険は終わりを迎えた。「邪悪なる将軍セジウィック」は倒されたが、\n美しいゲティ姫はあなたの足元で動かなくなっている。\n記憶の中で初めて、国は平和の日の光を受けている。\nしかし私たちの最愛の姫を弔いながら. . . .",//line issue
 //Ending dialog
 //Get garbled characters, fix it plz
 	//"The End.":"おしまい。",
@@ -251,14 +255,14 @@
 	//"さらなる冒険のために探険可能な全てのマルチプレイヤーの世界がある。もしゲームを購入したならマルチプレイヤーにてサーバーブラウザを起動しよう",
 //Sandbox.as
 	"Welcome to King Arthur's Gold":"King Arthur's Goldへようこそ",
-	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"これはサンドボックスモードです。\nあなたは思うがままに、自由に、建築を試してみましょう。\n[ESC]を押して、設定を確認できます。\nごゆっくりどうぞ!",
+	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"これはサンドボックスモード。\nリラックスし放題だ。\n\nESC を押して操作を確認できる。\nごゆっくりどうぞ!",
 
 //TDM_Interface.as
 	"WARMUP"                                   :"ウォームアップ",
 	"KILLS: {CURRENT}/{LIMIT}"                 :"キル数: {CURRENT}/{LIMIT}",
 	"SUDDEN DEATH"                             :"サドンデス",
 	"In Queue to Respawn..."                   :"リスポーンの順番待ち...",
-	"No Respawning - Wait for the Game to End.":"リスポーン無し - 次のゲームまでお待ちください",
+	"No Respawning - Wait for the Game to End.":"リスポーン無し - 次のゲームまで待とう。",
 
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
@@ -454,7 +458,7 @@
 //// HELPS ////
 //DrawHelp.as
 	"$!!!$$GREEN$WATCH THESE FOR          .          GAMEPLAY HELP$GREEN$\n\n\n$KEY_ESC$ CHECK CONTROLS\n\n$KEY_F1$ HELP ON/OFF\n\n(click to remove this)\n\n      $DEFEND_THIS$":
-	"$!!!$$GREEN$\n\nここを 見てね\nゲームプレイヘルプ$GREEN$\n\n\n$KEY_ESC$ 操作確認\n\n$KEY_F1$ ヘルプのオン/オフ\n\n(クリックでこれを消す)\n\n      $DEFEND_THIS$",//line issue
+	"$!!!$$GREEN$\n\nここを見てね\nゲームプレイヘルプ$GREEN$\n\n\n$KEY_ESC$ 操作確認\n\n$KEY_F1$ ヘルプのオン/オフ\n\n(クリックでこれを消す)\n\n      $DEFEND_THIS$",//line issue
 
 //BasicHelps.as
 	" $down_arrow$ Hop inside  $KEY_S$"                :" $down_arrow$ 乗る $KEY_S$",
@@ -555,9 +559,9 @@
 
 //HelpfulDeathTips.cfg
 	"To hide in-game help and tips, hit F1.":
-	"ヘルプの表示、非表示はF１で切り替えられる",
+	"ヘルプの表示、非表示はF1で切り替えられる。",
 	"Enemies can go through your tunnels so protect them well!":
-	"トンネルは敵も通れるのでしっかり守ってから設置しよう",
+	"トンネルは敵も通れるのでしっかり守ってから設置しよう!",
 	"Spikes will stun you for a short time.":
 	"トゲが刺さることで一瞬無防備になってしまう。",
 	"Saws will kill you instantly":
@@ -683,9 +687,9 @@
 	"Hold chickens to glide further.":
 	"ニワトリを持った状態で空を飛ぶとゆっくりと滑空できる。",
 	"There is a red barrier during build phase which will disappear on match start":
-	"戦闘開始前の中央の赤い壁は、試合開始時に消える",
+	"戦闘開始前の中央の赤いバリアは、試合開始時に消える",
 	"Don't be afraid to let people know you're new - they may lend a helping hand.":
-	"初心者だと伝える事を恐れずに - 周りの人は優しく手を差し伸べてくれるでしょう。",
+	"初心者だと伝える事を恐れずに - 周りの人は優しく手を差し伸べてくれるだろう。",
 	"Try to get video evidence of people griefing or hacking first before yelling for an admin.":
 	"ハッキングや荒らし行為を権限者に報告する前に、ビデオ録画して証拠を残す事を試そう。",
 	"Press E around dead bodies to check for useful things in enemy (or ally) corpses!":
@@ -729,7 +733,7 @@
 	"If you want a shop built, build it yourself! If a builder hasn't built it already, they probably won't.":
 	"建てて欲しい店は自分で建てよう! ビルダーがまだ建ててくれて無いなら、多分建てないだろう。",
 	"Downward platforms at the top of a tower will help prevent enemies from climbing over.":
-	"足場を下向きに、塔の上にくっ付けると、敵が登るのを防ぐのに役立つ。",
+	"足場を下向きに塔の上にくっ付けると、敵が登るのを防ぐのに役立つ。",
 	"Stomping enemies is great tactic, but be careful - jump from too high and you'll die if you miss.":
 	"踏みつけは高度な戦術、しかし気を付けて - 高すぎる所からジャンプして外すと死んでしまう。",
 	"Buy eggs to replenish your stock of chickens.":
@@ -747,7 +751,7 @@
 	"As a knight, you can always jab the enemy after successfully slashing them to deal extra heart of damage.":
 	"ナイトを使う場合、相手にスラッシュを当てた後にジャブを当てる事でさらなるダメージを与えられる。",
 	"It is advantageous to have one transport tunnel near your tent and another one at front base for quick transportation.":
-	"トンネルの片方をテントの近くに、もう片方を前線の拠点に建てると有利。",
+	"トンネルの片方をテントの近くに、もう片方を前線の拠点に建てると有利だ。",
 	"It's a good idea to protect your transport tunnels from enemies by creating a trap at the entrance of your tunnel.":
 	"トンネルの入口をトラップで敵から守るのは良いアイデア。",
 	"You can throw saws at logs to quickly turn them into usable wood.":
@@ -767,9 +771,9 @@
 	"Stone doors are durable, but very expensive - dont place too many of them in one doorway.":
 	"石のドアは頑丈だがとても高価 - 1つの通り道に使いすぎないようにしよう。",
 	"Placing a mine on your flag will make it difficult for the enemy to take it without dying.":
-	"地雷を旗の場所に置くと、敵が死なずに旗を奪う事が難しくなる。",
+	"地雷を旗の場所に置くと、敵が死なずに旗を奪う事が難しくなるぞ。",
 	"As an archer, you can shoot enemy mines to blow them up. But be careful, as the explosion can still kill you and your teammates!":
-	"アーチャーは敵の地雷を撃ちぬいて爆破させる事が出来る。ただし気を付けて、その爆発はチームメイトを傷つける能力がある!",
+	"アーチャーは敵の地雷を撃ちぬいて爆破させる事が出来る。ただし気を付けて、その爆発はチームメイトを傷つける能力があるぞ!",
 	"You can blow up enemy mines by throwing bodies of your teammates at them.":
 	"敵の地雷に味方の死体を投げる事で爆破させる事が出来る。",
 	"Throwing an enemy body into an enemy saw disables it.":
@@ -1015,9 +1019,9 @@
 //// SERVER CONNECTION EVENTS ////
 	"Connecting to {SERVER}...": " {SERVER}に接続中...",
 	"Connecting to {IP}": " {IP}に接続中",
-	"Connection failed": "接続に失敗",
-	"Please check the address again and make sure the server is running.": "IPアドレスを再確認し、サーバーが動いてるか確認しよう。",
-	"DISCONNECTED FROM SERVER": "サーバーから切断された",
+	"Connection failed": "接続に失敗しました",
+	"Please check the address again and make sure the server is running.": "IPアドレスを再確認し、サーバーが動いてるか確認してください。",
+	"DISCONNECTED FROM SERVER": "サーバーから切断されました",
 	"Waiting for scripts...":"スクリプトを待機中...",
 
 ////GLOBAL MESSAGES////
@@ -1027,22 +1031,31 @@
 	"It's a tie!":"引き分けだ!",
 	"Well done. Loading next map...":"よくやった。次のマップを読み込み中...",
 	"You saved the princess!":"お姫様を救出した!",
-	"The princess died!":"姫は死んだ!",
+	"The princess died!":"お姫様は死んだ!",
 	"Not enough players in each team for the game to start.\nPlease wait for someone to join...":"十分なプレイヤーがそれぞれのチームに集まっていない。\n誰かが来るまで待とう...",
 	"{LOSING_TEAM} Surrendered! {WINNING_TEAM} wins the Game!":"{LOSING_TEAM}が降伏した! {WINNING_TEAM}が勝利だ！",
 	"{WINNING_TEAM} wins the game!":"{WINNING_TEAM}が勝利だ！",
-	"Stalemate: both teams have no uncaptured flags.\nFlags returning in: {TIME}":"スチールメート:両チームが奪われてない旗を失った.com\n旗が戻るまで: {TIME}秒",
+	"Stalemate: both teams have no uncaptured flags.\nFlags returning in: {TIME}":"スチールメート:両チームが奪われてない旗を失った。\n旗が戻るまで: {TIME}秒",
 	"Stalemate resolved: Flags returned.":"スチールメイトの解決: 旗が返還された。",
 
+//CTF_Flag.as
+	/* chat events, need to change font for use japanese characters
+	"{TEAM}'s ":"{TEAM}の",
+	"{TEAM_S}flag has been picked up by {PLAYER}!":"{TEAM_S}旗は{PLAYER}に拾われた!",
+	"{TEAM_S}flag has been captured by {PLAYER}!":"{TEAM_S}旗は{PLAYER}に奪取された!",
+	"{TEAM_S}flag has been returned due to teamwork!":"{TEAM_S}旗はチームワークにより戻された!",
+	"{TEAM_S}flag has been returned!":"{TEAM_S}旗は戻された!",
+	*/
+
 //TimeToEnd.as
-	"Time is up!\n{WINNING_TEAM} wins the game!":"時間切れ!\n{WINNING_TEAM} が勝利した!",
+	"Time is up!\n{WINNING_TEAM} wins the game!":"時間切れ!\n{WINNING_TEAM}が勝利した!",
 	"Time is up!\nIt's a tie!"          :"時間切れ!\n引き分けだ!",
 	"Time left: {MIN}:{SEC}"            :"残り時間: {MIN}:{SEC}",
 
 //Challenges
 	"Kill the Red Scum!":"赤き奴らを抹殺せよ!",
 	"Kill all the Campers":"全ての伏兵を抹殺せよ",
-	"Kill all the Campers!":"全ての兵士を抹殺せよ!",
+	"Kill all the Campers!":"全ての伏兵を抹殺せよ!",
 	"Reach the end before time runs out!":"制限時間内にゴールまで走れ!",
 	"Run away from the tidal wave!":"大津波から逃げろ!",
 	"Get to the far right!":"一番右へ進め!",
@@ -1093,7 +1106,7 @@
 	"Remember me":"入力を記憶させる",
 	"Create Account":"アカウント作成",
 	"Offline":"オフライン",
-	"Forgot?":"忘れた?",
+	"Forgot?":"忘れましたか?",
 	"PLAY":"ゲーム開始",
 	"Restore":"修復",
 	"Minimize":"最小化",
@@ -1399,14 +1412,14 @@
 	"You are not allowed to vote\nto change the map on this server\n":"このサーバーであなたは\n次のマップへスキップ投票が許可されていない\n",
 	//vote surrender menu
 	"Surrender":"降伏",
-	"Surrender to the enemy?":"敵チームに降伏する？",
+	"Surrender to the enemy?":"敵チームに降伏する?",
 	"Voting for surrender\nis not allowed when playing\nwith a duplicate instance of KAG.\n\nTry rejoining the server\nif this was unintentional.":"KAGを多重起動してプレイしている場合\n降伏投票は利用できない\n\n意図的でない場合\nサーバーに再接続を試そう。",
 	"Voting for surrender\nis not allowed before the game starts.\n":"降伏の投票は\nゲーム開始前には許可されていない。\n",
 	"Voting for surrender\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"連続投票による迷惑行為を防ぐため\n降伏を投票するには\n投票が開始されるたびに\n{NEXTMAP_MINS}分待つ必要がある。",
 	"Voting for surrender\nis not available as a spectator\n":"降伏の投票は\n観客者は利用できない",
 	"Vote Surrender":"降伏投票",
 	"Vote to end the game\nin favour of the enemy team.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select surrender if you're sure.\n- everyone votes.\n":"敵に好印象を持たせて\nこのゲームを終わらせる投票\n\n- この機能の悪用があれば報告を。\n\n使い方:\n\n- 本当に良いなら降伏を選ぶ。\n- みんなで投票する。\n",
-	"We Surrender! (I'm sure)":"降伏します! (私は確かです)",
+	"We Surrender! (I'm sure)":"降伏する! (私は確かです)",
 	//vote scramble
 	"Scramble":"チームの再抽選",
 	"Scramble the teams?":"チームを再抽選する?",
@@ -1421,7 +1434,7 @@
 	//vote chat messages
 	/*ignore them for chat font issue
 	"Votekick passed! {USER} will be kicked out.":"キック投票可決! {USER} はキックされる。",
-	"{USER} left early, acting as if they were kicked.":"{USER} はキックされる前に自ら退室した",
+	"{USER} left early, acting as if they were kicked.":"{USER} はキックされる前に自ら退室した。",
 	"{USER} needs to take a spoonful of cement! Play on!":"{USER} はスプーン一杯のセメントが要るみたいだ!続けたまえ!",
 	"--- A vote was started by {USER} ---":"--- {USER} が投票を開始 ---",
 	"--- Vote \"{TITLE}\" was started by {USER}. Reason: {REASON} ---":"--- {USER} が投票を開始。案件: {TITLE} 理由: {REASON} ---",
