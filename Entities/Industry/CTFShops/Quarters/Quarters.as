@@ -177,9 +177,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	else
 	{
 		this.set_Vec2f("shop offset", Vec2f(6, 0));
-		CBitStream params;
-		params.write_u16(caller.getNetworkID());
-		caller.CreateGenericButton("$rest$", Vec2f(-6, 0), this, this.getCommandID("rest"), getTranslatedString("Rest"), params);
+		caller.CreateGenericButton("$rest$", Vec2f(-6, 0), this, this.getCommandID("rest"), getTranslatedString("Rest"));
 	}
 	this.set_bool("shop available", isOverlapping);
 }
@@ -221,13 +219,17 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 	}
-	else if (cmd == this.getCommandID("rest"))
+	else if (cmd == this.getCommandID("rest") && isServer())
 	{
-		u16 caller_id;
-		if (!params.saferead_netid(caller_id))
-			return;
+		CPlayer@ player = getNet().getActiveCommandPlayer();
 
-		CBlob@ caller = getBlobByNetworkID(caller_id);
+		if (player is null) 
+		{
+			return;
+		}
+
+		CBlob@ caller = player.getBlob();
+
 		if (caller !is null && !caller.isAttached())
 		{
 			AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
