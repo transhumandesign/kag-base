@@ -232,21 +232,24 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (caller !is null && !caller.isAttached())
 		{
+			f32 distance = this.getDistanceTo(caller);
+
+			// range check: do not rest if more than 5 blocks away from quarter's center
+			if (distance > 40) return;
+
 			AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
 			if (bed !is null && bedAvailable(this))
 			{
 				CBlob@ carried = caller.getCarriedBlob();
-				if (isServer())
+
+				if (carried !is null)
 				{
-					if (carried !is null)
+					if (!caller.server_PutInInventory(carried))
 					{
-						if (!caller.server_PutInInventory(carried))
-						{
-							carried.server_DetachFrom(caller);
-						}
+						carried.server_DetachFrom(caller);
 					}
-					this.server_AttachTo(caller, "BED");
 				}
+				this.server_AttachTo(caller, "BED");
 			}
 		}
 	}
