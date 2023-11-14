@@ -17,7 +17,7 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 
 void onTick(CBlob@ this)
 {
-	if (getNet().isServer() && this.getTickSinceCreated() > grow_time)
+	if (isServer() && this.getTickSinceCreated() > grow_time)
 	{
 		int chickenCount = 0;
 		CBlob@[] blobs;
@@ -33,27 +33,23 @@ void onTick(CBlob@ this)
 
 		if (chickenCount < MAX_CHICKENS_TO_HATCH)
 		{
-			this.SendCommand(this.getCommandID("hatch"));
+			Hatch(this);
 		}
 	}
 }
 
-
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+void onDie(CBlob@ this)
 {
-	if (cmd == this.getCommandID("hatch"))
+	CSprite@ s = this.getSprite();
+	if (s !is null)
 	{
-		CSprite@ s = this.getSprite();
-		if (s !is null)
-		{
-			s.Gib();
-		}
-
-		if (getNet().isServer())
-		{
-			this.server_SetHealth(-1);
-			this.server_Die();
-			server_CreateBlob("chicken", -1, this.getPosition() + Vec2f(0, -5.0f));
-		}
+		s.Gib();
 	}
+}
+
+void Hatch(CBlob@ this)
+{
+	this.server_SetHealth(-1);
+	this.server_Die();
+	server_CreateBlob("chicken", -1, this.getPosition() + Vec2f(0, -5.0f));
 }
