@@ -44,6 +44,7 @@ void onInit(CBlob@ this)
 	this.getSprite().SetEmitSound("Entities/Characters/Archer/BowPull.ogg");
 	this.addCommandID("shoot arrow");
 	this.addCommandID("pickup arrow");
+	this.addCommandID("pickup arrow client");
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
 	this.addCommandID(grapple_sync_cmd);
@@ -962,7 +963,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		archer.fletch_cooldown = FLETCH_COOLDOWN; // just don't allow shoot + make arrow
 	}
-	else if (cmd == this.getCommandID("pickup arrow"))
+	else if (cmd == this.getCommandID("pickup arrow") && isServer())
 	{
 		CBlob@ arrow = getPickupArrow(this);
 		bool spriteArrow = canPickSpriteArrow(this, false); // unnecessary
@@ -979,41 +980,43 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				const u8 arrowType = archer.arrow_type;
 				if (arrowType == ArrowType::bomb)
 				{
-					arrow.set_u16("follow", 0); //this is already synced, its in command.
+					arrow.set_u16("follow", 0);
+					arrow.Sync("follow", true);
 					arrow.setPosition(this.getPosition());
 					return;
 				}
 			}
 
-			if (getNet().isServer())
+			CBlob@ mat_arrows = server_CreateBlobNoInit('mat_arrows');
+
+			if (mat_arrows !is null)
 			{
-				CBlob@ mat_arrows = server_CreateBlobNoInit('mat_arrows');
+				mat_arrows.Tag('custom quantity');
+				mat_arrows.Init();
 
-				if (mat_arrows !is null)
+				mat_arrows.server_SetQuantity(1); // unnecessary
+
+				if (not this.server_PutInInventory(mat_arrows))
 				{
-					mat_arrows.Tag('custom quantity');
-					mat_arrows.Init();
+					mat_arrows.setPosition(this.getPosition());
+				}
 
-					mat_arrows.server_SetQuantity(1); // unnecessary
-
-					if (not this.server_PutInInventory(mat_arrows))
-					{
-						mat_arrows.setPosition(this.getPosition());
-					}
-
-					if (arrow !is null)
-					{
-						arrow.server_Die();
-					}
-					else
-					{
-						canPickSpriteArrow(this, true);
-					}
+				if (arrow !is null)
+				{
+					arrow.server_Die();
+				}
+				else
+				{
+					canPickSpriteArrow(this, true);
 				}
 			}
 
-			this.getSprite().PlaySound("Entities/Items/Projectiles/Sounds/ArrowHitGround.ogg");
+			this.SendCommand(this.getCommandID("pickup arrow client"));
 		}
+	}
+	else if (cmd == this.getCommandID("pickup arrow client") && isClient())
+	{
+		this.getSprite().PlaySound("Entities/Items/Projectiles/Sounds/ArrowHitGround.ogg");
 	}
 	else if (cmd == this.getCommandID(grapple_sync_cmd) && isClient())
 	{
