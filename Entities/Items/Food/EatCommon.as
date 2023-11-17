@@ -1,5 +1,3 @@
-const string heal_id = "heal command";
-
 bool canEat(CBlob@ blob)
 {
 	return blob.exists("eat sound");
@@ -29,7 +27,7 @@ void Heal(CBlob@ this, CBlob@ food)
 		CBitStream params;
 		params.write_u16(this.getNetworkID());
 		params.write_u8(getHealingAmount(food));
-		food.SendCommand(food.getCommandID(heal_id), params);
+		food.SendCommand(food.getCommandID("heal command"), params);
 
 		food.Tag("healed");
 	}
