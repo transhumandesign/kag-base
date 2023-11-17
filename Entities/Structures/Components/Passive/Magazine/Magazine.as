@@ -37,7 +37,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Magazine component(position);
 	this.set("component", component);
 
-	if (isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -99,7 +99,8 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	Vec2f_zero,																									// button offset
 	this, 																										// button attachment
 	this.getCommandID(LOAD ? "load" : "unload"), 																// command id
-	getTranslatedString(LOAD ? "Load {ITEM}" : "Unload {ITEM}").replace("{ITEM}", target.getInventoryName()));	// description
+	getTranslatedString(LOAD ? "Load {ITEM}" : "Unload {ITEM}").replace("{ITEM}", target.getInventoryName()),	// description
+	params);																									// cbitstream
 		
 	button.radius = 8.0f;
 	button.enableRadius = 22.0f;
@@ -107,18 +108,14 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("load") && isServer())
+	if (!getNet().isServer()) return;
+
+	if (cmd == this.getCommandID("load"))
 	{
-		CPlayer@ player = getNet().getActiveCommandPlayer();
-		if (player is null) return;
-					
-		CBlob@ caller = player.getBlob();
-		if (caller is null) return;
+		u16 id;
+		if (!params.saferead_u16(id)) return;
 
-		// range check
-		if (this.getDistanceTo(caller) > 22.0f) return;
-
-		CBlob@ carried = caller.getCarriedBlob();
+		CBlob@ carried = getBlobByNetworkID(id);
 		if (carried is null) return;
 
 		CBlob@ item = this.getInventory().getItem(0);
@@ -146,17 +143,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 	}
-	else if (cmd == this.getCommandID("unload") && isServer())
+	else if (cmd == this.getCommandID("unload"))
 	{
-		CPlayer@ player = getNet().getActiveCommandPlayer();
-		if (player is null) return;
-					
-		CBlob@ caller = player.getBlob();
-		if (caller is null) return;
+		u16 id;
+		if (!params.saferead_u16(id)) return;
 
-		// range check
-		if (this.getDistanceTo(caller) > 22.0f) return;
-
+		CBlob@ caller = getBlobByNetworkID(id);
 		if (caller is null) return;
 
 		CBlob@ item = this.getInventory().getItem(0);

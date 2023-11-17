@@ -22,8 +22,8 @@ void onInit(CBlob@ this)
 	// used by TileBackground.as
 	this.set_TileType("background tile", CMap::tile_wood_back);
 
-	this.addCommandID("activate client");
-	this.addCommandID("deactivate client");
+	this.addCommandID("activate");
+	this.addCommandID("deactivate");
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -39,7 +39,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	this.set_u32("cooldown", getGameTime() + 40);
 	this.set_u16("angle", this.getAngleDegrees());
 
-	if (isServer())
+	if (getNet().isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -59,8 +59,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (!isServer()) return;
-
 	Component@ component = null;
 	if (!this.get("component", @component)) return;
 
@@ -69,13 +67,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 	if (blob is null || !canActivatePlate(blob) || !isTouchingPlate(this, blob)) return;
 
-	Activate(this);
+	this.SendCommand(this.getCommandID("activate"));
 }
 
 void onEndCollision(CBlob@ this, CBlob@ blob)
 {
-	if (!isServer()) return;
-
 	Component@ component = null;
 	if (!this.get("component", @component)) return;
 
@@ -89,70 +85,59 @@ void onEndCollision(CBlob@ this, CBlob@ blob)
 		if (t !is null && canActivatePlate(t) && isTouchingPlate(this, t)) return;
 	}
 
-	Deactivate(this);
+	this.SendCommand(this.getCommandID("deactivate"));
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("activate client") && isClient())
-	{
-		CSprite@ sprite = this.getSprite();
-		if (sprite is null) return;
-
-		sprite.SetFrameIndex(1);
-		sprite.PlaySound("LeverToggle.ogg");
-	}
-	else if (cmd == this.getCommandID("deactivate client") && isClient())
-	{
-		CSprite@ sprite = this.getSprite();
-		if (sprite is null) return;
-
-		sprite.SetFrameIndex(0);
-		sprite.PlaySound("LeverToggle.ogg");
-	}
-}
-
-void Activate(CBlob@ this)
-{
 	Component@ component = null;
 	if (!this.get("component", @component)) return;
 
-	this.set_u8("state", 1);
-	this.Sync("state", true);
+	u8 state = this.get_u8("state");
 
-	// setInfo is too slow for fast collisions, need to set power as well
-	MapPowerGrid@ grid;
-	if (!getRules().get("power grid", @grid)) return;
+	if (cmd == this.getCommandID("activate"))
+	{
+		state = 1;
 
-	grid.setAll(
-	component.x,                        // x
-	component.y,                        // y
-	TOPO_NONE,                          // input topology
-	TOPO_CARDINAL,                      // output topology
-	INFO_SOURCE | INFO_ACTIVE,          // information
-	power_source,                       // power
-	0);     
+		// setInfo is too slow for fast collisions, need to set power as well
+		if (getNet().isServer())
+		{
+			MapPowerGrid@ grid;
+			if (!getRules().get("power grid", @grid)) return;
 
-	this.SendCommand(this.getCommandID("activate client"));
-}
+			grid.setAll(
+			component.x,                        // x
+			component.y,                        // y
+			TOPO_NONE,                          // input topology
+			TOPO_CARDINAL,                      // output topology
+			INFO_SOURCE | INFO_ACTIVE,          // information
+			power_source,                       // power
+			0);                                 // id
+		}
+	}
+	else if (cmd == this.getCommandID("deactivate"))
+	{
+		state = 0;
 
-void Deactivate(CBlob@ this)
-{
-	Component@ component = null;
-	if (!this.get("component", @component)) return;
+		if (getNet().isServer())
+		{
+			MapPowerGrid@ grid;
+			if (!getRules().get("power grid", @grid)) return;
 
-	this.set_u8("state", 0);
-	this.Sync("state", true);
+			grid.setInfo(
+			component.x,                        // x
+			component.y,                        // y
+			INFO_SOURCE);                       // information
+		}
+	}
 
-	MapPowerGrid@ grid;
-	if (!getRules().get("power grid", @grid)) return;
+	this.set_u8("state", state);
 
-	grid.setInfo(
-	component.x,                        // x
-	component.y,                        // y
-	INFO_SOURCE);                       // information
+	CSprite@ sprite = this.getSprite();
+	if (sprite is null) return;
 
-	this.SendCommand(this.getCommandID("deactivate client"));
+	sprite.SetFrameIndex(state);
+	sprite.PlaySound("LeverToggle.ogg");
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
