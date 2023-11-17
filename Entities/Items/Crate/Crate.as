@@ -517,8 +517,15 @@ void BoobyTrap(CBlob@ this, CBlob@ caller, CBlob@ mine)
 		pos.y = Maths::Min(pos.y, this.getPosition().y - 5);
 		mine.setPosition(pos);
 		mine.setVelocity(Vec2f((caller.getPosition().x - mine.getPosition().x) / 30.0f, -5.0f));
+
+		// maybe add MineCommon.as in the future..?
 		mine.set_u8("mine_timer", 255);
-		mine.SendCommand(mine.getCommandID("mine_primed"));
+		mine.Sync("mine_timer", true);
+		mine.set_u8("mine_state", 1);
+		mine.Sync("mine_state", true);
+		mine.getShape().checkCollisionsAgain = true;
+
+		mine.SendCommand(mine.getCommandID("mine_primed_client"));
 	}
 }
 
