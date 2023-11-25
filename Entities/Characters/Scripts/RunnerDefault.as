@@ -6,6 +6,8 @@
 
 void onInit(CBlob@ this)
 {
+	this.getShape().getConsts().bullet = true;
+
 	this.getCurrentScript().removeIfTag = "dead";
 	this.Tag("medium weight");
 
