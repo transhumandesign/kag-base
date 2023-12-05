@@ -17,6 +17,26 @@ Vec2f getTopLeft()
 	return Vec2f(getScreenWidth() - 210, 182 + (Maths::Sin(getGameTime() / 10.0f) + 1.0f) * 3.0f);
 }
 
+SColor get_vote_color(string vote_title)
+{
+	if (vote_title.toLower().findFirst("kick", 0) >= 0)
+	{
+		return SColor(255, 255, 255, 0);
+	}
+
+	if (vote_title.toLower().findFirst("skip", 0) >= 0)
+	{
+		return SColor(255, 0, 0, 255);
+	}
+
+	if (vote_title.toLower().findFirst("surrender", 0) >= 0)
+	{
+		return SColor(255, 0, 255, 0);
+	}
+
+	return color_white;
+}
+
 //hooks
 
 void onRender(CRules@ this)
@@ -59,7 +79,8 @@ void onRender(CRules@ this)
 	GUI::DrawPane(tl, br, SColor(0x80ffffff));
 
 	GUI::SetFont("menu");
-	GUI::DrawText(vote_title, tl + Vec2f(Maths::Max(dim.x / 2 - text_dim.x / 2, 3.0), 3), color_white);
+
+	GUI::DrawText(vote_title, tl + Vec2f(Maths::Max(dim.x / 2 - text_dim.x / 2, 3.0), 3), get_vote_color(vote.title));
 
 	GUI::DrawText(getTranslatedString("Reason: {REASON}").replace("{REASON}", getTranslatedString(vote.reason)), tl + Vec2f(3, 3 + text_dim.y * 2), color_white);
 	GUI::DrawText(getTranslatedString("Cast by: {USER}").replace("{USER}", vote.byuser), tl + Vec2f(3, 3 + text_dim.y * 3), color_white);
