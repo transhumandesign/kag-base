@@ -7,7 +7,7 @@
 
 #include "TreeCommon.as";
 
-const int present_interval = 30 * 60 * 10; // 10 minutes
+const int present_interval = getTicksASecond() * 60 * 10; // 10 minutes
 const int gifts_per_hoho = 3;
 
 // Snow stuff
@@ -150,7 +150,7 @@ CBlob@ spawnPresent(Vec2f spawnpos, u8 team)
 
 void onCommand( CRules@ this, u8 cmd, CBitStream @params )
 {
-	if(cmd == this.getCommandID("xmas sound"))
+	if(cmd == this.getCommandID("xmas sound") && isClient())
 	{
 		Sound::Play("Christmas.ogg");
 	}
