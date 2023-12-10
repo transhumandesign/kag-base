@@ -151,11 +151,22 @@ shared void packet_AddChangeAnimation(CBitStream@ stream, u16 id, string animati
 
 shared void packet_SendStream(CRules@ this, CBitStream@ stream)
 {
-	stream.write_u8(PACKET_END);
-	this.SendCommand(this.getCommandID("mechanisms_packet"), stream);
+	if (isServer())
+	{
+		stream.write_u8(PACKET_END);
+
+		// HACK, CMD SANITIZATION:
+		// we don't want a server->server command but we need to run the code on server
+		CBitStream stream_server = stream;
+		stream_server.Reset();
+		packet_RecvStream(this, stream_server);
+
+		// send to client
+		this.SendCommand(this.getCommandID("mechanisms_packet"), stream);
+	}
 }
 
-void packet_RecvStream(CRules@ this, CBitStream@ stream)
+shared void packet_RecvStream(CRules@ this, CBitStream@ stream)
 {
 	u8 type;
 	if(!stream.saferead_u8(type) || type != PACKET_START) return;
@@ -190,7 +201,7 @@ void packet_RecvStream(CRules@ this, CBitStream@ stream)
 	}
 }
 
-void packet_RecActivate(CBitStream@ stream)
+shared void packet_RecActivate(CBitStream@ stream)
 {
 	u16 id;
 	if(!stream.saferead_u16(id)) return;
@@ -204,7 +215,7 @@ void packet_RecActivate(CBitStream@ stream)
 	component.Activate(blob);
 }
 
-void packet_RecDeactivate(CBitStream@ stream)
+shared void packet_RecDeactivate(CBitStream@ stream)
 {
 	u16 id;
 	if(!stream.saferead_u16(id)) return;
@@ -218,7 +229,7 @@ void packet_RecDeactivate(CBitStream@ stream)
 	component.Deactivate(blob);
 }
 
-void packet_RecChangeFrame(CBitStream@ stream)
+shared void packet_RecChangeFrame(CBitStream@ stream)
 {
 	u16 id;
 	u8 frame;
@@ -231,7 +242,7 @@ void packet_RecChangeFrame(CBitStream@ stream)
 	blob.getSprite().SetFrameIndex(frame);
 }
 
-void packet_RecChangeAnimation(CBitStream@ stream)
+shared void packet_RecChangeAnimation(CBitStream@ stream)
 {
 	u16 id;
 	string animation;

@@ -22,7 +22,7 @@ void onRestart(CRules@ this)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
-	if(cmd == this.getCommandID("mechanisms_packet"))
+	if(cmd == this.getCommandID("mechanisms_packet") && isClient())
 	{
 		packet_RecvStream(this, params);
 	}
