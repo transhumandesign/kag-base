@@ -6,8 +6,8 @@ const int BUTTON_SIZE = 4;
 
 void onInit(CRules@ this)
 {
-	this.addCommandID("pick teams");
-	this.addCommandID("pick none");
+	this.addCommandID("pick teams"); // dumb client->client command, TODO: add func callbacks for cgridmenu in engine
+	this.addCommandID("pick none"); // dumb client->client command, TODO: add func callbacks for cgridmenu in engine
 
 	AddIconToken("$BLUE_TEAM$", "GUI/TeamIcons.png", Vec2f(96, 96), 0);
 	AddIconToken("$RED_TEAM$", "GUI/TeamIcons.png", Vec2f(96, 96), 1);
@@ -36,7 +36,6 @@ void ShowTeamMenu(CRules@ this)
 		for (int i = 0; i < this.getTeamsCount(); i++)
 		{
 			CBitStream params;
-			params.write_u16(getLocalPlayer().getNetworkID());
 			params.write_u8(i);
 
 			if (i == 0)
@@ -49,7 +48,6 @@ void ShowTeamMenu(CRules@ this)
 				// spectator
 				{
 					CBitStream params;
-					params.write_u16(getLocalPlayer().getNetworkID());
 					params.write_u8(this.getSpectatorTeamNum());
 					CGridButton@ button2 = menu.AddButton("$SPECTATOR$", getTranslatedString("Spectator"), this.getCommandID("pick teams"), Vec2f(BUTTON_SIZE / 2, BUTTON_SIZE), params);
 				}
@@ -68,17 +66,20 @@ void ShowTeamMenu(CRules@ this)
 }
 
 // the actual team changing is done in the player management script -> onPlayerRequestTeamChange()
-
-void ReadChangeTeam(CRules@ this, CBitStream @params)
+void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
-	CPlayer@ player = getPlayerByNetworkId(params.read_u16());
-	u8 team = params.read_u8();
-
-	if (player is getLocalPlayer())
+	if (cmd == this.getCommandID("pick teams") && isClient())
 	{
+		u8 team;
+		if (!params.saferead_u8(team)) return;
+
+		CPlayer@ player = getLocalPlayer();
+		if (player is null) return;
+
 		if (CanSwitchFromSpec(this, player, team))
 		{
-			ChangeTeam(player, team);
+			player.client_ChangeTeam(team);
+			getHUD().ClearMenus();
 		}
 		else
 		{
@@ -86,21 +87,7 @@ void ReadChangeTeam(CRules@ this, CBitStream @params)
 			Sound::Play("NoAmmo.ogg");
 		}
 	}
-}
-
-void ChangeTeam(CPlayer@ player, u8 team)
-{
-	player.client_ChangeTeam(team);
-	getHUD().ClearMenus();
-}
-
-void onCommand(CRules@ this, u8 cmd, CBitStream @params)
-{
-	if (cmd == this.getCommandID("pick teams"))
-	{
-		ReadChangeTeam(this, params);
-	}
-	else if (cmd == this.getCommandID("pick none"))
+	else if (cmd == this.getCommandID("pick none") && isClient())
 	{
 		getHUD().ClearMenus();
 	}
