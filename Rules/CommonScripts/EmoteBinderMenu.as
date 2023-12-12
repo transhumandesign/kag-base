@@ -73,7 +73,6 @@ void ShowEmotesMenu(CPlayer@ player)
 		CBitStream params;
 
 		params.write_u8(CLOSE_MENU);
-		params.write_string(player.getUsername());
 
 		menu.AddKeyCommand(KEY_ESCAPE, rules.getCommandID(EMOTE_CMD), params);
 		menu.SetDefaultCommand(rules.getCommandID(EMOTE_CMD), params);
@@ -99,7 +98,6 @@ void ShowEmotesMenu(CPlayer@ player)
 
 				CBitStream params;
 				params.write_u8(BIND_EMOTE);
-				params.write_string(player.getUsername());
 				params.write_string(emote.token);
 				CGridButton@ button = menu.AddButton(getIconName(emote.token), getTranslatedString(emote.name), rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
 			}
@@ -123,7 +121,6 @@ void ShowEmotesMenu(CPlayer@ player)
 
 			CBitStream params;
 			params.write_u8(SELECT_KEYBIND);
-			params.write_string(player.getUsername());
 			params.write_u8(i);
 			CGridButton@ button = menu.AddButton(getIconName(emoteBinds[i]), getTranslatedString(text).replace("{KEY_NUM}", keyNum + ""), rules.getCommandID(EMOTE_CMD), Vec2f(1, 1), params);
 			button.selectOneOnClick = true;
@@ -142,16 +139,14 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
 	if(cmd == this.getCommandID(EMOTE_CMD))
 	{
-		string name;
 		u8 subcmd;
 
 		if(!params.saferead_u8(subcmd)) return;
-		if(!params.saferead_string(name)) return;
 
-		CPlayer@ caller = getPlayerByUsername(name);
+		CPlayer@ caller = getLocalPlayer();
 
 		//check validity so far
-		if (caller is null || !caller.isMyPlayer() || subcmd >= EMOTE_SUBCMD_COUNT)
+		if (caller is null || subcmd >= EMOTE_SUBCMD_COUNT)
 		{
 			return;
 		}

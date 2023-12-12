@@ -19,7 +19,6 @@ void onInit(CRules@ this)
 {
 	this.addCommandID(BUILD_CMD);
 	addCommonBuilderBlocks(blocks, 0, "CTF");
-
 }
 
 void NewBuilderMenu()
@@ -32,7 +31,6 @@ void NewBuilderMenu()
 		getRules().set_u8(propname, 0);
 		ShowBuilderMenu(player);
 	}
-
 }
 
 void ShowBuilderMenu(CPlayer@ player)
@@ -53,7 +51,6 @@ void ShowBuilderMenu(CPlayer@ player)
 		CBitStream params;
 
 		params.write_u8(CLOSE_MENU);
-		params.write_string(player.getUsername());
 
 		menu.AddKeyCommand(KEY_ESCAPE, rules.getCommandID(BUILD_CMD), params);
 		menu.SetDefaultCommand(rules.getCommandID(BUILD_CMD), params);
@@ -65,7 +62,6 @@ void ShowBuilderMenu(CPlayer@ player)
 
 			CBitStream params;
 			params.write_u8(BIND_BLOCK);
-			params.write_string(player.getUsername());
 			params.write_u8(i);
 
 			CGridButton@ button = menu.AddButton(b.icon, block_desc, rules.getCommandID(BUILD_CMD), Vec2f(1, 1), params);
@@ -106,7 +102,6 @@ void ShowBuilderMenu(CPlayer@ player)
 		{
 			CBitStream params;
 			params.write_u8(SELECT_KEYBIND);
-			params.write_string(player.getUsername());
 			params.write_u8(i);
 
 			BuildBlock@ b = blocks[0][blockBinds[i]];
@@ -130,16 +125,14 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		return;
 	}
 
-	string name;
 	u8 subcmd;
 
 	if(!params.saferead_u8(subcmd)) return;
-	if(!params.saferead_string(name)) return;
 
-	CPlayer@ caller = getPlayerByUsername(name);
+	CPlayer@ caller = getLocalPlayer();
 
 	//check validity so far
-	if (caller is null || !caller.isMyPlayer() || subcmd >= BUILD_SUBCMD_COUNT)
+	if (caller is null || subcmd >= BUILD_SUBCMD_COUNT)
 	{
 		return;
 	}
