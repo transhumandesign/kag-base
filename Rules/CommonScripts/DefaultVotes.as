@@ -3,11 +3,8 @@
 #include "VoteCommon.as"
 
 bool g_haveStartedVote = false;
-s32 g_lastVoteCounter = 0;
-string g_lastUsernameVoted = "";
-const float required_minutes = 10; //time you have to wait after joining w/o skip_votewait.
 
-s32 g_lastNextmapCounter = 0;
+const float required_minutes = 10; //time you have to wait after joining w/o skip_votewait.
 const float required_minutes_nextmap = 10; //global nextmap vote cooldown
 
 const s32 VoteKickTime = 30; //minutes (30min default)
@@ -63,19 +60,56 @@ void onInit(CRules@ this)
 
 void onRestart(CRules@ this)
 {
-	g_lastNextmapCounter = 60 * getTicksASecond() * required_minutes_nextmap;
+	if (isServer())
+	{
+		for (int i=0; i<getPlayerCount(); ++i)
+		{
+			CPlayer@ p = getPlayer(i);
+			if (p is null) continue;
+
+			this.set_s32("last nextmap counter player " + p.getUsername(), 60 * getTicksASecond() * required_minutes_nextmap);
+		}
+	}
+}
+
+void onNewPlayerJoin(CRules@ this, CPlayer@ player)
+{
+	string username = player.getUsername();
+
+	this.set_s32("last vote counter player " + username, 0);
+	this.SyncToPlayer("last vote counter player " + username, player);
+
+	this.set_s32("last nextmap counter player " + username, 0);
+	this.SyncToPlayer("last nextmap counter player " + username, player);
 }
 
 void onTick(CRules@ this)
 {
-	if (g_lastVoteCounter < 60 * getTicksASecond()*required_minutes)
+	// server-side counter for every player since we don't trust the client
+	if (isServer())
 	{
-		g_lastVoteCounter++;
-	}
+		// update every 10 seconds only? probably not necessary but whatever
+		if (getGameTime() % (10 * getTicksASecond()) == 0)
+		{
+			for (int i=0; i<getPlayerCount(); ++i)
+			{
+				CPlayer@ p = getPlayer(i);
+				if (p is null) continue;
 
-	if (g_lastNextmapCounter < 60 * getTicksASecond()*required_minutes_nextmap)
-	{
-		g_lastNextmapCounter++;
+				string username = p.getUsername();
+
+				if (this.get_s32("last vote counter player " + username) < 60 * getTicksASecond()*required_minutes)
+				{
+					this.add_s32("last vote counter player " + username, (10 * getTicksASecond()));
+					this.SyncToPlayer("last vote counter player " + username, p);
+				}
+				if (this.get_s32("last nextmap counter player " + username) < 60 * getTicksASecond()*required_minutes_nextmap)
+				{
+					this.add_s32("last nextmap counter player " + username, (10 * getTicksASecond()));
+					this.SyncToPlayer("last nextmap counter player " + username, p);
+				}
+			}
+		}
 	}
 }
 
@@ -488,7 +522,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 				)
 			);
 		}
-		else if (g_lastVoteCounter < 60 * getTicksASecond()*required_minutes
+		else if (this.get_s32("last vote counter player " + me.getUsername()) < 60 * getTicksASecond()*required_minutes // synced from server
 				&& (!can_skip_wait || g_haveStartedVote))
 		{
 			string cantstart_info = getTranslatedString(
@@ -530,7 +564,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			{
 				CPlayer@ player = getPlayer(i);
 
-				//if(player is me) continue; //don't display ourself for kicking
+				//if (player is me) continue; //don't display ourself for kicking
 				//commented out for max lols
 
 				int player_team = player.getTeamNum();
@@ -543,7 +577,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 					if (player.getUsername() != player.getCharacterName())
 						descriptor += " (" + player.getUsername() + ")";
 
-					if(g_lastUsernameVoted == player.getUsername())
+					if (this.get_string("last username voted " + me.getUsername()) == player.getUsername()) // synced from server
 					{
 						string title = getTranslatedString(
 							"Cannot kick {USER}"
@@ -622,7 +656,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 				)
 			);
 		}
-		else if (g_lastNextmapCounter < 60 * getTicksASecond()*required_minutes_nextmap
+		else if (this.get_s32("last nextmap counter player " + me.getUsername()) < 60 * getTicksASecond()*required_minutes_nextmap // synced from server
 				&& (!can_skip_wait || g_haveStartedVote))
 		{
 			string cantstart_info = getTranslatedString(
@@ -705,7 +739,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			)
 		);
 	}
-	else if (g_lastNextmapCounter < 60 * getTicksASecond()*required_minutes_nextmap
+	else if (this.get_s32("last nextmap counter player " + me.getUsername()) < 60 * getTicksASecond()*required_minutes_nextmap // synced from server
 			 && (!can_skip_wait || g_haveStartedVote))
 	{
 		string cantstart_info = getTranslatedString(
@@ -766,7 +800,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			)
 		);
 	}
-	else if (!this.isWarmup() && !can_skip_wait)
+	else if (!this.isWarmup())
 	{
 		Menu::addInfoBox(
 			scramblemenu,
@@ -777,7 +811,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			)
 		);
 	}
-	else if (g_lastNextmapCounter < 60 * getTicksASecond()*required_minutes_nextmap
+	else if (this.get_s32("last nextmap counter player " + me.getUsername()) < 60 * getTicksASecond()*required_minutes_nextmap // synced from server
 			 && (!can_skip_wait || g_haveStartedVote))
 	{
 		string cantstart_info = getTranslatedString(
@@ -821,8 +855,6 @@ void CloseMenu()
 
 void onPlayerStartedVote()
 {
-	g_lastVoteCounter = 0;
-	g_lastNextmapCounter = 0;
 	g_haveStartedVote = true;
 }
 
@@ -852,16 +884,12 @@ void Callback_Kick(CBitStream@ params)
 	if (getSecurity().checkAccess_Feature(other_player, "kick_immunity"))
 		return;
 
-	//monitor to prevent abuse
-	g_lastUsernameVoted = other_player.getUsername();
-
 	CBitStream params2;
 
 	params2.write_u16(other_player.getNetworkID());
 	params2.write_u8(g_kick_reason_id);
 
 	getRules().SendCommand(getRules().getCommandID(votekick_id), params2);
-	onPlayerStartedVote();
 }
 
 void Callback_NextMap(CBitStream@ params)
@@ -880,7 +908,6 @@ void Callback_NextMap(CBitStream@ params)
 	params2.write_u8(id);
 
 	getRules().SendCommand(getRules().getCommandID(votenextmap_id), params2);
-	onPlayerStartedVote();
 }
 
 void Callback_Surrender(CBitStream@ params)
@@ -895,7 +922,6 @@ void Callback_Surrender(CBitStream@ params)
 	params2.write_u16(me.getNetworkID());
 
 	getRules().SendCommand(getRules().getCommandID(votesurrender_id), params2);
-	onPlayerStartedVote();
 }
 
 void Callback_Scramble(CBitStream@ params)
@@ -910,7 +936,53 @@ void Callback_Scramble(CBitStream@ params)
 	params2.write_u16(me.getNetworkID());
 
 	getRules().SendCommand(getRules().getCommandID(votescramble_id), params2);
-	onPlayerStartedVote();
+}
+
+
+bool server_canPlayerStartVote(CRules@ this, CPlayer@ player, CPlayer@ other_player, u8 cmdid)
+{
+	if (player is null) return false;
+
+	bool can_skip_wait = getSecurity().checkAccess_Feature(player, "skip_votewait");
+
+	if (cmdid == this.getCommandID(votekick_id))
+	{
+		if (other_player is null) return false;
+
+		// other player has kick immunity?
+		if (getSecurity().checkAccess_Feature(other_player, "kick_immunity"))
+		{
+			return false;
+		}
+
+		// already tried to votekick other player before this?
+		if (this.get_string("last username voted " + player.getUsername()) == other_player.getUsername())
+		{
+			return false;
+		}
+
+		if (!can_skip_wait)
+		{
+			// didnt wait required_minutes yet?
+			if (this.get_s32("last vote counter player " + player.getUsername()) < 60 * getTicksASecond()*required_minutes)
+			{
+				return false;
+			}
+		}
+	}
+	else if (cmdid == this.getCommandID(votenextmap_id))
+	{
+		if (!can_skip_wait)
+		{
+			// didnt wait required_minutes_nextmap yet?
+			if (this.get_s32("last nextmap counter player " + player.getUsername()) < 60 * getTicksASecond()*required_minutes_nextmap)
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 //actually setting up the votes
@@ -932,6 +1004,14 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 
 		CPlayer@ player = getPlayerByNetworkId(playerid);
 		if (player is null) return;
+
+		if (!server_canPlayerStartVote(this, byplayer, player, cmd)) return;
+
+		this.set_s32("last vote counter player " + byplayer.getUsername(), 0);
+		this.SyncToPlayer("last vote counter player " + byplayer.getUsername(), byplayer);
+
+		this.set_string("last username voted " + byplayer.getUsername(), player.getUsername());
+		this.SyncToPlayer("last username voted " + byplayer.getUsername(), byplayer);
 
 		Rules_SetVote(this, Create_Votekick(player, byplayer, reasonid));
 
@@ -973,9 +1053,13 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 		CPlayer@ byplayer = getNet().getActiveCommandPlayer();
 		if (byplayer is null) return;
 
-		Rules_SetVote(this, Create_VoteNextmap(byplayer, reasonid));
+		if (!server_canPlayerStartVote(this, byplayer, null, cmd)) return;
 
-		g_lastNextmapCounter = 0;
+		printf("gv " + byplayer.getUsername());
+		this.set_s32("last nextmap counter player " + byplayer.getUsername(), 0);
+		this.SyncToPlayer("last nextmap counter player " + byplayer.getUsername(), byplayer);
+
+		Rules_SetVote(this, Create_VoteNextmap(byplayer, reasonid));
 
 		CBitStream bt;
 		bt.write_u8(reasonid);
@@ -995,17 +1079,18 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 		if (byplayer is null) return;
 
 		Rules_SetVote(this, Create_VoteNextmap(byplayer, reasonid));
-
-		g_lastNextmapCounter = 0;
 	}
 	else if (cmd == this.getCommandID(votesurrender_id) && isServer())
 	{
 		CPlayer@ byplayer = getNet().getActiveCommandPlayer();
 		if (byplayer is null) return;
 
-		Rules_SetVote(this, Create_VoteSurrender(byplayer));
+		if (!server_canPlayerStartVote(this, byplayer, null, cmd)) return;
 
-		g_lastNextmapCounter = 0;
+		this.set_s32("last nextmap counter player " + byplayer.getUsername(), 0);
+		this.SyncToPlayer("last nextmap counter player " + byplayer.getUsername(), byplayer);
+
+		Rules_SetVote(this, Create_VoteSurrender(byplayer));
 
 		CBitStream bt;
 		bt.write_u16(byplayer.getNetworkID());
@@ -1021,17 +1106,18 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 		if (byplayer is null) return;
 
 		Rules_SetVote(this, Create_VoteSurrender(byplayer));
-
-		g_lastNextmapCounter = 0;
 	}
 	else if (cmd == this.getCommandID(votescramble_id) && isServer())
 	{
 		CPlayer@ byplayer = getNet().getActiveCommandPlayer();
 		if (byplayer is null) return;
 
-		Rules_SetVote(this, Create_VoteScramble(byplayer));
+		if (!server_canPlayerStartVote(this, byplayer, null, cmd)) return;
 
-		g_lastNextmapCounter = 0;
+		this.set_s32("last nextmap counter player " + byplayer.getUsername(), 0);
+		this.SyncToPlayer("last nextmap counter player " + byplayer.getUsername(), byplayer);
+
+		Rules_SetVote(this, Create_VoteScramble(byplayer));
 
 		CBitStream bt;
 		bt.write_u16(byplayer.getNetworkID());
@@ -1047,7 +1133,5 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 		if (byplayer is null) return;
 
 		Rules_SetVote(this, Create_VoteScramble(byplayer));
-
-		g_lastNextmapCounter = 0;
 	}
 }
