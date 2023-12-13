@@ -24,7 +24,7 @@ enum kick_reason
 };
 string[] kick_reason_string = { "Griefer", "Hacker", "Teamkiller", "Chat Spam", "Non-Participation" };
 
-string g_kick_reason = kick_reason_string[kick_reason_griefer]; //default
+u8 g_kick_reason_id = kick_reason_griefer; // default
 
 //next map related globals and enums
 enum nextmap_reason
@@ -40,19 +40,26 @@ string[] nextmap_reason_string = { "Map Ruined", "Stalemate", "Game Bugged" };
 //votekick and vote nextmap
 
 const string votekick_id = "vote: kick";
+const string votekick_id_client = "vote: kick client";
 const string votenextmap_id = "vote: nextmap";
+const string votenextmap_id_client = "vote: nextmap client";
 const string votesurrender_id = "vote: surrender";
+const string votesurrender_id_client = "vote: surrender client";
 const string votescramble_id = "vote: scramble";
+const string votescramble_id_client = "vote: scramble client";
 
 //set up the ids
 void onInit(CRules@ this)
 {
 	this.addCommandID(votekick_id);
+	this.addCommandID(votekick_id_client);
 	this.addCommandID(votenextmap_id);
+	this.addCommandID(votenextmap_id_client);
 	this.addCommandID(votesurrender_id);
+	this.addCommandID(votesurrender_id_client);
 	this.addCommandID(votescramble_id);
+	this.addCommandID(votescramble_id_client);
 }
-
 
 void onRestart(CRules@ this)
 {
@@ -95,7 +102,7 @@ class VoteKickFunctor : VoteFunctor
 				vote_message_colour()
 			);
 
-			if (getNet().isServer())
+			if (isServer())
 			{
 				getSecurity().ban(kickplayer, VoteKickTime, "Voted off"); //30 minutes ban
 			}
@@ -106,14 +113,14 @@ class VoteKickFunctor : VoteFunctor
 class VoteKickCheckFunctor : VoteCheckFunctor
 {
 	VoteKickCheckFunctor() {}//dont use this
-	VoteKickCheckFunctor(CPlayer@ _kickplayer, string _reason)
+	VoteKickCheckFunctor(CPlayer@ _kickplayer, u8 _reasonid)
 	{
 		@kickplayer = _kickplayer;
-		reason = _reason;
+		reasonid = _reasonid;
 	}
 
 	CPlayer@ kickplayer;
-	string reason;
+	u8 reasonid;
 
 	bool PlayerCanVote(CPlayer@ player)
 	{
@@ -121,15 +128,14 @@ class VoteKickCheckFunctor : VoteCheckFunctor
 
 		if (!getSecurity().checkAccess_Feature(player, "mark_player")) return false;
 
-		if (reason.find(kick_reason_string[kick_reason_griefer]) != -1 || //reason contains "Griefer"
-				reason.find(kick_reason_string[kick_reason_teamkiller]) != -1 || //or TKer
-				reason.find(kick_reason_string[kick_reason_non_participation]) != -1) //or AFK
+		if (reasonid == kick_reason_griefer || // "Griefer"
+				reasonid == kick_reason_teamkiller || // TKer
+				reasonid == kick_reason_non_participation) //AFK
 		{
 			return (player.getTeamNum() == kickplayer.getTeamNum() || //must be same team
 					kickplayer.getTeamNum() == getRules().getSpectatorTeamNum() || //or they're spectator
 					getSecurity().checkAccess_Feature(player, "mark_any_team"));   //or has mark_any_team
 		}
-
 		return true; //spammer, hacker (custom?)
 	}
 };
@@ -165,16 +171,16 @@ class VoteKickLeaveFunctor : VotePlayerLeaveFunctor
 };
 
 //setting up a votekick object
-VoteObject@ Create_Votekick(CPlayer@ player, CPlayer@ byplayer, string reason)
+VoteObject@ Create_Votekick(CPlayer@ player, CPlayer@ byplayer, u8 reasonid)
 {
 	VoteObject vote;
 
 	@vote.onvotepassed = VoteKickFunctor(player);
-	@vote.canvote = VoteKickCheckFunctor(player, reason);
+	@vote.canvote = VoteKickCheckFunctor(player, reasonid);
 	@vote.playerleave = VoteKickLeaveFunctor(player);
 
 	vote.title = "Kick {USER}?";
-	vote.reason = reason;
+	vote.reason = kick_reason_string[reasonid];
 	vote.byuser = byplayer.getUsername();
 	vote.user_to_kick = player.getUsername();
 	vote.forcePassFeature = "ban";
@@ -243,7 +249,7 @@ class VoteNextmapCheckFunctor : VoteCheckFunctor
 };
 
 //setting up a vote next map object
-VoteObject@ Create_VoteNextmap(CPlayer@ byplayer, string reason)
+VoteObject@ Create_VoteNextmap(CPlayer@ byplayer, u8 reasonid)
 {
 	VoteObject vote;
 
@@ -251,7 +257,7 @@ VoteObject@ Create_VoteNextmap(CPlayer@ byplayer, string reason)
 	@vote.canvote = VoteNextmapCheckFunctor();
 
 	vote.title = "Skip to next map?";
-	vote.reason = reason;
+	vote.reason = nextmap_reason_string[reasonid];
 	vote.byuser = byplayer.getUsername();
 	vote.forcePassFeature = "nextmap";
 	vote.cancel_on_restart = true;
@@ -826,7 +832,7 @@ void Callback_KickReason(CBitStream@ params)
 
 	if (id < kick_reason_count)
 	{
-		g_kick_reason = kick_reason_string[id];
+		g_kick_reason_id = id;
 	}
 }
 
@@ -852,8 +858,7 @@ void Callback_Kick(CBitStream@ params)
 	CBitStream params2;
 
 	params2.write_u16(other_player.getNetworkID());
-	params2.write_u16(me.getNetworkID());
-	params2.write_string(g_kick_reason);
+	params2.write_u8(g_kick_reason_id);
 
 	getRules().SendCommand(getRules().getCommandID(votekick_id), params2);
 	onPlayerStartedVote();
@@ -869,16 +874,10 @@ void Callback_NextMap(CBitStream@ params)
 	u8 id;
 	if (!params.saferead_u8(id)) return;
 
-	string reason = "";
-	if (id < nextmap_reason_count)
-	{
-		reason = nextmap_reason_string[id];
-	}
-
 	CBitStream params2;
 
 	params2.write_u16(me.getNetworkID());
-	params2.write_string(reason);
+	params2.write_u8(id);
 
 	getRules().SendCommand(getRules().getCommandID(votenextmap_id), params2);
 	onPlayerStartedVote();
@@ -920,59 +919,134 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 	if (Rules_AlreadyHasVote(this))
 		return;
 
-	if (cmd == this.getCommandID(votekick_id))
+	if (cmd == this.getCommandID(votekick_id) && isServer())
 	{
-		u16 playerid, byplayerid;
-		string reason;
-
+		u16 playerid;
 		if (!params.saferead_u16(playerid)) return;
-		if (!params.saferead_u16(byplayerid)) return;
-		if (!params.saferead_string(reason)) return;
+
+		u8 reasonid;
+		if (!params.saferead_u8(reasonid)) return;
+
+		CPlayer@ byplayer = getNet().getActiveCommandPlayer();
+		if (byplayer is null) return;
 
 		CPlayer@ player = getPlayerByNetworkId(playerid);
-		CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
+		if (player is null) return;
 
-		if (player !is null && byplayer !is null)
-			Rules_SetVote(this, Create_Votekick(player, byplayer, reason));
+		Rules_SetVote(this, Create_Votekick(player, byplayer, reasonid));
+
+		CBitStream bt;
+		bt.write_u16(playerid);
+		bt.write_u8(reasonid);
+		bt.write_u16(byplayer.getNetworkID());
+
+		this.SendCommand(this.getCommandID(votekick_id_client), bt);
 	}
-	else if (cmd == this.getCommandID(votenextmap_id))
+	else if (cmd == this.getCommandID(votekick_id_client) && isClient())
 	{
-		u16 byplayerid;
-		string reason;
+		u16 playerid;
+		if (!params.saferead_u16(playerid)) return;
 
+		u8 reasonid;
+		if (!params.saferead_u8(reasonid)) return;
+
+		if (reasonid >= kick_reason_count) return;
+
+		u16 byplayerid;
 		if (!params.saferead_u16(byplayerid)) return;
-		if (!params.saferead_string(reason)) return;
 
 		CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
+		if (byplayer is null) return;
 
-		if (byplayer !is null)
-			Rules_SetVote(this, Create_VoteNextmap(byplayer, reason));
+		CPlayer@ player = getPlayerByNetworkId(playerid);
+		if (player is null) return;
+
+		Rules_SetVote(this, Create_Votekick(player, byplayer, reasonid));
+	}
+	else if (cmd == this.getCommandID(votenextmap_id) && isServer())
+	{
+		u8 reasonid;
+		if (!params.saferead_u8(reasonid)) return;
+
+		if (reasonid >= nextmap_reason_count) return;
+
+		CPlayer@ byplayer = getNet().getActiveCommandPlayer();
+		if (byplayer is null) return;
+
+		Rules_SetVote(this, Create_VoteNextmap(byplayer, reasonid));
+
+		g_lastNextmapCounter = 0;
+
+		CBitStream bt;
+		bt.write_u8(reasonid);
+		bt.write_u16(byplayer.getNetworkID());
+
+		this.SendCommand(this.getCommandID(votenextmap_id_client), bt);
+	}
+	else if (cmd == this.getCommandID(votenextmap_id_client) && isClient())
+	{
+		u8 reasonid;
+		if (!params.saferead_u8(reasonid)) return;
+
+		u16 byplayerid;
+		if (!params.saferead_u16(byplayerid)) return;
+
+		CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
+		if (byplayer is null) return;
+
+		Rules_SetVote(this, Create_VoteNextmap(byplayer, reasonid));
 
 		g_lastNextmapCounter = 0;
 	}
-	else if (cmd == this.getCommandID(votesurrender_id))
+	else if (cmd == this.getCommandID(votesurrender_id) && isServer())
+	{
+		CPlayer@ byplayer = getNet().getActiveCommandPlayer();
+		if (byplayer is null) return;
+
+		Rules_SetVote(this, Create_VoteSurrender(byplayer));
+
+		g_lastNextmapCounter = 0;
+
+		CBitStream bt;
+		bt.write_u16(byplayer.getNetworkID());
+
+		this.SendCommand(this.getCommandID(votesurrender_id_client), bt);
+	}
+	else if (cmd == this.getCommandID(votesurrender_id_client) && isClient())
 	{
 		u16 byplayerid;
-
 		if (!params.saferead_u16(byplayerid)) return;
 
 		CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
+		if (byplayer is null) return;
 
-		if (byplayer !is null)
-			Rules_SetVote(this, Create_VoteSurrender(byplayer));
+		Rules_SetVote(this, Create_VoteSurrender(byplayer));
 
 		g_lastNextmapCounter = 0;
 	}
-	else if (cmd == this.getCommandID(votescramble_id))
+	else if (cmd == this.getCommandID(votescramble_id) && isServer())
+	{
+		CPlayer@ byplayer = getNet().getActiveCommandPlayer();
+		if (byplayer is null) return;
+
+		Rules_SetVote(this, Create_VoteScramble(byplayer));
+
+		g_lastNextmapCounter = 0;
+
+		CBitStream bt;
+		bt.write_u16(byplayer.getNetworkID());
+
+		this.SendCommand(this.getCommandID(votescramble_id_client), bt);
+	}
+	else if (cmd == this.getCommandID(votescramble_id_client) && isClient())
 	{
 		u16 byplayerid;
-
 		if (!params.saferead_u16(byplayerid)) return;
 
 		CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
+		if (byplayer is null) return;
 
-		if (byplayer !is null)
-			Rules_SetVote(this, Create_VoteScramble(byplayer));
+		Rules_SetVote(this, Create_VoteScramble(byplayer));
 
 		g_lastNextmapCounter = 0;
 	}

@@ -104,14 +104,14 @@ void onTick(CRules@ this)
 
 	CRules@ rules = getRules();
 
-	if (getNet().isServer() && ((vote.timeremaining == 0) || Vote_Conclusive(vote)))	//time up or decision made
+	if (isServer() && ((vote.timeremaining == 0) || Vote_Conclusive(vote)))	//time up or decision made
 	{
 		rules.SendCommand(rules.getCommandID(vote_end_id), CBitStream());
 	}
 
 	//--------------------------------- CLIENT ---------------------------------
 	CPlayer@ me = getLocalPlayer();
-	if (!getNet().isClient() || !CanPlayerVote(vote, me) || hide_vote_menu) return;
+	if (!isClient() || !CanPlayerVote(vote, me) || hide_vote_menu) return;
 
 	CControls@ controls = getControls();
 	if (controls is null) return;
@@ -171,24 +171,25 @@ void onTick(CRules@ this)
 
 	if (voted)
 	{
-		if (isClient()) 
-		{
-			favour_or_not = (favour == true ? favour_string : against_string);
-		}
+		favour_or_not = (favour == true ? favour_string : against_string);
 
 		CBitStream params;
-		params.write_u16(id);
 		rules.SendCommand(rules.getCommandID(favour ? vote_yes_id : vote_no_id), params);
 
 		g_have_voted = true;
 	}
 }
 
-const string vote_yes_id = "vote: yes";				//client "yes" vote
-const string vote_no_id = "vote: no";				//client "no" vote
-const string vote_cancel_id = "vote: cancel";		//admin cancel vote
-const string vote_force_pass_id = "vote: force pass";	//admin force pass vote
-const string vote_end_id = "vote: ended";			//server "vote over"
+const string vote_yes_id = "vote: yes";									//client->server "yes" vote
+const string vote_yes_id_client = "vote: yes client";					//server->client "yes" vote
+const string vote_no_id = "vote: no";									//client->server "no" vote
+const string vote_no_id_client = "vote: no client";						//server->client "no" vote
+const string vote_cancel_id = "vote: cancel";							//admin cancel vote
+const string vote_cancel_id_client = "vote: cancel client";				//admin cancel vote
+const string vote_force_pass_id = "vote: force pass";					//admin force pass vote
+const string vote_force_pass_id_client = "vote: force pass client";		//admin force pass vote
+const string vote_end_id = "vote: ended";								//server "vote over"
+const string vote_end_id_client = "vote: ended client";					//server "vote over"
 
 void onInit(CRules@ this)
 {
@@ -198,10 +199,15 @@ void onInit(CRules@ this)
 void onRestart(CRules@ this)
 {
 	this.addCommandID(vote_yes_id);
+	this.addCommandID(vote_yes_id_client);
 	this.addCommandID(vote_no_id);
+	this.addCommandID(vote_no_id_client);
 	this.addCommandID(vote_cancel_id);
+	this.addCommandID(vote_cancel_id_client);
 	this.addCommandID(vote_force_pass_id);
+	this.addCommandID(vote_force_pass_id_client);
 	this.addCommandID(vote_end_id);
+	this.addCommandID(vote_end_id_client);
 
 	if(Rules_AlreadyHasVote(this))
 	{
@@ -261,38 +267,79 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		return;
 	}
 
-	u16 id;
-	if (!params.saferead_u16(id))
+	if ((cmd == this.getCommandID(vote_yes_id) || cmd == this.getCommandID(vote_no_id)) && isServer())
 	{
-		return;
-	}
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
 
-	CPlayer@ player = getPlayerByNetworkId(id);
-	if (player is null)
-	{
-		return;
-	}
-
-	if (cmd == this.getCommandID(vote_yes_id) || cmd == this.getCommandID(vote_no_id))
-	{
 		if (CanPlayerVote(vote, player))
 		{
 			Vote(vote, player, cmd == this.getCommandID(vote_yes_id));
+
+			u8 client_cmd = (cmd == this.getCommandID(vote_yes_id) ? this.getCommandID(vote_yes_id_client) : this.getCommandID(vote_no_id_client));
+
+			CBitStream params;
+			params.write_u16(player.getNetworkID());
+			this.SendCommand(client_cmd, params);
 		}
 	}
-	else if (cmd == this.getCommandID(vote_cancel_id))
+	else if ((cmd == this.getCommandID(vote_yes_id_client) || cmd == this.getCommandID(vote_no_id_client)) && isClient())
 	{
+		u16 id;
+		if (!params.saferead_u16(id)) return;
+
+		CPlayer@ player = getPlayerByNetworkId(id);
+		if (player is null) return;
+
+		Vote(vote, player, cmd == this.getCommandID(vote_yes_id_client));
+	}
+	else if (cmd == this.getCommandID(vote_cancel_id) && isServer())
+	{
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
 		if (getSecurity().checkAccess_Feature(player, "vote_cancel")) //double-check to avoid hackers
 		{
 			CancelVote(vote, player);
+
+			CBitStream params;
+			params.write_u16(player.getNetworkID());
+			this.SendCommand(this.getCommandID(vote_cancel_id_client), params);
 		}
 	}
-	else if (cmd == this.getCommandID(vote_force_pass_id))
+	else if (cmd == this.getCommandID(vote_cancel_id_client) && isClient())
 	{
+		u16 id;
+		if (!params.saferead_u16(id)) return;
+
+		CPlayer@ player = getPlayerByNetworkId(id);
+		if (player is null) return;
+
+		CancelVote(vote, player);
+	}
+	else if (cmd == this.getCommandID(vote_force_pass_id) && isServer())
+	{
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
 		if (vote.forcePassFeature != "" && (getSecurity().checkAccess_Feature(player, vote.forcePassFeature)
 		                                    || getSecurity().checkAccess_Command(player, vote.forcePassFeature)))  //double-check to avoid hackers
 		{
 			ForcePassVote(vote, player);
+
+			CBitStream params;
+			params.write_u16(player.getNetworkID());
+			this.SendCommand(this.getCommandID(vote_force_pass_id_client), params);
 		}
+	}
+	else if (cmd == this.getCommandID(vote_force_pass_id_client) && isClient())
+	{
+		u16 id;
+		if (!params.saferead_u16(id)) return;
+
+		CPlayer@ player = getPlayerByNetworkId(id);
+		if (player is null) return;
+
+		ForcePassVote(vote, player);
 	}
 }
