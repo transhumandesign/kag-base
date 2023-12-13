@@ -160,7 +160,7 @@ class VoteKickLeaveFunctor : VotePlayerLeaveFunctor
 					.replace("{USER}", player.getUsername()),
 				vote_message_colour()
 			);
-			if (getNet().isServer())
+			if (isServer())
 			{
 				getSecurity().ban(player, VoteKickTime, "Ran from vote");
 			}
@@ -220,7 +220,7 @@ class VoteNextmapFunctor : VoteFunctor
 	{
 		if (outcome)
 		{
-			if (getNet().isServer())
+			if (isServer())
 			{
 				getRules().SetCurrentState(GAME_OVER);
 			}
@@ -299,7 +299,7 @@ class VoteSurrenderFunctor : VoteFunctor
 	{
 		if (outcome)
 		{
-			if (getNet().isServer())
+			if (isServer())
 			{
 				CRules@ rules = getRules();
 				s32 teamWonNum = (team + 1) % rules.getTeamsCount();
@@ -389,7 +389,7 @@ class VoteScrambleFunctor : VoteFunctor
 	{
 		if (outcome)
 		{
-			if (getNet().isServer())
+			if (isServer())
 			{
 				LoadMap(getMap().getMapName());
 			}
