@@ -106,7 +106,8 @@ void onTick(CRules@ this)
 
 	if (isServer() && ((vote.timeremaining == 0) || Vote_Conclusive(vote)))	//time up or decision made
 	{
-		rules.SendCommand(rules.getCommandID(vote_end_id), CBitStream());
+		PassVote(vote);
+		rules.SendCommand(rules.getCommandID(vote_end_id_client), CBitStream());
 	}
 
 	//--------------------------------- CLIENT ---------------------------------
@@ -184,12 +185,11 @@ const string vote_yes_id = "vote: yes";									//client->server "yes" vote
 const string vote_yes_id_client = "vote: yes client";					//server->client "yes" vote
 const string vote_no_id = "vote: no";									//client->server "no" vote
 const string vote_no_id_client = "vote: no client";						//server->client "no" vote
-const string vote_cancel_id = "vote: cancel";							//admin cancel vote
-const string vote_cancel_id_client = "vote: cancel client";				//admin cancel vote
-const string vote_force_pass_id = "vote: force pass";					//admin force pass vote
-const string vote_force_pass_id_client = "vote: force pass client";		//admin force pass vote
-const string vote_end_id = "vote: ended";								//server "vote over"
-const string vote_end_id_client = "vote: ended client";					//server "vote over"
+const string vote_cancel_id = "vote: cancel";							//client->server admin cancel vote
+const string vote_cancel_id_client = "vote: cancel client";				//server->client admin cancel vote
+const string vote_force_pass_id = "vote: force pass";					//client->server admin force pass vote
+const string vote_force_pass_id_client = "vote: force pass client";		//server->client admin force pass vote
+const string vote_end_id_client = "vote: ended client";					//server->client "vote over"
 
 void onInit(CRules@ this)
 {
@@ -206,7 +206,6 @@ void onRestart(CRules@ this)
 	this.addCommandID(vote_cancel_id_client);
 	this.addCommandID(vote_force_pass_id);
 	this.addCommandID(vote_force_pass_id_client);
-	this.addCommandID(vote_end_id);
 	this.addCommandID(vote_end_id_client);
 
 	if(Rules_AlreadyHasVote(this))
@@ -257,7 +256,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
 	VoteObject@ vote = Rules_getVote(this);
 	//always allow passing the vote, even if its expired
-	if (cmd == this.getCommandID(vote_end_id))
+	if (cmd == this.getCommandID(vote_end_id_client) && isClient())
 	{
 		PassVote(vote);
 	}
