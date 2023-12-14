@@ -30,9 +30,9 @@ class PositionComparableCBlobWrapper
 void onInit(CBlob@ this)
 {
 	this.addCommandID("travel");
-	this.addCommandID("travel none");
+	this.addCommandID("travel none client");
 	this.addCommandID("travel to");
-	this.addCommandID("server travel to");
+	this.addCommandID("travel to client");
 	this.Tag("travel tunnel");
 
 	int team = this.getTeamNum();
@@ -120,9 +120,9 @@ CButton@ MakeTravelButton(CBlob@ this, CBlob@ caller, Vec2f buttonPos, const str
 	const bool travelAvailable = gotTunnels && isInRadius(this, caller);
 	if (!travelAvailable)
 		return null;
+
 	CBitStream params;
-	params.write_u16(caller.getNetworkID());
-	CButton@ button = caller.CreateGenericButton(8, buttonPos, this, this.getCommandID("travel"), gotTunnels ? getTranslatedString(label) : getTranslatedString(cantTravelLabel), params);
+	CButton@ button = caller.CreateGenericButton(8, buttonPos, this, this.getCommandID("travel"), gotTunnels ? getTranslatedString(label) : getTranslatedString(cantTravelLabel));
 	if (button !is null)
 	{
 		button.SetEnabled(travelAvailable);
@@ -130,20 +130,28 @@ CButton@ MakeTravelButton(CBlob@ this, CBlob@ caller, Vec2f buttonPos, const str
 	return button;
 }
 
-bool doesFitAtTunnel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
+void server_Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 {
-	return true;
-}
+	if (!isServer()) return;
 
-void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
-{
-	CBlob@ thisTunnel = getBlobByNetworkID(this.getNetworkID());
-	if (thisTunnel !is null && caller !is null && tunnel !is null)
+	if (this !is null && caller !is null && tunnel !is null)
 	{
 		//(this should prevent travel when stunned, but actually
 		// causes issues on net)
 		//if (isKnockable(caller) && caller.get_u8("knocked") > 0)
 		//	return;
+
+		//dont travel if out of range
+		if (!this.isOverlapping(caller))
+			return;
+		
+		//dont travel if under raid and not ignoring raid
+		if (this.hasTag("under raid") && !this.hasTag("ignore raid"))
+			return;
+
+		//dont travel if teamlocked tunnel and different team
+		if (this.hasTag("teamlocked tunnel") && this.getTeamNum() != caller.getTeamNum())
+			return;
 
 		//dont travel if tunnel team has changed while tunnel menu was open
 		if (this.getTeamNum() != tunnel.getTeamNum())
@@ -152,33 +160,6 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 		//dont travel if caller is attached to something (e.g. siege)
 		if (caller.isAttached())
 			return;
-
-
-		// assume destination is center bottom
-		Vec2f position = tunnel.getPosition();
-		position = Vec2f(position.x, position.y + tunnel.getHeight() / 2 - caller.getHeight() / 2);
-		
-		// apply offset (if it exists)
-		if (tunnel.exists("travel offset"))
-		{
-			Vec2f offset = tunnel.get_Vec2f("travel offset");
-			position += tunnel.isFacingLeft() ? -offset : offset;
-		}
-
-		// move caller
-		caller.setPosition(position);
-		caller.setVelocity(Vec2f_zero);
-		//caller.getShape().PutOnGround();
-
-		if (caller.isMyPlayer())
-		{
-			Sound::Play("Travel.ogg");
-		}
-		else
-		{
-			Sound::Play("Travel.ogg", this.getPosition());
-			Sound::Play("Travel.ogg", caller.getPosition());
-		}
 
 		//stunned on going through tunnel
 		//(prevents tunnel spam and ensures traps get you)
@@ -191,6 +172,40 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 			//actually do the knocking
 			setKnocked(caller, 30, true);
 		}
+
+		CBitStream params;
+		params.write_u16(caller.getNetworkID());
+		params.write_u16(tunnel.getNetworkID());
+		this.SendCommand(this.getCommandID("travel to client"), params);
+	}
+}
+
+void client_Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
+{
+	if (this !is null && caller !is null && tunnel !is null)
+	{
+		// assume destination is center bottom
+		Vec2f position = tunnel.getPosition();
+		position = Vec2f(position.x, position.y + tunnel.getHeight() / 2 - caller.getHeight() / 2);
+		
+		// apply offset (if it exists)
+		if (tunnel.exists("travel offset"))
+		{
+			Vec2f offset = tunnel.get_Vec2f("travel offset");
+			position += tunnel.isFacingLeft() ? -offset : offset;
+		}
+
+		if (caller.isMyPlayer())
+		{
+			caller.setPosition(position);
+			caller.setVelocity(Vec2f_zero);
+			Sound::Play("Travel.ogg");
+		}
+		else
+		{
+			Sound::Play("Travel.ogg", this.getPosition());
+			Sound::Play("Travel.ogg", caller.getPosition());
+		}
 	}
 }
 
@@ -198,64 +213,91 @@ void onTunnelCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("travel"))
 	{
-		const u16 callerID = params.read_u16();
-		CBlob@ caller = getBlobByNetworkID(callerID);
+		CBlob@ caller;
+		if (isClient())
+		{
+			@caller = getLocalPlayerBlob();
+		}
+		else if (isServer())
+		{
+			CPlayer@ p = getNet().getActiveCommandPlayer();
+			if (p is null) return;
+			@caller = p.getBlob();
+		}
+
+		if (caller is null) return;
 
 		CBlob@[] tunnels;
-		if (caller !is null && getTunnels(this, @tunnels))
+		if (getTunnels(this, @tunnels))
 		{
 			// instant travel cause there is just one place to go
 			if (tunnels.length == 1)
 			{
-				Travel(this, caller, tunnels[0]);
+				if (isServer())
+					server_Travel(this, caller, tunnels[0]);
 			}
 			else
 			{
-				if (caller.isMyPlayer())
-					BuildTunnelsMenu(this, callerID);
+				if (isClient())
+					BuildTunnelsMenu(this);
 			}
 		}
 	}
 	else if (cmd == this.getCommandID("travel to"))
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		CBlob@ tunnel = getBlobByNetworkID(params.read_u16());
-		if (caller !is null && tunnel !is null
-		        && (this.getPosition() - caller.getPosition()).getLength() < (this.getRadius() + caller.getRadius()) * 2.0f &&
-		        doesFitAtTunnel(this, caller, tunnel))
+		CBlob@ caller;
+		if (isClient())
 		{
-			if (getNet().isServer())
+			@caller = getLocalPlayerBlob();
+		}
+		else if (isServer())
+		{
+			CPlayer@ p = getNet().getActiveCommandPlayer();
+			if (p is null) return;
+			@caller = p.getBlob();
+		}
+
+		if (caller is null) return;
+
+		u16 to_id;
+		if (!params.saferead_u16(to_id)) return;
+
+		CBlob@ tunnel = getBlobByNetworkID(to_id);
+		if (tunnel is null) return;
+
+		if (this.isOverlapping(caller))
+		{
+			if (isServer())
 			{
-				CBitStream params;
-				params.write_u16(caller.getNetworkID());
-				params.write_u16(tunnel.getNetworkID());
-				this.SendCommand(this.getCommandID("server travel to"), params);
-				Travel(this, caller, tunnel);
+				server_Travel(this, caller, tunnel);
 			}
 		}
-		else if (caller !is null && caller.isMyPlayer())
+		else if (isClient())
 			caller.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 	}
-	else if (cmd == this.getCommandID("server travel to"))
+	else if (cmd == this.getCommandID("travel to client") && isClient())
 	{
-		if (getNet().isClient())
-		{
-			CBlob@ caller = getBlobByNetworkID(params.read_u16());
-			CBlob@ tunnel = getBlobByNetworkID(params.read_u16());
-			Travel(this, caller, tunnel);
-		}
+		u16 caller_id;
+		if (!params.saferead_u16(caller_id)) return;
+		CBlob@ caller = getBlobByNetworkID(caller_id);
+		if (caller is null) return;
+
+		u16 tunnel_id;
+		if (!params.saferead_u16(tunnel_id)) return;
+		CBlob@ tunnel = getBlobByNetworkID(tunnel_id);
+		if (tunnel is null) return;
+
+		client_Travel(this, caller, tunnel);
 	}
-	else if (cmd == this.getCommandID("travel none"))
+	else if (cmd == this.getCommandID("travel none client") && isClient())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		if (caller !is null && caller.isMyPlayer())
-			getHUD().ClearMenus();
+		getHUD().ClearMenus();
 	}
 }
 
 const int BUTTON_SIZE = 2;
 
-void BuildTunnelsMenu(CBlob@ this, const u16 callerID)
+void BuildTunnelsMenu(CBlob@ this)
 {
 	CBlob@[] tunnels;
 	getTunnelsForButtons(this, @tunnels);
@@ -263,10 +305,9 @@ void BuildTunnelsMenu(CBlob@ this, const u16 callerID)
 	CGridMenu@ menu = CreateGridMenu(getDriver().getScreenCenterPos() + Vec2f(0.0f, 0.0f), this, Vec2f((tunnels.length) * BUTTON_SIZE, BUTTON_SIZE), getTranslatedString("Pick tunnel to travel"));
 	if (menu !is null)
 	{
-		CBitStream exitParams;
-		exitParams.write_netid(callerID);
-		menu.AddKeyCommand(KEY_ESCAPE, this.getCommandID("travel none"), exitParams);
-		menu.SetDefaultCommand(this.getCommandID("travel none"), exitParams);
+		CBitStream params;
+		menu.AddKeyCommand(KEY_ESCAPE, this.getCommandID("travel none client"), params);
+		menu.SetDefaultCommand(this.getCommandID("travel none client"), params);
 
 		for (uint i = 0; i < tunnels.length; i++)
 		{
@@ -278,7 +319,6 @@ void BuildTunnelsMenu(CBlob@ this, const u16 callerID)
 			else
 			{
 				CBitStream params;
-				params.write_u16(callerID);
 				params.write_u16(tunnel.getNetworkID());
 				int direction_index = getTravelDirectionIndex(this, tunnel);
 				menu.AddButton(getTravelIcon(this, tunnel, direction_index), getTranslatedString(getTravelDescription(this, tunnel, direction_index)), this.getCommandID("travel to"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
