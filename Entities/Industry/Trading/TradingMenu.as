@@ -10,9 +10,7 @@ const int DROP_SECS = 8;
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("stock");
 	this.addCommandID("buy");
-	this.addCommandID("reload menu");
 	AddIconToken("$" + this.getName() + "$", "TradingPost.png", Vec2f(16, 16), 15);
 	AddIconToken("$parachute$", "Crate.png", Vec2f(32, 32), 4);
 	AddIconToken("$trade$", "Coins.png", Vec2f(16, 16), 1);
@@ -55,9 +53,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (!this.hasTag("dead"))
 	{
-		CBitStream params;
-		params.write_u16(caller.getNetworkID());
-		CButton@ button = caller.CreateGenericButton("$trade$", Vec2f_zero, this, this.getCommandID("stock"), getTranslatedString("Shop"), params);
+		CButton@ button = caller.CreateGenericButton("$trade$", Vec2f_zero, this, BuildTradingMenu, getTranslatedString("Shop"));
 		button.enableRadius = 32;
 	}
 }
@@ -94,10 +90,7 @@ void BuildTradingMenu(CBlob@ this, CBlob @caller)
 				else
 				{
 					CBitStream params;
-					params.write_u16(caller.getNetworkID());
 					params.write_u8(i + sepCount);
-					const u16 goldCount = caller.getBlobCount("mat_gold");
-					params.write_u16(goldCount);
 					params.write_bool(true); //used hotkey?
 
 					menu.AddKeyCommand(numKeys[i], this.getCommandID("buy"), params);
@@ -134,10 +127,7 @@ void addTradeItemsToMenu(CBlob@ this, CGridMenu@ menu, u16 callerID)
 			else
 			{
 				CBitStream params;
-				params.write_u16(callerID);
 				params.write_u8(i);
-				const u16 goldCount = caller.getBlobCount("mat_gold");
-				params.write_u16(goldCount);
 				params.write_bool(false); //used hotkey?
 
 				CGridButton@ button = menu.AddButton(item.iconName, getTranslatedString(item.name), this.getCommandID("buy"), params);
@@ -154,6 +144,8 @@ void addTradeItemsToMenu(CBlob@ this, CGridMenu@ menu, u16 callerID)
 
 						if (item.prepaidGold)
 						{
+							u16 goldCount = caller.getBlobCount("mat_gold");
+
 							if (goldCount > 0)
 							{
 								button.SetEnabled(true);
@@ -179,18 +171,28 @@ bool isInRadius(CBlob@ this, CBlob @caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("stock"))
+	if (cmd == this.getCommandID("buy"))
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		BuildTradingMenu(this, caller);
-	}
-	else if (cmd == this.getCommandID("buy"))
-	{
-		u16 callerid = params.read_u16();
 		u8 itemIndex = params.read_u8();
-		u16 goldCount = params.read_u16();
 		bool hotkey = params.read_bool();
-		CBlob@ caller = getBlobByNetworkID(callerid);
+
+		CBlob@ caller;
+
+		if (isClient())
+		{
+			@caller = getLocalPlayerBlob();
+		}
+		else if (isServer())
+		{
+			CPlayer@ p = getNet().getActiveCommandPlayer();
+			if (p is null) return;
+
+			@caller = p.getBlob();
+		}
+
+		if (caller is null) return;
+
+		u16 goldCount = caller.getBlobCount("mat_gold");
 
 		if (caller !is null)
 		{
@@ -207,15 +209,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				caller.ClearMenus();
 				BuildTradingMenu(this, caller);
 			}
-		}
-	}
-	else if (cmd == this.getCommandID("reload menu"))
-	{
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		if (caller !is null)
-		{
-			caller.ClearMenus();
-			BuildTradingMenu(this, caller);
 		}
 	}
 }
