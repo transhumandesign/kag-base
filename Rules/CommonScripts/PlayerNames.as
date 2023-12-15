@@ -95,22 +95,34 @@ void onRender(CRules@ this)
 
 				// now draw nickname
 				string name = player.getCharacterName();
+				string clan_tag = player.getClantag();
+				bool has_clan = clan_tag.size() > 0;
 
 				Vec2f text_dim;
 				GUI::SetFont("menu");
-				GUI::GetTextDimensions(name, text_dim);
+				GUI::GetTextDimensions(has_clan ? (clan_tag + " " + name) : name, text_dim);
 				Vec2f text_dim_half = Vec2f(text_dim.x/2.0f, text_dim.y/2.0f);
+
+				Vec2f clan_dim;
+				if(has_clan)
+					GUI::GetTextDimensions(clan_tag + " ", clan_dim);
 
 				SColor text_color = SColor(255, 200, 200, 200);
 				CTeam@ team = this.getTeam(blob.getTeamNum());
 				if(team !is null)
 					text_color = team.color;
+				
+				SColor clan_color = SColor(255, 128, 128, 128);
 
 				text_color.setAlpha(255 * alpha);
+				clan_color.setAlpha(255 * alpha);
+
 				SColor rect_color = SColor(80 * alpha, 0, 0, 0);
 
 				GUI::DrawRectangle(draw_pos - text_dim_half, draw_pos + text_dim_half + Vec2f(5.0f, 3.0f), rect_color);
-				GUI::DrawText(name, draw_pos - text_dim_half, text_color);
+				if(has_clan)
+					GUI::DrawText(clan_tag, draw_pos - text_dim_half, clan_color);
+				GUI::DrawText(name, draw_pos - text_dim_half + (has_clan ? Vec2f(clan_dim.x, 0) : Vec2f_zero), text_color);
 			}
 		}
 	}
