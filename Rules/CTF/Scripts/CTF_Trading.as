@@ -178,12 +178,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 
 	if (cmd == getGameplayEventID(this))
 	{
-		printf("vg " + getNet().getActiveCommandPlayer().getUsername());
 		// confirm that this was sent from server
 		CPlayer@ cmdplayer = getNet().getActiveCommandPlayer();
 		if (cmdplayer !is null) return;
 
-		printf("vzxcxzg");
 		GameplayEvent g(params);
 
 		CPlayer@ p = g.getPlayer();
