@@ -318,12 +318,13 @@ void SyncQueue()
 	}
 
 	CRules@ rules = getRules();
-	// we sync to spectators only
+
 	for (int i=0; i<getPlayerCount(); ++i)
 	{
 		CPlayer@ p = getPlayer(i);
-		if (p.getTeamNum() != rules.getSpectatorTeamNum()) continue;
 
+		// we wanna sync to spectators only
+		if (p.getTeamNum() != rules.getSpectatorTeamNum()) continue;
 		rules.SendCommand(rules.getCommandID("sync queue client"), params, p);
 	}
 }
@@ -527,6 +528,14 @@ void onTick(CRules@ this)
 			CPlayer@ player = queue_entry.getPlayer();
 
 			if (player is null) // shouldn't happen in theory
+			{
+				queue.removeAt(i);
+				--i;
+				SyncQueue();
+				continue;
+			}
+
+			if (player.getTeamNum() != this.getSpectatorTeamNum()) // shouldn't happen, but happens!
 			{
 				queue.removeAt(i);
 				--i;
