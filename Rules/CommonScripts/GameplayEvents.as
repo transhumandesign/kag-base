@@ -129,6 +129,7 @@ void SendGameplayEvent(GameplayEvent@ event, bool fromServer = true)
 {
 	if (fromServer ? getNet().isServer() : getNet().isClient())
 	{
+		printf("vxc");
 		CBitStream stream;
 		event.Serialise(stream);
 		getRules().SendCommand(getGameplayEventID(getRules()), stream);

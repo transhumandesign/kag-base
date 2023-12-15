@@ -47,7 +47,7 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 	this.set_TileType("buildtile", 0);
 
 	CBlob@ anotherBlob = inv.getItem(b.name);
-	if (getNet().isServer() && anotherBlob !is null)
+	if (isServer() && anotherBlob !is null)
 	{
 		this.server_Pickup(anotherBlob);
 		this.set_u8("buildblob", 255);
@@ -146,7 +146,10 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 		// take inv here instead of in onDetach
 		server_TakeRequirements(inv, b.reqs);
 		DestroyScenary(tl, br);
-		SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), b.name));
+		if (isServer())
+		{
+			SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), b.name));
+		}
 	}
 
 	this.set_u8("buildblob", index);
