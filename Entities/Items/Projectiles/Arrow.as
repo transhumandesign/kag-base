@@ -559,7 +559,7 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 
 		if (arrowType == ArrowType::fire)
 		{
-			if (hitBlob.getName() == "keg" && !hitBlob.hasTag("exploding"))
+			if (hitBlob.getName() == "keg" && !hitBlob.hasTag("exploding") && isServer())
 			{
 				hitBlob.SendCommand(hitBlob.getCommandID("activate"));
 			}
