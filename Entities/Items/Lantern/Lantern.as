@@ -10,6 +10,8 @@ void onInit(CBlob@ this)
 	this.Tag("fire source");
 	this.Tag("ignore_arrow");
 	this.Tag("ignore fall");
+
+	this.addCommandID("activate client");
 	
 	this.set_bool("lantern lit", true); //isLight() causes problems
 
@@ -44,10 +46,30 @@ void Light(CBlob@ this, const bool &in lit)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("activate"))
-	{
+	if (cmd == this.getCommandID("activate") && isServer())
+	{		
+		CPlayer@ callerp = getNet().getActiveCommandPlayer();
+		/*
+		Lanterns can be activated by:
+		ActivateHeldObject.as - "activate/throw" command ActivateBlob, SERVERSIDE
+		There is no instance of lanterns being activated with a direct client->server command
+		*/
+		bool from_server = (callerp is null);
+		if (!from_server)
+		{
+			return;
+		}
+
 		if (this.isInWater()) return;
 
+		// localhost xd
+		if (!isClient())
+			Light(this, !this.get_bool("lantern lit"));
+
+		this.SendCommand(this.getCommandID("activate client"));
+	}
+	else if (cmd == this.getCommandID("activate client") && isClient())
+	{
 		Light(this, !this.get_bool("lantern lit"));
 	}
 }
