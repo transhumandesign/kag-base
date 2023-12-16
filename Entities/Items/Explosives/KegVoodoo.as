@@ -70,7 +70,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		Kegs can be activated by:
 		Arrow.as - fire arrow hit, SERVERSIDE
 		KnightLogic.as - "activate/throw bomb" command, SERVERSIDE
-		ActivateHeldObject.as - "activate/throw" command, SERVERSIDE
+		ActivateHeldObject.as - "activate/throw" command ActivateBlob, SERVERSIDE
 		Keg.as - onHit by keg, SERVERSIDE
 		There is no instance of kegs being activated with a direct client->server command
 		*/

@@ -110,14 +110,18 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			}
 			break;
 		case Hitters::keg:
-			if (!this.hasTag("exploding") && isServer())
+			if (isServer())
 			{
-				this.SendCommand(this.getCommandID("activate"));
-			}
-			//set fuse to shortest fuse time - either current time or new random time
-			//so it doesn't explode at the exact same time as hitter keg
-			this.set_s32("explosion_timer", Maths::Min(this.get_s32("explosion_timer"), getGameTime() + XORRandom(this.get_f32("keg_time")) / 3));
+				if (!this.hasTag("exploding"))
+				{
+					this.SendCommand(this.getCommandID("activate"));
+				}
 
+				//set fuse to shortest fuse time - either current time or new random time
+				//so it doesn't explode at the exact same time as hitter keg
+				this.set_s32("explosion_timer", Maths::Min(this.get_s32("explosion_timer"), getGameTime() + XORRandom(this.get_f32("keg_time")) / 3));
+				this.Sync("explosion_timer", true);
+			}
 			damage *= 0.0f; //invincible to allow keg chain reaction
 			break;
 		default:
