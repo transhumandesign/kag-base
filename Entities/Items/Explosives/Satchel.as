@@ -209,9 +209,24 @@ void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("activate"))
+	if (cmd == this.getCommandID("activate") && isServer())
 	{
+		CPlayer@ callerp = getNet().getActiveCommandPlayer();
+		/*
+		Satchels can be activated by:
+		ActivateHeldObject.as - "activate/throw" command ActivateBlob, SERVERSIDE
+		There is no instance of lanterns being activated with a direct client->server command
+		*/
+		bool from_server = (callerp is null);
+		if (!from_server)
+		{
+			return;
+		}
+
 		this.Tag("exploding");
 		this.Tag("activated");
+
+		this.Sync("exploding", true);
+		this.Sync("activated", true);
 	}
 }
