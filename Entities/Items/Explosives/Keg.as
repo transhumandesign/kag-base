@@ -60,7 +60,7 @@ void onTick(CSprite@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.isInFlames() && !this.hasTag("exploding"))
+	if (this.isInFlames() && !this.hasTag("exploding") && isServer())
 	{
 		this.SendCommand(this.getCommandID("activate"));
 	}

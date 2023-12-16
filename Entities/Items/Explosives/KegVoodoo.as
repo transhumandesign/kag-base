@@ -109,6 +109,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		/*
 		Kegs can be deactivated by:
 		Keg.as - onHit by bucket, SERVERSIDE
+		Keg.as - onTick, in flames, SERVERSIDE
 		KegVoodoo.as - onTick for freeze-by-admin check, SERVERSIDE
 		There is no instance of kegs being activated with a direct client->server command
 		*/
