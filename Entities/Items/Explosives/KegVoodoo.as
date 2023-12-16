@@ -5,7 +5,6 @@ void onInit(CBlob@ this)
 	this.getShape().SetRotationsAllowed(true);
 	this.getShape().getVars().waterDragScale = 8.0f;
 	this.getShape().getConsts().collideWhenAttached = true;
-	this.addCommandID("deactivate");
 
 	this.set_f32("explosive_radius", 96.0f);
 	this.set_f32("explosive_damage", 10.0f);
@@ -16,13 +15,18 @@ void onInit(CBlob@ this)
 	this.set_f32("keg_time", 300.0f);
 	this.set_bool("explosive_teamkill", true);
 
+	this.addCommandID("deactivate");
+	this.addCommandID("activate client");
+	this.addCommandID("deactivate client");
+
 	this.getCurrentScript().tickFrequency = 10;
 	this.getCurrentScript().tickIfTag = "exploding";
 }
 
 void onTick(CBlob@ this)
 {
-	if (!this.hasTag("activated")) //admin frozen?
+	// HACK, TODO: add a script for stuff like this or something
+	if (!this.hasTag("activated") && isServer()) //admin frozen?
 	{
 		this.SendCommand(this.getCommandID("deactivate"));
 	}
@@ -59,13 +63,39 @@ void onTick(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	bool isServer = getNet().isServer();
-
-	if (cmd == this.getCommandID("activate"))
+	if (cmd == this.getCommandID("activate") && isServer()) // added in Activatable.as
 	{
+		CPlayer@ callerp = getNet().getActiveCommandPlayer();
+		/*
+		Kegs can be activated by:
+		Arrow.as - fire arrow hit, SERVERSIDE
+		KnightLogic.as - "activate/throw bomb" command, SERVERSIDE
+		ActivateHeldObject.as - "activate/throw" command, SERVERSIDE
+		Keg.as - onHit by keg, SERVERSIDE
+		There is no instance of kegs being activated with a direct client->server command
+		*/
+		bool from_server = (callerp is null);
+		if (!from_server)
+		{
+			return;
+		}
+
 		this.Tag("activated");
 		this.set_s32("explosion_timer", getGameTime() + this.get_f32("keg_time"));
 		this.Tag("exploding");
+
+		this.Sync("activated", true);
+		this.Sync("explosion_timer", true);
+		this.Sync("exploding", true);
+
+		// not sure if necessary for server
+		this.SetLight(true);
+		this.SetLightRadius(this.get_f32("explosive_radius") * 0.5f);
+
+		this.SendCommand(this.getCommandID("activate client"));
+	}
+	else if (cmd == this.getCommandID("activate client") && isClient())
+	{
 		this.SetLight(true);
 		this.SetLightRadius(this.get_f32("explosive_radius") * 0.5f);
 		this.getSprite().SetEmitSound("/Sparkle.ogg");
@@ -73,11 +103,36 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		this.getSprite().SetEmitSoundVolume(1.0f);
 		this.getSprite().SetEmitSoundPaused(false);
 	}
-	else if (cmd == this.getCommandID("deactivate"))
+	else if (cmd == this.getCommandID("deactivate") && isServer())
 	{
+		CPlayer@ callerp = getNet().getActiveCommandPlayer();
+		/*
+		Kegs can be deactivated by:
+		Keg.as - onHit by bucket, SERVERSIDE
+		KegVoodoo.as - onTick for freeze-by-admin check, SERVERSIDE
+		There is no instance of kegs being activated with a direct client->server command
+		*/
+		bool from_server = (callerp is null);
+		if (!from_server)
+		{
+			return;
+		}
+
 		this.Untag("activated");
 		this.set_s32("explosion_timer", 0);
 		this.Untag("exploding");
+
+		this.Sync("activated", true);
+		this.Sync("explosion_timer", true);
+		this.Sync("exploding", true);
+
+		// not sure if necessary for server
+		this.SetLight(false);
+
+		this.SendCommand(this.getCommandID("deactivate client"));
+	}
+	else if (cmd == this.getCommandID("deactivate client") && isClient())
+	{
 		this.SetLight(false);
 		this.getSprite().SetEmitSoundPaused(true);
 

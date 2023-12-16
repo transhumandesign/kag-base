@@ -104,13 +104,13 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			damage *= 0.25f; //quarter damage from these
 			break;
 		case Hitters::water:
-			if (hitterBlob.getName() == "bucket" && this.hasTag("exploding"))
+			if (hitterBlob.getName() == "bucket" && this.hasTag("exploding") && isServer())
 			{
 				this.SendCommand(this.getCommandID("deactivate"));
 			}
 			break;
 		case Hitters::keg:
-			if (!this.hasTag("exploding"))
+			if (!this.hasTag("exploding") && isServer())
 			{
 				this.SendCommand(this.getCommandID("activate"));
 			}
