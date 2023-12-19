@@ -155,7 +155,6 @@ shared void packet_SendStream(CRules@ this, CBitStream@ stream)
 	{
 		stream.write_u8(PACKET_END);
 
-		// HACK, CMD SANITIZATION:
 		// we don't want a server->server command but we need to run the code on server
 		CBitStream stream_server = stream;
 		stream_server.Reset();
