@@ -4,7 +4,6 @@
 //Default Rules Core hooks - simple proxy
 //Make sure you dont forget JoinCoreHooks! :)
 
-#include "GameplayEvents.as"
 #include "SwitchFromSpec.as"
 
 //not server only so that all the players get this

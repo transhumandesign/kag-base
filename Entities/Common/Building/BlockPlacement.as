@@ -1,8 +1,7 @@
 #include "PlacementCommon.as"
 #include "BuildBlock.as"
 #include "Requirements.as"
-
-#include "GameplayEvents.as"
+#include "GameplayEventsCommon.as";
 
 // Called server side
 void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)

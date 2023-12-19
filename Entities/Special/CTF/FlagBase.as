@@ -1,7 +1,7 @@
 // Flag base logic
 
 #include "CTF_FlagCommon.as"
-#include "GameplayEvents.as";
+#include "GameplayEventsCommon.as";
 
 const string flag_name = "ctf_flag";
 

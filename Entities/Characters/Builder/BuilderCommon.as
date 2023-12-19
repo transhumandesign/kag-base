@@ -3,7 +3,7 @@
 #include "BuildBlock.as";
 #include "PlacementCommon.as";
 #include "CheckSpam.as";
-#include "GameplayEvents.as";
+#include "GameplayEventsCommon.as";
 
 const f32 allow_overlap = 2.0f;
 

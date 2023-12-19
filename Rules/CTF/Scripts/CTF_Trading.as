@@ -1,6 +1,6 @@
 //not server only so the client also gets the game event setup stuff
 
-#include "GameplayEvents.as"
+#include "GameplayEventsCommon.as";
 #include "AssistCommon.as"
 #include "Hitters.as"
 
