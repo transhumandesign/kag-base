@@ -11,6 +11,7 @@ const int DROP_SECS = 8;
 void onInit(CBlob@ this)
 {
 	this.addCommandID("buy");
+	this.addCommandID("play sound");
 	AddIconToken("$" + this.getName() + "$", "TradingPost.png", Vec2f(16, 16), 15);
 	AddIconToken("$parachute$", "Crate.png", Vec2f(32, 32), 4);
 	AddIconToken("$trade$", "Coins.png", Vec2f(16, 16), 1);
@@ -243,6 +244,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		TradeItem@ item = AddItemToShip(this, caller, item_index, gold_count);
 	}
+	else if (cmd == this.getCommandID("play sound") && isClient())
+	{
+		bool is_gold;
+		if (!params.saferead_bool(is_gold)) return;
+
+		if (is_gold) this.getSprite().PlaySound("/Cha.ogg");
+		else this.getSprite().PlaySound("/ChaChing.ogg");
+	}
 }
 
 TradeItem@ AddItemToShip(CBlob@ this, CBlob@ caller, const uint itemIndex, const u16 goldCount)
@@ -312,7 +321,13 @@ TradeItem@ AddItemToShip(CBlob@ this, CBlob@ caller, const uint itemIndex, const
 				{
 					item.paidGold += goldCount;
 					server_TakeRequirements(inv, modReqs);
-					this.getSprite().PlaySound("/Cha.ogg");
+
+					if (isServer())
+					{
+						CBitStream sparams;
+						sparams.write_bool(true);
+						this.SendCommand(this.getCommandID("play sound"), sparams);
+					}
 				}
 			}
 		}
@@ -350,7 +365,12 @@ TradeItem@ AddItemToShip(CBlob@ this, CBlob@ caller, const uint itemIndex, const
 
 	item.boughtTime = getGameTime();
 
-	this.getSprite().PlaySound("/ChaChing.ogg");
+	if (isServer())
+	{
+		CBitStream sparams;
+		sparams.write_bool(false);
+		this.SendCommand(this.getCommandID("play sound"), sparams);
+	}
 
 	return item;
 }
