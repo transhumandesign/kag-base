@@ -1,7 +1,5 @@
 // get spawn points for CTF
 
-#include "HallCommon.as"
-
 shared void PopulateSpawnList(CBlob@[]@ respawns, const int teamNum)
 {
 	CBlob@[] posts;
@@ -11,8 +9,7 @@ shared void PopulateSpawnList(CBlob@[]@ respawns, const int teamNum)
 	{
 		CBlob@ blob = posts[i];
 
-		if (blob.getTeamNum() == teamNum &&
-		        !isUnderRaid(blob))
+		if (blob.getTeamNum() == teamNum && !blob.hasTag("under raid"))
 		{
 			respawns.push_back(blob);
 		}
