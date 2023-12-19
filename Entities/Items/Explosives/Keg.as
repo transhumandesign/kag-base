@@ -1,5 +1,6 @@
 // Keg logic
 #include "Hitters.as";
+#include "ActivationThrowCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -62,7 +63,7 @@ void onTick(CBlob@ this)
 {
 	if (this.isInFlames() && !this.hasTag("exploding") && isServer())
 	{
-		this.SendCommand(this.getCommandID("activate"));
+		server_Activate(this);
 	}
 }
 
@@ -106,7 +107,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		case Hitters::water:
 			if (hitterBlob.getName() == "bucket" && this.hasTag("exploding") && isServer())
 			{
-				this.SendCommand(this.getCommandID("deactivate"));
+				server_Deactivate(this);
 			}
 			break;
 		case Hitters::keg:
@@ -114,7 +115,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			{
 				if (!this.hasTag("exploding"))
 				{
-					this.SendCommand(this.getCommandID("activate"));
+					server_Activate(this);
 				}
 
 				//set fuse to shortest fuse time - either current time or new random time

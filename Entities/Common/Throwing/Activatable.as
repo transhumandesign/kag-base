@@ -1,5 +1,4 @@
 // Attach this to objects activatable with ActivateHeldObject.as
-// then implement onCommand
 
 void onInit(CBlob@ this)
 {

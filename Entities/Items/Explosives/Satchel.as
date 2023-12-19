@@ -2,6 +2,7 @@
 
 #include "Hitters.as";
 #include "TeamStructureNear.as";
+#include "ActivationThrowCommon.as"
 
 //config
 
@@ -13,6 +14,9 @@ void onInit(CBlob@ this)
 {
 	this.getShape().getVars().waterDragScale = 24.0f;
 	this.getCurrentScript().tickIfTag = "exploding";
+
+	Activate@ func = @onActivate;
+	this.set("activate handle", @func);
 }
 
 //start ugly satchel logic :)
@@ -207,26 +211,20 @@ void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 	this.doTickScripts = true;
 }
 
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+// custom callback
+void onActivate(CBitStream@ params)
 {
-	if (cmd == this.getCommandID("activate") && isServer())
-	{
-		CPlayer@ callerp = getNet().getActiveCommandPlayer();
-		/*
-		Satchels can be activated by:
-		ActivateHeldObject.as - "activate/throw" command ActivateBlob, SERVERSIDE
-		There is no instance of lanterns being activated with a direct client->server command
-		*/
-		bool from_server = (callerp is null);
-		if (!from_server)
-		{
-			return;
-		}
+	if (!isServer()) return;
 
-		this.Tag("exploding");
-		this.Tag("activated");
+	u16 this_id;
+	if (!params.saferead_u16(this_id)) return;
 
-		this.Sync("exploding", true);
-		this.Sync("activated", true);
-	}
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+
+	this.Tag("exploding");
+	this.Tag("activated");
+
+	this.Sync("exploding", true);
+	this.Sync("activated", true);
 }

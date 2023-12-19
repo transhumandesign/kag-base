@@ -1,4 +1,5 @@
 // Lantern script
+#include "ActivationThrowCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -10,6 +11,9 @@ void onInit(CBlob@ this)
 	this.Tag("fire source");
 	this.Tag("ignore_arrow");
 	this.Tag("ignore fall");
+
+	Activate@ func = @onActivate;
+	this.set("activate handle", @func);
 
 	this.addCommandID("activate client");
 	
@@ -44,31 +48,29 @@ void Light(CBlob@ this, const bool &in lit)
 	this.set_bool("lantern lit", lit);
 }
 
+// custom callback
+void onActivate(CBitStream@ params)
+{
+	if (!isServer()) return;
+
+	u16 this_id;
+	if (!params.saferead_u16(this_id)) return;
+
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+
+	if (this.isInWater()) return;
+
+	// localhost xd
+	if (!isClient())
+		Light(this, !this.get_bool("lantern lit"));
+
+	this.SendCommand(this.getCommandID("activate client"));
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("activate") && isServer())
-	{		
-		CPlayer@ callerp = getNet().getActiveCommandPlayer();
-		/*
-		Lanterns can be activated by:
-		ActivateHeldObject.as - "activate/throw" command ActivateBlob, SERVERSIDE
-		There is no instance of lanterns being activated with a direct client->server command
-		*/
-		bool from_server = (callerp is null);
-		if (!from_server)
-		{
-			return;
-		}
-
-		if (this.isInWater()) return;
-
-		// localhost xd
-		if (!isClient())
-			Light(this, !this.get_bool("lantern lit"));
-
-		this.SendCommand(this.getCommandID("activate client"));
-	}
-	else if (cmd == this.getCommandID("activate client") && isClient())
+	if (cmd == this.getCommandID("activate client") && isClient())
 	{
 		Light(this, !this.get_bool("lantern lit"));
 	}
