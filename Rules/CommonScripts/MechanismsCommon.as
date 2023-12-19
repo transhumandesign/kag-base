@@ -162,7 +162,7 @@ shared void packet_SendStream(CRules@ this, CBitStream@ stream)
 		packet_RecvStream(this, stream_server);
 
 		// send to client
-		this.SendCommand(this.getCommandID("mechanisms_packet"), stream);
+		this.SendCommand(this.getCommandID("mechanisms_packet_client"), stream);
 	}
 }
 
