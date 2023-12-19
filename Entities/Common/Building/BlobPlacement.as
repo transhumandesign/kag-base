@@ -4,7 +4,7 @@
 #include "PlacementCommon.as";
 #include "BuildBlock.as";
 #include "CheckSpam.as";
-#include "GameplayEvents.as";
+#include "GameplayEventsCommon.as";
 #include "Requirements.as"
 #include "RunnerTextures.as"
 
@@ -562,7 +562,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			
 		if (PlaceBlob(this, carryBlob, aimpos))
 		{
-			SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), carryBlob.getName()));
+			CPlayer@ p = this.getPlayer();
+            if (p !is null)
+            {
+                GE_BuildBlob(p.getNetworkID(), carryBlob.getName()); // gameplay event for coins
+            }
 		}
 
 	}
@@ -588,14 +592,22 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		{
 			if (PlaceBlob(this, carryBlob, aimpos, true, repairBlob))
 			{
-				SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), repairBlob.getName()));
+				CPlayer@ p = this.getPlayer();
+				if (p !is null)
+				{
+					GE_BuildBlob(p.getNetworkID(), carryBlob.getName()); // gameplay event for coins
+                }
 			}
 		}
 		else // there's nothing here so we can place a new one
 		{
 			if (PlaceBlob(this, carryBlob, aimpos))
 			{
-				SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), carryBlob.getName()));
+				CPlayer@ p = this.getPlayer();
+				if (p !is null)
+				{
+					GE_BuildBlob(p.getNetworkID(), carryBlob.getName()); // gameplay event for coins
+				}
 			}
 		}
 	}

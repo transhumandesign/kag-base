@@ -50,7 +50,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		{
 			if (damageowner.getTeamNum() != this.getTeamNum() && isServer())
 			{
-				SendGameplayEvent(createVehicleDamageEvent(damageowner, dmg));
+				GE_HitVehicle(damageowner.getNetworkID(), dmg); // gameplay event for coins
 			}
 		}
 	}
@@ -66,7 +66,11 @@ void onDie(CBlob@ this)
 		CBlob@ b = p.getBlob();
 		if (b !is null && b.getTeamNum() != this.getTeamNum() && isServer())
 		{
-			SendGameplayEvent(createVehicleDestroyEvent(this.getPlayerOfRecentDamage()));
+			CPlayer@ p = this.getPlayerOfRecentDamage();
+			if (p !is null)
+			{
+				GE_KillVehicle(p.getNetworkID());
+			}
 		}
 	}
 }

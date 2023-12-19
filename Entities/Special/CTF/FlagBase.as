@@ -125,7 +125,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		CBlob@ flag = blob.getCarriedBlob();
 		if (flag !is null && flag.getName() == flag_name && flag.getTeamNum() != this.getTeamNum())
 		{
-			SendGameplayEvent(createFlagCaptureEvent(blob.getPlayer()));
+			CPlayer@ p = blob.getPlayer();
+			if (p !is null)
+			{
+				GE_CaptureFlag(p.getNetworkID()); // gameplay event for coins
+			}
 
 			//smash the flag
 			this.server_Hit(flag, flag.getPosition(), Vec2f(), 5.0f, 0xfa, true);

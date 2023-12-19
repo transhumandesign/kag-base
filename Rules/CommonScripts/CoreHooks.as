@@ -10,8 +10,6 @@
 //not server only so that all the players get this
 void onInit(CRules@ this)
 {
-	SetupGameplayEvents(this);
-
 	sv_gravity = 9.81f;
 	particles_gravity.y = 0.25f;
 }

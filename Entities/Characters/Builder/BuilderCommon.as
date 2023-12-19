@@ -148,7 +148,11 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 		DestroyScenary(tl, br);
 		if (isServer())
 		{
-			SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), b.name));
+			CPlayer@ p = this.getPlayer();
+			if (p !is null)
+			{
+				GE_BuildBlob(p.getNetworkID(), b.name); // gameplay event for coins
+			}
 		}
 	}
 
