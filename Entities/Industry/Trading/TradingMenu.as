@@ -58,6 +58,56 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 }
 
+void Callback_Buy(CBitStream@ params)
+{
+	CPlayer@ p = getLocalPlayer();
+	if (p is null) return;
+
+	CBlob@ caller = p.getBlob();
+	if (caller is null) return;
+
+	u8 item_index;
+	if (!params.saferead_u8(item_index)) return;
+
+	bool hotkey;
+	if (!params.saferead_bool(hotkey)) return;
+
+	u16 this_id;
+	if (!params.saferead_u16(this_id)) return;
+
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+
+	u16 gold_count = caller.getBlobCount("mat_gold");
+
+	if (caller !is null)
+	{
+		if (!isInRadius(this, caller))
+		{
+			caller.ClearMenus();
+			return;
+		}
+
+		// localhost check because AddItemToShip is a meme function
+		if (isClient() && !isServer())
+		{
+			TradeItem@ item = AddItemToShip(this, caller, item_index, gold_count);
+
+			if (item is null) // reload menu
+			{
+				caller.ClearMenus();
+				BuildTradingMenu(this, caller);
+				return;
+			}
+		}
+
+		CBitStream new_params;
+		new_params.write_u8(item_index);
+		new_params.write_bool(true); //used hotkey?
+		this.SendCommand(this.getCommandID("buy"), new_params);
+	}
+}
+
 void BuildTradingMenu(CBlob@ this, CBlob @caller)
 {
 	TradeItem[]@ items;
@@ -92,8 +142,9 @@ void BuildTradingMenu(CBlob@ this, CBlob @caller)
 					CBitStream params;
 					params.write_u8(i + sepCount);
 					params.write_bool(true); //used hotkey?
+					params.write_u16(this.getNetworkID());
 
-					menu.AddKeyCommand(numKeys[i], this.getCommandID("buy"), params);
+					menu.AddKeyCallback(numKeys[i], "TradingMenu.as", "Callback_Buy", params);
 
 					//successful bind, so move onto next keybind
 					i++;
@@ -129,8 +180,9 @@ void addTradeItemsToMenu(CBlob@ this, CGridMenu@ menu, u16 callerID)
 				CBitStream params;
 				params.write_u8(i);
 				params.write_bool(false); //used hotkey?
+				params.write_u16(this.getNetworkID());
 
-				CGridButton@ button = menu.AddButton(item.iconName, getTranslatedString(item.name), this.getCommandID("buy"), params);
+				CGridButton@ button = menu.AddButton(item.iconName, getTranslatedString(item.name), "TradingMenu.as", "Callback_Buy", params);
 				if (button !is null)
 				{
 					if (item.boughtTime != 0 && item.boughtTime + item.unavailableTime > gametime)
@@ -171,45 +223,25 @@ bool isInRadius(CBlob@ this, CBlob @caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("buy"))
+	if (cmd == this.getCommandID("buy") && isServer())
 	{
-		u8 itemIndex = params.read_u8();
-		bool hotkey = params.read_bool();
+		u8 item_index;
+		if (!params.saferead_u8(item_index)) return;
 
-		CBlob@ caller;
+		bool hotkey;
+		if (!params.saferead_bool(hotkey)) return;
 
-		if (isClient())
-		{
-			@caller = getLocalPlayerBlob();
-		}
-		else if (isServer())
-		{
-			CPlayer@ p = getNet().getActiveCommandPlayer();
-			if (p is null) return;
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
 
-			@caller = p.getBlob();
-		}
-
+		CBlob@ caller = p.getBlob();
 		if (caller is null) return;
 
-		u16 goldCount = caller.getBlobCount("mat_gold");
+		if (!isInRadius(this, caller)) return;
 
-		if (caller !is null)
-		{
-			if (!isInRadius(this, caller))
-			{
-				caller.ClearMenus();
-				return;
-			}
+		u16 gold_count = caller.getBlobCount("mat_gold");
 
-			TradeItem@ item = AddItemToShip(this, caller, itemIndex, goldCount);
-
-			if (item is null) // reload menu
-			{
-				caller.ClearMenus();
-				BuildTradingMenu(this, caller);
-			}
-		}
+		TradeItem@ item = AddItemToShip(this, caller, item_index, gold_count);
 	}
 }
 
@@ -289,7 +321,7 @@ TradeItem@ AddItemToShip(CBlob@ this, CBlob@ caller, const uint itemIndex, const
 
 	if (item.instantShipping)
 	{
-		CBlob@ blob = MakeBlobFromItem(item);
+		CBlob@ blob = MakeBlobFromItem(this, item, this.getTeamNum());
 		if (blob !is null)
 		{
 			blob.set_u16("buyer", caller.getPlayer().getNetworkID());
@@ -373,7 +405,7 @@ void RecursiveCrate(CBlob@ this, uint[]@ shipment, uint index, CBlob@ itemThatDi
 			for (uint i = index; i < shipment.length; i++)
 			{
 				TradeItem@ item = items[shipment[i]];
-				CBlob@ blobItem = MakeBlobFromItem(item);
+				CBlob@ blobItem = MakeBlobFromItem(this, item, this.getTeamNum());
 
 				if (blobItem !is null)
 				{
@@ -393,7 +425,7 @@ void RecursiveCrate(CBlob@ this, uint[]@ shipment, uint index, CBlob@ itemThatDi
 	}
 }
 
-CBlob@ MakeBlobFromItem(TradeItem@ item)
+CBlob@ MakeBlobFromItem(CBlob@ this, TradeItem@ item, int team)
 {
 	if (!isServer()) return null;
 
@@ -403,11 +435,11 @@ CBlob@ MakeBlobFromItem(TradeItem@ item)
 	}
 	else
 	{
-		return MakeItem(item.configFilename);
+		return MakeItem(this, item.configFilename, team);
 	}
 }
 
-CBlob@ MakeItem(const string& in name)
+CBlob@ MakeItem(CBlob@ this, const string& in name, int team)
 {
 	string[]@ tokens = name.split(" ");
 
@@ -417,7 +449,7 @@ CBlob@ MakeItem(const string& in name)
 	}
 	else
 	{
-		return server_CreateBlob(name);      // normal blob
+		return server_CreateBlob(name, team, this.getPosition());      // normal blob
 	}
 }
 
