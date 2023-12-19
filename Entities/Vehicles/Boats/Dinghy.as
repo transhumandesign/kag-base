@@ -48,7 +48,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (isServer() && cmd == this.getCommandID("store inventory"))
+	if (cmd == this.getCommandID("store inventory") && isServer())
 	{
 		CPlayer@ p = getNet().getActiveCommandPlayer();
 		if (p is null) return;
