@@ -7,6 +7,8 @@ void onInit(CBlob@ this)
 	this.SetLightRadius(64.0f);
 	this.SetLightColor(SColor(255, 255, 240, 171));
 
+	this.Tag("activatable");
+
 	this.Tag("dont deactivate");
 	this.Tag("fire source");
 	this.Tag("ignore_arrow");

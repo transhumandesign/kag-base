@@ -15,6 +15,8 @@ void onInit(CBlob@ this)
 	this.set_f32("keg_time", 300.0f);
 	this.set_bool("explosive_teamkill", true);
 
+	this.Tag("activatable");
+
 	Activate@ activation_handle = @onActivate;
 	this.set("activate handle", @activation_handle);
 

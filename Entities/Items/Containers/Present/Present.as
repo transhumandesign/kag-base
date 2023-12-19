@@ -5,7 +5,8 @@
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("activate client");
+	this.Tag("activatable");
+	this.addCommandID("activate");
 
 	this.Tag("medium weight");
 

@@ -5,10 +5,8 @@
 
 void onInit(CBlob@ this)
 {
-	// Activatable.as adds the following
-	// this.Tag("activatable");
-	// this.addCommandID("activate");
-	this.addCommandID("activate client");
+	this.Tag("activatable");
+	this.addCommandID("activate");
 
 	// used by RunnerMovement.as & ActivateHeldObject.as
 	this.Tag("medium weight");

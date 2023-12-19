@@ -15,6 +15,8 @@ void onInit(CBlob@ this)
 	this.getShape().getVars().waterDragScale = 24.0f;
 	this.getCurrentScript().tickIfTag = "exploding";
 
+	this.Tag("activatable");
+
 	Activate@ func = @onActivate;
 	this.set("activate handle", @func);
 }

@@ -39,6 +39,8 @@ void onInit(CBlob@ this)
 {
 	this.checkInventoryAccessibleCarefully = true;
 
+	this.Tag("activatable");
+
 	this.addCommandID("unpack");
 	this.addCommandID("unpack_client"); // just sets the drag...
 	this.addCommandID("getin");
