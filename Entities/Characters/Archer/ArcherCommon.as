@@ -214,7 +214,9 @@ bool hasArrows(CBlob@ this)
 
 bool hasArrows(CBlob@ this, u8 arrowType)
 {
-	return arrowType < ArrowType::count && this.getBlobCount(arrowTypeNames[arrowType]) > 0;
+	if (this is null) return false;
+	
+	return arrowType < arrowTypeNames.length && this.hasBlob(arrowTypeNames[arrowType], 1);
 }
 
 bool hasAnyArrows(CBlob@ this)

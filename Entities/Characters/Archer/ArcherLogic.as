@@ -8,7 +8,8 @@
 #include "ShieldCommon.as";
 #include "Help.as";
 #include "BombCommon.as";
-#include "RedBarrierCommon.as"
+#include "RedBarrierCommon.as";
+#include "StandardControlsCommon.as";
 
 const int FLETCH_COOLDOWN = 45;
 const int PICKUP_COOLDOWN = 15;
@@ -31,6 +32,12 @@ void onInit(CBlob@ this)
 	this.set_f32("gib health", -1.5f);
 	this.Tag("player");
 	this.Tag("flesh");
+
+	ControlsSwitch@ controls_switch = @onSwitch;
+	this.set("onSwitch handle", @controls_switch);
+
+	ControlsCycle@ controls_cycle = @onCycle;
+	this.set("onCycle handle", @controls_cycle);
 
 	//centered on arrows
 	//this.set_Vec2f("inventory offset", Vec2f(0.0f, 122.0f));
@@ -892,6 +899,73 @@ CBlob@ CreateArrow(CBlob@ this, Vec2f arrowPos, Vec2f arrowVel, u8 arrowType)
 	return arrow;
 }
 
+// clientside
+void onCycle(CBitStream@ params)
+{
+	u16 this_id;
+	if (!params.saferead_u16(this_id)) return;
+
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+
+	if (arrowTypeNames.length == 0) return;
+
+	// cycle arrows
+	ArcherInfo@ archer;
+	if (!this.get("archerInfo", @archer))
+	{
+		return;
+	}
+	u8 type = archer.arrow_type;
+
+	int count = 0;
+	while (count < arrowTypeNames.length)
+	{
+		type++;
+		count++;
+		if (type >= arrowTypeNames.length)
+		{
+			type = 0;
+		}
+		if (hasArrows(this, type))
+		{
+			CycleToArrowType(this, archer, type);
+			CBitStream sparams;
+			sparams.write_u8(type);
+			this.SendCommand(this.getCommandID("switch"), sparams);
+			break;
+		}
+	}
+}
+
+void onSwitch(CBitStream@ params)
+{
+	u16 this_id;
+	if (!params.saferead_u16(this_id)) return;
+
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+
+	if (arrowTypeNames.length == 0) return;
+
+	u8 type;
+	if (!params.saferead_u8(type)) return;
+
+	ArcherInfo@ archer;
+	if (!this.get("archerInfo", @archer))
+	{
+		return;
+	}
+
+	if (hasArrows(this, type))
+	{
+		CycleToArrowType(this, archer, type);
+		CBitStream sparams;
+		sparams.write_u8(type);
+		this.SendCommand(this.getCommandID("switch"), sparams);
+	}
+}
+
 void ShootArrow(CBlob@ this)
 {
 	ArcherInfo@ archer;
@@ -1072,34 +1146,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		HandleGrapple(this, params, !canSend(this));
 	}
-	else if (cmd == this.getCommandID("cycle"))  //from standardcontrols
+	else if (cmd == this.getCommandID("switch") && isServer())
 	{
-		// cycle arrows
-		ArcherInfo@ archer;
-		if (!this.get("archerInfo", @archer))
-		{
-			return;
-		}
-		u8 type = archer.arrow_type;
+		CPlayer@ callerp = getNet().getActiveCommandPlayer();
+		if (callerp is null) return;
 
-		int count = 0;
-		while (count < arrowTypeNames.length)
-		{
-			type++;
-			count++;
-			if (type >= arrowTypeNames.length)
-			{
-				type = 0;
-			}
-			if (hasArrows(this, type))
-			{
-				CycleToArrowType(this, archer, type);
-				break;
-			}
-		}
-	}
-	else if (cmd == this.getCommandID("switch"))
-	{
+		CBlob@ caller = callerp.getBlob();
+		if (caller is null) return;
+
+		if (caller !is this) return;
+
 		// switch to arrow
 		ArcherInfo@ archer;
 		if (!this.get("archerInfo", @archer))
@@ -1108,7 +1164,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 
 		u8 type;
-		if (params.saferead_u8(type) && hasArrows(this, type))
+		if (!params.saferead_u8(type)) return;
+
+		if (hasArrows(this, type))
 		{
 			CycleToArrowType(this, archer, type);
 		}
