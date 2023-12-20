@@ -414,8 +414,10 @@ void AdjustCamera(CBlob@ this, bool is_in_render)
 
 	f32 zoom_target = 1.0f;
 
-	if (zoomModifier) {
-		switch (zoomModifierLevel) {
+	if (zoomModifier) 
+	{
+		switch (zoomModifierLevel) 
+		{
 			case 0:	zoom_target = 0.5f; zoomLevel = 0; break;
 			case 1: zoom_target = 0.5625f; zoomLevel = 0; break;
 			case 2: zoom_target = 0.625f; zoomLevel = 0; break;
@@ -424,8 +426,11 @@ void AdjustCamera(CBlob@ this, bool is_in_render)
 			case 5: zoom_target = 1.5f; zoomLevel = 1; break;
 			case 6: zoom_target = 2.0f; zoomLevel = 2; break;
 		}
-	} else {
-		switch (zoomLevel) {
+	} 
+	else 
+	{
+		switch (zoomLevel) 
+		{
 			case 0: zoom_target = 0.5f; zoomModifierLevel = 0; break;
 			case 1: zoom_target = 1.0f; zoomModifierLevel = 4; break;
 			case 2:	zoom_target = 2.0f; zoomModifierLevel = 6; break;
