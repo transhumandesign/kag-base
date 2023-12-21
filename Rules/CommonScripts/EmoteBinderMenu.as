@@ -18,7 +18,6 @@ u8 selected_keybind = 0;
 void onInit(CRules@ this)
 {
 	this.addCommandID(EMOTE_CMD);
-	this.addCommandID("display taunt");
 }
 
 void NewEmotesMenu()
