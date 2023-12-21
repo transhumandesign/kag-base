@@ -103,11 +103,6 @@ void SyncGrapple(CBlob@ this)
 		bt.write_Vec2f(archer.grapple_vel);
 	}
 
-	// anti-cheat: make it impossible to run this command as a client-to-itself command
-	this.set_bool(grapple_sync_cmd + "_run", false);
-	this.Sync(grapple_sync_cmd + "_run", true);
-	this.set_bool(grapple_sync_cmd + "_run", true);
-	this.Sync(grapple_sync_cmd + "_run", true);
 	this.SendCommand(this.getCommandID(grapple_sync_cmd), bt);
 }
 
@@ -132,16 +127,6 @@ void HandleGrapple(CBlob@ this, CBitStream@ bt, bool apply)
 		grapple_ratio = temp / 250.0f;
 		grapple_pos = bt.read_Vec2f();
 		grapple_vel = bt.read_Vec2f();
-	}
-
-	// anti-cheat: run only if server has synced the prop for us
-	if (!this.get_bool(grapple_sync_cmd + "_run"))
-	{
-		apply = false;
-	}
-	else
-	{
-		this.set_bool(grapple_sync_cmd + "_run", false);
 	}
 
 	if (apply)

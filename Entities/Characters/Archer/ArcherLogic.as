@@ -42,7 +42,7 @@ void onInit(CBlob@ this)
 	//no spinning
 	this.getShape().SetRotationsAllowed(false);
 	this.getSprite().SetEmitSound("Entities/Characters/Archer/BowPull.ogg");
-	this.addCommandID("shoot arrow");
+	this.addCommandID("play fire sound");
 	this.addCommandID("pickup arrow");
 	this.addCommandID("pickup arrow client");
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
@@ -395,7 +395,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		{
 			if (isServer())
 			{
-				this.SendCommand(this.getCommandID("shoot arrow"));
+				ShootArrow(this);
 			}
 
 			charge_state = ArcherParams::legolas_charging;
@@ -551,7 +551,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			{
 				if (isServer())
 				{
-					this.SendCommand(this.getCommandID("shoot arrow"));
+					ShootArrow(this);
 				}
 
 				charge_time = ArcherParams::fired_time;
@@ -876,92 +876,93 @@ CBlob@ CreateArrow(CBlob@ this, Vec2f arrowPos, Vec2f arrowVel, u8 arrowType)
 	return arrow;
 }
 
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+void ShootArrow(CBlob@ this)
 {
-	if (cmd == this.getCommandID("shoot arrow"))
+	ArcherInfo@ archer;
+	if (!this.get("archerInfo", @archer))
 	{
-		ArcherInfo@ archer;
-		if (!this.get("archerInfo", @archer))
+		return;
+	}
+
+	u8 arrow_type = archer.arrow_type;
+
+	if (arrow_type >= arrowTypeNames.length) return;
+
+	bool hasarrow = archer.has_arrow;
+	s8 charge_time = archer.charge_time;
+	u8 charge_state = archer.charge_state;
+
+	f32 arrowspeed;
+
+	if (charge_time < MIDSHOT_CHARGE)
+	{
+		arrowspeed = ArcherParams::shoot_max_vel * (1.0f / 3.0f);
+	}
+	else if (charge_time < FULLSHOT_CHARGE)
+	{
+		arrowspeed = ArcherParams::shoot_max_vel * (4.0f / 5.0f);
+	}
+	else
+	{
+		arrowspeed = ArcherParams::shoot_max_vel;
+	}
+
+	Vec2f offset(this.isFacingLeft() ? 2 : -2, -2);
+
+	Vec2f arrowPos = this.getPosition() + offset;
+	Vec2f aimpos = this.getAimPos();
+	Vec2f arrowVel = (aimpos - arrowPos);
+	arrowVel.Normalize();
+	arrowVel *= arrowspeed;
+
+	bool legolas = false;
+	if (charge_state == ArcherParams::legolas_ready) legolas = true;
+
+	if (legolas)
+	{
+		int r = 0;
+		for (int i = 0; i < ArcherParams::legolas_arrows_volley; i++)
 		{
-			return;
-		}
-
-		u8 arrow_type = archer.arrow_type;
-
-		if (arrow_type >= arrowTypeNames.length) return;
-
-		bool hasarrow = archer.has_arrow;
-		s8 charge_time = archer.charge_time;
-		u8 charge_state = archer.charge_state;
-
-		f32 arrowspeed;
-
-		if (charge_time < MIDSHOT_CHARGE)
-		{
-			arrowspeed = ArcherParams::shoot_max_vel * (1.0f / 3.0f);
-		}
-		else if (charge_time < FULLSHOT_CHARGE)
-		{
-			arrowspeed = ArcherParams::shoot_max_vel * (4.0f / 5.0f);
-		}
-		else
-		{
-			arrowspeed = ArcherParams::shoot_max_vel;
-		}
-
-		Vec2f offset(this.isFacingLeft() ? 2 : -2, -2);
-
-		Vec2f arrowPos = this.getPosition() + offset;
-		Vec2f aimpos = this.getAimPos();
-		Vec2f arrowVel = (aimpos - arrowPos);
-		arrowVel.Normalize();
-		arrowVel *= arrowspeed;
-
-		bool legolas = false;
-		if (charge_state == ArcherParams::legolas_ready) legolas = true;
-
-		if (legolas)
-		{
-			int r = 0;
-			for (int i = 0; i < ArcherParams::legolas_arrows_volley; i++)
+			CBlob@ arrow = CreateArrow(this, arrowPos, arrowVel, arrow_type);
+			if (i > 0 && arrow !is null)
 			{
-				if (getNet().isServer())
-				{
-					CBlob@ arrow = CreateArrow(this, arrowPos, arrowVel, arrow_type);
-					if (i > 0 && arrow !is null)
-					{
-						arrow.Tag("shotgunned");
-					}
-				}
-				this.TakeBlob(arrowTypeNames[ arrow_type ], 1);
-				arrow_type = ArrowType::normal;
-
-				//don't keep firing if we're out of arrows
-				if (!hasArrows(this, arrow_type))
-					break;
-
-				r = r > 0 ? -(r + 1) : (-r) + 1;
-
-				arrowVel = arrowVel.RotateBy(ArcherParams::legolas_arrows_deviation * r, Vec2f());
-				if (i == 0)
-				{
-					arrowVel *= 0.9f;
-				}
-			}
-			this.getSprite().PlaySound("Entities/Characters/Archer/BowFire.ogg");
-		}
-		else
-		{
-			if (getNet().isServer())
-			{
-				CreateArrow(this, arrowPos, arrowVel, arrow_type);
+				arrow.Tag("shotgunned");
 			}
 
-			this.getSprite().PlaySound("Entities/Characters/Archer/BowFire.ogg");
 			this.TakeBlob(arrowTypeNames[ arrow_type ], 1);
+			arrow_type = ArrowType::normal;
+
+			//don't keep firing if we're out of arrows
+			if (!hasArrows(this, arrow_type))
+				break;
+
+			r = r > 0 ? -(r + 1) : (-r) + 1;
+
+			arrowVel = arrowVel.RotateBy(ArcherParams::legolas_arrows_deviation * r, Vec2f());
+			if (i == 0)
+			{
+				arrowVel *= 0.9f;
+			}
 		}
+
+		this.SendCommand(this.getCommandID("play fire sound"));
+	}
+	else
+	{
+		CreateArrow(this, arrowPos, arrowVel, arrow_type);
+
+		this.SendCommand(this.getCommandID("play fire sound"));
+		this.TakeBlob(arrowTypeNames[ arrow_type ], 1);
 
 		archer.fletch_cooldown = FLETCH_COOLDOWN; // just don't allow shoot + make arrow
+	}
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("play fire sound") && isClient())
+	{
+		this.getSprite().PlaySound("Entities/Characters/Archer/BowFire.ogg");
 	}
 	else if (cmd == this.getCommandID("pickup arrow") && isServer())
 	{
