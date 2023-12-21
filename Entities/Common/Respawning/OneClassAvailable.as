@@ -24,6 +24,7 @@ void onInit(CBlob@ this)
 			this.set_u8("class button radius", ts * 2);
 		}
 	}
+	this.addCommandID("change class");
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -34,14 +35,14 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (canChangeClass(this, caller) && caller.getName() != cfg)
 	{
 		CBitStream params;
-		write_classchange(params, caller.getNetworkID(), cfg);
+		params.write_u8(0);
 
 		CButton@ button = caller.CreateGenericButton(
 		"$change_class$",                           // icon token
 		this.get_Vec2f("class offset"),             // button offset
 		this,                                       // button attachment
-		SpawnCmd::changeClass,                      // command id
-		getTranslatedString("Swap Class"),                               // description
+		this.getCommandID("change class"),           // command id
+		getTranslatedString("Swap Class"),           // description
 		params);                                    // bit stream
 
 		button.enableRadius = this.get_u8("class button radius");
