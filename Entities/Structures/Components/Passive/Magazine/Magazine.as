@@ -37,7 +37,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Magazine component(position);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -83,9 +83,6 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		return;
 	}
-
-	CBitStream params;
-	params.write_u16(LOAD ? carried.getNetworkID() : caller.getNetworkID());
 		
 	CBlob@ target = LOAD ? carried : item;
 	string iconName = "$" + target.getName() + "$";
@@ -99,8 +96,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	Vec2f_zero,																									// button offset
 	this, 																										// button attachment
 	this.getCommandID(LOAD ? "load" : "unload"), 																// command id
-	getTranslatedString(LOAD ? "Load {ITEM}" : "Unload {ITEM}").replace("{ITEM}", target.getInventoryName()),	// description
-	params);																									// cbitstream
+	getTranslatedString(LOAD ? "Load {ITEM}" : "Unload {ITEM}").replace("{ITEM}", target.getInventoryName()));	// description
 		
 	button.radius = 8.0f;
 	button.enableRadius = 22.0f;
@@ -108,14 +104,18 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (!getNet().isServer()) return;
-
-	if (cmd == this.getCommandID("load"))
+	if (cmd == this.getCommandID("load") && isServer())
 	{
-		u16 id;
-		if (!params.saferead_u16(id)) return;
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+					
+		CBlob@ caller = player.getBlob();
+		if (caller is null) return;
 
-		CBlob@ carried = getBlobByNetworkID(id);
+		// range check
+		if (this.getDistanceTo(caller) > 22.0f) return;
+
+		CBlob@ carried = caller.getCarriedBlob();
 		if (carried is null) return;
 
 		CBlob@ item = this.getInventory().getItem(0);
@@ -143,12 +143,17 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 	}
-	else if (cmd == this.getCommandID("unload"))
+	else if (cmd == this.getCommandID("unload") && isServer())
 	{
-		u16 id;
-		if (!params.saferead_u16(id)) return;
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+					
+		CBlob@ caller = player.getBlob();
+		if (caller is null) return;
 
-		CBlob@ caller = getBlobByNetworkID(id);
+		// range check
+		if (this.getDistanceTo(caller) > 22.0f) return;
+
 		if (caller is null) return;
 
 		CBlob@ item = this.getInventory().getItem(0);
