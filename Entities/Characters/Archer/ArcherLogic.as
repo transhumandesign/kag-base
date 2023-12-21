@@ -1082,7 +1082,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			CycleToArrowType(this, archer, type);
 		}
 	}
-	else
+	else if (isServer())
 	{
 		ArcherInfo@ archer;
 		if (!this.get("archerInfo", @archer))
@@ -1107,6 +1107,29 @@ void CycleToArrowType(CBlob@ this, ArcherInfo@ archer, u8 arrowType)
 	{
 		Sound::Play("/CycleInventory.ogg");
 	}
+}
+
+void Callback_PickArrow(CBitStream@ params)
+{
+	CPlayer@ player = getLocalPlayer();
+	if (player is null) return;
+
+	CBlob@ blob = player.getBlob();
+	if (blob is null) return;
+
+	u8 arrow_id;
+	if (!params.saferead_u8(arrow_id)) return;
+
+	ArcherInfo@ archer;
+	if (!blob.get("archerInfo", @archer))
+	{
+		return;
+	}
+
+	archer.arrow_type = arrow_id;
+
+	string matname = arrowTypeNames[arrow_id];
+	blob.SendCommand(blob.getCommandID("pick " + matname));
 }
 
 // arrow pick menu
@@ -1140,8 +1163,9 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 
 		for (uint i = 0; i < arrowTypeNames.length; i++)
 		{
-			string matname = arrowTypeNames[i];
-			CGridButton @button = menu.AddButton(arrowIcons[i], getTranslatedString(arrowNames[i]), this.getCommandID("pick " + matname));
+			CBitStream params;
+			params.write_u8(i);
+			CGridButton @button = menu.AddButton(arrowIcons[i], getTranslatedString(arrowNames[i]), "ArcherLogic.as", "Callback_PickArrow", params);
 
 			if (button !is null)
 			{
