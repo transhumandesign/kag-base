@@ -7,63 +7,16 @@ void onInit(CBlob@ this)
 		this.set_string("eat sound", "/Eat.ogg");
 	}
 
-	this.addCommandID(heal_id);
+	this.addCommandID("heal command client");
 
 	this.Tag("pushedByDoor");
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID(heal_id))
+	if (cmd == this.getCommandID("heal command client") && isClient())
 	{
 		this.getSprite().PlaySound(this.get_string("eat sound"));
-
-		if (getNet().isServer())
-		{
-			u16 blob_id;
-			if (!params.saferead_u16(blob_id)) return;
-
-			CBlob@ theBlob = getBlobByNetworkID(blob_id);
-			if (theBlob !is null)
-			{
-				u8 heal_amount;
-				if (!params.saferead_u8(heal_amount)) return;
-
-				if (heal_amount == 255)
-				{
-					theBlob.add_f32("heal amount", theBlob.getInitialHealth() - theBlob.getHealth());
-					theBlob.server_SetHealth(theBlob.getInitialHealth());
-				}
-				else
-				{
-					f32 oldHealth = theBlob.getHealth();
-					theBlob.server_Heal(f32(heal_amount) * 0.25f);
-					theBlob.add_f32("heal amount", theBlob.getHealth() - oldHealth);
-				}
-
-				//give coins for healing teammate
-				if (this.exists("healer"))
-				{
-					CPlayer@ player = theBlob.getPlayer();
-					u16 healerID = this.get_u16("healer");
-					CPlayer@ healer = getPlayerByNetworkId(healerID);
-					if (player !is null && healer !is null)
-					{
-						bool healerHealed = healer is player;
-						bool sameTeam = healer.getTeamNum() == player.getTeamNum();
-						if (!healerHealed && sameTeam)
-						{
-							int coins = 10;
-							healer.server_setCoins(healer.getCoins() + coins);
-						}
-					}
-				}
-
-				theBlob.Sync("heal amount", true);
-			}
-
-			this.server_Die();
-		}
 	}
 }
 
