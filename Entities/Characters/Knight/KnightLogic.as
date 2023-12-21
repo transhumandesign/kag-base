@@ -1168,7 +1168,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 		SetFirstAvailableBomb(this);
 	}
-	else
+	else if (isServer())
 	{
 		for (uint i = 0; i < bombTypeNames.length; i++)
 		{
@@ -1614,9 +1614,24 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 }
 
 
+void Callback_PickBomb(CBitStream@ params)
+{
+	CPlayer@ player = getLocalPlayer();
+	if (player is null) return;
+
+	CBlob@ blob = player.getBlob();
+	if (blob is null) return;
+
+	u8 bomb_id;
+	if (!params.saferead_u8(bomb_id)) return;
+
+	string matname = bombTypeNames[bomb_id];
+	blob.set_u8("bomb type", bomb_id);
+
+	blob.SendCommand(blob.getCommandID("pick " + matname));
+}
 
 // bomb pick menu
-
 void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 {
 	if (bombTypeNames.length == 0)
@@ -1637,7 +1652,9 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 		for (uint i = 0; i < bombTypeNames.length; i++)
 		{
 			string matname = bombTypeNames[i];
-			CGridButton @button = menu.AddButton(bombIcons[i], getTranslatedString(bombNames[i]), this.getCommandID("pick " + matname));
+			CBitStream params;
+			params.write_u8(i);
+			CGridButton @button = menu.AddButton(bombIcons[i], getTranslatedString(bombNames[i]), "KnightLogic.as", "Callback_PickBomb", params);
 
 			if (button !is null)
 			{
