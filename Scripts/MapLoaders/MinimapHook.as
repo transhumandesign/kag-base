@@ -129,11 +129,14 @@ namespace MiniMap
 		CMap@ map = getMap();
 
 		//add sync script
-		//done here to avoid needing to modify gamemode.cfg
+		//was done here to avoid needing to modify gamemode.cfg
+		//seems to be unnecessary
+
+		/*
 		if (!rules.hasScript("MinimapSync.as"))
 		{
 			rules.AddScript("MinimapSync.as");
-		}
+		}*/
 
 		//init appropriately
 		if (isServer())
