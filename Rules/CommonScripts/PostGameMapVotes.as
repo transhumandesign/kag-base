@@ -155,10 +155,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	MapVotesMenu@ mvm;
 	if (!this.get("MapVotesMenu", @mvm)) return;
 
-	if (cmd == this.getCommandID(voteRequestSelectMapTag))
+	if (cmd == this.getCommandID(voteRequestSelectMapTag) && isServer())
 	{
-		if (!isServer()) { return; }
-
 		CPlayer@ sender = getNet().getActiveCommandPlayer();
 		if (sender is null) { return; }
 		u16 id = sender.getNetworkID();
@@ -181,10 +179,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 		params.write_u8(selected);
 		this.SendCommand(this.getCommandID(voteInfoSelectMapTag), params);
 	}
-	else if (cmd == this.getCommandID(voteInfoSelectMapTag))
+	else if (cmd == this.getCommandID(voteInfoSelectMapTag) && isClient())
 	{
-		if (!isClient()) { return; }
-
 		u16 id = params.read_netid();
 		u8 selected = params.read_u8();
 
@@ -202,27 +198,21 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			Sound::Play("buttonclick.ogg");
 		}
 	}
-	else if (cmd == this.getCommandID(voteRequestUnselectMapTag))
+	else if (cmd == this.getCommandID(voteRequestUnselectMapTag) && isServer())
 	{
-		if (!isServer()) { return; }
-
 		CPlayer@ sender = getNet().getActiveCommandPlayer();
 		if (sender is null) { return; }
 		u16 id = sender.getNetworkID();
 
 		mvm.RemoveVotesFrom(id);
 	}
-	else if (cmd == this.getCommandID(voteInfoUnselectMapTag))
+	else if (cmd == this.getCommandID(voteInfoUnselectMapTag) && isClient())
 	{
-		if (!isClient()) { return; }
-
 		u16 id = params.read_u16();
 		mvm.RemoveVotesFrom(id);
 	}
-	else if (cmd == this.getCommandID(voteSyncTag))
+	else if (cmd == this.getCommandID(voteSyncTag) && isClient())
 	{
-		if (!isClient()) { return; }
-
 		mvm.ClearVotes();
 		mvm.ParseFromStream(params);
 
@@ -235,10 +225,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 			}
 		}
 	}
-	else if (cmd == this.getCommandID(voteInfoWonMapTag))
+	else if (cmd == this.getCommandID(voteInfoWonMapTag) && isClient())
 	{
-		if (!isClient()) { return; }
-
 		params.saferead_u8(mvm.mostVoted);
 	}
 }
@@ -253,7 +241,7 @@ void RenderRaw(int id)
 	MapVotesMenu@ mvm;
 	if (!getRules().get("MapVotesMenu", @mvm)) return;
 	if (!getRules().isGameOver() || !mvm.isSetup) return;
-	if (!getNet().isClient()) return;
+	if (!isClient()) return;
 	if (!isMapVoteVisible()) return;
 
 	CRules@ rules = getRules();
