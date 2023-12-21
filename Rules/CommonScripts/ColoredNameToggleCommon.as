@@ -45,6 +45,8 @@ void sendNameColorCommand(CRules@ rules, CPlayer@ player, bool nameColorOn)
 {
 	string toggleID = getToggleID(player);
 
+	rules.set_bool(toggleID, nameColorOn);
+
 	CBitStream params;
 	params.write_string(toggleID);
 	params.write_bool(nameColorOn);
