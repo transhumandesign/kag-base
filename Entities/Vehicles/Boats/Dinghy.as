@@ -41,19 +41,23 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 		if (inv.getItemsCount() > 0)
 		{
-			CBitStream params;
-			params.write_netid(caller.getNetworkID());
-			caller.CreateGenericButton("$store_inventory$", Vec2f(0, 10), this, this.getCommandID("store inventory"), getTranslatedString("Store"), params);
+			caller.CreateGenericButton("$store_inventory$", Vec2f(0, 10), this, this.getCommandID("store inventory"), getTranslatedString("Store"));
 		}
 	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (isServer() && cmd == this.getCommandID("store inventory"))
+	if (cmd == this.getCommandID("store inventory") && isServer())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+					
+		CBlob@ caller = p.getBlob();
 		if (caller is null) return;
+
+		// range check; same as default cbutton range in engine (8 blocks)...
+		if (this.getDistanceTo(caller) > 64.0f) return;
 
 		CBlob@ carried = caller.getCarriedBlob();
 		if (carried !is null && carried.hasTag("temp blob"))
