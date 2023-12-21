@@ -90,6 +90,8 @@ void SyncGrapple(CBlob@ this)
 	ArcherInfo@ archer;
 	if (!this.get("archerInfo", @archer)) { return; }
 
+	if (isClient()) return;
+
 	CBitStream bt;
 	bt.write_bool(archer.grappling);
 
