@@ -1,5 +1,7 @@
 // FallOnNoSupport.as
 
+#include "StaticToggleCommon.as";
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
@@ -33,6 +35,7 @@ void onBlobCollapse(CBlob@ this)
 	{
 		if (shape.isStatic())
 		{
+			StaticOff(this);
 			this.SendCommand(this.getCommandID("static off"));
 		}
 	}
@@ -40,6 +43,7 @@ void onBlobCollapse(CBlob@ this)
 	{
 		if (!shape.isStatic())
 		{
+			StaticOn(this);
 			this.SendCommand(this.getCommandID("static on"));
 		}
 	}
@@ -47,32 +51,12 @@ void onBlobCollapse(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("static off"))
+	if (cmd == this.getCommandID("static off") && isClient())
 	{
-		CShape@ shape = this.getShape();
-		shape.SetStatic(false);
-		shape.SetGravityScale(1.0f);
-
-		ShapeConsts@ consts = shape.getConsts();
-		consts.mapCollisions = true;
-
-		if (!this.hasTag("fallen"))
-		{
-			this.Tag("fallen");
-			this.server_SetTimeToDie(3.0f);
-            ShapeVars@ vars = this.getShape().getVars();
-            if (vars.isladder)
-            {
-                vars.isladder = false;
-
-            }
-
-		}
+		StaticOff(this);
 	}
-	else if (cmd == this.getCommandID("static on"))
+	else if (cmd == this.getCommandID("static on") && isClient())
 	{
-		CShape@ shape = this.getShape();
-		shape.SetStatic(true);
-		shape.SetGravityScale(0.0f);
+		StaticOn(this);
 	}
 }
