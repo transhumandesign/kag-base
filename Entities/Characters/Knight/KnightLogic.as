@@ -7,7 +7,8 @@
 #include "ShieldCommon.as";
 #include "KnockedCommon.as"
 #include "Help.as";
-#include "Requirements.as"
+#include "Requirements.as";
+#include "StandardControlsCommon.as";
 
 
 //attacks limited to the one time per-actor before reset.
@@ -81,6 +82,12 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 	this.Tag("player");
 	this.Tag("flesh");
+
+	ControlsSwitch@ controls_switch = @onSwitch;
+	this.set("onSwitch handle", @controls_switch);
+
+	ControlsCycle@ controls_cycle = @onCycle;
+	this.set("onCycle handle", @controls_cycle);
 
 	this.addCommandID("activate/throw bomb");
 
@@ -1068,33 +1075,75 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 		}
 }
 
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+// clientside
+void onCycle(CBitStream@ params)
 {
-	if (cmd == this.getCommandID("cycle"))  //from standardcontrols
+	u16 this_id;
+	if (!params.saferead_u16(this_id)) return;
+
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+
+	if (bombTypeNames.length == 0) return;
+
+	// cycle bombs
+	u8 type = this.get_u8("bomb type");
+	int count = 0;
+	while (count < bombTypeNames.length)
 	{
-		// cycle bombs
-		u8 type = this.get_u8("bomb type");
-		int count = 0;
-		while (count < bombTypeNames.length)
-		{
-			type++;
-			count++;
-			if (type >= bombTypeNames.length)
-				type = 0;
-			if (hasBombs(this, type))
-			{
-				CycleToBombType(this, type);
-				break;
-			}
-		}
-	}
-	else if (cmd == this.getCommandID("switch"))
-	{
-		u8 type;
-		if (params.saferead_u8(type) && hasBombs(this, type))
+		type++;
+		count++;
+		if (type >= bombTypeNames.length)
+			type = 0;
+		if (hasBombs(this, type))
 		{
 			CycleToBombType(this, type);
+			CBitStream sparams;
+			sparams.write_u8(type);
+			this.SendCommand(this.getCommandID("switch"), sparams);
+			break;
 		}
+	}
+}
+
+void onSwitch(CBitStream@ params)
+{
+	u16 this_id;
+	if (!params.saferead_u16(this_id)) return;
+
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+
+	if (bombTypeNames.length == 0) return;
+
+	u8 type;
+	if (!params.saferead_u8(type)) return;
+
+	if (hasBombs(this, type))
+	{
+		CycleToBombType(this, type);
+		CBitStream sparams;
+		sparams.write_u8(type);
+		this.SendCommand(this.getCommandID("switch"), sparams);
+	}
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("switch") && isServer())
+	{
+		CPlayer@ callerp = getNet().getActiveCommandPlayer();
+		if (callerp is null) return;
+
+		CBlob@ caller = callerp.getBlob();
+		if (caller is null) return;
+
+		if (caller !is this) return;
+		// cycle bombs
+		u8 type;
+		if (!params.saferead_u8(type)) return;
+
+		CycleToBombType(this, type);
 	}
 	else if (cmd == this.getCommandID("activate/throw"))
 	{

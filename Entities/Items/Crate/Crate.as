@@ -406,9 +406,18 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			this.setVelocity(velocity);
 		}
 	}
-	else if (cmd == this.getCommandID("getout"))
+	else if (cmd == this.getCommandID("getout") && isServer())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+
+		CBlob@ caller = p.getBlob();
+		if (caller is null) return;
+
+		// range check
+		f32 distance = this.getDistanceTo(caller);
+		if (distance > 32.0f) return;
+
 		CBlob@ sneaky_player = getPlayerInside(this);
 		if (caller !is null && sneaky_player !is null)
 		{
@@ -420,6 +429,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 			}
 			this.Tag("crate escaped");
+			this.Sync("crate escaped", true);
 			this.server_PutOutInventory(sneaky_player);
 		}
 		// Attack self to pop out items
