@@ -10,6 +10,7 @@
 //edit the variables in the config file below to change the basics
 // no scripting required!
 string cost_config_file = "tdm_vars.cfg";
+const u16 arrow_resupply = 150;
 
 void Config(TDMCore@ this)
 {
@@ -310,6 +311,13 @@ shared class TDMCore : RulesCore
 			updateHUD();
 		}
 
+		for (uint player_num = 0; player_num < players.length; ++player_num)
+		{
+			TDMPlayerInfo@ player = cast < TDMPlayerInfo@ > (players[player_num]);
+
+			if (player.arrow_timer > 0) player.arrow_timer--;
+		}
+		
 		if (rules.isGameOver()) { return; }
 
 		s32 ticksToStart = gametime - getGameTime();
@@ -809,6 +817,8 @@ shared class TDMCore : RulesCore
 
 			if (!found)
 			{
+				TDMPlayerInfo@ info = cast < TDMPlayerInfo@ > (getInfoFromPlayer(player));
+				if (info.arrow_timer > 0) return; // no spam
 				CBlob@ mat = server_CreateBlob("mat_arrows");
 				if (mat !is null)
 				{
@@ -817,6 +827,9 @@ shared class TDMCore : RulesCore
 						mat.setPosition(blob.getPosition());
 					}
 				}
+
+				// no spam
+				info.arrow_timer = arrow_resupply;
 			}
 		}
 	}

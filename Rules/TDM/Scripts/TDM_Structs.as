@@ -6,6 +6,7 @@
 shared class TDMPlayerInfo : PlayerInfo
 {
 	u32 can_spawn_time;
+	u16 arrow_timer;
 	bool thrownBomb;
 
 	TDMPlayerInfo() { Setup("", 0, ""); }
@@ -15,6 +16,7 @@ shared class TDMPlayerInfo : PlayerInfo
 	{
 		PlayerInfo::Setup(_name, _team, _default_config);
 		can_spawn_time = 0;
+		arrow_timer = 0;
 		thrownBomb = false;
 	}
 };
