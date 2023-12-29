@@ -32,8 +32,6 @@ const u8 GRID_PADDING = 12;
 const Vec2f MENU_SIZE(3, 4);
 const u32 SHOW_NO_BUILD_TIME = 90;
 
-const bool QUICK_SWAP_ENABLED = false;
-
 void onInit(CInventory@ this)
 {
 	CBlob@ blob = this.getBlob();
@@ -71,12 +69,6 @@ void onInit(CInventory@ this)
 
 	blob.set_u8("buildblob", 255);
 	blob.set_TileType("buildtile", 0);
-
-	if (QUICK_SWAP_ENABLED)
-	{
-		blob.set_u8("current block", 255); // 255 for no block
-		blob.set_u8("prev block", 255);
-	}
 
 	blob.set_u32("cant build time", 0);
 	blob.set_u32("show build time", 0);
@@ -213,7 +205,7 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 
 		CBitStream sparams;
 		sparams.write_u8(i);
-		blob.server_SendCommandToPlayer(blob.getCommandID("make block client"), sparams, callerp);
+		blob.SendCommand(blob.getCommandID("make block client"), sparams);
 
 		const u8 PAGE = blob.get_u8("build page");
 		if (blocks !is null && i >= 0 && i < blocks[PAGE].length)
