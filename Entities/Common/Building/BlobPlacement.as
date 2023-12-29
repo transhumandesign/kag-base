@@ -43,7 +43,9 @@ bool PlaceBlob(CBlob@ this, CBlob@ blob, Vec2f cursorPos, bool repairing = false
 		if (!serverBlobCheck(this, blob, cursorPos, repairing, repairBlob))
 			return false;
 
-		u32 delay = getCurrentBuildDelay(this);
+		// one day we will reach an ideal world without latency, dumb edge cases and bad netcode
+		// that day is not today
+		u32 delay = 2 * getCurrentBuildDelay(this) - 1;
 		SetBuildDelay(this, delay);
 
 		CShape@ shape = blob.getShape();

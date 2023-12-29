@@ -37,7 +37,9 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 		server_TakeRequirements(inv, bc.reqs);
 		map.server_SetTile(cursorPos, bc.tile);
 
-		u32 delay = getCurrentBuildDelay(this);
+		// one day we will reach an ideal world without latency, dumb edge cases and bad netcode
+		// that day is not today
+		u32 delay = getCurrentBuildDelay(this) - 1;
 		SetBuildDelay(this, delay);
 
 		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), bc.tile));
