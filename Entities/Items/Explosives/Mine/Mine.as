@@ -86,7 +86,6 @@ void onTick(CBlob@ this)
 				if (this.get_u8(MINE_STATE) == PRIMED) return;
 
 				this.set_u8(MINE_STATE, PRIMED);
-				this.Sync(MINE_STATE, true);
 
 				this.getShape().checkCollisionsAgain = true;
 
@@ -105,6 +104,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
 	if (cmd == this.getCommandID("mine_primed_client") && isClient())
 	{
+		this.set_u8(MINE_STATE, PRIMED);
+		
 		this.getShape().checkCollisionsAgain = true;
 
 		CSprite@ sprite = this.getSprite();
