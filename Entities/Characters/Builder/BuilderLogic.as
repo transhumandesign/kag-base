@@ -27,8 +27,13 @@ void onInit(CBlob@ this)
 	HitData hitdata;
 	this.set("hitdata", hitdata);
 
-	ServerPickaxeInfo SPI;
+	PickaxeInfo PI;
+	this.set("pi", PI);
+
+	PickaxeInfo SPI; // server
 	this.set("spi", SPI);
+
+	this.addCommandID("pickaxe");
 
 	CShape@ shape = this.getShape();
 	shape.SetRotationsAllowed(false);
@@ -62,14 +67,10 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	Pickaxe(this);
-
 	// activate/throw
 	if (ismyplayer)
 	{
-		//Pickaxe(this);
-		//Pickaxe2(this);
-
+		Pickaxe(this);
 		if (this.isKeyJustPressed(key_action3))
 		{
 			CBlob@ carried = this.getCarriedBlob();
@@ -134,7 +135,7 @@ class SortHitsParams
 
 //helper class to reduce function definition cancer
 //and allow passing primitives &inout
-class ServerPickaxeInfo
+class PickaxeInfo
 {
 	u32 pickaxe_timer;
 	u32 last_pickaxed;
@@ -146,11 +147,11 @@ void Pickaxe(CBlob@ this)
 	HitData@ hitdata;
 	this.get("hitdata", @hitdata);
 
-	ServerPickaxeInfo@ SPI;
-	if (!this.get("spi", @SPI)) return;
+	PickaxeInfo@ PI;
+	if (!this.get("pi", @PI)) return;
 
 	// magic number :D
-	if (getGameTime() - SPI.last_pickaxed >= 24 && isClient())
+	if (getGameTime() - PI.last_pickaxed >= 12 && isClient())
 	{
 		this.get("hitdata", @hitdata);
 		hitdata.blobID = 0;
@@ -158,28 +159,28 @@ void Pickaxe(CBlob@ this)
 	}
 
 	u8 delay = delay_between_hit;
-	if (SPI.last_hit_structure) delay = delay_between_hit_structure;
+	if (PI.last_hit_structure) delay = delay_between_hit_structure;
 
-	if (SPI.pickaxe_timer >= delay)
+	if (PI.pickaxe_timer >= delay)
 	{
-		SPI.pickaxe_timer = 0;
+		PI.pickaxe_timer = 0;
 	}
 
 	bool just_pressed = false;
-	if (this.isKeyPressed(key_action2) && SPI.pickaxe_timer == 0)
+	if (this.isKeyPressed(key_action2) && PI.pickaxe_timer == 0)
 	{
 		just_pressed = true;
-		SPI.pickaxe_timer++;
+		PI.pickaxe_timer++;
 	}
 
-	if (SPI.pickaxe_timer == 0) return;
+	if (PI.pickaxe_timer == 0) return;
 
-	if (SPI.pickaxe_timer > 0 && !just_pressed)
+	if (PI.pickaxe_timer > 0 && !just_pressed)
 	{
-		SPI.pickaxe_timer++;
+		PI.pickaxe_timer++;
 	}
 
-	bool justCheck = SPI.pickaxe_timer == 5;
+	bool justCheck = PI.pickaxe_timer == 5;
 	if (!justCheck) return;
 
 	// we can only hit blocks with pickaxe on 5th tick of hitting, every 10/12 ticks
@@ -320,18 +321,17 @@ void Pickaxe(CBlob@ this)
 
 	if (hitdata.blobID == 0)
 	{
+		CBitStream params;
+		params.write_u16(0);
+		params.write_Vec2f(hitdata.tilepos);
+		this.SendCommand(this.getCommandID("pickaxe"), params);
+
 		TileType t = getMap().getTile(hitdata.tilepos).type;
 		if (t != CMap::tile_empty && t != CMap::tile_ground_back)
 		{
 			uint16 type = map.getTile(hitdata.tilepos).type;
 			if (!inNoBuildZone(map, hitdata.tilepos, type))
 			{
-				if (isServer())
-				{
-					map.server_DestroyTile(tilepos, 1.0f, this);
-					Material::fromTile(this, type, 1.0f);
-				}
-
 				// for smaller delay
 				if (map.isTileWood(type) || // wood tile
 					(type >= CMap::tile_wood_back && type <= 207) || // wood backwall
@@ -343,13 +343,10 @@ void Pickaxe(CBlob@ this)
 				}
 			}
 
-			if (isClient())
+			if (map.isTileBedrock(type))
 			{
-				if (map.isTileBedrock(type))
-				{
-					this.getSprite().PlaySound("/metal_stone.ogg");
-					sparks(tilepos, attackVel.Angle(), 1.0f);
-				}
+				this.getSprite().PlaySound("/metal_stone.ogg");
+				sparks(tilepos, attackVel.Angle(), 1.0f);
 			}
 		}
 	}
@@ -358,22 +355,10 @@ void Pickaxe(CBlob@ this)
 		CBlob@ b = getBlobByNetworkID(hitdata.blobID);
 		if (b !is null)
 		{
-			bool isdead = b.hasTag("dead");
-
-			f32 attack_power = hit_damage;
-
-			if (isdead) //double damage to corpses
-			{
-				attack_power *= 2.0f;
-			}
-
-			const bool teamHurt = !b.hasTag("flesh") || isdead;
-
-			if (isServer())
-			{
-				this.server_Hit(b, tilepos, attackVel, attack_power, Hitters::builder, teamHurt);
-				Material::fromBlob(this, b, attack_power);
-			}
+			CBitStream params;
+			params.write_u16(hitdata.blobID);
+			params.write_Vec2f(hitdata.tilepos);
+			this.SendCommand(this.getCommandID("pickaxe"), params);
 
 			// for smaller delay
 			string attacked_name = b.getName();
@@ -389,8 +374,8 @@ void Pickaxe(CBlob@ this)
 		}
 	}
 
-	SPI.last_hit_structure = hitting_structure;
-	SPI.last_pickaxed = getGameTime();
+	PI.last_hit_structure = hitting_structure;
+	PI.last_pickaxed = getGameTime();
 }
 
 void SortHits(CBlob@ this, HitInfo@[]@ hitInfos, f32 damage, SortHitsParams@ p)
@@ -532,6 +517,111 @@ bool canHit(CBlob@ this, CBlob@ b, Vec2f tpos, bool extra = true)
 	}
 
 	return true;
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("pickaxe") && isServer())
+	{
+		PickaxeInfo@ SPI;
+		if (!this.get("spi", @SPI)) return;
+
+		u8 delay = delay_between_hit;
+		if (SPI.last_hit_structure) delay = delay_between_hit_structure;
+
+		if (getGameTime() - SPI.last_pickaxed < (delay - 1)) // too early. 1 tick of leeway for the laggers, but a hit-queuing system would be safer :/
+		{
+			return;
+		}
+
+		u16 blobID;
+		Vec2f tilepos;
+
+		if (!params.saferead_u16(blobID)) return;
+		if (!params.saferead_Vec2f(tilepos)) return;
+
+		Vec2f blobPos = this.getPosition();
+		Vec2f aimPos = this.getAimPos();
+		Vec2f attackVel = aimPos - blobPos;
+
+		attackVel.Normalize();
+
+		bool hitting_structure = false;
+
+		if (blobID == 0)
+		{
+			CMap@ map = getMap();
+			TileType t = map.getTile(tilepos).type;
+			if (t != CMap::tile_empty && t != CMap::tile_ground_back)
+			{
+				// 5 blocks range check
+				Vec2f tsp = map.getTileSpacePosition(tilepos);
+				Vec2f wsp = map.getTileWorldPosition(tsp);
+				wsp += Vec2f(4, 4); // get center of block
+				f32 distance = Vec2f(blobPos - wsp).Length();
+				if (distance > 40.0f) return;
+
+				uint16 type = map.getTile(tilepos).type;
+				if (!inNoBuildZone(map, tilepos, type))
+				{
+					map.server_DestroyTile(tilepos, 1.0f, this);
+					Material::fromTile(this, type, 1.0f);
+				}
+
+				// for smaller delay
+				if (map.isTileWood(type) || // wood tile
+					(type >= CMap::tile_wood_back && type <= 207) || // wood backwall
+					map.isTileCastle(type) || // castle block
+					(type >= CMap::tile_castle_back && type <= 79) || // castle backwall
+					 type == CMap::tile_castle_back_moss) // castle mossbackwall
+				{
+					hitting_structure = true;
+				}
+			}
+		}
+		else
+		{
+			CBlob@ b = getBlobByNetworkID(blobID);
+			if (b !is null)
+			{
+				// 4 blocks range check
+				f32 distance = this.getDistanceTo(b);
+				if (distance > 32.0f) return;
+
+				bool isdead = b.hasTag("dead");
+
+				f32 attack_power = hit_damage;
+
+				if (isdead) //double damage to corpses
+				{
+					attack_power *= 2.0f;
+				}
+
+				const bool teamHurt = !b.hasTag("flesh") || isdead;
+
+				if (isServer())
+				{
+					this.server_Hit(b, tilepos, attackVel, attack_power, Hitters::builder, teamHurt);
+					Material::fromBlob(this, b, attack_power);
+				}
+
+				// for smaller delay
+				string attacked_name = b.getName();
+				if (attacked_name == "bridge" ||
+					attacked_name == "wooden_platform" ||
+					b.hasTag("door") ||
+					attacked_name == "ladder" ||
+					attacked_name == "spikes"
+					)
+				{
+					hitting_structure = true;
+				}
+			}
+		}
+
+		SPI.last_hit_structure = hitting_structure;
+		SPI.last_pickaxed = getGameTime();
+	}
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
