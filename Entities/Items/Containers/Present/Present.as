@@ -3,8 +3,15 @@
 #include "LootCommon.as";
 #include "GenericButtonCommon.as";
 
+void onInit(CSprite@ this)
+{
+	this.ReloadSprites(XORRandom(8), 0);
+}
+
 void onInit(CBlob@ this)
 {
+	this.Tag("ignore_saw");
+	this.Tag("ignore fall");
 	this.Tag("medium weight");
 
 	AddIconToken("$chest_open$", "InteractionIcons.png", Vec2f(32, 32), 20);
