@@ -583,6 +583,5 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
 	detached.Untag("picked");
 	detached.Sync("picked", true);
-    
 	this.set_bool("no target", true);
 }
