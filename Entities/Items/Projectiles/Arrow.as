@@ -372,7 +372,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	//collide with saw only when arrow isn't normal type
 	if (blob.getName() == "saw" && this.get_u8("arrow type") != ArrowType::normal)
 	{
-		return true
+		return true;
 	}
 
 	//anything to always hit
