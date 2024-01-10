@@ -240,9 +240,7 @@ void onTick(CBlob@ this)
             if (targetAttached && pickedPlayerBlob !is null)
             {
                 this.server_DetachAll();
-                pickedPlayerBlob.Untag("picked");
                 pickRandTargetPos(this);
-
             }
 
             return;
