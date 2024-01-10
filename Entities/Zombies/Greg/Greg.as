@@ -215,8 +215,6 @@ void onTick(CBlob@ this)
             if (pickedPlayerBlob.get_s32("pickup time") + hold_time < getGameTime())
             {
                 this.server_DetachAll();
-                pickedPlayerBlob.Untag("picked");
-                pickedPlayerBlob.Sync("picked", true);
             }
         }
 
@@ -243,7 +241,6 @@ void onTick(CBlob@ this)
             {
                 this.server_DetachAll();
                 pickedPlayerBlob.Untag("picked");
-                pickedPlayerBlob.Sync("picked", true);
                 pickRandTargetPos(this);
 
             }
@@ -259,8 +256,6 @@ void onTick(CBlob@ this)
             if (targetAttached && pickedPlayerBlob !is null)
             {
                 this.server_DetachAll();
-                pickedPlayerBlob.Untag("picked");
-                pickedPlayerBlob.Sync("picked", true);
 
             }
 
@@ -387,9 +382,6 @@ void onTick(CBlob@ this)
                             //this.Chat("i lied.");
                         }
 
-                        pickedPlayerBlob.Untag("picked");
-                        pickedPlayerBlob.Sync("picked", true);
-
                         set_emote(this, "troll");
 
                     }
@@ -398,7 +390,6 @@ void onTick(CBlob@ this)
                     {
                         //detach and add some velocity so they hopefully die.
                         this.server_DetachAll();
-                        this.set_bool("no target", true);
                         //target.setVelocity(Vec2f(0, 8.0f));
 
                     }
@@ -431,8 +422,6 @@ void onTick(CBlob@ this)
             {
                 //detach and add some velocity so they hopefully die.
                 this.server_DetachAll();
-                pickedPlayerBlob.Untag("picked");
-                this.set_bool("no target", true);
                 target.setVelocity(Vec2f(0, 4.0f));
 
             }
@@ -493,12 +482,11 @@ void onDie( CBlob@ this )
     }
 }
 
-void onCollision( CBlob@ this, CBlob@ blob, bool solid )
+void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
     if (isKnocked(this) || blob is null)
     {
         return;
-
     }
 
     /*if (this.hasTag("statue"))
@@ -518,6 +506,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
     }*/
 
     CBlob@ target = getTarget(this);
+	
     if (target is blob && !target.hasTag("picked"))
     {
         target.Tag("picked");
@@ -590,5 +579,12 @@ f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hit
 bool doesCollideWithBlob( CBlob@ this, CBlob@ blob )
 {
     return blob.getName() != "greg";
+}
 
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+{
+	detached.Untag("picked");
+	detached.Sync("picked", true);
+    
+	this.set_bool("no target", true);
 }
