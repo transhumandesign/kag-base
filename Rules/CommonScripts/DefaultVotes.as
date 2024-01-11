@@ -300,22 +300,9 @@ class VoteSurrenderFunctor : VoteFunctor
 				CTeam@ teamLost = rules.getTeam(team);
 				CTeam@ teamWon = rules.getTeam(teamWonNum);
 
-				// add winning team coins
-				if (rules.isMatchRunning())
-				{
-					CBlob@[] players;
-					getBlobsByTag("player", @players);
-					for (uint i = 0; i < players.length; i++)
-					{
-						CPlayer@ player = players[i].getPlayer();
-						if (player !is null && players[i].getTeamNum() == teamWonNum)
-						{
-							player.server_setCoins(player.getCoins() + 150);
-						}
-					}
-				}
 				
-				rules.SetTeamWon(teamWonNum);	//game over!
+				rules.set_s32("surrender reward", teamWonNum);	//give winning team coins in CTF.as and TDM.as
+				rules.SetTeamWon(teamWonNum);					//game over!
 				rules.SetCurrentState(GAME_OVER);
 
 				rules.SetGlobalMessage("{LOSING_TEAM} Surrendered! {WINNING_TEAM} wins the Game!");
