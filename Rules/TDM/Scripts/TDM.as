@@ -693,7 +693,7 @@ shared class TDMCore : RulesCore
 	}
 	
 	void GiveWinTeamCoins(s32 winning_team)
-	{	print("a");
+	{
 		CBlob@[] players;
 		getBlobsByTag("player", @players);
 		for (uint i = 0; i < players.length; i++)
