@@ -426,7 +426,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			just_action1 = true;
 		}
 
-		if ((just_action1 || this.wasKeyPressed(key_action2) && !pressed_action2) &&
+		if ((just_action1 || this.wasKeyPressed(key_action2) || this.hasTag("redo charge") && !pressed_action2) &&
 		        (charge_state == ArcherParams::not_aiming || charge_state == ArcherParams::fired || charge_state == ArcherParams::stabbing))
 		{
 			charge_state = ArcherParams::readying;
@@ -536,6 +536,12 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 			{
 				charge_time++;
 			}
+		}
+		else
+		{
+			charge_state = ArcherParams::not_aiming;
+			charge_time = 0;
+			this.Tag("redo charge");
 		}
 	}
 	else
