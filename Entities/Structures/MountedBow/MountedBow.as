@@ -19,9 +19,6 @@ class MountedBowInfo : VehicleInfo
 
 			// set much higher drag than archer arrow
 			bullet.getShape().setDrag(bullet.getShape().getDrag() * 2.0f);
-
-			bullet.server_SetTimeToDie(-1);   // override lock
-			bullet.server_SetTimeToDie(0.69f);
 			bullet.Tag("bow arrow");
 		}
 	}
@@ -191,4 +188,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	{
 		TryToAttachVehicle(this, blob);
 	}
+}
+
+bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+{
+	if (this.isAttached() || this.hasAttached() || this.hasTag("unpickable"))	{ return false; }
+	
+	return true;
 }
