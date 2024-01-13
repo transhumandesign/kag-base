@@ -20,7 +20,7 @@ void onInit(CBlob@ this)
 	Activate@ activation_handle = @onActivate;
 	this.set("activate handle", @activation_handle);
 
-	Activate@ @deactivation_handle = @onDeactivate;
+	Activate@ deactivation_handle = @onDeactivate;
 	this.set("deactivate handle", @deactivation_handle);
 
 	this.addCommandID("activate client");
