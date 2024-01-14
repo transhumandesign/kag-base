@@ -8,6 +8,7 @@
 #include "Hitters.as"
 #include "GenericButtonCommon.as"
 #include "KnockedCommon.as"
+#include "ActivationThrowCommon.as"
 
 // crate tags and their uses
 
@@ -38,11 +39,16 @@ void onInit(CBlob@ this)
 {
 	this.checkInventoryAccessibleCarefully = true;
 
+	this.Tag("activatable");
+
 	this.addCommandID("unpack");
 	this.addCommandID("getin");
 	this.addCommandID("getout");
 	this.addCommandID("stop unpack");
 	this.addCommandID("boobytrap");
+
+	Activate@ func = @onActivate;
+	this.set("activate handle", @func);
 
 	const string packed = this.exists("packed") ? this.get_string("packed") : "";
 	if (!packed.isEmpty())
@@ -339,6 +345,25 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	}
 }
 
+void onActivate(CBitStream@ params)
+{
+	if (!isServer()) return;
+
+	u16 this_id;
+	if (!params.saferead_u16(this_id)) return;
+
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+		
+	u16 caller_id;
+	if (!params.saferead_u16(caller_id)) return;
+
+	CBlob@ caller = getBlobByNetworkID(caller_id);
+	if (caller is null) return;
+
+	DumpOutItems(this, 5.0f, caller.getVelocity(), false);
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("unpack"))
@@ -442,14 +467,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			mine.setVelocity(Vec2f((caller.getPosition().x - mine.getPosition().x) / 30.0f, -5.0f));
 			mine.set_u8("mine_timer", 255);
 			mine.SendCommand(mine.getCommandID("mine_primed"));
-		}
-	}
-	else if (cmd == this.getCommandID("activate"))
-	{
-		CBlob@ carrier = this.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();
-		if (carrier !is null)
-		{
-			DumpOutItems(this, 5.0f, carrier.getVelocity(), false);
 		}
 	}
 }

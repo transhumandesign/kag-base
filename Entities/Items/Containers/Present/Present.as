@@ -5,6 +5,9 @@
 
 void onInit(CBlob@ this)
 {
+	this.Tag("activatable");
+	this.addCommandID("activate");
+
 	this.Tag("medium weight");
 
 	AddIconToken("$chest_open$", "InteractionIcons.png", Vec2f(32, 32), 20);

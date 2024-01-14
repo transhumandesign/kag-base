@@ -1,6 +1,6 @@
 // Blob can place blocks on grid
 
-#include "ThrowCommon.as";
+#include "ActivationThrowCommon.as"
 #include "PlacementCommon.as";
 #include "BuildBlock.as";
 #include "CheckSpam.as";

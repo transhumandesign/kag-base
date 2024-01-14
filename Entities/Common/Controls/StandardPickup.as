@@ -2,7 +2,7 @@
 // add to blob and sprite
 
 #include "StandardControlsCommon.as"
-#include "ThrowCommon.as"
+#include "ActivationThrowCommon.as"
 #include "WheelMenuCommon.as"
 #include "KnockedCommon.as"
 
