@@ -97,6 +97,10 @@ void onInit(CBlob@ this)
 	this.Tag("flesh");
 
 	this.getShape().SetOffset(Vec2f(0, 6));
+	
+	this.getCurrentScript().runProximityRadius = 320.0f;
+	this.getCurrentScript().runProximityTag = "player";
+	this.getCurrentScript().runProximityRadius = 320.0f;
 
 	// attachment
 
@@ -128,18 +132,12 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onTick(CBlob@ this)
 {
-	CMap@ map 		= getMap();
-	Vec2f position 	= this.getPosition();
-
-	// only tick if player nearby
-	if (!map.isBlobWithTagInRadius("player", position, 320.0f))
-	{
-		return;
-	}
-	
 	// fry it after it's been in fire
 	if (isServer())
 	{
+		CMap@ map 		= getMap();
+		Vec2f position 	= this.getPosition();
+	
 		u16 fire_duration = this.get_u16("fire duration");
 		
 		if (map.isInFire(position))
