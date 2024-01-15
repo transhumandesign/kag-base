@@ -338,6 +338,8 @@ void SetStatic(CBlob@ this, const f32 angle)
 	this.setVelocity(Vec2f_zero);
 	this.setPosition(position);
 	this.getShape().SetStatic(true);
+	
+	this.getShape().getVars().isladder = true;
 
 	//this.getCurrentScript().runFlags |= Script::remove_after_this;
 }
@@ -357,6 +359,8 @@ void SetNonStatic(CBlob@ this)
 	
 	this.setVelocity(Vec2f_zero);
 	this.getShape().SetStatic(false);
+	
+	this.getShape().getVars().isladder = false;
 
 	//this.getCurrentScript().runFlags |= Script::remove_after_this;
 }
