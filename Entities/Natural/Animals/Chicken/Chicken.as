@@ -2,11 +2,16 @@
 //script for a chicken
 
 #include "AnimalConsts.as";
+#include "MakeFood.as";
+#include "ProductionCommon.as";
+#include "ArcherCommon.as";
 
 const u8 DEFAULT_PERSONALITY = SCARED_BIT;
-const int MAX_EGGS = 2; //maximum symultaneous eggs
+const int MAX_EGGS = 2; //maximum simultaneous eggs
 const int MAX_CHICKENS = 6;
 const f32 CHICKEN_LIMIT_RADIUS = 120.0f;
+const string cookedName = "Fried Chicken";
+const u8 cookAfterInFireTicks = 50;
 
 int g_lastSoundPlayedTime = 0;
 int g_layEggInterval = 0;
@@ -74,6 +79,8 @@ void onTick(CSprite@ this)
 void onInit(CBlob@ this)
 {
 	this.set_f32("bite damage", 0.25f);
+	
+	this.set_u16("fire duration", 0);
 
 	//brain
 	this.set_u8(personality_property, DEFAULT_PERSONALITY);
@@ -90,10 +97,6 @@ void onInit(CBlob@ this)
 	this.Tag("flesh");
 
 	this.getShape().SetOffset(Vec2f(0, 6));
-
-	this.getCurrentScript().runFlags |= Script::tick_blob_in_proximity;
-	this.getCurrentScript().runProximityTag = "player";
-	this.getCurrentScript().runProximityRadius = 320.0f;
 
 	// attachment
 
@@ -115,7 +118,7 @@ void onInit(CBlob@ this)
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
-	return true; //maybe make a knocked out state? for loading to cata?
+	return true;
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
@@ -125,6 +128,39 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onTick(CBlob@ this)
 {
+	CMap@ map 		= getMap();
+	Vec2f position 	= this.getPosition();
+
+	// only tick if player nearby
+	if (!map.isBlobWithTagInRadius("player", position, 320.0f))
+	{
+		return;
+	}
+	
+	// fry it after it's been in fire
+	if (isServer())
+	{
+		u16 fire_duration = this.get_u16("fire duration");
+		
+		if (map.isInFire(position))
+		{
+			fire_duration++;
+						
+			if (fire_duration >= cookAfterInFireTicks)
+			{
+				Fry(this);
+			}
+			
+			this.set_u16("fire duration", fire_duration);
+		}
+		else if (fire_duration > 0)
+		{
+			fire_duration--;
+		
+			this.set_u16("fire duration", fire_duration);
+		}
+	}
+	
 	f32 x = this.getVelocity().x;
 	if (Maths::Abs(x) > 1.0f)
 	{
@@ -226,6 +262,18 @@ void onTick(CBlob@ this)
 	}
 }
 
+f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
+{
+	if (hitterBlob.getName() == "arrow" 
+		&& hitterBlob.get_u8("arrow type") == ArrowType::fire
+		&& !this.hasTag("fried"))
+	{
+		Fry(this);
+	}
+	
+	return damage;
+}
+
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
 	if (blob is null)
@@ -235,6 +283,21 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	{
 		this.getSprite().PlaySound("/ScaredChicken");
 		g_lastSoundPlayedTime = getGameTime();
+	}
+}
+
+void Fry(CBlob@ this)
+{
+	CBlob@ food = server_MakeFood(this.getPosition(), cookedName, 7);
+	
+	this.getSprite().PlaySound("SparkleShort.ogg");
+	
+	if (food !is null)
+	{
+		this.Tag("fried");
+		this.Sync("fried", true);
+		this.server_Die();
+		food.setVelocity(this.getVelocity().opMul(0.5f));
 	}
 }
 
