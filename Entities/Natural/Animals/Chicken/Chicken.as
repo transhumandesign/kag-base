@@ -98,7 +98,7 @@ void onInit(CBlob@ this)
 
 	this.getShape().SetOffset(Vec2f(0, 6));
 	
-	this.getCurrentScript().runProximityRadius = 320.0f;
+	this.getCurrentScript().runFlags |= Script::tick_blob_in_proximity;
 	this.getCurrentScript().runProximityTag = "player";
 	this.getCurrentScript().runProximityRadius = 320.0f;
 
