@@ -60,19 +60,24 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
 {
-	if (this.exists("bloody")) return;
-
-	this.Tag("bloody");
-
-	if (g_kidssafe) return;
-
-	CSpriteLayer@ layer = this.getSprite().getSpriteLayer("blood");
-	if (layer is null) return;
-
-	layer.SetVisible(true);
+	if (hitBlob !is null 
+		&& hitBlob !is this 
+		&& damage > 0.0f)
+	{
+		this.Tag("bloody");
+		UpdateSprite(this);
+	}
 }
 
 bool canBePickedUp( CBlob@ this, CBlob@ byBlob )
 {
 	return false;
+}
+
+void UpdateSprite(CBlob@ this)
+{
+	if (isClient())
+	{
+		this.getSprite().animation.frame = this.hasTag("bloody") && !g_kidssafe ? 1 : 0;
+	}
 }

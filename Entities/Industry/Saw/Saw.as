@@ -17,6 +17,12 @@ void onInit(CBlob@ this)
 	this.addCommandID(sawteammate_id);
 
 	SetSawOn(this, true);
+	
+	CRules@ rules = getRules();
+	if (!rules.hasScript("ToggleBloodyStuff.as"))
+	{
+		rules.AddScript("ToggleBloodyStuff.as");
+	}
 }
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
@@ -305,9 +311,10 @@ void UpdateSprite(CBlob@ this)
 		}
 		
 		CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
-		if (chop !is null && this.hasTag("bloody") && !g_kidssafe)
+		if (chop !is null)
 		{
-			chop.animation.frame = 1;
+			chop.SetOffset(Vec2f());		
+			chop.animation.frame = this.hasTag("bloody") && !g_kidssafe ? 1 : 0;
 		}
 	}
 }
