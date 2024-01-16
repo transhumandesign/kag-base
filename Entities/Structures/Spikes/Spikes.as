@@ -265,8 +265,6 @@ void onTick(CBlob@ this)
 		this.set_u8(state_prop, 0);
 		this.set_u8(timer_prop, 0);
 	}
-
-	onHealthChange(this, this.getHealth());
 }
 
 bool canStab(CBlob@ b)
