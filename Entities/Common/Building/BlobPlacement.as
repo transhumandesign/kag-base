@@ -16,7 +16,7 @@ bool PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos, bool repairing = false
 			return false;
 
 		u32 delay = getCurrentBuildDelay(this);
-		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
+		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc.
 
 		CShape@ shape = blob.getShape();
 		shape.server_SetActive(true);
@@ -30,21 +30,37 @@ bool PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos, bool repairing = false
 		if (this.server_DetachFrom(blob))
 		{
 			if (repairing && repairBlob !is null)
-			{
+			{			
 				repairBlob.server_SetHealth(repairBlob.getInitialHealth());
-				getMap().server_SetTile(repairBlob.getPosition(), blob.get_TileType("background tile"));
+				
+				if (blob.exists("background tile"))
+					getMap().server_SetTile(repairBlob.getPosition(), blob.get_TileType("background tile"));
+				
 				blob.server_Die();
 			}
 			else
-			{
+			{			
 				blob.setPosition(cursorPos);
 				if (blob.isSnapToGrid())
 				{
 					shape.SetStatic(true);
 				}
+				
+				// replace if applicable
+				if (blob.exists("blob to replace") && blob.exists("has blob to replace") && blob.get_bool("has blob to replace"))
+				{
+					u16 netid = blob.get_netid("blob to replace");
+					CBlob@ blob_to_be_replaced = getBlobByNetworkID(netid);
+					if (blob_to_be_replaced !is null)
+					{
+						blob_to_be_replaced.server_Die();
+					}
+				}
 			}
+			
+			blob.set_bool("has blob to replace", false);
 		}
-
+		
 		DestroyScenary(cursorPos, cursorPos);
 
 		return true;
@@ -90,10 +106,30 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repa
 			return false;
 	}
 
-	// Are we trying to place a blob on a door/ladder/platform/bridge (usually due to lag)?
-	if (fakeHasTileSolidBlobs(cursorPos) && !repairing)
+	// Are we trying to place a blob on a door/ladder/platform/bridge (usually due to lag) and aren't repairing or replacing?
+	CBlob@[] blobsAtPos;
+	map.getBlobsAtPosition(cursorPos + Vec2f(1, 1), blobsAtPos);
+
+	for (int i = 0; i < blobsAtPos.size(); i++)
 	{
-		return false;
+		CBlob@ blobAtPos = blobsAtPos[i];
+		
+		if (isRepairable(blobAtPos) && !repairing)
+		{
+			if (!blobToPlace.exists("blob to replace"))
+			{
+				return false;
+			}
+			else if (blobToPlace.exists("has blob to replace") && blobToPlace.get_bool("has blob to replace"))
+			{
+				u16 netid = blobToPlace.get_netid("blob to replace");
+				CBlob@ blob_to_be_replaced = getBlobByNetworkID(netid);
+				if (blob_to_be_replaced is null)
+				{
+					return false;
+				}
+			}
+		}
 	}
 
 	// Are we trying to repair something we aren't supposed to?
@@ -101,15 +137,11 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repa
 	{
 		// Are we trying to repair a different blob?
 		if (repairBlob.getName() != blobToPlace.getName())
-		{
 			return false;
-		}
 
 		// Are we trying to repair something at full health?
 		if (repairBlob.getHealth() == blobToPlace.getInitialHealth())
-		{
 			return false;
-		}
 	}
 
 	return true;

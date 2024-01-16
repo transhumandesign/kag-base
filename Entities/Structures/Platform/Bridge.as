@@ -5,6 +5,7 @@
 void onInit(CBlob@ this)
 {
 	this.Tag("place norotate");
+	this.Tag("repairable");
 
 	this.Tag("explosion always teamkill"); // ignore 'no teamkill' for explosives
 
