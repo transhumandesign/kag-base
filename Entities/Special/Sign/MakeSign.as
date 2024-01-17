@@ -4,7 +4,10 @@ CBlob@ createSign(Vec2f position, const string &in text)
 	if (sign !is null)
 	{
 		sign.setPosition(position);
-		sign.set_string("text", text);
+		
+		if (text.size() > 0)
+			sign.set_string("text", text);
+		
 		sign.Init();
 		sign.getShape().SetStatic(true);
 	}
