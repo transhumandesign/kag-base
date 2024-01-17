@@ -56,7 +56,6 @@ class CrateCommand : BlobCommand
 		string blobName = args[0];
 		args.removeAt(0);
 
-		//TODO: make description kids safe
 		string description = args.size() > 0 ? join(args, " ") : blobName;
 
 		if (isBlobBlacklisted(blobName, player))
@@ -87,7 +86,6 @@ class SignCommand : BlobCommand
 			return;
 		}
 
-		//TODO: make description kids safe
 		string description = join(args, " ");
 		
 		createSign(pos, description);

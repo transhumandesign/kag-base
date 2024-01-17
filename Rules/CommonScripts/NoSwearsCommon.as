@@ -64,3 +64,21 @@ bool processSwears(const string &in textIn, string &out textOut)
 	textOut = KidSafeText(textIn);
 	return true;
 }
+
+bool InitSwearsArray()
+{
+	ConfigFile cfg;
+
+	if (!cfg.loadFile("Base/Rules/CommonScripts/Swears.cfg") ||
+		!cfg.readIntoArray_string(word_replacements, "replacements"))
+	{
+		warning("Could not read chat filter configuration from Swears.cfg");
+	}
+
+	if (word_replacements.length % 2 != 0)
+	{
+		warning("Could not read chat filter configuration: Expected 'swear; replacement;' pairs, got " + word_replacements.length + " strings");
+	}
+	
+	return true;
+}

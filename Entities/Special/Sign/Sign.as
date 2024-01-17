@@ -29,24 +29,9 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getSprite().SetZ(-10.0f);
 	
-	// swears
+	// swears-related
 	if (!swearsReadIntoArray)
-	{
-		ConfigFile cfg;
-
-		if (!cfg.loadFile("Base/Rules/CommonScripts/Swears.cfg") ||
-			!cfg.readIntoArray_string(word_replacements, "replacements"))
-		{
-			warning("Could not read chat filter configuration from Swears.cfg");
-		}
-
-		if (word_replacements.length % 2 != 0)
-		{
-			warning("Could not read chat filter configuration: Expected 'swear; replacement;' pairs, got " + word_replacements.length + " strings");
-		}
-		
-		swearsReadIntoArray = true;
-	}
+		swearsReadIntoArray = InitSwearsArray();
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
@@ -70,7 +55,7 @@ void onRender(CSprite@ this)
 	    ((localBlob.getPosition() - blob.getPosition()).Length() < 0.5f * (localBlob.getRadius() + blob.getRadius())) &&
 	    (!getHUD().hasButtons()))
 	{
-		// draw drop time progress bar
+		// positioning of text
 		int top = pos2d.y - 2.5f * blob.getHeight() + 000.0f;
 		int left = 200.0f;
 		int margin = 4;
