@@ -25,10 +25,6 @@ void onInit(CBlob@ this)
 	// Fix TDM map trampolines (I'm assuming these have "no pickup")
 	if (this.getTeamNum() == 255)
 	{
-		Animation@ anim = this.getSprite().getAnimation("default");
-		anim.AddFrame(5);
-		anim.RemoveFrame(0);
-
 		Vec2f[] shape;
 		shape.push_back(Vec2f(0, 0));
 		shape.push_back(Vec2f(23, 0));
@@ -36,6 +32,10 @@ void onInit(CBlob@ this)
 		shape.push_back(Vec2f(0, 7));
 		// this.getShape().SetShape(shape); // immediately crashes
 		this.getShape().AddShape(shape);
+	}
+	else // No need to wait a tick and setup feet
+	{
+		this.getCurrentScript().runFlags |= Script::tick_attached;
 	}
 
 	this.Tag("no falldamage");
@@ -50,8 +50,6 @@ void onInit(CBlob@ this)
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 	point.SetKeysToTake(key_action1 | key_action2 | key_action3);
 
-	this.getCurrentScript().runFlags |= Script::tick_attached;
-
 	if (this.hasTag("tramp_freeze"))
 	{
 		ShowMeYourFeet(this, this.get_f32("old_angle"), true);
@@ -60,6 +58,13 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	// Map trampoline setup
+	if (this.getTeamNum() == 255 && this.getCurrentScript().runFlags & Script::tick_attached == 0) // && this.getTickSinceCreated() > 2)
+	{
+		ShowMeYourFeet(this, 180.0f);
+		this.getCurrentScript().runFlags |= Script::tick_attached;
+	}
+
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 
 	CBlob@ holder = point.getOccupied();
@@ -218,6 +223,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 // for help text
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
+	if (this.getTeamNum() == 255)
+	{
+		RemoveFeet(this);
+	}
 	if (!attached.isMyPlayer()) return;
 
 	SetHelp(attached, "trampoline help lmb", "", getTranslatedString("$trampoline$ Lock to 45° steps  $KEY_HOLD$$LMB$"), "", 3, true);
@@ -235,7 +244,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if (isExplosionHitter(customData) && !this.isAttached())
+	if (isExplosionHitter(customData) && !this.isAttached() && this.getTeamNum() != 255)
 	{
 		RemoveFeet(this);
 
