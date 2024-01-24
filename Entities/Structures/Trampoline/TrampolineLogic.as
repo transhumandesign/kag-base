@@ -222,6 +222,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 	SetHelp(attached, "trampoline help lmb", "", getTranslatedString("$trampoline$ Lock to 45° steps  $KEY_HOLD$$LMB$"), "", 3, true);
 	SetHelp(attached, "trampoline help rmb", "", getTranslatedString("$trampoline$ Lock current angle  $KEY_HOLD$$RMB$"), "", 3, true);
+	SetHelp(attached, "trampoline help space", "", getTranslatedString("$trampoline$ Add/remove feet  $KEY_TAP$$KEY_SPACE$"), "", 3, true);
 }
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
@@ -229,6 +230,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	if (!detached.isMyPlayer()) return;
 	RemoveHelps(detached, "trampoline help lmb");
 	RemoveHelps(detached, "trampoline help rmb");
+	RemoveHelps(detached, "trampoline help space");
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
