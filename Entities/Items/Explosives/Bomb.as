@@ -3,6 +3,9 @@
 #include "Hitters.as";
 #include "BombCommon.as";
 #include "ShieldCommon.as";
+#include "HolidaySprites.as";
+
+string waterbomb_file_name;
 
 const s32 bomb_fuse = 120;
 
@@ -13,6 +16,17 @@ void onInit(CBlob@ this)
 	SetupBomb(this, bomb_fuse, 48.0f, 3.0f, 24.0f, 0.4f, true);
 	//
 	this.Tag("activated"); // make it lit already and throwable
+}
+
+void onInit(CSprite@ this)
+{
+	CBlob@ blob = this.getBlob();
+
+	if (blob !is null && isAnyHoliday() && blob.getName() == "waterbomb")
+	{
+		waterbomb_file_name = getHolidayVersionFileName("WaterBomb");
+		this.ReloadSprite(waterbomb_file_name);
+	}
 }
 
 //start ugly bomb logic :)

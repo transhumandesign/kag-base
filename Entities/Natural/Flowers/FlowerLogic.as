@@ -1,6 +1,9 @@
 // Flowers logic
 
 #include "PlantGrowthCommon.as";
+#include "HolidaySprites.as";
+
+string flowers_file_name;
 
 void onInit(CBlob@ this)
 {
@@ -24,5 +27,14 @@ void onTick(CBlob@ this)
 	{
 		this.AddScript("Eatable.as");
 		this.getCurrentScript().runFlags |= Script::remove_after_this;
+	}
+}
+
+void onInit(CSprite@ this)
+{
+	if (isAnyHoliday())
+	{
+		flowers_file_name = getHolidayVersionFileName("Flowers");
+		this.ReloadSprite(flowers_file_name);
 	}
 }

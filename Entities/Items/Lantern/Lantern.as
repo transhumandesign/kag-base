@@ -1,5 +1,9 @@
 // Lantern script
 
+#include "HolidaySprites.as";
+
+string lantern_file_name;
+
 void onInit(CBlob@ this)
 {
 	this.SetLight(true);
@@ -14,6 +18,15 @@ void onInit(CBlob@ this)
 	this.set_bool("lantern lit", true); //isLight() causes problems
 
 	this.getCurrentScript().runFlags |= Script::tick_inwater;
+}
+
+void onInit(CSprite@ this)
+{
+	if (isAnyHoliday())
+	{
+		lantern_file_name = getHolidayVersionFileName("Lantern");
+		this.ReloadSprite(lantern_file_name);
+	}
 }
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)

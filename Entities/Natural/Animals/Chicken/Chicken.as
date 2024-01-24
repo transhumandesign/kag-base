@@ -2,6 +2,9 @@
 //script for a chicken
 
 #include "AnimalConsts.as";
+#include "HolidaySprites.as";
+
+string chicken_file_name;
 
 const u8 DEFAULT_PERSONALITY = SCARED_BIT;
 const int MAX_EGGS = 2; //maximum symultaneous eggs
@@ -15,8 +18,11 @@ int g_layEggInterval = 0;
 
 void onInit(CSprite@ this)
 {
-	this.ReloadSprites(0, 0); //always blue
-
+	if (isAnyHoliday())
+	{
+		chicken_file_name = getHolidayVersionFileName("Chicken");
+		this.ReloadSprite(chicken_file_name);
+	}
 }
 
 void onTick(CSprite@ this)

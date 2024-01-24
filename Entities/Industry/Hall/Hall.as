@@ -9,6 +9,9 @@
 #include "GenericButtonCommon.as"
 
 #include "Help.as"
+#include "HolidaySprites.as";
+
+string hall_file_name;
 
 const int MIGRANTS = 5;
 const int MIGRANT_COST = 100;	// these should probably be in war_vars.cfg...
@@ -41,7 +44,7 @@ void onInit(CBlob@ this)
 	this.Tag("change class store inventory");
 	this.Tag("bed"); // allow spawning in WAR
 	this.Tag("teamlocked tunnel");
-
+	
 	this.set_u8("migrants max", MIGRANTS);		   		  // how many physical migrants it needs
 
 	this.addCommandID("respawn");
@@ -80,7 +83,7 @@ void onInit(CBlob@ this)
 	}
 
 	// hall workers
-	if (getNet().isServer())
+	if (isServer())
 	{
 		HallWorkerSet s(this);
 		this.set(workers_property, s);
@@ -607,8 +610,13 @@ void onInit(CSprite@ this)
 	int team = this.getBlob().getTeamNum();
 	if (team >= 0 && team < 8) //"normal" team
 		this.animation.frame = 1;
+	
+	if (isAnyHoliday())
+	{
+		hall_file_name = getHolidayVersionFileName("Hall");
+		this.ReloadSprite(hall_file_name);
+	}
 }
-
 
 // alert and capture progress bar
 

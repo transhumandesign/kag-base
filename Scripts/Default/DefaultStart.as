@@ -1,5 +1,9 @@
 // default startup functions for autostart scripts
 
+#include "HolidaySprites.as";
+
+string world_intro_file_name;
+
 void RunServer()
 {
 	if (getNet().CreateServer())
@@ -38,7 +42,8 @@ void LoadDefaultMenuMusic()
 		if (mixer !is null)
 		{
 			mixer.ResetMixer();
-			mixer.AddTrack("Sounds/Music/world_intro.ogg", 0);
+			world_intro_file_name = getHolidayVersionFileName("world_intro", "ogg");
+			mixer.AddTrack("Sounds/Music/" + world_intro_file_name, 0);
 			mixer.PlayRandom(0);
 		}
 	}

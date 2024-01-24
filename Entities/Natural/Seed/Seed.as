@@ -1,15 +1,18 @@
 // Flowers logic
 
 #include "canGrow.as";
+#include "HolidaySprites.as";
+
+string trees_file_name, grain_file_name;
 
 //sprites to load by index
 const string[] seed_sprites =
 {
 	"Entities/Natural/Seed/Seed.png",       //normal seed
 	"Entities/Natural/Seed/Seed.png",       //grain seed
-	"Entities/Natural/Trees/Trees.png",     //pine
-	"Entities/Natural/Trees/Trees.png",     //bushy
-	"Entities/Natural/Farming/Grain.png",   //grains
+	"Entities/Natural/Trees/" + trees_file_name,     //pine
+	"Entities/Natural/Trees/" + trees_file_name,     //bushy
+	"Entities/Natural/Farming/" + grain_file_name,   //grains
 	"Entities/Natural/Seed/Seed.png",  //bush
 	"Entities/Natural/Seed/Seed.png",  //flowers
 };
@@ -30,6 +33,9 @@ const u32 OPT_TICK = 31;
 
 void onInit(CBlob@ this)
 {
+	trees_file_name = isAnyHoliday() ? getHolidayVersionFileName("Trees") : "Trees.png";
+	grain_file_name = isAnyHoliday() ? getHolidayVersionFileName("Grain") : "Grain.png";
+
 	if (this.exists("sprite index"))
 	{
 		u8 spriteIndex = this.get_u8("sprite index");
@@ -82,8 +88,8 @@ void LoadSprite(CBlob@ this, string filename, u8 spriteIndex)
 		frameWidth = 16;
 		frameHeight = 16;
 	}
-
-	sprite.ReloadSprite(filename, frameWidth, frameHeight);
+	
+	sprite.ReloadSprite(trees_file_name, frameWidth, frameHeight);
 	Animation@ anim = sprite.addAnimation("loadedSeed", 0, false);
 
 	if (anim !is null)

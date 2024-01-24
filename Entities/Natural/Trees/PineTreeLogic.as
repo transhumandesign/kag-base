@@ -1,6 +1,9 @@
 // Pine tree Logic
 
-#include "TreeSync.as"
+#include "TreeSync.as";
+#include "HolidaySprites.as";
+
+string trees_file_name;
 
 void onInit(CBlob@ this)
 {
@@ -19,9 +22,7 @@ void onInit(CBlob@ this)
 		{
 			this.set_u32("tree_rand", seed);
 			this.Sync("tree_rand", true);
-
 		}
-
 	}
 
 	this.server_setTeamNum(-1);
@@ -42,6 +43,8 @@ void onInit(CBlob@ this)
 
 	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", icon_frame, Vec2f(8, 32));
 	this.SetMinimapRenderAlways(true);
+	
+	trees_file_name = isAnyHoliday() ? getHolidayVersionFileName("Trees") : "Trees.png";
 }
 
 void GrowSprite(CSprite@ this, TreeVars@ vars)
@@ -73,7 +76,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 			if (segment.grown_times == 1)
 			{
-				CSpriteLayer@ newsegment = this.addSpriteLayer("segment " + i, "Entities/Natural/Trees/Trees.png" , 16, 16, 0, 0);
+				CSpriteLayer@ newsegment = this.addSpriteLayer("segment " + i, "Entities/Natural/Trees/" + trees_file_name , 16, 16, 0, 0);
 
 				if (newsegment !is null)
 				{
@@ -111,7 +114,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 			}
 			else if (segment.grown_times == 2 && segment.height > 2)
 			{
-				CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i, "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
+				CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i, "Entities/Natural/Trees/" + trees_file_name, 32, 32, 0, 0);
 
 				if (newsegment !is null)
 				{
@@ -144,7 +147,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 				if (i == 0) //add roots
 				{
 					f32 flipsign = 1.0f;
-					CSpriteLayer@ newsegment = this.addSpriteLayer("roots", "Entities/Natural/Trees/Trees.png" , 32, 16, 0, 0);
+					CSpriteLayer@ newsegment = this.addSpriteLayer("roots", "Entities/Natural/Trees/" + trees_file_name , 32, 16, 0, 0);
 
 					if (newsegment !is null)
 					{
@@ -162,7 +165,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 				else if (segment.height > 2 && segment.height <= vars.max_height)  //add leaves
 				{
 					bool flip = false;
-					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves side " + i, "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
+					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves side " + i, "Entities/Natural/Trees/" + trees_file_name , 32, 32, 0, 0);
 
 					if (newsegment !is null)
 					{
@@ -180,7 +183,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 					if (segment.r.NextRanged(2) == 0)
 					{
-						CSpriteLayer@ secondnewsegment = this.addSpriteLayer("leaves doubleside " + i, "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
+						CSpriteLayer@ secondnewsegment = this.addSpriteLayer("leaves doubleside " + i, "Entities/Natural/Trees/" + trees_file_name , 32, 32, 0, 0);
 
 						if (secondnewsegment !is null)
 						{

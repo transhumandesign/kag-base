@@ -1,9 +1,14 @@
 ﻿// Storage.as
 
 #include "GenericButtonCommon.as"
+#include "HolidaySprites.as"
+
+string lantern_file_name;
 
 void onInit(CSprite@ this)
 {
+	lantern_file_name = isAnyHoliday() ? getHolidayVersionFileName("Lantern") : "Lantern.png";
+
 	// Building
 	this.SetZ(-60); //-60 instead of -50 so sprite layers are behind ladders
 
@@ -77,7 +82,7 @@ void onInit(CSprite@ this)
 	}
 	
 	// Lantern
-	CSpriteLayer@ lantern = this.addSpriteLayer("lantern", "Lantern.png", 8, 8);
+	CSpriteLayer@ lantern = this.addSpriteLayer("lantern", lantern_file_name, 8, 8);
 	if (lantern !is null)
 	{
 		{

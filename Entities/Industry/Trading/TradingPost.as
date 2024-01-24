@@ -1,6 +1,9 @@
 ﻿// Trading Post
 
 #include "MakeDustParticle.as";
+#include "HolidaySprites.as";
+
+string tradermale_file_name, traderfemale_file_name, tradingpost_file_name;
 
 Random traderRandom(Time());
 
@@ -9,11 +12,14 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().mapCollisions = false;
 	this.set_Vec2f("nobuild extend", Vec2f(0.0f, 8.0f));
 	CSprite@ sprite = this.getSprite();
+	
+	tradermale_file_name 	= isAnyHoliday() ? getHolidayVersionFileName("TraderMale") : "TraderMale.png";
+	traderfemale_file_name 	= isAnyHoliday() ? getHolidayVersionFileName("TraderFemale") : "TraderFemale.png";
 
 	if (sprite !is null)
 	{
 		sprite.SetZ(-50.0f);   // push to background
-		string sex = traderRandom.NextRanged(2) == 0 ? "TraderMale.png" : "TraderFemale.png";
+		string sex = traderRandom.NextRanged(2) == 0 ? "TraderMale" + active_holiday + ".png" : "TraderFemale" + active_holiday + ".png";
 		CSpriteLayer@ trader = sprite.addSpriteLayer("trader", sex, 16, 16, 0, 0);
 		trader.SetRelativeZ(20);
 		Animation@ stop = trader.addAnimation("stop", 1, false);
@@ -30,12 +36,19 @@ void onInit(CBlob@ this)
 		this.set_bool("moving left", false);
 		this.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(5) + 5)*getTicksASecond());
 		this.set_u32("next offset", traderRandom.NextRanged(16));
-
 	}
-
+	
 	//TODO: set shop type and spawn trader based on some property
 }
 
+void onInit(CSprite@ this)
+{
+	if (isAnyHoliday())
+	{
+		tradingpost_file_name = getHolidayVersionFileName("TradingPost");
+		this.ReloadSprite(tradingpost_file_name);
+	}
+}
 
 
 //Sprite updates
@@ -59,9 +72,7 @@ void onTick(CSprite@ this)
 			Vec2f offset = trader.getOffset();
 			offset.x *= -1.0f;
 			trader.SetOffset(offset);
-
 		}
-
 	}
 	else
 	{
@@ -71,7 +82,6 @@ void onTick(CSprite@ this)
 		{
 			offset.x -= 0.5f;
 			trader.SetOffset(offset);
-
 		}
 		else if (moving_left && offset.x <= -next_offset)
 		{
@@ -80,13 +90,11 @@ void onTick(CSprite@ this)
 			blob.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(5) + 5)*getTicksASecond());
 			blob.set_u32("next offset", traderRandom.NextRanged(16));
 			trader.SetAnimation("stop");
-
 		}
 		else if (!moving_left && offset.x > -next_offset)
 		{
 			offset.x -= 0.5f;
 			trader.SetOffset(offset);
-
 		}
 		else if (!moving_left && offset.x <= -next_offset)
 		{
@@ -95,11 +103,8 @@ void onTick(CSprite@ this)
 			blob.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(5) + 5)*getTicksASecond());
 			blob.set_u32("next offset", traderRandom.NextRanged(16));
 			trader.SetAnimation("stop");
-
 		}
-
 	}
-
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
@@ -113,7 +118,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	return 0.0f;
 }
-
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {

@@ -1,7 +1,9 @@
 #include "WAR_Structs.as";
 #include "WAR_HUDCommon.as";
-
 #include "TeamColour.as";
+#include "HolidaySprites.as";
+
+string hall_file_name;
 
 //HUD serialisation done in the logic script now
 
@@ -10,9 +12,10 @@ bool tutorial = false;
 
 void onInit(CRules@ this)
 {
+	hall_file_name = isAnyHoliday() ? getHolidayVersionFileName("Hall"); : "Hall.png";
+	
 	tutorial = this.hasTag("singleplayer");
 }
-
 
 void onRender(CRules@ this)
 {
@@ -85,7 +88,7 @@ void onRender(CRules@ this)
 
 			Vec2f mycorner = upperleft + Vec2f((hall_num + 2) * 32, 16);
 
-			const string hall_image_fname = "Entities/Industry/Hall/Hall.png";
+			const string hall_image_fname = "Entities/Industry/Hall/" + hall_file_name;
 
 			GUI::DrawIcon(hall_image_fname, 48, Vec2f(16, 16), mycorner , 1.0f, hud_hall.team_num);
 

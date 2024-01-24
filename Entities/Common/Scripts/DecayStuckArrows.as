@@ -1,3 +1,12 @@
+#include "HolidaySprites.as";
+
+string gibs_file_name;
+
+void onInit(CBlob@ this)
+{
+	gibs_file_name = isAnyHoliday() ? getHolidayVersionFileName("GenericGibs") : "GenericGibs.png";
+}
+
 Random rand(Time());
 
 void onTick(CBlob@ this)
@@ -25,7 +34,7 @@ void onTick(CBlob@ this)
 					Vec2f pos = arrow.getWorldTranslation();
 					Vec2f vel = this.getVelocity();
 					makeGibParticle(
-						"GenericGibs.png", pos, vel,
+						gibs_file_name, pos, vel,
 						1, rand.NextRanged(4) + 4,
 						Vec2f(8, 8), 2.0f, 20, "/thud",
 						this.getTeamNum()

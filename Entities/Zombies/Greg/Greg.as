@@ -1,5 +1,8 @@
 #include "EmotesCommon.as"
 #include "KnockedCommon.as"
+#include "HolidaySprites.as";
+
+string gibs_file_name;
 
 Random gregRand(Time());
 
@@ -42,7 +45,6 @@ void pickRandPlayer(CBlob@ this)
         this.set_bool("no target", true);
         pickRandTargetPos(this);
         return;
-
     }
 
     u16 targetId = players[gregRand.Next()%players.size()].getNetworkID();
@@ -58,26 +60,22 @@ CBlob@ getTarget(CBlob@ this)
     if (this.get_bool("no target") || this.get_bool("use pos"))
     {
         return null;
-
     }
 
     u16 targetId = this.get_u16("targetId");
     CBlob@ target = getBlobByNetworkID(targetId);
 
     return target;
-
 }
 
 Vec2f getTargetPos(CBlob@ this)
 {
     return this.get_Vec2f("target pos");
-
 }
 
 bool useTargetPos(CBlob@ this)
 {
     return this.get_bool("use pos");
-
 }
 
 void onInit(CBlob@ this)
@@ -89,7 +87,6 @@ void onInit(CBlob@ this)
     if (sprite !is null)
     {
         sprite.SetRelativeZ(2.0f);
-
     }
 
     Sound::Play("GregCry.ogg", this.getPosition());
@@ -101,6 +98,7 @@ void onInit(CBlob@ this)
 
     this.getShape().setFriction(0.7);
 
+	gibs_file_name = isAnyHoliday() ? getHolidayVersionFileName("GenericGibs") : "GenericGibs.png";
 }
 
 void onTick(CBlob@ this)
@@ -113,7 +111,6 @@ void onTick(CBlob@ this)
             if (sprite.animation.name == "default")
             {
                 sprite.SetAnimation("statue");
-
             }
 
         }
@@ -122,11 +119,8 @@ void onTick(CBlob@ this)
             if (sprite.animation.name == "statue")
             {
                 sprite.SetAnimation("default");
-
             }
-
         }
-
     }
 
     if (this.hasTag("statue"))
@@ -166,11 +160,8 @@ void onTick(CBlob@ this)
                     this.SendCommand(this.getCommandID("unstatue"));
 
                     this.server_Hit(this, this.getPosition(), Vec2f(1, 1), 1.0f, 0);
-
                 }
-
             }
-
         }
 
         return;
@@ -186,13 +177,12 @@ void onTick(CBlob@ this)
 
         bool faceLeft = (vel.x > 0);
         this.SetFacingLeft(faceLeft);
-
     }
 
     //do knocking logic
     DoKnockedUpdate(this);
 
-    if (getNet().isServer())
+    if (isServer())
     {
 
         CBlob@ target = getTarget(this);
@@ -227,14 +217,11 @@ void onTick(CBlob@ this)
             if (usepos && elapsed > 30*10)
             {
                 pickRandPlayer(this);
-
             }
             else if (target !is null && elapsed > 30*30) //go after player for a long time
             {
                 pickRandTargetPos(this);
-
             }
-
         }
 
         if (isKnocked(this))
@@ -245,11 +232,9 @@ void onTick(CBlob@ this)
                 pickedPlayerBlob.Untag("picked");
                 pickedPlayerBlob.Sync("picked", true);
                 pickRandTargetPos(this);
-
             }
 
             return;
-
         }
 
         //if on fire drop target
@@ -261,11 +246,9 @@ void onTick(CBlob@ this)
                 this.server_DetachAll();
                 pickedPlayerBlob.Untag("picked");
                 pickedPlayerBlob.Sync("picked", true);
-
             }
 
            pickRandTargetPos(this);
-
         }
 
         Vec2f vel = this.getVelocity();
@@ -275,7 +258,6 @@ void onTick(CBlob@ this)
         {
             bool faceLeft = (vel.x > 0);
             this.SetFacingLeft(faceLeft);
-
         }
 
         if (targetAttached)
@@ -304,11 +286,8 @@ void onTick(CBlob@ this)
                 {
                     //this.SendCommand(this.getCommandID("legomyego"));
                     this.set_u16("struggle count", 0);
-
                 }
-
             }
-
         }
 
         Vec2f targetPos = usepos ? targetP : target.getPosition();
@@ -316,7 +295,6 @@ void onTick(CBlob@ this)
         if (!usepos) //hack so gregs don't have to fly low
         {
             targetPos.y = 45;
-
         }
 
         bool targetAbove = targetPos.y < this.getPosition().y;
@@ -333,17 +311,14 @@ void onTick(CBlob@ this)
             if (targetAttached || targetAbove)
             {
                 force += 35.0f;
-
             }
 
             this.AddForce(Vec2f(0, -force));
-
         }
         else if (this.isOnGround()) //get off the ground
         {
             this.setVelocity(Vec2f(vel.x, 0.0f));
             this.AddForce(Vec2f(0, -70.0f));
-
         }
 
         Vec2f gregPos = this.getPosition();
@@ -353,7 +328,6 @@ void onTick(CBlob@ this)
         if (usepos && dif.Length() < 25.0f)
         {
             pickRandPlayer(this);
-
         }
 
         if (getNet().isServer() && target !is null)
@@ -391,7 +365,6 @@ void onTick(CBlob@ this)
                         pickedPlayerBlob.Sync("picked", true);
 
                         set_emote(this, "troll");
-
                     }
 
                     if (distToGround > 260.0f)
@@ -400,7 +373,6 @@ void onTick(CBlob@ this)
                         this.server_DetachAll();
                         this.set_bool("no target", true);
                         //target.setVelocity(Vec2f(0, 8.0f));
-
                     }
                 }
             }
@@ -424,7 +396,6 @@ void onTick(CBlob@ this)
                 pickedPlayerBlob.Sync("picked", true);
 
                 set_emote(this, "troll");
-
             }
 
             if (distToGround > 260.0f)
@@ -434,9 +405,7 @@ void onTick(CBlob@ this)
                 pickedPlayerBlob.Untag("picked");
                 this.set_bool("no target", true);
                 target.setVelocity(Vec2f(0, 4.0f));
-
             }
-
         }
 
         f32 absVelx = Maths::Abs(vel.x);
@@ -460,7 +429,6 @@ void onTick(CBlob@ this)
                 if (vel.x > 0)
                 {
                     this.AddForce(Vec2f(-40.0f*stopping, 0));
-
                 }
 
             }
@@ -471,16 +439,10 @@ void onTick(CBlob@ this)
                 if (vel.x < 0)
                 {
                     this.AddForce(Vec2f(40.0f*stopping, 0));
-
                 }
-
-
             }
-
         }
-
     }
-
 }
 
 void onDie( CBlob@ this )
@@ -498,7 +460,6 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
     if (isKnocked(this) || blob is null)
     {
         return;
-
     }
 
     /*if (this.hasTag("statue"))
@@ -510,11 +471,8 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
                 this.server_Hit(blob, blob.getPosition(), Vec2f(1, 1), 500.0f, 0);
                 if (gregRand.Next()%3 == 0)
                     set_emote(this, "troll");
-
             }
-
         }
-
     }*/
 
     CBlob@ target = getTarget(this);
@@ -543,9 +501,7 @@ void onCollision( CBlob@ this, CBlob@ blob, bool solid )
 
         //make player play the stunned sound
         blob.getSprite().PlaySound("Stun.ogg", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
-
     }
-
 }
 
 void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
@@ -555,7 +511,6 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
         this.server_DetachAll();
         this.set_bool("no target", true);
         set_emote(this, "mad");
-
     }*/
 
     if (cmd == this.getCommandID("dropstatue") && getNet().isClient())
@@ -563,14 +518,11 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
         set_emote(this, "mad");
         this.Tag("statue");
         //this.setVelocity(Vec2f_zero);
-
     }
     else if (cmd == this.getCommandID("unstatue") && getNet().isClient())
     {
         this.Untag("statue");
-
     }
-
 }
 
 f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData )
@@ -580,15 +532,13 @@ f32 onHit( CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hit
         this.getSprite().PlaySound("dig_stone", Maths::Min(1.25f, Maths::Max(0.5f, damage)));
     }
 
-    makeGibParticle("GenericGibs", worldPoint, getRandomVelocity((this.getPosition() - worldPoint).getAngle(), 1.0f + damage, 90.0f) + Vec2f(0.0f, -2.0f),
+    makeGibParticle(gibs_file_name, worldPoint, getRandomVelocity((this.getPosition() - worldPoint).getAngle(), 1.0f + damage, 90.0f) + Vec2f(0.0f, -2.0f),
         2, 4 + XORRandom(4), Vec2f(8, 8), 2.0f, 0, "", 0);
 
     return damage;
-
 }
 
 bool doesCollideWithBlob( CBlob@ this, CBlob@ blob )
 {
     return blob.getName() != "greg";
-
 }

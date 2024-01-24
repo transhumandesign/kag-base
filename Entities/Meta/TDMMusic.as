@@ -2,6 +2,12 @@
 
 #define CLIENT_ONLY
 
+#include "HolidaySprites.as";
+
+string 	KAGWorld1_1a_file_name, KAGWorld1_2a_file_name, KAGWorld1_3a_file_name, KAGWorld1_4a_file_name, KAGWorld1_5a_file_name, KAGWorld1_6a_file_name, 
+		KAGWorld1_7a_file_name, KAGWorld1_8a_file_name, KAGWorld1_9a_file_name, KAGWorld1_10a_file_name, KAGWorld1_11a_file_name, KAGWorld1_12a_file_name, 
+		KAGWorld1_13_file_name, KAGWorld1_14_file_name;
+
 enum GameMusicTags
 {
 	world_intro,
@@ -51,21 +57,37 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 
 	this.set_bool("initialized game", true);
 	mixer.ResetMixer();
+	
+	KAGWorld1_1a_file_name = getHolidayVersionFileName("KAGWorld1-1a", "ogg");
+	KAGWorld1_2a_file_name = getHolidayVersionFileName("KAGWorld1-2a", "ogg");
+	KAGWorld1_3a_file_name = getHolidayVersionFileName("KAGWorld1-3a", "ogg");
+	KAGWorld1_4a_file_name = getHolidayVersionFileName("KAGWorld1-4a", "ogg");
+	KAGWorld1_5a_file_name = getHolidayVersionFileName("KAGWorld1-5a", "ogg");
+	KAGWorld1_6a_file_name = getHolidayVersionFileName("KAGWorld1-6a", "ogg");	
+	KAGWorld1_7a_file_name = getHolidayVersionFileName("KAGWorld1-7a", "ogg");
+	KAGWorld1_8a_file_name = getHolidayVersionFileName("KAGWorld1-8a", "ogg");
+	KAGWorld1_9a_file_name = getHolidayVersionFileName("KAGWorld1-9a", "ogg");
+	KAGWorld1_10a_file_name = getHolidayVersionFileName("KAGWorld1-10a", "ogg");
+	KAGWorld1_11a_file_name = getHolidayVersionFileName("KAGWorld1-11a", "ogg");
+	KAGWorld1_12a_file_name = getHolidayVersionFileName("KAGWorld1-12a", "ogg");
+	KAGWorld1_13_file_name = isChristmas() ? "KAGWorld1-13Christmas.ogg" : "KAGWorld1-13+Intro.ogg";
+	KAGWorld1_14_file_name = getHolidayVersionFileName("KAGWorld1-14", "ogg");
+	
 	mixer.AddTrack("Sounds/Music/KAGWorldIntroShortA.ogg", world_intro);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-1a.ogg", world_home);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-2a.ogg", world_home);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-3a.ogg", world_home);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-4a.ogg", world_home);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-5a.ogg", world_calm);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-6a.ogg", world_calm);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-7a.ogg", world_calm);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-8a.ogg", world_calm);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-9a.ogg", world_home);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-10a.ogg", world_battle);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-11a.ogg", world_battle);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-12a.ogg", world_battle);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-13+Intro.ogg", world_battle_2);
-	mixer.AddTrack("Sounds/Music/KAGWorld1-14.ogg", world_battle_2);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_1a_file_name, world_home);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_2a_file_name, world_home);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_3a_file_name, world_home);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_4a_file_name, world_home);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_5a_file_name, world_calm);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_6a_file_name, world_calm);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_7a_file_name, world_calm);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_8a_file_name, world_calm);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_9a_file_name, world_home);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_10a_file_name, world_battle);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_11a_file_name, world_battle);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_12a_file_name, world_battle);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_13_file_name, world_battle_2);
+	mixer.AddTrack("Sounds/Music/" + KAGWorld1_14_file_name, world_battle_2);
 	mixer.AddTrack("Sounds/Music/KAGWorldQuickOut.ogg", world_quick_out);
 }
 

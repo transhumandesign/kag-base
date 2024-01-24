@@ -3,6 +3,13 @@
 
 #include "LoaderUtilities.as";
 #include "MinimapHook.as";
+#include "HolidaySprites.as";
+
+string world_file_name;
+string skygradient_file_name;
+string background_castle_file_name;
+string background_trees_file_name;
+string background_plains_file_name;
 
 bool loadMap(CMap@ _map, const string& in filename)
 {
@@ -10,7 +17,7 @@ bool loadMap(CMap@ _map, const string& in filename)
 
 	MiniMap::Initialise();
 
-	if (!getNet().isServer() || filename == "")
+	if (!isServer() || filename == "")
 	{
 		SetupMap(map, 0, 0);
 		SetupBackgrounds(map);
@@ -510,7 +517,10 @@ CBlob@ SpawnBush(CMap@ map, Vec2f pos)
 
 CBlob@ SpawnTree(CMap@ map, Vec2f pos, bool high_altitude)
 {
-	CBlob@ tree = server_CreateBlobNoInit(high_altitude ? "tree_pine" : "tree_bushy");
+	const string default_tree 		= high_altitude ? "tree_pine" : "tree_bushy";
+	const string christmas_tree 	= "pine_tree";
+
+	CBlob@ tree = server_CreateBlobNoInit(isChristmas() ? christmas_tree : default_tree);
 	if (tree !is null)
 	{
 		tree.Tag("startbig");
@@ -522,19 +532,28 @@ CBlob@ SpawnTree(CMap@ map, Vec2f pos, bool high_altitude)
 
 void SetupMap(CMap@ map, int width, int height)
 {
-	map.CreateTileMap(width, height, 8.0f, "Sprites/world.png");
+	world_file_name = isAnyHoliday() ? getHolidayVersionFileName("world") : "world.png";
+	map.CreateTileMap(width, height, 8.0f, "Sprites/" + world_file_name);
 }
 
 void SetupBackgrounds(CMap@ map)
 {
-	// sky
-	map.CreateSky(color_black, Vec2f(1.0f, 1.0f), 200, "Sprites/Back/cloud", 0);
-	map.CreateSkyGradient("Sprites/skygradient.png");   // override sky color with gradient
+	bool is_holiday = isAnyHoliday();
 
-	// plains
-	map.AddBackground("Sprites/Back/BackgroundPlains.png", Vec2f(0.0f, -50.0f), Vec2f(0.06f, 20.0f), color_white);
-	map.AddBackground("Sprites/Back/BackgroundTrees.png", Vec2f(0.0f,  -220.0f), Vec2f(0.18f, 70.0f), color_white);
-	map.AddBackground("Sprites/Back/BackgroundCastle.png", Vec2f(0.0f, -580.0f), Vec2f(0.3f, 180.0f), color_white);
+	// sky
+	skygradient_file_name = is_holiday ? getHolidayVersionFileName("skygradient") : "skygradient.png";
+	
+	map.CreateSky(color_black, Vec2f(1.0f, 1.0f), 200, "Sprites/Back/cloud", 0);
+	map.CreateSkyGradient("Sprites/" + skygradient_file_name);   // override sky color with gradient
+
+	// background
+	background_plains_file_name 	= is_holiday ? getHolidayVersionFileName("BackgroundPlains") : "BackgroundPlains.png";
+	background_trees_file_name 		= is_holiday ? getHolidayVersionFileName("BackgroundTrees") : "BackgroundTrees.png";
+	background_castle_file_name 	= is_holiday ? getHolidayVersionFileName("BackgroundCastle") : "BackgroundCastle.png";
+	
+	map.AddBackground("Sprites/Back/" + background_plains_file_name, Vec2f(0.0f, -50.0f), Vec2f(0.06f, 20.0f), color_white);
+	map.AddBackground("Sprites/Back/" + background_trees_file_name, Vec2f(0.0f,  -220.0f), Vec2f(0.18f, 70.0f), color_white);
+	map.AddBackground("Sprites/Back/" + background_castle_file_name, Vec2f(0.0f, -580.0f), Vec2f(0.3f, 180.0f), color_white);
 
 	// fade in
 	SetScreenFlash(255, 0, 0, 0);
