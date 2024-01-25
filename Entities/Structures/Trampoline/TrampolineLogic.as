@@ -139,8 +139,16 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 	CBlob@ holder = point.getOccupied();
 
-	//choose whether to jump on team trampolines
-	if (blob.hasTag("player") && blob.isKeyPressed(key_down) && this.getTeamNum() == blob.getTeamNum()) return;
+	//choose whether to pass through team trampolines
+	if (blob.hasTag("player") 
+		&& (blob.isKeyPressed(key_down)
+			|| (this.getAngleDegrees() > 120		// Hold W to pass downward-facing trampolines
+				&& this.getAngleDegrees() < 240
+				&& blob.isKeyPressed(key_up)))
+		&& this.getTeamNum() == blob.getTeamNum())
+	{
+		return;
+	}
 
 	//cant bounce holder
 	if (holder is blob) return;
