@@ -140,6 +140,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			if (blob.hasTag("player") && Maths::Abs(velocity.x) > 5) // moveVars.stoppingFastCap
 			{
 				blob.Tag("stop_air_fast");
+				blob.Untag("dont stop til ground");
 			}
 			blob.setVelocity(velocity);
 
