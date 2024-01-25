@@ -331,8 +331,8 @@ void ShowMeYourFeet(CBlob@ this, f32 tramp_angle, bool skip_sprite=false, bool s
 
 	tilt *= 0.0174533f; // radians
 
-	f32 height = tilt < 0.9506f ? 7.38241f * Maths::Sin(tilt + 0.49394f) - 2.5f // match bottom vertex
-								: 12.0208f * Maths::Sin(tilt - 0.29544f) - 2.5f; // match side vertex
+	f32 height = tilt < 0.9506f ? 7.38241f * Maths::Sin(tilt + 0.49394f) - 3.5f // match bottom vertex
+								: 12.0208f * Maths::Sin(tilt - 0.29544f) - 3.5f; // match side vertex
 
 	Vec2f left_offset = Vec2f(0, height);
 	Vec2f right_offset = Vec2f(0, height);
