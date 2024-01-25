@@ -226,6 +226,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	if (this.getTeamNum() == 255)
 	{
 		RemoveFeet(this);
+		this.Untag("invincible");
 	}
 	if (!attached.isMyPlayer()) return;
 
