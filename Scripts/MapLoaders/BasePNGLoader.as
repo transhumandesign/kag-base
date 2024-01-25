@@ -122,7 +122,17 @@ class PNGLoader
 			case map_colors::alpha_bridge:          autotile(offset); spawnBlob(map, "bridge",          getTeamFromChannel(alpha), position,                             true); break;
 			case map_colors::alpha_wooden_door:     autotile(offset); spawnBlob(map, "wooden_door",     getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_wooden_platform: autotile(offset); spawnBlob(map, "wooden_platform", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
-			case map_colors::alpha_trampoline:      autotile(offset); spawnBlob(map, "trampoline",      getTeamFromChannel(alpha), position, getAngleFromChannel(alpha)); break;
+			case map_colors::alpha_trampoline:
+			{
+				autotile(offset);
+				CBlob@ trampoline = spawnBlob(map, "trampoline", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha));
+				if (getTeamFromChannel(alpha) == 255 && trampoline !is null)
+				{
+					trampoline.Tag("invincible");
+					trampoline.Tag("static");
+					trampoline.Tag("no pickup");
+				}
+			} break;
 
 			// Mechanisms
 			case map_colors::alpha_pressure_plate:  autotile(offset); spawnBlob(map, "pressure_plate",                        255, position, getAngleFromChannel(alpha), true); break;

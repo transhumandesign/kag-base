@@ -22,7 +22,7 @@ void onInit(CBlob@ this)
 	this.set(Trampoline::TIMER, cooldowns);
 	this.getShape().getConsts().collideWhenAttached = true;
 
-	// Fix TDM map trampolines (I'm assuming these have "no pickup")
+	// Fix TDM map trampolines
 	if (this.getTeamNum() == 255)
 	{
 		Vec2f[] shape;
