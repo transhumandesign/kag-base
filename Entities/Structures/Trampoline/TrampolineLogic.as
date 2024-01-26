@@ -22,21 +22,8 @@ void onInit(CBlob@ this)
 	this.set(Trampoline::TIMER, cooldowns);
 	this.getShape().getConsts().collideWhenAttached = true;
 
-	// Fix TDM map trampolines
-	if (this.getTeamNum() == 255)
-	{
-		Vec2f[] shape;
-		shape.push_back(Vec2f(0, 0));
-		shape.push_back(Vec2f(23, 0));
-		shape.push_back(Vec2f(23, 7));
-		shape.push_back(Vec2f(0, 7));
-		// this.getShape().SetShape(shape); // immediately crashes
-		this.getShape().AddShape(shape);
-	}
-	else // No need to wait a tick and setup feet
-	{
-		this.getCurrentScript().runFlags |= Script::tick_attached;
-	}
+	this.Tag("setup_feet_tick");
+	// this.getCurrentScript().runFlags |= Script::tick_attached;
 
 	this.Tag("no falldamage");
 	this.Tag("medium weight");
@@ -58,10 +45,26 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	// Map trampoline setup
-	if (this.getTeamNum() == 255 && this.getCurrentScript().runFlags & Script::tick_attached == 0) // && this.getTickSinceCreated() > 2)
+	// Map trampoline setup tick
+	if (this.hasTag("setup_feet_tick"))
 	{
-		ShowMeYourFeet(this, 180.0f);
+		this.Untag("setup_feet_tick");
+		if (this.exists("map_alpha"))
+		{
+			// from BasePNGLoader.as - getAngleFromChannel()
+			switch (this.get_u8("map_alpha") & 0x30)
+			{
+				// case  0: {this.set_f32("old_angle",   0.0f); ShowMeYourFeet(this,   0.0f); break;}
+				case 16: {this.set_f32("old_angle",  90.0f); ShowMeYourFeet(this,  90.0f); break;}
+				// case 32: {this.set_f32("old_angle", 180.0f); ShowMeYourFeet(this, 180.0f); break;}
+				case 48: {this.set_f32("old_angle", 270.0f); ShowMeYourFeet(this, 270.0f); break;}
+			}
+		}
+		else if (this.getTeamNum() == 255)
+		{
+			ShowMeYourFeet(this, 0.0f);
+		}
+
 		this.getCurrentScript().runFlags |= Script::tick_attached;
 	}
 

@@ -126,11 +126,15 @@ class PNGLoader
 			{
 				autotile(offset);
 				CBlob@ trampoline = spawnBlob(map, "trampoline", getTeamFromChannel(alpha), position, getAngleFromChannel(alpha));
-				if (getTeamFromChannel(alpha) == 255 && trampoline !is null)
+				if (trampoline !is null)
 				{
-					trampoline.Tag("invincible");
-					trampoline.Tag("static");
-					trampoline.Tag("no pickup");
+					trampoline.set_u8("map_alpha", alpha);
+					if (getTeamFromChannel(alpha) == 255)
+					{
+						trampoline.Tag("invincible");
+						trampoline.Tag("static");
+						trampoline.Tag("no pickup");
+					}
 				}
 			} break;
 
