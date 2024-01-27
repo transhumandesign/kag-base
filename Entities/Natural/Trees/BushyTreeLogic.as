@@ -7,6 +7,8 @@ string trees_file_name;
 
 void onInit(CBlob@ this)
 {
+	trees_file_name = isAnyHoliday() ? getHolidayVersionFileName("Trees") : "Trees.png";
+
 	InitVars(this);
 
 	s32 seed = 0;
@@ -18,13 +20,11 @@ void onInit(CBlob@ this)
 	else
 	{
 		seed = this.getNetworkID() * 139 + getGameTime() * 7;
-		if (getNet().isServer())
+		if (isServer())
 		{
 			this.set_s32("tree_rand", seed);
 			this.Sync("tree_rand", true);
-
 		}
-
 	}
 
 	this.server_setTeamNum(-1);
@@ -45,8 +45,6 @@ void onInit(CBlob@ this)
 
 	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", icon_frame, Vec2f(8, 32));
 	this.SetMinimapRenderAlways(true);
-	
-	trees_file_name = isAnyHoliday() ? getHolidayVersionFileName("Trees") : "Trees.png";
 }
 
 void GrowSprite(CSprite@ this, TreeVars@ vars)
