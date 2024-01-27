@@ -201,9 +201,11 @@ void spawnOre(CBlob@ this)
 	int remainder = amountToSpawn % 5;
 	amountToSpawn += (remainder < 3 ? -remainder : (5 - remainder));
 	//setup res
+	Vec2f ore_offset 			= this.isFacingLeft() ? Vec2f(8.0f, 0.0f) : Vec2f(-8.0f, 0.0f);
+	
 	_ore.Tag("custom quantity");
 	_ore.Init();
-	_ore.setPosition(this.getPosition() + Vec2f(-8.0f, 0.0f));
+	_ore.setPosition(this.getPosition() + ore_offset);
 	_ore.server_SetQuantity(!rare ? amountToSpawn : rare_output);
 
 	this.set_s16(fuel_prop, blobCount - actual_input); //burn wood
