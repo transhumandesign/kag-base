@@ -2,7 +2,7 @@
 
 #include "HolidayCommon.as";
 
-onInit(CRules@ this)
+void onInit(CRules@ this)
 {
 	// nothing here yet
 }
