@@ -44,6 +44,7 @@ void onInit(CBlob@ this)
 	this.getSprite().SetEmitSound("Entities/Characters/Archer/BowPull.ogg");
 	this.addCommandID("shoot arrow");
 	this.addCommandID("pickup arrow");
+	this.addCommandID("shoot sound");
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
 	this.addCommandID(grapple_sync_cmd);
@@ -908,12 +909,28 @@ CBlob@ CreateArrow(CBlob@ this, Vec2f arrowPos, Vec2f arrowVel, u8 arrowType)
 		arrow.server_setTeamNum(this.getTeamNum());
 		arrow.setPosition(arrowPos);
 		arrow.setVelocity(arrowVel);
+		
+		this.SendCommand(this.getCommandID("shoot sound"));
 	}
 	return arrow;
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
+	if (cmd == this.getCommandID("shoot sound"))
+	{
+		if (isClient())
+		{
+			// run this only once for a given tick
+			if (this.exists("arrow last shot time") && this.get_u16("arrow last shot time") == this.getTickSinceCreated())
+			{
+				return;
+			}
+			
+			this.getSprite().PlaySound("Entities/Characters/Archer/BowFire.ogg");
+			this.set_u16("arrow last shot time", this.getTickSinceCreated());
+		}
+	}
 	if (cmd == this.getCommandID("shoot arrow"))
 	{
 		Vec2f arrowPos;
@@ -969,16 +986,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					arrowVel *= 0.9f;
 				}
 			}
-			this.getSprite().PlaySound("Entities/Characters/Archer/BowFire.ogg");
 		}
 		else
 		{
-			if (getNet().isServer())
+			if (isServer())
 			{
 				CreateArrow(this, arrowPos, arrowVel, arrowType);
 			}
 
-			this.getSprite().PlaySound("Entities/Characters/Archer/BowFire.ogg");
 			this.TakeBlob(arrowTypeNames[ arrowType ], 1);
 		}
 
