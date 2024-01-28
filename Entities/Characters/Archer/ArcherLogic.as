@@ -45,9 +45,10 @@ void onInit(CBlob@ this)
 	this.addCommandID("shoot arrow");
 	this.addCommandID("pickup arrow");
 	this.addCommandID("shoot sound");
-	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
-
 	this.addCommandID(grapple_sync_cmd);
+	this.addCommandID(grapple_sound_cmd);
+	
+	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
 	SetHelp(this, "help self hide", "archer", getTranslatedString("Hide    $KEY_S$"), "", 1);
 	SetHelp(this, "help self action2", "archer", getTranslatedString("$Grapple$ Grappling hook    $RMB$"), "", 3);
@@ -750,6 +751,7 @@ bool checkGrappleStep(CBlob@ this, ArcherInfo@ archer, CMap@ map, const f32 dist
 		archer.grapple_pos.y = Maths::Max(0.0, archer.grapple_pos.y);
 
 		if (canSend(this)) SyncGrapple(this);
+		if (canSend(this)) GrappleSound(this);
 
 		return true;
 	}
@@ -1022,7 +1024,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 			}
 
-			if (getNet().isServer())
+			if (isServer())
 			{
 				CBlob@ mat_arrows = server_CreateBlobNoInit('mat_arrows');
 
@@ -1055,6 +1057,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID(grapple_sync_cmd))
 	{
 		HandleGrapple(this, params, !canSend(this));
+	}
+	else if (cmd == this.getCommandID(grapple_sound_cmd))
+	{
+		if (isClient())
+		{		
+			this.getSprite().PlaySound("BombBounce.ogg");
+		}
 	}
 	else if (cmd == this.getCommandID("cycle"))  //from standardcontrols
 	{
