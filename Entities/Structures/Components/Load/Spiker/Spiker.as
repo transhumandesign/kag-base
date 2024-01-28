@@ -104,7 +104,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.getAttachments().getAttachmentPointByName("MECHANISM").offsetZ = -5;
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -121,6 +121,9 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		CBlob@ spike = server_CreateBlob("spike", this.getTeamNum(), this.getPosition());
 		spike.setAngleDegrees(this.getAngleDegrees());
 		spike.set_u8("state", 0);
+		
+		spike.set_u16("spiker id", this.getNetworkID());
+		spike.Sync("spiker id", true);
 
 		ShapeConsts@ consts = spike.getShape().getConsts();
 		consts.mapCollisions = false;
@@ -138,14 +141,16 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	CSpriteLayer@ layer = sprite.addSpriteLayer("background", "Spiker.png", 8, 16);
 	layer.addAnimation("default", 0, false);
-	layer.animation.AddFrame(4);
+	int[] frames = {4, 5}; 	//non-bloody and bloody
+	layer.animation.AddFrames(frames);
+		
 	layer.SetRelativeZ(-10);
 	layer.SetFacingLeft(false);
 }
 
 void onDie(CBlob@ this)
 {
-	if (!getNet().isServer()) return;
+	if (!isServer()) return;
 
 	CBlob@ spike = this.getAttachments().getAttachmentPointByName("MECHANISM").getOccupied();
 	if (spike is null) return;

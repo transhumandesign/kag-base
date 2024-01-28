@@ -31,6 +31,28 @@ void UpdateBloodySprite(CBlob@ this)
 	}
 	else if (name == "spike")
 	{
-		sprite.animation.frame = this.hasTag("bloody") && !g_kidssafe ? 1 : 0;
+		// spike frame
+		uint frame_add = this.hasTag("bloody") && !g_kidssafe ? 1 : 0;
+		
+		sprite.animation.frame = frame_add;
+	
+		// spiker spritelayer frame
+		if (this.exists("spiker id"))
+		{
+			CBlob@ spiker = getBlobByNetworkID(this.get_u16("spiker id"));
+			if (spiker !is null)
+			{
+				CSprite@ sprite = spiker.getSprite();
+				
+				if (sprite !is null)
+				{
+					CSpriteLayer@ layer = sprite.getSpriteLayer("background");
+					if (layer !is null)
+					{
+						layer.animation.frame = frame_add;
+					}
+				}
+			}
+		}
 	}
 }
