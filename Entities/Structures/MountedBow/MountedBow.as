@@ -26,6 +26,8 @@ class MountedBowInfo : VehicleInfo
 
 void onInit(CBlob@ this)
 {
+	this.Tag("medium weight");
+
 	Vehicle_Setup(this,
 	              0.0f, // move speed
 	              0.31f,  // turn speed
@@ -37,7 +39,7 @@ void onInit(CBlob@ this)
 	if (!this.get("VehicleInfo", @v)) return;
 
 	Vehicle_AddAmmo(this, v,
-	                    25, // fire delay (ticks)
+	                    35, // fire delay (ticks)
 	                    1, // fire bullets amount
 	                    1, // fire cost
 	                    "mat_arrows", // bullet ammo config name
