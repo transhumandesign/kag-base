@@ -9,7 +9,6 @@ const u8 DEFAULT_PERSONALITY = SCARED_BIT;
 const int MAX_EGGS = 2; //maximum simultaneous eggs
 const int MAX_CHICKENS = 6;
 const f32 CHICKEN_LIMIT_RADIUS = 120.0f;
-const string cookedName = "Fried Chicken";
 const u8 cookAfterInFireTicks = 50;
 
 int g_lastSoundPlayedTime = 0;
@@ -117,6 +116,10 @@ void onInit(CBlob@ this)
 	vars.slowForce.Set(1.0f, 0.0f);
 	vars.jumpForce.Set(0.0f, -20.0f);
 	vars.maxVelocity = 1.1f;
+	
+	// cooking
+	this.set_string("cooked name", "Fried Chicken");
+	this.set_u8("cooked sprite index", 7);
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
@@ -145,7 +148,7 @@ void onTick(CBlob@ this)
 						
 			if (fire_duration >= cookAfterInFireTicks)
 			{
-				Cook(this);
+				Cook(this); // MakeFood.as
 			}
 			
 			this.set_u16("fire duration", fire_duration);
@@ -262,10 +265,9 @@ void onTick(CBlob@ this)
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	if (hitterBlob.getName() == "arrow" 
-		&& hitterBlob.get_u8("arrow type") == ArrowType::fire
-		&& !this.hasTag("cooked"))
+		&& hitterBlob.get_u8("arrow type") == ArrowType::fire)
 	{
-		Cook(this);
+		Cook(this); // MakeFood.as
 	}
 	
 	return damage;
@@ -282,19 +284,3 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		g_lastSoundPlayedTime = getGameTime();
 	}
 }
-
-void Cook(CBlob@ this)
-{
-	CBlob@ food = server_MakeFood(this.getPosition(), cookedName, 7);
-	
-	this.getSprite().PlaySound("SparkleShort.ogg");
-	
-	if (food !is null)
-	{
-		this.Tag("cooked");
-		this.Sync("cooked", true);
-		this.server_Die();
-		food.setVelocity(this.getVelocity().opMul(0.5f));
-	}
-}
-

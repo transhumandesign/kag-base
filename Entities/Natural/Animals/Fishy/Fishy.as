@@ -79,6 +79,10 @@ void onInit(CBlob@ this)
 	this.Tag("pushedByDoor");
 	
 	this.set_u16("fire duration", 0);
+	
+	this.Tag("cookable in fireplace");
+	this.set_string("cooked name", "Cooked Fish");
+	this.set_u8("cooked sprite index", 1);
 }
 
 void onTick(CBlob@ this)
@@ -99,7 +103,7 @@ void onTick(CBlob@ this)
 							
 				if (fire_duration >= cookAfterInFireTicks)
 				{
-					Cook(this);
+					Cook(this); // MakeFood.as
 				}
 				
 				this.set_u16("fire duration", fire_duration);
@@ -156,7 +160,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		&& hitterBlob.get_u8("arrow type") == ArrowType::fire
 		&& !this.hasTag("cooked"))
 	{
-		Cook(this);
+		Cook(this); // MakeFood.as
 	}
 
 	if (damage == 0)
@@ -177,19 +181,4 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	sprite.SetFacingLeft(!sprite.isFacingLeft());
 
 	return damage;
-}
-
-void Cook(CBlob@ this)
-{
-	CBlob@ food = server_MakeFood(this.getPosition(), "Cooked Fish", 1);
-	
-	this.getSprite().PlaySound("SparkleShort.ogg");
-	
-	if (food !is null)
-	{
-		this.Tag("cooked");
-		this.Sync("cooked", true);
-		this.server_Die();
-		food.setVelocity(this.getVelocity().opMul(0.5f));
-	}
 }
