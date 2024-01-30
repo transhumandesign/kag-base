@@ -1,3 +1,5 @@
+#include "ProductionCommon.as";
+
 CBlob@ server_MakeFood(Vec2f atpos, const string &in name, const u8 spriteIndex)
 {
 	if (!isServer())  return null; 

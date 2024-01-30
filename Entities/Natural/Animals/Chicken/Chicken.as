@@ -3,7 +3,6 @@
 
 #include "AnimalConsts.as";
 #include "MakeFood.as";
-#include "ProductionCommon.as";
 #include "ArcherCommon.as";
 
 const u8 DEFAULT_PERSONALITY = SCARED_BIT;
@@ -132,13 +131,13 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onTick(CBlob@ this)
 {
-	// fry it after it's been in fire
+	// cook it after it's been in fire
 	if (isServer())
 	{
 		CMap@ map 		= getMap();
 		Vec2f position 	= this.getPosition();
 	
-		u16 fire_duration = this.get_u16("fire duration");
+		u16 fire_duration = this.exists("fire duration") ? this.get_u16("fire duration") : 0;
 		
 		if (map.isInFire(position))
 		{
@@ -146,7 +145,7 @@ void onTick(CBlob@ this)
 						
 			if (fire_duration >= cookAfterInFireTicks)
 			{
-				Fry(this);
+				Cook(this);
 			}
 			
 			this.set_u16("fire duration", fire_duration);
@@ -218,7 +217,7 @@ void onTick(CBlob@ this)
 		g_lastSoundPlayedTime =  getGameTime();
 
 		// lay eggs
-		if (getNet().isServer())
+		if (isServer())
 		{
 			g_layEggInterval++;
 			if (g_layEggInterval % 13 == 0)
@@ -264,9 +263,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 {
 	if (hitterBlob.getName() == "arrow" 
 		&& hitterBlob.get_u8("arrow type") == ArrowType::fire
-		&& !this.hasTag("fried"))
+		&& !this.hasTag("cooked"))
 	{
-		Fry(this);
+		Cook(this);
 	}
 	
 	return damage;
@@ -284,7 +283,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	}
 }
 
-void Fry(CBlob@ this)
+void Cook(CBlob@ this)
 {
 	CBlob@ food = server_MakeFood(this.getPosition(), cookedName, 7);
 	
@@ -292,8 +291,8 @@ void Fry(CBlob@ this)
 	
 	if (food !is null)
 	{
-		this.Tag("fried");
-		this.Sync("fried", true);
+		this.Tag("cooked");
+		this.Sync("cooked", true);
 		this.server_Die();
 		food.setVelocity(this.getVelocity().opMul(0.5f));
 	}

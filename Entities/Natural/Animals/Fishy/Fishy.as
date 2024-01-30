@@ -2,6 +2,10 @@
 //script for a cute fishy
 
 #include "AnimalConsts.as";
+#include "MakeFood.as";
+#include "ArcherCommon.as";
+
+const u8 cookAfterInFireTicks = 10;
 
 //sprite
 
@@ -69,51 +73,92 @@ void onInit(CBlob@ this)
 	this.Tag("flesh");
 	this.Tag("builder always hit");
 
-	this.getCurrentScript().tickFrequency = 40;
-
 	if (!this.exists("age"))
 		this.set_u8("age", 0);
 
 	this.Tag("pushedByDoor");
+	
+	this.set_u16("fire duration", 0);
 }
 
 void onTick(CBlob@ this)
 {
-	f32 x = this.getVelocity().x;
-	if (Maths::Abs(x) > 1.0f)
+	// cook it after it's been in fire
+	if (getGameTime() % 5 == 0)
 	{
-		this.SetFacingLeft(x < 0);
-	}
-	else
-	{
-		if (this.isKeyPressed(key_left))
-			this.SetFacingLeft(true);
-		if (this.isKeyPressed(key_right))
-			this.SetFacingLeft(false);
-	}
-
-	if (getNet().isServer())
-	{
-		u8 age = this.get_u8("age");
-		if (age < 3)
+		if (isServer())
 		{
-			if (XORRandom(512) < 16)
+			CMap@ map 		= getMap();
+			Vec2f position 	= this.getPosition();
+		
+			u16 fire_duration = this.exists("fire duration") ? this.get_u16("fire duration") : 0;
+			
+			if (map.isInFire(position))
 			{
-				age++;
+				fire_duration++;
+							
+				if (fire_duration >= cookAfterInFireTicks)
+				{
+					Cook(this);
+				}
+				
+				this.set_u16("fire duration", fire_duration);
 			}
-
-			this.set_u8("age", age);
-			this.Sync("age", true);
+			else if (fire_duration > 0)
+			{
+				fire_duration--;
+			
+				this.set_u16("fire duration", fire_duration);
+			}
 		}
-		else if (XORRandom(512) < 4)
+	}
+	
+	if (getGameTime() % 40 == 0)
+	{
+		f32 x = this.getVelocity().x;
+		if (Maths::Abs(x) > 1.0f)
 		{
-			this.server_Hit(this, this.getPosition(), Vec2f(0, 0), 1.0f, 0, true); //death from old age
+			this.SetFacingLeft(x < 0);
+		}
+		else
+		{
+			if (this.isKeyPressed(key_left))
+				this.SetFacingLeft(true);
+			if (this.isKeyPressed(key_right))
+				this.SetFacingLeft(false);
+		}
+
+		if (isServer())
+		{				
+			// aging
+			u8 age = this.get_u8("age");
+			if (age < 3)
+			{
+				if (XORRandom(512) < 16)
+				{
+					age++;
+				}
+
+				this.set_u8("age", age);
+				this.Sync("age", true);
+			}
+			else if (XORRandom(512) < 4)
+			{
+				this.server_Hit(this, this.getPosition(), Vec2f(0, 0), 1.0f, 0, true); //death from old age
+			}
 		}
 	}
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
+	if (hitterBlob.getName() == "arrow" 
+		&& hitterBlob.get_u8("arrow type") == ArrowType::fire
+		&& !this.hasTag("cooked"))
+	{
+		Cook(this);
+	}
+
 	if (damage == 0)
 		return damage;
 
@@ -132,4 +177,19 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	sprite.SetFacingLeft(!sprite.isFacingLeft());
 
 	return damage;
+}
+
+void Cook(CBlob@ this)
+{
+	CBlob@ food = server_MakeFood(this.getPosition(), "Cooked Fish", 1);
+	
+	this.getSprite().PlaySound("SparkleShort.ogg");
+	
+	if (food !is null)
+	{
+		this.Tag("cooked");
+		this.Sync("cooked", true);
+		this.server_Die();
+		food.setVelocity(this.getVelocity().opMul(0.5f));
+	}
 }
