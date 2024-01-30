@@ -78,15 +78,18 @@ void Slam(CBlob @this, f32 angle, Vec2f vel, f32 vellen)
 				if (BoulderHitMap(this, hi.hitpos, hi.tileOffset, vel, dmg, Hitters::cata_boulder))
 					return;
 			}
-			else if (team != u8(hi.blob.getTeamNum()))
+			else if (!hi.blob.hasTag("invincible"))
 			{
-				this.server_Hit(hi.blob, pos, vel, dmg, Hitters::cata_boulder, true);
-				this.setVelocity(vel * 0.9f); //damp
-
-				// die when hit something large
-				if (hi.blob.getRadius() > 32.0f)
+				if (team != u8(hi.blob.getTeamNum()))
 				{
-					this.server_Hit(this, pos, vel, 10, Hitters::cata_boulder, true);
+					this.server_Hit(hi.blob, pos, vel, dmg, Hitters::cata_boulder, true);
+					this.setVelocity(vel * 0.9f); //damp
+
+					// die when hit something large
+					if (hi.blob.getRadius() > 32.0f)
+					{
+						this.server_Hit(this, pos, vel, 10, Hitters::cata_boulder, true);
+					}
 				}
 			}
 		}
@@ -222,10 +225,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		}
 
 		//hurt
-		this.server_Hit(blob, point1, hitvel, dmg, Hitters::boulder, true);
-
+		if (!blob.hasTag("invincible"))
+		{
+			this.server_Hit(blob, point1, hitvel, dmg, Hitters::boulder, true);
+		}
+		
 		return;
-
 	}
 }
 
