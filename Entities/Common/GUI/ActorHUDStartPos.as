@@ -81,6 +81,8 @@ void DrawResupplyOnHUD(CBlob@ this, Vec2f tl)
 		.replace("{TIMESUFFIX}", getTranslatedString(units))
 		.replace("{WOOD}", "" + wood_amount)
 		.replace("{STONE}", "" + stone_amount);
+		
+		resupply_icon_frame = 1;
 	}
 	else if (bname == "archer")
 	{
@@ -99,6 +101,8 @@ void DrawResupplyOnHUD(CBlob@ this, Vec2f tl)
 		.replace("{SEC}", "" + secs)
 		.replace("{TIMESUFFIX}", getTranslatedString(units))
 		.replace("{ARROWS}", "" + arrows_amount);
+		
+		resupply_icon_frame = 3;
 	}
 
 
@@ -124,7 +128,7 @@ void DrawResupplyOnHUD(CBlob@ this, Vec2f tl)
 	}
 	else
 	{
-		GUI::DrawIcon("Entities/Common/GUI/ResupplyIcon.png", 1, icon_size, icon_pos + Vec2f(0, 6), 1.0f);
+		GUI::DrawIcon("Entities/Common/GUI/ResupplyIcon.png", resupply_icon_frame, icon_size, icon_pos + Vec2f(0, 6), 1.0f);
 
 		if (hover)
 		{
