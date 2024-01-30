@@ -110,7 +110,8 @@ void onTick(CBlob@ this)
 			if (blob is null)
 				@blob = this;
 
-			blob.server_Hit(this, pos, Vec2f(0, 0), 0.25, this.get_u8(burn_hitter), true);
+			if (!this.hasTag("invincible"))
+				blob.server_Hit(this, pos, Vec2f(0, 0), 0.25, this.get_u8(burn_hitter), true);
 		}
 
 		//burninating the burning time
