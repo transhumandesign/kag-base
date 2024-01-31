@@ -95,6 +95,16 @@ class TeamCommand : ChatCommand
 		}
 
 		blob.server_setTeamNum(team);
+		
+		if (blob.hasAttached())
+		{
+			CBlob@ heldblob = blob.getCarriedBlob();
+			
+			if (heldblob !is null && heldblob.hasScript("SetTeamToCarrier.as"))
+			{
+				heldblob.server_setTeamNum(team);
+			}
+		}
 	}
 }
 
