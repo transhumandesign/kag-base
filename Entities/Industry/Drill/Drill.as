@@ -133,7 +133,7 @@ void onTick(CSprite@ this)
 	CSpriteLayer@ heatlayer = this.getSpriteLayer("heat");
 	if (heatlayer !is null)
 	{
-		f32 heat = Maths::Min(blob.get_u8(heat_prop), heat_max);
+		u8 heat = Maths::Min(blob.get_u8(heat_prop), heat_max);
 		f32 heatPercent = heat / float(heat_max);
 		if (heatPercent > 0.1f)
 		{
@@ -447,10 +447,10 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	{
 		s16 current_heat = this.get_u8(heat_prop) - heat_max * heat_reduction_water;
 		
-		if (current_heat <= 0) 
-			current_heat = 0;
-		else if (current_heat > 0)
+		if (current_heat > 0)
 			makeSteamPuff(this);
+			
+		current_heat = Maths::Max(current_heat - heat_max * heat_reduction_water, 0);
 			
 		this.set_u8(heat_prop, current_heat);
 	}
@@ -500,6 +500,9 @@ void onRender(CSprite@ this)
 
 	CBlob@ blob = this.getBlob();
 	u16 holderID = blob.get_u16("showHeatTo");
+	
+	s16 heat2 =  blob.get_u8(heat_prop);
+	GUI::DrawText("heat: " + heat2, blob.getPosition(), SColor(255,255,255,255));	
 
 	CPlayer@ holder = holderID == 0 ? null : getPlayerByNetworkId(holderID);
 	if (holder is null){return;}
