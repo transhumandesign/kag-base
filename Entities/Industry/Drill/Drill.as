@@ -500,9 +500,6 @@ void onRender(CSprite@ this)
 
 	CBlob@ blob = this.getBlob();
 	u16 holderID = blob.get_u16("showHeatTo");
-	
-	s16 heat2 =  blob.get_u8(heat_prop);
-	GUI::DrawText("heat: " + heat2, blob.getPosition(), SColor(255,255,255,255));	
 
 	CPlayer@ holder = holderID == 0 ? null : getPlayerByNetworkId(holderID);
 	if (holder is null){return;}
