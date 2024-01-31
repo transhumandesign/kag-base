@@ -86,18 +86,10 @@ void onChangeTeam(CBlob@ this, const int oldTeam)
 	if (!this.hasAttached())
 		return;
 
-	CAttachment@ att = this.getAttachments();
-	if (att !is null)
+	CBlob@ heldblob = this.getCarriedBlob();
+	
+	if (heldblob !is null && heldblob.hasScript("SetTeamToCarrier.as"))
 	{
-		AttachmentPoint@ ap = att.getAttachmentPoint("PICKUP");
-		if (ap !is null)
-		{
-			CBlob@ blob = ap.getOccupied();
-			if (blob !is null)
-			{
-				if (blob.hasScript("SetTeamToCarrier.as"))
-					blob.server_setTeamNum(this.getTeamNum());
-			}
-		}
+		heldblob.server_setTeamNum(this.getTeamNum());
 	}
 }
