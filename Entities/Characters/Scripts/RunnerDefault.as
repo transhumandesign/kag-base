@@ -77,3 +77,27 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		this.Untag("invincible");
 	return damage;
 }
+
+void onChangeTeam(CBlob@ this, const int oldTeam)
+{
+	if (!isServer())
+		return;
+
+	if (!this.hasAttached())
+		return;
+
+	CAttachment@ att = this.getAttachments();
+	if (att !is null)
+	{
+		AttachmentPoint@ ap = att.getAttachmentPoint("PICKUP");
+		if (ap !is null)
+		{
+			CBlob@ blob = ap.getOccupied();
+			if (blob !is null)
+			{
+				if (blob.hasScript("SetTeamToCarrier.as"))
+					blob.server_setTeamNum(this.getTeamNum());
+			}
+		}
+	}
+}
