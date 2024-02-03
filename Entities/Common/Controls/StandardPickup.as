@@ -646,8 +646,8 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 	{
 		for (int i = 0; i < hitInfos.length; i++)
 		{
-			HitInfo@ hi 	= hitInfos[i];
-			CBlob@ b 	= hi.blob;
+			HitInfo@ hi = hitInfos[i];
+			CBlob@ b = hi.blob;
 
 			if (b is null || b is this)
 			{
