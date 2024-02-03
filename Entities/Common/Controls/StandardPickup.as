@@ -609,6 +609,25 @@ CBlob@ getClosestBlob(CBlob@ this)
 	return closest;
 }
 
+bool CollidesWithPlatform(Vec2f ray, Vec2f hitpos, CBlob@ platform)
+{
+	f32 angle           = platform.getAngleDegrees();
+	Vec2f border_offset = Vec2f(0, -getMap().tilesize / 2);
+	border_offset.RotateBy(Maths::Round(angle));         // getting rid of "0.001 off" cases
+	
+	const f32 ray_angle          = border_offset.AngleWith(ray);
+	
+	if (!(ray_angle > -90.0f && ray_angle < 90.0f)) // facing against platform?
+	{	
+		Vec2f border_pos = platform.getPosition() + border_offset;
+		hitpos     = Vec2f(Maths::Round(hitpos.x), Maths::Round(hitpos.y));
+		
+		return ((angle + 45.0f) % 180.0f) < 90.0f ? border_pos.y == hitpos.y : border_pos.x == hitpos.x; // ray hitpos overlaps with border pos?
+	}
+	
+	return false;
+}
+
 bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 {
 	if (!blob.canBePickedUp(this)) return false;
@@ -637,66 +656,11 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 
 			if (b !is blob && b.isCollidable() && b.getShape().isStatic())
 			{
-				if (!b.isPlatform())
+				//don't allow picking through platform
+				if (b.isPlatform() && CollidesWithPlatform(ray, hi.hitpos, b))
 				{
 					canRayCast = false;
 					break;
-				}
-				else
-				{
-					// don't allow pick through platforms
-					
-					f32 angle 	= b.getAngleDegrees();
-					
-					if (angle > 45.0f && angle < 135.0f		// right-facing platform
-						&& picker_pos.x > blob_pos.x)
-					{
-						f32 border_x = b.getPosition().x + map.tilesize / 2;
-						
-						if (picker_pos.x > border_x
-							&& Maths::Round(hi.hitpos.x) == Maths::Round(border_x))
-						{
-								canRayCast = false;
-								break;
-						}
-
-					}
-					else if (angle > 135.0f && angle < 225.0f	// down-facing platform
-							&& picker_pos.y > blob_pos.y)
-					{
-						f32 border_y = b.getPosition().y + map.tilesize / 2;
-						
-						if (picker_pos.y > border_y
-							&& Maths::Round(hi.hitpos.y) == Maths::Round(border_y))
-						{
-							canRayCast = false;
-							break;
-						}
-					}
-					else if (angle > 225.0f && angle < 315.0f	// left-facing platform
-							&& picker_pos.x < blob_pos.x)
-					{
-						f32 border_x = b.getPosition().x - map.tilesize / 2;
-						
-						if (picker_pos.x < border_x
-							&& Maths::Round(hi.hitpos.x) == Maths::Round(border_x))
-						{
-								canRayCast = false;
-								break;
-						}
-					}
-					else if ((angle > 315.0f || angle < 45.0f)	// up-facing platform
-							&& picker_pos.y < blob_pos.y)
-					{
-						f32 border_y = b.getPosition().y - map.tilesize / 2;
-						
-						if (picker_pos.y < border_y
-							&& Maths::Round(hi.hitpos.y) == Maths::Round(border_y))
-						{
-								canRayCast = false;
-								break;
-						}
-					}
 				}
 			}
 
@@ -712,7 +676,6 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 				canRayCast = true;
 			}
 		}
-
 	} 
 	else 
 	{
