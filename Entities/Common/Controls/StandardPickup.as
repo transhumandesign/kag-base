@@ -611,16 +611,16 @@ CBlob@ getClosestBlob(CBlob@ this)
 
 bool CollidesWithPlatform(Vec2f ray, Vec2f hitpos, CBlob@ platform)
 {
-	f32 angle           = platform.getAngleDegrees();
+	f32 angle = platform.getAngleDegrees();
 	Vec2f border_offset = Vec2f(0, -getMap().tilesize / 2);
 	border_offset.RotateBy(Maths::Round(angle));         // getting rid of "0.001 off" cases
 	
-	const f32 ray_angle          = border_offset.AngleWith(ray);
+	const f32 ray_angle = border_offset.AngleWith(ray);
 	
 	if (!(ray_angle > -90.0f && ray_angle < 90.0f)) // facing against platform?
 	{	
 		Vec2f border_pos = platform.getPosition() + border_offset;
-		hitpos     = Vec2f(Maths::Round(hitpos.x), Maths::Round(hitpos.y));
+		hitpos = Vec2f(Maths::Round(hitpos.x), Maths::Round(hitpos.y));
 		
 		return ((angle + 45.0f) % 180.0f) < 90.0f ? border_pos.y == hitpos.y : border_pos.x == hitpos.x; // ray hitpos overlaps with border pos?
 	}
@@ -634,19 +634,19 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 
 	float maxDist = Maths::Max(this.getRadius() + blob.getRadius() + 20.0f, 36.0f);
 
-	Vec2f picker_pos 	= this.getPosition() + Vec2f(0.0f, -this.getRadius() * 0.9f);
-	Vec2f blob_pos 		= blob.getPosition();
-	Vec2f ray 			= blob_pos - picker_pos;
-	f32 ray_length		= ray.Length();
-	bool canRayCast 	= false;
-	CMap@ map 			= getMap();
+	Vec2f picker_pos = this.getPosition() + Vec2f(0.0f, -this.getRadius() * 0.9f);
+	Vec2f blob_pos = blob.getPosition();
+	Vec2f ray = blob_pos - picker_pos;
+	f32 ray_length = ray.Length();
+	bool canRayCast = false;
+	CMap@ map = getMap();
 
 	HitInfo@[] hitInfos;
 	if (map.getHitInfosFromRay(picker_pos, -ray.getAngle(), ray_length, this, hitInfos))
 	{
 		for (int i = 0; i < hitInfos.length; i++)
 		{
-			HitInfo@ hi = hitInfos[i];
+			HitInfo@ hi 	= hitInfos[i];
 			CBlob@ b 	= hi.blob;
 
 			if (b is null || b is this)
