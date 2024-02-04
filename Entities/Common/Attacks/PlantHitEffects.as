@@ -5,7 +5,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 {
 	if (damage > 0.05f) //sound for all damage
 	{
-		if (customData != Hitters::fire && customData != Hitters::burn) // not fire or burn
+		if (customData != Hitters::fire && customData != Hitters::burn)
 		{
 			Sound::Play("/cut_grass", this.getPosition());
 		}
