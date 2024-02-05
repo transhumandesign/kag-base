@@ -146,23 +146,30 @@ void SpecCamera(CRules@ this)
 {
 	//death effect
 	CCamera@ camera = getCamera();
-	if (camera !is null && getLocalPlayerBlob() is null && getLocalPlayer() !is null)
+	if (camera !is null && getLocalPlayer() !is null)
 	{
-		const int diffTime = deathTime - getGameTime();
-		// death effect
-		if (!spectatorTeam && diffTime > 0)
+		if (getLocalPlayerBlob() is null)
 		{
-			//lock camera
-			posActual = deathLock;
-			camera.setPosition(deathLock);
-			//zoom in for a bit
-			const float zoom_target = 2.0f;
-			const float zoom_speed = 5.0f;
-			camera.targetDistance = Maths::Min(zoom_target, camera.targetDistance + zoom_speed * getRenderDeltaTime());
+			const int diffTime = deathTime - getGameTime();
+			// death effect
+			if (!spectatorTeam && diffTime > 0)
+			{
+				//lock camera
+				posActual = deathLock;
+				camera.setPosition(deathLock);
+				//zoom in for a bit
+				const float zoom_target = 2.0f;
+				const float zoom_speed = 5.0f;
+				camera.targetDistance = Maths::Min(zoom_target, camera.targetDistance + zoom_speed * getRenderDeltaTime());
+			}
+			else
+			{
+				Spectator(this);
+			}
 		}
 		else
 		{
-			Spectator(this);
+			posActual = camera.getPosition();
 		}
 	}
 }

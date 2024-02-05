@@ -238,11 +238,11 @@ void Spectator(CRules@ this)
 
 	if (targetPlayer() !is null)
 	{
-		if (camera.getTarget() !is targetPlayer().getBlob())
+		if (camera.getTarget() !is targetPlayer().getBlob() && !targetPlayer().isBot())
 		{
 			camera.setTarget(targetPlayer().getBlob());
+			posActual = camera.getPosition();
 		}
-		posActual = camera.getPosition();
 	}
 	else
 	{
