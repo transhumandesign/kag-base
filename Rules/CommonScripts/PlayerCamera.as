@@ -37,14 +37,12 @@ void Reset(CRules@ this)
 	CMap@ map = getMap();
 	if (!map.hasScript("PlayerCamera.as"))
 	{	
-		print("map script added");
 		map.AddScript("PlayerCamera.as");
 	}
 }
 
 void onInit(CMap@ this)
 {
-	print("on init map");
 	//initially position camera to view entire map
 	ViewEntireMap();
 }
