@@ -67,6 +67,20 @@ float ease(float current, float target, float factor)
 	return current + linearCorrection * cubicCorrectionMod;
 }
 
+void ViewEntireMap()
+{
+	CMap@ map = getMap();
+
+	if (map !is null)
+	{
+		Vec2f mapDim = map.getMapDimensions();
+		posTarget = mapDim / 2.0f;
+		Vec2f zoomLevel = calculateZoomLevel(mapDim.x, mapDim.y);
+		zoomTarget = Maths::Min(zoomLevel.x, zoomLevel.y);
+		zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f);
+	}
+}
+
 void SetTargetPlayer(CPlayer@ p)
 {
 	_targetPlayer = "";

@@ -24,9 +24,7 @@ void Reset(CRules@ this)
 
 	currentTarget = 0;
 	switchTarget = 0;
-
-	//initially position camera to view entire map
-	ViewEntireMap();
+	
 	// force lock camera position immediately, even if not cinematic
 	posActual = posTarget;
 
@@ -34,6 +32,21 @@ void Reset(CRules@ this)
 	zoomEaseModifier = 1.0f;
 
 	timeToCinematic = 0;
+	
+	// so map will call "onInit(CMap@ this)", fixes "ViewEntireMap()" not working in online
+	CMap@ map = getMap();
+	if (!map.hasScript("PlayerCamera.as"))
+	{	
+		print("map script added");
+		map.AddScript("PlayerCamera.as");
+	}
+}
+
+void onInit(CMap@ this)
+{
+	print("on init map");
+	//initially position camera to view entire map
+	ViewEntireMap();
 }
 
 void onRestart(CRules@ this)
