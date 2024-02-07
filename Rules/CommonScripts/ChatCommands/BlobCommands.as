@@ -72,7 +72,7 @@ class SignCommand : BlobCommand
 {
 	SignCommand()
 	{
-		super("sign", "Spawn a sign with an optional description");
+		super("sign", "Spawn a sign with an optional message");
 		SetUsage("[description]");
 	}
 
