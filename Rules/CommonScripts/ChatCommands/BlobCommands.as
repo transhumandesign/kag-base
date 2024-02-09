@@ -73,7 +73,7 @@ class SignCommand : BlobCommand
 	SignCommand()
 	{
 		super("sign", "Spawn a sign with an optional message");
-		SetUsage("[description]");
+		SetUsage("[message]");
 	}
 
 	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
