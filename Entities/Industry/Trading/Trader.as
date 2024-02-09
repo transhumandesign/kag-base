@@ -2,13 +2,13 @@
 
 #include "RunnerCommon.as"
 #include "Help.as";
-
 #include "Hitters.as";
-
 #include "TraderWantedList.as";
+#include "HolidaySprites.as";
+
+string tradermale_file_name, traderfemale_file_name;
 
 //trader methods
-
 //blob
 
 void onInit(CBlob@ this)
@@ -21,15 +21,25 @@ void onInit(CBlob@ this)
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().runFlags |= Script::tick_moving;
-
+	
 	//EnsureWantedList();
+}
+
+void onInit(CSprite@ this)
+{
+	if (isAnyHoliday())
+	{
+		tradermale_file_name = getHolidayVersionFileName("TraderMale");
+		traderfemale_file_name = getHolidayVersionFileName("TraderFemale");
+		this.ReloadSprites(0,0);
+	}
 }
 
 void onReload(CSprite@ this)
 {
 	this.getConsts().filename = this.getBlob().getSexNum() == 0 ?
-	                            "Entities/Special/WAR/Trading/TraderMale.png" :
-	                            "Entities/Special/WAR/Trading/TraderFemale.png";
+	                            "Entities/Special/WAR/Trading/" + tradermale_file_name :
+	                            "Entities/Special/WAR/Trading/" + traderfemale_file_name;
 }
 
 void onGib(CSprite@ this)

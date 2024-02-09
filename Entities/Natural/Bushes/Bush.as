@@ -1,6 +1,9 @@
 // Bush logic
 
 #include "canGrow.as";
+#include "HolidaySprites.as";
+
+string bush_file_name;
 
 void onInit(CBlob@ this)
 {
@@ -26,4 +29,10 @@ void onInit(CSprite@ this)
 	this.SetFacingLeft(((netID % 13) % 2) == 0);
 	//this.getCurrentScript().runFlags |= Script::remove_after_this;	// wont be sent on network
 	this.SetZ(10.0f);
+	
+	if (isAnyHoliday())
+	{
+		bush_file_name = getHolidayVersionFileName("Bushes");
+		this.ReloadSprite(bush_file_name);
+	}
 }

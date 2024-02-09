@@ -1,6 +1,9 @@
 // Grain logic
 
 #include "PlantGrowthCommon.as";
+#include "HolidaySprites.as";
+
+string grain_file_name;
 
 void onInit(CBlob@ this)
 {
@@ -20,6 +23,14 @@ void onInit(CBlob@ this)
 	this.Tag("scenary");
 }
 
+void onInit(CSprite@ this)
+{
+	if (isAnyHoliday())
+	{
+		grain_file_name = getHolidayVersionFileName("Grain");
+		this.ReloadSprite(grain_file_name);
+	}
+}
 
 void onTick(CBlob@ this)
 {

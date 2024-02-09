@@ -1,7 +1,10 @@
 //Rock logic
 
 #include "/Entities/Common/Attacks/Hitters.as";
-#include "MakeDustParticle.as"
+#include "MakeDustParticle.as";
+#include "HolidaySprites.as";
+
+string gibs_file_name;
 
 // defines amount of damage as well as maximum separate hits
 // - in terms of this's health. see config
@@ -24,7 +27,7 @@ Random _r(0xca7a);
 
 void onInit(CBlob@ this)
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
 		this.server_SetTimeToDie(4 + _r.NextRanged(2));
 	}
@@ -37,6 +40,8 @@ void onInit(CBlob@ this)
 		this.getShape().getConsts().net_threshold_multiplier = 4.0f;
 		this.set_u32("last collided tile", -1);
 	}
+	
+	gibs_file_name = isAnyHoliday() ? getHolidayVersionFileName("GenericGibs") : "GenericGibs.png";
 }
 
 void onTick(CBlob@ this)
@@ -146,7 +151,7 @@ float HitMap(CBlob@ this, CMap@ map, Vec2f tilepos, bool ricochet)
 					for (int i = 0; i < 2; ++i)
 					{
 						makeGibParticle(
-							"/GenericGibs",
+							gibs_file_name,
 							this.getPosition(),
 							getRandomVelocity(this.getOldVelocity().getAngle(), XORRandom(2.0f) + 4.0f, 30.0f),
 							1,

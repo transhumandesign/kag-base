@@ -1,9 +1,14 @@
 // Bushy tree Logic
 
 #include "TreeSync.as"
+#include "HolidaySprites.as";
+
+string trees_file_name;
 
 void onInit(CBlob@ this)
 {
+	trees_file_name = isAnyHoliday() ? getHolidayVersionFileName("Trees") : "Trees.png";
+
 	InitVars(this);
 
 	s32 seed = 0;
@@ -15,13 +20,11 @@ void onInit(CBlob@ this)
 	else
 	{
 		seed = this.getNetworkID() * 139 + getGameTime() * 7;
-		if (getNet().isServer())
+		if (isServer())
 		{
 			this.set_s32("tree_rand", seed);
 			this.Sync("tree_rand", true);
-
 		}
-
 	}
 
 	this.server_setTeamNum(-1);
@@ -73,7 +76,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 			if (segment.grown_times == 1)
 			{
-				CSpriteLayer@ newsegment = this.addSpriteLayer("segment " + i, "Entities/Natural/Trees/Trees.png" , 32, 16, 0, 0);
+				CSpriteLayer@ newsegment = this.addSpriteLayer("segment " + i, "Entities/Natural/Trees/" + trees_file_name, 32, 16, 0, 0);
 
 				if (newsegment !is null)
 				{
@@ -133,7 +136,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 				for (int spriteindex = 0; spriteindex < 3; spriteindex++)
 				{
-					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i + " " + spriteindex, "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
+					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i + " " + spriteindex, "Entities/Natural/Trees/" + trees_file_name, 32, 32, 0, 0);
 
 					if (newsegment !is null)
 					{
@@ -172,7 +175,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 			else if (i == 0 && segment.grown_times == 4) //add roots
 			{
 				f32 flipsign = 1.0f;
-				CSpriteLayer@ newsegment = this.addSpriteLayer("roots", "Entities/Natural/Trees/Trees.png" , 32, 16, 0, 0);
+				CSpriteLayer@ newsegment = this.addSpriteLayer("roots", "Entities/Natural/Trees/" + trees_file_name, 32, 16, 0, 0);
 
 				if (newsegment !is null)
 				{
@@ -189,7 +192,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 			}
 			else if (segment.grown_times == 4 && i == vars.max_height - 1) //top of the tree
 			{
-				CSpriteLayer@ newsegment = this.addSpriteLayer("extra leaves top", "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
+				CSpriteLayer@ newsegment = this.addSpriteLayer("extra leaves top", "Entities/Natural/Trees/" + trees_file_name, 32, 32, 0, 0);
 
 				if (newsegment !is null)
 				{
@@ -214,7 +217,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 
 				for (int spriteindex = 0; spriteindex < 3; spriteindex++)
 				{
-					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i + " " + spriteindex, "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
+					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i + " " + spriteindex, "Entities/Natural/Trees/" + trees_file_name, 32, 32, 0, 0);
 
 					if (newsegment !is null)
 					{
@@ -251,7 +254,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 				}
 
 				{
-					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i + " " + 3, "Entities/Natural/Trees/Trees.png" , 64, 32, 0, 0);
+					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i + " " + 3, "Entities/Natural/Trees/" + trees_file_name, 64, 32, 0, 0);
 
 					if (newsegment !is null)
 					{
@@ -266,7 +269,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 				}
 
 				{
-					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i + " " + 4, "Entities/Natural/Trees/Trees.png" , 64, 32, 0, 0);
+					CSpriteLayer@ newsegment = this.addSpriteLayer("leaves " + i + " " + 4, "Entities/Natural/Trees/" + trees_file_name, 64, 32, 0, 0);
 
 					if (newsegment !is null)
 					{

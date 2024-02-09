@@ -5,6 +5,9 @@
 #include "StandardControlsCommon.as"
 #include "RespawnCommandCommon.as"
 #include "GenericButtonCommon.as"
+#include "HolidaySprites.as"
+
+string tdm_ruins_file_name;
 
 void onInit(CBlob@ this)
 {
@@ -20,6 +23,15 @@ void onInit(CBlob@ this)
 	this.Tag("change class drop inventory");
 
 	this.getSprite().SetZ(-50.0f);   // push to background
+}
+
+void onInit(CSprite@ this)
+{
+	if (isAnyHoliday())
+	{
+		tdm_ruins_file_name = getHolidayVersionFileName("TDM_Ruins");
+		this.ReloadSprite(tdm_ruins_file_name);
+	}
 }
 
 void onTick(CBlob@ this)
