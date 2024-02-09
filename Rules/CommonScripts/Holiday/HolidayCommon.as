@@ -66,6 +66,12 @@ u16 getEasterSunday(u16 server_year)
 	u8 d = (19 * a + M) % 30;
 	u8 e = (2 * b + 4 * c + 6 * d + N) % 7;
 
+	if (d == 29 && e == 6)
+		return 50;
+
+	if (d == 28 && e == 6 && (11 * M + 11) % 30 < 19)
+		return 49;
+
 	return 22 + d + e;
 }
 
