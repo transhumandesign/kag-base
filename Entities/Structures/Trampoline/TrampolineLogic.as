@@ -67,7 +67,15 @@ void onTick(CBlob@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1, Vec2f point2)
 {
-	if (blob is null || blob.isAttached() || blob.getShape().isStatic()) return;
+	if (blob is null || blob.getShape().isStatic())
+	{
+		if (solid && this.hasTag("folded") && !this.isAttached())
+			Unfold(this);
+
+		return;
+	}
+
+	if (blob.isAttached() || this.hasTag("folded")) return;
 
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 	CBlob@ holder = point.getOccupied();
@@ -153,6 +161,13 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 // for help text
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
+	CSprite@ sprite = this.getSprite();
+	if (sprite !is null)
+	{
+		sprite.SetAnimation("pack");
+		this.Tag("folded");
+	}
+
 	if (!attached.isMyPlayer()) return;
 
 	SetHelp(attached, "trampoline help lmb", "", getTranslatedString("$trampoline$ Lock to 45° steps  $KEY_HOLD$$LMB$"), "", 3, true);
@@ -175,4 +190,22 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return !this.hasTag("no pickup");
+}
+
+void Fold(CBlob@ this)
+{
+	this.Tag("folded");
+	CSprite@ sprite = this.getSprite();
+	if (sprite is null) return;
+
+	sprite.SetAnimation("pack");
+}
+
+void Unfold(CBlob@ this)
+{
+	this.Untag("folded");
+	CSprite@ sprite = this.getSprite();
+	if (sprite is null) return;
+
+	sprite.SetAnimation("unpack");
 }
