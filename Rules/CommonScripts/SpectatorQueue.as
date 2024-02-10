@@ -311,6 +311,7 @@ void SyncQueue()
 	CBitStream params;
 
 	params.write_u8(queue.length);
+
 	for (int i=0; i<queue.length; ++i)
 	{
 		params.write_u16(queue[i].player_id);
@@ -319,14 +320,7 @@ void SyncQueue()
 
 	CRules@ rules = getRules();
 
-	for (int i=0; i<getPlayerCount(); ++i)
-	{
-		CPlayer@ p = getPlayer(i);
-
-		// we wanna sync to spectators only
-		if (p.getTeamNum() != rules.getSpectatorTeamNum()) continue;
-		rules.SendCommand(rules.getCommandID("sync queue client"), params, p);
-	}
+	rules.SendCommand(rules.getCommandID("sync queue client"), params);
 }
 
 void SetupQueueGUI(CRules@ this)
