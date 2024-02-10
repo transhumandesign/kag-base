@@ -329,6 +329,36 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	return damage;
 }
 
+void onHealthChange(CBlob@ this, f32 health_old)
+{
+	if (!isClient()) return;
+
+	if (this.getHealth() <= this.getInitialHealth() / 2)
+	{
+		CSprite@ sprite = this.getSprite();
+
+		Animation@ anim = sprite.getAnimation("default");
+		anim.AddFrame(2);
+		anim.RemoveFrame(0);
+
+		@anim = sprite.getAnimation("bounce");
+		anim.RemoveFrame(6);
+		anim.AddFrame(2);
+
+		@anim = sprite.getAnimation("pack");
+		const int[] frames = {2, 3, 0, 1};
+		anim.AddFrames(frames);
+		for (int i = 0; i < 4; ++i)
+		{
+			anim.RemoveFrame(0);
+		}
+
+		@anim = sprite.getAnimation("unpack");
+		anim.RemoveFrame(3);
+		anim.AddFrame(2);
+	}
+}
+
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return blob.getShape().isStatic();
@@ -557,7 +587,6 @@ void RemoveFeet(CBlob@ this)
 	if (isClient())
 	{
 		CSprite@ sprite = this.getSprite();
-		sprite.SetAnimation("default");
 		sprite.getSpriteLayer("left_foot").SetVisible(false);
 		sprite.getSpriteLayer("right_foot").SetVisible(false);
 	}
