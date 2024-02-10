@@ -1,4 +1,5 @@
 #include "Help.as";
+#include "GenericButtonCommon.as";
 
 namespace Trampoline
 {
@@ -25,6 +26,8 @@ void onInit(CBlob@ this)
 	this.Tag("medium weight");
 	// Because BlobPlacement.as is *AMAZING*
 	this.Tag("place norotate");
+
+	this.addCommandID("unfold");
 
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 	point.SetKeysToTake(key_action1 | key_action2);
@@ -58,8 +61,25 @@ void onTick(CBlob@ this)
 	}
 	else
 	{
-		// follow cursor normally
-		this.setAngleDegrees(-angle + 90);
+		if (this.hasTag("folded"))
+		{
+			// follow cursor normally
+			this.setAngleDegrees(-angle + 90);
+		}
+		else // tramp is active, follow cursor slowly
+		{
+			angle = (-1.0f * angle + 90 + 360) % 360;
+
+			if (angle < 90) angle=angle;
+			else if (angle < 180) angle = 90;
+			else if (angle < 270) angle = 270;
+
+			f32 diff = angle - this.getAngleDegrees();
+			if (diff < -180) diff += 360;
+			if (diff > 180) diff -= 360;
+			angle = this.getAngleDegrees() + diff / 10.0f;
+			this.setAngleDegrees(angle);
+		}
 	}
 	
 	this.set_f32("old angle", this.getAngleDegrees());
@@ -158,9 +178,29 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	}
 }
 
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("unfold"))
+	{
+		Unfold(this);
+	}
+}
+
+void GetButtonsFor(CBlob@ this, CBlob@ caller)
+{
+	if (!canSeeButtons(this, caller) || !this.hasTag("folded")
+		|| (this.isAttached() && !this.isAttachedTo(caller)))
+	{
+		return;
+	}
+
+	CButton@ button = caller.CreateGenericButton(6, Vec2f(0, 0), this, this.getCommandID("unfold"), "Unpack Trampoline");
+}
+
 // for help text
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
+	this.getShape().SetRotationsAllowed(false);
 	Fold(this);
 
 	if (!attached.isMyPlayer()) return;
@@ -171,6 +211,8 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
+	this.getShape().SetRotationsAllowed(true);
+
 	if (!detached.isMyPlayer()) return;
 
 	RemoveHelps(detached, "trampoline help lmb");
