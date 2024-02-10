@@ -1,7 +1,8 @@
-#include "ChatCommand.as"
+#include "ChatCommand.as";
 #include "MakeSeed.as";
 #include "MakeCrate.as";
-#include "MakeScroll.as"
+#include "MakeScroll.as";
+#include "MakeSign.as";
 
 class TreeCommand : BlobCommand
 {
@@ -55,7 +56,6 @@ class CrateCommand : BlobCommand
 		string blobName = args[0];
 		args.removeAt(0);
 
-		//TODO: make description kids safe
 		string description = args.size() > 0 ? join(args, " ") : blobName;
 
 		if (isBlobBlacklisted(blobName, player))
@@ -65,6 +65,30 @@ class CrateCommand : BlobCommand
 		}
 
 		server_MakeCrate(blobName, description, 0, team, pos);
+	}
+}
+
+class SignCommand : BlobCommand
+{
+	SignCommand()
+	{
+		super("sign", "Spawn a sign with an optional message");
+		SetUsage("[message]");
+	}
+
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
+	{
+		u8 team = player.getBlob().getTeamNum();
+
+		if (args.size() == 0)
+		{
+			createSign(pos, "");
+			return;
+		}
+
+		string description = join(args, " ");
+		
+		createSign(pos, description);
 	}
 }
 
