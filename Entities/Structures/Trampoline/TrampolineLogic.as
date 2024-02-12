@@ -1,4 +1,5 @@
 #include "Help.as";
+#include "StandardControlsCommon.as";
 
 namespace Trampoline
 {
@@ -38,6 +39,8 @@ void onTick(CBlob@ this)
 
 	CBlob@ holder = point.getOccupied();
 	if (holder is null) return;
+
+	HandleButtonClickKey(holder, point);
 
 	Vec2f ray = holder.getAimPos() - this.getPosition();
 	ray.Normalize();
