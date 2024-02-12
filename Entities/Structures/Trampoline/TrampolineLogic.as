@@ -161,12 +161,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 // for help text
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	CSprite@ sprite = this.getSprite();
-	if (sprite !is null)
-	{
-		sprite.SetAnimation("pack");
-		this.Tag("folded");
-	}
+	Fold(this);
 
 	if (!attached.isMyPlayer()) return;
 
@@ -195,6 +190,7 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 void Fold(CBlob@ this)
 {
 	this.Tag("folded");
+	this.Untag("medium weight");
 	CSprite@ sprite = this.getSprite();
 	if (sprite is null) return;
 
@@ -204,6 +200,7 @@ void Fold(CBlob@ this)
 void Unfold(CBlob@ this)
 {
 	this.Untag("folded");
+	this.Tag("medium weight");
 	CSprite@ sprite = this.getSprite();
 	if (sprite is null) return;
 
