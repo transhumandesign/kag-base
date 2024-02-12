@@ -56,6 +56,7 @@ void RenderTip()
 	Vec2f br(scrw / 2 + w / 2, scrh - offset);
 
 	GUI::DrawButton(tl, br);
+	GUI::SetFont("menu");
 	GUI::DrawText(tip, tl + Vec2f(10, 10), br - Vec2f(10, 10), color_white, true, true, false);
 }
 
