@@ -100,55 +100,56 @@ bool putInHeld(CBlob@ owner)
 	return owner.server_PutInInventory(held);
 }
 
-bool ClickGridMenu(CBlob@ this, int button)
-{
-	CGridMenu @gmenu;
-	CGridButton @gbutton;
-
-	if (this.ClickGridMenu(button, gmenu, gbutton))   // button gets pressed here - thing get picked up
-	{
-		if (gmenu !is null)
-		{
-			// if (gmenu.getName() == this.getInventory().getMenuName() && gmenu.getOwner() !is null)
-			{
-				if (gbutton is null)    // carrying something, put it in
-				{
-					server_PutInHeld(this, gmenu.getOwner());
-				}
-				else // take something
-				{
-					// handled by button cmd   // hardcoded still :/
-				}
-			}
-			return true;
-		}
-	}
-
-	return false;
-}
-
-void ButtonOrMenuClick(CBlob@ this, Vec2f pos, bool clear, bool doClosestClick)
-{
-	if (!ClickGridMenu(this, 0))
-		if (this.ClickInteractButton())
-		{
-			clear = false;
-		}
-		else if (doClosestClick)
-		{
-			if (this.ClickClosestInteractButton(pos, this.getRadius() * 1.0f))
-			{
-				this.ClearButtons();
-				clear = false;
-			}
-		}
-
-	if (clear)
-	{
-		this.ClearButtons();
-		this.ClearMenus();
-	}
-}
+//  // Moved to StandardControlsCommon.as
+//  bool ClickGridMenu(CBlob@ this, int button)
+//  {
+//  	CGridMenu @gmenu;
+//  	CGridButton @gbutton;
+//  
+//  	if (this.ClickGridMenu(button, gmenu, gbutton))   // button gets pressed here - thing get picked up
+//  	{
+//  		if (gmenu !is null)
+//  		{
+//  			// if (gmenu.getName() == this.getInventory().getMenuName() && gmenu.getOwner() !is null)
+//  			{
+//  				if (gbutton is null)    // carrying something, put it in
+//  				{
+//  					server_PutInHeld(this, gmenu.getOwner());
+//  				}
+//  				else // take something
+//  				{
+//  					// handled by button cmd   // hardcoded still :/
+//  				}
+//  			}
+//  			return true;
+//  		}
+//  	}
+//  
+//  	return false;
+//  }
+//  
+//  void ButtonOrMenuClick(CBlob@ this, Vec2f pos, bool clear, bool doClosestClick)
+//  {
+//  	if (!ClickGridMenu(this, 0))
+//  		if (this.ClickInteractButton())
+//  		{
+//  			clear = false;
+//  		}
+//  		else if (doClosestClick)
+//  		{
+//  			if (this.ClickClosestInteractButton(pos, this.getRadius() * 1.0f))
+//  			{
+//  				this.ClearButtons();
+//  				clear = false;
+//  			}
+//  		}
+//  
+//  	if (clear)
+//  	{
+//  		this.ClearButtons();
+//  		this.ClearMenus();
+//  	}
+//  }
 
 void onTick(CBlob@ this)
 {
@@ -281,16 +282,8 @@ void onTick(CBlob@ this)
 		}
 	}
 
-	// release action1 to click buttons
-
-	if (getHUD().hasButtons())
-	{
-		if ((this.isKeyJustPressed(key_action1) /*|| controls.isKeyJustPressed(KEY_LBUTTON)*/) && !this.isKeyPressed(key_pickup))
-		{
-			ButtonOrMenuClick(this, this.getAimPos(), false, true);
-			this.set_bool("release click", false);
-		}
-	}
+	// press action1 to click buttons
+	HandleButtonClickKey(this);
 
 	// clear grid menus on move
 
