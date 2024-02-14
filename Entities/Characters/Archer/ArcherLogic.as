@@ -1062,7 +1062,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		if (isClient())
 		{		
-			this.getSprite().PlaySound("BombBounce.ogg");
+			ArcherInfo@ archer;
+			if (!this.get("archerInfo", @archer))
+			{
+				return;
+			}
+
+			Sound::Play("BombBounce.ogg", archer.grapple_pos, 0.5f);
 		}
 	}
 	else if (cmd == this.getCommandID("cycle"))  //from standardcontrols
