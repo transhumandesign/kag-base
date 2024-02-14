@@ -327,7 +327,7 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 	{
 		return false;
 	}
-	else if (byBlob.getTeamNum() == this.getTeamNum())
+	else if (this.hasTag("folded") || byBlob.getTeamNum() == this.getTeamNum())
 	{
 		return true;
 	}
