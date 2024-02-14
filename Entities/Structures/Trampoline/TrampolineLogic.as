@@ -96,10 +96,7 @@ void onTick(CBlob@ this)
 			Sound::Play("hit_wood.ogg", this.getPosition());
 
 			CBitStream params;
-			f32 angle = (point.isKeyPressed(key_action2)) 
-							? this.get_f32("old_angle")
-							: getHoldAngle(this, holder, point);
-			params.write_f32(angle);
+			params.write_f32(getHoldAngle(this, holder, point));
 			this.SendCommand(this.getCommandID("freeze_angle_at"), params);
 		}
 	}
@@ -187,10 +184,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		Vec2f velocity_old = blob.getOldVelocity();
 		if (velocity_old.Length() + this.getVelocity().Length() < 1.0f) return;
 
-		float angle = this.getAngleDegrees();
-
-		Vec2f direction = Vec2f(0.0f, -1.0f);
-		direction.RotateBy(angle);
+		// float angle = this.getAngleDegrees();
+		// Vec2f direction = Vec2f(0.0f, -1.0f);
+		// direction.RotateBy(angle);
 
 		// // Unnecessary after earlier offset check
 		// float velocity_angle = direction.AngleWith(velocity_old);
@@ -237,7 +233,6 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	CButton@ button = caller.CreateGenericButton(6, Vec2f(0, 0), this, this.getCommandID("unfold"), "Unpack Trampoline");
 }
 
-// for help text
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	if (this.getTeamNum() == 255)
