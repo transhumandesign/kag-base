@@ -44,9 +44,11 @@ void onInit(CBlob@ this)
 	this.getSprite().SetEmitSound("Entities/Characters/Archer/BowPull.ogg");
 	this.addCommandID("shoot arrow");
 	this.addCommandID("pickup arrow");
-	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
-
+	this.addCommandID("shoot sound");
 	this.addCommandID(grapple_sync_cmd);
+	this.addCommandID(grapple_sound_cmd);
+	
+	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
 	SetHelp(this, "help self hide", "archer", getTranslatedString("Hide    $KEY_S$"), "", 1);
 	SetHelp(this, "help self action2", "archer", getTranslatedString("$Grapple$ Grappling hook    $RMB$"), "", 3);
@@ -749,6 +751,7 @@ bool checkGrappleStep(CBlob@ this, ArcherInfo@ archer, CMap@ map, const f32 dist
 		archer.grapple_pos.y = Maths::Max(0.0, archer.grapple_pos.y);
 
 		if (canSend(this)) SyncGrapple(this);
+		if (canSend(this)) GrappleSound(this);
 
 		return true;
 	}
@@ -908,12 +911,28 @@ CBlob@ CreateArrow(CBlob@ this, Vec2f arrowPos, Vec2f arrowVel, u8 arrowType)
 		arrow.server_setTeamNum(this.getTeamNum());
 		arrow.setPosition(arrowPos);
 		arrow.setVelocity(arrowVel);
+		
+		this.SendCommand(this.getCommandID("shoot sound"));
 	}
 	return arrow;
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
+	if (cmd == this.getCommandID("shoot sound"))
+	{
+		if (isClient())
+		{
+			// run this only once for a given tick
+			if (this.exists("arrow last shot time") && this.get_u16("arrow last shot time") == this.getTickSinceCreated())
+			{
+				return;
+			}
+			
+			this.getSprite().PlaySound("Entities/Characters/Archer/BowFire.ogg");
+			this.set_u16("arrow last shot time", this.getTickSinceCreated());
+		}
+	}
 	if (cmd == this.getCommandID("shoot arrow"))
 	{
 		Vec2f arrowPos;
@@ -969,16 +988,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 					arrowVel *= 0.9f;
 				}
 			}
-			this.getSprite().PlaySound("Entities/Characters/Archer/BowFire.ogg");
 		}
 		else
 		{
-			if (getNet().isServer())
+			if (isServer())
 			{
 				CreateArrow(this, arrowPos, arrowVel, arrowType);
 			}
 
-			this.getSprite().PlaySound("Entities/Characters/Archer/BowFire.ogg");
 			this.TakeBlob(arrowTypeNames[ arrowType ], 1);
 		}
 
@@ -1007,7 +1024,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 			}
 
-			if (getNet().isServer())
+			if (isServer())
 			{
 				CBlob@ mat_arrows = server_CreateBlobNoInit('mat_arrows');
 
@@ -1040,6 +1057,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID(grapple_sync_cmd))
 	{
 		HandleGrapple(this, params, !canSend(this));
+	}
+	else if (cmd == this.getCommandID(grapple_sound_cmd))
+	{
+		if (isClient())
+		{		
+			ArcherInfo@ archer;
+			if (!this.get("archerInfo", @archer))
+			{
+				return;
+			}
+
+			Sound::Play("BombBounce.ogg", archer.grapple_pos, 0.5f);
+		}
 	}
 	else if (cmd == this.getCommandID("cycle"))  //from standardcontrols
 	{
