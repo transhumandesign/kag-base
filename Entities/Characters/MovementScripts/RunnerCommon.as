@@ -33,6 +33,8 @@ shared class RunnerMoveVars
 	//force applied while... stopping
 	f32 stoppingForce;
 	f32 stoppingForceAir;
+	f32 stoppingForceAirFast;
+	f32 stoppingFastCap;
 	f32 stoppingFactor;
 
 	// moved from tags...
