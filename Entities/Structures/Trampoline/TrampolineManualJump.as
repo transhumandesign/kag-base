@@ -17,6 +17,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 void onTick(CBlob@ this)
 {
+	if (this.hasTag("folded")) return;
+
 	bool player = false;
 	CBlob@[] overlapping;
 	if (this.getOverlapping(@overlapping))

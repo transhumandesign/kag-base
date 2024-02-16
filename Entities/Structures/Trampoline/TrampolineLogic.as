@@ -1,5 +1,7 @@
 #include "Help.as";
 #include "TrampolineCommon.as";
+#include "GenericButtonCommon.as";
+#include "StandardControlsCommon.as";
 #include "Hitters.as";
 
 class TrampolineCooldown{
@@ -25,6 +27,7 @@ void onInit(CBlob@ this)
 
 	this.addCommandID("freeze_angle_at");
 	this.addCommandID("unfreeze_tramp");
+	this.addCommandID("unfold");
 
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 	point.SetKeysToTake(key_action1 | key_action3);
@@ -64,6 +67,8 @@ void onTick(CBlob@ this)
 
 	CBlob@ holder = point.getOccupied();
 	if (holder is null) return;
+
+	HandleButtonClickKey(holder, point);
 
 	if (holder.isMyPlayer() && point.isKeyJustPressed(key_action3))
 	{
@@ -119,7 +124,15 @@ void onTick(CBlob@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1, Vec2f point2)
 {
-	if (blob is null || blob.isAttached() || blob.getShape().isStatic()) return;
+	if (blob is null || blob.getShape().isStatic())
+	{
+		if (solid && this.hasTag("folded") && !this.isAttached())
+			Unfold(this);
+
+		return;
+	}
+
+	if (blob.isAttached() || this.hasTag("folded")) return;
 
 	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 	CBlob@ holder = point.getOccupied();
@@ -204,8 +217,24 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("unfreeze_tramp"))
 	{
+		Fold(this);
 		RemoveFeet(this);
 	}
+	else if (cmd == this.getCommandID("unfold"))
+	{
+		Unfold(this);
+	}
+}
+
+void GetButtonsFor(CBlob@ this, CBlob@ caller)
+{
+	if (!canSeeButtons(this, caller) || !this.hasTag("folded")
+		|| (this.isAttached() && !this.isAttachedTo(caller)))
+	{
+		return;
+	}
+
+	CButton@ button = caller.CreateGenericButton(6, Vec2f(0, 0), this, this.getCommandID("unfold"), "Unpack Trampoline");
 }
 
 // for help text
@@ -216,6 +245,11 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 		RemoveFeet(this);
 		this.Untag("invincible");
 	}
+
+	this.getShape().SetRotationsAllowed(false);
+	if (!this.hasTag("tramp_freeze"))
+		Fold(this);
+
 	if (!attached.isMyPlayer()) return;
 
 	SetHelp(attached, "trampoline help lmb", "", getTranslatedString("$trampoline$ Lock to 45° steps  $KEY_HOLD$$LMB$"), "", 3, true);
@@ -225,6 +259,8 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
+	this.getShape().SetRotationsAllowed(true);
+
 	if (!detached.isMyPlayer()) return;
 	RemoveHelps(detached, "trampoline help lmb");
 	// RemoveHelps(detached, "trampoline help rmb");
@@ -306,8 +342,24 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 
 f32 getHoldAngle(CBlob@ this, CBlob@ holder, AttachmentPoint@ point)
 {
-	if (point.isKeyPressed(key_action1))
+	if (!this.hasTag("folded")) // follow cursor slowly
 	{
+		f32 angle = (holder.getAimPos() - this.getPosition()).Angle();
+		angle = (-1.0f * angle + 90 + 360) % 360;
+
+		if (angle < 90) angle=angle;
+		else if (angle < 180) angle = 90;
+		else if (angle < 270) angle = 270;
+
+		f32 diff = angle - this.getAngleDegrees();
+		if (diff < -180) diff += 360;
+		if (diff > 180) diff -= 360;
+
+		return this.getAngleDegrees() + diff / 10.0f;
+	}
+	else if (point.isKeyPressed(key_action1))
+	{
+		// Follow cursor in 45 degree steps
 		f32 angle;
 		angle = (holder.getAimPos() - this.getPosition()).Angle();
 		angle = -Maths::Floor((angle - 67.5f) / 45) * 45;
@@ -319,6 +371,7 @@ f32 getHoldAngle(CBlob@ this, CBlob@ holder, AttachmentPoint@ point)
 	// }
 	else
 	{
+		// follow cursor normally
 		return (-1.0f * (holder.getAimPos() - this.getPosition()).Angle() + 90 + 360) % 360;
 	}
 }
@@ -356,6 +409,9 @@ void onInit(CSprite@ this)
 
 void ShowMeYourFeet(CBlob@ this, f32 tramp_angle, bool skip_sprite=false, bool skip_shape=false)
 {
+	if (this.hasTag("folded"))
+		Unfold(this);
+
 	tramp_angle = (tramp_angle + 360) % 360;
 	f32 tilt = tramp_angle;
 	if (tilt > 180)
@@ -490,4 +546,24 @@ void RemoveFeet(CBlob@ this)
 		sprite.getSpriteLayer("left_foot").SetVisible(false);
 		sprite.getSpriteLayer("right_foot").SetVisible(false);
 	}
+}
+
+void Fold(CBlob@ this)
+{
+	this.Tag("folded");
+	this.Untag("medium weight");
+	CSprite@ sprite = this.getSprite();
+	if (sprite is null) return;
+
+	sprite.SetAnimation("pack");
+}
+
+void Unfold(CBlob@ this)
+{
+	this.Untag("folded");
+	this.Tag("medium weight");
+	CSprite@ sprite = this.getSprite();
+	if (sprite is null) return;
+
+	sprite.SetAnimation("unpack");
 }
