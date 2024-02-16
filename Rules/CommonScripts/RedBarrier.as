@@ -168,7 +168,7 @@ void PushBlob(CBlob@ blob, const u16 &in x1, const u16 &in x2)
 	
 	// either a spawn point exists and we push toward it
 	// or we use the old way, pushing from the center of the barrier
-	push_left = (found_spawn_point && push_left) || left_from_middle;
+	push_left = found_spawn_point ? push_left : left_from_middle;
 		
 	//players clamped to edge
 	if (blob.getPlayer() !is null)
