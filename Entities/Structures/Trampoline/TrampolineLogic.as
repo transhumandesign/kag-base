@@ -9,6 +9,9 @@ namespace Trampoline
 	const u8 SCALAR = 10;
 	const bool SAFETY = true;
 	const int COOLDOWN_LIMIT = 8;
+
+	const bool PHYSICS = true; // adjust angle to account for blob's previous velocity
+	const float PERPENDICULAR_BOUNCE = 1.0f; // strength of angle adjustment
 }
 
 class TrampolineCooldown{
@@ -188,7 +191,39 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			cooldowns.push_back(cooldown);
 
 			Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
-			velocity.RotateBy(angle);
+
+			if (Trampoline::PHYSICS)
+			{
+				Vec2f new_vel = velocity;
+
+				velocity_old.RotateBy(-angle);
+				new_vel.x = velocity_old.x * Trampoline::PERPENDICULAR_BOUNCE;
+				new_vel *= Trampoline::SCALAR / new_vel.getLength();
+				// velocity_old.RotateBy(angle); // change velocity_old back?
+
+				new_vel.RotateBy(angle);
+				velocity.RotateBy(angle);
+
+				// If a player is holding the opposite direction of the angle adjustment, use normal velocity
+				if (blob.hasTag("player") && velocity.y < 0)
+				{
+					bool escaped = (new_vel.y - velocity.y >= 2 && blob.isKeyPressed(key_up))
+					            || (new_vel.x > velocity.x && blob.isKeyPressed(key_left))
+					            || (new_vel.x < velocity.x && blob.isKeyPressed(key_right));
+					if (!escaped)
+					{
+						velocity = new_vel;
+					}	
+				}
+				else
+				{
+					velocity = new_vel;
+				}
+			}
+			else
+			{
+				velocity.RotateBy(angle);
+			}
 
 			blob.setVelocity(velocity);
 			ProtectFromFall(blob);
