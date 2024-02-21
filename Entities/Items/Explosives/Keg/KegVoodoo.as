@@ -32,9 +32,10 @@ void onTick(CBlob@ this)
 
 		if (timer <= 0)
 		{
-			if (getNet().isServer())
+			if (isServer())
 			{
-				Boom(this);
+				this.server_SetHealth(-1.0f);
+				this.server_Die();
 			}
 		}
 		else
@@ -89,44 +90,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 }
 
-void Boom(CBlob@ this)
-{
-	this.server_SetHealth(-1.0f);
-	this.server_Die();
-
-	if (getNet().isClient()) {
-		// screenshake when close to a Keg
-
-		CBlob @blob = getLocalPlayerBlob();
-		CPlayer @player = getLocalPlayer();
-		Vec2f pos;
-
-	    CCamera @camera = getCamera();
-		if (camera !is null) {
-			
-			// If the player is a spectating, base their location off of their camera.	
-			if (player !is null && player.getTeamNum() == getRules().getSpectatorTeamNum())
-			{
-				pos = camera.getPosition();
-			}
-			else if (blob !is null)
-			{
-				pos = blob.getPosition();
-			} 
-			else 
-			{
-				return;
-			}
-
-			pos -= this.getPosition();
-			f32 dist = pos.Length();
-			if (dist < 300) {
-				ShakeScreen(200, 60, this.getPosition());
-			}
-		}
-	}
-}
-
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	Vec2f dir = velocity;
@@ -138,27 +101,6 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 void onDie(CBlob@ this)
 {
 	this.getSprite().SetEmitSoundPaused(true);
-}
-
-void onCollision(CBlob@ this, CBlob@ blob, bool solid)
-{
-	if (!solid || this.isAttached())
-	{
-		return;
-	}
-
-	f32 vellen = this.getOldVelocity().Length();
-
-	if (vellen > 1.7f)
-	{
-		Sound::Play("/WoodLightBump", this.getPosition(), Maths::Min(vellen / 8.0f, 1.1f));
-
-		//printf("vellen " + vellen );
-		if (this.hasTag("exploding") && vellen > 8.0f)
-		{
-			Boom(this);
-		}
-	}
 }
 
 void sparks(Vec2f at, f32 angle, f32 speed, SColor color)

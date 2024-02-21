@@ -1,8 +1,27 @@
 #include "Hitters.as"
+#include "FallDamageCommon.as"
 
 void onInit(CBlob@ this)
 {
 	this.Tag("stone");
+
+	// for things that can be protected from fall damage
+	this.getCurrentScript().tickIfTag = "will_go_oof";
+}
+
+void onTick(CBlob@ this)
+{
+	if (!this.exists("tick_to_oof"))
+	{
+		this.Untag("will_go_oof");
+		return;
+	}
+
+	if (getGameTime() >= this.get_u32("tick_to_oof"))
+	{
+		// Take damage
+		this.server_Hit(this, Vec2f_zero, Vec2f_zero, this.get_f32("fall_damage"), Hitters::fall);
+	}
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
@@ -41,11 +60,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		return;
 	}
 
-	if (!getNet().isServer())
-	{
-		return;
-	}
-
 	f32 vellen = this.getShape().vellen;
 	bool heavy = this.hasTag("heavy weight");
 	// sound
@@ -73,12 +87,13 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		}
 	}
 
+	if (!isServer()) return;
+
 	const f32 base = heavy ? 5.0f : 7.0f;
 	const f32 ramp = 1.2f;
 
-	//print("stone vel " + vellen + " base " + base );
-	// damage
-	if (getNet().isServer() && vellen > base && !this.hasTag("ignore fall"))
+	// fall damage
+	if (vellen > base && !this.hasTag("ignore fall"))
 	{
 		if (vellen > base * ramp)
 		{
@@ -105,23 +120,27 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				damage = 100.0f;
 			}
 
-			// check if we aren't touching a trampoline
-			CBlob@[] overlapping;
-
-			if (this.getOverlapping(@overlapping))
+			if (!isSavableFromFall(this))
 			{
-				for (uint i = 0; i < overlapping.length; i++)
-				{
-					CBlob@ b = overlapping[i];
+				this.server_Hit(this, point1, normal, damage, Hitters::fall);
+			}
+			else
+			{
+				if (isSavedFromFall(this)) return;
 
-					if (b.hasTag("no falldamage"))
-					{
-						return;
-					}
+				if (shouldFallDamageWait(point1, this))
+				{
+					// store damage
+					this.set_f32("fall_damage", damage);
+
+					this.Tag("will_go_oof");
+					this.set_u32("tick_to_oof", getGameTime() + 2);
+				}
+				else
+				{
+					this.server_Hit(this, point1, normal, damage, Hitters::fall);
 				}
 			}
-
-			this.server_Hit(this, point1, normal, damage, Hitters::fall);
 		}
 	}
 }

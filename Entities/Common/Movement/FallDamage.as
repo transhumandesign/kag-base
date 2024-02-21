@@ -9,7 +9,9 @@ const u8 knockdown_time = 12;
 
 void onInit(CBlob@ this)
 {
-	this.getCurrentScript().tickIfTag = "dead";
+	// Init saveable from fall damage
+	this.getCurrentScript().tickIfTag = "will_go_oof";
+	this.set_u32("safe_from_fall", 0); // Tick granted temp fall immunity
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
@@ -31,53 +33,53 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	f32 damage = FallDamageAmount(vely);
 	if (damage != 0.0f) //interesting value
 	{
-		bool doknockdown = true;
+		if (isSavedFromFall(this)) return;
 
-		if (damage > 0.0f)
+		if (shouldFallDamageWait(point1, this))
 		{
-			// check if we aren't touching a trampoline
-			CBlob@[] overlapping;
-
-			if (this.getOverlapping(@overlapping))
-			{
-				for (uint i = 0; i < overlapping.length; i++)
-				{
-					CBlob@ b = overlapping[i];
-
-					if (b.hasTag("no falldamage"))
-					{
-						return;
-					}
-				}
-			}
-
-			if (damage > 0.1f)
-			{
-				this.server_Hit(this, point1, normal, damage, Hitters::fall);
-			}
-			else
-			{
-				doknockdown = false;
-			}
+			this.set_u32("tick_to_oof", getGameTime() + 2);
+			this.set_f32("oof_damage", damage);
+			this.Tag("will_go_oof");
 		}
-
-		if (doknockdown)
-			setKnocked(this, knockdown_time);
-
-		if (!this.hasTag("should be silent"))
-		{				
-			if (this.getHealth() > damage) //not dead
-				Sound::Play("/BreakBone", this.getPosition());
-			else
-			{
-				Sound::Play("/FallDeath.ogg", this.getPosition());
-			}
+		else
+		{
+			Oof(this, damage);
 		}
 	}
 }
 
 void onTick(CBlob@ this)
 {
-	this.Tag("should be silent");
-	this.getCurrentScript().tickFrequency = 0;
+	if (!this.exists("tick_to_oof"))
+	{
+		this.Untag("will_go_oof");
+		return;
+	}
+
+	if (getGameTime() >= this.get_u32("tick_to_oof"))
+	{
+		this.Untag("will_go_oof");
+		Oof(this, this.get_f32("oof_damage"));
+	}
+
+}
+
+void Oof(CBlob@ this, f32 damage)
+{
+	if (!this.hasTag("dead"))
+	{				
+		if (this.getHealth() > damage) //not dead
+			Sound::Play("/BreakBone", this.getPosition());
+		else
+		{
+			Sound::Play("/FallDeath.ogg", this.getPosition());
+		}
+	}
+
+	if (damage > 0.1f)
+	{
+		this.server_Hit(this, this.getPosition(), Vec2f(0.0f, -1.0f), damage, Hitters::fall);
+	}
+
+	setKnocked(this, knockdown_time);
 }

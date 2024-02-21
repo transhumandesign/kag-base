@@ -91,6 +91,7 @@ namespace map_colors
 		alpha_bridge           = 0xFFD0DED0, // ARGB(255, 208,  222, 208);
 		alpha_wooden_door      = 0xFFD040D0, // ARGB(255, 208,   64, 208);
 		alpha_wooden_platform  = 0xFFD050D0, // ARGB(255, 208,   80, 208);
+		alpha_trampoline       = 0xFFD060D0, // ARGB(255, 208,   96, 208);
 
 		// ALPHA NATURAL
 		alpha_stalagmite       = 0xFFC000C0, // ARGB(255, 192,   0, 192);
