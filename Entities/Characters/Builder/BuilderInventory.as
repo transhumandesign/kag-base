@@ -355,6 +355,7 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 	else if (cmd == blob.getCommandID("client_fail_sound"))
 	{
 		if (isClient() && blob.isMyPlayer())
+			blob.getSprite().PlaySound("/NoAmmo", 0.5);
 	}
 	else if (cmd == blob.getCommandID("client_construct_sound"))
 	{
