@@ -141,9 +141,13 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 			return null;
 		}
 
+		if (isServer())
+		{
+			this.SendCommand(this.getCommandID("client_construct_sound"));
+		}
+		
 		pos = offsetPos + space * map.tilesize * 0.5f;
 
-		this.getSprite().PlaySound("/Construct");
 		// take inv here instead of in onDetach
 		server_TakeRequirements(inv, b.reqs);
 		DestroyScenary(tl, br);
