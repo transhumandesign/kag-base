@@ -18,7 +18,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 	{
 		this.getSprite().PlaySound(this.get_string("eat sound"));
 
-		if (getNet().isServer())
+		if (isServer() && !this.hasTag("cooked"))
 		{
 			u16 blob_id;
 			if (!params.saferead_u16(blob_id)) return;

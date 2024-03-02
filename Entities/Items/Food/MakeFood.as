@@ -39,7 +39,7 @@ CBlob@ CookInFireplace(CBlob@ ingredient) // used by Fireplace.as
 
 CBlob@ Cook(CBlob@ ingredient) // used by Chicken.as and Fishy.as
 {
-	if (ingredient.hasTag("cooked") || !ingredient.exists("cooked name"))
+	if (ingredient.hasTag("cooked") || ingredient.hasTag("healed") || !ingredient.exists("cooked name"))
 		return null;
 
 	string cooked_name 			= ingredient.get_string("cooked name");
