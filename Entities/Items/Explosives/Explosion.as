@@ -70,7 +70,7 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 			//copy position, explode from centre of carrier
 			pos = doomed.getPosition();
 			//kill or stun players if we're in their inventory
-			if ((doomed.hasTag("player") || doomed.getName() == "crate") && !doomed.hasTag("invincible"))
+			if ((doomed.hasTag("flesh") || doomed.getName() == "crate") && !doomed.hasTag("invincible"))
 			{
 				if (this.getName() == "bomb") //kill player
 				{
@@ -152,7 +152,7 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 		}
 	}
 
-	if (getNet().isServer())
+	if (isServer())
 	{
         Vec2f m_pos = (pos / map.tilesize);
         m_pos.x = Maths::Floor(m_pos.x);
@@ -336,8 +336,6 @@ void LinearExplosion(CBlob@ this, Vec2f _direction, f32 length, const f32 width,
 	pos += normal * -(halfwidth / tilesize + 1.0f);
     Vec2f m_pos = pos;
 
-	bool isserver = getNet().isServer();
-
 	int steps = int(length / tilesize);
 	int width_steps = int(width / tilesize);
 	int damagedsteps = 0;
@@ -355,7 +353,7 @@ void LinearExplosion(CBlob@ this, Vec2f _direction, f32 length, const f32 width,
 
 			if (!justhurt && (((step + width_step) % 3 == 0) || XORRandom(3) == 0)) makeSmallExplosionParticle(tpos);
 
-			if (isserver)
+			if (isServer())
 			{
 				TileType t = map.getTile(tpos).type;
 				if (t == CMap::tile_bedrock)
@@ -404,7 +402,7 @@ void LinearExplosion(CBlob@ this, Vec2f _direction, f32 length, const f32 width,
 		pos += direction;
 	}
 
-	if (!isserver) return; //EARLY OUT ---------------------------------------- SERVER ONLY BELOW HERE
+	if (!isServer()) return; //EARLY OUT ---------------------------------------- SERVER ONLY BELOW HERE
 
 	//prevent hitting through walls
 	length = steps * tilesize;
