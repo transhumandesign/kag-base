@@ -146,7 +146,7 @@ class HealCommand : ChatCommand
 		//health calculation and processing
 
 		// going in steps of 0.25
-		float orig_health = parseFloat(args[0]);
+		float orig_health = args.size() > 0 ? parseFloat(args[0]) : blob.getInitialHealth() * 2;
 		float health_to_heal = orig_health > 0 ? Maths::Floor(orig_health * 4) * 0.25 : Maths::Ceil(orig_health * 4) * 0.25; 
 		bool no_change = health_to_heal == 0;
 		bool healing = health_to_heal > 0;
