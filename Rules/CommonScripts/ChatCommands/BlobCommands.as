@@ -25,10 +25,8 @@ class SeedCommand : BlobCommand
 				server_AddToChat(getTranslatedString("Specify a valid seed type: " + join(seedTypes, ", ")), ConsoleColour::ERROR, player);
 				return;
 			}
-			else
-			{
-				seed = type;
-			}
+
+			seed = type;
 		}
 
 		server_MakeSeed(pos, seed);
