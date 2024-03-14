@@ -51,7 +51,7 @@ class BotCommand : ChatCommand
 	{
 		if (isServer())
 		{
-			string name = args.size() > 0 ? args[0] : "Henry";
+			string name = args.size() > 0 ? join(args, " ") : "Henry";
 			AddBot(name);
 		}
 	}
