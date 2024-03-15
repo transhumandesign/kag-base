@@ -110,7 +110,7 @@ class ScrollCommand : BlobCommand
 		
 		if (scroll is null)
 		{
-			server_AddToChat(getTranslatedString("Specify the name of a scroll to spawn:"), ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Specify a valid scroll name:"), ConsoleColour::ERROR, player);
 			
 			ScrollSet@ allScrolls = getScrollSet("all scrolls");
 			
