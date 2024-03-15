@@ -85,8 +85,30 @@ class ScrollCommand : BlobCommand
 			SetupScrolls(getRules());
 		}
 
-		// no name specified, show all valid names in chat
+		// no name specified, spawn a random scroll
 		if (args.size() == 0)
+		{
+			ScrollSet@ allScrolls = getScrollSet("all scrolls");
+			
+			if (allScrolls !is null)
+			{
+				string[] scrolls_list = allScrolls.names;
+				int scrolls_list_size = scrolls_list.size();
+				
+				if (scrolls_list_size > 0)
+				{
+					server_MakePredefinedScroll(pos, scrolls_list[XORRandom(scrolls_list_size)]);
+				}
+			}
+			return;
+		}
+
+		// attempting to spawn scroll by name
+		string scrollName = join(args, " ");
+				
+		CBlob@ scroll = server_MakePredefinedScroll(pos, scrollName);
+		
+		if (scroll is null)
 		{
 			server_AddToChat(getTranslatedString("Specify the name of a scroll to spawn:"), ConsoleColour::ERROR, player);
 			
@@ -102,17 +124,6 @@ class ScrollCommand : BlobCommand
 				}
 			}
 			
-			return;
-		}
-
-		// attempting to spawn scroll
-		string scrollName = join(args, " ");
-				
-		CBlob@ scroll = server_MakePredefinedScroll(pos, scrollName);
-		
-		if (scroll is null)
-		{
-			server_AddToChat(getTranslatedString("Scroll '{SCROLL}' not found").replace("{SCROLL}", scrollName), ConsoleColour::ERROR, player);
 			return;
 		}
 	}
