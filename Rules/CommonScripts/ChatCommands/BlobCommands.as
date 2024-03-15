@@ -1,7 +1,8 @@
 #include "ChatCommand.as"
 #include "MakeSeed.as";
 #include "MakeCrate.as";
-#include "MakeScroll.as"
+#include "MakeScroll.as";
+#include "WAR_Technology.as";
 
 class TreeCommand : BlobCommand
 {
@@ -78,14 +79,42 @@ class ScrollCommand : BlobCommand
 
 	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
+		// setting up scrolls if necessary
+		if (!getRules().exists("all scrolls"))
+		{
+			SetupScrolls(getRules());
+		}
+
+		// no name specified, show all valid names in chat
 		if (args.size() == 0)
 		{
-			server_AddToChat(getTranslatedString("Specify the name of a scroll to spawn"), ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Specify the name of a scroll to spawn:"), ConsoleColour::ERROR, player);
+			
+			ScrollSet@ allScrolls = getScrollSet("all scrolls");
+			
+			if (allScrolls !is null)
+			{
+				string[] scrolls_list = allScrolls.names;
+				
+				if (scrolls_list.size() > 0)
+				{
+					server_AddToChat(join(scrolls_list, ", "), ConsoleColour::ERROR, player);
+				}
+			}
+			
 			return;
 		}
 
+		// attempting to spawn scroll
 		string scrollName = join(args, " ");
-		server_MakePredefinedScroll(pos, scrollName);
+				
+		CBlob@ scroll = server_MakePredefinedScroll(pos, scrollName);
+		
+		if (scroll is null)
+		{
+			server_AddToChat(getTranslatedString("Scroll '{SCROLL}' not found").replace("{SCROLL}", scrollName), ConsoleColour::ERROR, player);
+			return;
+		}
 	}
 }
 
