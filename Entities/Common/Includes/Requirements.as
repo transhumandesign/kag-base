@@ -213,7 +213,7 @@ bool hasRequirements(CInventory@ inv1, CInventory@ inv2, CBitStream &inout bs, C
 		{
 			CBlob@ blob = inv1 !is null ? inv1.getBlob() : null;
 			CRules@ rules = getRules();
-			if (rules !is null && rules.exists("no purchase post match") && rules.isGameOver())
+			if (rules !is null && rules.exists("no purchase post match") && rules.get_bool("no purchase post match") && rules.isGameOver())
 			{
 				AddMatchNotEndedRequirement(missingBs);
 				has = false;
