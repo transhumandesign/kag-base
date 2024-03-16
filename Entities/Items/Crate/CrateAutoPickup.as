@@ -27,14 +27,17 @@ void onTick(CBlob@ this)
         for (uint i = 0; i < overlapping.length; i++)
         {
             CBlob@ blob = overlapping[i];
-            {
-                if (blob.getShape().vellen > 1.0f)
-                {
-                    continue;
-                }
 
-                crateTake(this, blob);
-            }
+			if (blob is null 
+				|| blob.isAttached() 
+				|| !blob.canBePickedUp(this)
+				|| blob.getShape().vellen > 1.0f
+				)
+			{
+				continue;
+			}
+
+			crateTake(this, blob);
         }
     }
 }
