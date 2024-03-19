@@ -21,6 +21,12 @@ void onInit(CBlob@ this)
 
 	// defaultnobuild
 	this.set_Vec2f("nobuild extend", Vec2f(0.0f, 8.0f));
+	
+	CShape@ shape = this.getShape();
+	if (shape !is null)
+	{
+		shape.PutOnGround();
+	}
 }
 
 void onTick(CBlob@ this)
