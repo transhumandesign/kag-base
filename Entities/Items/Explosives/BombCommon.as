@@ -26,7 +26,7 @@ bool UpdateBomb(CBlob@ this)
 	this.getSprite().SetEmitSoundPaused(false);
 	if (timer <= 0)
 	{
-		if (getNet().isServer())
+		if (isServer())
 		{
 			Boom(this);
 		}
@@ -53,7 +53,9 @@ bool UpdateBomb(CBlob@ this)
 
 		if (XORRandom(2) == 0)
 		{
-			sparks(this.getPosition(), this.getAngleDegrees(), 3.5f + (XORRandom(10) / 5.0f), lightColor);
+			Vec2f blob_position = this.getPosition();
+			Vec2f sparks_position = this.exists("custom_sparks_offset") ? this.get_Vec2f("custom_sparks_offset") + blob_position : blob_position;
+			sparks(sparks_position, this.getAngleDegrees(), 3.5f + (XORRandom(10) / 5.0f), lightColor);
 		}
 
 		int fuseTicks = (this.get_s32("bomb_timer") - getGameTime());

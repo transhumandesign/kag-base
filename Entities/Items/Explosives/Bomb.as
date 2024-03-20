@@ -11,7 +11,6 @@ void onInit(CBlob@ this)
 	this.set_u16("explosive_parent", 0);
 	this.getShape().getConsts().net_threshold_multiplier = 2.0f;
 	SetupBomb(this, bomb_fuse, 48.0f, 3.0f, 24.0f, 0.4f, true);
-	//
 	this.Tag("activated"); // make it lit already and throwable
 }
 
@@ -27,7 +26,6 @@ void set_delay(CBlob@ this, string field, s32 delay)
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
-	Vec2f vel = blob.getVelocity();
 
 	s32 timer = blob.get_s32("bomb_timer") - getGameTime();
 
