@@ -6,6 +6,8 @@
 
 const s32 bomb_fuse = 120;
 
+// blob
+
 void onInit(CBlob@ this)
 {
 	this.set_u16("explosive_parent", 0);
@@ -14,50 +16,11 @@ void onInit(CBlob@ this)
 	this.Tag("activated"); // make it lit already and throwable
 }
 
-//start ugly bomb logic :)
-
-void set_delay(CBlob@ this, string field, s32 delay)
+void set_delay(CBlob@ this, string field, s32 delay) // legacy?
 {
 	this.set_s32(field, getGameTime() + delay);
 }
 
-//sprite update
-
-void onTick(CSprite@ this)
-{
-	CBlob@ blob = this.getBlob();
-	
-	if (!blob.hasTag("exploding"))
-	{
-		return;
-	}
-	
-	
-	s32 timer = blob.get_s32("bomb_timer") - getGameTime();
-
-	if (timer < 0)
-	{
-		return;
-	}
-
-	if (timer > 30)
-	{
-		this.SetAnimation("default");
-		this.animation.frame = this.animation.getFramesCount() * (1.0f - ((timer - 30) / 220.0f));
-	}
-	else
-	{
-		this.SetAnimation("shes_gonna_blow");
-		this.animation.frame = this.animation.getFramesCount() * (1.0f - (timer / 30.0f));
-
-		if (timer < 15 && timer > 0)
-		{
-			f32 invTimerScale = (1.0f - (timer / 15.0f));
-			Vec2f scaleVec = Vec2f(1, 1) * (1.0f + 0.07f * invTimerScale * invTimerScale);
-			this.ScaleBy(scaleVec);
-		}
-	}
-}
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
@@ -104,8 +67,6 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	return true;
 }
 
-
-
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (!solid)
@@ -132,4 +93,42 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		}
 	}
 }
+
+// sprite
+
+void onInit(CSprite@ this)
+{
+	this.getCurrentScript().tickIfTag = "exploding";
+}
+
+void onTick(CSprite@ this)
+{
+	CBlob@ blob = this.getBlob();	
+
+	s32 timer = blob.get_s32("bomb_timer") - getGameTime();
+
+	if (timer < 0)
+	{
+		return;
+	}
+
+	if (timer > 30)
+	{
+		this.SetAnimation("default");
+		this.animation.frame = this.animation.getFramesCount() * (1.0f - ((timer - 30) / 220.0f));
+	}
+	else
+	{
+		this.SetAnimation("shes_gonna_blow");
+		this.animation.frame = this.animation.getFramesCount() * (1.0f - (timer / 30.0f));
+
+		if (timer < 15 && timer > 0)
+		{
+			f32 invTimerScale = (1.0f - (timer / 15.0f));
+			Vec2f scaleVec = Vec2f(1, 1) * (1.0f + 0.07f * invTimerScale * invTimerScale);
+			this.ScaleBy(scaleVec);
+		}
+	}
+}
+
 
