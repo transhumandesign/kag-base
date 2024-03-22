@@ -26,6 +26,13 @@ void set_delay(CBlob@ this, string field, s32 delay)
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
+	
+	if (!blob.hasTag("exploding"))
+	{
+		return;
+	}
+	
+	
 	s32 timer = blob.get_s32("bomb_timer") - getGameTime();
 
 	if (timer < 0)
