@@ -40,6 +40,8 @@ void onInit(CBlob@ this)
 	{
 		this.set_bool("map_damage_raycast", true);
 	}
+	
+	this.getCurrentScript().tickIfTag = "exploding";
 }
 
 void Explode(CBlob@ this)

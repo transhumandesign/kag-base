@@ -2,10 +2,9 @@
 
 #include "Hitters.as"
 
-
-
 void SetupBomb(CBlob@ this, const int fuseTicks, const f32 explRadius, const f32 explosive_damage, const f32 map_damage_radius, const f32 map_damage_ratio, const bool map_damage_raycast)
 {
+	this.set_s32("fuse_ticks", fuseTicks);
 	this.set_s32("bomb_timer", getGameTime() + fuseTicks);
 	this.set_f32("explosive_radius", explRadius);
 	this.set_f32("explosive_damage", explosive_damage);
@@ -24,6 +23,7 @@ bool UpdateBomb(CBlob@ this)
 	s32 timer = this.get_s32("bomb_timer") - getGameTime();
 	//printf("timer " + timer + " " + this.get_s32("bomb_timer")  + " " + getGameTime() );
 	this.getSprite().SetEmitSoundPaused(false);
+
 	if (timer <= 0)
 	{
 		if (isServer())
@@ -58,7 +58,7 @@ bool UpdateBomb(CBlob@ this)
 			sparks(sparks_position, this.getAngleDegrees(), 3.5f + (XORRandom(10) / 5.0f), lightColor);
 		}
 
-		int fuseTicks = (this.get_s32("bomb_timer") - getGameTime());
+		int fuseTicks = this.get_s32("fuse_ticks");
 		if (timer < fuseTicks / 2)
 		{
 			const f32 speed = 1.0f + (1.0f - 2.0f * ((f32(timer) / f32(fuseTicks))));
@@ -66,6 +66,7 @@ bool UpdateBomb(CBlob@ this)
 			this.getSprite().SetEmitSoundVolume(speed);
 		}
 	}
+
 	return true;
 }
 

@@ -28,7 +28,6 @@ void onInit(CBlob@ this)
 	
 	// explosion stuff
 	this.set_Vec2f("custom_sparks_offset", Vec2f(0,-24));
-	this.set_s32("bomb_timer", -1); // this has to exist because resetting ctf tutorial causes this to be 0 for one tick which messes up the sprite frames
 	this.set_bool("explosive_teamkill", true);
 }
 
