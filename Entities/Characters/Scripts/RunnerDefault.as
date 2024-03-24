@@ -33,14 +33,18 @@ void onTick(CBlob@ this)
 	// wetness
 	if (!v_fastrender)
 	{
-		bool wet = false;
-		if (this.isInWater())
+		bool wet = this.isInWater();
+		
+		// in water
+		if (wet)
 		{
 			this.set_u32("water last touched", getGameTime());
-			wet = true;
+			this.Tag("wet");
+			return;
 		}
 		
-		if (wet || (this.exists("water last touched") && this.get_u32("water last touched") + 150 > getGameTime()))
+		// got out of water
+		if (this.exists("water last touched") && this.get_u32("water last touched") + 150 > getGameTime())
 		{
 			this.Tag("wet");
 		}
