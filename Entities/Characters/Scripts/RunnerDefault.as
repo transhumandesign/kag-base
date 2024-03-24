@@ -29,6 +29,26 @@ void onTick(CBlob@ this)
 {
 	this.Untag("prevent crouch");
 	DoKnockedUpdate(this);
+	
+	// wetness
+	if (!v_fastrender)
+	{
+		bool wet = false;
+		if (this.isInWater())
+		{
+			this.set_u32("water last touched", getGameTime());
+			wet = true;
+		}
+		
+		if (wet || (this.exists("water last touched") && this.get_u32("water last touched") + 150 > getGameTime()))
+		{
+			this.Tag("wet");
+		}
+		else
+		{
+			this.Untag("wet");
+		}
+	}
 }
 
 // pick up efffects
