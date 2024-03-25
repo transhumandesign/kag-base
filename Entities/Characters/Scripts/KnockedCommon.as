@@ -24,7 +24,7 @@ bool setKnocked(CBlob@ blob, int ticks, bool server_only = false)
 	u8 currentKnockedTime = blob.get_u8(knockedProp);
 	if (knockedTime > currentKnockedTime)
 	{
-		if (getNet().isServer())
+		if (isServer())
 		{
 			blob.set_u8(knockedProp, knockedTime);
 
@@ -32,7 +32,6 @@ bool setKnocked(CBlob@ blob, int ticks, bool server_only = false)
 			params.write_u8(knockedTime);
 
 			blob.SendCommand(blob.getCommandID("knocked"), params);
-
 		}
 
 		if(!server_only && blob.isMyPlayer())
@@ -42,13 +41,13 @@ bool setKnocked(CBlob@ blob, int ticks, bool server_only = false)
 
 		return true;
 	}
-	return false;
 
+	return false;
 }
 
 void KnockedCommands(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID("knocked") && getNet().isClient())
+	if (cmd == this.getCommandID("knocked") && isClient())
 	{
 		u8 knockedTime = 0;
 		if (!params.saferead_u8(knockedTime))
@@ -73,7 +72,6 @@ bool isKnocked(CBlob@ this)
 	if (this.getPlayer() !is null && this.getPlayer().freeze)
 	{
 		return true;
-
 	}
 
 	u8 knockedRemaining = getKnockedRemaining(this);
@@ -108,8 +106,12 @@ void DoKnockedUpdate(CBlob@ this)
 			knockedRemaining--;
 			this.set_u8(knockedProp, knockedRemaining);
 
+			if (this.isMyPlayer())
+			{
+				this.ClearButtons();
+				this.ClearMenus();
+			}
 		}
-
 
 		u16 takekeys;
 		if (knockedRemaining < 2 || (this.hasTag("dazzled") && knockedRemaining < 30))
