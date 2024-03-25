@@ -70,7 +70,7 @@ u8 getKnockedRemaining(CBlob@ this)
 bool isKnocked(CBlob@ this)
 {
 	if (this.getPlayer() !is null && this.getPlayer().freeze)
-	{	
+	{
 		return true;
 	}
 
