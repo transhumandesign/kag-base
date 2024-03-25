@@ -74,6 +74,9 @@ void onInit(CInventory@ this)
 
 	blob.set_u8("buildblob", 255);
 	blob.set_TileType("buildtile", 0);
+	
+	blob.addCommandID("client_fail_sound");
+	blob.addCommandID("client_construct_sound");
 
 	if (QUICK_SWAP_ENABLED)
 	{
@@ -205,8 +208,6 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 
 	if (cmd >= Builder::make_block && cmd < Builder::make_reserved)
 	{
-		const bool isServer = getNet().isServer();
-
 		BuildBlock[][]@ blocks;
 		if (!blob.get(blocks_property, @blocks)) return;
 
@@ -217,19 +218,20 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 		{
 			BuildBlock@ block = @blocks[PAGE][i];
 			bool canBuildBlock = canBuild(blob, @blocks[PAGE], i) && !isKnocked(blob);
+
+			// put carried in inventory thing first
 			if (!canBuildBlock)
 			{
-				if (blob.isMyPlayer())
+				if (isServer())
 				{
-					blob.getSprite().PlaySound("/NoAmmo", 0.5);
+					blob.SendCommand(blob.getCommandID("client_fail_sound"));
 				}
 
 				return;
 			}
-
-			// put carried in inventory thing first
-			if (isServer)
-			{
+			
+			if (isServer())
+			{			
 				CBlob@ carryBlob = blob.getCarriedBlob();
 				if (carryBlob !is null)
 				{
@@ -349,6 +351,16 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 		{
 			Sound::Play("/CycleInventory.ogg");
 		}
+	}
+	else if (cmd == blob.getCommandID("client_fail_sound"))
+	{
+		if (isClient() && blob.isMyPlayer())
+			blob.getSprite().PlaySound("/NoAmmo", 0.5);
+	}
+	else if (cmd == blob.getCommandID("client_construct_sound"))
+	{
+		if (isClient() && blob.isMyPlayer())
+			blob.getSprite().PlaySound("/Construct");
 	}
 }
 

@@ -609,35 +609,59 @@ CBlob@ getClosestBlob(CBlob@ this)
 	return closest;
 }
 
+bool CollidesWithPlatform(Vec2f ray, Vec2f hitpos, CBlob@ platform)
+{
+	f32 angle = platform.getAngleDegrees();
+	Vec2f border_offset = Vec2f(0, -getMap().tilesize / 2);
+	border_offset.RotateBy(Maths::Round(angle));         // getting rid of "0.001 off" cases
+	
+	const f32 ray_angle = border_offset.AngleWith(ray);
+	
+	if (!(ray_angle > -90.0f && ray_angle < 90.0f)) // facing against platform?
+	{	
+		Vec2f border_pos = platform.getPosition() + border_offset;
+		hitpos = Vec2f(Maths::Round(hitpos.x), Maths::Round(hitpos.y));
+		
+		return ((angle + 45.0f) % 180.0f) < 90.0f ? border_pos.y == hitpos.y : border_pos.x == hitpos.x; // ray hitpos overlaps with border pos?
+	}
+	
+	return false;
+}
+
 bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 {
 	if (!blob.canBePickedUp(this)) return false;
 
 	float maxDist = Maths::Max(this.getRadius() + blob.getRadius() + 20.0f, 36.0f);
 
-	Vec2f pos = this.getPosition() + Vec2f(0.0f, -this.getRadius() * 0.9f);
-	Vec2f pos2 = blob.getPosition();
-
-	Vec2f ray = pos2 - pos;
+	Vec2f picker_pos = this.getPosition() + Vec2f(0.0f, -this.getRadius() * 0.9f);
+	Vec2f blob_pos = blob.getPosition();
+	Vec2f ray = blob_pos - picker_pos;
+	f32 ray_length = ray.Length();
 	bool canRayCast = false;
-
 	CMap@ map = getMap();
 
 	HitInfo@[] hitInfos;
-	if(map.getHitInfosFromRay(pos, -ray.getAngle(), ray.Length(), this, hitInfos))
+	if (map.getHitInfosFromRay(picker_pos, -ray.getAngle(), ray_length, this, hitInfos))
 	{
 		for (int i = 0; i < hitInfos.length; i++)
 		{
 			HitInfo@ hi = hitInfos[i];
 			CBlob@ b = hi.blob;
 
-			// collide with anything that isn't a platform
-			// could do proper platform direction check but probably not needed
-			if (b !is null && b !is this && b !is blob && b.isCollidable() && b.getShape().isStatic() && !b.isPlatform())
+			if (b is null || b is this)
 			{
-				canRayCast = false;
-				break;
+				continue;
+			}
 
+			if (b !is blob && b.isCollidable() && b.getShape().isStatic())
+			{
+				//don't allow picking through platform
+				if (b.isPlatform() && CollidesWithPlatform(ray, hi.hitpos, b))
+				{
+					canRayCast = false;
+					break;
+				}
 			}
 
 			if(map.isTileSolid(hi.tile))
@@ -652,12 +676,13 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 				canRayCast = true;
 			}
 		}
-
-	} else {
+	} 
+	else 
+	{
 		canRayCast = true;
 	}
 
-	return (((pos2 - pos).getLength() <= maxDist)
+	return ((ray_length <= maxDist)
 	        && !blob.isAttached() && !blob.hasTag("no pickup")
 	        && (canRayCast || this.isOverlapping(blob)) //overlapping fixes "in platform" issue
 	       );

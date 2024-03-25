@@ -9,7 +9,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (dissalowDecaying(this))
+	if (disallowDecaying(this))
 		return;
 
 	const f32 thresh = 45.0f;
