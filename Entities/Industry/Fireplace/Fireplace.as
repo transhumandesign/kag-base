@@ -121,4 +121,3 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return blob.getShape().isStatic();
 }
-}

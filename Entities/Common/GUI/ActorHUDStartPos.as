@@ -58,7 +58,7 @@ void DrawResupplyOnHUD(CBlob@ this, Vec2f tl)
 	u32 secs = ((next_items - 1 - getGameTime()) / getTicksASecond()) + 1;
 	string units = ((secs != 1) ? " seconds" : " second");
 
-	Vec2f dim_res_av;
+	Vec2f dim_res_av, dim_res_unav;
 	u8 resupply_icon_frame;
 
 	if (bname == "builder")
