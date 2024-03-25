@@ -2,9 +2,15 @@
 // wont work without "exploding"  tag
 
 #include "Explosion.as";  // <---- onHit()
+#include "Void.as";
 
 void onDie(CBlob@ this)
 {
+	if (isVoidedOut(this))
+	{
+		return;
+	}
+
 	if (this.hasTag("exploding"))
 	{
 		if (this.exists("explosive_radius") && this.exists("explosive_damage"))

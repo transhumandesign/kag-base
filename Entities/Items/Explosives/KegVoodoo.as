@@ -32,7 +32,7 @@ void onTick(CBlob@ this)
 
 		if (timer <= 0)
 		{
-			if (getNet().isServer())
+			if (isServer())
 			{
 				Boom(this);
 			}
@@ -59,8 +59,6 @@ void onTick(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	bool isServer = getNet().isServer();
-
 	if (cmd == this.getCommandID("activate"))
 	{
 		this.Tag("activated");
@@ -94,7 +92,7 @@ void Boom(CBlob@ this)
 	this.server_SetHealth(-1.0f);
 	this.server_Die();
 
-	if (getNet().isClient()) {
+	if (isClient()) {
 		// screenshake when close to a Keg
 
 		CBlob @blob = getLocalPlayerBlob();

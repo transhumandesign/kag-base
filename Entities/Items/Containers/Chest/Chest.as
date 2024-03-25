@@ -2,6 +2,7 @@
 
 #include "LootCommon.as";
 #include "GenericButtonCommon.as";
+#include "Void.as";
 
 void onInit(CBlob@ this)
 {
@@ -115,7 +116,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void onDie(CBlob@ this)
 {
-	if (getNet().isServer() && !this.exists(DROP))
+	if (isVoidedOut(this))
+	{
+		return;
+	}
+
+	if (isServer() && !this.exists(DROP))
 	{
 		addLoot(this, INDEX_TDM, 1, 0);
 	}
