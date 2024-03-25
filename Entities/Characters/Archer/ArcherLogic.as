@@ -994,7 +994,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				{
 					arrowVel *= 0.9f;
 				}
-			};
+			}
 		}
 		else
 		{
