@@ -57,3 +57,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 	}
 }
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	return blob.getShape().isStatic();
+}

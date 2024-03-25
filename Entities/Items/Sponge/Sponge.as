@@ -98,6 +98,20 @@ void onTick(CSprite@ this)
 {
 	u8 absorbed = this.getBlob().get_u8(ABSORBED_PROP);
 	spongeUpdateSprite(this, absorbed);
+	
+	// wetness
+	if (!v_fastrender)
+		{
+		CBlob@ blob = this.getBlob();
+		if (blob !is null && this.getFrameIndex() == 3)
+		{
+			blob.Tag("wet");
+		}
+		else
+		{
+			blob.Untag("wet");
+		}
+	}
 }
 
 u8 adjustAbsorbedAmount(CBlob@ this, f32 amount)
@@ -108,7 +122,6 @@ u8 adjustAbsorbedAmount(CBlob@ this, f32 amount)
 	this.Sync(ABSORBED_PROP, true);
 	return absorbed;
 }
-
 
 // custom gibs
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
