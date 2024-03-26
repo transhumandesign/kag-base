@@ -333,7 +333,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				Hitters::arrow;
 
 			//perform the hit and tag so that another doesn't happen
-			this.server_Hit(blob, point1, initVelocity, dmg, hit_type);
+			if (!blob.hasTag("invincible"))
+				this.server_Hit(blob, point1, initVelocity, dmg, hit_type);
 
 			// for fire arrows, make fire
 			if (arrowType == ArrowType::fire && !this.hasTag("no_fire"))

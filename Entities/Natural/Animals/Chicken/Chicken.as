@@ -2,11 +2,14 @@
 //script for a chicken
 
 #include "AnimalConsts.as";
+#include "MakeFood.as";
+#include "ArcherCommon.as";
 
 const u8 DEFAULT_PERSONALITY = SCARED_BIT;
-const int MAX_EGGS = 2; //maximum symultaneous eggs
+const int MAX_EGGS = 2; //maximum simultaneous eggs
 const int MAX_CHICKENS = 6;
 const f32 CHICKEN_LIMIT_RADIUS = 120.0f;
+const u8 cookAfterInFireTicks = 50;
 
 int g_lastSoundPlayedTime = 0;
 int g_layEggInterval = 0;
@@ -16,7 +19,6 @@ int g_layEggInterval = 0;
 void onInit(CSprite@ this)
 {
 	this.ReloadSprites(0, 0); //always blue
-
 }
 
 void onTick(CSprite@ this)
@@ -74,6 +76,7 @@ void onTick(CSprite@ this)
 void onInit(CBlob@ this)
 {
 	this.set_f32("bite damage", 0.25f);
+	this.set_u16("fire duration", 0);
 
 	//brain
 	this.set_u8(personality_property, DEFAULT_PERSONALITY);
@@ -111,11 +114,15 @@ void onInit(CBlob@ this)
 	vars.slowForce.Set(1.0f, 0.0f);
 	vars.jumpForce.Set(0.0f, -20.0f);
 	vars.maxVelocity = 1.1f;
+	
+	// cooking
+	this.set_string("cooked name", "Fried Chicken");
+	this.set_u8("cooked sprite index", 7);
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
-	return true; //maybe make a knocked out state? for loading to cata?
+	return true;
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
@@ -125,6 +132,33 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onTick(CBlob@ this)
 {
+	// cook it after it's been in fire
+	if (isServer())
+	{
+		CMap@ map 		= getMap();
+		Vec2f position 	= this.getPosition();
+
+		u16 fire_duration = this.exists("fire duration") ? this.get_u16("fire duration") : 0;
+
+		if (map.isInFire(position))
+		{
+			fire_duration++;
+
+			if (fire_duration >= cookAfterInFireTicks)
+			{
+				Cook(this); // MakeFood.as
+			}
+
+			this.set_u16("fire duration", fire_duration);
+		}
+		else if (fire_duration > 0)
+		{
+			fire_duration--;
+
+			this.set_u16("fire duration", fire_duration);
+		}
+	}
+
 	f32 x = this.getVelocity().x;
 	if (Maths::Abs(x) > 1.0f)
 	{
@@ -184,7 +218,7 @@ void onTick(CBlob@ this)
 		g_lastSoundPlayedTime =  getGameTime();
 
 		// lay eggs
-		if (getNet().isServer())
+		if (isServer())
 		{
 			g_layEggInterval++;
 			if (g_layEggInterval % 13 == 0)
@@ -224,6 +258,17 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
+}
+
+f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
+{
+	if (hitterBlob.getName() == "arrow" 
+		&& hitterBlob.get_u8("arrow type") == ArrowType::fire)
+	{
+		Cook(this); // MakeFood.as
+	}
+
+	return damage;
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)

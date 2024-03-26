@@ -2,7 +2,7 @@
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (!solid || blob is null)
+	if (!solid || blob is null || blob.hasTag("invincible"))
 		return;
 
 	bool hasAttachments = otherTeamHitting(this, blob);

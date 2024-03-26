@@ -182,7 +182,9 @@ void Pierce(CBlob@ this, Vec2f velocity, const f32 angle)
 				if (!doesCollideWithBlob(this, blob) || LimitedAttack_has_hit_actor(this, blob))
 					continue;
 
-				this.server_Hit(blob, hit_position, velocity, damage, Hitters::ballista, true);
+				if (!blob.hasTag("invincible"))
+					this.server_Hit(blob, hit_position, velocity, damage, Hitters::ballista, true);
+
 				BallistaHitBlob(this, hit_position, velocity, damage, blob, Hitters::ballista);
 				LimitedAttack_add_actor(this, blob);
 			}
@@ -212,8 +214,7 @@ bool DoExplosion(CBlob@ this, Vec2f velocity)
 
 void BallistaHitBlob(CBlob@ this, Vec2f hit_position, Vec2f velocity, const f32 damage, CBlob@ blob, u8 customData)
 {
-	if (DoExplosion(this, velocity)
-	        || this.get_bool("static"))
+	if (DoExplosion(this, velocity) || this.get_bool("static") || blob.hasTag("invincible"))
 		return;
 
 	if (blob.hasTag("flesh"))
