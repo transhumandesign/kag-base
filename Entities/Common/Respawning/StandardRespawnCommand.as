@@ -11,6 +11,8 @@
 
 #include "ClassSelectMenu.as"
 #include "KnockedCommon.as"
+#include "FireCommon.as"
+#include "Hitters.as"
 
 void InitRespawnCommand(CBlob@ this)
 {
@@ -80,12 +82,12 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		case SpawnCmd::changeClass:
 		{
-			if (getNet().isServer())
+			if (isServer())
 			{
 				// build menu for them
 				CBlob@ caller = getBlobByNetworkID(params.read_u16());
 
-				if (caller !is null && canChangeClass(this, caller))
+				if (caller !is null && !caller.hasTag("dead") && canChangeClass(this, caller))
 				{
 					string classconfig = params.read_string();
 					CBlob @newBlob = server_CreateBlob(classconfig, caller.getTeamNum(), this.getRespawnPosition());
@@ -139,6 +141,20 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 						if (isKnockable(caller))
 						{
 							setKnocked(newBlob, getKnockedRemaining(caller));
+						}
+
+						//copy fire
+						if (caller.hasTag(burning_tag))
+						{
+							newBlob.Tag(burning_tag);
+							newBlob.set_s16(burn_duration, caller.get_s16(burn_duration));
+							newBlob.set_s16(burn_timer, caller.get_s16(burn_timer));
+							newBlob.set_u8(burn_hitter, Hitters::burn);
+
+							newBlob.Sync(burning_tag, true);
+							newBlob.Sync(burn_duration, true);
+							newBlob.Sync(burn_timer, true);
+							newBlob.Sync(burn_hitter, true);
 						}
 
 						// plug the soul

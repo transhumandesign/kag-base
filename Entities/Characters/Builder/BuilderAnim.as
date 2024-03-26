@@ -19,7 +19,7 @@ void onInit(CSprite@ this)
 
 	this.getCurrentScript().runFlags |= Script::tick_not_infire;
 
-	this.getBlob().set_string("prev_attack_anim", "strike");
+	this.getBlob().set_string("prev_attack_anim", getRules().hasTag("faster mining") ? "strike_fast" : "strike");
 }
 
 void onPlayerInfoChanged(CSprite@ this)
@@ -93,7 +93,7 @@ void onTick(CSprite@ this)
 	// set attack animation back to default
 	if (blob.isKeyJustReleased(key_action2))
 	{
-		blob.set_string("prev_attack_anim", "strike");
+		blob.set_string("prev_attack_anim", getRules().hasTag("faster mining") ? "strike_fast" : "strike");
 
 	}
 
@@ -127,7 +127,8 @@ void onTick(CSprite@ this)
 		{
 			this.SetAnimation("crouch");
 		}
-		else if (action2 || ((this.isAnimation("strike") || this.isAnimation("chop")) && !this.isAnimationEnded()))
+		else if (action2 || ((this.isAnimation("strike") || this.isAnimation("chop") || this.isAnimation("strike_fast") 
+				|| this.isAnimation("chop_fast")) && !this.isAnimationEnded()))
 		{
 			string attack_anim = blob.get_string("prev_attack_anim");
 			HitData@ hitdata;
@@ -191,7 +192,14 @@ void onTick(CSprite@ this)
 
 				if (hitting_wood || hitting_stone)
 				{
-					attack_anim = hitting_wood ? "chop" : "strike";
+					if (getRules().hasTag("faster mining"))
+					{
+						attack_anim = hitting_wood ? "chop_fast" : "strike_fast";
+					}
+					else
+					{
+						attack_anim = hitting_wood ? "chop" : "strike";
+					}
 
 					Animation @anim = this.getAnimation(attack_anim);
 
@@ -328,7 +336,9 @@ void onRender(CSprite@ this)
 
 	// draw tile cursor
 
-	if (blob.isKeyPressed(key_action1) || this.isAnimation("strike") || this.isAnimation("chop"))
+	bool strikeAnim = this.isAnimation("strike") || this.isAnimation("strike_fast") || this.isAnimation("chop") || this.isAnimation("chop_fast");
+
+	if (blob.isKeyPressed(key_action1) || strikeAnim)
 	{
 		HitData@ hitdata;
 		blob.get("hitdata", @hitdata);

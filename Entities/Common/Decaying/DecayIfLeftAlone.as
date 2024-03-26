@@ -13,7 +13,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (dissalowDecaying(this))
+	if (disallowDecaying(this))
 		return;
 
 	const u8 team = this.getTeamNum();

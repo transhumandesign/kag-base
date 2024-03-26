@@ -4,7 +4,7 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
             const f32 splash_offset, const bool shouldStun = true)
 {
 	//extinguish fire
-	CMap@ map = this.getMap();
+	CMap@ map = getMap();
 	Sound::Play("SplashSlow.ogg", this.getPosition(), 3.0f);
 
 
@@ -12,7 +12,7 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 
 	if (map !is null)
 	{
-		bool is_server = getNet().isServer();
+		bool is_server = isServer();
 		Vec2f pos = this.getPosition() +
 		            Vec2f(this.isFacingLeft() ?
 		                  -splash_halfwidth * map.tilesize*splash_offset :
@@ -65,6 +65,9 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 			for (uint i = 0; i < blobs.length; i++)
 			{
 				CBlob@ blob = blobs[i];
+				
+				if (blob is null || blob.hasTag("invincible"))
+					continue;
 
 				bool hitHard = blob.getTeamNum() != this.getTeamNum() || ownerBlob is blob;
 

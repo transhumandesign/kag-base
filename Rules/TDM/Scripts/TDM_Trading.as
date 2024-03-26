@@ -39,6 +39,7 @@ TradeItem@ addItemForCoin(CBlob@ this, const string &in name, int cost, const bo
 	if (item !is null)
 	{
 		AddRequirement(item.reqs, "coin", "", "Coins", cost);
+		AddMatchNotEndedRequirement(item.reqs);
 		item.buyIntoInventory = true;
 	}
 	return item;
@@ -182,7 +183,11 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 			}
 		}
 
-		victim.server_setCoins(victim.getCoins() - coinsOnDeathLose);
+		if (this.isMatchRunning() || (killer !is null && killer.getTeamNum() != victim.getTeamNum()))
+		{
+			// subtract coins after a match only when opponent player killed us
+			victim.server_setCoins(victim.getCoins() - coinsOnDeathLose);
+		}
 	}
 }
 

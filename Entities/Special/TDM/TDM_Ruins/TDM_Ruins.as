@@ -20,6 +20,12 @@ void onInit(CBlob@ this)
 	this.Tag("change class drop inventory");
 
 	this.getSprite().SetZ(-50.0f);   // push to background
+	
+	CShape@ shape = this.getShape();
+	if (shape !is null)
+	{
+		shape.PutOnGround();
+	}
 }
 
 void onTick(CBlob@ this)
