@@ -1,7 +1,6 @@
 #include "BombCommon.as";
 #include "Hitters.as";
 #include "Explosion.as";
-#include "Void.as";
 
 void onInit(CBlob@ this)
 {
@@ -78,22 +77,6 @@ void onTick(CBlob@ this)
 
 void onDie(CBlob@ this)
 {
-	if (isVoidedOut(this))
-	{
-		CSprite@ sprite = this.getSprite();
-		
-		if (sprite is null)
-		{
-			return;
-		}
-		
-		const u8 hitter = this.get_u8("custom_hitter");
-		
-		sprite.PlaySound( hitter == Hitters::water ? "WaterSparkleFade.ogg" : "SparkleFade.ogg");
-
-		return;
-	}
-	
 	Explode(this);
 }
 

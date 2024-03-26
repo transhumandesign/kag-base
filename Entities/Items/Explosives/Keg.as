@@ -1,6 +1,5 @@
 // Keg logic
 #include "Hitters.as";
-#include "Void.as";
 
 void onInit(CBlob@ this)
 {
@@ -64,18 +63,6 @@ void onTick(CBlob@ this)
 	if (this.isInFlames() && !this.hasTag("exploding"))
 	{
 		this.SendCommand(this.getCommandID("activate"));
-	}
-}
-
-void onDie(CBlob@ this)
-{
-	if (isVoidedOut(this))
-	{
-		CSprite@ sprite = this.getSprite();
-		if (sprite !is null && this.hasTag("activated"))
-		{
-			sprite.PlaySound("SparkleFade.ogg");
-		}
 	}
 }
 

@@ -8,7 +8,6 @@
 #include "KnockedCommon.as";
 #include "DoorCommon.as";
 #include "FireplaceCommon.as";
-#include "Void.as";
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
@@ -785,11 +784,6 @@ bool isFlammableAt(Vec2f worldPos)
 Random _gib_r(0xa7c3a);
 void onDie(CBlob@ this)
 {
-	if (isVoidedOut(this))
-	{
-		return;
-	}
-
 	if (isClient())
 	{
 		Vec2f pos = this.getPosition();

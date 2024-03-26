@@ -9,7 +9,6 @@
 #include "GenericButtonCommon.as"
 #include "KnockedCommon.as"
 #include "NoSwearsCommon.as"
-#include "Void.as"
 
 // crate tags and their uses
 
@@ -710,13 +709,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 void onDie(CBlob@ this)
 {
-	HideParachute(this);
-	
-	if (isVoidedOut(this))
-	{
-		return;
-	}
-	
+	HideParachute(this);	
 	this.getSprite().Gib();
 	Vec2f pos = this.getPosition();
 	Vec2f vel = this.getVelocity();
