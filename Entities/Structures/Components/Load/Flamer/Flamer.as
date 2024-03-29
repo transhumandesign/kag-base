@@ -264,7 +264,7 @@ void CreateFlame(CBlob@ this)
 				}
 				else if (isServer())
 				{
-					cookFood(blob);
+					Cook(blob); // MakeFood.as
 					
 					if (!blob.hasTag("invincible"))
 					{

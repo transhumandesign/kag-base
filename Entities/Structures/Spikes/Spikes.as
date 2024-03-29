@@ -229,7 +229,7 @@ void onTick(CBlob@ this)
 						if (b !is null
 							&& !b.hasTag("invincible")
 							&& canStab(b) //even hurts team when stabbing
-							&& this.isOverlapping(b) //hurt? 
+							&& this.isOverlapping(b)) //hurt? 
 						{
 							this.server_Hit(b, pos, b.getVelocity() * -1, 0.5f, Hitters::spikes, true);
 						}

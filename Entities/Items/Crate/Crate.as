@@ -690,7 +690,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 				dmg = Maths::Max(dmg, this.getInitialHealth() * 2); // Keg always kills crate
 			}
 			CBlob@ sneaky_player = getPlayerInside(this);
-			if (sneaky_player !is null && !sneaky_player.hasTag("invincible")))
+			if (sneaky_player !is null && !sneaky_player.hasTag("invincible"))
 			{
 				bool should_teamkill = (sneaky_player.getTeamNum() != hitterBlob.getTeamNum()
 										|| customData == Hitters::keg);
