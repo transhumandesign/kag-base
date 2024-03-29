@@ -194,7 +194,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
-	if (this.hasTag("unpickable"))	
+	if (this.hasTag("unpickable") || this.hasAttached())	
 	{ 
 		return false; 
 	}
