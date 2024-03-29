@@ -310,6 +310,18 @@ shared class TDMCore : RulesCore
 			updateHUD();
 		}
 
+		// check if we need to give winning team coins after other team surrendered
+		if (rules.exists("surrender reward"))
+		{
+			s32 winTeamIndex = rules.get_s32("surrender reward");
+			
+			if (winTeamIndex > -1)
+			{
+				GiveWinTeamCoins(rules.get_s32("surrender reward"));
+				rules.set_s32("surrender reward", -1);
+			}
+		}
+
 		if (rules.isGameOver()) { return; }
 
 		s32 ticksToStart = gametime - getGameTime();
@@ -674,48 +686,48 @@ shared class TDMCore : RulesCore
 
 		if (winteamIndex >= 0)
 		{
-			// add winning team coins
-			if (rules.isMatchRunning())
+			GiveWinTeamCoins(winteamIndex);	// give coins for winning
+			rules.SetTeamWon(winteamIndex);	//game over!
+			rules.SetCurrentState(GAME_OVER);
+		}
+	}
+	
+	void GiveWinTeamCoins(s32 winning_team)
+	{
+		CBlob@[] players;
+		getBlobsByTag("player", @players);
+		for (uint i = 0; i < players.length; i++)
+		{
+			CPlayer@ player = players[i].getPlayer();
+			if (player !is null)
 			{
-				CBlob@[] players;
-				getBlobsByTag("player", @players);
-				for (uint i = 0; i < players.length; i++)
+				if (player.getTeamNum() == winning_team)
 				{
-					CPlayer@ player = players[i].getPlayer();
-					if (player !is null)
+					player.server_setCoins(player.getCoins() + 10);
+				}
+
+				CBlob@ blob = player.getBlob();
+				if (blob !is null)
+				{
+					ConfigFile cfg = ConfigFile();
+					cfg.loadFile("tdm_vars.cfg");
+
+					//give coins for items in your inventory
+					CInventory@ inventory = blob.getInventory();
+					for (uint j = 0; j < inventory.getItemsCount(); j++)
 					{
-						if (player.getTeamNum() == winteamIndex)
-						{
-							player.server_setCoins(player.getCoins() + 10);
-						}
+						CBlob@ blob = inventory.getItem(j);
+						giveCoinsBack(player, blob, cfg);
+					}
 
-						CBlob@ blob = player.getBlob();
-						if (blob !is null)
-						{
-							ConfigFile cfg = ConfigFile();
-							cfg.loadFile("tdm_vars.cfg");
-
-							//give coins for items in your inventory
-							CInventory@ inventory = blob.getInventory();
-							for (uint j = 0; j < inventory.getItemsCount(); j++)
-							{
-								CBlob@ blob = inventory.getItem(j);
-								giveCoinsBack(player, blob, cfg);
-							}
-
-							//give coins for held item
-							CBlob@ heldBlob = blob.getCarriedBlob();
-							if (heldBlob !is null)
-							{
-								giveCoinsBack(player, heldBlob, cfg);
-							}
-						}
+					//give coins for held item
+					CBlob@ heldBlob = blob.getCarriedBlob();
+					if (heldBlob !is null)
+					{
+						giveCoinsBack(player, heldBlob, cfg);
 					}
 				}
 			}
-
-			rules.SetTeamWon(winteamIndex);   //game over!
-			rules.SetCurrentState(GAME_OVER);
 		}
 	}
 
@@ -836,7 +848,6 @@ void Reset(CRules@ this)
 	this.set("start_gametime", getGameTime() + core.warmUpTime);
 	this.set_u32("game_end_time", getGameTime() + core.gameDuration); //for TimeToEnd.as
 	this.set_s32("restart_rules_after_game_time", (core.spawnTime < 0 ? 5 : 10) * 30 );
-	this.set_bool("no purchase post match", true);
 }
 
 void onRestart(CRules@ this)
