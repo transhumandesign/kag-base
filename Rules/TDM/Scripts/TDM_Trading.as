@@ -78,11 +78,8 @@ void MakeTradeMenu(CBlob@ trader)
 	s32 menu_height = cfg.read_s32("trade_menu_height", 5);
 
 	// create icons
-	if (getIconTokenFilename("$keg_tdm$").length == 0)
-		AddIconToken("$keg_tdm$", "Keg.png", Vec2f(16, 16), 0);
-
-	if (getIconTokenFilename("$crate_tdm$").length == 0)
-		AddIconToken("$crate_tdm$", "CrateSmall.png", Vec2f(16, 16), 0);
+	if (!GUI::hasIconName("$crate_tdm$"))
+		AddIconToken("$crate_tdm$", "Crate.png", Vec2f(16, 16), 43);
 
 	// build menu
 	CreateTradeMenu(trader, Vec2f(menu_width, menu_height), "Buy weapons");
@@ -93,7 +90,7 @@ void MakeTradeMenu(CBlob@ trader)
 	//knighty stuff
 	addItemForCoin(trader, "Bomb", cost_bombs, true, "$mat_bombs$", "mat_bombs", Descriptions::bomb);
 	addItemForCoin(trader, "Water Bomb", cost_waterbombs, true, "$mat_waterbombs$", "mat_waterbombs", Descriptions::waterbomb);
-	addItemForCoin(trader, "Keg", cost_keg, true, "$keg_tdm$", "keg", Descriptions::keg);
+	addItemForCoin(trader, "Keg", cost_keg, true, "$keg$", "keg", Descriptions::keg);
 	addItemForCoin(trader, "Mine", cost_mine, true, "$mine$", "mine", Descriptions::mine);
 	//yummy stuff
 	addItemForCoin(trader, "Burger", cost_burger, true, "$food$", "food", Descriptions::food);
