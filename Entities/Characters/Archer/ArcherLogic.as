@@ -1068,7 +1068,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				return;
 			}
 
-			Sound::Play("BombBounce.ogg", archer.grapple_pos, 0.5f);
+			Sound::Play("hit_wood.ogg", archer.grapple_pos, 0.5f);
 		}
 	}
 	else if (cmd == this.getCommandID("cycle"))  //from standardcontrols
