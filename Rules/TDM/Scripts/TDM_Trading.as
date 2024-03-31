@@ -77,8 +77,9 @@ void MakeTradeMenu(CBlob@ trader)
 	s32 menu_width = cfg.read_s32("trade_menu_width", 3);
 	s32 menu_height = cfg.read_s32("trade_menu_height", 5);
 
-	// create icons
+	// create team-colored icons
 	AddIconToken("$keg_tdm" + trader.getTeamNum() + "$", "Keg.png", Vec2f(16, 16), 0, trader.getTeamNum());
+	AddIconToken("$mine_tdm" + trader.getTeamNum() + "$", "Mine.png", Vec2f(16, 16), 0, trader.getTeamNum());
 	AddIconToken("$crate_tdm" + trader.getTeamNum() + "$", "CrateSmall.png", Vec2f(16, 16), 0, trader.getTeamNum());
 
 	// build menu
@@ -91,7 +92,7 @@ void MakeTradeMenu(CBlob@ trader)
 	addItemForCoin(trader, "Bomb", cost_bombs, true, "$mat_bombs$", "mat_bombs", Descriptions::bomb);
 	addItemForCoin(trader, "Water Bomb", cost_waterbombs, true, "$mat_waterbombs$", "mat_waterbombs", Descriptions::waterbomb);
 	addItemForCoin(trader, "Keg", cost_keg, true, "$keg_tdm" + trader.getTeamNum() + "$", "keg", Descriptions::keg);
-	addItemForCoin(trader, "Mine", cost_mine, true, "$mine$", "mine", Descriptions::mine);
+	addItemForCoin(trader, "Mine", cost_mine, true, "$mine_tdm" + trader.getTeamNum() + "$", "mine", Descriptions::mine);
 	//yummy stuff
 	addItemForCoin(trader, "Burger", cost_burger, true, "$food$", "food", Descriptions::food);
 	//archery stuff
