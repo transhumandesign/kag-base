@@ -64,4 +64,3 @@ void onRender(CSprite@ this)
 		DrawResupplyOnHUD(blob, tl + Vec2f(8 + (slotsSize) * 40, -4));
 	}
 }
-
