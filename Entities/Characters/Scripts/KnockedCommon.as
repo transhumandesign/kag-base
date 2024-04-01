@@ -116,7 +116,7 @@ void DoKnockedUpdate(CBlob@ this)
 		u16 takekeys;
 		if (knockedRemaining < 2 || (this.hasTag("dazzled") && knockedRemaining < 30))
 		{
-			takekeys = key_action1 | key_action2 | key_action3;
+			takekeys = key_action1 | key_action2 | key_action3 | key_inventory;
 
 			if (this.isOnGround())
 			{
@@ -125,7 +125,7 @@ void DoKnockedUpdate(CBlob@ this)
 		}
 		else
 		{
-			takekeys = key_left | key_right | key_up | key_down | key_action1 | key_action2 | key_action3;
+			takekeys = key_left | key_right | key_up | key_down | key_action1 | key_action2 | key_action3 | key_inventory;
 		}
 
 		this.DisableKeys(takekeys);
