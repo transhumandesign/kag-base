@@ -56,7 +56,7 @@ namespace Descriptions
 	spikes                     = getTranslatedString("Stone spikes used as a defense around fortifications."),
 
 	mounted_bow                = getTranslatedString("A stationary arrow-firing death machine."),
-	dinghy                     = getTranslatedString("A small boat with two rowing positions and a large space for cargo."),
+	dingdonghy                 = getTranslatedString("A lengthy boat with several rowing positions and a large space for cargo."),
 	longboat                   = getTranslatedString("A fast rowing boat used for quickly getting across water."),
 	warboat                    = getTranslatedString("A slow armoured boat which acts also as a water base for respawn and class change."),
 	tunnel                     = getTranslatedString("A tunnel for quick transportation."),

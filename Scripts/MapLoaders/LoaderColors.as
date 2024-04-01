@@ -238,7 +238,7 @@ namespace map_colors
 		catapult               = 0xFF67E5A5, // ARGB(255, 103, 229, 165);
 		ballista               = 0xFF64D2A0, // ARGB(255, 100, 210, 160);
 		raft                   = 0xFF466E9B, // ARGB(255,  70, 110, 155);
-		dinghy                 = 0xFFC99EF6, // ARGB(255, 201, 158, 246);
+		dingdonghy             = 0xFFC99EF6, // ARGB(255, 201, 158, 246);
 		longboat               = 0xFF0033FF, // ARGB(255,   0,  51, 255);
 		warboat                = 0xFF328CFF, // ARGB(255,  50, 140, 255);
 		airship                = 0xFFFFAF00, // ARGB(255, 255, 175,   0);

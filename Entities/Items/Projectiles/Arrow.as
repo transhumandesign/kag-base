@@ -77,15 +77,15 @@ void onInit(CBlob@ this)
 
 	{
 		Animation@ anim = sprite.addAnimation("fire arrow", 0, false);
-		anim.AddFrame(8);
+		anim.AddFrame(10);
 		if (arrowType == ArrowType::fire)
 			sprite.SetAnimation(anim);
 	}
 
 	{
 		Animation@ anim = sprite.addAnimation("bomb arrow", 0, false);
-		anim.AddFrame(14);
-		anim.AddFrame(15);
+		anim.AddFrame(12);
+		anim.AddFrame(13);
 		if (arrowType == ArrowType::bomb)
 			sprite.SetAnimation(anim);
 	}
@@ -622,7 +622,7 @@ void ArrowHitMap(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, u8 c
 	Vec2f norm = velocity;
 	norm.Normalize();
 	norm *= (1.5f * radius);
-	Vec2f lock = worldPoint - norm;
+	Vec2f lock = worldPoint - norm - this.getOldVelocity() * 0.25f;
 	this.set_Vec2f("lock", lock);
 
 	// saving information on what was hit to determine when the arrow should collapse

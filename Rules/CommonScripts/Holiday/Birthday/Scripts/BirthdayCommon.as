@@ -12,7 +12,7 @@ const string[] holiday_blobs =
 	"tradingpost",
 
 	// blobs
-	"dinghy"
+	"dingdonghy"
 };
 
 const Vec2f[] holiday_blob_offsets =

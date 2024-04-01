@@ -29,7 +29,7 @@ namespace CTFCosts
 		crate_wood, crate;
 
 	//BoatShop.as
-	s32 dinghy, dinghy_wood, longboat, longboat_wood, warboat, warboat_gold;
+	s32 dingdonghy, dingdonghy_wood, longboat, longboat_wood, warboat, warboat_gold;
 
 	//VehicleShop.as
 	s32 catapult, ballista, ballista_ammo, ballista_bomb_ammo, outpost_coins, outpost_gold;
@@ -47,7 +47,7 @@ namespace WARCosts
 {
 	//Workbench.as
 	s32 lantern_wood, bucket_wood, sponge_wood, trampoline_wood,
-		crate_wood, drill_stone, saw_wood, dinghy_wood, boulder_stone;
+		crate_wood, drill_stone, saw_wood, dingdonghy_wood, boulder_stone;
 
 	//Scrolls
 	s32 crappiest_scroll, crappy_scroll, medium_scroll,
@@ -145,8 +145,8 @@ void InitCosts()
 	CTFCosts::crate =                       ReadCost(cfg, costs, "cost_crate"              , 20);
 
 	//BoatShop.as
-	CTFCosts::dinghy =                      ReadCost(cfg, costs, "cost_dinghy"             , 25);
-	CTFCosts::dinghy_wood =                 ReadCost(cfg, costs, "cost_dinghy_wood"        , 100);
+	CTFCosts::dingdonghy =                  ReadCost(cfg, costs, "cost_dingdonghy"         , 25);
+	CTFCosts::dingdonghy_wood =             ReadCost(cfg, costs, "cost_dingdonghy_wood"    , 100);
 	CTFCosts::longboat =                    ReadCost(cfg, costs, "cost_longboat"           , 50);
 	CTFCosts::longboat_wood =               ReadCost(cfg, costs, "cost_longboat_wood"      , 200);
 	CTFCosts::warboat =                     ReadCost(cfg, costs, "cost_warboat"            , 250);
@@ -185,7 +185,7 @@ void InitCosts()
 	WARCosts::crate_wood =                  ReadCost(cfg, costs, "cost_crate_wood"         , 30);
 	WARCosts::drill_stone =                 ReadCost(cfg, costs, "cost_drill_stone"        , 100);
 	WARCosts::saw_wood =                    ReadCost(cfg, costs, "cost_saw_wood"           , 150);
-	WARCosts::dinghy_wood =                 ReadCost(cfg, costs, "cost_dinghy_wood"        , 100);
+	WARCosts::dingdonghy_wood =             ReadCost(cfg, costs, "cost_dingdonghy_wood"    , 100);
 	WARCosts::boulder_stone =               ReadCost(cfg, costs, "cost_boulder_stone"      , 30);
 
 	//Scrolls

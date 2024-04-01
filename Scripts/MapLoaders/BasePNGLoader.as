@@ -373,7 +373,7 @@ class PNGLoader
 			// Water/air vehicles
 			case map_colors::longboat:    autotile(offset); spawnVehicle(map, "longboat", offset); break;
 			case map_colors::warboat:     autotile(offset); spawnVehicle(map, "warboat",  offset); break;
-			case map_colors::dinghy:      autotile(offset); spawnVehicle(map, "dinghy",   offset); break;
+			case map_colors::dingdonghy:  autotile(offset); spawnVehicle(map, "dingdonghy", offset); break;
 			case map_colors::raft:        autotile(offset); spawnVehicle(map, "raft",     offset); break;
 			case map_colors::airship:     autotile(offset); spawnVehicle(map, "airship",  offset); break;
 			case map_colors::bomber:      autotile(offset); spawnVehicle(map, "bomber",   offset); break;

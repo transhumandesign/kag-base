@@ -19,6 +19,7 @@ enum State
 void onInit(CBlob@ this)
 {
 	this.getShape().getVars().waterDragScale = 16.0f;
+	this.getShape().SetRotationsAllowed(false);
 
 	this.set_f32("explosive_radius", 32.0f);
 	this.set_f32("explosive_damage", 8.0f);
@@ -221,8 +222,21 @@ bool canBePickedUp(CBlob@ this, CBlob@ blob)
 	return this.get_u8(MINE_STATE) != PRIMED || this.getTeamNum() == blob.getTeamNum();
 }
 
+// custom gibs
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
+	if (damage > 0.05f) //sound for all damage
+	{
+		f32 angle = (this.getPosition() - worldPoint).getAngle();
+		this.getSprite().PlayRandomSound("/Wetfall2", Maths::Min(1.25f, Maths::Max(0.5f, damage)));
+
+		makeGibParticle("Entities/Items/Sponge/PoopGibs.png", 
+			worldPoint, getRandomVelocity(angle, 1.0f + damage, 90.0f) + Vec2f(0.0f, -2.0f),
+	                0, 4 + XORRandom(4), 
+	                Vec2f(8, 8), 2.0f, 0, "", 0);
+
+	}
+
 	return customData == Hitters::builder? this.getInitialHealth() / 2 : damage;
 }
 
@@ -246,3 +260,4 @@ void onRender(CSprite@ this)
 		}
 	}
 }
+

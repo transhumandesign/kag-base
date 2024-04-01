@@ -13,8 +13,9 @@ void onInit(CBlob@ this)
 	if (sprite !is null)
 	{
 		sprite.SetZ(-50.0f);   // push to background
-		string sex = traderRandom.NextRanged(2) == 0 ? "TraderMale.png" : "TraderFemale.png";
-		CSpriteLayer@ trader = sprite.addSpriteLayer("trader", sex, 16, 16, 0, 0);
+		//string sex = traderRandom.NextRanged(2) == 0 ? "TraderMale.png"; : "TraderFemale.png";
+		string sex = "TraderMale.png";
+		CSpriteLayer@ trader = sprite.addSpriteLayer("trader", sex, 32, 32, 0, 0);
 		trader.SetRelativeZ(20);
 		Animation@ stop = trader.addAnimation("stop", 1, false);
 		stop.AddFrame(0);
@@ -36,9 +37,11 @@ void onInit(CBlob@ this)
 	//TODO: set shop type and spawn trader based on some property
 }
 
-
-
-//Sprite updates
+void onInit(CSprite@ this)
+{
+	this.SetEmitSound("trumpet" + XORRandom(4) + ".ogg");
+	this.SetEmitSoundPaused(false);
+}
 
 void onTick(CSprite@ this)
 {
@@ -49,6 +52,15 @@ void onTick(CSprite@ this)
 	bool moving_left = blob.get_bool("moving left");
 	u32 move_timer = blob.get_u32("move timer");
 	u32 next_offset = blob.get_u32("next offset");
+	
+	// trumpet	
+	if (blob.getTickSinceCreated() % 150 == 0 && XORRandom(2) == 0)
+	{
+		this.SetEmitSound("trumpet" + XORRandom(4) + ".ogg");
+		this.SetEmitSoundPaused(false);
+	}
+	// end of trumpet
+	
 	if (!trader_moving)
 	{
 		if (move_timer <= getGameTime())

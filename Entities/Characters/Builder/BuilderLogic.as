@@ -10,6 +10,7 @@
 #include "PlacementCommon.as";
 #include "ParticleSparks.as";
 #include "MaterialCommon.as";
+#include "EmotesCommon.as";
 
 //can't be <2 - needs one frame less for gathering infos
 const s32 hit_frame = 2;
@@ -375,6 +376,10 @@ void Pickaxe(CBlob@ this)
 			{
 				hasHit = true;
 				hitdata.tilepos = tilepos;
+				
+				// dirty rat
+				if (map.isTileGroundBack(map.getTile(this.getPosition()).type))
+					set_emote(this, "rat", 90);
 			}
 			else if (map.isTileGrass(tile.type))
 			{

@@ -42,7 +42,7 @@ void SetupScrolls(CRules@ this)
 		def.level = 0.0f;
 		def.tier = 0.0f;
 		def.timeSecs = t * 6;
-		def.connections.push_back("dinghy");
+		def.connections.push_back("dingdonghy");
 		//def.connections.push_back("mounted bow");
 		//addScrollItemsToArray( "Mill Saw", "saw", m*30, false, 1, @def.items );
 		all.scrolls.set("saw", def);
@@ -68,15 +68,15 @@ void SetupScrolls(CRules@ this)
 
 	{
 		ScrollDef def;
-		def.name = "Dinghy";
-		def.scrollFrame = FactoryFrame::dinghy;
+		def.name = "Ding Donghy";
+		def.scrollFrame = FactoryFrame::dingdonghy;
 		def.level = 1.0f;
 		def.tier = 0.0f;
 		def.timeSecs = t * 160;
 		def.connections.push_back("longboat");
 		def.connections.push_back("warboat");
-		//addScrollItemsToArray( "Dinghy", "dinghy", 	m*30, false, 1, @def.items );
-		all.scrolls.set("dinghy", def);
+		//addScrollItemsToArray( "Ding Donghy", "dingdonghy", 	m*30, false, 1, @def.items );
+		all.scrolls.set("dingdonghy", def);
 	}
 
 	{
@@ -258,7 +258,7 @@ void SetupScrolls(CRules@ this)
 
 	copyFrom(all.scrolls, "saw", crappy.scrolls);
 	copyFrom(all.scrolls, "military basics", crappy.scrolls);
-	copyFrom(all.scrolls, "dinghy", crappy.scrolls);
+	copyFrom(all.scrolls, "dingdonghy", crappy.scrolls);
 
 	// make medium scrolls ----------------------------------------------------
 

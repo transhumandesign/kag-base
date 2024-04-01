@@ -88,15 +88,15 @@ void LoadSprites(CSprite@ this)
 	}
 
 	this.RemoveSpriteLayer("held arrow");
-	CSpriteLayer@ arrow = this.addSpriteLayer("held arrow", "Arrow.png" , 16, 8, this.getBlob().getTeamNum(), 0);
+	CSpriteLayer@ arrow = this.addSpriteLayer("held arrow", "Arrow.png" , 16, 12, this.getBlob().getTeamNum(), 0);
 
 	if (arrow !is null)
 	{
 		Animation@ anim = arrow.addAnimation("default", 0, false);
 		anim.AddFrame(1); //normal
 		anim.AddFrame(9); //water
-		anim.AddFrame(8); //fire
-		anim.AddFrame(14); //bomb
+		anim.AddFrame(1); //fire
+		anim.AddFrame(12); //bomb
 		arrow.SetOffset(Vec2f(-1.0f, 5.0f + config_offset));
 		arrow.SetAnimation("default");
 		arrow.SetVisible(false);

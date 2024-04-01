@@ -13,7 +13,7 @@ const uint COST_WOOD_BUCKET = 10;
 const uint COST_COIN_FILLED_BUCKET = 10;
 const uint COST_WOOD_SPONGE = 50;
 const uint COST_WOOD_TRAMPOLINE = 150;
-const uint COST_WOOD_DINGHY = 150;
+const uint COST_WOOD_DINGDONGHY = 150;
 const uint COST_WOOD_SAW = 150;
 const uint COST_STONE_DRILL = 100;
 

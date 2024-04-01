@@ -17,7 +17,7 @@ namespace FactoryFrame
 
 		saw = 8,
 		drill,
-		dinghy,
+		dingdonghy,
 
 		military_basics = 12,
 		explosives,

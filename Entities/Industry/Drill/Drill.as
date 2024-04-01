@@ -13,16 +13,16 @@ const f32 speed_hard_thresh = 2.6f;
 const string buzz_prop = "drill timer";
 
 const string heat_prop = "drill heat";
-const u8 heat_max = 150;
-const u8 heat_drop = 140;
-const u8 high_damage_window = 40; // at how much heat before max drill deals increased damage
+const u32 heat_max = 840;
+const u32 heat_drop = 800;
+const u32 high_damage_window = 360; // at how much heat before max drill deals increased damage
 
 const string last_drill_prop = "drill last active";
 
 const u8 heat_add = 7;
 const u8 heat_add_constructed = 2;
-const u8 heat_add_blob = 6;
-const u8 heat_cool_amount = 2;
+const u8 heat_add_blob = 2;
+const u8 heat_cool_amount = 5;
 
 const f32 heat_reduction_water = 0.5f;
 
@@ -37,7 +37,7 @@ const string required_class = "builder";
 
 void onInit(CSprite@ this)
 {
-	CSpriteLayer@ heat = this.addSpriteLayer("heat", this.getFilename(), 32, 16);
+	CSpriteLayer@ heat = this.addSpriteLayer("heat", this.getFilename(), 64, 32);
 
 	if (heat !is null)
 	{
@@ -259,7 +259,7 @@ void onTick(CBlob@ this)
 				const f32 attack_distance = 6.0f;
 				Vec2f attackVel = direction * attack_distance;
 
-				const f32 distance = 20.0f;
+				const f32 distance = 40.0f;
 
 				bool hitsomething = false;
 				bool hitblob = false;
@@ -273,7 +273,7 @@ void onTick(CBlob@ this)
 						bool hit_ground = false;
 						for (uint i = 0; i < hitInfos.length; i++)
 						{
-							f32 attack_dam = 1.0f;
+							f32 attack_dam = 2.0f;
 							HitInfo@ hi = hitInfos[i];
 							bool hit_constructed = false;
 							CBlob@ b = hi.blob;
@@ -304,16 +304,6 @@ void onTick(CBlob@ this)
 
 								if (isServer())
 								{
-									if (int(heat) >= heat_max - high_damage_window) // are we at high heat? more damage!
-									{
-										attack_dam += 0.5f;
-									}
-
-									if (b.hasTag("shielded") && blockAttack(b, attackVel, 0.0f)) // are they shielding? reduce damage!
-									{
-										attack_dam /= 2;
-									}
-
 									this.server_Hit(b, hi.hitpos, attackVel, attack_dam, Hitters::drill);
 
 									Material::fromBlob(holder, hi.blob, attack_dam, this);
@@ -338,6 +328,9 @@ void onTick(CBlob@ this)
 										if (!map.isTileSolid(map.getTile(hi.tileOffset))){ break; }
 
 										map.server_DestroyTile(hi.hitpos, 1.0f, this);
+										
+										if (map.isTileBedrock(tile))
+											map.server_SetTile(hi.hitpos, 0);
 
 										if (map.isTileCastle(tile) || map.isTileWood(tile) || map.isTileGold(tile))
 										{

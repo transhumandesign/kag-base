@@ -2,9 +2,7 @@
 
 #include "RunnerCommon.as"
 #include "Help.as";
-
 #include "Hitters.as";
-
 #include "TraderWantedList.as";
 
 //trader methods
@@ -25,12 +23,20 @@ void onInit(CBlob@ this)
 	//EnsureWantedList();
 }
 
+void onInit(CSprite@ this)
+{
+	this.SetEmitSound("trumpet" + XORRandom(4) + ".ogg");
+	this.SetEmitSoundPaused(false);
+}
+
+/*
 void onReload(CSprite@ this)
 {
 	this.getConsts().filename = this.getBlob().getSexNum() == 0 ?
 	                            "Entities/Special/WAR/Trading/TraderMale.png" :
 	                            "Entities/Special/WAR/Trading/TraderFemale.png";
 }
+*/
 
 void onGib(CSprite@ this)
 {
@@ -95,13 +101,30 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	return damage;
 }
 
-
 //sprite/anim update
 
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
+	if (blob is null) return;
 	// set dead animations
+
+	// trumpet
+	if (!blob.hasTag("my trumpet is also dead"))
+	{
+		if (blob.hasTag("dead"))
+		{
+			this.SetEmitSoundPaused(true);
+			blob.Tag("my trumpet is also dead");
+		}
+		
+		if (blob.getTickSinceCreated() % 150 == 0 && XORRandom(2) == 0)
+		{
+			this.SetEmitSound("trumpet" + XORRandom(4) + ".ogg");
+			this.SetEmitSoundPaused(false);
+		}
+	}
+	// end of trumpet
 
 	if (blob.hasTag("dead"))
 	{

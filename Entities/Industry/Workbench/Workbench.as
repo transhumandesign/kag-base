@@ -55,9 +55,9 @@ void InitWorkshop(CBlob@ this)
 		AddRequirement(s.requirements, "tech", "saw", "Saw Technology");
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Dinghy", "$dinghy$", "dinghy", Descriptions::dinghy, false);
-		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::dinghy_wood);
-		AddRequirement(s.requirements, "tech", "dinghy", "Dinghy Technology");
+		ShopItem@ s = addShopItem(this, "Ding Donghy", "$dingdonghy$", "dingdonghy", Descriptions::dingdonghy, false);
+		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", WARCosts::dingdonghy_wood);
+		AddRequirement(s.requirements, "tech", "dingdonghy", "Dingdonghy Technology");
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Boulder", "$boulder$", "boulder", Descriptions::boulder, false);

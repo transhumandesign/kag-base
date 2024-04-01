@@ -6,7 +6,13 @@
 
 void onInit(CBlob@ this)
 {
-	this.getSprite().SetZ(-50.0f);
+	CSprite@ sprite = this.getSprite();
+	if (sprite !is null)
+	{
+		sprite.SetZ(-50.0f);
+		sprite.SetEmitSound("Duck.ogg");
+		sprite.SetEmitSoundPaused(false);
+	}
 
 	this.CreateRespawnPoint("tent", Vec2f(0.0f, -4.0f));
 	InitClasses(this);

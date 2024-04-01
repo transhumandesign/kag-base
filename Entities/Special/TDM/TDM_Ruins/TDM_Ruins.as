@@ -5,6 +5,22 @@
 #include "StandardControlsCommon.as"
 #include "RespawnCommandCommon.as"
 #include "GenericButtonCommon.as"
+#include "MakeSign.as"
+
+namespace Trampoline
+{
+	const string TIMER = "trampoline_timer";
+	const u16 COOLDOWN = 7;
+	const u8 SCALAR = 6;
+	const bool SAFETY = true;
+	const int COOLDOWN_LIMIT = 8;
+}
+
+class TrampolineCooldown{
+	u16 netid;
+	u32 timer;
+	TrampolineCooldown(u16 netid, u16 timer){this.netid = netid; this.timer = timer;}
+};
 
 void onInit(CBlob@ this)
 {
@@ -13,13 +29,32 @@ void onInit(CBlob@ this)
 	//TDM classes
 	addPlayerClass(this, "Knight", "$knight_class_icon$", "knight", "Hack and Slash.");
 	addPlayerClass(this, "Archer", "$archer_class_icon$", "archer", "The Ranged Advantage.");
-	this.getShape().SetStatic(true);
-	this.getShape().getConsts().mapCollisions = false;
 	this.addCommandID("class menu");
 
 	this.Tag("change class drop inventory");
 
 	this.getSprite().SetZ(-50.0f);   // push to background
+	
+	this.getShape().SetOffset(Vec2f(0,26));
+	Vec2f pos = this.getPosition();
+	this.setPosition(Vec2f(pos.x, pos.y - getMap().tilesize * 4));
+	this.getShape().PutOnGround();
+	
+	// bouncing stuff
+	TrampolineCooldown @[] cooldowns;
+	this.set(Trampoline::TIMER, cooldowns);
+	
+	// when using verticesXY shape, radius from .cfg is ignored so we use this
+	this.set_f32("custom radius", 48.0f);
+	
+	// sign
+	Vec2f atPos = this.getPosition() + Vec2f(this.getTeamNum() < 1 ? + 48 : -48, 0);
+	CBlob@ sign = createSign(atPos, "Welcome to Build 47856945 Super Edition !!!!!!!!");
+	CShape@ sign_shape = sign.getShape();
+	if (sign_shape !is null)
+	{
+		sign_shape.PutOnGround();
+	}
 }
 
 void onTick(CBlob@ this)
@@ -67,7 +102,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	
 	if (!canSeeButtons(this, caller)) return;
 
-	if (canChangeClass(this, caller))
+	if (!caller.hasTag("switch class"))
 	{
 		if (isInRadius(this, caller))
 		{
@@ -86,5 +121,66 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 bool isInRadius(CBlob@ this, CBlob @caller)
 {
-	return (this.getPosition() - caller.getPosition()).Length() < this.getRadius();
+	return (this.getPosition() - caller.getPosition()).Length() < this.get_f32("custom radius");
+}
+
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1, Vec2f point2)
+{
+	if (blob is null || blob.isAttached() || blob.getShape().isStatic()) return;
+
+	TrampolineCooldown@[]@ cooldowns;
+	if (!this.get(Trampoline::TIMER, @cooldowns)) return;
+
+	//shred old cooldown if we have too many
+	if (Trampoline::SAFETY && cooldowns.length > Trampoline::COOLDOWN_LIMIT) cooldowns.removeAt(0);
+
+	u16 netid = blob.getNetworkID();
+	bool block = false;
+	for(int i = 0; i < cooldowns.length; i++)
+	{
+		if (cooldowns[i].timer < getGameTime())
+		{
+			cooldowns.removeAt(i);
+			i--;
+		}
+		else if (netid == cooldowns[i].netid)
+		{
+			block = true;
+			break;
+		}
+	}
+	if (!block)
+	{
+		Vec2f velocity_old = blob.getOldVelocity();
+		if (velocity_old.Length() < 1.0f) return;
+
+		float angle = this.getAngleDegrees();
+
+		Vec2f direction = Vec2f(0.0f, -1.0f);
+		direction.RotateBy(angle);
+
+		float velocity_angle = direction.AngleWith(velocity_old);
+
+		if (Maths::Abs(velocity_angle) > 90)
+		{
+			TrampolineCooldown cooldown(netid, getGameTime() + Trampoline::COOLDOWN);
+			cooldowns.push_back(cooldown);
+
+			Vec2f velocity = Vec2f(velocity_old.x, -Trampoline::SCALAR);
+			velocity.RotateBy(angle);
+
+			blob.setVelocity(velocity);
+
+			CSprite@ sprite = this.getSprite();
+			if (sprite !is null)
+			{
+				sprite.PlaySound("TrampolineJump.ogg");
+			}
+		}
+	}
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	return blob.getShape().isStatic();
 }
