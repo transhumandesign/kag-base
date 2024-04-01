@@ -39,7 +39,7 @@ void onInit(CRules@ this)
 				Tile tile = map.getTile(coords);
 				Tile tile_below = map.getTile(coords + Vec2f(0, map.tilesize));
 
-				// add dirt tiles
+				// add any solid tiles
 				if (map.isTileSolid(tile))
 				{
 					solid_tiles.insertLast(TileInfo(coords, 0, tile));
@@ -73,7 +73,7 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 		solid_tiles.removeAt(tindex);
 	}
 
-	// new tile, add it if it's solid and there free space below
+	// new tile, add it if it's solid
 	if (tindex == 0 && this.isTileSolid(newtile))
 	{
 		solid_tiles.insertLast(TileInfo(coords, getGameTime(), this.getTile(coords))); 
