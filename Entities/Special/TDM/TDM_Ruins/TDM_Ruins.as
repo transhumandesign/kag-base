@@ -21,11 +21,10 @@ void onInit(CBlob@ this)
 
 	this.getSprite().SetZ(-50.0f);   // push to background
 	
-	CShape@ shape = this.getShape();
-	if (shape !is null)
-	{
-		shape.PutOnGround();
-	}
+	// minimap
+	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
+	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 29, Vec2f(8, 8));
+	this.SetMinimapRenderAlways(true);
 }
 
 void onTick(CBlob@ this)
