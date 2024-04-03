@@ -315,6 +315,7 @@ void UpdateSprite(CBlob@ this)
 		{
 			chop.SetOffset(Vec2f());		
 			chop.animation.frame = this.hasTag("bloody") && !g_kidssafe ? 1 : 0;
+		}
 	}
 }
 
