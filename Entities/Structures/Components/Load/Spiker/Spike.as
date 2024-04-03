@@ -63,7 +63,8 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 {
 	if (hitBlob !is null 
 		&& hitBlob !is this 
-		&& damage > 0.0f)
+		&& damage > 0.0f
+		&& !this.isInWater())
 	{
 		this.Tag("bloody");
 		UpdateSprite(this);
