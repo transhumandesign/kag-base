@@ -193,6 +193,7 @@ void onTick(CBlob@ this)
 		if (state == hidden)
 		{
 			this.getSprite().SetAnimation("hidden");
+			UpdateSprite(this);
 			CBlob@[] blobsInRadius;
 			const int team = this.getTeamNum();
 			if (map.getBlobsInRadius(pos, this.getRadius() * 1.0f, @blobsInRadius))
@@ -222,6 +223,7 @@ void onTick(CBlob@ this)
 				timer = delay_retract;
 
 				this.getSprite().SetAnimation("default");
+				UpdateSprite(this);
 				this.getSprite().PlaySound("/SpikesOut.ogg");
 
 				CBlob@[] blobsInRadius;
@@ -275,7 +277,7 @@ bool canStab(CBlob@ b)
 //physics logic
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point)
 {
-if 	(!isServer() 
+	if 	(!isServer() 
 		|| this.isAttached()
 		|| blob is null		//shouldn't be in here! collided with map??
 		|| !blob.hasTag("flesh")	// only hit living things
@@ -373,8 +375,12 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 		&& damage > 0.0f)
 	{
 		this.getSprite().PlaySound("/SpikesCut.ogg");
-		this.Tag("bloody");
-		UpdateSprite(this);
+		
+		if (!this.isInWater())
+		{
+			this.Tag("bloody");
+			UpdateSprite(this);
+		}
 	}
 }
 

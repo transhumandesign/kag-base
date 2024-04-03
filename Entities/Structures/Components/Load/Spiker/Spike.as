@@ -24,7 +24,7 @@ namespace Spike
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (!getNet().isServer() 
+	if (!isServer() 
 		|| this.get_u8("state") == Spike::hidden 
 		|| blob is null 
 		|| !blob.hasTag("flesh") 
@@ -69,7 +69,8 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 {
 	if (hitBlob !is null 
 		&& hitBlob !is this 
-		&& damage > 0.0f)
+		&& damage > 0.0f
+		&& !this.isInWater())
 	{
 		this.Tag("bloody");
 		UpdateSprite(this);
