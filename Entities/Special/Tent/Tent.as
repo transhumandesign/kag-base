@@ -82,6 +82,17 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 void onDie(CBlob@ this)
 {
 	this.getSprite().SetEmitSoundPaused(true);
+
+	// custom gib particles
+	this.getSprite().Gib();
+	Vec2f pos = this.getPosition();
+	Vec2f vel = this.getVelocity();
+	const string fname = CFileMatcher("/Tent.png").getFirst();
+	for (int i = 0; i < 16; i++)
+	{
+		uint frame = i + Maths::Floor(i / 4) * 4;
+		makeGibParticle(fname, pos, vel + getRandomVelocity(0, 6 + XORRandom(10), 180), 0, frame, Vec2f(8, 8), 2.0f, 20, "Sounds/material_drop.ogg", this.getTeamNum());
+	}
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
