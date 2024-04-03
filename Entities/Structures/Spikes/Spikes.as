@@ -39,6 +39,12 @@ void onInit(CBlob@ this)
 
 	this.set_u8(state_prop, normal);
 	this.set_u8(timer_prop, 0);
+	
+	CRules@ rules = getRules();
+	if (!rules.hasScript("ToggleBloodyStuff.as"))
+	{
+		rules.AddScript("ToggleBloodyStuff.as");
+	}
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -87,8 +93,8 @@ void onTick(CBlob@ this)
 	Vec2f pos = this.getPosition();
 	const f32 tilesize = map.tilesize;
 
-	if (isServer() &&
-	        (map.isTileSolid(map.getTile(pos)) || map.rayCastSolid(pos - this.getVelocity(), pos)))
+	if (isServer() 
+		&& (map.isTileSolid(map.getTile(pos)) || map.rayCastSolid(pos - this.getVelocity(), pos)))
 	{
 		this.server_Hit(this, pos, Vec2f(0, -1), 3.0f, Hitters::fall, true);
 		return;
@@ -259,8 +265,6 @@ void onTick(CBlob@ this)
 		this.set_u8(state_prop, 0);
 		this.set_u8(timer_prop, 0);
 	}
-
-	onHealthChange(this, this.getHealth());
 }
 
 bool canStab(CBlob@ b)
@@ -364,34 +368,34 @@ if 	(!isServer()
 
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
 {
-	if (hitBlob !is null && hitBlob !is this && damage > 0.0f)
+	if (hitBlob !is null 
+		&& hitBlob !is this 
+		&& damage > 0.0f)
 	{
-		CSprite@ sprite = this.getSprite();
-		sprite.PlaySound("/SpikesCut.ogg");
-
-		if (!this.hasTag("bloody"))
-		{
-			if (!g_kidssafe)
-			{
-				sprite.animation.frame += 3;
-			}
-
-			this.Tag("bloody");
-		}
+		this.getSprite().PlaySound("/SpikesCut.ogg");
+		this.Tag("bloody");
+		UpdateSprite(this);
 	}
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
-	f32 hp = this.getHealth();
-	f32 full_hp = this.getInitialHealth();
-	int frame = (hp > full_hp * 0.9f) ? 0 : ((hp > full_hp * 0.4f) ? 1 : 2);
+	UpdateSprite(this);
+}
 
-	if (this.hasTag("bloody") && !g_kidssafe)
+void UpdateSprite(CBlob@ this)
+{
+	if (isClient())
 	{
-		frame += 3;
+		f32 hp = this.getHealth();
+		f32 full_hp = this.getInitialHealth();
+		int frame = (hp > full_hp * 0.9f) ? 0 : ((hp > full_hp * 0.4f) ? 1 : 2);
+		if (this.hasTag("bloody") && !g_kidssafe)
+		{
+			frame += 3;
+		}
+		this.getSprite().animation.frame = frame;
 	}
-	this.getSprite().animation.frame = frame;
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)

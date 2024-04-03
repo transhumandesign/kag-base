@@ -1075,7 +1075,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				return;
 			}
 
-			Sound::Play("BombBounce.ogg", archer.grapple_pos, 0.5f);
+			Sound::Play("hit_wood.ogg", archer.grapple_pos, 0.5f);
 		}
 	}
 	else if (cmd == this.getCommandID("cycle"))  //from standardcontrols
@@ -1282,5 +1282,12 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	{
 		archer.grappling = false;
 		SyncGrapple(this);
+	}
+	
+	// make archer not shoot when picking up heavy objects
+	if (attached.hasTag("no action while carrying") && attachedPoint.name == "PICKUP")
+	{
+		archer.charge_state = 0;
+		archer.charge_time = 0;
 	}
 }

@@ -179,13 +179,17 @@ class SpawnCommand : BlobCommand
 			return;
 		}
 
-		u8 team = player.getBlob().getTeamNum();
+		CBlob@ playerBlob = player.getBlob();
+		u8 team = playerBlob.getTeamNum();
 		CBlob@ newBlob = server_CreateBlob(blobName, team, pos + Vec2f(0, -5));
 
 		//invalid blobs will have 'broken' names
 		if (newBlob is null || newBlob.getName() != blobName)
 		{
 			server_AddToChat(getTranslatedString("Blob '{BLOB}' not found").replace("{BLOB}", blobName), ConsoleColour::ERROR, player);
+			return;
 		}
+
+		newBlob.SetFacingLeft(playerBlob.isFacingLeft());
 	}
 }

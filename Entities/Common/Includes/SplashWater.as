@@ -1,4 +1,5 @@
 #include "Hitters.as";
+#include "UpdateBloodySprite.as";
 
 void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheight,
             const f32 splash_offset, const bool shouldStun = true)
@@ -6,7 +7,6 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 	//extinguish fire
 	CMap@ map = getMap();
 	Sound::Play("SplashSlow.ogg", this.getPosition(), 3.0f);
-
 
     //bool raycast = this.hasTag("splash ray cast");
 
@@ -68,6 +68,12 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 				
 				if (blob is null || blob.hasTag("invincible"))
 					continue;
+
+				if (blob.hasTag("bloody"))
+				{
+					blob.Untag("bloody");
+					UpdateBloodySprite(blob);
+				}
 
 				bool hitHard = blob.getTeamNum() != this.getTeamNum() || ownerBlob is blob;
 

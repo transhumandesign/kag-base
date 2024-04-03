@@ -95,6 +95,28 @@ class TeamCommand : ChatCommand
 		}
 
 		blob.server_setTeamNum(team);
+
+		// also convert items in inventory
+		CInventory@ inv = blob.getInventory();
+		if (inv !is null)
+		{
+			for (int i = 0; i < inv.getItemsCount(); i++)
+			{
+				CBlob@ item = inv.getItem(i);
+
+				if (item !is null)
+				{
+					item.server_setTeamNum(team);
+				}
+			}
+		}
+
+		// also convert held item
+		CBlob@ heldblob = blob.getCarriedBlob();
+		if (heldblob !is null && heldblob.hasScript("SetTeamToCarrier.as"))
+		{
+			heldblob.server_setTeamNum(team);
+		}
 	}
 }
 
