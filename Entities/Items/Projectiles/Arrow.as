@@ -8,6 +8,7 @@
 #include "KnockedCommon.as";
 #include "DoorCommon.as";
 #include "FireplaceCommon.as";
+#include "ArrowCommon.as";
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
@@ -89,24 +90,6 @@ void onInit(CBlob@ this)
 		if (arrowType == ArrowType::bomb)
 			sprite.SetAnimation(anim);
 	}
-}
-
-void turnOffFire(CBlob@ this)
-{
-	this.SetLight(false);
-	this.set_u8("arrow type", ArrowType::normal);
-	this.Untag("fire source");
-	this.getSprite().SetAnimation("arrow");
-	this.getSprite().PlaySound("/ExtinguishFire.ogg");
-}
-
-void turnOnFire(CBlob@ this)
-{
-	this.SetLight(true);
-	this.set_u8("arrow type", ArrowType::fire);
-	this.Tag("fire source");
-	this.getSprite().SetAnimation("fire arrow");
-	this.getSprite().PlaySound("/FireFwoosh.ogg");
 }
 
 void onTick(CBlob@ this)
@@ -333,7 +316,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				Hitters::arrow;
 
 			//perform the hit and tag so that another doesn't happen
-			this.server_Hit(blob, point1, initVelocity, dmg, hit_type);
+			if (!blob.hasTag("invincible"))
+				this.server_Hit(blob, point1, initVelocity, dmg, hit_type);
 
 			// for fire arrows, make fire
 			if (arrowType == ArrowType::fire && !this.hasTag("no_fire"))
@@ -784,7 +768,7 @@ bool isFlammableAt(Vec2f worldPos)
 Random _gib_r(0xa7c3a);
 void onDie(CBlob@ this)
 {
-	if (getNet().isClient())
+	if (isClient())
 	{
 		Vec2f pos = this.getPosition();
 		if (pos.x >= 1 && pos.y >= 1)

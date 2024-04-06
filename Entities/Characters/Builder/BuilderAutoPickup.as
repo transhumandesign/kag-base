@@ -43,7 +43,10 @@ bool pickupCriteria(CBlob@ this, CBlob@ blob, uint16 quantity)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (blob is null || blob.getShape().vellen > 1.0f)
+	if (blob is null 
+		|| blob.isAttached()
+		|| !blob.canBePickedUp(this)
+		|| blob.getShape().vellen > 1.0f)
 	{
 		return;
 	}

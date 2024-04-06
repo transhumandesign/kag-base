@@ -29,6 +29,30 @@ void onTick(CBlob@ this)
 {
 	this.Untag("prevent crouch");
 	DoKnockedUpdate(this);
+	
+	// wetness
+	if (!v_fastrender)
+	{
+		bool wet = this.isInWater();
+
+		// in water
+		if (wet)
+		{
+			this.set_u32("water last touched", getGameTime());
+			this.Tag("wet");
+			return;
+		}
+
+		// got out of water
+		if (this.exists("water last touched") && this.get_u32("water last touched") + 150 > getGameTime())
+		{
+			this.Tag("wet");
+		}
+		else
+		{
+			this.Untag("wet");
+		}
+	}
 }
 
 // pick up efffects
@@ -41,6 +65,19 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
+	if (attached.hasTag("no action while carrying"))
+	{
+		CAttachment@ att = attached.getAttachments();
+		if (att !is null) 
+		{
+			AttachmentPoint@ ap = att.getAttachmentPointByName("PICKUP");
+			if (ap !is null)
+			{
+				ap.SetKeysToTake(key_action1 | key_action2);
+			}
+		}
+	}
+
 	this.getSprite().PlaySound("/Pickup.ogg");
 
 	this.ClearButtons();

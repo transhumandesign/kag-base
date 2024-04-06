@@ -21,13 +21,11 @@ void onInit(CBlob@ this)
 	this.set(Trampoline::TIMER, cooldowns);
 	this.getShape().getConsts().collideWhenAttached = true;
 
+	this.Tag("no action while carrying");
 	this.Tag("no falldamage");
 	this.Tag("medium weight");
 	// Because BlobPlacement.as is *AMAZING*
 	this.Tag("place norotate");
-
-	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
-	point.SetKeysToTake(key_action1 | key_action2);
 
 	this.getCurrentScript().runFlags |= Script::tick_attached;
 }
@@ -136,6 +134,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 			Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
 			velocity.RotateBy(angle);
+			velocity = Vec2f(Maths::Round(velocity.x), Maths::Round(velocity.y));
 
 			blob.setVelocity(velocity);
 

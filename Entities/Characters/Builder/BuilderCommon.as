@@ -47,7 +47,7 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 	this.set_TileType("buildtile", 0);
 
 	CBlob@ anotherBlob = inv.getItem(b.name);
-	if (getNet().isServer() && anotherBlob !is null)
+	if (isServer() && anotherBlob !is null)
 	{
 		this.server_Pickup(anotherBlob);
 		this.set_u8("buildblob", 255);
@@ -141,9 +141,13 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 			return null;
 		}
 
+		if (isServer())
+		{
+			this.SendCommand(this.getCommandID("client_construct_sound"));
+		}
+
 		pos = offsetPos + space * map.tilesize * 0.5f;
 
-		this.getSprite().PlaySound("/Construct");
 		// take inv here instead of in onDetach
 		server_TakeRequirements(inv, b.reqs);
 		DestroyScenary(tl, br);
@@ -152,7 +156,7 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 
 	this.set_u8("buildblob", index);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CBlob@ blockBlob = server_CreateBlob(b.name, this.getTeamNum(), Vec2f(0,0));
 		if (blockBlob !is null)

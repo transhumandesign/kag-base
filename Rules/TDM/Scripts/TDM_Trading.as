@@ -39,6 +39,7 @@ TradeItem@ addItemForCoin(CBlob@ this, const string &in name, int cost, const bo
 	if (item !is null)
 	{
 		AddRequirement(item.reqs, "coin", "", "Coins", cost);
+		AddMatchNotEndedRequirement(item.reqs);
 		item.buyIntoInventory = true;
 	}
 	return item;
@@ -65,7 +66,8 @@ void MakeTradeMenu(CBlob@ trader)
 	s32 cost_bombarrows = cfg.read_s32("cost_bombarrows", 50);
 
 	s32 cost_boulder = cfg.read_s32("cost_boulder", 50);
-	s32 cost_burger = cfg.read_s32("cost_burger", 40);
+	s32 cost_crate = cfg.read_s32("cost_crate", 50);
+	s32 cost_burger = cfg.read_s32("cost_burger", 50);
 	s32 cost_sponge = cfg.read_s32("cost_sponge", 20);
 
 	s32 cost_mountedbow = cfg.read_s32("cost_mountedbow", -1);
@@ -76,6 +78,11 @@ void MakeTradeMenu(CBlob@ trader)
 	s32 menu_width = cfg.read_s32("trade_menu_width", 3);
 	s32 menu_height = cfg.read_s32("trade_menu_height", 5);
 
+	// create team-colored icons
+	AddIconToken("$keg_tdm" + trader.getTeamNum() + "$", "Keg.png", Vec2f(16, 16), 0, trader.getTeamNum());
+	AddIconToken("$mine_tdm" + trader.getTeamNum() + "$", "Mine.png", Vec2f(16, 16), 0, trader.getTeamNum());
+	AddIconToken("$crate_tdm" + trader.getTeamNum() + "$", "CrateSmall.png", Vec2f(16, 16), 0, trader.getTeamNum());
+
 	// build menu
 	CreateTradeMenu(trader, Vec2f(menu_width, menu_height), "Buy weapons");
 
@@ -85,8 +92,8 @@ void MakeTradeMenu(CBlob@ trader)
 	//knighty stuff
 	addItemForCoin(trader, "Bomb", cost_bombs, true, "$mat_bombs$", "mat_bombs", Descriptions::bomb);
 	addItemForCoin(trader, "Water Bomb", cost_waterbombs, true, "$mat_waterbombs$", "mat_waterbombs", Descriptions::waterbomb);
-	addItemForCoin(trader, "Keg", cost_keg, true, "$keg$", "keg", Descriptions::keg);
-	addItemForCoin(trader, "Mine", cost_mine, true, "$mine$", "mine", Descriptions::mine);
+	addItemForCoin(trader, "Keg", cost_keg, true, "$keg_tdm" + trader.getTeamNum() + "$", "keg", Descriptions::keg);
+	addItemForCoin(trader, "Mine", cost_mine, true, "$mine_tdm" + trader.getTeamNum() + "$", "mine", Descriptions::mine);
 	//yummy stuff
 	addItemForCoin(trader, "Burger", cost_burger, true, "$food$", "food", Descriptions::food);
 	//archery stuff
@@ -99,6 +106,7 @@ void MakeTradeMenu(CBlob@ trader)
 	addItemForCoin(trader, "Mounted Bow", cost_mountedbow, true, "$mounted_bow$", "mounted_bow", Descriptions::mounted_bow);
 	addItemForCoin(trader, "Drill", cost_drill, true, "$drill$", "drill", Descriptions::drill);
 	addItemForCoin(trader, "Boulder", cost_boulder, true, "$boulder$", "boulder", Descriptions::boulder);
+	addItemForCoin(trader, "Crate", cost_crate, true, "$crate_tdm" + trader.getTeamNum() + "$", "crate", Descriptions::crate);
 	//vehicles
 	addItemForCoin(trader, "Catapult", cost_catapult, true, "$catapult$", "catapult", Descriptions::catapult);
 	addItemForCoin(trader, "Ballista", cost_ballista, true, "$ballista$", "ballista", Descriptions::ballista);
@@ -182,7 +190,11 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 			}
 		}
 
-		victim.server_setCoins(victim.getCoins() - coinsOnDeathLose);
+		if (this.isMatchRunning() || (killer !is null && killer.getTeamNum() != victim.getTeamNum()))
+		{
+			// subtract coins after a match only when opponent player killed us
+			victim.server_setCoins(victim.getCoins() - coinsOnDeathLose);
+		}
 	}
 }
 

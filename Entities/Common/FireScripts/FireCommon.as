@@ -26,10 +26,6 @@ void server_setFireOn(CBlob@ this)
 
 	this.set_s16(burn_timer, this.get_s16(burn_duration) / fire_wait_ticks);
 	this.Sync(burn_timer, true);
-
-	if ((this.getCurrentScript().runFlags & Script::tick_infire) != 0)
-		this.Tag("had only fire flag");
-	this.getCurrentScript().runFlags &= ~Script::tick_infire;
 }
 
 /**
@@ -47,9 +43,6 @@ void server_setFireOff(CBlob@ this)
 	
 	this.set_s16(burn_counter, 0);
 	this.Sync(burn_counter, true);
-
-	if (this.hasTag("had only fire flag"))
-		this.getCurrentScript().runFlags |= Script::tick_infire;
 }
 
 /**

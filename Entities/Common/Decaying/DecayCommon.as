@@ -1,11 +1,10 @@
 const bool DECAY_DEBUG = false;
 
-bool dissalowDecaying(CBlob@ this)
+bool disallowDecaying(CBlob@ this)
 {
-	return (
-	           this.getControls() !is null ||
-	           this.isInInventory()
-	       );
+	return (this.getControls() !is null 
+			|| this.isInInventory()
+			|| this.hasTag("invincible"));
 }
 
 void SelfDamage(CBlob@ this, f32 dmg)

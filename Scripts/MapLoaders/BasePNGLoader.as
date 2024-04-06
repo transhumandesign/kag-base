@@ -146,6 +146,7 @@ class PNGLoader
 			case map_colors::alpha_lamp:            autotile(offset); spawnBlob(map, "lamp",                                  255, position,                             true); break;
 			case map_colors::alpha_obstructor:      autotile(offset); spawnBlob(map, "obstructor",                            255, position,                             true); break;
 			case map_colors::alpha_spiker:          autotile(offset); spawnBlob(map, "spiker",                                255, position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_flamer:          autotile(offset); spawnBlob(map, "flamer",                                255, position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_lever:
 			{
 				autotile(offset);
@@ -368,7 +369,16 @@ class PNGLoader
 			// Ground siege
 			case map_colors::catapult:    autotile(offset); spawnVehicle(map, "catapult", offset, 0); break; // HACK: team for Challenge
 			case map_colors::ballista:    autotile(offset); spawnVehicle(map, "ballista", offset); break;
-			case map_colors::mountedbow:  autotile(offset); spawnBlob(map, "mounted_bow", offset, 255, true, Vec2f(0.0f, 4.0f)); break;
+			case map_colors::mountedbow:  
+			{
+				autotile(offset); 
+				CBlob@ mounted_bow = spawnBlob(map, "mounted_bow", offset, 255, true, Vec2f(0.0f, 4.0f));
+				if (mounted_bow !is null)
+				{	
+					mounted_bow.Tag("unpickable"); 
+				}
+			}
+			break;
 
 			// Water/air vehicles
 			case map_colors::longboat:    autotile(offset); spawnVehicle(map, "longboat", offset); break;
@@ -951,6 +961,11 @@ void getInfoFromBlob(CBlob@ this, SColor &out color, Vec2f &out offset)
 		else if(name == "spiker")
 		{
 			color = map_colors::alpha_spiker;
+			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()));
+		}
+		else if(name == "flamer")
+		{
+			color = map_colors::alpha_flamer;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()));
 		}
 	}

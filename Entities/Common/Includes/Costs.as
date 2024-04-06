@@ -32,7 +32,7 @@ namespace CTFCosts
 	s32 dinghy, dinghy_wood, longboat, longboat_wood, warboat, warboat_gold;
 
 	//VehicleShop.as
-	s32 catapult, ballista, ballista_ammo, ballista_bomb_ammo, outpost_coins, outpost_gold;
+	s32 catapult, ballista, ballista_ammo, ballista_bomb_ammo, mounted_bow, outpost_coins, outpost_gold;
 
 	//Quarters.as
 	s32 beer, meal, egg, burger;
@@ -119,7 +119,7 @@ void InitCosts()
 	CTFCosts::quarry_count =                ReadCost(cfg, costs, "cost_quarry_count"       , 1);
 
 	//ArcherShop.as
-	CTFCosts::arrows =                      ReadCost(cfg, costs, "cost_arrows"             , 15);
+	CTFCosts::arrows =                      ReadCost(cfg, costs, "cost_arrows"             , 5);
 	CTFCosts::waterarrows =                 ReadCost(cfg, costs, "cost_waterarrows"        , 15);
 	CTFCosts::firearrows =                  ReadCost(cfg, costs, "cost_firearrows"         , 30);
 	CTFCosts::bombarrows =                  ReadCost(cfg, costs, "cost_bombarrows"         , 50);
@@ -157,6 +157,7 @@ void InitCosts()
 	CTFCosts::ballista =                    ReadCost(cfg, costs, "cost_ballista"                   , 200);
 	CTFCosts::ballista_ammo =               ReadCost(cfg, costs, "cost_ballista_ammo"              , 80);
 	CTFCosts::ballista_bomb_ammo =          ReadCost(cfg, costs, "cost_ballista_bomb_ammo"         , 100);
+	CTFCosts::mounted_bow =                 ReadCost(cfg, costs, "cost_mounted_bow"                , 80);
 	CTFCosts::outpost_coins =               ReadCost(cfg, costs, "cost_outpost_coins"              , 150);
 	CTFCosts::outpost_gold =                ReadCost(cfg, costs, "cost_outpost_gold"               , 50);
 

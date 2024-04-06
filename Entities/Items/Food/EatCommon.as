@@ -24,7 +24,8 @@ u8 getHealingAmount(CBlob@ food)
 void Heal(CBlob@ this, CBlob@ food)
 {
 	bool exists = getBlobByNetworkID(food.getNetworkID()) !is null;
-	if (getNet().isServer() && this.hasTag("player") && this.getHealth() < this.getInitialHealth() && !food.hasTag("healed") && exists)
+	if (isServer() && this.hasTag("player") && this.getHealth() < this.getInitialHealth() 
+		&& !food.hasTag("healed") && !food.hasTag("cooked") && exists)
 	{
 		CBitStream params;
 		params.write_u16(this.getNetworkID());

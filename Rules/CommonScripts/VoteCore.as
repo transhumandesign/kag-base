@@ -49,6 +49,7 @@ void onRender(CRules@ this)
 		vote_title = vote_title.replace("{USER}", vote.user_to_kick);
 	}
 
+	GUI::SetFont("menu");
 	GUI::GetTextDimensions(vote_title, text_dim);
 
 	if (can_cancel || can_force_pass)
@@ -57,8 +58,6 @@ void onRender(CRules@ this)
 	}
 
 	GUI::DrawPane(tl, br, SColor(0x80ffffff));
-
-	GUI::SetFont("menu");
 	GUI::DrawText(vote_title, tl + Vec2f(Maths::Max(dim.x / 2 - text_dim.x / 2, 3.0), 3), color_white);
 
 	GUI::DrawText(getTranslatedString("Reason: {REASON}").replace("{REASON}", getTranslatedString(vote.reason)), tl + Vec2f(3, 3 + text_dim.y * 2), color_white);

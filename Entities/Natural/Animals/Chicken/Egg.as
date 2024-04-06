@@ -8,6 +8,10 @@ void onInit(CBlob@ this)
 {
 	this.getCurrentScript().tickFrequency = 120;
 	this.addCommandID("hatch");
+	
+	this.Tag("cookable in fireplace");
+	this.set_string("cooked name", "Cake");
+	this.set_u8("cooked sprite index", 5);
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
@@ -17,7 +21,7 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 
 void onTick(CBlob@ this)
 {
-	if (getNet().isServer() && this.getTickSinceCreated() > grow_time)
+	if (isServer() && this.getTickSinceCreated() > grow_time)
 	{
 		int chickenCount = 0;
 		CBlob@[] blobs;
@@ -49,11 +53,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			s.Gib();
 		}
 
-		if (getNet().isServer())
+		if (isServer())
 		{
 			this.server_SetHealth(-1);
 			this.server_Die();
 			server_CreateBlob("chicken", -1, this.getPosition() + Vec2f(0, -5.0f));
 		}
 	}
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	return blob.getShape().isStatic();
 }

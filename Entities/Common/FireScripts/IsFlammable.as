@@ -18,7 +18,6 @@ void onInit(CBlob@ this)
 		this.set_s16(burn_timer , 0);
 
 	this.getCurrentScript().tickFrequency = fire_wait_ticks;
-	this.getCurrentScript().runFlags |= Script::tick_infire;
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
@@ -63,6 +62,9 @@ void onDie(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	if (!this.hasTag(burning_tag) && !this.isInFlames())
+		return;
+
 	Vec2f pos = this.getPosition();
 	CMap@ map = this.getMap();
 	if (map is null)
@@ -110,7 +112,8 @@ void onTick(CBlob@ this)
 			if (blob is null)
 				@blob = this;
 
-			blob.server_Hit(this, pos, Vec2f(0, 0), 0.25, this.get_u8(burn_hitter), true);
+			if (!this.hasTag("invincible"))
+				blob.server_Hit(this, pos, Vec2f(0, 0), 0.25, this.get_u8(burn_hitter), true);
 		}
 
 		//burninating the burning time

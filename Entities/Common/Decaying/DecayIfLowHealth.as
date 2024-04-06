@@ -11,7 +11,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (dissalowDecaying(this) || this.isAttached())
+	if (disallowDecaying(this) || this.isAttached())
 		return;
 
 	if (this.getHealth() < this.getInitialHealth() * 0.1f)

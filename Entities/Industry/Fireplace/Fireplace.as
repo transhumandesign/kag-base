@@ -1,7 +1,5 @@
 // Fireplace
 
-#include "ProductionCommon.as";
-#include "Requirements.as";
 #include "MakeFood.as";
 #include "FireParticle.as";
 #include "FireCommon.as";
@@ -51,7 +49,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	
 	if (this.getSprite().isAnimation("fire"))
 	{
-		CBlob@ food = cookFood(blob);
+		CBlob@ food = CookInFireplace(blob); // MakeFood.as
 		if (food !is null)
 		{
 			food.setVelocity(blob.getVelocity().opMul(0.5f));
@@ -115,4 +113,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		Ignite(this);
 	}
 	return damage;
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	return blob.getShape().isStatic();
 }
