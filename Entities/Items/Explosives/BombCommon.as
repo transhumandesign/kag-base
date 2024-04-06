@@ -2,10 +2,9 @@
 
 #include "Hitters.as"
 
-
-
 void SetupBomb(CBlob@ this, const int fuseTicks, const f32 explRadius, const f32 explosive_damage, const f32 map_damage_radius, const f32 map_damage_ratio, const bool map_damage_raycast)
 {
+	this.set_s32("fuse_ticks", fuseTicks);
 	this.set_s32("bomb_timer", getGameTime() + fuseTicks);
 	this.set_f32("explosive_radius", explRadius);
 	this.set_f32("explosive_damage", explosive_damage);
@@ -24,9 +23,10 @@ bool UpdateBomb(CBlob@ this)
 	s32 timer = this.get_s32("bomb_timer") - getGameTime();
 	//printf("timer " + timer + " " + this.get_s32("bomb_timer")  + " " + getGameTime() );
 	this.getSprite().SetEmitSoundPaused(false);
+
 	if (timer <= 0)
 	{
-		if (getNet().isServer())
+		if (isServer())
 		{
 			Boom(this);
 		}
@@ -53,10 +53,12 @@ bool UpdateBomb(CBlob@ this)
 
 		if (XORRandom(2) == 0)
 		{
-			sparks(this.getPosition(), this.getAngleDegrees(), 3.5f + (XORRandom(10) / 5.0f), lightColor);
+			Vec2f blob_position = this.getPosition();
+			Vec2f sparks_position = this.exists("custom_sparks_offset") ? this.get_Vec2f("custom_sparks_offset") + blob_position : blob_position;
+			sparks(sparks_position, this.getAngleDegrees(), 3.5f + (XORRandom(10) / 5.0f), lightColor);
 		}
 
-		int fuseTicks = (this.get_s32("bomb_timer") - getGameTime());
+		int fuseTicks = this.get_s32("fuse_ticks");
 		if (timer < fuseTicks / 2)
 		{
 			const f32 speed = 1.0f + (1.0f - 2.0f * ((f32(timer) / f32(fuseTicks))));
@@ -64,6 +66,7 @@ bool UpdateBomb(CBlob@ this)
 			this.getSprite().SetEmitSoundVolume(speed);
 		}
 	}
+
 	return true;
 }
 
