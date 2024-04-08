@@ -6,7 +6,9 @@ enum WireType
 {
 	COUPLING = 0,
 	ELBOW,
-	TEE
+	TEE,
+	FORK,
+	DUAL_ELBOW
 };
 
 // COUPLING frame weight
@@ -51,6 +53,14 @@ void onInit(CBlob@ this)
 	{
 		this.set_u8("type", TEE);
 	}
+	else if (NAME == "fork")
+	{
+		this.set_u8("type", FORK);
+	}
+	else if (NAME == "dual_elbow")
+	{
+		this.set_u8("type", DUAL_ELBOW);
+	}
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -63,33 +73,51 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Wire component(POSITION);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
+		
+		u8 io, io2;
 
-		u8 io;
-		switch (this.get_u8("type"))
+		switch(this.get_u8("type"))
 		{
 			case COUPLING:
 				io = rotateTopology(ANGLE, TOPO_VERT);
+				io2 = TOPO_NONE;
 				break;
+
 			case ELBOW:
 				io = rotateTopology(ANGLE, TOPO_DOWN | TOPO_RIGHT);
+				io2 = TOPO_NONE;
 				break;
+
 			case TEE:
 				io = rotateTopology(ANGLE, TOPO_DOWN | TOPO_HORI);
+				io2 = TOPO_NONE;
+				break;
+
+			case FORK:
+				io = rotateTopology(ANGLE, TOPO_VERT);
+				io2 = rotateTopology(ANGLE, TOPO_HORI);
+				break;
+
+			case DUAL_ELBOW:
+				io = rotateTopology(ANGLE, TOPO_DOWN | TOPO_RIGHT);
+				io2 = rotateTopology(ANGLE, TOPO_UP | TOPO_LEFT);
 				break;
 		}
-
+		
 		grid.setAll(
 		component.x,                        // x
 		component.y,                        // y
-		io,                                 // input topology
-		io,                                 // output topology
+		io,									// input topology section 0
+		io,									// output topology section 0
+		io2,								// input topology section 1
+		io2,								// output topology section 1
 		INFO_NONE,                          // information
-		0,                                  // power
-		0);                                 // id
+		0,									// power
+		0);									// id
 	}
 
 	CSprite@ sprite = this.getSprite();

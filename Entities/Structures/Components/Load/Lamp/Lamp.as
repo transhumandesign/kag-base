@@ -14,14 +14,18 @@ class Lamp : Component
 		id = _id;
 	}
 
-	void Activate(CBlob@ this)
+	void Activate(CBlob@ this, u16 section)
 	{
+		if (section > 0) return; // only runs on section 0
+	
 		this.SetLight(true);
 		this.getSprite().SetFrameIndex(1);
 	}
 
-	void Deactivate(CBlob@ this)
+	void Deactivate(CBlob@ this, u16 section)
 	{
+		if (section > 0) return; // only runs on section 0
+	
 		this.SetLight(false);
 		this.getSprite().SetFrameIndex(0);
 	}
@@ -59,7 +63,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Lamp component(POSITION, this.getNetworkID());
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -67,8 +71,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		grid.setAll(
 		component.x,                        // x
 		component.y,                        // y
-		rotateTopology(ANGLE, TOPO_DOWN),   // input topology
-		TOPO_NONE,                          // output topology
+		rotateTopology(ANGLE, TOPO_DOWN),	// input topology section 0
+		TOPO_NONE,							// output topology section 0
+		TOPO_NONE,							// input topology section 1
+		TOPO_NONE,							// output topology section 1
 		INFO_LOAD,                          // information
 		0,                                  // power
 		component.id);                      // id

@@ -36,7 +36,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Diode component(POSITION);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -44,8 +44,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		grid.setAll(
 		component.x,                        // x
 		component.y,                        // y
-		rotateTopology(ANGLE, TOPO_DOWN),   // input topology
-		rotateTopology(ANGLE, TOPO_UP),     // output topology
+		rotateTopology(ANGLE, TOPO_DOWN),   // input topology section 0
+		rotateTopology(ANGLE, TOPO_UP),		// output topology section 0
+		TOPO_NONE,							// input topology section 1
+		TOPO_NONE,							// output topology section 1
 		INFO_NONE,                          // information
 		0,                                  // power
 		0);                                 // id

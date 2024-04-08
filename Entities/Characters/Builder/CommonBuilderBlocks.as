@@ -159,7 +159,17 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 			blocks[1].push_back(b);
 		}
 		{
+			BuildBlock b(0, "dual_elbow", "$dual_elbow$", "Dual Elbow");
+			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
+			blocks[1].push_back(b);
+		}
+		{
 			BuildBlock b(0, "tee", "$tee$", "Tee");
+			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
+			blocks[1].push_back(b);
+		}
+		{
+			BuildBlock b(0, "fork", "$fork$", "Fork");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			blocks[1].push_back(b);
 		}

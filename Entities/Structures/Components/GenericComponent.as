@@ -14,12 +14,21 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		Component@ component = null;
 		if (!this.get("component", @component)) return;
 
-		if (getNet().isServer())
+		if (isServer())
 		{
 			MapPowerGrid@ grid;
 			if (!getRules().get("power grid", @grid)) return;
-
-			grid.setAll(component.x, component.y, 0, 0, 0, 0, 0);
+			
+			grid.setAll(
+			component.x,                        // x
+			component.y,                        // y
+			0,									// input topology section 0
+			0,									// output topology section 0
+			0,									// input topology section 1
+			0,									// output topology section 1
+			0,                                  // information
+			0,                                  // power
+			0);                                 // id
 		}
 
 		this.set("component", null);

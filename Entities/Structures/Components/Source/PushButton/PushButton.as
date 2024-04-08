@@ -44,7 +44,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.set_u8("state", 0);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -52,8 +52,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		grid.setAll(
 		component.x,                        // x
 		component.y,                        // y
-		TOPO_NONE,                          // input topology
-		TOPO_CARDINAL,                      // output topology
+		TOPO_NONE,							// input topology section 0
+		TOPO_CARDINAL,						// output topology section 0
+		TOPO_NONE,							// input topology section 1
+		TOPO_NONE,							// output topology section 1
 		INFO_SOURCE,                        // information
 		0,                                  // power
 		0);                                 // id
