@@ -186,7 +186,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 
 						Vec2f bpos = b.getPosition();
 
-						bool placingSeedOnNonStaticBlob = isSeed && !b.getShape().isStatic() && b.getName() != "seed";
+						bool placingSeedOnNonStaticBlob = isSeed && !b.getShape().isStatic();
 						bool replacingSeed = isSeed && b.getName() == "seed";
 						bool cantBuild = isBlocking(b);
 						bool buildingOnTeam = isDoor && (b.getTeamNum() == this.getTeamNum() || b.getTeamNum() == 255) && !b.getShape().isStatic() && this !is b;
