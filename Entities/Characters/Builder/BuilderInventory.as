@@ -110,7 +110,8 @@ void MakeBlocksMenu(CInventory@ this, const Vec2f &in INVENTORY_CE)
 			BuildBlock@ b = blocks[PAGE][i];
 			if (b is null) continue;
 			string block_desc = getTranslatedString(b.description);
-			CGridButton@ button = menu.AddButton(b.icon, "\n" + block_desc, Builder::make_block + i);
+			block_desc = block_desc.find("\n") != -1 ? "\n" + block_desc : block_desc;
+			CGridButton@ button = menu.AddButton(b.icon, block_desc, Builder::make_block + i);
 			if (button is null) continue;
 
 			button.selectOneOnClick = true;
