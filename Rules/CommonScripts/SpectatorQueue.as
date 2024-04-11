@@ -83,6 +83,7 @@ class QueueGUIHidden
 		string text = "Queue Position: " + (client_queue_pos == -1 ? "None" : "" + (client_queue_pos + 1));
 		GUI::DrawPane(origin, origin+size, color);
 		Vec2f text_pos = Vec2f(origin.x + size.x / 2, origin.y + size.y / 2);
+		GUI::SetFont("menu");
 		GUI::DrawTextCentered(text, text_pos, color_white);
 	}
 
