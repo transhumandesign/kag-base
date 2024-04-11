@@ -14,9 +14,6 @@ class PushButton : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -44,7 +41,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.set_u8("state", 0);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -109,7 +106,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("activate"))
 	{
-		if (getNet().isServer())
+		if (isServer())
 		{
 			// double check state, if state != 0, return
 			if (this.get_u8("state") != 0) return;
@@ -142,9 +139,4 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		sprite.SetAnimation("activate");
 		sprite.PlaySound("PushButton.ogg");
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

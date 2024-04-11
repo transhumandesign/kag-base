@@ -24,9 +24,6 @@ class CoinSlot : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -176,9 +173,4 @@ void onDie(CBlob@ this)
 	{
 		server_CreateLoot(this, this.getPosition(), this.getTeamNum());
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

@@ -22,7 +22,7 @@ class Dispenser : Component
 	{
 		Vec2f position = this.getPosition();
 
-		if (getNet().isServer())
+		if (isServer())
 		{
 			CBlob@[] blobs;
 			getMap().getBlobsAtPosition((offset * -1) * 8 + position, @blobs);
@@ -67,9 +67,6 @@ class Dispenser : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("blocks sword");
 
@@ -88,7 +85,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Dispenser component(position, this.getNetworkID(), angle, offset);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -108,9 +105,4 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	sprite.SetFacingLeft(false);
 	sprite.SetZ(500);
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

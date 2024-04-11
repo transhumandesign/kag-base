@@ -228,6 +228,7 @@ void packet_RecChangeFrame(CBitStream@ stream)
 	CBlob@ blob = getBlobByNetworkID(id);
 	if(blob is null) return;
 
+	blob.set_u8("frame index", frame);
 	blob.getSprite().SetFrameIndex(frame);
 }
 
