@@ -143,7 +143,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		spike.setAngleDegrees(this.getAngleDegrees());
 		spike.set_u8("state", 0);
 		this.set_u16("spike id", spike.getNetworkID());
-		this.Sync("spiker id", true);
+		this.Sync("spike id", true);
 
 		ShapeConsts@ consts = spike.getShape().getConsts();
 		consts.mapCollisions = false;
