@@ -1,5 +1,9 @@
 // drop water particles if blob has tag "wet"
 
+#define CLIENT_ONLY
+
+#include "FireCommon.as";
+
 void onInit(CSprite@ this)
 {
 	this.getCurrentScript().tickIfTag = "wet";
@@ -14,7 +18,7 @@ void onTick(CSprite@ this)
 
 	CBlob@ blob = this.getBlob();
 	
-	if (blob is null)
+	if (blob is null || blob.hasTag(burning_tag))
 	{
 		return;
 	}
