@@ -29,7 +29,7 @@ void onTick(CBlob@ this)
 		f32 height = this.getHeight();
 		Vec2f sparkle_position = Vec2f(position.x + XORRandom(width + 1) - width/2, position.y + XORRandom(height + 1) - height/2);
 	
-		// water drop particle
+		// sparkle particle
 		CParticle@ p = ParticleAnimated(
 		"SparkleParticle.png", 		// file name
 		sparkle_position, 			// position
