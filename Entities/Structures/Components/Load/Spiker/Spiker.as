@@ -98,18 +98,6 @@ void UpdateSprite(CBlob@ this)
 {
 	this.getSprite().SetFrameIndex(this.get_u8("state"));
 	this.getSprite().SetRelativeZ(1.0f); // spiker comes before spike
-	
-	// spike frame
-	if (this.exists("spike id"))
-	{
-		CBlob@ spike = getBlobByNetworkID(this.get_u16("spike id"));
-		
-		if (spike !is null)
-		{
-			uint frame_add = spike.hasTag("bloody") && !g_kidssafe ? 1 : 0;
-			spike.getSprite().animation.frame = frame_add;
-		}
-	}
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -142,8 +130,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		CBlob@ spike = server_CreateBlob("spike", this.getTeamNum(), this.getPosition());
 		spike.setAngleDegrees(this.getAngleDegrees());
 		spike.set_u8("state", 0);
-		this.set_u16("spike id", spike.getNetworkID());
-		this.Sync("spike id", true);
 
 		ShapeConsts@ consts = spike.getShape().getConsts();
 		consts.mapCollisions = false;

@@ -83,12 +83,6 @@ bool canBePickedUp( CBlob@ this, CBlob@ byBlob )
 
 void UpdateSprite(CBlob@ this)
 {
-	//if (isClient())
-	{
-		// spike frame
-		uint frame_add = this.hasTag("bloody") && !g_kidssafe ? 1 : 0;
-		
-		this.getSprite().animation.frame = frame_add;
-
-	}
+	uint frame_add = this.hasTag("bloody") && !g_kidssafe ? 1 : 0;	
+	this.getSprite().animation.frame = frame_add;
 }
