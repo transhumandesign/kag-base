@@ -163,7 +163,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 			}
 		}
 
-		if (!isLadder && (buildSolid || isSpikes || isDoor || isPlatform) && map.getSectorAtPosition(middle, "no build") !is null)
+		if (!isSeed && !isLadder && (buildSolid || isSpikes || isDoor || isPlatform) && map.getSectorAtPosition(middle, "no build") !is null)
 		{
 			return false;
 		}
