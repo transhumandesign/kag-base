@@ -74,7 +74,7 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 					blob.Untag("bloody");
 					UpdateBloodySprite(blob);
 
-					if (!v_fastrender)
+					if (!v_fastrender && !g_kidssafe)
 					{
 						// sparkle particles
 						if (!blob.hasScript("CleanSparkles.as"))
