@@ -438,14 +438,11 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 
 void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 {
-	if (newteam == this.getSpectatorTeamNum())
+	if (player.isMyPlayer() && newteam == this.getSpectatorTeamNum())
 	{
-		SetupQueueGUI(this);
-	}
-
-	if (oldteam != this.getSpectatorTeamNum() && player.isMyPlayer()) 
-	{
+		client_selected = -99;
 		hide = true;
+		SetupQueueGUI(this);
 		return;
 	}
 
