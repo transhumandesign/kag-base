@@ -61,14 +61,15 @@ void ShowBuilderMenu(CPlayer@ player)
 		for (uint i = 0; i < blocks[0].length; i++)
 		{
 			BuildBlock@ b = blocks[0][i];
-			string block_desc = getTranslatedString(b.description);
+			string block_title = getTranslatedString(b.title);
+			string block_desc = block_title + "\n\n" + getTranslatedString(b.description);
 
 			CBitStream params;
 			params.write_u8(BIND_BLOCK);
 			params.write_string(player.getUsername());
 			params.write_u8(i);
 
-			CGridButton@ button = menu.AddButton(b.icon, block_desc, rules.getCommandID(BUILD_CMD), Vec2f(1, 1), params);
+			CGridButton@ button = menu.AddButton(b.icon, block_title, rules.getCommandID(BUILD_CMD), Vec2f(1, 1), params);
 
 		}
 

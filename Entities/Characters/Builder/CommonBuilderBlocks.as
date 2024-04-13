@@ -56,64 +56,64 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	BuildBlock[] page_0;
 	blocks.push_back(page_0);
 	{
-		BuildBlock b(CMap::tile_castle, "stone_block", "$stone_block$", "Stone Block\nBasic building block");
+		BuildBlock b(CMap::tile_castle, "stone_block", "$stone_block$", "Stone Block", "Basic building block.");
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::stone_block);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(CMap::tile_castle_back, "back_stone_block", "$back_stone_block$", "Back Stone Wall\nExtra support");
+		BuildBlock b(CMap::tile_castle_back, "back_stone_block", "$back_stone_block$", "Back Stone Wall", "Extra support.");
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::back_stone_block);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "stone_door", getTeamIcon("stone_door", "1x1StoneDoor.png", team_num, Vec2f(16, 8)), "Stone Door\nPlace next to walls");
+		BuildBlock b(0, "stone_door", getTeamIcon("stone_door", "1x1StoneDoor.png", team_num, Vec2f(16, 8)), "Stone Door", "Place next to walls.");
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::stone_door);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(CMap::tile_wood, "wood_block", "$wood_block$", "Wood Block\nCheap block\nwatch out for fire!");
+		BuildBlock b(CMap::tile_wood, "wood_block", "$wood_block$", "Wood Block", "Cheap block. Watch out for fire!");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::wood_block);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(CMap::tile_wood_back, "back_wood_block", "$back_wood_block$", "Back Wood Wall\nCheap extra support");
+		BuildBlock b(CMap::tile_wood_back, "back_wood_block", "$back_wood_block$", "Back Wood Wall", "Cheap extra support.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::back_wood_block);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "wooden_door", getTeamIcon("wooden_door", "1x1WoodDoor.png", team_num, Vec2f(16, 8)), "Wooden Door\nPlace next to walls");
+		BuildBlock b(0, "wooden_door", getTeamIcon("wooden_door", "1x1WoodDoor.png", team_num, Vec2f(16, 8)), "Wooden Door", "Place next to walls.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::wooden_door);
 		blocks[0].push_back(b);
 	}
 	/*{
-		BuildBlock b(0, "trap_block", getTeamIcon("trap_block", "TrapBlock.png", team_num), "Trap Block\nOnly enemies can pass");
+		BuildBlock b(0, "trap_block", getTeamIcon("trap_block", "TrapBlock.png", team_num), "Trap Block\n\nOnly enemies can pass.");
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::trap_block);
 		blocks[0].push_back(b);
 	}*/
 	{
-		BuildBlock b(0, "bridge", getTeamIcon("bridge", "Bridge.png", team_num), "Trap Bridge\nOnly your team can stand on it");
+		BuildBlock b(0, "bridge", getTeamIcon("bridge", "Bridge.png", team_num), "Trap Bridge", "Only your team can stand on it.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::bridge);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "ladder", "$ladder$", "Ladder\nAnyone can climb it");
+		BuildBlock b(0, "ladder", "$ladder$", "Ladder", "Anyone can climb it.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::ladder);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "wooden_platform", "$wooden_platform$", "Wooden Platform\nOne way platform");
+		BuildBlock b(0, "wooden_platform", "$wooden_platform$", "Wooden Platform", "One way platform.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", BuilderCosts::wooden_platform);
 		blocks[0].push_back(b);
 	}
 	{
-		BuildBlock b(0, "spikes", "$spikes$", "Spikes\nPlace on Stone Block\nfor Retracting Trap");
+		BuildBlock b(0, "spikes", "$spikes$", "Spikes", "Place on Stone Block for Retracting Trap.");
 		AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::spikes);
 		blocks[0].push_back(b);
 	}
 
 	if (CTF || SCTF)
 	{
-		BuildBlock b(0, "building", "$building$", "Workshop\nStand in an open space\nand tap this button.");
+		BuildBlock b(0, "building", "$building$", "Workshop", "Stand in an open space and tap this button.");
 		AddRequirement(b.reqs, "blob", "mat_wood", "Wood", CTFCosts::workshop_wood);
 		b.buildOnGround = true;
 		b.size.Set(40, 24);
@@ -122,14 +122,14 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	else if (TTH)
 	{
 		{
-			BuildBlock b(0, "factory", "$building$", "Factory\nAn item-producing factory\nRequires migrant");
+			BuildBlock b(0, "factory", "$building$", "Factory", "An item-producing factory. Requires a migrant.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", WARCosts::factory_wood);
 			b.buildOnGround = true;
 			b.size.Set(40, 24);
 			blocks[0].insertAt(9, b);
 		}
 		{
-			BuildBlock b(0, "workbench", "$workbench$", "Workbench\nCreate trampolines, saws, and more");
+			BuildBlock b(0, "workbench", "$workbench$", "Workbench", "Create different items.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", WARCosts::workbench_wood);
 			b.buildOnGround = true;
 			b.size.Set(32, 16);
@@ -139,7 +139,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 	else if (SBX)
 	{
 		{
-			BuildBlock b(0, "building", "$building$", "Workshop\nStand in an open space\nand tap this button.");
+			BuildBlock b(0, "building", "$building$", "Workshop", "Stand in an open space and tap this button.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 150);
 			b.buildOnGround = true;
 			b.size.Set(40, 24);
@@ -149,58 +149,58 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		BuildBlock[] page_1;
 		blocks.push_back(page_1);
 		{
-			BuildBlock b(0, "wire", "$wire$", "Wire");
+			BuildBlock b(0, "wire", "$wire$", "Wire", "Carries power to components and devices.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "elbow", "$elbow$", "Elbow");
+			BuildBlock b(0, "elbow", "$elbow$", "Elbow", "Carries power to components and devices.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "tee", "$tee$", "Tee");
+			BuildBlock b(0, "tee", "$tee$", "Tee", "Carries power to components and devices.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "junction", "$junction$", "Junction");
+			BuildBlock b(0, "junction", "$junction$", "Junction", "Carries power to components and devices.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 20);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "diode", "$diode$", "Diode");
+			BuildBlock b(0, "diode", "$diode$", "Diode", "Acts as a one-way wire.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "resistor", "$resistor$", "Resistor");
+			BuildBlock b(0, "resistor", "$resistor$", "Resistor", "Halves power.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "inverter", "$inverter$", "Inverter");
+			BuildBlock b(0, "inverter", "$inverter$", "Inverter", "Always on until signal passes through.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 20);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "oscillator", "$oscillator$", "Oscillator");
+			BuildBlock b(0, "oscillator", "$oscillator$", "Oscillator", "Adds a delay before signal passes through.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "transistor", "$transistor$", "Transistor");
+			BuildBlock b(0, "transistor", "$transistor$", "Transistor", "Signal passes through if both sides have power.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "toggle", "$toggle$", "Toggle");
+			BuildBlock b(0, "toggle", "$toggle$", "Toggle", "Turns on or off when receiving power.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 20);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "randomizer", "$randomizer$", "Randomizer");
+			BuildBlock b(0, "randomizer", "$randomizer$", "Randomizer", "Passes signal at a 50% chance.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 20);
 			blocks[1].push_back(b);
 		}
@@ -208,29 +208,29 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		BuildBlock[] page_2;
 		blocks.push_back(page_2);
 		{
-			BuildBlock b(0, "lever", "$lever$", "Lever");
+			BuildBlock b(0, "lever", "$lever$", "Lever", "Keeps sending power when turned on.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
 			blocks[2].push_back(b);
 		}
 		{
-			BuildBlock b(0, "push_button", "$pushbutton$", "Button");
+			BuildBlock b(0, "push_button", "$pushbutton$", "Button", "Sends power for one second when pressed.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 40);
 			blocks[2].push_back(b);
 		}
 		{
-			BuildBlock b(0, "coin_slot", "$coin_slot$", "Coin Slot");
+			BuildBlock b(0, "coin_slot", "$coin_slot$", "Coin Slot", "Sends power for three seconds when receiving 60 coins.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 40);
 			blocks[2].push_back(b);
 		}
 		{
-			BuildBlock b(0, "pressure_plate", "$pressureplate$", "Pressure Plate");
+			BuildBlock b(0, "pressure_plate", "$pressureplate$", "Pressure Plate", "Activates when pushed against.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
 			blocks[2].push_back(b);
 		}
 		{
-			BuildBlock b(0, "sensor", "$sensor$", "Motion Sensor");
+			BuildBlock b(0, "sensor", "$sensor$", "Motion Sensor", "Activates when detecting movement.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 40);
 			blocks[2].push_back(b);
 		}
@@ -238,45 +238,45 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		BuildBlock[] page_3;
 		blocks.push_back(page_3);
 		{
-			BuildBlock b(0, "lamp", "$lamp$", "Lamp");
+			BuildBlock b(0, "lamp", "$lamp$", "Lamp", "Lights up a dark area.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
 			blocks[3].push_back(b);
 		}
 		{
-			BuildBlock b(0, "emitter", "$emitter$", "Emitter");
+			BuildBlock b(0, "emitter", "$emitter$", "Emitter", "Sends signal to Receivers.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
 			blocks[3].push_back(b);
 		}
 		{
-			BuildBlock b(0, "receiver", "$receiver$", "Receiver");
+			BuildBlock b(0, "receiver", "$receiver$", "Receiver", "Receives signal from Emitters.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
 			blocks[3].push_back(b);
 		}
 		{
-			BuildBlock b(0, "magazine", "$magazine$", "Magazine");
+			BuildBlock b(0, "magazine", "$magazine$", "Magazine", "Can store an item.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 20);
 			blocks[3].push_back(b);
 		}
 		{
-			BuildBlock b(0, "bolter", "$bolter$", "Bolter");
+			BuildBlock b(0, "bolter", "$bolter$", "Bolter", "Shoots arrow projectiles from adjacent Magazine.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
 			blocks[3].push_back(b);
 		}
 		{
-			BuildBlock b(0, "dispenser", "$dispenser$", "Dispenser");
+			BuildBlock b(0, "dispenser", "$dispenser$", "Dispenser", "Drops item from adjacent Magazine.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
 			blocks[3].push_back(b);
 		}
 		{
-			BuildBlock b(0, "obstructor", "$obstructor$", "Obstructor");
+			BuildBlock b(0, "obstructor", "$obstructor$", "Obstructor", "Becomes solid when powered.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 50);
 			blocks[3].push_back(b);
 		}
 		{
-			BuildBlock b(0, "spiker", "$spiker$", "Spiker");
+			BuildBlock b(0, "spiker", "$spiker$", "Spiker", "Stabs forward when powered.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 40);
 			blocks[3].push_back(b);
