@@ -69,7 +69,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	
 	CSprite@ sprite = this.getSprite();
 	if (sprite !is null)
+	{
 		sprite.SetFacingLeft(false);
+		sprite.SetZ(-50.0f);
+	}
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
