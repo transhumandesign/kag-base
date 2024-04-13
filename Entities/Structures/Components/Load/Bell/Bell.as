@@ -70,7 +70,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	const Vec2f POSITION = this.getPosition() / 8;
 	const u16 ANGLE = this.getAngleDegrees();
-	const Vec2f bell_offset = Vec2f(0, -1);
 
 	Bell component(POSITION, this.getNetworkID());
 	this.set("component", component);
@@ -93,8 +92,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	CSprite@ sprite = this.getSprite();
 	if (sprite !is null)
 	{
-		this.set_Vec2f("bell_offset", bell_offset);
-
 		sprite.SetZ(-55);
 		sprite.SetFacingLeft(false);
 
@@ -109,7 +106,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		bell.addAnimation("default", 0, false);
 		bell.animation.AddFrame(1);
 		bell.SetRelativeZ(1);
-		bell.SetOffset(bell_offset);
 
 		// ringer layer
 		CSpriteLayer@ ringer = sprite.addSpriteLayer("ringer", "Bell.png", 8, 8);
@@ -132,14 +128,12 @@ void onTick(CSprite@ this)
 
 	if (bell !is null && ringer !is null && blob !is null)
 	{
-		Vec2f bell_offset = blob.get_Vec2f("bell_offset");
-	
 		if (blob.hasTag("stop ringing"))
 		{
 			// set to original offset
 			blob.Untag("ringing");
 			blob.Untag("stop ringing");
-			bell.SetOffset(bell_offset);
+			bell.SetOffset(Vec2f_zero);
 
 			ringer.SetOffset(Vec2f_zero);
 			ringer.ResetTransform();
@@ -147,11 +141,10 @@ void onTick(CSprite@ this)
 		else
 		{
 			// set to offset with some deviation
-			bell.SetOffset(bell_offset + Vec2f(XORRandom(11) * 0.1f - 0.5f,  XORRandom(11) * 0.1f - 0.5f));
-			//ringer.SetOffset(Vec2f(XORRandom(11) * 0.1f - 0.5f,  XORRandom(11) * 0.1f - 0.5f));
+			bell.SetOffset(Vec2f(XORRandom(11) * 0.1f - 0.5f,  XORRandom(11) * 0.1f - 0.5f));
 			
 			ringer.ResetTransform();
-			ringer.RotateBy(XORRandom(90) * 0.3f - 30, Vec2f_zero);
+			ringer.RotateBy(XORRandom(110) * 0.3f - 30, Vec2f(0, 2));
 		}
 	}
 }
