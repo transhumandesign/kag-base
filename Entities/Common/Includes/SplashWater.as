@@ -83,7 +83,7 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 						blob.set_u16("sparkling time", getGameTime());
 						
 						// sound
-						Sound::Play("Sparkle.ogg", blob.getPosition());
+						Sound::Play("CleanSparkle.ogg", blob.getPosition());
 					}
 				}
 
