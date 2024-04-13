@@ -2,6 +2,8 @@
 #include "Hitters.as";
 #include "SplashWater.as";
 #include "ArcherCommon.as";
+#include "Void.as";
+
 //config
 
 const int splash_width = 9;
@@ -68,6 +70,11 @@ void onTick(CBlob@ this)
 
 void onDie(CBlob@ this)
 {
+	if (isVoidedOut(this))
+	{
+		return;
+	}
+
 	if (this.get_u8("filled") > 0)
 	{
 		DoSplash(this);
