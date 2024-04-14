@@ -58,6 +58,7 @@ void LoadDefaultGUI()
 		AddIconToken("$inverter$",      "Inverter.png",         Vec2f(8, 16), 3);
 		AddIconToken("$oscillator$",    "Oscillator.png",       Vec2f(8, 16), 7);
 		AddIconToken("$magazine$",      "Magazine.png",         Vec2f(16, 16), 3);
+		AddIconToken("$display$",       "Display.png",          Vec2f(16, 16), 7);
 		AddIconToken("$randomizer$",    "Randomizer.png",       Vec2f(8, 16), 7);
 		AddIconToken("$resistor$",      "Resistor.png",         Vec2f(8, 16), 3);
 		AddIconToken("$tee$",           "Tee.png",              Vec2f(16, 16), 3);
@@ -71,6 +72,7 @@ void LoadDefaultGUI()
 		AddIconToken("$lamp$",          "Lamp.png",             Vec2f(16, 16), 3);
 		AddIconToken("$obstructor$",    "Obstructor.png",       Vec2f(16, 16), 3);
 		AddIconToken("$spiker$",        "Spiker.png",           Vec2f(16, 16), 5);
+		AddIconToken("$bell$",          "Bell.png",             Vec2f(16, 16), 3);
 		AddIconToken("$flamer$",        "Flamer.png",           Vec2f(16, 16), 3);
 
 		// techs

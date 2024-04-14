@@ -4,6 +4,7 @@ shared class BuildBlock
 	string name;
 	CBitStream reqs;
 	string icon;
+	string title;
 	string description;
 	bool buildOnGround;
 	Vec2f size; // used by buildOnGround blobs
@@ -11,11 +12,12 @@ shared class BuildBlock
 
 	BuildBlock() {} // required for handles to work
 
-	BuildBlock(TileType _tile, string _name, string _icon, string _desc)
+	BuildBlock(TileType _tile, string _name, string _icon, string _title, string _desc)
 	{
 		tile = _tile;
-		name = _name;
+		name = _name; // blob name
 		icon = _icon;
+		title = _title; // name displayed in menu
 		description = _desc;
 		temporaryBlob = true;
 		buildOnGround = false;

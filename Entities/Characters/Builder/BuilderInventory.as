@@ -38,8 +38,8 @@ const string[] PAGE_NAME =
 
 const u8 GRID_SIZE = 48;
 const u8 GRID_PADDING = 12;
+const u8 MINIMUM_ROWS_IN_PAGE = 4;
 
-const Vec2f MENU_SIZE(3, 4);
 const u32 SHOW_NO_BUILD_TIME = 90;
 
 const bool QUICK_SWAP_ENABLED = false;
@@ -99,21 +99,25 @@ void MakeBlocksMenu(CInventory@ this, const Vec2f &in INVENTORY_CE)
 	blob.get(blocks_property, @blocks);
 	if (blocks is null) return;
 
-	const Vec2f MENU_CE = Vec2f(0, MENU_SIZE.y * -GRID_SIZE - GRID_PADDING) + INVENTORY_CE;
+	const u8 PAGE = blob.get_u8("build page");
+	const u8 rows = Maths::Max(Maths::Ceil(blocks[PAGE].length / 3.0f), MINIMUM_ROWS_IN_PAGE);
+	const Vec2f menuSize(3, rows);
+	const Vec2f MENU_CE = Vec2f(0, -(menuSize.y * GRID_SIZE / 2 + GRID_PADDING * 8)) + INVENTORY_CE;
 
-	CGridMenu@ menu = CreateGridMenu(MENU_CE, blob, MENU_SIZE, getTranslatedString("Build"));
-	if (menu !is null)
+	CGridMenu@ menu = CreateGridMenu(MENU_CE, blob, menuSize, getTranslatedString("Build"));if (menu !is null)
 	{
 		menu.deleteAfterClick = false;
-
-		const u8 PAGE = blob.get_u8("build page");
 
 		for(u8 i = 0; i < blocks[PAGE].length; i++)
 		{
 			BuildBlock@ b = blocks[PAGE][i];
+
 			if (b is null) continue;
-			string block_desc = getTranslatedString(b.description);
-			CGridButton@ button = menu.AddButton(b.icon, "\n" + block_desc, Builder::make_block + i);
+
+			string block_title = getTranslatedString(b.title); 
+			string block_desc = block_title + "\n$separation$\n" + getTranslatedString(b.description);
+			CGridButton@ button = menu.AddButton(b.icon, block_title, Builder::make_block + i);
+
 			if (button is null) continue;
 
 			button.selectOneOnClick = true;
@@ -121,11 +125,11 @@ void MakeBlocksMenu(CInventory@ this, const Vec2f &in INVENTORY_CE)
 			CBitStream missing;
 			if (hasRequirements(this, b.reqs, missing, not b.buildOnGround))
 			{
-				button.hoverText = block_desc + "\n" + getButtonRequirementsText(b.reqs, false);
+				button.hoverText = block_desc + "\n\n" + getButtonRequirementsText(b.reqs, false);
 			}
 			else
 			{
-				button.hoverText = block_desc + "\n" + getButtonRequirementsText(missing, true);
+				button.hoverText = block_desc + "\n\n" + getButtonRequirementsText(missing, true);
 				button.SetEnabled(false);
 			}
 

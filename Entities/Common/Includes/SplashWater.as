@@ -71,8 +71,20 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 
 				if (blob.hasTag("bloody"))
 				{
+					// remove blood
 					blob.Untag("bloody");
 					UpdateBloodySprite(blob);
+					
+					if (!v_fastrender && !g_kidssafe)
+					{
+						// sparkle particles and sound
+						if (!blob.hasScript("CleanSparkles.as"))
+							blob.AddScript("CleanSparkles.as");
+						blob.Tag("sparkling");
+						blob.set_u16("sparkling time", getGameTime());
+
+						Sound::Play("CleanSparkle.ogg", blob.getPosition());
+					}
 				}
 
 				bool hitHard = blob.getTeamNum() != this.getTeamNum() || ownerBlob is blob;
