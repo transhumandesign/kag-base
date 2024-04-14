@@ -127,7 +127,7 @@ namespace map_colors
 		alpha_obstructor       = 0xFFFFFF30, // ARGB(255, 255, 255,  48);
 		alpha_spiker           = 0xFFFFFF40, // ARGB(255, 255, 255,  64);
 		alpha_bell             = 0xFFFFFF50, // ARGB(255, 255, 255,  80);
-		alpha_flamer           = 0xFFFFFF50, // ARGB(255, 255, 255,  96);
+		alpha_flamer           = 0xFFFFFF60, // ARGB(255, 255, 255,  96);
 
 		// BLOCKS
 		ladder                 = 0xFF42240B, // ARGB(255,  66,  36,  11);

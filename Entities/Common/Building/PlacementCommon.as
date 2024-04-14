@@ -195,7 +195,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 						// cant place on any other blob
 						if ((!ladderBuild &&
 							!buildingOnTeam &&
-							(cantBuild && !placingSeedOnNonStaticBlob)
+							(cantBuild && !placingSeedOnNonStaticBlob) &&
 							!b.hasTag("dead") &&
 							!b.hasTag("material") &&
 							!b.hasTag("projectile"))

@@ -140,7 +140,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 			blocks[0].insertAt(9, b);
 		}	
 		{
-			BuildBlock b(0, "trap_block", getTeamIcon("trap_block", "TrapBlock.png", team_num), "Trap Block\n\nOnly enemies can pass.");
+			BuildBlock b(0, "trap_block", getTeamIcon("trap_block", "TrapBlock.png", team_num), "Trap Block", "Only enemies can pass.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", BuilderCosts::trap_block);
 			blocks[0].push_back(b);
 		}
