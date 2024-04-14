@@ -33,6 +33,7 @@ void LoadDefaultGUI()
 		AddIconToken("$BUILD$", interaction, Vec2f(32, 32), 15);
 		AddIconToken("$STONE$", "Sprites/World.png", Vec2f(8, 8), 48);
 		AddIconToken("$!!!$", "/Emoticons.png", Vec2f(22, 22), 48);
+		AddIconToken("$separation$", "Separation.png", Vec2f(64, 08), 0);
 
 		// classes
 		AddIconToken("$ARCHER$",        "ClassIcons.png",       Vec2f(16, 16), 2);
