@@ -2,7 +2,7 @@
 
 #include "MechanismsCommon.as";
 
-const u8 MAX_LIGHT_RADIUS = 128.0f;
+const u8 MAX_LIGHT_RADIUS = 96.0f;
 
 class Lamp : Component
 {
@@ -29,7 +29,7 @@ class Lamp : Component
 					blob.SetLight(true);
 					packet_AddChangeFrame(grid.packet, id, 1);
 					f32 power_factor = Maths::Min((float(power_new + 1) / power_source), 1);
-					f32 power_factor_color = Maths::Max(power_factor, 0.3f);
+					f32 power_factor_color = Maths::Max(power_factor, 0.4f);
 					SColor new_color = SColor(255 * power_factor_color, 
 					                         255 * power_factor_color,
 										     240 * power_factor_color, 
