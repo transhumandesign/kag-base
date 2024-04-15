@@ -50,6 +50,7 @@ void LoadDefaultGUI()
 		AddIconToken("$lever$",         "Lever.png",            Vec2f(8, 16), 3);
 		AddIconToken("$pressureplate$", "PressurePlate.png",    Vec2f(8, 16), 0);
 		AddIconToken("$pushbutton$",    "PushButton.png",       Vec2f(8, 8), 3);
+		AddIconToken("$solarpanel$",    "SolarPanel.png",       Vec2f(16, 16), 3);
 
 		// PASSIVE
 		AddIconToken("$diode$",         "Diode.png",            Vec2f(8, 16), 3);
