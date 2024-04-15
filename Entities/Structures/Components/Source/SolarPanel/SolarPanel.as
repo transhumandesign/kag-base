@@ -5,7 +5,6 @@
 
 const u8 TICK_FREQUENCY_IDLE = 45;
 const u8 TICK_FREQUENCY_RUNNING = 3;
-const u8 IDLE_TICKS_UNTIL_STARTS_RUNNING = 5;
 
 void onInit(CBlob@ this)
 {
@@ -20,9 +19,9 @@ void onInit(CBlob@ this)
 
 	// used by DummyOnStatic.as
 	this.set_TileType(Dummy::TILE, Dummy::BACKGROUND);
-	
+
 	this.getCurrentScript().tickFrequency = TICK_FREQUENCY_IDLE;
-	
+
 	CSprite@ sprite = this.getSprite();
 	u16 netID = this.getNetworkID();
 	if (sprite !is null)
@@ -67,38 +66,14 @@ void onTick(CBlob@ this)
 {
 	if (!this.getShape().isStatic()) return;
 
-	Tile tile = getMap().getTile(this.getPosition());
+	SColor color_light = getMap().getColorLight(this.getPosition());
+	u8 light = color_light.getLuminance();
 
-	u8 light = tile.light;
-	s16 light_received_counter = this.get_u16("light received counter");
-	bool has_light = this.get_bool("has light");
-	
-	if (light > 50)
-	{
-		if (!has_light)
-		{
-			if (light_received_counter >= IDLE_TICKS_UNTIL_STARTS_RUNNING)
-				this.set_bool("has light", true);
-		}
-
-		this.set_u16("light received counter",  Maths::Min(light_received_counter + 1, IDLE_TICKS_UNTIL_STARTS_RUNNING));
-	}
-	else
-	{
-		if (has_light)
-		{	
-			if (light_received_counter <= 0)
-				this.set_bool("has light", false);
-		}
-
-		this.set_u16("light received counter", Maths::Max(light_received_counter - 1, 0));
-	}
-
-	if (has_light)
+	if (light > 150)
 	{
 		this.getCurrentScript().tickFrequency = TICK_FREQUENCY_RUNNING;
 
-		u8 power = light / 255.0f * power_source;
+		u8 power = (light - 150) / 100.0f * power_source;
 
 		Component@ component = null;
 		if (!this.get("component", @component)) return;
@@ -109,17 +84,15 @@ void onTick(CBlob@ this)
 			if (!getRules().get("power grid", @grid)) return;
 
 			grid.setPower(
-			component.x,                        // x
-			component.y,                        // y
-			power);                             // power
+			component.x,      // x
+			component.y,      // y
+			power);           // power
 		}
 	}
 	else
 	{
 		this.getCurrentScript().tickFrequency = TICK_FREQUENCY_IDLE;
 	}
-
-	//print("has_light: " + has_light + " light: " + light + " light_received_counter: " + light_received_counter);
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
