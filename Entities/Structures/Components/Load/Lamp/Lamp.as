@@ -2,6 +2,8 @@
 
 #include "MechanismsCommon.as";
 
+const u8 MAX_LIGHT_RADIUS = 128.0f;
+
 class Lamp : Component
 {
 	u16 id;
@@ -14,16 +16,36 @@ class Lamp : Component
 		id = _id;
 	}
 
-	void Activate(CBlob@ this)
+	u8 Special(MapPowerGrid@ grid, u8 power_old, u8 power_new)
 	{
-		this.SetLight(true);
-		this.getSprite().SetFrameIndex(1);
-	}
+		if (power_old != power_new)
+		{
+			CBlob@ blob = getBlobByNetworkID(id);
+			
+			if (blob !is null)
+			{
+				if (power_new > 0)
+				{
+					blob.SetLight(true);
+					packet_AddChangeFrame(grid.packet, id, 1);
+					f32 power_factor = Maths::Min((float(power_new + 1) / power_source), 1);
+					f32 power_factor_color = Maths::Max(power_factor, 0.3f);
+					SColor new_color = SColor(255 * power_factor_color, 
+					                         255 * power_factor_color,
+										     240 * power_factor_color, 
+										     171 * power_factor_color);
+					blob.SetLightColor(new_color);
+					blob.SetLightRadius(power_factor * MAX_LIGHT_RADIUS);
+				}
+				else
+				{
+					blob.SetLight(false);
+					packet_AddChangeFrame(grid.packet, id, 0);
+				}
+			}
+		}
 
-	void Deactivate(CBlob@ this)
-	{
-		this.SetLight(false);
-		this.getSprite().SetFrameIndex(0);
+		return power_new;
 	}
 }
 
@@ -45,7 +67,7 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().waterPasses = true;
 
 	this.SetLight(false);
-	this.SetLightRadius(96.0f);
+	this.SetLightRadius(0.0f);
 	this.SetLightColor(SColor(255, 255, 240, 171));
 }
 
@@ -69,7 +91,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		component.y,                        // y
 		rotateTopology(ANGLE, TOPO_DOWN),   // input topology
 		TOPO_NONE,                          // output topology
-		INFO_LOAD,                          // information
+		INFO_SPECIAL,                       // information
 		0,                                  // power
 		component.id);                      // id
 	}
