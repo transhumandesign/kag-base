@@ -5,6 +5,7 @@
 
 const u8 TICK_FREQUENCY_IDLE = 45;
 const u8 TICK_FREQUENCY_RUNNING = 3;
+const u8 LIGHT_THRESHOLD = 140;
 
 void onInit(CBlob@ this)
 {
@@ -68,31 +69,24 @@ void onTick(CBlob@ this)
 
 	SColor color_light = getMap().getColorLight(this.getPosition());
 	u8 light = color_light.getLuminance();
+	u8 power = light > LIGHT_THRESHOLD ? (light - LIGHT_THRESHOLD) / (250.0f - LIGHT_THRESHOLD) * power_source : 0;
 
-	if (light > 150)
+	Component@ component = null;
+	if (!this.get("component", @component)) return;
+
+	if (isServer())
 	{
-		this.getCurrentScript().tickFrequency = TICK_FREQUENCY_RUNNING;
+		MapPowerGrid@ grid;
+		if (!getRules().get("power grid", @grid)) return;
 
-		u8 power = (light - 150) / 100.0f * power_source;
-
-		Component@ component = null;
-		if (!this.get("component", @component)) return;
-
-		if (isServer())
-		{
-			MapPowerGrid@ grid;
-			if (!getRules().get("power grid", @grid)) return;
-
-			grid.setPower(
-			component.x,      // x
-			component.y,      // y
-			power);           // power
-		}
+		grid.setPower(
+		component.x,      // x
+		component.y,      // y
+		power);           // power
 	}
-	else
-	{
-		this.getCurrentScript().tickFrequency = TICK_FREQUENCY_IDLE;
-	}
+	
+	this.getCurrentScript().tickFrequency = light > LIGHT_THRESHOLD ? 
+	                                        TICK_FREQUENCY_RUNNING : TICK_FREQUENCY_IDLE;
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
