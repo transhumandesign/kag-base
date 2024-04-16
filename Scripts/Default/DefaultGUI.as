@@ -49,28 +49,15 @@ void LoadDefaultGUI()
 
 		// SOURCE
 		AddIconToken("$coin_slot$",     "CoinSlot.png",         Vec2f(16, 16), 3);
-		AddIconToken("$lever$",         "Lever.png",            Vec2f(8, 16), 3);
 		AddIconToken("$pressureplate$", "PressurePlate.png",    Vec2f(8, 16), 0);
 		AddIconToken("$pushbutton$",    "PushButton.png",       Vec2f(8, 8), 3);
 
 		// PASSIVE
-		AddIconToken("$diode$",         "Diode.png",            Vec2f(8, 16), 3);
-		AddIconToken("$elbow$",         "Elbow.png",            Vec2f(16, 16), 3);
-		AddIconToken("$junction$",      "Junction.png",         Vec2f(16, 16), 3);
-		AddIconToken("$inverter$",      "Inverter.png",         Vec2f(8, 16), 3);
-		AddIconToken("$oscillator$",    "Oscillator.png",       Vec2f(8, 16), 7);
 		AddIconToken("$magazine$",      "Magazine.png",         Vec2f(16, 16), 3);
-		AddIconToken("$randomizer$",    "Randomizer.png",       Vec2f(8, 16), 7);
-		AddIconToken("$resistor$",      "Resistor.png",         Vec2f(8, 16), 3);
-		AddIconToken("$tee$",           "Tee.png",              Vec2f(16, 16), 3);
-		AddIconToken("$toggle$",        "Toggle.png",           Vec2f(8, 16), 3);
-		AddIconToken("$transistor$",    "Transistor.png",       Vec2f(16, 16), 3);
-		AddIconToken("$wire$",          "Wire.png",             Vec2f(16, 16), 3);
 
 		// LOAD
 		AddIconToken("$bolter$",        "Bolter.png",           Vec2f(16, 16), 3);
 		AddIconToken("$dispenser$",     "Dispenser.png",        Vec2f(16, 16), 3);
-		AddIconToken("$lamp$",          "Lamp.png",             Vec2f(16, 16), 3);
 		AddIconToken("$obstructor$",    "Obstructor.png",       Vec2f(16, 16), 3);
 		AddIconToken("$spiker$",        "Spiker.png",           Vec2f(16, 16), 3);
 
