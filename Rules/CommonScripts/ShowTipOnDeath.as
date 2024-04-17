@@ -47,6 +47,8 @@ void RenderTip()
 	s32 scrw = getScreenWidth();
 	s32 scrh = getScreenHeight();
 
+	GUI::SetFont("menu");
+
 	Vec2f textDim;
 	GUI::GetTextDimensions(tip, textDim);
 
