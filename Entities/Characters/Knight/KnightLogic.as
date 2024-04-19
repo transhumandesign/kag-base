@@ -45,15 +45,9 @@ void knight_clear_actor_limits(CBlob@ this)
 void onInit(CBlob@ this)
 {
 	KnightInfo knight;
-
-	knight.state = KnightStates::normal;
-	knight.swordTimer = 0;
-	knight.slideTime = 0;
-	knight.doubleslash = false;
-	knight.shield_down = getGameTime();
-	knight.tileDestructionLimiter = 0;
-
 	this.set("knightInfo", @knight);
+
+	ResetState(this);
 
 	KnightState@[] states;
 	states.push_back(NormalState());
@@ -206,7 +200,6 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 void onTick(CBlob@ this)
 {
 	bool knocked = isKnocked(this);
-	CHUD@ hud = getHUD();
 
 	//knight logic stuff
 	//get the vars to turn various other scripts on/off
@@ -225,12 +218,7 @@ void onTick(CBlob@ this)
 	if (this.isInInventory())
 	{
 		//prevent players from insta-slashing when exiting crates
-		knight.state = 0;
-		knight.swordTimer = 0;
-		knight.slideTime = 0;
-		knight.doubleslash = false;
-		hud.SetCursorFrame(0);
-		this.set_s32("currentKnightState", 0);
+		ResetState(this);
 		return;
 	}
 
@@ -252,18 +240,14 @@ void onTick(CBlob@ this)
 
 	const bool myplayer = this.isMyPlayer();
 
-	if (getNet().isClient() && !this.isInInventory() && myplayer)  //Knight charge cursor
+	if (isClient() && !this.isInInventory() && myplayer)  //Knight charge cursor
 	{
 		SwordCursorUpdate(this, knight);
 	}
 
 	if (knocked)
 	{
-		knight.state = KnightStates::normal; //cancel any attacks or shielding
-		knight.swordTimer = 0;
-		knight.slideTime = 0;
-		knight.doubleslash = false;
-		this.set_s32("currentKnightState", 0);
+		ResetState(this);
 
 		pressed_a1 = false;
 		pressed_a2 = false;
@@ -921,10 +905,9 @@ class SlashState : KnightState
 		{
 			knight.state = KnightStates::normal;
 			return false;
-
 		}
 
-		if (getNet().isClient())
+		if (isClient())
 		{
 			const bool myplayer = this.isMyPlayer();
 			Vec2f pos = this.getPosition();
@@ -1168,7 +1151,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 		SetFirstAvailableBomb(this);
 	}
-	else if (isServer())
+	else
 	{
 		for (uint i = 0; i < bombTypeNames.length; i++)
 		{
@@ -1513,7 +1496,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	}
 }
 
-
 //a little push forward
 
 void pushForward(CBlob@ this, f32 normalForce, f32 pushingForce, f32 verticalForce)
@@ -1613,25 +1595,8 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	}
 }
 
-
-void Callback_PickBomb(CBitStream@ params)
-{
-	CPlayer@ player = getLocalPlayer();
-	if (player is null) return;
-
-	CBlob@ blob = player.getBlob();
-	if (blob is null) return;
-
-	u8 bomb_id;
-	if (!params.saferead_u8(bomb_id)) return;
-
-	string matname = bombTypeNames[bomb_id];
-	blob.set_u8("bomb type", bomb_id);
-
-	blob.SendCommand(blob.getCommandID("pick " + matname));
-}
-
 // bomb pick menu
+
 void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 {
 	if (bombTypeNames.length == 0)
@@ -1652,9 +1617,6 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 		for (uint i = 0; i < bombTypeNames.length; i++)
 		{
 			string matname = bombTypeNames[i];
-			CBitStream params;
-			params.write_u8(i);
-			CGridButton @button = menu.AddButton(bombIcons[i], getTranslatedString(bombNames[i]), "KnightLogic.as", "Callback_PickBomb", params);
 
 			if (button !is null)
 			{
@@ -1670,7 +1632,6 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 	}
 }
 
-
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @ap)
 {
 	for (uint i = 0; i < bombTypeNames.length; i++)
@@ -1683,16 +1644,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @ap)
 	}
 
 	if (!ap.socket) {
-		KnightInfo@ knight;
-		if (!this.get("knightInfo", @knight))
-		{
-			return;
-		}
-
-		knight.state = KnightStates::normal; //cancel any attacks or shielding
-		knight.swordTimer = 0;
-		knight.doubleslash = false;
-		this.set_s32("currentKnightState", 0);
+		ResetState(this);
 	}
 }
 
@@ -1722,6 +1674,24 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 			}
 		}
 	}
+}
+
+void ResetState(CBlob@ this)
+{
+	KnightInfo@ knight;
+	if (!this.get("knightInfo", @knight))
+	{
+		return;
+	}
+
+	knight.state = KnightStates::normal; //cancel any attacks or shielding
+	knight.swordTimer = 0;
+	knight.doubleslash = false;
+	knight.slideTime = 0;
+	knight.shield_down = getGameTime();
+	knight.tileDestructionLimiter = 0;
+	getHUD().SetCursorFrame(0);
+	this.set_s32("currentKnightState", 0);
 }
 
 void SetFirstAvailableBomb(CBlob@ this)
