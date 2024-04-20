@@ -26,7 +26,7 @@ class Dispenser : Component
 		CMap@ map = getMap();
 		bool canRayCast = true;
 		HitInfo@[] hitInfos;
-		Vec2f start_pos = position + offset * map.tilesize/4;
+		Vec2f start_pos = position + offset * map.tilesize/2;
 		Vec2f end_pos = position + offset * 11;
 		Vec2f ray_vec = (end_pos - start_pos);
 		
