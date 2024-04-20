@@ -12,6 +12,11 @@ const f32 beer_amount = 1.0f;
 const f32 heal_amount = 0.25f;
 const u8 heal_rate = 30;
 
+const string BEER_NAME = "Beer - 1 Heart";
+const string JUICE_NAME = "Orange Juice - 1 Heart";
+const string BEER_ICON = "$quarters_beer$";
+const string JUICE_ICON = "$quarters_orange_juice$";
+
 void onInit(CSprite@ this)
 {
 	CSpriteLayer@ bed = this.addSpriteLayer("bed", "Quarters.png", 32, 16);
@@ -19,7 +24,7 @@ void onInit(CSprite@ this)
 	{
 		{
 			bed.addAnimation("default", 0, false);
-			int[] frames = {14, 15};
+			int[] frames = {15, 19};
 			bed.animation.AddFrames(frames);
 		}
 		bed.SetOffset(Vec2f(1, 4));
@@ -71,7 +76,6 @@ void onInit(CBlob@ this)
 	}
 
 	this.addCommandID("rest");
-	this.getCurrentScript().runFlags |= Script::tick_hasattached;
 
 	this.Tag("has window");
 
@@ -80,12 +84,26 @@ void onInit(CBlob@ this)
 
 	// ICONS
 	AddIconToken("$quarters_beer$", "Quarters.png", Vec2f(24, 24), 7);
+	AddIconToken("$quarters_orange_juice$", "Quarters.png", Vec2f(24, 24), 12);
 	AddIconToken("$quarters_meal$", "Quarters.png", Vec2f(48, 24), 2);
 	AddIconToken("$quarters_egg$", "Quarters.png", Vec2f(24, 24), 8);
 	AddIconToken("$quarters_burger$", "Quarters.png", Vec2f(24, 24), 9);
 	AddIconToken("$rest$", "InteractionIcons.png", Vec2f(32, 32), 29);
 
 	// SHOP
+	SetupShopItems(this);
+
+	CRules@ rules = getRules();
+	if (!rules.hasScript("ToggleBloodyStuff.as"))
+	{
+		rules.AddScript("ToggleBloodyStuff.as");
+	}
+	
+	this.set_bool("g_kidssafe", false);
+}
+
+void SetupShopItems(CBlob@ this)
+{
 	this.set_Vec2f("shop offset", Vec2f_zero);
 	this.set_Vec2f("shop menu size", Vec2f(5, 1));
 	this.set_string("shop description", "Buy");
@@ -118,41 +136,59 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	// TODO: Add stage based sleeping, rest(2 * 30) | sleep(heal_amount * (patient.getHealth() - patient.getInitialHealth())) | awaken(1 * 30)
-	// TODO: Add SetScreenFlash(rest_time, 19, 13, 29) to represent the player gradually falling asleep
-	AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
-	if (bed !is null)
+	if (isClient())
 	{
-		CBlob@ patient = bed.getOccupied();
-		if (patient !is null)
+		if (this.get_bool("g_kidssafe") != g_kidssafe)
 		{
-			if (bed.isKeyJustPressed(key_up) || patient.getHealth() == 0)
+			string name_to_replace = g_kidssafe ? BEER_NAME : JUICE_NAME;
+			string new_name = g_kidssafe ? JUICE_NAME : BEER_NAME;
+			string new_icon = g_kidssafe ? JUICE_ICON : BEER_ICON;
+			string new_description = g_kidssafe ? Descriptions::orange_juice : Descriptions::beer;
+
+			replaceShopItem(this, name_to_replace, new_name, new_icon, "beer", new_description, false);
+
+			this.set_bool("g_kidssafe", g_kidssafe);
+		}
+	}
+
+	if (this.hasAttached())
+	{
+		// TODO: Add stage based sleeping, rest(2 * 30) | sleep(heal_amount * (patient.getHealth() - patient.getInitialHealth())) | awaken(1 * 30)
+		// TODO: Add SetScreenFlash(rest_time, 19, 13, 29) to represent the player gradually falling asleep
+		AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
+		if (bed !is null)
+		{
+			CBlob@ patient = bed.getOccupied();
+			if (patient !is null)
 			{
-				if (isServer())
-				{
-					patient.server_DetachFrom(this);
-				}
-			}
-			else if (getGameTime() % heal_rate == 0)
-			{
-				if (requiresTreatment(this, patient))
-				{
-					if (patient.isMyPlayer())
-					{
-						Sound::Play("Heart.ogg", patient.getPosition(), 0.5);
-					}
-					if (isServer())
-					{
-						f32 oldHealth = patient.getHealth();
-						patient.server_Heal(heal_amount);
-						patient.add_f32("heal amount", patient.getHealth() - oldHealth);
-					}
-				}
-				else
+				if (bed.isKeyJustPressed(key_up) || patient.getHealth() == 0)
 				{
 					if (isServer())
 					{
 						patient.server_DetachFrom(this);
+					}
+				}
+				else if (getGameTime() % heal_rate == 0)
+				{
+					if (requiresTreatment(this, patient))
+					{
+						if (patient.isMyPlayer())
+						{
+							Sound::Play("Heart.ogg", patient.getPosition(), 0.5);
+						}
+						if (isServer())
+						{
+							f32 oldHealth = patient.getHealth();
+							patient.server_Heal(heal_amount);
+							patient.add_f32("heal amount", patient.getHealth() - oldHealth);
+						}
+					}
+					else
+					{
+						if (isServer())
+						{
+							patient.server_DetachFrom(this);
+						}
 					}
 				}
 			}
@@ -177,7 +213,9 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	else
 	{
 		this.set_Vec2f("shop offset", Vec2f(6, 0));
-		caller.CreateGenericButton("$rest$", Vec2f(-6, 0), this, this.getCommandID("rest"), getTranslatedString("Rest"));
+		CBitStream params;
+		params.write_u16(caller.getNetworkID());
+		caller.CreateGenericButton("$rest$", Vec2f(-6, 0), this, this.getCommandID("rest"), getTranslatedString("Rest"), params);
 	}
 	this.set_bool("shop available", isOverlapping);
 }
@@ -219,37 +257,30 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 	}
-	else if (cmd == this.getCommandID("rest") && isServer())
+	else if (cmd == this.getCommandID("rest"))
 	{
-		CPlayer@ player = getNet().getActiveCommandPlayer();
-
-		if (player is null) 
-		{
+		u16 caller_id;
+		if (!params.saferead_netid(caller_id))
 			return;
-		}
 
-		CBlob@ caller = player.getBlob();
-
+		CBlob@ caller = getBlobByNetworkID(caller_id);
 		if (caller !is null && !caller.isAttached())
 		{
-			f32 distance = this.getDistanceTo(caller);
-
-			// range check: do not rest if more than 5 blocks away from quarter's center
-			if (distance > 40) return;
-
 			AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
 			if (bed !is null && bedAvailable(this))
 			{
 				CBlob@ carried = caller.getCarriedBlob();
-
-				if (carried !is null)
+				if (isServer())
 				{
-					if (!caller.server_PutInInventory(carried))
+					if (carried !is null)
 					{
-						carried.server_DetachFrom(caller);
+						if (!caller.server_PutInInventory(carried))
+						{
+							carried.server_DetachFrom(caller);
+						}
 					}
+					this.server_AttachTo(caller, "BED");
 				}
-				this.server_AttachTo(caller, "BED");
 			}
 		}
 	}

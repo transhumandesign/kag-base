@@ -85,6 +85,7 @@ namespace Descriptions
 
 	//Quarters.as
 	beer                       = getTranslatedString("A refreshing mug of beer."),
+	orange_juice               = getTranslatedString("A refreshing glass of orange juice."),
 	meal                       = getTranslatedString("A hearty meal to get you back on your feet."),
 	egg                        = getTranslatedString("A suspiciously undercooked egg, maybe it will hatch."),
 	burger                     = getTranslatedString("A burger to go."),

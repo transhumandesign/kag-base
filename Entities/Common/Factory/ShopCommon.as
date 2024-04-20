@@ -112,8 +112,6 @@ shared class ShopItem
 
 		return true;
 	}
-
-
 };
 
 const string SHOP_ARRAY = "shop array";
@@ -174,6 +172,50 @@ ShopItem@ addShopItem(CBlob@ this, const string &in shopArray, const string &in 
 	return p_ref;
 }
 
+ShopItem@ replaceShopItem(CBlob@ this, const string &in name_to_replace, const string &in name, const string &in iconName, const string &in blobName, const string &in description)
+{
+	return replaceShopItem(this, SHOP_ARRAY, name_to_replace, name, iconName, blobName, description, false, false);
+}
+
+ShopItem@ replaceShopItem(CBlob@ this, const string &in name_to_replace, const string &in name, const string &in iconName, const string &in blobName, const string &in description, bool spawnToInventory)
+{
+	return replaceShopItem(this, SHOP_ARRAY, name_to_replace, name, iconName, blobName, description, spawnToInventory, false);
+}
+
+ShopItem@ replaceShopItem(CBlob@ this, const string &in name_to_replace, const string &in name, const string &in iconName, const string &in blobName, const string &in description, bool spawnToInventory, bool spawnInCrate)
+{
+	return replaceShopItem(this, SHOP_ARRAY, name_to_replace, name, iconName, blobName, description, spawnToInventory, spawnInCrate);
+}
+
+ShopItem@ replaceShopItem(CBlob@ this, const string &in shopArray, const string &in name_to_replace, const string &in name, const string &in iconName, const string &in blobName, const string &in description, bool spawnToInventory, bool spawnInCrate)
+{
+	if (!this.exists(shopArray))
+	{
+		return null;
+	}
+
+	// check existing
+	ShopItem[]@ shop_items;
+	if (this.get(shopArray, @shop_items))
+	{
+		for (uint i = 0 ; i < shop_items.length; i++)
+		{
+			ShopItem @item = shop_items[i];
+			if (item.blobName == blobName && item.name == name_to_replace)
+			{
+				item.name = name;
+				item.iconName = iconName;
+				item.blobName = blobName;
+				item.description = description;
+				item.spawnToInventory = spawnToInventory;
+				item.spawnInCrate = spawnInCrate;
+				return item;
+			}
+		}
+	}
+	
+	return null;
+}
 
 void ShopSendCreateData(CBlob@ this, CBitStream@ stream, const string &in shopArray)
 {
