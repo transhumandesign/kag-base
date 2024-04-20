@@ -649,31 +649,36 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 			HitInfo@ hi = hitInfos[i];
 			CBlob@ b = hi.blob;
 
-			if (b is null || b is this)
+			if (b is this)
 			{
 				continue;
 			}
-
-			if (b !is blob && b.isCollidable() && b.getShape().isStatic())
+			
+			if (b is null) // ray hit map
 			{
-				//don't allow picking through platform
-				if (b.isPlatform() && CollidesWithPlatform(ray, hi.hitpos, b))
+				if(map.isTileSolid(hi.tile))
 				{
 					canRayCast = false;
 					break;
 				}
 			}
-
-			if(map.isTileSolid(hi.tile))
+			else // ray hit blob
 			{
-				canRayCast = false;
-				break;
-			}
+				if (b !is blob && b.isCollidable() && b.getShape().isStatic())
+				{
+					//don't allow picking through platform
+					if (b.isPlatform() && CollidesWithPlatform(ray, hi.hitpos, b))
+					{
+						canRayCast = false;
+						break;
+					}
+				}
 
-			// if our blob isn't in the list that means the ray stopped at a block
-			if (b is blob)
-			{
-				canRayCast = true;
+				// if our blob isn't in the list that means the ray stopped at a block
+				if (b is blob)
+				{
+					canRayCast = true;
+				}
 			}
 		}
 	} 
