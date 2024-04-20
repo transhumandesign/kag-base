@@ -64,9 +64,12 @@ class Dispenser : Component
 		}
 		
 		// play sound always
-		CSprite@ sprite = this.getSprite();
-		if (sprite is null) return;
-		sprite.PlaySound("DispenserFire.ogg", 4.0f);
+		if (isClient())
+		{
+			CSprite@ sprite = this.getSprite();
+			if (sprite is null) return;
+			sprite.PlaySound("DispenserFire.ogg", 4.0f);
+		}
 		
 		// if exit is not blocked, make particle and pop out item from one nearby magazine
 		if (!canRayCast)
