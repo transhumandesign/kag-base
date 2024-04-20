@@ -5,19 +5,29 @@
 
 #include "UpdateBloodySprite.as";
 
-void OnCloseMenu(CRules@ this)
+void onInit(CRules@ this)
 {
-	CBlob@[] blobs;
-	getBlobsByName("saw", @blobs);
-	getBlobsByName("spikes", @blobs);
-	getBlobsByName("spike", @blobs);
-	
-	for (int i = 0; i < blobs.length; i++)
+	this.set_bool("g_kidssafe", g_kidssafe);
+}
+
+void onTick(CRules@ this)
+{
+	if (this.get_bool("g_kidssafe") != g_kidssafe)
 	{
-		CBlob@ blob = blobs[i];
+		CBlob@[] blobs;
+		getBlobsByName("saw", @blobs);
+		getBlobsByName("spikes", @blobs);
+		getBlobsByName("spike", @blobs);
 		
-		if (blob is null)	continue;
+		for (int i = 0; i < blobs.length; i++)
+		{
+			CBlob@ blob = blobs[i];
+			
+			if (blob is null)	continue;
+			
+			UpdateBloodySprite(blob);
+		}
 		
-		UpdateBloodySprite(blob);
+		this.set_bool("g_kidssafe", g_kidssafe);
 	}
 }
