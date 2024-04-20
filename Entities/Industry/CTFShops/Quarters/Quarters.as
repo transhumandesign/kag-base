@@ -93,12 +93,6 @@ void onInit(CBlob@ this)
 	// SHOP
 	SetupShopItems(this);
 
-	CRules@ rules = getRules();
-	if (!rules.hasScript("ToggleBloodyStuff.as"))
-	{
-		rules.AddScript("ToggleBloodyStuff.as");
-	}
-	
 	this.set_bool("g_kidssafe", false);
 }
 
