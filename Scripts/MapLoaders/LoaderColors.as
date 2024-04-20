@@ -104,6 +104,7 @@ namespace map_colors
 		alpha_push_button      = 0xFF20FFFF, // ARGB(255,  32, 255, 255);
 		alpha_coin_slot        = 0xFF30FFFF, // ARGB(255,  48, 255, 255);
 		alpha_sensor           = 0xFF40FFFF, // ARGB(255,  64, 255, 255);
+		alpha_solar_panel      = 0xFF50FFFF, // ARGB(255,  80, 255, 255);
 
 		alpha_diode            = 0xFFFF00FF, // ARGB(255, 255,   0, 255);
 		alpha_inverter         = 0xFFFF10FF, // ARGB(255, 255,  16, 255);
