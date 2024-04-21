@@ -421,8 +421,6 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 	if (this.getSpectatorTeamNum() == player.getTeamNum())
 	{
 		server_AddToQueue(player.getNetworkID());
-
-		SetupQueueGUI(this);
 	}
 }
 
