@@ -1,4 +1,4 @@
-/* Spectator Queue script written by Bunnie
+/* Spectator Queue script written by bunnie
    Uses custom GUI, because in-built kag GUI functions didn't really work well for this purpose
    Supports multiple teams
 */
@@ -11,8 +11,8 @@ const int QueuePaneHeight = 128;
 const int QueueTeamHeight = 64;
 
 // Client-side stuff
-int client_queue_pos = -1; // Our current position in queue
-int client_selected = -99; // Currently selected team 
+s16 client_queue_pos = -1; // Our current position in queue
+s16 client_selected = -99; // Currently selected team 
 bool hide = false; // Are we hiding the main queue GUI?
 
 // Array of all currently queued players
@@ -20,12 +20,12 @@ QueueEntry[] queue;
 
 class QueueEntry
 {
-	string username;
-	int team_num;
+	u16 player_id;
+	s16 team_num;
 
-	QueueEntry(string _username, int _team_num = -1)
+	QueueEntry(u16 _player_id, s16 _team_num = -1)
 	{
-		username = _username;
+		player_id = _player_id;
 		team_num = _team_num;
 	}
 
@@ -36,7 +36,7 @@ class QueueEntry
 
 	CPlayer@ getPlayer()
 	{
-		CPlayer@ player = getPlayerByUsername(username);
+		CPlayer@ player = getPlayerByNetworkId(player_id);
 
 		if (player !is null) return player;
 
@@ -296,8 +296,7 @@ class ClickButton
 					client_selected = -99;
 
 				CBitStream params;
-				params.write_string(player.getUsername());
-				params.write_s32(id);
+				params.write_s16(id);
 				params.write_bool(selected);
 
 				getRules().SendCommand(getRules().getCommandID("queue action"), params);
@@ -306,20 +305,23 @@ class ClickButton
 	}
 }
 
-void SyncQueue(CRules@ this, CPlayer@ player)
+void SyncQueue()
 {
-	if (player is null) return;
+	if (!isServer()) return;
 
 	CBitStream params;
 
-	params.write_s32(queue.length);
+	params.write_u8(queue.length);
+
 	for (int i=0; i<queue.length; ++i)
 	{
-		params.write_string(queue[i].username);
-		params.write_s32(queue[i].team_num);
+		params.write_u16(queue[i].player_id);
+		params.write_s16(queue[i].team_num);
 	}
 
-	this.SendCommand(this.getCommandID("sync queue"), params, player);
+	CRules@ rules = getRules();
+
+	rules.SendCommand(rules.getCommandID("sync queue client"), params);
 }
 
 void SetupQueueGUI(CRules@ this)
@@ -344,29 +346,28 @@ void SetupQueueGUI(CRules@ this)
 	this.set("queueguismall", @SmallGUI);
 }
 
-void AddToQueue(CPlayer@ player, int team = -1)
+void server_AddToQueue(u16 id, int team = -1)
 {
-	queue.push_back(QueueEntry(player.getUsername(), team));
+	if (!isServer()) return;
 
-	if (isClient() && player.isMyPlayer())
-		client_queue_pos = queue.length - 1;
+	queue.push_back(QueueEntry(id, team));
+
+	SyncQueue();
 }
 
-void RemoveFromQueue(CPlayer@ player)
+void server_RemoveFromQueue(u16 id)
 {
+	if (!isServer()) return;
+
 	for (int i=0; i<queue.length; ++i)
 	{
-		if (queue[i].username == player.getUsername())
+		if (queue[i].player_id == id)
 		{
 			queue.removeAt(i);
-
-			if (isClient())
-			{
-				if (i == client_queue_pos) client_queue_pos = -1;
-				else if (i < client_queue_pos) client_queue_pos--;
-			}
 		}
 	}
+
+	SyncQueue();
 }
 
 int screenheight;
@@ -385,7 +386,8 @@ void onInit(CRules@ this)
 	}
 
 	this.addCommandID("queue action");
-	this.addCommandID("sync queue");
+	this.addCommandID("sync queue client");
+	this.addCommandID("add to team sound client");
 
 	if (!GUI::isFontLoaded("slightly bigger text"))
 	{
@@ -415,107 +417,43 @@ void onReload(CRules@ this)
 
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
+	if (!isServer()) return;
 	// automatically add to queue 
 	if (this.getSpectatorTeamNum() == player.getTeamNum())
 	{
-		AddToQueue(player);
-
-		if (isServer())
-		{
-			SyncQueue(this, player);
-		}
-
-		SetupQueueGUI(this);
+		server_AddToQueue(player.getNetworkID());
 	}
 }
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
+	if (!isServer()) return;
+
 	if (player.getTeamNum() != this.getSpectatorTeamNum()) return;
 
-	RemoveFromQueue(player);
+	server_RemoveFromQueue(player.getNetworkID());
 }
 
 void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 {
-	if (newteam == this.getSpectatorTeamNum())
+	if (isClient() && player.isMyPlayer())
 	{
-		SetupQueueGUI(this);
-	}
-
-	if (oldteam != this.getSpectatorTeamNum() && player.isMyPlayer()) 
-	{
-		hide = true;
-		return;
-	}
-
-	if (this.get_bool(player.getUsername() + "_playsound"))
-	{
-		if (isClient() && player.isMyPlayer())
+		if (newteam == this.getSpectatorTeamNum())
 		{
-			Sound::Play("AchievementUnlocked.ogg"); // TODO: different, distinct sound
+			SetupQueueGUI(this);
+		}
+		if (oldteam != this.getSpectatorTeamNum() && player.isMyPlayer()) 
+		{
+			hide = true;
+			return;
 		}
 
-		this.set_bool(player.getUsername() + "_playsound", false);
+		client_selected = -99;
 	}
 
-	client_selected = -99;
-	RemoveFromQueue(player);
-}
-
-void onCommand(CRules@ this, u8 cmd, CBitStream @params)
-{
-	if (cmd == this.getCommandID("queue action"))
+	if (isServer())
 	{
-		string username;
-		if (!params.saferead_string(username)) return;
-		s32 team_num;
-		if (!params.saferead_s32(team_num)) return;
-		bool selected;
-		if (!params.saferead_bool(selected)) return;
-
-		CPlayer@ player = getPlayerByUsername(username);
-		
-		if (player is null) return;
-
-		RemoveFromQueue(player);
-
-		if (player.getTeamNum() != this.getSpectatorTeamNum()) return;
-
-		if (selected)
-		{
-			AddToQueue(player, team_num);
-		}
-
-		QueueGUI@ GUI;
-		this.get("queuegui", @GUI);
-		if (GUI is null) return;
-	}
-	else if (cmd == this.getCommandID("sync queue") && isClient())
-	{
-		s32 length;
-		if (!params.saferead_s32(length)) return;
-
-		for (int i=0; i<length; ++i)
-		{
-			string username;
-			if (!params.saferead_string(username)) return;
-			s32 team_num;
-			if (!params.saferead_s32(team_num)) return;
-
-			CPlayer@ localplayer = getLocalPlayer();
-
-			if (localplayer !is null)
-			{
-				if (localplayer.getUsername() == username)
-				{
-					client_selected = team_num;
-					client_queue_pos = i;
-				}
-			}
-
-			queue.push_back(QueueEntry(username, team_num));
-		}
+		server_RemoveFromQueue(player.getNetworkID());
 	}
 }
 
@@ -569,12 +507,12 @@ void onTick(CRules@ this)
 		}
 	}
 
-	// Queue checking logic
-	if (getPlayersCount_NotSpectator() < sv_maxplayers)
+	// There's a spot in the teams - let's add someone from the queue
+	if (getPlayersCount_NotSpectator() < sv_maxplayers && isServer())
 	{
 		RulesCore@ core;
 		this.get("core", @core);
-		if (core is null) return; // core will be null on client
+		if (core is null) return;
 
 		for (u16 i=0; i<queue.length; ++i)
 		{
@@ -586,12 +524,21 @@ void onTick(CRules@ this)
 			{
 				queue.removeAt(i);
 				--i;
+				SyncQueue();
 				continue;
 			}
 
-			s32 newTeam;
+			if (player.getTeamNum() != this.getSpectatorTeamNum()) // shouldn't happen, but happens!
+			{
+				queue.removeAt(i);
+				--i;
+				SyncQueue();
+				continue;
+			}
 
-			if (team == -1) // any team
+			u8 newTeam;
+
+			if (team == -1) // They're fine with any team; add them to the smaller one
 			{
 				newTeam = getSmallestTeam(core.teams);
 			}
@@ -601,24 +548,80 @@ void onTick(CRules@ this)
 				int ourSize = getTeamSize(core.teams, team);
 				int smallestSize = getTeamSize(core.teams, smallestTeam);
 
-				if (smallestSize == ourSize)
+				if (smallestSize == ourSize) // They queued for the team that is smaller now; add them
 				{
 					newTeam = team;
 				}
-				else
+				else // They want to join the bigger team, cannot unbalance - moving on to next person in queue
 				{
 					continue;
 				}
 			}
 
-			// disgusting workaround to play sound (didn't want to add a command just for a team change & sound)
-			this.set_bool(player.getUsername() + "_playsound", false);
-			this.SyncToPlayer(player.getUsername() + "_playsound", player);
-			this.set_bool(player.getUsername() + "_playsound", true);
-			this.SyncToPlayer(player.getUsername() + "_playsound", player);
+			// Notify the player in queue that they got added to a team
+			CBitStream params;
+			this.SendCommand(this.getCommandID("add to team sound client"), params, player);
 			core.ChangePlayerTeam(player, newTeam);
 			break;
 		}
+	}
+}
+
+void onCommand(CRules@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("queue action") && isServer())
+	{
+		s16 team_num;
+		if (!params.saferead_s16(team_num)) return;
+		bool selected;
+		if (!params.saferead_bool(selected)) return;
+
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
+		server_RemoveFromQueue(player.getNetworkID());
+
+		if (player.getTeamNum() != this.getSpectatorTeamNum()) return;
+
+		if (selected)
+		{
+			server_AddToQueue(player.getNetworkID(), team_num);
+		}
+	}
+	else if (cmd == this.getCommandID("sync queue client") && isClient())
+	{
+		u8 length;
+		if (!params.saferead_u8(length)) return;
+
+		queue.clear();
+
+		client_queue_pos = -1;
+		client_selected = -99;
+
+		for (int i=0; i<length; ++i)
+		{
+			u16 id;
+			if (!params.saferead_u16(id)) return;
+			s16 team_num;
+			if (!params.saferead_s16(team_num)) return;
+
+			CPlayer@ localplayer = getLocalPlayer();
+
+			if (localplayer !is null)
+			{
+				if (localplayer.getNetworkID() == id)
+				{
+					client_selected = team_num;
+					client_queue_pos = i;
+				}
+			}
+
+			queue.push_back(QueueEntry(id, team_num));
+		}
+	}
+	else if (cmd == this.getCommandID("add to team sound client") && isClient())
+	{
+		Sound::Play("AchievementUnlocked.ogg"); // TODO: different, distinct sound
 	}
 }
 
