@@ -889,6 +889,8 @@ void ShootArrow(CBlob@ this)
 	if (arrow_type >= arrowTypeNames.length) return;
 
 	bool hasarrow = archer.has_arrow;
+	if (!hasArrows(this, arrow_type)) return; 
+	
 	s8 charge_time = archer.charge_time;
 	u8 charge_state = archer.charge_state;
 
