@@ -4,6 +4,9 @@
 
 void onInit(CBlob@ this)
 {
+	// used by BuilderHittable.as
+	this.Tag("builder always hit");
+
 	this.Tag("no pickup");
 }
 
@@ -35,3 +38,8 @@ void onDie(CBlob@ this)
 	if (!this.get("component", @component)) return;
 }
 */
+
+bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+{
+	return false;
+}
