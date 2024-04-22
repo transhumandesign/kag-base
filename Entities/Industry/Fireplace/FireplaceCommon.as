@@ -24,7 +24,7 @@ void Extinguish(CBlob@ this)
 		this.getSprite().PlaySound("/ExtinguishFire.ogg");
 	}
 
-	makeSmokeParticle(this.getPosition()); //*poof*
+	makeBigSmokeParticle(this.getPosition()); //*poof*
 
 	SetFire(this, false);
 }
