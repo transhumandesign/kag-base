@@ -36,9 +36,6 @@ class Oscillator : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("ignore sword");
 
@@ -60,7 +57,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Oscillator component(position, this.getNetworkID(), input);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -92,7 +89,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void onDie(CBlob@ this)
 {
-	if (!getNet().isClient() || !this.exists("component")) return;
+	if (!isClient() || !this.exists("component")) return;
 
 	const string image = this.getSprite().getFilename();
 	const Vec2f position = this.getPosition();
@@ -112,9 +109,4 @@ void onDie(CBlob@ this)
 		"",                                 // sound
 		team);                              // team number
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

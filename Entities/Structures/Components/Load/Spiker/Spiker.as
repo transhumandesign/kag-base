@@ -39,7 +39,7 @@ class Spiker : Component
 		spike.set_u8("state", 1);
 
 		// hit flesh at target position
-		if (getNet().isServer())
+		if (isServer())
 		{
 			CBlob@[] blobs;
 			map.getBlobsAtPosition(offset * 8 + position, @blobs);
@@ -81,14 +81,23 @@ class Spiker : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("blocks sword");
 
 	// used by TileBackground.as
 	this.set_TileType("background tile", CMap::tile_wood_back);
+}
+
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	UpdateSprite(this);
+	return true;
+}
+
+void UpdateSprite(CBlob@ this)
+{
+	this.getSprite().SetFrameIndex(this.get_u8("state"));
+	this.getSprite().SetRelativeZ(1.0f); // spiker comes before spike
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -104,7 +113,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.getAttachments().getAttachmentPointByName("MECHANISM").offsetZ = -5;
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -145,7 +154,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void onDie(CBlob@ this)
 {
-	if (!getNet().isServer()) return;
+	if (!isServer()) return;
 
 	CBlob@ spike = this.getAttachments().getAttachmentPointByName("MECHANISM").getOccupied();
 	if (spike is null) return;

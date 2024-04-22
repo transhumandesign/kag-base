@@ -5,9 +5,6 @@
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -27,7 +24,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Component component(POSITION);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -57,7 +54,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	Component@ component = null;
 	if (!this.get("component", @component)) return;
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -93,9 +90,4 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			particle.Z = -25;
 		}
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

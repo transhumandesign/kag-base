@@ -14,9 +14,6 @@ class Magazine : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -37,7 +34,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Magazine component(position);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -108,7 +105,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (!getNet().isServer()) return;
+	if (!isServer()) return;
 
 	if (cmd == this.getCommandID("load"))
 	{
@@ -169,11 +166,6 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 }
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
-{
-	return false;
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return false;
 }

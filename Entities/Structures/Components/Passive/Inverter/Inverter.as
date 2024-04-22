@@ -38,9 +38,6 @@ class Inverter : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("ignore sword");
 
@@ -51,6 +48,17 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().waterPasses = true;
 }
 
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	UpdateSprite(this);
+	return true;
+}
+
+void UpdateSprite(CBlob@ this)
+{
+	this.getSprite().SetFrameIndex(this.get_u8("frame index"));
+}
+
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic || this.exists("component")) return;
@@ -59,10 +67,11 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	const u16 angle = this.getAngleDegrees();
 	const u8 input = rotateTopology(angle, TOPO_DOWN);
 
+	this.set_u8("frame index", 1);
 	Inverter component(position, this.getNetworkID(), input);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -94,7 +103,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void onDie(CBlob@ this)
 {
-	if (!getNet().isClient() || !this.exists("component")) return;
+	if (!isClient() || !this.exists("component")) return;
 
 	const string image = this.getSprite().getFilename();
 	const Vec2f position = this.getPosition();
@@ -114,9 +123,4 @@ void onDie(CBlob@ this)
 		"",                                 // sound
 		team);                              // team number
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

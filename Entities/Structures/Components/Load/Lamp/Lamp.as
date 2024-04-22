@@ -16,22 +16,21 @@ class Lamp : Component
 
 	void Activate(CBlob@ this)
 	{
+		this.set_u8("frame index", 1);
 		this.SetLight(true);
-		this.getSprite().SetFrameIndex(1);
+		UpdateSprite(this);
 	}
 
 	void Deactivate(CBlob@ this)
 	{
+		this.set_u8("frame index", 0);
 		this.SetLight(false);
-		this.getSprite().SetFrameIndex(0);
+		UpdateSprite(this);
 	}
 }
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place ignore facing");
 
@@ -49,6 +48,17 @@ void onInit(CBlob@ this)
 	this.SetLightColor(SColor(255, 255, 240, 171));
 }
 
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	UpdateSprite(this);
+	return true;
+}
+
+void UpdateSprite(CBlob@ this)
+{
+	this.getSprite().SetFrameIndex(this.get_u8("frame index"));
+}
+
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic || this.exists("component")) return;
@@ -58,8 +68,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	Lamp component(POSITION, this.getNetworkID());
 	this.set("component", component);
+	
+	this.set_u8("frame index", 0);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -88,9 +100,4 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		layer.SetRelativeZ(-1);
 		layer.SetFacingLeft(FACING);
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }
