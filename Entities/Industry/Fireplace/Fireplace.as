@@ -1,7 +1,6 @@
 // Fireplace
 
 #include "MakeFood.as";
-#include "FireParticle.as";
 #include "FireCommon.as";
 #include "FireplaceCommon.as";
 #include "Hitters.as";

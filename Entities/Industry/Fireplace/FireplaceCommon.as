@@ -1,4 +1,6 @@
 ﻿
+#include "FireParticle.as";
+
 void Ignite(CBlob@ this)
 {
 	if (this.hasTag("fire source")) return;
