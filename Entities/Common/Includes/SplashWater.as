@@ -51,30 +51,35 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 		Vec2f offset = Vec2f(splash_halfwidth * map.tilesize + map.tilesize, splash_halfheight * map.tilesize + map.tilesize);
 		Vec2f tl = pos - offset * 0.5f;
 		Vec2f br = pos + offset * 0.5f;
+
+		CBlob@ ownerBlob;
+		
 		if (is_server)
 		{
-			CBlob@ ownerBlob;
 			CPlayer@ damagePlayer = this.getDamageOwnerPlayer();
 			if (damagePlayer !is null)
 			{
 				@ownerBlob = damagePlayer.getBlob();
 			}
+		}
 
-			CBlob@[] blobs;
-			map.getBlobsInBox(tl, br, @blobs);
-			for (uint i = 0; i < blobs.length; i++)
+		CBlob@[] blobs;
+		map.getBlobsInBox(tl, br, @blobs);
+		for (uint i = 0; i < blobs.length; i++)
+		{
+			CBlob@ blob = blobs[i];
+
+			if (blob is null || blob.hasTag("invincible"))
+				continue;
+
+			if (blob.hasTag("bloody"))
 			{
-				CBlob@ blob = blobs[i];
-				
-				if (blob is null || blob.hasTag("invincible"))
-					continue;
+				// remove blood
+				blob.Untag("bloody");
+				UpdateBloodySprite(blob);
 
-				if (blob.hasTag("bloody"))
+				if (isClient())
 				{
-					// remove blood
-					blob.Untag("bloody");
-					UpdateBloodySprite(blob);
-					
 					if (!v_fastrender && !g_kidssafe)
 					{
 						// sparkle particles and sound
@@ -86,25 +91,27 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 						Sound::Play("CleanSparkle.ogg", blob.getPosition());
 					}
 				}
+			}
 
-				bool hitHard = blob.getTeamNum() != this.getTeamNum() || ownerBlob is blob;
+			if (!is_server) continue;
 
-				Vec2f hit_blob_pos = blob.getPosition();
-				f32 scale;
-				Vec2f bombforce = getBombForce(this, radius, hit_blob_pos, pos, blob.getMass(), scale);
+			bool hitHard = blob.getTeamNum() != this.getTeamNum() || ownerBlob is blob;
 
-				if (shouldStun && (ownerBlob is blob || (this.isOverlapping(blob) && hitHard)))
-				{
-					this.server_Hit(blob, pos, bombforce, 0.0f, Hitters::water_stun_force, true);
-				}
-				else if (hitHard)
-				{
-					this.server_Hit(blob, pos, bombforce, 0.0f, hitter, true);
-				}
-				else //still have to hit teamies so we can put them out!
-				{
-					this.server_Hit(blob, pos, bombforce, 0.0f, Hitters::water, true);
-				}
+			Vec2f hit_blob_pos = blob.getPosition();
+			f32 scale;
+			Vec2f bombforce = getBombForce(this, radius, hit_blob_pos, pos, blob.getMass(), scale);
+
+			if (shouldStun && (ownerBlob is blob || (this.isOverlapping(blob) && hitHard)))
+			{
+				this.server_Hit(blob, pos, bombforce, 0.0f, Hitters::water_stun_force, true);
+			}
+			else if (hitHard)
+			{
+				this.server_Hit(blob, pos, bombforce, 0.0f, hitter, true);
+			}
+			else //still have to hit teamies so we can put them out!
+			{
+				this.server_Hit(blob, pos, bombforce, 0.0f, Hitters::water, true);
 			}
 		}
 	}
