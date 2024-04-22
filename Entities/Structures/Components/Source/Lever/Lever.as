@@ -14,9 +14,6 @@ class Lever : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -32,6 +29,17 @@ void onInit(CBlob@ this)
 	AddIconToken("$lever_1$", "Lever.png", Vec2f(16, 16), 5);
 }
 
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	UpdateSprite(this);
+	return true;
+}
+
+void UpdateSprite(CBlob@ this)
+{
+	this.getSprite().SetFrameIndex(this.get_u8("state"));
+}
+
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic || this.exists("component")) return;
@@ -43,7 +51,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.set_u8("state", 0);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -94,7 +102,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("toggle"))
 	{
-		if (getNet().isServer())
+		if (isServer())
 		{
 			Component@ component = null;
 			if (!this.get("component", @component)) return;
@@ -116,13 +124,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		CSprite@ sprite = this.getSprite();
 		if (sprite is null) return;
-
-		sprite.SetFrameIndex(this.get_u8("state"));
 		sprite.PlaySound("LeverToggle.ogg");
-	}
-}
 
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
+		UpdateSprite(this);
+	}
 }

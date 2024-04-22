@@ -69,9 +69,6 @@ class Obstructor : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -93,7 +90,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Obstructor component(POSITION, this.getNetworkID());
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -126,7 +123,7 @@ void onTick(CBlob@ this)
 		{
 			this.Untag("obstructed");
 
-			if (getNet().isServer())
+			if (isServer())
 			{
 				getMap().server_SetTile(this.getPosition(), Dummy::OBSTRUCTOR);
 			}
@@ -172,10 +169,5 @@ bool isObstructed(CBlob@ this)
 			}
 		}
 	}
-	return false;
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
 	return false;
 }

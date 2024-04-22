@@ -22,6 +22,12 @@ namespace Spike
 
 // Todo: collision normal
 
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	UpdateSprite(this);
+	return true;
+}
+
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (!isServer() 
@@ -84,32 +90,10 @@ bool canBePickedUp( CBlob@ this, CBlob@ byBlob )
 
 void UpdateSprite(CBlob@ this)
 {
-	if (isClient())
-	{
-		// spike frame
-		uint frame_add = this.hasTag("bloody") && !g_kidssafe ? 1 : 0;
-		
-		this.getSprite().animation.frame = frame_add;
-	
-		// spiker spritelayer frame
-		if (this.exists("spiker id"))
-		{
-			CBlob@ spiker = getBlobByNetworkID(this.get_u16("spiker id"));
-			if (spiker !is null)
-			{
-				CSprite@ sprite = spiker.getSprite();
-				
-				if (sprite !is null)
-				{
-					CSpriteLayer@ layer = sprite.getSpriteLayer("background");
-					if (layer !is null)
-					{
-						layer.animation.frame = frame_add;
-					}
-				}
-			}
-		}
-	}
+	if (!isClient()) return;
+
+	uint frame_add = this.hasTag("bloody") && !g_kidssafe ? 1 : 0;
+	this.getSprite().animation.frame = frame_add;
 }
 
 void onInit(CSprite@ this)

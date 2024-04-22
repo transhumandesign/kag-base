@@ -31,9 +31,6 @@ class Junction : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -47,6 +44,17 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().waterPasses = true;
 }
 
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	UpdateSprite(this);
+	return true;
+}
+
+void UpdateSprite(CBlob@ this)
+{
+	this.getSprite().SetFrameIndex(this.get_u8("frame index"));
+}
+
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic || this.exists("component")) return;
@@ -56,7 +64,9 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Junction component(position, this.getNetworkID());
 	this.set("component", component);
 
-	if (getNet().isServer())
+	this.set_u8("frame index", 0);
+
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -82,9 +92,4 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	layer.animation.AddFrame(2);
 	layer.SetRelativeZ(-1);
 	layer.SetFacingLeft(false);
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

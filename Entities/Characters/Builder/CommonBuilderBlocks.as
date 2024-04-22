@@ -148,22 +148,22 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		BuildBlock[] page_1;
 		blocks.push_back(page_1);
 		{
-			BuildBlock b(0, "wire", "$wire$", "Wire", "Carries power to components and devices.");
+			BuildBlock b(0, "wire", getTeamIcon("wire", "Wire.png", team_num, Vec2f(16, 16), 3), "Wire", "Carries power to components and devices.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "elbow", "$elbow$", "Elbow", "Carries power to components and devices.");
+			BuildBlock b(0, "elbow", getTeamIcon("elbow", "Elbow.png", team_num, Vec2f(16, 16), 3), "Elbow", "Carries power to components and devices.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "tee", "$tee$", "Tee", "Carries power to components and devices.");
+			BuildBlock b(0, "tee", getTeamIcon("tee", "Tee.png", team_num, Vec2f(16, 16), 7), "Tee", "Carries power to components and devices.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "junction", "$junction$", "Junction", "Carries power to components and devices.");
+			BuildBlock b(0, "junction", getTeamIcon("junction", "Junction.png", team_num, Vec2f(16, 16), 3), "Junction", "Carries power to components and devices.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 20);
 			blocks[1].push_back(b);
 		}
@@ -173,38 +173,38 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "diode", "$diode$", "Diode", "Acts as a one-way wire.");
+			BuildBlock b(0, "diode", getTeamIcon("diode", "Diode.png", team_num, Vec2f(8, 16), 3), "Diode", "Acts as a one-way wire.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "resistor", "$resistor$", "Resistor", "Halves power.");
+			BuildBlock b(0, "resistor", getTeamIcon("resistor", "Resistor.png", team_num, Vec2f(8, 16), 3), "Resistor", "Halves power.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "inverter", "$inverter$", "Inverter", "Always on until signal passes through.");
+			BuildBlock b(0, "inverter", getTeamIcon("inverter", "Inverter.png", team_num, Vec2f(8, 16), 3), "Inverter", "Always on until signal passes through.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 20);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "oscillator", "$oscillator$", "Oscillator", "Adds a delay before signal passes through.");
+			BuildBlock b(0, "oscillator", getTeamIcon("oscillator", "Oscillator.png", team_num, Vec2f(8, 16), 7), "Oscillator", "Adds a delay before signal passes through.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "transistor", "$transistor$", "Transistor", "Signal passes through if both sides have power.");
+			BuildBlock b(0, "transistor", getTeamIcon("transistor", "Transistor.png", team_num, Vec2f(16, 16), 3), "Transistor", "Signal passes through if both sides have power.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "toggle", "$toggle$", "Toggle", "Turns on or off when receiving power.");
+			BuildBlock b(0, "toggle", getTeamIcon("toggle", "Toggle.png", team_num, Vec2f(8, 16), 3), "Toggle", "Turns on or off when receiving power.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 20);
 			blocks[1].push_back(b);
 		}
 		{
-			BuildBlock b(0, "randomizer", "$randomizer$", "Randomizer", "Passes signal at a 50% chance.");
+			BuildBlock b(0, "randomizer", getTeamIcon("randomizer", "Randomizer.png", team_num, Vec2f(8, 16), 7), "Randomizer", "Passes signal at a 50% chance.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 20);
 			blocks[1].push_back(b);
 		}
@@ -212,7 +212,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		BuildBlock[] page_2;
 		blocks.push_back(page_2);
 		{
-			BuildBlock b(0, "lever", "$lever$", "Lever", "Keeps sending power when turned on.");
+			BuildBlock b(0, "lever", getTeamIcon("lever", "Lever.png", team_num, Vec2f(8, 16), 3), "Lever", "Keeps sending power when turned on.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
 			blocks[2].push_back(b);
@@ -248,18 +248,18 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 		BuildBlock[] page_3;
 		blocks.push_back(page_3);
 		{
-			BuildBlock b(0, "lamp", "$lamp$", "Lamp", "Lights up a dark area.");
+			BuildBlock b(0, "lamp", getTeamIcon("lamp", "Lamp.png", team_num, Vec2f(16, 16), 3), "Lamp", "Lights up a dark area.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
 			blocks[3].push_back(b);
 		}
 		{
-			BuildBlock b(0, "emitter", "$emitter$", "Emitter", "Sends signal to Receivers.");
+			BuildBlock b(0, "emitter", getTeamIcon("emitter", "Emitter.png", team_num, Vec2f(8, 8), 0), "Emitter", "Sends signal to Receivers.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
 			blocks[3].push_back(b);
 		}
 		{
-			BuildBlock b(0, "receiver", "$receiver$", "Receiver", "Receives signal from Emitters.");
+			BuildBlock b(0, "receiver", getTeamIcon("receiver", "Receiver.png", team_num, Vec2f(8, 8), 0), "Receiver", "Receives signal from Emitters.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
 			blocks[3].push_back(b);
 		}
@@ -292,7 +292,7 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 			blocks[3].push_back(b);
 		}
 		{
-			BuildBlock b(0, "bell", "$bell$", "Bell", "Rings when powered.");
+			BuildBlock b(0, "bell", getTeamIcon("bell", "Bell.png", team_num, Vec2f(16, 16), 3), "Bell", "Rings when powered.");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
 			blocks[3].push_back(b);

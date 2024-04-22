@@ -23,9 +23,6 @@ class Wire : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place ignore facing");
 
@@ -63,7 +60,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Wire component(POSITION);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -134,9 +131,4 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		sprite.SetOffset(offset);
 		layer.SetOffset(offset);
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

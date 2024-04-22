@@ -9,9 +9,6 @@ const u8 LIGHT_THRESHOLD = 140;
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -87,9 +84,4 @@ void onTick(CBlob@ this)
 	
 	this.getCurrentScript().tickFrequency = light > LIGHT_THRESHOLD ? 
 	                                        TICK_FREQUENCY_RUNNING : TICK_FREQUENCY_IDLE;
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

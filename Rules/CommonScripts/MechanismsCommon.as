@@ -222,12 +222,13 @@ void packet_RecChangeFrame(CBitStream@ stream)
 {
 	u16 id;
 	u8 frame;
-	if(!stream.saferead_u16(id)) return;
-	if(!stream.saferead_u8(frame)) return;
+	if (!stream.saferead_u16(id)) return;
+	if (!stream.saferead_u8(frame)) return;
 
 	CBlob@ blob = getBlobByNetworkID(id);
-	if(blob is null) return;
+	if (blob is null) return;
 
+	blob.set_u8("frame index", frame);
 	blob.getSprite().SetFrameIndex(frame);
 }
 
@@ -235,14 +236,14 @@ void packet_RecChangeAnimation(CBitStream@ stream)
 {
 	u16 id;
 	string animation;
-	if(!stream.saferead_u16(id)) return;
-	if(!stream.saferead_string(animation)) return;
+	if (!stream.saferead_u16(id)) return;
+	if (!stream.saferead_string(animation)) return;
 
 	CBlob@ blob = getBlobByNetworkID(id);
-	if(blob is null) return;
+	if (blob is null) return;
 
 	CSprite@ sprite = blob.getSprite();
-	if(sprite is null) return;
+	if (sprite is null) return;
 
 	sprite.SetAnimation(animation);
 	sprite.SetFrameIndex(0);

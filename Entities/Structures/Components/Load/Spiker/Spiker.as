@@ -123,14 +123,23 @@ class Spiker : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("blocks sword");
 
 	// used by TileBackground.as
 	this.set_TileType("background tile", CMap::tile_wood_back);
+}
+
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	UpdateSprite(this);
+	return true;
+}
+
+void UpdateSprite(CBlob@ this)
+{
+	this.getSprite().SetFrameIndex(this.get_u8("state"));
+	this.getSprite().SetRelativeZ(1.0f); // spiker comes before spike
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)

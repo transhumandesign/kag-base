@@ -13,9 +13,6 @@ class Plate : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("blocks sword");
 
@@ -24,6 +21,17 @@ void onInit(CBlob@ this)
 
 	this.addCommandID("activate");
 	this.addCommandID("deactivate");
+}
+
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	UpdateSprite(this);
+	return true;
+}
+
+void UpdateSprite(CBlob@ this)
+{
+	this.getSprite().SetFrameIndex(this.get_u8("state"));
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -39,7 +47,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	this.set_u32("cooldown", getGameTime() + 40);
 	this.set_u16("angle", this.getAngleDegrees());
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -100,7 +108,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		state = 1;
 
 		// setInfo is too slow for fast collisions, need to set power as well
-		if (getNet().isServer())
+		if (isServer())
 		{
 			MapPowerGrid@ grid;
 			if (!getRules().get("power grid", @grid)) return;
@@ -119,7 +127,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		state = 0;
 
-		if (getNet().isServer())
+		if (isServer())
 		{
 			MapPowerGrid@ grid;
 			if (!getRules().get("power grid", @grid)) return;
@@ -133,16 +141,11 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 	this.set_u8("state", state);
 
-	CSprite@ sprite = this.getSprite();
+	CSprite@ sprite = this.getSprite();	
 	if (sprite is null) return;
-
-	sprite.SetFrameIndex(state);
 	sprite.PlaySound("LeverToggle.ogg");
-}
 
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
+	UpdateSprite(this);
 }
 
 bool canActivatePlate(CBlob@ blob)

@@ -24,9 +24,6 @@ class CoinSlot : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -57,7 +54,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	CoinSlot component(POSITION);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -109,7 +106,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onTick(CBlob@ this)
 {
-	if (!getNet().isServer() || this.get_u32("duration") > getGameTime()) return;
+	if (!isServer() || this.get_u32("duration") > getGameTime()) return;
 
 	Component@ component = null;
 	if (!this.get("component", @component)) return;
@@ -131,7 +128,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("activate"))
 	{
-		if (getNet().isServer())
+		if (isServer())
 		{
 			Component@ component = null;
 			if (!this.get("component", @component)) return;
@@ -176,9 +173,4 @@ void onDie(CBlob@ this)
 	{
 		server_CreateLoot(this, this.getPosition(), this.getTeamNum());
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

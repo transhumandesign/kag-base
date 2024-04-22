@@ -26,22 +26,21 @@ class Flamer : Component
 
 	void Activate(CBlob@ this)
 	{
-		UpdateState(this, 1);
+		this.set_u8("state", 1);
+		UpdateSprite(this);
 		this.Tag("activated");
 		this.set_u8("delayed start", 10);
 	 }
 
 	void Deactivate(CBlob@ this)
 	{
-		UpdateState(this, 0);
+		this.set_u8("state", 0);
+		UpdateSprite(this);
 	}
 }
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("blocks sword");
 
@@ -54,6 +53,17 @@ void onInit(CBlob@ this)
 	this.SetLight(false);
 	this.getSprite().SetEmitSound("Flamer.ogg");
 	this.getSprite().SetEmitSoundPaused(true);
+}
+
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	UpdateSprite(this);
+	return true;
+}
+
+void UpdateSprite(CBlob@ this)
+{
+	this.getSprite().SetFrameIndex(this.get_u8("state"));
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -275,14 +285,4 @@ void CreateFlame(CBlob@ this)
 			}
 		}
 	}
-}
-
-void UpdateState(CBlob@ this, u8 state)
-{
-	this.set_u8("state", state);
-		
-	CSprite@ sprite = this.getSprite();
-	if (sprite is null) return;
-
-	sprite.SetFrameIndex(state);
 }

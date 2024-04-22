@@ -64,6 +64,12 @@ void onInit(CBlob@ this)
 	}
 }
 
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	this.getSprite().SetEmitSoundPaused(!this.hasTag("ringing"));
+	return true;
+}
+
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic || this.exists("component")) return;

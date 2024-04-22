@@ -56,9 +56,6 @@ const string EMITTER = "emitter";
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("ignore sword");
 
@@ -85,7 +82,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Receiver component(POSITION, this.getNetworkID());
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CMap@ map = getMap();
 
@@ -150,7 +147,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 /*
 void onDie(CBlob@ this)
 {
-	if (!getNet().isClient() || !this.exists("component")) return;
+	if (!isClient() || !this.exists("component")) return;
 
 	const string image = this.getSprite().getFilename();
 	const Vec2f position = this.getPosition();
@@ -172,8 +169,3 @@ void onDie(CBlob@ this)
 	}
 }
 */
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
-}

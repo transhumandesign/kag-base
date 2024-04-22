@@ -27,9 +27,6 @@ class Display : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -43,6 +40,17 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().waterPasses = true;
 }
 
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	UpdateSprite(this);
+	return true;
+}
+
+void UpdateSprite(CBlob@ this)
+{
+	this.getSprite().SetFrameIndex(this.get_u8("frame index"));
+}
+
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic || this.exists("component")) return;
@@ -51,6 +59,8 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	Display component(POSITION, this.getNetworkID());
 	this.set("component", component);
+
+	this.set_u8("frame index", 0);
 
 	if (isServer())
 	{
@@ -73,9 +83,4 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		sprite.SetFacingLeft(false);
 		sprite.SetZ(-50.0f);
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

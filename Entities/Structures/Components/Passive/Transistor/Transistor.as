@@ -41,9 +41,6 @@ class Transistor : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("ignore sword");
 
@@ -52,6 +49,17 @@ void onInit(CBlob@ this)
 
 	// background component, let water overlap
 	this.getShape().getConsts().waterPasses = true;
+}
+
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	UpdateSprite(this);
+	return true;
+}
+
+void UpdateSprite(CBlob@ this)
+{
+	this.getSprite().SetFrameIndex(this.get_u8("frame index"));
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -66,7 +74,9 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Transistor component(position, this.getNetworkID(), base, input);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	this.set_u8("frame index", 0);
+
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -104,7 +114,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void onDie(CBlob@ this)
 {
-	if (!getNet().isClient() || !this.exists("component")) return;
+	if (!isClient() || !this.exists("component")) return;
 
 	const string image = this.getSprite().getFilename();
 	const Vec2f position = this.getPosition();
@@ -124,9 +134,4 @@ void onDie(CBlob@ this)
 		"",                                 // sound
 		team);                              // team number
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }
