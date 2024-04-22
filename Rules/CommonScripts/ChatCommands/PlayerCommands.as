@@ -1,4 +1,6 @@
-#include "ChatCommand.as"
+
+#include "ChatCommand.as";
+#include "Hitters.as";
 
 class ClassCommand : ChatCommand
 {
@@ -205,5 +207,30 @@ class HealCommand : ChatCommand
 				}
 			}
 		}
+	}
+}
+
+class SuicideCommand : ChatCommand
+{
+	SuicideCommand()
+	{
+		super("suicide", "Kill yourself");
+		AddAlias("die");
+	}
+
+	void Execute(string[] args, CPlayer@ player)
+	{
+		CBlob@ blob = player.getBlob();
+		if (blob is null)
+		{
+			if (isServer())
+			{
+				server_AddToChat(getTranslatedString("You cannot kill yourself while dead or spectating"), ConsoleColour::ERROR, player);
+			}
+
+			return;
+		}
+
+		blob.server_Hit(blob, blob.getPosition(), blob.getVelocity(), 10.0f, Hitters::suicide);
 	}
 }
