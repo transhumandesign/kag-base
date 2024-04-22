@@ -221,16 +221,15 @@ class SuicideCommand : ChatCommand
 	void Execute(string[] args, CPlayer@ player)
 	{
 		CBlob@ blob = player.getBlob();
-		if (blob is null)
+		if (isServer())
 		{
-			if (isServer())
+			if (blob is null)
 			{
 				server_AddToChat(getTranslatedString("You cannot kill yourself while dead or spectating"), ConsoleColour::ERROR, player);
+				return;
 			}
 
-			return;
+			blob.server_Hit(blob, blob.getPosition(), blob.getVelocity(), 10.0f, Hitters::suicide);
 		}
-
-		blob.server_Hit(blob, blob.getPosition(), blob.getVelocity(), 10.0f, Hitters::suicide);
 	}
 }
