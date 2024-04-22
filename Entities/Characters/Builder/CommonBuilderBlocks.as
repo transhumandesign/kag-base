@@ -254,12 +254,12 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 			blocks[3].push_back(b);
 		}
 		{
-			BuildBlock b(0, "emitter", getTeamIcon("emitter", "Emitter.png", team_num, Vec2f(8, 8), 0), "Emitter", "Sends signal to Receivers.");
+			BuildBlock b(0, "emitter", getTeamIcon("emitter", "Emitter.png", team_num, Vec2f(16, 16), 3), "Emitter", "Sends signal to Receivers.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
 			blocks[3].push_back(b);
 		}
 		{
-			BuildBlock b(0, "receiver", getTeamIcon("receiver", "Receiver.png", team_num, Vec2f(8, 8), 0), "Receiver", "Receives signal from Emitters.");
+			BuildBlock b(0, "receiver", getTeamIcon("receiver", "Receiver.png", team_num, Vec2f(16, 16), 3), "Receiver", "Receives signal from Emitters.");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
 			blocks[3].push_back(b);
 		}
