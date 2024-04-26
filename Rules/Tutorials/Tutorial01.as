@@ -27,17 +27,17 @@ void onInit(CMap@ this)
 
 	{
 		CBlob@ bomb = server_CreateBlob("mat_bombs", 0, Vec2f(205, 43) * this.tilesize);
-		if (isServer() && bomb !is null)
+		if (bomb !is null)
 			bomb.server_SetTimeToDie(-1.0f);
 	}
 	{
 		CBlob@ bomb = server_CreateBlob("mat_bombs", 0, Vec2f(207, 43) * this.tilesize);
-		if (isServer() && bomb !is null)
+		if (bomb !is null)
 			bomb.server_SetTimeToDie(-1.0f);
 	}
 	{
 		CBlob@ bomb = server_CreateBlob("mat_bombs", 0, Vec2f(208, 43) * this.tilesize);
-		if (isServer() && bomb !is null)
+		if (bomb !is null)
 			bomb.server_SetTimeToDie(-1.0f);
 	}
 
