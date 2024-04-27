@@ -983,8 +983,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				const u8 arrowType = archer.arrow_type;
 				if (arrowType == ArrowType::bomb)
 				{
-					arrow.set_u16("follow", 0);
-					arrow.Sync("follow", true);
 					arrow.setPosition(this.getPosition());
 					return;
 				}
