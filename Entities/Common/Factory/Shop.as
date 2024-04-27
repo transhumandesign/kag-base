@@ -11,6 +11,11 @@
 
 void onInit(CBlob@ this)
 {
+	if (isClient())
+	{
+		this.getSprite().PlaySound("/Construct");
+	}
+
 	this.addCommandID("shop buy");
 	this.addCommandID("shop made item client");
 
