@@ -632,7 +632,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			kickmenu,
 			getTranslatedString("Can't vote"),
 			getTranslatedString(
-				"You are now allowed to votekick\n" +
+				"You are not allowed to votekick\n" +
 				"players on this server\n"
 			)
 		);
