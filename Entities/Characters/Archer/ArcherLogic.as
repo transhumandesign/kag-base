@@ -27,8 +27,6 @@ void onInit(CBlob@ this)
 	ArcherInfo archer;
 	this.set("archerInfo", @archer);
 
-	this.set_s8("charge_time", 0);
-	this.set_u8("charge_state", ArcherParams::not_aiming);
 	this.set_bool("has_arrow", false);
 	this.set_f32("gib health", -1.5f);
 	this.Tag("player");
@@ -45,6 +43,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("play fire sound");
 	this.addCommandID("pickup arrow");
 	this.addCommandID("pickup arrow client");
+	this.addCommandID("request shoot");
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
 	this.addCommandID(grapple_sync_cmd);
@@ -395,10 +394,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		          !this.isKeyPressed(key_action1) &&
 		          this.wasKeyPressed(key_action1)))
 		{
-			if (isServer())
-			{
-				ShootArrow(this);
-			}
+			ClientFire(this, charge_time);
 
 			charge_state = ArcherParams::legolas_charging;
 			charge_time = ArcherParams::shoot_period - ArcherParams::legolas_charge_time;
@@ -555,11 +551,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		{
 			if (charge_state < ArcherParams::fired)
 			{
-				if (isServer())
-				{
-					ShootArrow(this);
-				}
-
+				ClientFire(this, charge_time);
 				charge_time = ArcherParams::fired_time;
 				charge_state = ArcherParams::fired;
 			}
@@ -827,6 +819,18 @@ bool canSend(CBlob@ this)
 	return (this.isMyPlayer() || this.getPlayer() is null || this.getPlayer().isBot());
 }
 
+void ClientFire(CBlob@ this, const s8 charge_time)
+{
+	//time to fire!
+	if (canSend(this))  // client-logic
+	{
+		CBitStream params;
+		params.write_u8(charge_time);
+
+		this.SendCommand(this.getCommandID("request shoot"), params);
+	}
+}
+
 CBlob@ getPickupArrow(CBlob@ this)
 {
 	CBlob@[] blobsInRadius;
@@ -972,6 +976,18 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	if (cmd == this.getCommandID("play fire sound") && isClient())
 	{
 		this.getSprite().PlaySound("Entities/Characters/Archer/BowFire.ogg");
+	}
+	else if (cmd == this.getCommandID("request shoot") && isServer())
+	{
+		s8 charge_time;
+		if (!params.saferead_u8(charge_time)) { return; }
+
+		ArcherInfo@ archer;
+		if (!this.get("archerInfo", @archer)) { return; }
+
+		archer.charge_time = charge_time;
+
+		ShootArrow(this);
 	}
 	else if (cmd == this.getCommandID("pickup arrow") && isServer())
 	{
