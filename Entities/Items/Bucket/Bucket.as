@@ -21,8 +21,6 @@ void onInit(CBlob@ this)
 	this.getSprite().ReloadSprites(0, 0);
 	this.addCommandID("splash client");
 
-	this.addCommandID("fill client");
-
 	this.set_u8("filled", this.hasTag("_start_filled") ? splashes : 0);
 	this.Tag("ignore fall");
 	this.getCurrentScript().runFlags |= Script::tick_attached;
@@ -35,38 +33,43 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	u8 filled = this.get_u8("filled");
-	if (filled < splashes && this.isInWater())
+	if (isServer())
 	{
-		this.set_u8("filled", splashes);
-		this.set_u8("water_delay", 30);
-		SetFrame(this, true);
-	}
-
-	if (filled != 0 && isServer())
-	{
-		AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
-		u8 water_delay = this.get_u8("water_delay");
-
-		if (water_delay > 0)
+		if (this.isInWater() && this.get_u8("filled") < splashes)
 		{
-			this.set_u8("water_delay", water_delay - 1);
-			this.Sync("water_delay", true);
+			this.set_u8("filled", splashes);
+			this.set_u8("water_delay", 30);
+			this.Sync("filled", true);
 		}
-		else
+
+		if (this.get_u8("filled") != 0)
 		{
-			CBlob@ occupiedBlob = point.getOccupied();
-			if (occupiedBlob !is null && 
-				 occupiedBlob.isKeyJustPressed(key_action1) && 
-				 !this.isInWater() &&
-				 !occupiedBlob.isKeyPressed(key_inventory)) // prevent splash when doing stuff with inventory
+			AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
+			u8 water_delay = this.get_u8("water_delay");
+
+			if (water_delay > 0)
 			{
-				DoSplash(this);
-				this.SendCommand(this.getCommandID("splash client"));
-				this.set_u8("water_delay", 30);
-				this.Sync("water_delay", true);
+				this.set_u8("water_delay", water_delay - 1);
+			}
+			else
+			{
+				CBlob@ occupiedBlob = point.getOccupied();
+				if (occupiedBlob !is null && 
+					occupiedBlob.isKeyJustPressed(key_action1) && 
+					!this.isInWater() &&
+					!occupiedBlob.isKeyPressed(key_inventory)) // prevent splash when doing stuff with inventory
+				{
+					DoSplash(this);
+					this.SendCommand(this.getCommandID("splash client"));
+					this.set_u8("water_delay", 30);
+				}
 			}
 		}
+	}
+
+	if (isClient())
+	{
+		SetFrame(this, this.get_u8("filled") > 0);
 	}
 }
 
@@ -114,10 +117,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 				this.set_u8("water_delay", 5); // only slight delay
 				this.set_u8("filled", (filled + d));
-				this.Sync("water_delay", true);
 				this.Sync("filled", true);
-				
-				this.SendCommand(this.getCommandID("fill client"));
 			}
 		}
 	}
@@ -130,10 +130,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	if (cmd == this.getCommandID("splash client") && isClient())
 	{
 		DoSplash(this);
-	}
-	else if (cmd == this.getCommandID("fill client") && isClient())
-	{
-		SetFrame(this, true);
 	}
 }
 
@@ -149,6 +145,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 void TakeWaterCount(CBlob@ this)
 {
+	if (!isServer()) { return; }
+
 	u8 filled = this.get_u8("filled");
 	if (filled > 0)
 		filled--;
@@ -159,6 +157,7 @@ void TakeWaterCount(CBlob@ this)
 		SetFrame(this, false);
 	}
 	this.set_u8("filled", filled);
+	this.Sync("filled", true);
 }
 
 const uint splash_halfwidth = splash_width / 2;
