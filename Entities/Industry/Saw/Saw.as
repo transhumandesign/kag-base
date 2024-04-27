@@ -18,6 +18,8 @@ void onInit(CBlob@ this)
 	this.addCommandID(toggle_id_client);
 	this.addCommandID(sawteammate_id_client);
 
+	this.getCurrentScript().runFlags |= Script::tick_onscreen;
+
 	SetSawOn(this, true);
 }
 
@@ -199,10 +201,10 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 
 		if (dot > 0.8f)
 		{
-			if (blob.hasTag("flesh"))
+			if (blob.hasTag("flesh") && isServer())
 			{
 				this.Tag("bloody");
-				UpdateSprite(this);
+				this.Sync("bloody", true);
 			}
 
 			return true;
@@ -373,15 +375,15 @@ void onInit(CSprite@ this)
 	}
 }
 
-void onTick(CSprite@ this)
+void onTick(CBlob@ blob)
 {
-	CBlob@ blob = this.getBlob();
-	if (blob is null) return;
+	CSprite@ sprite = blob.getSprite();
+	if (sprite is null) return;
 
-	this.SetZ(blob.isAttached() ? 10.0f : -10.0f);
+	sprite.SetZ(blob.isAttached() ? 10.0f : -10.0f);
 
 	//spin saw blade
-	CSpriteLayer@ chop = this.getSpriteLayer("chop");
+	CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
 	if (chop !is null && getSawOn(blob))
 	{
 		chop.SetFacingLeft(false);
@@ -389,4 +391,6 @@ void onTick(CSprite@ this)
 		Vec2f around(0.5f, -0.5f);
 		chop.RotateBy(30.0f, around);
 	}
+
+	UpdateSprite(blob);
 }
