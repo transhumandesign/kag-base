@@ -75,7 +75,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (b is null) return;
 
 		// range check
-		if (this.getDistanceTo(b) > 16) return;
+		if (this.getDistanceTo(b) > 32) return;
 
 		// team check
 		if (this.getTeamNum() != b.getTeamNum()) return;
