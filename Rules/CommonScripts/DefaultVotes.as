@@ -632,7 +632,7 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			kickmenu,
 			getTranslatedString("Can't vote"),
 			getTranslatedString(
-				"You are now allowed to votekick\n" +
+				"You are not allowed to votekick\n" +
 				"players on this server\n"
 			)
 		);
@@ -999,6 +999,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 		u8 reasonid;
 		if (!params.saferead_u8(reasonid)) return;
 
+		if (reasonid >= kick_reason_count) return;
+
 		CPlayer@ byplayer = getNet().getActiveCommandPlayer();
 		if (byplayer is null) return;
 
@@ -1071,6 +1073,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 	{
 		u8 reasonid;
 		if (!params.saferead_u8(reasonid)) return;
+
+		if (reasonid >= nextmap_reason_count) return;
 
 		u16 byplayerid;
 		if (!params.saferead_u16(byplayerid)) return;
