@@ -81,6 +81,16 @@ void onTick(CBlob@ this)
 		}
 	}
 
+	QueuedHit@ queued_hit;
+	if (this.get("queued pickaxe", @queued_hit))
+	{
+		if (queued_hit !is null && getGameTime() >= queued_hit.scheduled_tick)
+		{
+			HandlePickaxeCommand(this, queued_hit.params);
+			this.set("queued pickaxe", null);
+		}
+	}
+
 	// slow down walking
 	if (this.isKeyPressed(key_action2))
 	{
@@ -519,6 +529,106 @@ bool canHit(CBlob@ this, CBlob@ b, Vec2f tpos, bool extra = true)
 	return true;
 }
 
+class QueuedHit
+{
+	CBitStream params;
+	int scheduled_tick;
+}
+
+void HandlePickaxeCommand(CBlob@ this, CBitStream@ params)
+{
+	PickaxeInfo@ SPI;
+	if (!this.get("spi", @SPI)) return;
+
+	u16 blobID;
+	Vec2f tilepos;
+
+	if (!params.saferead_u16(blobID)) return;
+	if (!params.saferead_Vec2f(tilepos)) return;
+
+	Vec2f blobPos = this.getPosition();
+	Vec2f aimPos = this.getAimPos();
+	Vec2f attackVel = aimPos - blobPos;
+
+	attackVel.Normalize();
+
+	bool hitting_structure = false;
+
+	if (blobID == 0)
+	{
+		CMap@ map = getMap();
+		TileType t = map.getTile(tilepos).type;
+		if (t != CMap::tile_empty && t != CMap::tile_ground_back)
+		{
+			// 5 blocks range check
+			Vec2f tsp = map.getTileSpacePosition(tilepos);
+			Vec2f wsp = map.getTileWorldPosition(tsp);
+			wsp += Vec2f(4, 4); // get center of block
+			f32 distance = Vec2f(blobPos - wsp).Length();
+			if (distance > 40.0f) return;
+
+			uint16 type = map.getTile(tilepos).type;
+			if (!inNoBuildZone(map, tilepos, type))
+			{
+				map.server_DestroyTile(tilepos, 1.0f, this);
+				Material::fromTile(this, type, 1.0f);
+			}
+
+			// for smaller delay
+			if (map.isTileWood(type) || // wood tile
+				(type >= CMap::tile_wood_back && type <= 207) || // wood backwall
+				map.isTileCastle(type) || // castle block
+				(type >= CMap::tile_castle_back && type <= 79) || // castle backwall
+					type == CMap::tile_castle_back_moss) // castle mossbackwall
+			{
+				hitting_structure = true;
+			}
+		}
+	}
+	else
+	{
+		CBlob@ b = getBlobByNetworkID(blobID);
+		if (b !is null)
+		{
+			// 4 blocks range check
+			f32 distance = this.getDistanceTo(b);
+			if (distance > 32.0f) return;
+
+			bool isdead = b.hasTag("dead");
+
+			f32 attack_power = hit_damage;
+
+			if (isdead) //double damage to corpses
+			{
+				attack_power *= 2.0f;
+			}
+
+			const bool teamHurt = !b.hasTag("flesh") || isdead;
+
+			if (isServer())
+			{
+				this.server_Hit(b, tilepos, attackVel, attack_power, Hitters::builder, teamHurt);
+				Material::fromBlob(this, b, attack_power);
+			}
+
+			// for smaller delay
+			string attacked_name = b.getName();
+			if (attacked_name == "bridge" ||
+				attacked_name == "wooden_platform" ||
+				b.hasTag("door") ||
+				attacked_name == "ladder" ||
+				attacked_name == "spikes"
+				)
+			{
+				hitting_structure = true;
+			}
+		}
+	}
+
+	SPI.last_hit_structure = hitting_structure;
+	SPI.last_pickaxed = getGameTime();
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("pickaxe") && isServer())
@@ -529,98 +639,28 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		u8 delay = delay_between_hit;
 		if (SPI.last_hit_structure) delay = delay_between_hit_structure;
 
-		if (getGameTime() - SPI.last_pickaxed < (delay - 1)) // too early. 1 tick of leeway for the laggers, but a hit-queuing system would be safer :/
+		QueuedHit@ queued_hit;
+		if (this.get("queued pickaxe", @queued_hit))
 		{
+			if (queued_hit !is null)
+			{
+				// cancel queued hit.
+				return;
+			}
+		}
+
+		// allow for one queued hit in-flight; reject any incoming one in the
+		// mean time (would only happen with massive lag in legit scenarios)
+		if (getGameTime() - SPI.last_pickaxed < delay)
+		{
+			QueuedHit queued_hit;
+			queued_hit.params = params;
+			queued_hit.scheduled_tick = SPI.last_pickaxed + delay;
+			this.set("queued pickaxe", @queued_hit);
 			return;
 		}
 
-		u16 blobID;
-		Vec2f tilepos;
-
-		if (!params.saferead_u16(blobID)) return;
-		if (!params.saferead_Vec2f(tilepos)) return;
-
-		Vec2f blobPos = this.getPosition();
-		Vec2f aimPos = this.getAimPos();
-		Vec2f attackVel = aimPos - blobPos;
-
-		attackVel.Normalize();
-
-		bool hitting_structure = false;
-
-		if (blobID == 0)
-		{
-			CMap@ map = getMap();
-			TileType t = map.getTile(tilepos).type;
-			if (t != CMap::tile_empty && t != CMap::tile_ground_back)
-			{
-				// 5 blocks range check
-				Vec2f tsp = map.getTileSpacePosition(tilepos);
-				Vec2f wsp = map.getTileWorldPosition(tsp);
-				wsp += Vec2f(4, 4); // get center of block
-				f32 distance = Vec2f(blobPos - wsp).Length();
-				if (distance > 40.0f) return;
-
-				uint16 type = map.getTile(tilepos).type;
-				if (!inNoBuildZone(map, tilepos, type))
-				{
-					map.server_DestroyTile(tilepos, 1.0f, this);
-					Material::fromTile(this, type, 1.0f);
-				}
-
-				// for smaller delay
-				if (map.isTileWood(type) || // wood tile
-					(type >= CMap::tile_wood_back && type <= 207) || // wood backwall
-					map.isTileCastle(type) || // castle block
-					(type >= CMap::tile_castle_back && type <= 79) || // castle backwall
-					 type == CMap::tile_castle_back_moss) // castle mossbackwall
-				{
-					hitting_structure = true;
-				}
-			}
-		}
-		else
-		{
-			CBlob@ b = getBlobByNetworkID(blobID);
-			if (b !is null)
-			{
-				// 4 blocks range check
-				f32 distance = this.getDistanceTo(b);
-				if (distance > 32.0f) return;
-
-				bool isdead = b.hasTag("dead");
-
-				f32 attack_power = hit_damage;
-
-				if (isdead) //double damage to corpses
-				{
-					attack_power *= 2.0f;
-				}
-
-				const bool teamHurt = !b.hasTag("flesh") || isdead;
-
-				if (isServer())
-				{
-					this.server_Hit(b, tilepos, attackVel, attack_power, Hitters::builder, teamHurt);
-					Material::fromBlob(this, b, attack_power);
-				}
-
-				// for smaller delay
-				string attacked_name = b.getName();
-				if (attacked_name == "bridge" ||
-					attacked_name == "wooden_platform" ||
-					b.hasTag("door") ||
-					attacked_name == "ladder" ||
-					attacked_name == "spikes"
-					)
-				{
-					hitting_structure = true;
-				}
-			}
-		}
-
-		SPI.last_hit_structure = hitting_structure;
-		SPI.last_pickaxed = getGameTime();
+		HandlePickaxeCommand(this, @params);
 	}
 }
 
