@@ -969,9 +969,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID("pickup arrow") && isServer())
 	{
 		CBlob@ arrow = getPickupArrow(this);
-		bool spriteArrow = canPickSpriteArrow(this, false); // unnecessary
+		// bool spriteArrow = canPickSpriteArrow(this, false); // unnecessary
 
-		if (arrow !is null || spriteArrow)
+		if (arrow !is null/* || spriteArrow*/)
 		{
 			if (arrow !is null)
 			{
@@ -1010,7 +1010,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 				else
 				{
-					canPickSpriteArrow(this, true);
+					// canPickSpriteArrow(this, true);
 				}
 			}
 
