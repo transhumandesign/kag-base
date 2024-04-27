@@ -968,6 +968,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("pickup arrow") && isServer())
 	{
+		// TODO: missing cooldown check
 		CBlob@ arrow = getPickupArrow(this);
 		// bool spriteArrow = canPickSpriteArrow(this, false); // unnecessary
 
