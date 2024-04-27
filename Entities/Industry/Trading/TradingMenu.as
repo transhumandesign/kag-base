@@ -1,4 +1,4 @@
-// Trading Post
+﻿// Trading Post
 
 #include "MakeCrate.as"
 #include "MakeSeed.as"
@@ -10,9 +10,9 @@ const int DROP_SECS = 8;
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("cha");
-	this.addCommandID("chaching");
+	this.addCommandID("stock");
 	this.addCommandID("buy");
+	this.addCommandID("reload menu");
 	AddIconToken("$" + this.getName() + "$", "TradingPost.png", Vec2f(16, 16), 15);
 	AddIconToken("$parachute$", "Crate.png", Vec2f(32, 32), 4);
 	AddIconToken("$trade$", "Coins.png", Vec2f(16, 16), 1);
@@ -55,7 +55,9 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (!this.hasTag("dead"))
 	{
-		CButton@ button = caller.CreateGenericButton("$trade$", Vec2f_zero, this, BuildTradingMenu, getTranslatedString("Shop"));
+		CBitStream params;
+		params.write_u16(caller.getNetworkID());
+		CButton@ button = caller.CreateGenericButton("$trade$", Vec2f_zero, this, this.getCommandID("stock"), getTranslatedString("Shop"), params);
 		button.enableRadius = 32;
 	}
 }
@@ -177,7 +179,12 @@ bool isInRadius(CBlob@ this, CBlob @caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("buy") && isServer())
+	if (cmd == this.getCommandID("stock"))
+	{
+		CBlob@ caller = getBlobByNetworkID(params.read_u16());
+		BuildTradingMenu(this, caller);
+	}
+	else if (cmd == this.getCommandID("buy"))
 	{
 		u16 callerid = params.read_u16();
 		u8 itemIndex = params.read_u8();
@@ -202,13 +209,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 	}
-	else if (cmd == this.getCommandID("cha") && isClient())
+	else if (cmd == this.getCommandID("reload menu"))
 	{
-		this.getSprite().PlaySound("/Cha.ogg");
-	}
-	else if (cmd == this.getCommandID("chaching") && isClient())
-	{
-		this.getSprite().PlaySound("/ChaChing.ogg");
+		CBlob@ caller = getBlobByNetworkID(params.read_u16());
+		if (caller !is null)
+		{
+			caller.ClearMenus();
+			BuildTradingMenu(this, caller);
+		}
 	}
 }
 
@@ -279,7 +287,7 @@ TradeItem@ AddItemToShip(CBlob@ this, CBlob@ caller, const uint itemIndex, const
 				{
 					item.paidGold += goldCount;
 					server_TakeRequirements(inv, modReqs);
-					this.SendCommand(this.getCommandID("cha"));
+					this.getSprite().PlaySound("/Cha.ogg");
 				}
 			}
 		}
@@ -317,7 +325,7 @@ TradeItem@ AddItemToShip(CBlob@ this, CBlob@ caller, const uint itemIndex, const
 
 	item.boughtTime = getGameTime();
 
-	this.SendCommand(this.getCommandID("chaching"));
+	this.getSprite().PlaySound("/ChaChing.ogg");
 
 	return item;
 }
