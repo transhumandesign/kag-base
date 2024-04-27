@@ -333,15 +333,17 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 	if (responsible)
 	{
-		if ((getGameTime() + this.getNetworkID()) % 10 == 0)
-		{
-			hasarrow = hasArrows(this);
+		hasarrow = hasArrows(this);
 
-			if (!hasarrow && hasnormal)
+		if (!hasarrow && hasnormal)
+		{
+			// set back to default
+			archer.arrow_type = ArrowType::normal;
+			hasarrow = hasnormal;
+
+			if (ismyplayer)
 			{
-				// set back to default
-				archer.arrow_type = ArrowType::normal;
-				hasarrow = hasnormal;
+				Sound::Play("/CycleInventory.ogg");
 			}
 		}
 
@@ -442,6 +444,10 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 				archer.arrow_type = ArrowType::normal;
 				hasarrow = hasnormal;
 
+				if (ismyplayer)
+				{
+					Sound::Play("/CycleInventory.ogg");
+				}
 			}
 
 			if (responsible)
@@ -677,8 +683,10 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		}
 
 		// pickup from ground
+		// from clientside right now, could probably move to a simple call and
+		// pray that fletch_cooldown is synced correctly
 
-		if (archer.fletch_cooldown == 0 && this.isKeyPressed(key_action2))
+		if (isClient() && archer.fletch_cooldown == 0 && this.isKeyPressed(key_action2))
 		{
 			if (getPickupArrow(this) !is null)   // pickup arrow from ground
 			{
@@ -888,7 +896,6 @@ void ShootArrow(CBlob@ this)
 
 	if (arrow_type >= arrowTypeNames.length) return;
 
-	bool hasarrow = archer.has_arrow;
 	if (!hasArrows(this, arrow_type)) return; 
 	
 	s8 charge_time = archer.charge_time;
@@ -1181,6 +1188,10 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 			if (itemname == arrowTypeNames[i])
 			{
 				archer.arrow_type = i;
+				if (this.isMyPlayer())
+				{
+					Sound::Play("/CycleInventory.ogg");
+				}
 			}
 		}
 	}
