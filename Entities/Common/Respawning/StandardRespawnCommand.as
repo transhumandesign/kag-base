@@ -80,6 +80,17 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		PlayerClass[]@ classes;
 		if (this.get("playerclasses", @classes)) // Multiple classes available?
 		{
+			if (id >= classes.size())
+			{
+				string player_username = "(couldn't determine)";
+				if (this.getPlayer() !is null)
+				{
+					player_username = this.getPlayer().getUsername();
+				}
+				warn("Bad class ID " + id + ", ignoring request of player " + player_username);
+				return;
+			}
+
 			classconfig = classes[id].configFilename;
 		}
 		else if (this.exists("required class")) // Maybe single class available?
