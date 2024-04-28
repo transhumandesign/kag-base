@@ -143,7 +143,6 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 
 		pos = offsetPos + space * map.tilesize * 0.5f;
 
-		this.getSprite().PlaySound("/Construct");
 		// take inv here instead of in onDetach
 		server_TakeRequirements(inv, b.reqs);
 		DestroyScenary(tl, br);
