@@ -117,14 +117,6 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	if (isServer())
-	{
-		if (getGameTime() - this.get_u32("gametimeg") == 0)
-		{
-			printf("SERVER POS IN ONTICK" + this.getPosition());
-		}
-	}
-
 	//don't build with menus open
 	if (getHUD().hasMenus())
 	{
