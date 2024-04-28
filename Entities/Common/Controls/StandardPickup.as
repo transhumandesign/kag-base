@@ -15,8 +15,6 @@ void onInit(CBlob@ this)
 	CBlob@[] closestblobs;
 	this.set("closest blobs", closestblobs);
 
-//	this.addCommandID("detach"); in StandardControls
-
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
 
@@ -143,7 +141,7 @@ void onTick(CBlob@ this)
 				if (ap.getOccupied() !is null && ap.name != "PICKUP")
 				{
 					CBitStream params;
-					params.write_netid(ap.getOccupied().getNetworkID());
+					params.write_u16(ap.getOccupied().getNetworkID());
 					this.SendCommand(this.getCommandID("detach"), params);
 					this.set_bool("release click", false);
 					break;
@@ -155,7 +153,6 @@ void onTick(CBlob@ this)
 			ClearPickupBlobs(this);
 			client_SendThrowCommand(this);
 			this.set_bool("release click", false);
-
 		}
 		else
 		{
@@ -215,7 +212,7 @@ void onTick(CBlob@ this)
 					{
 						// NOTE: optimisation: use selected-option-blobs-in-radius
 						@closest = @GetBetterAlternativePickupBlobs(blobsInRadius, closest);
-						server_Pickup(this, this, closest);
+						client_Pickup(this, closest);
 					}
 				}
 			}
@@ -254,7 +251,7 @@ void onTick(CBlob@ this)
 				this.get("closest blobs", @closestBlobs);
 				if (closestBlobs.length > 0)
 				{
-					server_Pickup(this, this, closestBlobs[0]);
+					client_Pickup(this, closestBlobs[0]);
 				}
 			}
 			ClearPickupBlobs(this);
