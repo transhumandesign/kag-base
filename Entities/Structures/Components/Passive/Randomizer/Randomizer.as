@@ -18,8 +18,10 @@ class Randomizer : Component
 		active = 0;
 	}
 
-	u8 Special(MapPowerGrid@ _grid, u8 _old, u8 _new)
+	u8 Special(MapPowerGrid@ _grid, u8 _old, u8 _new, u16 section)
 	{
+		if (section > 0) return 0; // only runs on section 0
+	
 		const u8 power = _grid.getInputPowerAt(x, y, base, 0);
 
 		if (_old == 0 && power > 0 && active == 0)
@@ -63,7 +65,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Randomizer component(position, this.getNetworkID(), input);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -71,8 +73,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		grid.setAll(
 		component.x,                        // x
 		component.y,                        // y
-		input,                              // input topology
-		rotateTopology(angle, TOPO_UP),     // output topology
+		input,								// input topology section 0
+		rotateTopology(angle, TOPO_UP),		// output topology section 0
+		TOPO_NONE,							// input topology section 1
+		TOPO_NONE,							// output topology section 1
 		INFO_SPECIAL,                       // information
 		0,                                  // power
 		component.id);                      // id

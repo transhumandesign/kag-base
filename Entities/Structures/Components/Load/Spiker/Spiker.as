@@ -17,8 +17,10 @@ class Spiker : Component
 		offset = _offset;
 	}
 
-	void Activate(CBlob@ this)
+	void Activate(CBlob@ this, u16 section)
 	{
+		if (section > 0) return; // only runs on section 0
+	
 		Vec2f position = this.getPosition();
 
 		CMap@ map = getMap();
@@ -58,8 +60,10 @@ class Spiker : Component
 		sprite.PlaySound("SpikerThrust.ogg", 2.0f);
 	}
 
-	void Deactivate(CBlob@ this)
+	void Deactivate(CBlob@ this, u16 section)
 	{
+		if (section > 0) return; // only runs on section 0
+	
 		// if ! blocked, do stuff
 
 		AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
@@ -104,7 +108,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.getAttachments().getAttachmentPointByName("MECHANISM").offsetZ = -5;
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -112,8 +116,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		grid.setAll(
 		component.x,                        // x
 		component.y,                        // y
-		TOPO_CARDINAL,                      // input topology
-		TOPO_NONE,                          // output topology
+		TOPO_CARDINAL,                      // input topology section 0
+		TOPO_NONE,							// output topology section 0
+		TOPO_NONE,							// input topology section 1
+		TOPO_NONE,							// output topology section 1
 		INFO_LOAD,                          // information
 		0,                                  // power
 		component.id);                      // id

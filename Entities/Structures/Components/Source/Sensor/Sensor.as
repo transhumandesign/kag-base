@@ -27,7 +27,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Component component(POSITION);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -35,8 +35,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		grid.setAll(
 		component.x,                        // x
 		component.y,                        // y
-		TOPO_NONE,                          // input topology
-		TOPO_CARDINAL,                      // output topology
+		TOPO_NONE,							// input topology section 0
+		TOPO_CARDINAL,						// output topology section 0
+		TOPO_NONE,							// input topology section 1
+		TOPO_NONE,							// output topology section 1
 		INFO_NONE,                          // information
 		0,                                  // power
 		0);                                 // id
@@ -57,7 +59,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	Component@ component = null;
 	if (!this.get("component", @component)) return;
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -65,7 +67,8 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		grid.setPower(
 		component.x,                        // x
 		component.y,                        // y
-		power_source);                      // power
+		power_source,                       // power
+		0);									// section
 	}
 
 	CSprite@ sprite = this.getSprite();

@@ -138,6 +138,8 @@ class PNGLoader
 			case map_colors::alpha_receiver:        autotile(offset); spawnBlob(map, "receiver",        getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_resistor:        autotile(offset); spawnBlob(map, "resistor",        getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_tee:             autotile(offset); spawnBlob(map, "tee",             getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_fork:            autotile(offset); spawnBlob(map, "fork",            getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_dual_elbow:      autotile(offset); spawnBlob(map, "dual_elbow",      getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_toggle:          autotile(offset); spawnBlob(map, "toggle",          getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_transistor:      autotile(offset); spawnBlob(map, "transistor",      getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_wire:            autotile(offset); spawnBlob(map, "wire",            getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;

@@ -61,6 +61,8 @@ void LoadDefaultGUI()
 		AddIconToken("$randomizer$",    "Randomizer.png",       Vec2f(8, 16), 7);
 		AddIconToken("$resistor$",      "Resistor.png",         Vec2f(8, 16), 3);
 		AddIconToken("$tee$",           "Tee.png",              Vec2f(16, 16), 3);
+		AddIconToken("$fork$",          "Fork.png",             Vec2f(16, 16), 3);
+		AddIconToken("$dual_elbow$",    "Dual_Elbow.png",       Vec2f(16, 16), 3);
 		AddIconToken("$toggle$",        "Toggle.png",           Vec2f(8, 16), 3);
 		AddIconToken("$transistor$",    "Transistor.png",       Vec2f(16, 16), 3);
 		AddIconToken("$wire$",          "Wire.png",             Vec2f(16, 16), 3);

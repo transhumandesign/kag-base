@@ -79,10 +79,10 @@ shared class Component
 	}
 
 	// INFO_LOAD member functions
-	void Activate(CBlob@ this) {}
-	void Deactivate(CBlob@ this) {}
-
-	u8 Special(MapPowerGrid@ _grid, u8 _old, u8 _new)
+	void Activate(CBlob@ this, u16 section) {}
+	void Deactivate(CBlob@ this, u16 section) {}
+	
+	u8 Special(MapPowerGrid@ _grid, u8 _old, u8 _new, u16 section)
 	{
 		return decayedPower(_old);
 	}
@@ -123,16 +123,18 @@ enum packetType
 	PACKET_END = 255
 };
 
-shared void packet_AddActivate(CBitStream@ stream, u16 id)
+shared void packet_AddActivate(CBitStream@ stream, u16 id, u16 section)
 {
 	stream.write_u8(PACKET_ACTIVATE);
 	stream.write_u16(id);
+	stream.write_u16(section);
 }
 
-shared void packet_AddDeactivate(CBitStream@ stream, u16 id)
+shared void packet_AddDeactivate(CBitStream@ stream, u16 id, u16 section)
 {
 	stream.write_u8(PACKET_DEACTIVATE);
 	stream.write_u16(id);
+	stream.write_u16(section);
 }
 
 shared void packet_AddChangeFrame(CBitStream@ stream, u16 id, u8 frame)
@@ -193,7 +195,9 @@ void packet_RecvStream(CRules@ this, CBitStream@ stream)
 void packet_RecActivate(CBitStream@ stream)
 {
 	u16 id;
+	u16 section;
 	if(!stream.saferead_u16(id)) return;
+	if(!stream.saferead_u16(section)) return;
 
 	CBlob@ blob = getBlobByNetworkID(id);
 	if(blob is null) return;
@@ -201,13 +205,15 @@ void packet_RecActivate(CBitStream@ stream)
 	Component@ component = null;
 	if (!blob.get("component", @component)) return;
 
-	component.Activate(blob);
+	component.Activate(blob, section);
 }
 
 void packet_RecDeactivate(CBitStream@ stream)
 {
 	u16 id;
+	u16 section;
 	if(!stream.saferead_u16(id)) return;
+	if(!stream.saferead_u16(section)) return;
 
 	CBlob@ blob = getBlobByNetworkID(id);
 	if(blob is null) return;
@@ -215,7 +221,7 @@ void packet_RecDeactivate(CBitStream@ stream)
 	Component@ component = null;
 	if (!blob.get("component", @component)) return;
 
-	component.Deactivate(blob);
+	component.Deactivate(blob, section);
 }
 
 void packet_RecChangeFrame(CBitStream@ stream)
@@ -262,8 +268,14 @@ shared class MapPowerChunk
 	//not using handles for simplicity
 	array<u8> power_old;
 	array<u8> power_new;
-	array<u8> topo_in;              // input topology
-	array<u8> topo_out;             // output topology
+	array<u8> topo_in; 
+	array<u8> topo_out;
+	
+	array<u8> power_old2;
+	array<u8> power_new2;
+	array<u8> topo_in2; 
+	array<u8> topo_out2;
+	
 	array<u8> info;                 // information flags
 	array<u16> id;                  // network id of a load
 
@@ -280,6 +292,12 @@ shared class MapPowerChunk
 			power_new.push_back(0);
 			topo_in.push_back(0);
 			topo_out.push_back(0);
+			
+			power_old2.push_back(0);
+			power_new2.push_back(0);
+			topo_in2.push_back(0);
+			topo_out2.push_back(0);
+			
 			info.push_back(0);
 			id.push_back(0);
 		}
@@ -301,23 +319,35 @@ shared class MapPowerChunk
 			u8 t_out = topo_out[i];
 			u8 t_old = power_old[i];
 			u8 t_new;
+			
+			u8 t_in2 = topo_in2[i];
+			u8 t_out2 = topo_out2[i];
+			u8 t_old2 = power_old2[i];
+			u8 t_new2;
+			
 			u8 t_info = info[i];
 
+			////
 			if((t_info & INFO_SOURCE) != 0 && (t_info & INFO_ACTIVE) != 0)
 			{
 				t_new = power_source;
+				t_new2 = power_source;
 			}
 			else
 			{
 				t_new = _grid.getInputPowerAt(_x, _y, t_in, t_old);
+				t_new2 = _grid.getInputPowerAt(_x, _y, t_in2, t_old2);
 
 				if((t_info & INFO_RESIST) != 0)
 				{
 					t_new /= 2;
+					t_new2 /= 2;
 				}
 			}
 			power_new[i] = t_new;
+			power_new2[i] = t_new2;
 
+			////
 			if((t_info & INFO_LOAD) != 0 && t_old != t_new)
 			{
 				if(id[i] == 0) continue;
@@ -325,16 +355,32 @@ shared class MapPowerChunk
 				CBlob@ blob = getBlobByNetworkID(id[i]);
 				if(blob is null) continue;
 
+				// section 0
 				if(t_old == 0 && t_new > 0)
 				{
 					// if positive edge
-					packet_AddActivate(_grid.packet, id[i]);
+					packet_AddActivate(_grid.packet, id[i], 0);
 				}
 				else if (t_new == 0 && t_old > 0)
 				{
 					// else if negative edge
-					packet_AddDeactivate(_grid.packet, id[i]);
+					packet_AddDeactivate(_grid.packet, id[i], 0);
 				}
+				
+				// section 1
+				/* not sure this works so commenting out for now
+				if(t_old2 == 0 && t_new2 > 0)
+				{
+					// if positive edge
+					packet_AddActivate(_grid.packet, id[i], 1);
+				}
+				else if (t_new2 == 0 && t_old2 > 0)
+				{
+					// else if negative edge
+					packet_AddDeactivate(_grid.packet, id[i], 1);
+				}
+				*/
+				
 			}
 			else if ((t_info & INFO_SPECIAL) != 0)
 			{
@@ -346,7 +392,8 @@ shared class MapPowerChunk
 				Component@ component = null;
 				if (!blob.get("component", @component)) continue;
 
-				power_new[i] = component.Special(_grid, t_old, t_new);
+				power_new[i] = component.Special(_grid, t_old, t_new, 0);
+				power_new2[i] = component.Special(_grid, t_old2, t_new2, 1);
 			}
 		}
 	}
@@ -355,6 +402,7 @@ shared class MapPowerChunk
 	void flip()
 	{
 		power_old = power_new;
+		power_old2 = power_new2;
 	}
 
 	//check if there's any interesting topology going on in this chunk
@@ -363,25 +411,14 @@ shared class MapPowerChunk
 		interesting = false;
 		for (int i = 0; i < chunk_size; i++)
 		{
-			if ( topo_in[i] != 0 ||
-				topo_out[i] != 0 ||
+			if ( topo_in[i] != 0 || topo_in2[i] != 0 ||
+				topo_out[i] != 0 || topo_out2[i] != 0 ||
 				info[i] != 0 )
 			{
 				interesting = true;
 				return;
 			}
 		}
-	}
-
-	//set a chunk tile's topology and id
-	//also update if this chunk is interesting (needs updating) or not
-	void setChunkTile(int tile, u8 input_topology, u8 output_topology, u8 info_flags, u16 blob_id = 0)
-	{
-		topo_in[tile] = input_topology;
-		topo_out[tile] = output_topology;
-		info[tile] = info_flags;
-		id[tile] = blob_id;
-		checkInteresting();
 	}
 
 	void render()
@@ -496,10 +533,10 @@ shared class MapPowerGrid
 	}
 
 	//get a handful of useful stuff
-	void query(int x, int y, u8 &out input, u8 &out output, u8 &out old)
+	void query(int x, int y, u8 &out input, u8 &out output, u8 &out old, u8 &out input2, u8 &out output2, u8 &out old2)
 	{
 		//init
-		input = output = old = 0;
+		input = output = old = input2 = output2 = old2 = 0;
 
 		//translate indices
 		int index, chunk_index;
@@ -510,17 +547,25 @@ shared class MapPowerGrid
 		input = chunks[index].topo_in[chunk_index];
 		output = chunks[index].topo_out[chunk_index];
 		old = chunks[index].power_old[chunk_index];
+		input2 = chunks[index].topo_in2[chunk_index];
+		output2 = chunks[index].topo_out2[chunk_index];
+		old2 = chunks[index].power_old2[chunk_index];
 	}
 
 	int getPowerFrom(int x, int y, u8 t_in, u8 t_old, u8 input, u8 output)
 	{
 		if ((t_in & input) != 0)
 		{
-			u8 n_in, n_out, n_old;
-			query(x, y, n_in, n_out, n_old);
+			u8 n_in, n_out, n_old, n_in2, n_out2, n_old2;
+			query(x, y, n_in, n_out, n_old, n_in2, n_out2, n_old2);
+			
 			if ((n_out & output) != 0 && n_old > t_old)
 			{
 				return n_old - 1;
+			}
+			if ((n_out2 & output) != 0 && n_old2 > t_old)
+			{
+				return n_old2 - 1;
 			}
 		}
 		return 0;
@@ -531,11 +576,8 @@ shared class MapPowerGrid
 		int power = t_old;
 
 		int up = getPowerFrom(x, y-1, t_in, t_old, TOPO_UP, TOPO_DOWN);
-
 		int down = getPowerFrom(x, y+1, t_in, t_old, TOPO_DOWN, TOPO_UP);
-
 		int left = getPowerFrom(x-1, y, t_in, t_old, TOPO_LEFT, TOPO_RIGHT);
-
 		int right = getPowerFrom(x+1, y, t_in, t_old, TOPO_RIGHT, TOPO_LEFT);
 
 		power = Maths::Max(power-1, Maths::Max(Maths::Max(up, down),Maths::Max(left, right)));
@@ -546,22 +588,26 @@ shared class MapPowerGrid
 	}
 
 	//get single things
-	u8 getInput(int x, int y)
+	u8 getInput(int x, int y, int section)
 	{
 		//translate indices
 		int index, chunk_index;
 		if(!_get_indices(x, y, index, chunk_index)) return 0;
+	
+		u8 topo_in = section == 0 ? chunks[index].topo_in[chunk_index] : chunks[index].topo_in2[chunk_index];
 
-		return chunks[index].topo_in[chunk_index];
+		return topo_in;
 	}
 
-	u8 getOutput(int x, int y)
+	u8 getOutput(int x, int y, int section)
 	{
 		//translate indices
 		int index, chunk_index;
 		if(!_get_indices(x, y, index, chunk_index)) return 0;
 
-		return chunks[index].topo_out[chunk_index];
+		u8 topo_out = section == 0 ? chunks[index].topo_out[chunk_index] :  chunks[index].topo_out2[chunk_index];
+
+		return topo_out;
 	}
 
 	u8 getInfo(int x, int y)
@@ -573,13 +619,15 @@ shared class MapPowerGrid
 		return chunks[index].info[chunk_index];
 	}
 
-	u8 getPower(int x, int y)
+	u8 getPower(int x, int y, int section)
 	{
 		//translate indices
 		int index, chunk_index;
 		if(!_get_indices(x, y, index, chunk_index)) return 0;
 
-		return chunks[index].power_old[chunk_index];
+		u8 power_old = section == 0 ? chunks[index].power_old[chunk_index] : chunks[index].power_old2[chunk_index];
+
+		return power_old;
 	}
 
 	u16 getID(int x, int y)
@@ -592,35 +640,49 @@ shared class MapPowerGrid
 	}
 
 	//get input | output
-	u8 getIO(int x, int y)
+	u8 getIO(int x, int y, int section)
 	{
 		//translate indices
 		int index, chunk_index;
 		if(!_get_indices(x, y, index, chunk_index)) return 0;
 
-		return chunks[index].topo_in[chunk_index] | chunks[index].topo_out[chunk_index];
+		u8 io = section == 0 ? 
+				chunks[index].topo_in[chunk_index] | chunks[index].topo_out[chunk_index] 
+				: chunks[index].topo_in2[chunk_index] | chunks[index].topo_out2[chunk_index];
+
+		return io;
 	}
 
 	//set single things
-	void setInput(int x, int y, u8 v)
+	void setInput(int x, int y, u8 v, int section)
 	{
 		//translate indices
 		int index, chunk_index;
 		if(!_get_indices(x, y, index, chunk_index)) return;
 
 		MapPowerChunk@ chunk = chunks[index];
-		chunk.topo_in[chunk_index] = v;
+
+		if (section == 0)
+			chunk.topo_in[chunk_index] = v;
+		else
+			chunk.topo_in2[chunk_index] = v;
+		
 		chunk.checkInteresting();
 	}
 
-	void setOutput(int x, int y, u8 v)
+	void setOutput(int x, int y, u8 v, int section)
 	{
 		//translate indices
 		int index, chunk_index;
 		if(!_get_indices(x, y, index, chunk_index)) return;
 
 		MapPowerChunk@ chunk = chunks[index];
-		chunk.topo_out[chunk_index] = v;
+		
+		if (section == 0)
+			chunk.topo_out[chunk_index] = v;
+		else
+			chunk.topo_out[chunk_index] = v;
+		
 		chunk.checkInteresting();
 	}
 
@@ -635,15 +697,25 @@ shared class MapPowerGrid
 		chunk.checkInteresting();
 	}
 
-	void setPower(int x, int y, u8 v)
+	void setPower(int x, int y, u8 v, int section)
 	{
 		//translate indices
 		int index, chunk_index;
 		if(!_get_indices(x, y, index, chunk_index)) return;
 
 		MapPowerChunk@ chunk = chunks[index];
-		chunk.power_old[chunk_index] = v;
-		chunk.power_new[chunk_index] = v;
+
+		if (section == 0)
+		{
+			chunk.power_old[chunk_index] = v;
+			chunk.power_new[chunk_index] = v;
+		}
+		else
+		{
+			chunk.power_old2[chunk_index] = v;
+			chunk.power_new2[chunk_index] = v;
+		}
+
 		chunk.checkInteresting();
 	}
 
@@ -658,20 +730,27 @@ shared class MapPowerGrid
 		chunk.checkInteresting();
 	}
 
-	//set all things
-	void setAll(int x, int y, u8 input, u8 output, u8 info, u8 power, u16 id)
+	void setAll(int x, int y, u8 input, u8 output, u8 input2, u8 output2, u8 info, u8 power, u16 id)
 	{
 		//translate indices
 		int index, chunk_index;
-		if(!_get_indices(x, y, index, chunk_index)) return;
+		if(!_get_indices(x, y, index, chunk_index)) 
+			return;
 
 		MapPowerChunk@ chunk = chunks[index];
+
 		chunk.topo_in[chunk_index] = input;
 		chunk.topo_out[chunk_index] = output;
 		chunk.info[chunk_index] = info;
 		chunk.power_old[chunk_index] = power;
 		chunk.power_new[chunk_index] = power;
 		chunk.id[chunk_index] = id;
+		
+		chunk.topo_in2[chunk_index] = input2;
+		chunk.topo_out2[chunk_index] = output2;
+		chunk.power_old2[chunk_index] = power;
+		chunk.power_new2[chunk_index] = power;
+		
 		chunk.checkInteresting();
 	}
 
@@ -718,4 +797,5 @@ shared class MapPowerGrid
 			chunks[i].render();
 		}
 	}
+	
 };

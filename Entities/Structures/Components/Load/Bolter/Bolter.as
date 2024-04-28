@@ -19,11 +19,13 @@ class Bolter : Component
 		offset = _offset;
 	}
 
-	void Activate(CBlob@ this)
+	void Activate(CBlob@ this, u16 section)
 	{
+		if (section > 0) return; // only runs on section 0
+	
 		Vec2f position = this.getPosition();
 
-		if (getNet().isServer())
+		if (isServer())
 		{
 			CBlob@[] blobs;
 			getMap().getBlobsAtPosition((offset * -1) * 8 + position, @blobs);
@@ -117,16 +119,18 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Bolter component(position, this.getNetworkID(), angle, offset);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
 
-		grid.setAll(
+		grid.setAll( 
 		component.x,                        // x
 		component.y,                        // y
-		TOPO_CARDINAL,                      // input topology
-		TOPO_NONE,                          // output topology
+		TOPO_CARDINAL,						// input topology section 0
+		TOPO_NONE,							// output topology section 0
+		TOPO_NONE,							// input topology section 1
+		TOPO_NONE,							// output topology section 1
 		INFO_LOAD,                          // information
 		0,                                  // power
 		component.id);                      // id

@@ -119,6 +119,8 @@ namespace map_colors
 		alpha_receiver         = 0xFFFFB0FF, // ARGB(255, 255, 176, 255);
 		alpha_elbow            = 0xFFFFC0FF, // ARGB(255, 255, 192, 255);
 		alpha_tee              = 0xFFFFD0FF, // ARGB(255, 255, 208, 255);
+		alpha_fork             = 0xFFFFE0FF, // ARGB(255, 255, 224, 255);
+		alpha_dual_elbow       = 0xFFFFF0FF, // ARGB(255, 255, 240, 255);
 
 		alpha_bolter           = 0xFFFFFF00, // ARGB(255, 255, 255,   0);
 		alpha_dispenser        = 0xFFFFFF10, // ARGB(255, 255, 255,  16);

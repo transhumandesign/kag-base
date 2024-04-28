@@ -14,8 +14,10 @@ class Junction : Component
 		id = netID;
 	}
 
-	u8 Special(MapPowerGrid@ _grid, u8 _old, u8 _new)
+	u8 Special(MapPowerGrid@ _grid, u8 _old, u8 _new, u16 section)
 	{
+		if (section > 0) return 0; // only runs on section 0
+	
 		if (_old == 0 && _new > 0)
 		{
 			packet_AddChangeFrame(_grid.packet, id, 1);
@@ -56,7 +58,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Junction component(position, this.getNetworkID());
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -64,8 +66,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		grid.setAll(
 		component.x,                        // x
 		component.y,                        // y
-		TOPO_CARDINAL,                      // input topology
-		TOPO_CARDINAL,                      // output topology
+		TOPO_CARDINAL,						// input topology section 0
+		TOPO_CARDINAL,						// output topology section 0
+		TOPO_NONE,							// input topology section 1
+		TOPO_NONE,							// output topology section 1
 		INFO_SPECIAL,                       // information
 		0,                                  // power
 		component.id);                      // id

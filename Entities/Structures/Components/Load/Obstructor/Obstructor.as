@@ -19,11 +19,13 @@ class Obstructor : Component
 		id = _id;
 	}
 
-	void Activate(CBlob@ this)
+	void Activate(CBlob@ this, u16 section)
 	{
+		if (section > 0) return; // only runs on section 0
+	
 		if (!isObstructed(this))
 		{
-			if (getNet().isServer())
+			if (isServer())
 			{
 				getMap().server_SetTile(this.getPosition(), Dummy::OBSTRUCTOR);
 			}
@@ -46,8 +48,10 @@ class Obstructor : Component
 		}
 	}
 
-	void Deactivate(CBlob@ this)
+	void Deactivate(CBlob@ this, u16 section)
 	{
+		if (section > 0) return; // only runs on section 0
+	
 		this.Untag("obstructed");
 
 		CMap@ map = getMap();
@@ -94,7 +98,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Obstructor component(POSITION, this.getNetworkID());
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -102,8 +106,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		grid.setAll(
 		component.x,                        // x
 		component.y,                        // y
-		TOPO_CARDINAL,                      // input topology
-		TOPO_CARDINAL,                      // output topology
+		TOPO_CARDINAL,						// input topology section 0
+		TOPO_CARDINAL,						// output topology section 0
+		TOPO_NONE,							// input topology section 1
+		TOPO_NONE,							// output topology section 1
 		INFO_LOAD,                          // information
 		0,                                  // power
 		component.id);                      // id

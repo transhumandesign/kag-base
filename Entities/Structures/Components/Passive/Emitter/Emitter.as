@@ -14,8 +14,10 @@ class Emitter : Component
 		m_id = id;
 	}
 
-	u8 Special(MapPowerGrid@ grid, u8 power_old, u8 power_new)
+	u8 Special(MapPowerGrid@ grid, u8 power_old, u8 power_new, u16 section)
 	{
+		if (section > 0) return 0; // only runs on section 0
+	
 		if (power_old == 0 && power_new > 0)
 		{
 			packet_AddChangeFrame(grid.packet, m_id, 1);
@@ -56,7 +58,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Emitter component(POSITION, this.getNetworkID());
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -64,8 +66,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		grid.setAll(
 		component.x,                        // x
 		component.y,                        // y
-		rotateTopology(ANGLE, TOPO_DOWN),   // input topology
-		TOPO_NONE,                          // output topology
+		rotateTopology(ANGLE, TOPO_DOWN),	// input topology section 0
+		TOPO_NONE,							// output topology section 0
+		TOPO_NONE,							// input topology section 1
+		TOPO_NONE,							// output topology section 1
 		INFO_SPECIAL,                       // information
 		0,                                  // power
 		component.m_id);                    // id

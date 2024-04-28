@@ -14,8 +14,10 @@ class Receiver : Component
 		m_id = id;
 	}
 
-	u8 Special(MapPowerGrid@ grid, u8 power_old, u8 power_new)
+	u8 Special(MapPowerGrid@ grid, u8 power_old, u8 power_new, u16 section)
 	{
+		if (section > 0) return 0; // only runs on section 0
+	
 		CBlob@ this = getBlobByNetworkID(m_id);
 
 		u16[]@ id;
@@ -37,7 +39,7 @@ class Receiver : Component
 					continue;
 				}
 
-				if (grid.getPower(emitter.x, emitter.y) > 0)
+				if (grid.getPower(emitter.x, emitter.y, section) > 0)
 				{
 					if (i > 0)
 					{
@@ -68,7 +70,7 @@ void onInit(CBlob@ this)
 	// background, let water overlap
 	this.getShape().getConsts().waterPasses = true;
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		u16[] emitter;
 		this.set(EMITTER, emitter);
@@ -85,7 +87,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Receiver component(POSITION, this.getNetworkID());
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CMap@ map = getMap();
 
@@ -95,8 +97,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		grid.setAll(
 		component.x,                        // x
 		component.y,                        // y
-		TOPO_NONE,                          // input topology
-		rotateTopology(ANGLE, TOPO_DOWN),   // output topology
+		TOPO_NONE,							// input topology section 0
+		rotateTopology(ANGLE, TOPO_DOWN),	// output topology section 0
+		TOPO_NONE,							// input topology section 1
+		TOPO_NONE,							// output topology section 1
 		INFO_SPECIAL,                       // information
 		0,                                  // power
 		component.m_id);                    // id

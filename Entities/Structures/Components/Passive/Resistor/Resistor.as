@@ -31,12 +31,12 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	if (!isStatic || this.exists("component")) return;
 
 	const Vec2f position = this.getPosition() / 8;
-	const u16 angle = this.getAngleDegrees();
+	const u16 ANGLE = this.getAngleDegrees();
 
 	Resistor component(position);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -44,8 +44,10 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		grid.setAll(
 		component.x,                        // x
 		component.y,                        // y
-		rotateTopology(angle, TOPO_DOWN),   // input topology
-		rotateTopology(angle, TOPO_UP),     // output topology
+		rotateTopology(ANGLE, TOPO_DOWN),	// input topology section 0
+		rotateTopology(ANGLE, TOPO_UP),		// output topology section 0
+		TOPO_NONE,							// input topology section 1
+		TOPO_NONE,							// output topology section 1
 		INFO_RESIST,                        // information
 		0,                                  // power
 		0);                                 // id
@@ -54,7 +56,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	CSprite@ sprite = this.getSprite();
 	if (sprite is null) return;
 
-	const bool facing = angle < 180? false : true;
+	const bool facing = ANGLE < 180? false : true;
 
 	sprite.SetZ(-60);
 	sprite.SetFacingLeft(facing);

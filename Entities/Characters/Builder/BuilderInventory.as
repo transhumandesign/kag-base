@@ -39,7 +39,7 @@ const string[] PAGE_NAME =
 const u8 GRID_SIZE = 48;
 const u8 GRID_PADDING = 12;
 
-const Vec2f MENU_SIZE(3, 4);
+Vec2f MENU_SIZE(3, 4);
 const u32 SHOW_NO_BUILD_TIME = 90;
 
 void onInit(CInventory@ this)
@@ -77,6 +77,10 @@ void onInit(CInventory@ this)
 	blob.set_u32("show build time", 0);
 
 	this.getCurrentScript().removeIfTag = "dead";
+	
+	// larger menu in sandbox
+	if (getRules().gamemode_name == "Sandbox")
+		MENU_SIZE = Vec2f(3, 5);
 }
 
 void MakeBlocksMenu(CInventory@ this, const Vec2f &in INVENTORY_CE)
