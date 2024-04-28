@@ -930,9 +930,6 @@ void onCycle(CBitStream@ params)
 		if (hasArrows(this, type))
 		{
 			CycleToArrowType(this, archer, type);
-			CBitStream sparams;
-			sparams.write_u8(type);
-			this.SendCommand(this.getCommandID("switch"), sparams);
 			break;
 		}
 	}
@@ -960,9 +957,6 @@ void onSwitch(CBitStream@ params)
 	if (hasArrows(this, type))
 	{
 		CycleToArrowType(this, archer, type);
-		CBitStream sparams;
-		sparams.write_u8(type);
-		this.SendCommand(this.getCommandID("switch"), sparams);
 	}
 }
 
@@ -1145,31 +1139,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID(grapple_sync_cmd) && isClient())
 	{
 		HandleGrapple(this, params, !canSend(this));
-	}
-	else if (cmd == this.getCommandID("switch") && isServer())
-	{
-		CPlayer@ callerp = getNet().getActiveCommandPlayer();
-		if (callerp is null) return;
-
-		CBlob@ caller = callerp.getBlob();
-		if (caller is null) return;
-
-		if (caller !is this) return;
-
-		// switch to arrow
-		ArcherInfo@ archer;
-		if (!this.get("archerInfo", @archer))
-		{
-			return;
-		}
-
-		u8 type;
-		if (!params.saferead_u8(type)) return;
-
-		if (hasArrows(this, type))
-		{
-			CycleToArrowType(this, archer, type);
-		}
 	}
 	else if (isServer())
 	{
