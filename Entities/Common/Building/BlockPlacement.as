@@ -1,8 +1,7 @@
 #include "PlacementCommon.as"
 #include "BuildBlock.as"
 #include "Requirements.as"
-
-#include "GameplayEvents.as"
+#include "GameplayEventsCommon.as";
 
 // Called server side
 void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
@@ -42,7 +41,11 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 		u32 delay = getCurrentBuildDelay(this) - 1;
 		SetBuildDelay(this, delay);
 
-		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), bc.tile));
+		// GameplayEvent
+		if (p !is null)
+		{
+			GE_BuildBlock(p.getNetworkID(), bc.tile); // gameplay event for coins
+		}
 	}
 }
 
