@@ -122,32 +122,6 @@ class CatapultInfo : VehicleInfo
 	}
 }
 
-void onReload(CBlob@ this)
-{
-	Vehicle_Setup(this,
-	              30.0f, // move speed
-	              0.31f,  // turn speed
-	              Vec2f(0.0f, 0.0f), // jump out velocity
-	              false,  // inventory access
-	              CatapultInfo()
-	             );
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v)) return;
-
-	Vehicle_AddAmmo(this, v,
-	                    cooldown_time_ammo, // fire delay (ticks)
-	                    7, // fire bullets amount
-	                    3, // fire cost
-	                    "mat_stone", // bullet ammo config name
-	                    "Catapult Rocks", // name for ammo selection
-	                    "cata_rock", // bullet config name
-	                    "CatapultFire", // fire sound
-	                    "CatapultFire", // empty fire sound
-	                    Vec2f(0, -16), //fire position offset
-	                    90 // charge time
-	);
-}
-
 void onInit(CBlob@ this)
 {
 	Vehicle_Setup(this,
