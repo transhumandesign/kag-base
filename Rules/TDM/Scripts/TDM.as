@@ -610,6 +610,8 @@ shared class TDMCore : RulesCore
 				{
 					@winteam = team;
 					winteamIndex = team_num;
+					rules.SetGlobalMessage("{WINNING_TEAM} wins the game!");
+					rules.AddGlobalMessageReplacement("WINNING_TEAM", team.name);
 				}
 			}
 			else if (team.kills > 0 && team.kills == highkills)
