@@ -66,7 +66,7 @@ const u8 signal_strength = 20;
 // sub classes
 //////////////////////////////////////
 
-shared class Component
+class Component
 {
 	int x, y;
 
@@ -123,33 +123,33 @@ enum packetType
 	PACKET_END = 255
 };
 
-shared void packet_AddActivate(CBitStream@ stream, u16 id)
+void packet_AddActivate(CBitStream@ stream, u16 id)
 {
 	stream.write_u8(PACKET_ACTIVATE);
 	stream.write_u16(id);
 }
 
-shared void packet_AddDeactivate(CBitStream@ stream, u16 id)
+void packet_AddDeactivate(CBitStream@ stream, u16 id)
 {
 	stream.write_u8(PACKET_DEACTIVATE);
 	stream.write_u16(id);
 }
 
-shared void packet_AddChangeFrame(CBitStream@ stream, u16 id, u8 frame)
+void packet_AddChangeFrame(CBitStream@ stream, u16 id, u8 frame)
 {
 	stream.write_u8(PACKET_CHANGEFRAME);
 	stream.write_u16(id);
 	stream.write_u8(frame);
 }
 
-shared void packet_AddChangeAnimation(CBitStream@ stream, u16 id, string animation)
+void packet_AddChangeAnimation(CBitStream@ stream, u16 id, string animation)
 {
 	stream.write_u8(PACKET_CHANGEANIMATION);
 	stream.write_u16(id);
 	stream.write_string(animation);
 }
 
-shared void packet_SendStream(CRules@ this, CBitStream@ stream)
+void packet_SendStream(CRules@ this, CBitStream@ stream)
 {
 	if (isServer())
 	{
@@ -165,7 +165,7 @@ shared void packet_SendStream(CRules@ this, CBitStream@ stream)
 	}
 }
 
-shared void packet_RecvStream(CRules@ this, CBitStream@ stream)
+void packet_RecvStream(CRules@ this, CBitStream@ stream)
 {
 	u8 type;
 	if(!stream.saferead_u8(type) || type != PACKET_START) return;
@@ -200,7 +200,7 @@ shared void packet_RecvStream(CRules@ this, CBitStream@ stream)
 	}
 }
 
-shared void packet_RecActivate(CBitStream@ stream)
+void packet_RecActivate(CBitStream@ stream)
 {
 	u16 id;
 	if(!stream.saferead_u16(id)) return;
@@ -214,7 +214,7 @@ shared void packet_RecActivate(CBitStream@ stream)
 	component.Activate(blob);
 }
 
-shared void packet_RecDeactivate(CBitStream@ stream)
+void packet_RecDeactivate(CBitStream@ stream)
 {
 	u16 id;
 	if(!stream.saferead_u16(id)) return;
@@ -228,7 +228,7 @@ shared void packet_RecDeactivate(CBitStream@ stream)
 	component.Deactivate(blob);
 }
 
-shared void packet_RecChangeFrame(CBitStream@ stream)
+void packet_RecChangeFrame(CBitStream@ stream)
 {
 	u16 id;
 	u8 frame;
@@ -241,7 +241,7 @@ shared void packet_RecChangeFrame(CBitStream@ stream)
 	blob.getSprite().SetFrameIndex(frame);
 }
 
-shared void packet_RecChangeAnimation(CBitStream@ stream)
+void packet_RecChangeAnimation(CBitStream@ stream)
 {
 	u16 id;
 	string animation;
@@ -264,7 +264,7 @@ shared void packet_RecChangeAnimation(CBitStream@ stream)
 // of the map's power grid
 //////////////////////////////////////
 
-shared class MapPowerChunk
+class MapPowerChunk
 {
 	//position
 	int x, y;
@@ -460,7 +460,7 @@ shared class MapPowerChunk
 // the grid
 //////////////////////////////////////
 
-shared class MapPowerGrid
+class MapPowerGrid
 {
 	array<MapPowerChunk> chunks;
 	int chunk_count;
