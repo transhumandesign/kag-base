@@ -7,6 +7,7 @@ void onInit(CBlob@ this)
 {
 	this.Tag("activatable");
 	this.addCommandID("activate");
+	this.addCommandID("activate client");
 
 	// used by RunnerMovement.as & ActivateHeldObject.as
 	this.Tag("medium weight");
