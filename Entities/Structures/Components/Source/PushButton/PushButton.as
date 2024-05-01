@@ -27,6 +27,7 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().waterPasses = true;
 
 	this.addCommandID("activate");
+	this.addCommandID("activate client");
 
 	AddIconToken("$pushbutton_1$", "PushButton.png", Vec2f(16, 16), 2);
 
@@ -44,7 +45,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.set_u8("state", 0);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -107,34 +108,45 @@ void onTick(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("activate"))
+	if (cmd == this.getCommandID("activate") && isServer())
 	{
-		if (getNet().isServer())
-		{
-			// double check state, if state != 0, return
-			if (this.get_u8("state") != 0) return;
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+					
+		CBlob@ caller = p.getBlob();
+		if (caller is null) return;
 
-			Component@ component = null;
-			if (!this.get("component", @component)) return;
+		// range check
+		if (this.getDistanceTo(caller) > 20.0f) return;
 
-			MapPowerGrid@ grid;
-			if (!getRules().get("power grid", @grid)) return;
+		// double check state, if state != 0, return
+		if (this.get_u8("state") != 0) return;
 
-			// only set tag on server, so only the server ticks
-			this.Tag("active");
+		Component@ component = null;
+		if (!this.get("component", @component)) return;
 
-			this.set_u32("duration", getGameTime() + 36);
+		MapPowerGrid@ grid;
+		if (!getRules().get("power grid", @grid)) return;
 
-			// set state, sync to clients
-			this.set_u8("state", 1);
-			this.Sync("state", true);
+		// only set tag on server, so only the server ticks
+		this.Tag("active");
 
-			grid.setInfo(
-			component.x,                        // x
-			component.y,                        // y
-			INFO_SOURCE | INFO_ACTIVE);         // information
-		}
+		this.set_u32("duration", getGameTime() + 36);
 
+		// set state, sync to clients
+		this.set_u8("state", 1);
+		this.Sync("state", true);
+
+		grid.setInfo(
+		component.x,                        // x
+		component.y,                        // y
+		INFO_SOURCE | INFO_ACTIVE);         // information
+
+		this.SendCommand(this.getCommandID("activate client"));
+
+	}
+	else if (cmd == this.getCommandID("activate client") && isClient())
+	{
 		CSprite@ sprite = this.getSprite();
 		if (sprite is null) return;
 
