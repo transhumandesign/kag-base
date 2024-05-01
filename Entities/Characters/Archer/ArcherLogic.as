@@ -1153,6 +1153,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			{
 				CBitStream params;
 				params.write_u8(i);
+				archer.arrow_type = i;
 				this.SendCommand(this.getCommandID("arrow sync client"), params);
 				break;
 			}
