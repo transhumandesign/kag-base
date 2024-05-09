@@ -2,6 +2,12 @@
 
 #include "GameStateBanners.as";
 
+// TODO: this.set_bool("is_time_finished", true); Not working
+
+// TODO: Check if there is at least 1v1. If there is, don't display the getWaitForPlayersBanner
+// ^ seems like start of tdm has state == 1 (warmup). It should be ommited if possible
+// TODO: Adjust translations for banners (if the changes get accepted)
+
 const u32 waitForPlayersBannerDuration = -1;  // no duration stated. The banner is present untill the players join
 const u32 gameStartBannerDuration = 5;
 const u32 gameTieBannerDuration = 5;
@@ -11,7 +17,7 @@ const u32 winBannerDuration = 5;
 Banner@ getWaitForPlayersBanner()
 {
 	u32 duration = waitForPlayersBannerDuration;
-	string main_text = "Not enough players to start the game..."; // todo: adjust local translations getTranslatedString()
+	string main_text = "Not enough players to start the game.";
 	string secondary_text = "Please wait for someone to join...";
 
 	Icon@ left_icon = Icon("InteractionIcons.png", 29, Vec2f(32, 32), Vec2f(250, 32), 0);
@@ -40,8 +46,8 @@ Banner@ getTieBanner()
 	u32 duration = gameTieBannerDuration * getTicksASecond();
 	string main_text = "It's a tie!";
 
-	Icon@ left_icon = Icon("MenuItems.png", 18, Vec2f(32, 32), Vec2f(160, 32), 0);  // 17 is cool too...
-	Icon@ right_icon = Icon("MenuItems.png", 18, Vec2f(32, 32), Vec2f(96, -32), 0);
+	Icon@ left_icon = Icon("BannerIconTDMTie.png", 0, Vec2f(32, 32), Vec2f(160, 32), 0);
+	Icon@ right_icon = Icon("BannerIconTDMTie.png", 1, Vec2f(32, 32), Vec2f(96, -32), 0);
 
 	Banner banner(duration, main_text, left_icon, right_icon);
 
@@ -54,7 +60,7 @@ Banner@ getTimeEndBanner()
 	string main_text = "Time is up!";
 	string secondary_text = "It's a tie!";
 
-	Icon@ left_icon = Icon("MenuItems.png", 18, Vec2f(32, 32), Vec2f(160, 32), 0);  // 17 is cool too...
+	Icon@ left_icon = Icon("MenuItems.png", 18, Vec2f(32, 32), Vec2f(160, 32), 0);
 	Icon@ right_icon = Icon("MenuItems.png", 18, Vec2f(32, 32), Vec2f(96, -32), 0);
 
 	Banner banner(duration, main_text, left_icon, right_icon, true, secondary_text);
@@ -80,7 +86,7 @@ Banner@[] banners;
 
 void onInit(CRules@ this)
 {
-	// banners have to be in the exact same order as the BannerType enum aliases... (dumb af)
+	// banners have to be in the exact same order as the BannerType enum aliases
 	banners.push_back(getWaitForPlayersBanner());
 	banners.push_back(getGameStartBanner());
 	banners.push_back(getWinBanner());
@@ -105,17 +111,11 @@ void onTick(CRules@ this)
 		
 		Banner@ banner = banners[banner_type];
 
-		// TODO: Check if there is at least 1v1. If there is, don't display the getWaitForPlayersBanner
-		// TODO: this.set_bool("is_time_finished", true); Not working
-		// TODO: Wrong swords color while "Fight!" banner
-		// TODO: Line 14 TDM_Banners.as fix translation and adjust the locals
-		// TODO: Test CTF and other modes potentially
 		if (banner_type == BannerType::GAME_START)
 		{
 			CPlayer@ p = getLocalPlayer();
 			int team = (p is null ? 0 : p.getTeamNum());
-			// show flags of enemy team colour
-			team ^= 1;
+			// show flags with player team colour
 
 			banner.setTeam(team);
 		}

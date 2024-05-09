@@ -12,9 +12,16 @@ void onInit(CRules@ this)
 		this.set_s32("end_in", 0);
 	if (!this.exists("exclude_global_messages"))
 		this.set_bool("exclude_global_messages", false);
-	if (!this.exists("is_time_finished"))
-		this.set_bool("is_time_finished", false);
+	// if (!this.exists("is_time_finished"))
+	// 	this.set_bool("is_time_finished", false);
 }
+
+
+void onRestart(CRules@ this)
+{
+	this.set_bool("is_time_finished", false);
+}
+
 
 void handleGlobalMessage(CRules@ this, string message, string messageToReplace = "", string replaceWith = "")
 {
@@ -70,14 +77,8 @@ void onTick(CRules@ this)
 		{
 			handleGlobalMessage(this, "Time is up!\nIt's a tie!");
 		}
-
-		//GAME OVER
-		this.set_bool("is_time_finished", true); //todo: not working
-		this.Sync("is_time_finished", true);
-		if (this.get_bool("is_time_finished"))
-			printf("\n\nis_time_finished is true\n\n");
-		else
-			printf("\n\nis_time_finished is false\n\n");
+		// GAME_OVER
+		// this.set_bool("is_time_finished", true); //todo: not working
 		this.SetCurrentState(3);
 	}
 }

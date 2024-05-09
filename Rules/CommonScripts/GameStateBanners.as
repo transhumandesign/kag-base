@@ -229,13 +229,13 @@ void SetBanner(CRules@ this)
 		this.set_bool("Draw Banner", true);
 		this.set_u32("Banner Start", getGameTime());
 
-		if (this.get_bool("is_time_finished"))
-		{
-			printf("\n\nis_time_finished is true\n\n");
-			this.set_u8("Animate Banner", BannerType::GAME_TIME_END);
-			this.minimap = false;
-		}
-		printf("\n\nis_time_finished is false\n\n");
+		// if (this.get_bool("is_time_finished"))
+		// {
+		// 	this.set_u8("Animate Banner", BannerType::GAME_TIME_END);
+		// 	this.minimap = false;
+		// }
+
+		printf("\n\nstate: " + state);
 
 		if (state == GAME_OVER && this.getTeamWon() == -1) // tie (TDM)
 		{

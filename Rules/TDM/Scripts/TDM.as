@@ -33,7 +33,7 @@ void Config(TDMCore@ this)
 
 	//how long for the game to play out?
 	f32 gameDurationMinutes = cfg.read_f32("gameDurationMinutes", 3.0f);
-	this.gameDuration = (getTicksASecond() * 60 * 0.2f) + this.warmUpTime;
+	this.gameDuration = (getTicksASecond() * 60 * 0.1) + this.warmUpTime;
 
 	//spawn after death time - set in gamemode.cfg, or override here
 	f32 spawnTimeSeconds = cfg.read_f32("spawnTimeSeconds", rules.playerrespawn_seconds);
