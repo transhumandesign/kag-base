@@ -2,16 +2,9 @@
 
 #include "GameStateBanners.as";
 
-// TODO: this.set_bool("is_time_finished", true); Not working
-
-// TODO: Check if there is at least 1v1. If there is, don't display the getWaitForPlayersBanner
-// ^ seems like start of tdm has state == 1 (warmup). It should be ommited if possible
-// TODO: Adjust translations for banners (if the changes get accepted)
-
 const u32 waitForPlayersBannerDuration = -1;  // no duration stated. The banner is present untill the players join
-const u32 gameStartBannerDuration = 5;
+const u32 gameStartBannerDuration = 2;
 const u32 gameTieBannerDuration = 5;
-const u32 gameTimeEndBannerDuration = 5;
 const u32 winBannerDuration = 5;
 
 Banner@ getWaitForPlayersBanner()
@@ -54,24 +47,10 @@ Banner@ getTieBanner()
 	return banner;
 }
 
-Banner@ getTimeEndBanner()
-{
-	u32 duration = gameTimeEndBannerDuration * getTicksASecond();
-	string main_text = "Time is up!";
-	string secondary_text = "It's a tie!";
-
-	Icon@ left_icon = Icon("MenuItems.png", 18, Vec2f(32, 32), Vec2f(160, 32), 0);
-	Icon@ right_icon = Icon("MenuItems.png", 18, Vec2f(32, 32), Vec2f(96, -32), 0);
-
-	Banner banner(duration, main_text, left_icon, right_icon, true, secondary_text);
-
-	return banner;
-}
-
 Banner@ getWinBanner(int team=0)
 {
 	u32 duration = winBannerDuration * getTicksASecond();
-	string main_text = "{TEAM} team wins";
+	string main_text = "{TEAM} team wins!";
 
 	Icon@ team_icon = getTeamIcon(team);
 	Icon@ left_icon = Icon("MenuItems.png", 31, Vec2f(32, 32), Vec2f(160, 32), team);
@@ -91,7 +70,6 @@ void onInit(CRules@ this)
 	banners.push_back(getGameStartBanner());
 	banners.push_back(getWinBanner());
 	banners.push_back(getTieBanner());
-	banners.push_back(getTimeEndBanner());
 }
 
 void onReload(CRules@ this)

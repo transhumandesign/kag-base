@@ -36,7 +36,7 @@ Banner@ getGameBanner(int team=0)
 Banner@ getWinBanner(int team=0)
 {
 	u32 duration = winBannerDuration * getTicksASecond();
-	string text = "{TEAM} team wins";
+	string text = "{TEAM} team wins!";
 	string teamName = (team == 0 ? "Blue" : "Red");
 	string actual_text = teamName + " team wins";
 
