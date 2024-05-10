@@ -53,9 +53,6 @@ void Config(TDMCore@ this)
 
 	// modifies if the fall damage velocity is higher or lower - TDM has lower velocity
 	rules.set_f32("fall vel modifier", cfg.read_f32("fall_dmg_nerf", 1.3f));
-
-	//indicates if the getGameTime() reached 0
-	rules.set_bool("is_time_finished", false);
 }
 
 //TDM spawn system
