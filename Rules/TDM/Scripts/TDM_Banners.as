@@ -77,7 +77,7 @@ void checkTeamsGotEnoughPlayers(CRules@ this)
 			red_has_players = true;
 		if (blue_has_players && red_has_players)
 		{
-			this.set_bool("suspend wait for players banner", true);
+			this.set_bool("suspend_wait_for_players_banner", true);
 			break;
 		}
 	}
@@ -130,7 +130,7 @@ void onTick(CRules@ this)
 
 		else if (banner_type == BannerType::GAME_START)
 		{
-			this.set_bool("suspend wait for players banner", false);
+			this.set_bool("suspend_wait_for_players_banner", false);
 			setBannerTeam(banner);
 		}
 		else if (banner_type == BannerType::GAME_END)
@@ -148,7 +148,7 @@ void onTick(CRules@ this)
 
 void onRender(CRules@ this)
 {
-	if (this.get_bool("Draw Banner") && !(this.getCurrentState() == WARMUP && this.get_bool("suspend wait for players banner")))
+	if (this.get_bool("Draw Banner") && !(this.getCurrentState() == WARMUP && this.get_bool("suspend_wait_for_players_banner")))
 	{
 		u8 banner_type = this.get_u8("Animate Banner");
 
