@@ -597,7 +597,7 @@
 
 //CTF_GiveSpawnItems.as
 	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!": "Proximo reabastecimento em {SEC}{TIMESUFFIX}, {ACTION}!",
-	"Go Fight!"                                     : "Vá lutar",
+	"Go Fight!"                                     : "Vá lutar!",
 	"Go Build"                                     : "Vá construir",
 	"Prepare for Battle"                           : "Se prepare para batalha",
 	" seconds"                                     : " segundos",

@@ -249,7 +249,7 @@ KING ARTHUR'S GOLD TRANSLATION FILE
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
 	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"Następne zaopatrzenie za {SEC}{TIMESUFFIX}, {ACTION}!",
-	"Go Fight!"                                     :"Idź walczyć",
+	"Go Fight!"                                     :"Idź walczyć!",
 	"Go Build"                                     :"Buduj",
 	"Prepare for Battle"                           :"Przygotuj się na walkę",
 	" seconds"                                     :" sekund",

@@ -248,7 +248,7 @@
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
 	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"Malzemeler {SEC} {TIMESUFFIX} sonra geliyor, {ACTION}!",
-	"Go Fight!"                                     :"Hücum Et",
+	"Go Fight!"                                     :"Hücum Et!",
 	"Go Build"                                     :"İnşa Et",
 	"Prepare for Battle"                           :"Çatışmaya Hazırlan",
 	" seconds"                                     :"saniye",

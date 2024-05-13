@@ -239,7 +239,7 @@
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
 	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"次の資源補給まで残り {SEC} {TIMESUFFIX} {ACTION}!",
-	"Go Fight!"                                     :"！",
+	"Go Fight!"                                    :"戦え！",
 	"Go Build"                                     :"！",
 	"Prepare for Battle"                           :"戦闘に備えろ",
 	" seconds"                                     :"秒.",

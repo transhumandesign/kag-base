@@ -246,7 +246,7 @@
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
 	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"Следующее пополнение запасов через {SEC} {TIMESUFFIX} {ACTION}!",
-	"Go Fight!"                                     :"Сражайтесь",
+	"Go Fight!"                                     :"Сражайтесь!",
 	"Go Build"                                     :"Стройте",
 	"Prepare for Battle"                           :"Готовьтесь к бою",
 	" seconds"                                     :"сек.",
