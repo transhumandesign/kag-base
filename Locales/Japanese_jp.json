@@ -239,7 +239,7 @@
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
 	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"次の資源補給まで残り {SEC} {TIMESUFFIX} {ACTION}!",
-	"Go Fight"                                     :"！",
+	"Go Fight!"                                     :"！",
 	"Go Build"                                     :"！",
 	"Prepare for Battle"                           :"戦闘に備えろ",
 	" seconds"                                     :"秒.",
@@ -865,7 +865,8 @@
 	"Well done. Loading next map...":"もういい？ 次のマップを読み込んどくよ！",
 	"You saved the princess!":"お姫様を救出した！",
 	"The princess died!":"姫は死んだ！お前が殺したんだ。",
-	"Not enough players in each team for the game to start.\nPlease wait for someone to join...":"十分なプレイヤーが集まっていません。\n誰かが来るまでお待ちください...",
+	"Not enough players in each team for the game to start.":"十分なプレイヤーが集まっていません。",
+	"Please wait for someone to join...": "誰かが来るまでお待ちください...",
 	"{LOSING_TEAM} Surrendered! {WINNING_TEAM} wins the Game!":"{LOSING_TEAM} が降伏宣言。 {WINNING_TEAM} が圧倒的勝利だ！",
 	"{WINNING_TEAM} wins the game!":"{WINNING_TEAM} が勝利だ！",
 	"Stalemate: both teams have no uncaptured flags.\nFlags returning in: {TIME}":"両チームが旗を保持している膠着状態のため、\n {TIME}秒後に強制的に両チームの旗をリセットします。",
