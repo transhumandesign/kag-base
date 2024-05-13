@@ -248,7 +248,7 @@
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
 	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"Malzemeler {SEC} {TIMESUFFIX} sonra geliyor, {ACTION}!",
-	"Go Fight"                                     :"Hücum Et",
+	"Go Fight!"                                     :"Hücum Et!",
 	"Go Build"                                     :"İnşa Et",
 	"Prepare for Battle"                           :"Çatışmaya Hazırlan",
 	" seconds"                                     :"saniye",
@@ -848,7 +848,8 @@
 	"Well done. Loading next map...":"Güzel oyundu. Sıradaki harita yükleniyor...",
 	"You saved the princess!":"Prensesi kurtardın!",
 	"The princess died!":"Prenses öldü!",
-	"Not enough players in each team for the game to start.\nPlease wait for someone to join...":"Oyunu başlatmak için yeterli oyuncu yok.\nLütfen oyuncu sayısının artmasını bekleyin...",
+	"Not enough players in each team for the game to start.":"Oyunu başlatmak için yeterli oyuncu yok.",
+	"Please wait for someone to join...": "Lütfen oyuncu sayısının artmasını bekleyin...",
 	"{LOSING_TEAM} Surrendered! {WINNING_TEAM} wins the Game!":"{LOSING_TEAM} teslim oldu! {WINNING_TEAM} oyunu kazandı!",
 	"{WINNING_TEAM} wins the game!":"{WINNING_TEAM} oyunu kazandı!",
 	"Stalemate: both teams have no uncaptured flags.\nFlags returning in: {TIME}":"Eşitlik: her iki takımın da ele geçirilememiş sancakları var.\nSancaklar geri dönüyor: {TIME}",

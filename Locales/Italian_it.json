@@ -240,7 +240,7 @@
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
 	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"Prossimo rifornimento tra {SEC} {TIMESUFFIX}, {ACTION}!",
-	"Go Fight"                                     :"Combatti",
+	"Go Fight!"                                     :"Combatti!",
 	"Go Build"                                     :"Costruisci",
 	"Prepare for Battle"                           :"Preparati alla Battaglia",
 	" seconds"                                     :" secondi",
@@ -866,7 +866,8 @@
 	"Well done. Loading next map...":"Ben fatto. Caricando la prossima mappa...",
 	"You saved the princess!":"Hai salvato la principessa!",
 	"The princess died!":"La principessa è morta!",
-	"Not enough players in each team for the game to start.\nPlease wait for someone to join...":"Non ci sono abbastanza giocatori in ogni squadra per iniziare la partita.\nAspetta che qualcuno connetta...",
+	"Not enough players in each team for the game to start.": "Non ci sono abbastanza giocatori in ogni squadra per iniziare la partita.",
+	"Please wait for someone to join...": "Aspetta che qualcuno connetta...",
 	"{LOSING_TEAM} Surrendered! {WINNING_TEAM} wins the Game!":"{LOSING_TEAM} si è arreso! {WINNING_TEAM} ha vinto la partita!",
 	"{WINNING_TEAM} wins the game!":"{WINNING_TEAM} ha vinto la partita!",
 	"Stalemate: both teams have no uncaptured flags.\nFlags returning in: {TIME}":"Entrambe le squadre hanno tutte le bandiere catturate.\nLe bandiere saranno riconsegnate in {TIME}",
