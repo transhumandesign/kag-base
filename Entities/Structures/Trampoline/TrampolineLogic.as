@@ -26,9 +26,6 @@ void onInit(CBlob@ this)
 	// Because BlobPlacement.as is *AMAZING*
 	this.Tag("place norotate");
 
-	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
-	point.SetKeysToTake(key_action1 | key_action2);
-
 	this.getCurrentScript().runFlags |= Script::tick_attached;
 }
 
