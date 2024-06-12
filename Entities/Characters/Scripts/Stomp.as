@@ -21,7 +21,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	}
 
 	// server only
-	if (!getNet().isServer() || !blob.hasTag("player")) { return; }
+	if (!isServer() || !blob.hasTag("player") || blob.hasTag("invincible")) { return; }
 
 	if (this.getPosition().y < blob.getPosition().y - 2)
 	{
