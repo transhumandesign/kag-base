@@ -2,6 +2,7 @@
 
 #include "MechanismsCommon.as";
 #include "Hitters.as";
+#include "PlatformCommon.as";
 
 class Spiker : Component
 {
@@ -22,7 +23,46 @@ class Spiker : Component
 		Vec2f position = this.getPosition();
 
 		CMap@ map = getMap();
-		if (map.rayCastSolid(position + offset * 5, position + offset * 11))
+		bool canRayCast = true;
+		HitInfo@[] hitInfos;
+		Vec2f start_pos = position + offset * map.tilesize/2;
+		Vec2f end_pos = position + offset * 11;
+		Vec2f ray_vec = (end_pos - start_pos);
+
+		// check if exit is blocked
+		if (map.getHitInfosFromRay(start_pos, -ray_vec.getAngle(), ray_vec.Length(), this, hitInfos))
+		{
+			for (int i = 0; i < hitInfos.length; i++)
+			{
+				HitInfo@ hi = hitInfos[i];
+				CBlob@ b = hi.blob;
+
+				if (b is this)
+					continue;
+
+				if (b is null) // hit map
+				{
+					if (map.isTileSolid(hi.hitpos))
+					{
+						canRayCast = false;
+						break;
+					}
+				}
+				else // hit blob
+				{
+					if (b.isCollidable() && b.getShape().isStatic())
+					{
+						if (b.isPlatform() && CollidesWithPlatform(ray_vec, hi.hitpos, b))
+						{
+							canRayCast = false;
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		if (!canRayCast)
 		{
 			this.getSprite().PlaySound("dry_hit.ogg");
 			return;
@@ -39,7 +79,7 @@ class Spiker : Component
 		spike.set_u8("state", 1);
 
 		// hit flesh at target position
-		if (getNet().isServer())
+		if (isServer())
 		{
 			CBlob@[] blobs;
 			map.getBlobsAtPosition(offset * 8 + position, @blobs);
@@ -104,7 +144,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.getAttachments().getAttachmentPointByName("MECHANISM").offsetZ = -5;
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
