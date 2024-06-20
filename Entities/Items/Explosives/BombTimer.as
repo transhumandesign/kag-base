@@ -17,9 +17,12 @@ void onInit(CBlob@ this)
 	{
 		this.set_f32("explosive_damage", 3.0f);
 	}
-
-	BombFuseOn(this, explRadius * 0.5f);
-
+	
+	if (this.hasTag("exploding"))
+	{
+		BombFuseOn(this, explRadius * 0.5f);
+	}
+	
 	//use the bomb hitter
 	if (!this.exists("custom_hitter"))
 	{
@@ -37,6 +40,8 @@ void onInit(CBlob@ this)
 	{
 		this.set_bool("map_damage_raycast", true);
 	}
+	
+	this.getCurrentScript().tickIfTag = "exploding";
 }
 
 void Explode(CBlob@ this)
