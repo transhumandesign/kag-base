@@ -64,7 +64,10 @@ namespace Hitters
 		muscles,
 
 		// scrolls
-		suddengib
+		suddengib,
+		
+		//natural
+		bison
 	};
 }
 
