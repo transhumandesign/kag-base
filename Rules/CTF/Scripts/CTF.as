@@ -613,15 +613,15 @@ shared class CTFCore : RulesCore
 			}
 
 			// if enabled game timer and some team stolen one flag from enemy
-			if (team_num == 0 && flags_red.length < flags_blue.length)				// BLUE WIN
+			if (team_num == 0 && flags_red.length < flags_blue.length)          // BLUE WIN
 			{
 				team_wins_on_end = 0;
 			}
-			else if (team_num == 1 && flags_blue.length < flags_red.length) 		// RED WIN
+			else if (team_num == 1 && flags_blue.length < flags_red.length)     // RED WIN
 			{
 				team_wins_on_end = 1;
 			}
-			else if (flags_blue.length == flags_red.length)							// TIE
+			else if (flags_blue.length == flags_red.length)                     // TIE
 			{
 				team_wins_on_end = -1;
 			}
