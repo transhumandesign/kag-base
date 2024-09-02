@@ -580,9 +580,9 @@ shared class CTFCore : RulesCore
 		if (!rules.isMatchRunning()) { return; }
 
 		// get all the flags
-		CBlob@[] flags;			// Total flags
-		CBlob@[] flags_red;		// Red flags
-		CBlob@[] flags_blue;	// Blue flags
+		CBlob@[] flags;        // Total flags
+		CBlob@[] flags_red;    // Red flags
+		CBlob@[] flags_blue;   // Blue flags
 		getBlobsByName(flag_name(), @flags);
 
 		for (uint i = 0; i < flags.length; i++) {
