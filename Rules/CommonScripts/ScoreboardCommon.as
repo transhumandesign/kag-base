@@ -143,8 +143,8 @@ void getMapName(CRules@ this)
 
 	if (map !is null && isServer())
 	{
-		string[] name = map.getMapName().split('/');	 //Official server maps seem to show up as
-		string mapName = name[name.length() - 1];		 //``Maps/CTF/MapNameHere.png`` while using this instead of just the .png
+		string[] name = map.getMapName().split('/');     //Official server maps seem to show up as
+		string mapName = name[name.length() - 1];        //``Maps/CTF/MapNameHere.png`` while using this instead of just the .png
 		mapName = getFilenameWithoutExtension(mapName);  // Remove extension from the filename if it exists
 
 		this.set_string("map_name", mapName);

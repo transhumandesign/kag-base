@@ -90,7 +90,8 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 	topleft.y += stepheight;
 
 	//draw team info
-	if (g_locale == "ru") { // because averia dont have cyrillic symbols, we need use another font
+	// because averia dont have cyrillic symbols, we need use another font
+	if (g_locale == "ru") {
 		GUI::SetFont("menu");
 	} else {
 		GUI::SetFont("AveriaSerif-Bold_22");
