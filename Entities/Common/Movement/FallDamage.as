@@ -35,12 +35,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 		// better check for trampolines
 		CBlob@[] blobs_around;
-		if (getMap().getBlobsInRadius(this.getPosition(), this.getRadius() * 4, blobs_around)) {
+		if (getMap().getBlobsInRadius(this.getPosition(), this.getRadius() * 4, blobs_around))
+		{
 			for (uint i = 0; i < blobs_around.length; i++)
 			{
 				CBlob@ b = blobs_around[i];
 
-				if (b is null) continue;
 				if (!b.hasTag("no falldamage")) continue;
 
 				Vec2f b_pos = b.getPosition();
