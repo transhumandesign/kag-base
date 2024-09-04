@@ -36,7 +36,7 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, const u32 &in index)
 {
 	if (!isServer()) return null;
 	
-	if (index >= blocks.length)
+	if (index >= blocks.length) return null;
 
 	this.set_u32("cant build time", 0);
 	this.set_TileType("buildtile", 0);
