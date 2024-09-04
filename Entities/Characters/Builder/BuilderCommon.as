@@ -147,7 +147,7 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, const u32 &in index)
 
 	this.set_u8("buildblob", index);
 
-	CBlob@ blockBlob = server_CreateBlob(b.name, this.getTeamNum(), Vec2f(0,0));
+	CBlob@ blockBlob = server_CreateBlob(b.name, this.getTeamNum(), pos);
 	if (blockBlob !is null)
 	{
 		CShape@ shape = blockBlob.getShape();
