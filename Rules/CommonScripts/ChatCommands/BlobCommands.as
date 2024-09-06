@@ -4,34 +4,33 @@
 #include "MakeScroll.as";
 #include "WAR_Technology.as";
 
-class TreeCommand : BlobCommand
+class SeedCommand : BlobCommand
 {
-	string[] treeTypes = { "pine", "bushy" };
+	string[] seedTypes = { "tree_pine", "tree_bushy", "grain_plant", "flowers", "bush"};
 
-	TreeCommand()
+	SeedCommand()
 	{
-		super("tree", "Spawn a tree seed");
-		AddAlias("seed");
+		super("seed", "Spawn a seed");
 		SetUsage("[type]");
 	}
 
 	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		string tree = "tree_" + treeTypes[0];
+		string seed = seedTypes[XORRandom(seedTypes.size())];
 
 		if (args.size() > 0)
 		{
 			string type = args[0].toLower();
-			if (treeTypes.find(type) == -1)
+			if (seedTypes.find(type) == -1)
 			{
-				server_AddToChat(getTranslatedString("Specify a valid tree type: " + join(treeTypes, ", ")), ConsoleColour::ERROR, player);
+				server_AddToChat(getTranslatedString("Specify a valid seed type: " + join(seedTypes, ", ")), ConsoleColour::ERROR, player);
 				return;
 			}
 
-			tree = "tree_" + type;
+			seed = type;
 		}
 
-		server_MakeSeed(pos, tree);
+		server_MakeSeed(pos, seed);
 	}
 }
 
