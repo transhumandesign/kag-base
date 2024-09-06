@@ -86,7 +86,7 @@ class Spiker : Component
 			for(uint i = 0; i < blobs.length; i++)
 			{
 				CBlob@ blob = blobs[i];
-				if (!blob.hasTag("flesh")) continue;
+				if (!blob.hasTag("flesh") || blob.hasTag("invincible")) continue;
 
 				spike.server_Hit(blob, blob.getPosition(), blob.getVelocity() * -1, 1.0f, Hitters::spikes, true);
 			}

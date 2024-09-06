@@ -36,12 +36,8 @@ void onGib(CSprite@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (!solid)
-	{
-		return;
-	}
-
-	if (!getNet().isServer())
+	if (!solid
+		|| !isServer())
 	{
 		return;
 	}
@@ -78,7 +74,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 	//print("stone vel " + vellen + " base " + base );
 	// damage
-	if (getNet().isServer() && vellen > base && !this.hasTag("ignore fall"))
+	if (isServer() && vellen > base && !this.hasTag("ignore fall"))
 	{
 		if (vellen > base * ramp)
 		{
