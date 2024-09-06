@@ -314,10 +314,12 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 
 	bed_head_animation.AddFrame(head_animation.getFrame(2));
 
+	uint rotation = !this.isFacingLeft() ? 80 : 280;
+
 	bed_head.SetAnimation(bed_head_animation);
-	bed_head.RotateBy(80, Vec2f_zero);
+	bed_head.RotateBy(rotation, Vec2f_zero);
 	bed_head.SetOffset(Vec2f(1, 2));
-	bed_head.SetFacingLeft(true);
+	bed_head.SetFacingLeft(!this.isFacingLeft());
 	bed_head.SetVisible(true);
 	bed_head.SetRelativeZ(2);
 }
