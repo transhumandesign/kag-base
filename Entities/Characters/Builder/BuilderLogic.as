@@ -532,7 +532,7 @@ bool canHit(CBlob@ this, CBlob@ b, Vec2f tpos, bool extra = true)
 class QueuedHit
 {
 	u16 blobID;
-    Vec2f tilepos;
+	Vec2f tilepos;
 	int scheduled_tick;
 }
 
@@ -644,10 +644,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 
-        u16 blobID;
-        Vec2f tilepos;
+		u16 blobID;
+		Vec2f tilepos;
 
-        if (!params.saferead_u16(blobID) || !params.saferead_Vec2f(tilepos)) return;
+		if (!params.saferead_u16(blobID) || !params.saferead_Vec2f(tilepos)) return;
 
 		// allow for one queued hit in-flight; reject any incoming one in the
 		// mean time (would only happen with massive lag in legit scenarios)
@@ -655,7 +655,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		{
 			QueuedHit queued_hit;
 			queued_hit.blobID = blobID;
-            queued_hit.tilepos = tilepos;
+			queued_hit.tilepos = tilepos;
 			queued_hit.scheduled_tick = SPI.last_pickaxed + delay;
 			this.set("queued pickaxe", @queued_hit);
 			return;
