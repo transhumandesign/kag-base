@@ -1,17 +1,10 @@
 #include "CTF_PopulateSpawnList.as"
-#include "HallCommon.as"
 
 const int BUTTON_SIZE = 2;
 u16 LAST_PICK = 0;
 u16 RESPAWNS_COUNT = 0;
 bool REQUESTED_SPAWN = false;
 bool SHOW_MENU = false;
-
-void onInit(CRules@ this)
-{
-	this.addCommandID("pick default");
-	this.addCommandID("pick spawn");
-}
 
 CGridMenu@ getRespawnMenu()
 {
@@ -59,19 +52,12 @@ void BuildRespawnMenu(CRules@ this, CPlayer@ player, CBlob@[] respawns)
 		{
 			CBlob@ respawn = respawns[i];
 			params.ResetBitIndex();
-			params.write_netid(localID);
-			params.write_netid(respawn.getNetworkID());
+			params.write_u16(respawn.getNetworkID());
 			const string msg = getTranslatedString("Spawn at {ITEM}").replace("{ITEM}", getTranslatedString(respawn.getInventoryName()));
-			CGridButton@ button = menu.AddButton("$" + respawn.getName() + "$", msg, this.getCommandID("pick spawn"), Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
+			CGridButton@ button = menu.AddButton("$" + respawn.getName() + "$", msg, "CTF_PickSpawn.as", "Callback_PickSpawn", Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
 			if (button !is null)
 			{
 				button.selectOneOnClick = true;
-
-				/*if (isUnderRaid(respawn))
-				{
-					button.SetEnabled(false);
-					button.SetHoverText(getTranslatedString("respawn is contested"));
-				}*/
 
 				if (LAST_PICK == respawn.getNetworkID())
 				{
@@ -79,12 +65,6 @@ void BuildRespawnMenu(CRules@ this, CPlayer@ player, CBlob@[] respawns)
 				}
 			}
 		}
-
-		// default behaviour on clicking anywhere else
-		params.ResetBitIndex();
-		params.write_netid(localID);
-		params.write_netid(LAST_PICK);
-		menu.SetDefaultCommand(this.getCommandID("pick default"), params);
 	}
 }
 
@@ -144,33 +124,21 @@ void onSetPlayer(CRules@ this, CBlob@ blob, CPlayer@ player)
 	}
 }
 
-void ReadPickCmd(CRules@ this, CBitStream @params)
+void Callback_PickSpawn(CBitStream@ params)
 {
-	CPlayer@ player = getPlayerByNetworkId(params.read_netid());
-	const u16 pick = params.read_netid();
+	CPlayer@ player = getLocalPlayer();
+	u16 pick;
+	if (!params.saferead_u16(pick)) return;
 
-	if (player.isMyPlayer())
+	LAST_PICK = pick; 
+
+	if (player.getTeamNum() == getRules().getSpectatorTeamNum())
 	{
-		// Only set the respawn reference, after we've confirmed 
-		//  the involved player is our own. 
-		LAST_PICK = pick; 
-
-		if (player.getTeamNum() == this.getSpectatorTeamNum())
-		{
-			getHUD().ClearMenus(true);
-		}
-		else
-		{
-			player.client_RequestSpawn(pick);
-		}
+		getHUD().ClearMenus(true);
 	}
-}
-
-void onCommand(CRules@ this, u8 cmd, CBitStream @params)
-{
-	if (cmd == this.getCommandID("pick spawn"))
+	else
 	{
-		ReadPickCmd(this, params);
+		player.client_RequestSpawn(pick);
 	}
 }
 
