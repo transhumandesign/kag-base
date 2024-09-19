@@ -170,6 +170,12 @@ shared class RulesCore
 			return;
 		}
 
+		if (newTeamNum >= teams.size() && newTeamNum != getRules().getSpectatorTeamNum())
+		{
+			warn(player.getUsername() + " attempted switch to illegal team " + newTeamNum + ", ignoring");
+			return;
+		}
+
 		bool is_spawning = false;
 		if (respawns !is null && respawns.isSpawning(player))
 		{
