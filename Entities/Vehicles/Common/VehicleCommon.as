@@ -90,11 +90,13 @@ void Vehicle_Setup(CBlob@ this, const f32 &in move_speed, const f32 &in turn_spe
 	v.wep_angle = 0.0f;
 
 	this.addCommandID("fire");
-	this.addCommandID("fire blob");
+	this.addCommandID("fire client");
+	this.addCommandID("fire blob client");
 	this.addCommandID("flip_over");
 	this.addCommandID("load_ammo");
 	this.addCommandID("swap_ammo");
-	this.addCommandID("recount ammo");
+	this.addCommandID("swap_ammo_client");
+	this.addCommandID("recount ammo client");
 	this.Tag("vehicle");
 	this.getShape().getConsts().collideWhenAttached = false;
 	this.set("VehicleInfo", @v);
@@ -178,7 +180,7 @@ void RecountAmmo(CBlob@ this, VehicleInfo@ v)
 		params.write_u8(i);
 		params.write_u16(ammo.ammo_stocked);
 		params.write_u8(ammo.loaded_ammo);
-		this.SendCommand(this.getCommandID("recount ammo"), params);
+		this.SendCommand(this.getCommandID("recount ammo client"), params);
 	}
 }
 
@@ -245,7 +247,6 @@ bool Vehicle_AddLoadAmmoButton(CBlob@ this, CBlob@ caller, Vec2f &in offset = Ve
 		if (ammoBlob !is null)
 		{
 			CBitStream params;
-			params.write_netid(caller.getNetworkID());
 			const string msg = getTranslatedString("Load {ITEM}").replace("{ITEM}", ammoBlob.getInventoryName());
 			caller.CreateGenericButton("$" + ammoBlob.getName() + "$", offset, this, this.getCommandID("load_ammo"), msg, params);
 			return true;
@@ -255,7 +256,7 @@ bool Vehicle_AddLoadAmmoButton(CBlob@ this, CBlob@ caller, Vec2f &in offset = Ve
 	return false;
 }
 
-void Fire(CBlob@ this, VehicleInfo@ v, CBlob@ caller, const u8 &in fired_charge)
+void Fire(CBlob@ this, VehicleInfo@ v, CBlob@ caller, const u16 &in fired_charge)
 {
 	if (!v.canFire() || caller is null) return;
 
@@ -283,7 +284,7 @@ void Fire(CBlob@ this, VehicleInfo@ v, CBlob@ caller, const u8 &in fired_charge)
 				bullet.SetDamageOwnerPlayer(caller.getPlayer());
 				bullet.Init();
 				bullet.SetDamageOwnerPlayer(caller.getPlayer());
-				server_FireBlob(this, bullet, fired_charge);
+				server_FireBlob(this, v, bullet, fired_charge);
 			}
 		}
 		this.getSprite().PlayRandomSound(ammo.fire_sound);
@@ -301,20 +302,19 @@ void Fire(CBlob@ this, VehicleInfo@ v, CBlob@ caller, const u8 &in fired_charge)
 	v.SetFireDelay(ammo.fire_delay);
 }
 
-void server_FireBlob(CBlob@ this, CBlob@ blob, const u8 &in charge)
+void server_FireBlob(CBlob@ this, VehicleInfo@ v, CBlob@ blob, const u16 &in charge)
 {
+	v.onFire(this, blob, charge);
+
 	CBitStream params;
-	params.write_netid(blob.getNetworkID());
-	params.write_u8(charge);
-	this.SendCommand(this.getCommandID("fire blob"), params);
+	params.write_u16(blob.getNetworkID());
+	params.write_u16(charge);
+	this.SendCommand(this.getCommandID("fire blob client"), params);
 }
 
-void client_Fire(CBlob@ this, CBlob@ caller, const u8 &in charge)
+void client_Fire(CBlob@ this, CBlob@ caller)
 {
-	CBitStream params;
-	params.write_netid(caller.getNetworkID());
-	params.write_u8(charge);
-	this.SendCommand(this.getCommandID("fire"), params);
+	this.SendCommand(this.getCommandID("fire"));
 }
 
 void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
@@ -481,7 +481,7 @@ void Vehicle_GunnerControls(CBlob@ this, CBlob@ blob, AttachmentPoint@ ap, Vehic
 	if (v.canFire(this, ap) && canFireLocally)
 	{
 		v.network_fire_time = getGameTime() + v.getCurrentAmmo().fire_delay;
-		client_Fire(this, blob, v.charge);
+		client_Fire(this, blob);
 	}
 }
 
