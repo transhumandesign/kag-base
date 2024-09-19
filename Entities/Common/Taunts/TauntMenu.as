@@ -1,8 +1,6 @@
 #include "WheelMenuCommon.as"
 #include "TauntsCommon.as"
 
-#define CLIENT_ONLY
-
 const int GLOBAL_COOLDOWN = 120;
 const int TEAM_COOLDOWN = 60;
 const bool CAN_REPEAT_TAUNT = true;
@@ -15,8 +13,10 @@ int cooldown_time = 0;
 
 void onInit(CRules@ rules)
 {
-	//You should never do this in a client only script, moved to EmoteBinderMenu.as
-	//rules.addCommandID("display taunt");
+	rules.addCommandID("display taunt");
+	rules.addCommandID("display taunt client");
+
+	if (isServer()) return;
 
 	string filename = "TauntEntries.cfg";
 	string cachefilename = "../Cache/" + filename;
@@ -81,6 +81,8 @@ void onInit(CRules@ rules)
 
 void onTick(CRules@ rules)
 {
+	if (isServer()) return;
+
 	CBlob@ blob = getLocalPlayerBlob();
 
 	if (blob is null)
@@ -97,7 +99,7 @@ void onTick(CRules@ rules)
 
 		if (blob.isKeyJustPressed(key_taunts))
 		{
-			Sound::Play("NoAmmo.ogg");
+			blob.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 		}
 	}
 	else if (blob.isKeyPressed(key_taunts) && get_active_wheel_menu() is null) //activate taunt menu
@@ -125,7 +127,6 @@ void onTick(CRules@ rules)
 					else
 					{
 						CBitStream params;
-						params.write_u16(blob.getNetworkID());
 						params.write_string(selected.visible_name);
 						params.write_bool(globalTaunt);
 						rules.SendCommand(rules.getCommandID("display taunt"), params, true);
@@ -133,7 +134,7 @@ void onTick(CRules@ rules)
 				}
 				else
 				{
-					Sound::Play("NoAmmo.ogg");
+					blob.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 				}
 			}
 		}
@@ -157,17 +158,45 @@ void onTick(CRules@ rules)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("display taunt"))
+	if (cmd == this.getCommandID("display taunt") && isServer())
 	{
-		CPlayer@ player = getLocalPlayer();
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		string taunt = params.read_string();
-		bool globalTaunt = params.read_bool();
+		CPlayer@ callerp = getNet().getActiveCommandPlayer();
+		if (callerp is null) return;
+
+		CBlob@ caller = callerp.getBlob();
+		if (caller is null) return;
+
+		string taunt;
+		if (!params.saferead_string(taunt)) return;
+
+		bool globalTaunt;
+		if (!params.saferead_bool(globalTaunt)) return;
+
+		CBitStream bt;
+		bt.write_u16(caller.getNetworkID());
+		bt.write_string(taunt);
+		bt.write_bool(globalTaunt);
+		this.SendCommand(this.getCommandID("display taunt client"), bt);
+	}
+	else if (cmd == this.getCommandID("display taunt client") && isClient())
+	{
+		u16 id;
+		if (params.saferead_u16(id)) return;
+
+		string taunt;
+		if (!params.saferead_string(taunt)) return;
+
+		bool globalTaunt;
+		if (!params.saferead_bool(globalTaunt)) return;
+
+		CBlob@ caller = getBlobByNetworkID(id);
 
 		if (caller is null || !cl_chatbubbles)
 		{
 			return;
 		}
+
+		CPlayer@ player = getLocalPlayer();
 
 		//only show team taunts to teammates
 		if (globalTaunt || (player !is null && player.getTeamNum() == caller.getTeamNum()))

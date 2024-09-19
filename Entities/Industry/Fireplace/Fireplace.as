@@ -23,8 +23,6 @@ void onInit(CBlob@ this)
 	this.Tag("fire source");
 	//this.server_SetTimeToDie(60*3);
 	this.getSprite().SetZ(-20.0f);
-
-	this.addCommandID("extinguish");
 }
 
 void onTick(CBlob@ this)

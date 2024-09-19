@@ -45,10 +45,11 @@ void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 	manager.RegisterCommand(BisonCommand());
 
 	//other
-	manager.RegisterCommand(TreeCommand());
+	manager.RegisterCommand(SeedCommand());
 	manager.RegisterCommand(WaterCommand());
 	manager.RegisterCommand(CrateCommand());
 	manager.RegisterCommand(ScrollCommand());
 	manager.RegisterCommand(BotCommand());
 	manager.RegisterCommand(SpawnCommand());
+	manager.RegisterCommand(TimeCommand());
 }

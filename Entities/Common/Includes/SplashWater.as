@@ -69,8 +69,8 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 				bool hitHard = blob.getTeamNum() != this.getTeamNum() || ownerBlob is blob;
 
 				Vec2f hit_blob_pos = blob.getPosition();
-				f32 scale;
-				Vec2f bombforce = getBombForce(this, radius, hit_blob_pos, pos, blob.getMass(), scale);
+
+				Vec2f bombforce = getBombForce(this, radius, hit_blob_pos, pos, blob.getMass());
 
 				if (shouldStun && (ownerBlob is blob || (this.isOverlapping(blob) && hitHard)))
 				{
@@ -90,7 +90,7 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 }
 
 // copied from Explosion.as ...... should be in bombcommon?
-Vec2f getBombForce(CBlob@ this, f32 radius, Vec2f hit_blob_pos, Vec2f pos, f32 hit_blob_mass, f32 &out scale)
+Vec2f getBombForceLegacy(CBlob@ this, f32 radius, Vec2f hit_blob_pos, Vec2f pos, f32 hit_blob_mass, f32 &out scale)
 {
 	Vec2f offset = hit_blob_pos - pos;
 	f32 distance = offset.Length();
@@ -105,5 +105,28 @@ Vec2f getBombForce(CBlob@ this, f32 radius, Vec2f hit_blob_pos, Vec2f pos, f32 h
 	bombforce.y = Maths::Round(bombforce.y);
 	bombforce /= 2.0f;
 	bombforce *= hit_blob_mass * (3.0f) * scale;
+	return bombforce;
+}
+
+f32 getBombDamageScale(CBlob@ this, f32 radius, Vec2f hit_blob_pos, Vec2f pos)
+{
+	Vec2f offset = hit_blob_pos - pos;
+	f32 distance = offset.Length();
+
+	f32 scale = (distance > (radius * 0.7)) ? 0.5f : 1.0f;
+	return scale;
+}
+
+Vec2f getBombForce(CBlob@ this, f32 radius, Vec2f hit_blob_pos, Vec2f pos, f32 hit_blob_mass)
+{
+	Vec2f offset = hit_blob_pos - pos;
+	f32 distance = offset.Length();
+	//the force, copy across
+	Vec2f bombforce = offset;
+	bombforce.Normalize();
+	bombforce *= 2.0f;
+	bombforce.y -= 0.2f;
+	bombforce /= 2.0f;
+	bombforce *= hit_blob_mass * (3.0f);
 	return bombforce;
 }
