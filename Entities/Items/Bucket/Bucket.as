@@ -19,8 +19,7 @@ void onInit(CBlob@ this)
 	}*/
 
 	this.getSprite().ReloadSprites(0, 0);
-	this.addCommandID("splash");
-	this.addCommandID("fill");
+	this.addCommandID("splash client");
 
 	this.set_u8("filled", this.hasTag("_start_filled") ? splashes : 0);
 	this.Tag("ignore fall");
@@ -34,35 +33,43 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	u8 filled = this.get_u8("filled");
-	if (filled < splashes && this.isInWater())
+	if (isServer())
 	{
-		this.set_u8("filled", splashes);
-		this.set_u8("water_delay", 30);
-		SetFrame(this, true);
-	}
-
-	if (filled != 0)
-	{
-		AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
-		u8 water_delay = this.get_u8("water_delay");
-
-		if (water_delay > 0)
+		if (this.isInWater() && this.get_u8("filled") < splashes)
 		{
-			this.set_u8("water_delay", water_delay - 1);
+			this.set_u8("filled", splashes);
+			this.set_u8("water_delay", 30);
+			this.Sync("filled", true);
 		}
-		else{
-			CBlob@ occupiedBlob = point.getOccupied();
-			if (occupiedBlob !is null && 
-				 occupiedBlob.isMyPlayer() && 
-				 occupiedBlob.isKeyJustPressed(key_action1) && 
-				 !this.isInWater() &&
-				 !occupiedBlob.isKeyPressed(key_inventory)) // prevent splash when doing stuff with inventory
+
+		if (this.get_u8("filled") != 0)
+		{
+			AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
+			u8 water_delay = this.get_u8("water_delay");
+
+			if (water_delay > 0)
 			{
-				this.SendCommand(this.getCommandID("splash"));
-				this.set_u8("water_delay", 30);
+				this.set_u8("water_delay", water_delay - 1);
+			}
+			else
+			{
+				CBlob@ occupiedBlob = point.getOccupied();
+				if (occupiedBlob !is null && 
+					occupiedBlob.isKeyJustPressed(key_action1) && 
+					!this.isInWater() &&
+					!occupiedBlob.isKeyPressed(key_inventory)) // prevent splash when doing stuff with inventory
+				{
+					DoSplash(this);
+					this.SendCommand(this.getCommandID("splash client"));
+					this.set_u8("water_delay", 30);
+				}
 			}
 		}
+	}
+
+	if (isClient())
+	{
+		SetFrame(this, this.get_u8("filled") > 0);
 	}
 }
 
@@ -87,8 +94,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		}
 	}
 
-
-	if (getNet().isServer()) {
+	if (isServer()) 
+	{
 		const string name = hitterBlob.getName();
 
 		if ((customData == Hitters::water || customData == Hitters::water_stun) &&
@@ -107,10 +114,10 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 				if (tmp_filling_left <= 0)
 					hitterBlob.Tag("tmp has filled");
-				
-				CBitStream params;
-				params.write_u8(filled + d);
-				this.SendCommand(this.getCommandID("fill"), params);
+
+				this.set_u8("water_delay", 5); // only slight delay
+				this.set_u8("filled", (filled + d));
+				this.Sync("filled", true);
 			}
 		}
 	}
@@ -120,31 +127,26 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("splash"))
+	if (cmd == this.getCommandID("splash client") && isClient())
 	{
 		DoSplash(this);
-	}
-	else if (cmd == this.getCommandID("fill"))
-	{
-		const u8 filled = params.read_u8();
-		this.set_u8("water_delay", 5); // only slight delay
-		this.set_u8("filled", filled);
-				
-		SetFrame(this, true);
 	}
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point)
 {
-	if (solid && getNet().isServer() && this.getShape().vellen > 6.8f && this.get_u8("filled") > 0)
+	if (solid && isServer() && this.getShape().vellen > 6.8f && this.get_u8("filled") > 0)
 	{
-		this.SendCommand(this.getCommandID("splash"));
+		DoSplash(this);
+		this.SendCommand(this.getCommandID("splash client"));
 	}
 
 }
 
 void TakeWaterCount(CBlob@ this)
 {
+	if (!isServer()) { return; }
+
 	u8 filled = this.get_u8("filled");
 	if (filled > 0)
 		filled--;
@@ -155,6 +157,7 @@ void TakeWaterCount(CBlob@ this)
 		SetFrame(this, false);
 	}
 	this.set_u8("filled", filled);
+	this.Sync("filled", true);
 }
 
 const uint splash_halfwidth = splash_width / 2;

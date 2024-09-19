@@ -1,5 +1,7 @@
 //fall if not supported by adjacent
 
+#include "StaticToggleCommon.as";
+
 const string time_prop = "_collapse adjacent time";
 const string angle_prop = "_collapse angle";
 const u32 collapse_time = 10 * getTicksASecond();
@@ -44,6 +46,7 @@ void onTick(CBlob@ this)
 			f32 time = this.get_u32(time_prop);
 			if (getGameTime() - time > collapse_time)
 			{
+				StaticOff(this);
 				this.SendCommand(this.getCommandID("static off"));
 				this.getCurrentScript().tickFrequency = 0;
 			}
