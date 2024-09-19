@@ -24,9 +24,23 @@ void onInit(CMap@ this)
 	createSign(Vec2f(163, 45) * this.tilesize, "Run at wall and hold jump to WALL RUN.\n\nHOLD $KEY_D$$KEY_W$");
 	createSign(Vec2f(183, 47) * this.tilesize, "Knights can destroy wooden blocks, wooden doors and dig dirt. Point at the wall and jab it to get through $LMB$");
 	createSign(Vec2f(200, 48) * this.tilesize, "Automatically pickup things used by your class.");
-	server_CreateBlob("mat_bombs", 0, Vec2f(205, 43) * this.tilesize);
-	server_CreateBlob("mat_bombs", 0, Vec2f(207, 43) * this.tilesize);
-	server_CreateBlob("mat_bombs", 0, Vec2f(208, 43) * this.tilesize);
+
+	{
+		CBlob@ bomb = server_CreateBlob("mat_bombs", 0, Vec2f(205, 43) * this.tilesize);
+		if (bomb !is null)
+			bomb.server_SetTimeToDie(-1.0f);
+	}
+	{
+		CBlob@ bomb = server_CreateBlob("mat_bombs", 0, Vec2f(207, 43) * this.tilesize);
+		if (bomb !is null)
+			bomb.server_SetTimeToDie(-1.0f);
+	}
+	{
+		CBlob@ bomb = server_CreateBlob("mat_bombs", 0, Vec2f(208, 43) * this.tilesize);
+		if (bomb !is null)
+			bomb.server_SetTimeToDie(-1.0f);
+	}
+
 	createSign(Vec2f(216, 47) * this.tilesize, "Press $KEY_SPACE$ to light bomb\n\nAim with mouse.\n\nAgain $KEY_SPACE$ throw it.");
 	createSign(Vec2f(247, 49) * this.tilesize, "Shield gliding$Tutorial_Glide$\n\n\nJump over the canyon and while in air:\nPoint your cursor upwards\nHOLD $RMB$ for shield.");
 }
