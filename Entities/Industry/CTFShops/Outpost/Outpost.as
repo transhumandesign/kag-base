@@ -14,7 +14,6 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
-	InitRespawnCommand(this);
 	InitClasses(this);
 
 	this.Tag("respawn");

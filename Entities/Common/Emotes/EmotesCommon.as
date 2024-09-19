@@ -146,6 +146,8 @@ void set_emote(CBlob@ this, string token, int time)
 
 void set_emote(CBlob@ this, string token)
 {
+	set_emote(this, token, 90);
+
 	if (this.isInInventory())
 	{
 		CBlob@ inventoryblob = this.getInventoryBlob();
@@ -153,21 +155,13 @@ void set_emote(CBlob@ this, string token)
 			&& inventoryblob.exists("emote"))
 		{
 			set_emoteByCommand(this, token);
-			set_emoteByCommand(inventoryblob, token);
 		}
-	}
-	else
-	{
-		set_emote(this, token, 90);
 	}
 }
 
 void set_emoteByCommand(CBlob@ this, string token, int time = 90)
 {
-	CBitStream params;
-	params.write_string(token);
-	params.write_u32(getGameTime() + time);
-	this.SendCommand(this.getCommandID("emote"), params);
+	this.SendCommand(this.getCommandID("emote"));
 }
 
 bool is_emote(CBlob@ this, bool checkBlank = false)
