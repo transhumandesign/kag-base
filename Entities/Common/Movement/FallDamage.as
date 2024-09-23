@@ -33,24 +33,29 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	{
 		bool doknockdown = true;
 
+		// better check for trampolines
+		CBlob@[] blobs_around;
+		if (getMap().getBlobsInRadius(this.getPosition(), this.getRadius() * 4, blobs_around))
+		{
+			for (uint i = 0; i < blobs_around.length; i++)
+			{
+				CBlob@ b = blobs_around[i];
+
+				if (!b.hasTag("no falldamage")) continue;
+
+				Vec2f b_pos = b.getPosition();
+				Vec2f pos = this.getPosition();
+
+				if (Maths::Abs(b_pos.x - pos.x) > b.getWidth()) continue;
+
+				if (Maths::Abs(b_pos.y - pos.y) > b.getWidth()) continue;
+
+				return;
+			}
+		}
+
 		if (damage > 0.0f)
 		{
-			// check if we aren't touching a trampoline
-			CBlob@[] overlapping;
-
-			if (this.getOverlapping(@overlapping))
-			{
-				for (uint i = 0; i < overlapping.length; i++)
-				{
-					CBlob@ b = overlapping[i];
-
-					if (b.hasTag("no falldamage"))
-					{
-						return;
-					}
-				}
-			}
-
 			if (damage > 0.1f)
 			{
 				this.server_Hit(this, point1, normal, damage, Hitters::fall);
@@ -65,7 +70,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			setKnocked(this, knockdown_time);
 
 		if (!this.hasTag("should be silent"))
-		{				
+		{
 			if (this.getHealth() > damage) //not dead
 				Sound::Play("/BreakBone", this.getPosition());
 			else
