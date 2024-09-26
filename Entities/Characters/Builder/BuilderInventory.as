@@ -109,11 +109,11 @@ void MakeBlocksMenu(CInventory@ this, const Vec2f &in INVENTORY_CE)
 			CBitStream missing;
 			if (hasRequirements(this, b.reqs, missing, not b.buildOnGround))
 			{
-				button.hoverText = block_desc + "\n" + getButtonRequirementsText(b.reqs, false);
+				button.hoverText = block_desc + "\n\n" + getButtonRequirementsText(b.reqs, false);
 			}
 			else
 			{
-				button.hoverText = block_desc + "\n" + getButtonRequirementsText(missing, true);
+				button.hoverText = block_desc + "\n\n" + getButtonRequirementsText(missing, true);
 				button.SetEnabled(false);
 			}
 

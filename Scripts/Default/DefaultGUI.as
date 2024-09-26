@@ -13,7 +13,7 @@ void LoadDefaultGUI()
 		string interaction = "/GUI/InteractionIcons.png";
 		AddIconToken("$NONE$", interaction, Vec2f(32, 32), 9);
 		AddIconToken("$TIME$", interaction, Vec2f(32, 32), 0);
-		AddIconToken("$COIN$", "Sprites/coins.png", Vec2f(16, 16), 1);
+		AddIconToken("$COIN$", "Sprites/coins.png", Vec2f(16, 16), 1, Vec2f(0, -8));
 		AddIconToken("$HEART$", "GUI/HeartNBubble.png", Vec2f(12, 12), 1);
 		AddIconToken("$TEAMS$", "GUI/MenuItems.png", Vec2f(32, 32), 1);
 		AddIconToken("$SPECTATOR$", "GUI/MenuItems.png", Vec2f(32, 32), 19);
