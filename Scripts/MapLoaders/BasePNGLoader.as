@@ -133,6 +133,7 @@ class PNGLoader
 			case map_colors::alpha_emitter:         autotile(offset); spawnBlob(map, "emitter",         getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_inverter:        autotile(offset); spawnBlob(map, "inverter",        getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_junction:        autotile(offset); spawnBlob(map, "junction",        getTeamFromChannel(alpha), position,                             true); break;
+			case map_colors::alpha_display:         autotile(offset); spawnBlob(map, "display",         getTeamFromChannel(alpha), position,                             true); break;
 			case map_colors::alpha_oscillator:      autotile(offset); spawnBlob(map, "oscillator",      getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_randomizer:      autotile(offset); spawnBlob(map, "randomizer",      getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_receiver:        autotile(offset); spawnBlob(map, "receiver",        getTeamFromChannel(alpha), position, getAngleFromChannel(alpha), true); break;
@@ -144,6 +145,7 @@ class PNGLoader
 			case map_colors::alpha_bolter:          autotile(offset); spawnBlob(map, "bolter",                                255, position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_dispenser:       autotile(offset); spawnBlob(map, "dispenser",                             255, position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_lamp:            autotile(offset); spawnBlob(map, "lamp",                                  255, position,                             true); break;
+			case map_colors::alpha_bell:            autotile(offset); spawnBlob(map, "bell",                                  255, position,                             true); break;
 			case map_colors::alpha_obstructor:      autotile(offset); spawnBlob(map, "obstructor",                            255, position,                             true); break;
 			case map_colors::alpha_spiker:          autotile(offset); spawnBlob(map, "spiker",                                255, position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_lever:
