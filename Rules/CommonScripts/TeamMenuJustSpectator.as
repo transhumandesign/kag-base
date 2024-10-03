@@ -13,7 +13,7 @@ void Callback_PickTeams(CBitStream@ params)
 	CPlayer@ player = getLocalPlayer();
 	if (player is null) return;
 
-	player.client_ChangeTeam(getRules().getSpectatorTeamNum());
+	player.client_ChangeTeam(-1);
 	getHUD().ClearMenus();
 }
 
@@ -22,7 +22,7 @@ void Callback_PickSpectator(CBitStream@ params)
 	CPlayer@ player = getLocalPlayer();
 	if (player is null) return;
 
-	player.client_ChangeTeam(-1);
+	player.client_ChangeTeam(getRules().getSpectatorTeamNum());
 	getHUD().ClearMenus();
 }
 
