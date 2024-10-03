@@ -3,8 +3,9 @@ const bool DECAY_DEBUG = false;
 bool dissalowDecaying(CBlob@ this)
 {
 	return (
-	           this.getControls() !is null ||
-	           this.isInInventory()
+	           this.getControls() !is null 
+			   || this.isInInventory()
+			   || this.hasTag("invincible")
 	       );
 }
 
