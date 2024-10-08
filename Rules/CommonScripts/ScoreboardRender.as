@@ -828,7 +828,7 @@ void drawAgeIcon(int age, Vec2f position)
 
 void DrawFancyCopiedText(string username, Vec2f mousePos, uint duration)
 {
-	string text = "Username copied: " + username;
+	string text = getTranslatedString("Username copied: {NAME}").replace("{NAME}", username);
 	Vec2f pos = mousePos - Vec2f(0, duration);
 	int col = (255 - duration * 3);
 
