@@ -119,16 +119,25 @@ void onTick(CRules@ this)
 class VoteKickFunctor : VoteFunctor
 {
 	VoteKickFunctor() {} //dont use this
-	VoteKickFunctor(CPlayer@ _kickplayer)
+	VoteKickFunctor(CPlayer@ _kickplayer, CPlayer@ _byplayer, u8 _reasonid)
 	{
 		@kickplayer = _kickplayer;
+		@byplayer = _byplayer;
+		reasonid = _reasonid;
 	}
 
 	CPlayer@ kickplayer;
+	CPlayer@ byplayer;
+	u8 reasonid;
 
 	void Pass(bool outcome)
 	{
-		if (kickplayer !is null && outcome)
+		if (kickplayer is null) 
+		{
+			return;
+		}
+
+		if (outcome)
 		{
 			client_AddToChat(
 				getTranslatedString("Votekick passed! {USER} will be kicked out.")
@@ -139,7 +148,21 @@ class VoteKickFunctor : VoteFunctor
 			if (isServer())
 			{
 				getSecurity().ban(kickplayer, VoteKickTime, "Voted off"); //30 minutes ban
-			}
+			}	
+		}
+
+		// Log the vote!
+		if (sv_tcpr && isServer())	
+		{
+			string username = byplayer !is null ? byplayer.getUsername() : " unknown";
+			string voteResult = outcome ? " has successfully voted" : " attempted";
+			
+			string message = username + voteResult + " to kick " + kickplayer.getUsername() + " ("+ kick_reason_string[reasonid] +")";
+
+			// TODO: No way to get IP server side, needs engine change
+			string serverip = "unknown";
+
+			tcpr("*LOG *MESSAGE=\"" + message + "\" *SERVERNAME=\"" + sv_name + "\" *SERVERIP=\"" + serverip + "\"");
 		}
 	}
 };
@@ -209,7 +232,7 @@ VoteObject@ Create_Votekick(CPlayer@ player, CPlayer@ byplayer, u8 reasonid)
 {
 	VoteObject vote;
 
-	@vote.onvotepassed = VoteKickFunctor(player);
+	@vote.onvotepassed = VoteKickFunctor(player, byplayer, reasonid);
 	@vote.canvote = VoteKickCheckFunctor(player, reasonid);
 	@vote.playerleave = VoteKickLeaveFunctor(player);
 
