@@ -156,11 +156,9 @@ class VoteKickFunctor : VoteFunctor
 		{
 			string username = byplayer !is null ? byplayer.getUsername() : " unknown";
 			string voteResult = outcome ? " has successfully voted" : " attempted";
-			
-			string message = username + voteResult + " to kick " + kickplayer.getUsername() + " ("+ kick_reason_string[reasonid] +")";
 
-			// TODO: No way to get IP server side, needs engine change
-			string serverip = "unknown";
+			string message = username + voteResult + " to kick " + kickplayer.getUsername() + " ("+ kick_reason_string[reasonid] +")";
+			string serverip = getNet().sv_current_ip;			
 
 			tcpr("*LOG *MESSAGE=\"" + message + "\" *SERVERNAME=\"" + sv_name + "\" *SERVERIP=\"" + serverip + "\"");
 		}
