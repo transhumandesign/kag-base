@@ -24,9 +24,6 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 		CPlayer@ baddie = getPlayerByNetworkId(id);
 		if (baddie is null) return;
 
-		string serverip;
-		if (!params.saferead_string(serverip)) return;
-
 		string reason;
 		if (!params.saferead_string(reason)) return;
 
@@ -69,7 +66,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 			//*REPORT *PLAYER="SirSalami" *BADDIE="vik" *COUNT="1" *SERVER="arbitrary server name" *REASON="bullshit fuckery"
 
 			tcpr("*REPORT *PLAYER=\"" + p_name + "\" *BADDIE=\"" + b_name + "\" *COUNT=\"" + this.get_u8(b_name + "_report_count") +
-			"\" *SERVERNAME=\"" + sv_name + "\" *SERVERIP=\"" + serverip + "\" *REASON=\"" + reason + "\"");
+			"\" *SERVERNAME=\"" + sv_name + "\" *SERVERIP=\"" + getNet().sv_current_ip + "\" *REASON=\"" + reason + "\"");
 
 			CBitStream bt;
 			bt.write_u16(player.getNetworkID());
