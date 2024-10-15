@@ -77,11 +77,6 @@ void MakeTradeMenu(CBlob@ trader)
 	s32 menu_width = cfg.read_s32("trade_menu_width", 3);
 	s32 menu_height = cfg.read_s32("trade_menu_height", 5);
 
-	// create team-colored icons
-	AddIconToken("$keg_tdm" + trader.getTeamNum() + "$", "Keg.png", Vec2f(16, 16), 0, trader.getTeamNum());
-	AddIconToken("$mine_tdm" + trader.getTeamNum() + "$", "Mine.png", Vec2f(16, 16), 0, trader.getTeamNum());
-	AddIconToken("$crate_tdm" + trader.getTeamNum() + "$", "CrateSmall.png", Vec2f(16, 16), 0, trader.getTeamNum());
-
 	// build menu
 	CreateTradeMenu(trader, Vec2f(menu_width, menu_height), "Buy weapons");
 
