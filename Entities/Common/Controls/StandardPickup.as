@@ -601,8 +601,20 @@ bool canBlobBePickedUp(CBlob@ this, CBlob@ blob)
 				break;
 			}
 
-			if (b !is this && b.isCollidable() && b.getShape().isStatic() && !b.isPlatform())
+			if (b !is this && b.isCollidable() && b.getShape().isStatic())
 			{
+				if (b.isPlatform())
+				{
+					ShapePlatformDirection@ plat = b.getShape().getPlatformDirection(0);
+					Vec2f dir = plat.direction;
+					if (!plat.ignore_rotations) dir.RotateBy(b.getAngleDegrees());
+
+					if (Maths::Abs(dir.AngleWith(ray)) < plat.angleLimit)
+					{
+						continue;
+					}
+				}
+				
 				canRayCast = false;
 				break;
 			}
