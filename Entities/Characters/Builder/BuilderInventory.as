@@ -252,11 +252,17 @@ void onCommand(CInventory@ this, u8 cmd, CBitStream@ params)
 	}
 	else if (cmd == blob.getCommandID("make block client") && isClient())
 	{
-		const TileType buildtile = params.read_TileType();
-		const bool buildonground = params.read_bool();
-		const u32 buildtime = params.read_u32();
-		const u8 buildblob = params.read_u8();
-		const Vec2f buildspace = params.read_Vec2f();
+		TileType buildtile;
+		bool buildonground;
+		u32 buildtime;
+		u8 buildblob;
+		Vec2f buildspace;
+
+		if (!params.saferead_TileType(buildtile)) return;
+		if (!params.saferead_bool(buildonground)) return;
+		if (!params.saferead_u32(buildtime))      return;
+		if (!params.saferead_u8(buildblob))       return;
+		if (!params.saferead_Vec2f(buildspace))   return;
 		
 		blob.set_TileType("buildtile", buildtile);
 		blob.set_u32("cant build time", buildtime);
