@@ -70,6 +70,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (pickedup.isAttached()) return;
 
+		pickedup.setPosition(caller.getPosition());
 		caller.server_Pickup(pickedup);
 	}
 	else if (cmd == this.getCommandID("detach"))
