@@ -24,9 +24,7 @@ void Reset(CRules@ this)
 
 	currentTarget = 0;
 	switchTarget = 0;
-
-	//initially position camera to view entire map
-	ViewEntireMap();
+	
 	// force lock camera position immediately, even if not cinematic
 	posActual = posTarget;
 
@@ -34,6 +32,19 @@ void Reset(CRules@ this)
 	zoomEaseModifier = 1.0f;
 
 	timeToCinematic = 0;
+	
+	// so map will call "onInit(CMap@ this)", fixes "ViewEntireMap()" not working in online
+	CMap@ map = getMap();
+	if (!map.hasScript("PlayerCamera.as"))
+	{	
+		map.AddScript("PlayerCamera.as");
+	}
+}
+
+void onInit(CMap@ this)
+{
+	//initially position camera to view entire map
+	ViewEntireMap();
 }
 
 void onRestart(CRules@ this)
@@ -146,23 +157,30 @@ void SpecCamera(CRules@ this)
 {
 	//death effect
 	CCamera@ camera = getCamera();
-	if (camera !is null && getLocalPlayerBlob() is null && getLocalPlayer() !is null)
+	if (camera !is null && getLocalPlayer() !is null)
 	{
-		const int diffTime = deathTime - getGameTime();
-		// death effect
-		if (!spectatorTeam && diffTime > 0)
+		if (getLocalPlayerBlob() is null)
 		{
-			//lock camera
-			posActual = deathLock;
-			camera.setPosition(deathLock);
-			//zoom in for a bit
-			const float zoom_target = 2.0f;
-			const float zoom_speed = 5.0f;
-			camera.targetDistance = Maths::Min(zoom_target, camera.targetDistance + zoom_speed * getRenderDeltaTime());
+			const int diffTime = deathTime - getGameTime();
+			// death effect
+			if (!spectatorTeam && diffTime > 0)
+			{
+				//lock camera
+				posActual = deathLock;
+				camera.setPosition(deathLock);
+				//zoom in for a bit
+				const float zoom_target = 2.0f;
+				const float zoom_speed = 5.0f;
+				camera.targetDistance = Maths::Min(zoom_target, camera.targetDistance + zoom_speed * getRenderDeltaTime());
+			}
+			else
+			{
+				Spectator(this);
+			}
 		}
 		else
 		{
-			Spectator(this);
+			posActual = camera.getPosition();
 		}
 	}
 }
