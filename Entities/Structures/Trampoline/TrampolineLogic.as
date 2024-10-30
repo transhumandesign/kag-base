@@ -1,4 +1,5 @@
-#include "Help.as";
+#include "Help.as"
+#include "FallDamageCommon.as"
 
 namespace Trampoline
 {
@@ -67,34 +68,7 @@ void onTick(CBlob@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1, Vec2f point2)
 {
-	if (blob is null || blob.isAttached() || blob.getShape().isStatic()) return;
-
-	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
-	CBlob@ holder = point.getOccupied();
-
-	//choose whether to jump on team trampolines
-	if (blob.hasTag("player") && blob.isKeyPressed(key_down) && this.getTeamNum() == blob.getTeamNum()) return;
-
-	//cant bounce holder
-	if (holder is blob) return;
-
-	//cant bounce while held by something attached to something else
-	if (holder !is null && holder.isAttached()) return;
-
-	//prevent knights from flying using trampolines
-
-	//get angle difference between entry angle and the facing angle
-	Vec2f pos_delta = (blob.getPosition() - this.getPosition()).RotateBy(90);
-	float delta_angle = Maths::Abs(-pos_delta.Angle() - this.getAngleDegrees());
-	if (delta_angle > 180)
-	{
-		delta_angle = 360 - delta_angle;
-	}
-	//if more than 90 degrees out, no bounce
-	if (delta_angle > 90)
-	{
-		return;
-	}
+	if (!canBounce(@this, @blob)) return;
 
 	TrampolineCooldown@[]@ cooldowns;
 	if (!this.get(Trampoline::TIMER, @cooldowns)) return;
@@ -103,7 +77,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	if (Trampoline::SAFETY && cooldowns.length > Trampoline::COOLDOWN_LIMIT) cooldowns.removeAt(0);
 
 	u16 netid = blob.getNetworkID();
-	bool block = false;
 	for(int i = 0; i < cooldowns.length; i++)
 	{
 		if (cooldowns[i].timer < getGameTime())
@@ -113,40 +86,26 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		}
 		else if (netid == cooldowns[i].netid)
 		{
-			block = true;
-			break;
+			return;
 		}
 	}
-	if (!block)
+
+	TrampolineCooldown cooldown(netid, getGameTime() + Trampoline::COOLDOWN);
+	cooldowns.push_back(cooldown);
+
+	float angle = this.getAngleDegrees();
+
+	Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
+	velocity.RotateBy(angle);
+
+	blob.setVelocity(velocity);
+
+	CSprite@ sprite = this.getSprite();
+	if (sprite !is null)
 	{
-		Vec2f velocity_old = blob.getOldVelocity();
-		if (velocity_old.Length() < 1.0f) return;
-
-		float angle = this.getAngleDegrees();
-
-		Vec2f direction = Vec2f(0.0f, -1.0f);
-		direction.RotateBy(angle);
-
-		float velocity_angle = direction.AngleWith(velocity_old);
-
-		if (Maths::Abs(velocity_angle) > 90)
-		{
-			TrampolineCooldown cooldown(netid, getGameTime() + Trampoline::COOLDOWN);
-			cooldowns.push_back(cooldown);
-
-			Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
-			velocity.RotateBy(angle);
-
-			blob.setVelocity(velocity);
-
-			CSprite@ sprite = this.getSprite();
-			if (sprite !is null)
-			{
-				sprite.SetAnimation("default");
-				sprite.SetAnimation("bounce");
-				sprite.PlaySound("TrampolineJump.ogg");
-			}
-		}
+		sprite.SetAnimation("default");
+		sprite.SetAnimation("bounce");
+		sprite.PlaySound("TrampolineJump.ogg");
 	}
 }
 
@@ -167,9 +126,58 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 	RemoveHelps(detached, "trampoline help rmb");
 }
 
-bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+bool doesCollideWithBlob(CBlob@ trampoline, CBlob@ candidate)
 {
-	return blob.getShape().isStatic();
+	// HACK: tag the candidate with collision immunity before it hits the ground
+	if (canBounce(@trampoline, @candidate)) { CancelFallDamageThisTick(@candidate); }
+
+	return candidate.getShape().isStatic();
+}
+
+bool canBounce(CBlob@ trampoline, CBlob@ candidate)
+{
+	if (candidate is null || candidate.isAttached() || candidate.getShape().isStatic()) return false;
+
+	AttachmentPoint@ point = trampoline.getAttachments().getAttachmentPointByName("PICKUP");
+	CBlob@ holder = point.getOccupied();
+
+	//choose whether to jump on team trampolines
+	if (candidate.hasTag("player") && candidate.isKeyPressed(key_down) && trampoline.getTeamNum() == candidate.getTeamNum()) return false;
+
+	//cant bounce holder
+	if (holder is candidate) return false;
+
+	//cant bounce while held by something attached to something else
+	if (holder !is null && holder.isAttached()) return false;
+
+	//prevent knights from flying using trampolines
+
+	//get angle difference between entry angle and the facing angle
+	Vec2f pos_delta = (candidate.getPosition() - trampoline.getPosition()).RotateBy(90);
+	float delta_angle = Maths::Abs(-pos_delta.Angle() - trampoline.getAngleDegrees());
+	if (delta_angle > 180)
+	{
+		delta_angle = 360 - delta_angle;
+	}
+	//if more than 90 degrees out, no bounce
+	if (delta_angle > 90)
+	{
+		return false;
+	}
+
+	Vec2f velocity_old = candidate.getOldVelocity();
+	if (velocity_old.Length() < 1.0f) return false;
+
+	float angle = trampoline.getAngleDegrees();
+
+	Vec2f direction = Vec2f(0.0f, -1.0f);
+	direction.RotateBy(angle);
+
+	float velocity_angle = direction.AngleWith(velocity_old);
+
+	if (Maths::Abs(velocity_angle) <= 90) return false;
+
+	return true;
 }
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
