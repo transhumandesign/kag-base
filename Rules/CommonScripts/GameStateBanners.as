@@ -13,6 +13,7 @@ enum BannerType
 	WARMUP_START = 0,
 	GAME_START,
 	GAME_END,
+	GAME_END_TIE,
 	NONE
 };
 
@@ -48,7 +49,9 @@ shared class Banner
 	bool use_two_boxes;
 	string secondary_text;
 
-	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, int team, const bool use_team_icon, Icon@ team_icon, const bool use_two_boxes, string secondary_text)
+	int distance_from_center;
+
+	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, int team, const bool use_team_icon, Icon@ team_icon, const bool use_two_boxes, string secondary_text, int distance_from_center = 160)
 	{
 		this.duration = duration;
 		this.main_text = main_text;
@@ -58,40 +61,48 @@ shared class Banner
 		this.team = team;
 		this.use_team_icon = use_team_icon;
 		if (use_team_icon) this.team_icon = team_icon;
+
+		this.distance_from_center = distance_from_center;
 
 		this.use_two_boxes = use_two_boxes;
 		if (use_two_boxes) this.secondary_text = secondary_text;
 	}
 
-	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon)
+	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, int distance_from_center = 160)
 	{
 		this.duration = duration;
 		this.main_text = main_text;
 		this.left_icon = left_icon;
 		this.right_icon = right_icon;
+
+		this.distance_from_center = distance_from_center;
 
 		this.use_team_icon = false;
 		this.use_two_boxes = false;
 	}
 
-	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, int team)
+	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, int team, int distance_from_center = 160)
 	{
 		this.duration = duration;
 		this.main_text = main_text;
 		this.left_icon = left_icon;
 		this.right_icon = right_icon;
+
+		this.distance_from_center = distance_from_center;
 
 		this.team = team;
 		this.use_team_icon = false;
 		this.use_two_boxes = false;
 	}
 
-	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, int team, const bool use_team_icon, Icon@ team_icon)
+	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, int team, const bool use_team_icon, Icon@ team_icon, int distance_from_center = 160)
 	{
 		this.duration = duration;
 		this.main_text = main_text;
 		this.left_icon = left_icon;
 		this.right_icon = right_icon;
+
+		this.distance_from_center = distance_from_center;
 
 		this.team = team;
 		this.use_team_icon = use_team_icon;
@@ -100,12 +111,14 @@ shared class Banner
 		this.use_two_boxes = false;
 	}
 
-	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, const bool use_two_boxes, string secondary_text)
+	Banner(u32 duration, string main_text, Icon@ left_icon, Icon@ right_icon, const bool use_two_boxes, string secondary_text, int distance_from_center = 160)
 	{
 		this.duration = duration;
 		this.main_text = main_text;
 		this.left_icon = left_icon;
 		this.right_icon = right_icon;
+
+		this.distance_from_center = distance_from_center;
 
 		this.use_team_icon = false;
 
@@ -122,8 +135,8 @@ shared class Banner
 			GUI::LoadFont("AveriaSerif-Bold_32", AveriaSerif, 32, true);
 		}
 
-		Vec2f tl = center - Vec2f(160, 32);
-		Vec2f br = center + Vec2f(160, 32);
+		Vec2f tl = center - Vec2f(this.distance_from_center, 32);
+		Vec2f br = center + Vec2f(this.distance_from_center, 32);
 		GUI::DrawRectangle(tl, br);
 		if (this.use_team_icon)
 		{
@@ -215,6 +228,11 @@ void SetBanner(CRules@ this)
 		this.set_bool("Draw Banner", true);
 		this.set_u32("Banner Start", getGameTime());
 
+		if (state == GAME_OVER && this.getTeamWon() == -1) // tie (TDM)
+		{
+			this.set_u8("Animate Banner", BannerType::GAME_END_TIE);
+			this.minimap = false;
+		}
 		if (state == GAME_OVER && this.getTeamWon() >= 0)
 		{
 			this.set_u8("Animate Banner", BannerType::GAME_END);
