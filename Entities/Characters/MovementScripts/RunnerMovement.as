@@ -279,7 +279,7 @@ void onTick(CMovement@ this)
 
 		// crouch through platforms and crates
 		if (down && !action3 && !onground && this.getVars().aircount > 2)
-		{		
+		{
 			blob.set_u8("crouch_through", 3);
 		}
 
