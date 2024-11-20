@@ -74,7 +74,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				}
 				else
 				{
-					this.getSprite().PlayRandomSound("/WoodHeavyBump", volume);
+					this.getSprite().PlayRandomSound("/StoneHeavyBump", volume);
 				}
 			}
 		}
