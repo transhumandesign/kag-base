@@ -101,7 +101,7 @@ void onTick(CSprite@ this)
 	
 	// wetness
 	if (!v_fastrender)
-		{
+	{
 		CBlob@ blob = this.getBlob();
 		if (blob !is null && this.getFrameIndex() == 3)
 		{
