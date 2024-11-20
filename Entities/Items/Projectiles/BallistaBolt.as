@@ -85,13 +85,19 @@ void onTick(CBlob@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-
-	CBlob@ carrier = blob.getCarriedBlob();
-
-	if (carrier !is null)
-		if (carrier.hasTag("player")
-		        && (this.getTeamNum() == carrier.getTeamNum() || blob.hasTag("temp blob")))
-			return false;
+	// don't hit if carried by teammate
+	if (blob.isAttached())
+	{
+		AttachmentPoint@ ap = blob.getAttachments().getAttachmentPointByName("PICKUP");
+		
+		if (ap !is null)
+		{
+			CBlob@ occ = ap.getOccupied();
+			
+			if (occ is null || occ.getTeamNum() == this.getTeamNum()) 
+				return false;
+		}
+	}
 
 	return (this.getTeamNum() != blob.getTeamNum() || blob.getShape().isStatic())
 	       && blob.isCollidable();

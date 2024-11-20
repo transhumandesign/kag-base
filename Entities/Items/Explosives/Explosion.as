@@ -294,10 +294,23 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 			if (hit_blob is this)
 				continue;
 
+			// don't hit if carried by teammate
+			if (hit_blob.isAttached())
+			{
+				AttachmentPoint@ ap = hit_blob.getAttachments().getAttachmentPointByName("PICKUP");
+				
+				if (ap !is null)
+				{
+					CBlob@ occ = ap.getOccupied();
+					
+					if (occ is null || occ.getTeamNum() == this.getTeamNum()) 
+						continue;
+				}
+			}
+
 			HitBlob(this, m_pos, hit_blob, radius, damage, hitter, true, should_teamkill);
 		}
 	}
-
 }
 
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)

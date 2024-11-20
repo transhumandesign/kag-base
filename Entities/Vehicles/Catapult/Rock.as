@@ -24,7 +24,7 @@ Random _r(0xca7a);
 
 void onInit(CBlob@ this)
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
 		this.server_SetTimeToDie(4 + _r.NextRanged(2));
 	}
@@ -97,13 +97,19 @@ void MakeRockDustParticle(Vec2f pos, string file, Vec2f vel=Vec2f(0.0, 0.0), int
 
 bool canHitBlob(CBlob@ this, CBlob@ blob)
 {
-
-	CBlob@ carrier = blob.getCarriedBlob();
-
-	if (carrier !is null)
-		if (carrier.hasTag("player")
-		        && (this.getTeamNum() == carrier.getTeamNum() || blob.hasTag("temp blob")))
-			return false;
+	// don't hit if carried by teammate
+	if (blob.isAttached())
+	{
+		AttachmentPoint@ ap = blob.getAttachments().getAttachmentPointByName("PICKUP");
+		
+		if (ap !is null)
+		{
+			CBlob@ occ = ap.getOccupied();
+			
+			if (occ is null || occ.getTeamNum() == this.getTeamNum()) 
+				return false;
+		}
+	}
 
 	return (this.getTeamNum() != blob.getTeamNum() || blob.getShape().isStatic())
 	       && !blob.hasTag("invincible");
