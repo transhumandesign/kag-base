@@ -128,12 +128,7 @@ bool ReadRequirement(CBitStream &inout bs, string &out req, string &out blobName
 		return false;
 	}
 
-	if (req == "hurt")
-	{
-		return true;
-	}
-	
-	if (req == "match not ended")
+	if (req == "hurt" || "match not ended")
 	{
 		return true;
 	}
@@ -211,7 +206,6 @@ bool hasRequirements(CInventory@ inv1, CInventory@ inv2, CBitStream &inout bs, C
 		}
 		else if (req == "match not ended")
 		{
-			CBlob@ blob = inv1 !is null ? inv1.getBlob() : null;
 			CRules@ rules = getRules();
 			if (rules !is null && rules.exists("no purchase post match") && rules.get_bool("no purchase post match") && rules.isGameOver())
 			{
