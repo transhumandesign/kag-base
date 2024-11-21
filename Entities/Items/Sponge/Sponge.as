@@ -1,5 +1,4 @@
 #include "Hitters.as";
-#include "SplashWater.as";
 #include "SpongeCommon.as";
 
 const u8 DRY_COOLDOWN = 8;
@@ -85,6 +84,31 @@ void onTick(CBlob@ this)
 	{
 		this.add_u8("cooldown_time", -1);
 	}
+	
+	// wetness (for water dripping effect)
+	if (!v_fastrender)
+	{
+		CSprite@ sprite = this.getSprite();
+		bool wet = this.isInWater();
+		
+		// in water
+		if (sprite !is null && sprite.getFrameIndex() == 3 && wet)
+		{
+			this.set_u32("water last touched", getGameTime());
+			this.Tag("wet");
+			return;
+		}
+		
+		// got out of water
+		if (this.exists("water last touched") && this.get_u32("water last touched") + 150 > getGameTime())
+		{
+			this.Tag("wet");
+		}
+		else
+		{
+			this.Untag("wet");
+		}
+	}
 }
 
 //sprite
@@ -98,20 +122,6 @@ void onTick(CSprite@ this)
 {
 	u8 absorbed = this.getBlob().get_u8(ABSORBED_PROP);
 	spongeUpdateSprite(this, absorbed);
-	
-	// wetness
-	if (!v_fastrender)
-	{
-		CBlob@ blob = this.getBlob();
-		if (blob !is null && this.getFrameIndex() == 3)
-		{
-			blob.Tag("wet");
-		}
-		else
-		{
-			blob.Untag("wet");
-		}
-	}
 }
 
 u8 adjustAbsorbedAmount(CBlob@ this, f32 amount)
