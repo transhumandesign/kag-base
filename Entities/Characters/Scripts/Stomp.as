@@ -2,6 +2,8 @@
 #include "/Entities/Common/Attacks/Hitters.as";
 #include "KnockedCommon.as"
 
+const u8 STOMP_AGAIN_THRESHOLD = 15;
+
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (blob is null)   // map collision?
@@ -71,7 +73,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 	u16 stomped_time = this.get_u16("stomped_time");
 	CBlob@ stomper = getBlobByNetworkID(this.get_u16("stomped_by_id"));
-	bool recently_stomped_by_blob = (stomper !is null && stomper is blob && stomped_time + 60 > getGameTime());
+	bool recently_stomped_by_blob = (stomper !is null && stomper is blob && stomped_time + STOMP_AGAIN_THRESHOLD > getGameTime());
 	bool falling_faster_than_blob = this.getVelocity().y > blob.getVelocity().y;
 
 	return !(recently_stomped_by_blob && falling_faster_than_blob);
