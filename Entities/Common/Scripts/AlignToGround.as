@@ -1,3 +1,4 @@
+#define SERVER_ONLY
 
 void onInit(CBlob@ this)
 {
@@ -9,6 +10,8 @@ void onInit(CBlob@ this)
 	Vec2f pos = shape.getPosition();
 	pos = Vec2f(Maths::Floor(pos.x / ts) * ts, Maths::Floor(pos.y / ts) * ts); // align to tiles
 
+	u8 checked_times = 0;
+
 	while (!map.isTileSolid(pos))
 	{
 		pos += Vec2f(0, ts);
@@ -19,6 +22,11 @@ void onInit(CBlob@ this)
 			this.server_Die();
 			return;
 		}
+		
+		// if checked 10 times, leave it be
+		checked_times++;
+		if (checked_times >= 10)
+			break;
 	}
 
 	this.setPosition(Vec2f(pos.x, pos.y - shape.getHeight() / 2 - shape.getOffset().y));

@@ -3,7 +3,6 @@
 #include "ClassSelectMenu.as"
 #include "StandardRespawnCommand.as"
 #include "StandardControlsCommon.as"
-#include "RespawnCommandCommon.as"
 #include "GenericButtonCommon.as"
 
 void onInit(CBlob@ this)
