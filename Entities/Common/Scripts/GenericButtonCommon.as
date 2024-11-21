@@ -1,4 +1,3 @@
-
 #include "KnockedCommon.as";
 
 bool canSeeButtons(CBlob@ this, CBlob@ caller)
