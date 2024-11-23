@@ -961,7 +961,7 @@ bool isMapVoteActive()
 	return getRules().get("MapVotesMenu", @mvm)
 		&& getRules().isGameOver()
 		&& mvm.isSetup
-		&& getNet().isClient()
+		&& isClient()
 		&& ticksSinceGameOver() >= 5*getTicksASecond();
 }
 

@@ -40,7 +40,7 @@ void onInit(CRules@ this)
 
 void onRestart(CRules@ this)
 {
-	if(getNet().isServer())
+	if (isServer())
 	{
 		print("Checking any holidays...");
 
@@ -59,13 +59,13 @@ void onRestart(CRules@ this)
 
 		s16 holiday_start;
 		s16 holiday_end;
-		for(u8 i = 0; i < calendar.length; i++)
+		for (u8 i = 0; i < calendar.length; i++)
 		{
 			holiday_start = calendar[i].m_date;
 			holiday_end = (holiday_start + calendar[i].m_length) % (365 + server_leap);
 
 			bool holiday_active = false;
-			if(holiday_start <= holiday_end)
+			if (holiday_start <= holiday_end)
 			{
 				holiday_active = server_date >= holiday_start && server_date < holiday_end;
 			}
@@ -74,7 +74,7 @@ void onRestart(CRules@ this)
 				holiday_active = server_date >= holiday_start || server_date < holiday_end;
 			}
 
-			if(holiday_active)
+			if (holiday_active)
 			{
 				holiday = calendar[i].m_name;
 				print("Holiday: "+holiday);
@@ -85,10 +85,51 @@ void onRestart(CRules@ this)
 	}
 }
 
+void SyncHoliday(CRules@ this, string _holiday, string _holiday_cache)
+{
+	if (_holiday != _holiday_cache) //changed
+	{
+		if (_holiday_cache != "")
+		{
+			if (scriptlist.find(_holiday_cache) == -1) {
+				warn("script " + _holiday_cache + " cache not found inside script list");
+				return;
+			} 
+			print("removing " + _holiday_cache + " holiday script");
+			//remove old holiday
+			this.RemoveScript(_holiday_cache + ".as");
+			if (isServer())
+			{
+				holiday_cache = "";
+			}
+		}
+		if (_holiday != "")
+		{
+			if (scriptlist.find(_holiday) == -1) {
+				warn("script " + _holiday + " not found inside script list");
+				return;
+			}
+
+			print("adding " + _holiday + " holiday script");
+			//adds the holiday script
+			this.AddScript(_holiday+".as");
+
+			if(isServer())
+			{
+				//this is 100% local, so we only have it if we actually attached a script
+				holiday = _holiday;
+				holiday_cache = _holiday;
+			}
+		}
+		this.set_string(holiday_prop, holiday);
+	}
+}
+
 void onTick(CRules@ this)
 {
-	if(getNet().isServer() && sync)
+	if (isServer() && sync)
 	{
+		SyncHoliday(this, holiday, holiday_cache);
 		CBitStream params;
 		params.write_string(holiday);
 		params.write_string(holiday_cache);
@@ -99,47 +140,12 @@ void onTick(CRules@ this)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 {
-	if(cmd == this.getCommandID(SYNC_HOLIDAY_ID))
+	if (cmd == this.getCommandID(SYNC_HOLIDAY_ID) && isClient())
 	{
 		string _holiday, _holiday_cache;
 		if(!params.saferead_string(_holiday)) return;
 		if(!params.saferead_string(_holiday_cache)) return;
 
-		if(_holiday != _holiday_cache) //changed
-		{
-			if(_holiday_cache != "")
-			{
-				if (scriptlist.find(_holiday_cache) == -1) {
-					warn("script " + _holiday_cache + " cache not found inside script list");
-					return;
-				} 
-				print("removing " + _holiday_cache + " holiday script");
-				//remove old holiday
-				this.RemoveScript(_holiday_cache + ".as");
-				if(getNet().isServer())
-				{
-					holiday_cache = "";
-				}
-			}
-			if(_holiday != "")
-			{
-				if (scriptlist.find(_holiday) == -1) {
-					warn("script " + _holiday + " not found inside script list");
-					return;
-				}
-
-				print("adding " + _holiday + " holiday script");
-				//adds the holiday script
-				this.AddScript(_holiday+".as");
-
-				if(getNet().isServer())
-				{
-					//this is 100% local, so we only have it if we actually attached a script
-					holiday = _holiday;
-					holiday_cache = _holiday;
-				}
-			}
-			this.set_string(holiday_prop, holiday);
-		}
+		SyncHoliday(this, _holiday, _holiday_cache);
 	}
 }
