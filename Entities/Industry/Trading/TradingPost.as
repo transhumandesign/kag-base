@@ -34,6 +34,11 @@ void onInit(CBlob@ this)
 	}
 
 	//TODO: set shop type and spawn trader based on some property
+	
+	// create icons, used in TDM_Trading.as
+	AddIconToken("$keg_tdm" + this.getTeamNum() + "$", "Keg.png", Vec2f(16, 16), 0, this.getTeamNum());
+	AddIconToken("$mine_tdm" + this.getTeamNum() + "$", "Mine.png", Vec2f(16, 16), 0, this.getTeamNum());
+	AddIconToken("$crate_tdm" + this.getTeamNum() + "$", "CrateSmall.png", Vec2f(16, 16), 0, this.getTeamNum());
 }
 
 
