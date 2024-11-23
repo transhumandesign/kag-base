@@ -106,9 +106,9 @@ class ChatCommandManager
 
 	bool processCommand(string text, ChatCommand@ &out command, string[] &out args)
 	{
-        text = text.toLower();  // Ignore case
+		text = text.toLower();  // Ignore case
 
-        string prefix = ChatCommands::getPrefix();
+		string prefix = ChatCommands::getPrefix();
 		if (text.substr(0, prefix.size()) != prefix && text.substr(0, 1) != "!") return false;  // Allow ! instead of /
 
 		string name = text.substr(1, 1);
@@ -131,6 +131,6 @@ class ChatCommandManager
 			}
 		}
 
-        return processCommand("/spawn " + text.substr(1), command, args);  // Default to spawn command
+		return processCommand("/spawn " + text.substr(1), command, args);  // Default to spawn command
 	}
 }
