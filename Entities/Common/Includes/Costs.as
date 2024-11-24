@@ -119,7 +119,7 @@ void InitCosts()
 	CTFCosts::quarry_count =                ReadCost(cfg, costs, "cost_quarry_count"       , 1);
 
 	//ArcherShop.as
-	CTFCosts::arrows =                      ReadCost(cfg, costs, "cost_arrows"             , 15);
+	CTFCosts::arrows =                      ReadCost(cfg, costs, "cost_arrows"             , 5);
 	CTFCosts::waterarrows =                 ReadCost(cfg, costs, "cost_waterarrows"        , 15);
 	CTFCosts::firearrows =                  ReadCost(cfg, costs, "cost_firearrows"         , 30);
 	CTFCosts::bombarrows =                  ReadCost(cfg, costs, "cost_bombarrows"         , 50);
