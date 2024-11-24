@@ -43,11 +43,14 @@ void onTick(CSprite@ this)
 {
 	//TODO: empty? show it.
 	CBlob@ blob = this.getBlob();
+	if (blob is null) return;
+	
 	CSpriteLayer@ trader = this.getSpriteLayer("trader");
 	bool trader_moving = blob.get_bool("trader moving");
 	bool moving_left = blob.get_bool("moving left");
 	u32 move_timer = blob.get_u32("move timer");
 	u32 next_offset = blob.get_u32("next offset");
+	
 	if (!trader_moving)
 	{
 		if (move_timer <= getGameTime())
@@ -70,7 +73,6 @@ void onTick(CSprite@ this)
 		{
 			offset.x -= 0.5f;
 			trader.SetOffset(offset);
-
 		}
 		else if (moving_left && offset.x <= -next_offset)
 		{
@@ -79,13 +81,11 @@ void onTick(CSprite@ this)
 			blob.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(5) + 5)*getTicksASecond());
 			blob.set_u32("next offset", traderRandom.NextRanged(16));
 			trader.SetAnimation("stop");
-
 		}
 		else if (!moving_left && offset.x > -next_offset)
 		{
 			offset.x -= 0.5f;
 			trader.SetOffset(offset);
-
 		}
 		else if (!moving_left && offset.x <= -next_offset)
 		{
@@ -94,7 +94,6 @@ void onTick(CSprite@ this)
 			blob.set_u32("move timer", getGameTime() + (traderRandom.NextRanged(5) + 5)*getTicksASecond());
 			blob.set_u32("next offset", traderRandom.NextRanged(16));
 			trader.SetAnimation("stop");
-
 		}
 	}
 }
@@ -119,17 +118,21 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 	bool TDM = rules.gamemode_name == "Team Deathmatch";
 	bool SBX = rules.gamemode_name == "Sandbox";
 	
-	if (!TDM && !SBX)
+	if (!isServer() || !(TDM || SBX))
 		return;
-	
+
 	if (oldHealth > 0.0f && this.getHealth() <= 0.0f)
 	{
 		// spawn trader that can be killed
 		if (this.exists("trader sex num"))
 		{
 			CBlob@ trader = server_CreateBlobNoInit("trader");
-			trader.set_u8("sex num", this.get_u8("trader sex num"));
-			trader.setPosition(this.getPosition());
+			if (trader !is null)
+			{
+				trader.set_u8("sex num", this.get_u8("trader sex num"));
+				trader.setPosition(this.getPosition());
+				trader.Init();
+			}
 		}
 	
 		// destroy building
