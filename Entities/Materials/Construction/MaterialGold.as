@@ -28,7 +28,10 @@ void onRender(CSprite@ this)
 	if (localBlob is null) return;
 
 	CBlob@ invBlob = blob.getInventoryBlob();
-	if (invBlob is null || localBlob.getTeamNum() != invBlob.getTeamNum() || localBlob is invBlob) return;
+	if (invBlob is null 
+		|| localBlob.getTeamNum() != invBlob.getTeamNum() 
+		|| localBlob is invBlob
+		|| invBlob.getName() == "storage") return;
 
 	Vec2f pos2d = blob.getScreenPos();
 
@@ -39,7 +42,12 @@ void onRender(CSprite@ this)
 		Vec2f textDim;
 		GUI::GetTextDimensions(goldCount, textDim);
 		
-		u16 offset_x = invBlob.getInitialHealth() * 2 * 12;
+		u16 offset_x = 0;
+		
+		if (invBlob.hasTag("player"))
+		{
+			offset_x = invBlob.getInitialHealth() * 2 * 12;
+		}
 		
 		Vec2f tl(pos2d.x - 6 + offset_x, pos2d.y + 4);
 		Vec2f textPos(pos2d.x + 18 + offset_x, pos2d.y + 8);
