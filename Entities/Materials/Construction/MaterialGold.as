@@ -31,17 +31,24 @@ void onRender(CSprite@ this)
 	if (invBlob is null 
 		|| localBlob.getTeamNum() != invBlob.getTeamNum() 
 		|| localBlob is invBlob
-		|| invBlob.getName() == "storage") return;
+		|| invBlob.getName() == "storage")
+	{
+		return;
+	}
+	
+	// check if it's actually a player teammate, not just a spawned in blob
+	CPlayer@ invPlayer = invBlob.getPlayer();
+	if (invBlob.hasTag("player") && invBlob.getPlayer() is null)
+	{
+		return;
+	}
 
 	Vec2f pos2d = blob.getScreenPos();
 
 	if (!getHUD().hasButtons())
 	{
-		string goldCount = "" + invBlob.getBlobCount("mat_gold");
-		
-		Vec2f textDim;
-		GUI::GetTextDimensions(goldCount, textDim);
-		
+		string goldCount = invBlob.getBlobCount("mat_gold");
+
 		u16 offset_x = 0;
 		
 		if (invBlob.hasTag("player"))
