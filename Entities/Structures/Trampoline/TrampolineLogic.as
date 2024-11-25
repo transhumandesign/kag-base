@@ -142,7 +142,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			
 			blob.server_Hit(blob, blob.getPosition(), blob.getVelocity(), 0.0f, Hitters::fall_trampoline, true);
 
-			blob.set_s16("trampoline last bounce", getGameTime());
+			blob.set_s32("trampoline last bounce", getGameTime());
 
 			CSprite@ sprite = this.getSprite();
 			if (sprite !is null)
