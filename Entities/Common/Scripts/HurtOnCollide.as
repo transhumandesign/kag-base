@@ -48,6 +48,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		if (blob is null)
 		{
 			// map collision
+			
 			CMap@ map = this.getMap();
 			point1 -= normal;
 			TileType tile = map.getTile(point1).type;
@@ -72,52 +73,54 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				}
 			}
 		}
-		else    // blob
-			if (blob.getTeamNum() != this.getTeamNum())
+		else if (!blob.hasTag("invincible") 
+				&& blob.getTeamNum() != this.getTeamNum())
+		{
+			// blob
+		
+			const f32 mass = Maths::Max(this.getMass(), 10.0f);
+			const f32 veryHeavy = 500.0f;
+			// no team killingfor not very heavy objects
+
+			CPlayer@ damagePlayer = this.getDamageOwnerPlayer();
+			if (mass < veryHeavy &&
+					damagePlayer !is null &&
+					damagePlayer.getBlob() !is null &&
+					damagePlayer.getBlob().getTeamNum() == blob.getTeamNum())
 			{
-				const f32 mass = Maths::Max(this.getMass(), 10.0f);
-				const f32 veryHeavy = 500.0f;
-				// no team killingfor not very heavy objects
+				return;
+			}
 
-				CPlayer@ damagePlayer = this.getDamageOwnerPlayer();
-				if (mass < veryHeavy &&
-				        damagePlayer !is null &&
-				        damagePlayer.getBlob() !is null &&
-				        damagePlayer.getBlob().getTeamNum() == blob.getTeamNum())
+
+			// hack:for boats killing ppl on top
+			if (mass > veryHeavy &&
+					blob.getPosition().y < this.getPosition().y &&
+					blob.hasTag("flesh"))
+			{
+				return;
+			}
+
+			// check if we had greater velocity
+			if (vellen >= blob.getShape().vellen &&
+					vellen > 0.1f &&
+					blob.getMass() > 0.0f)
+			{
+				hitvel /= vellen;
+				hitvec.Normalize();
+				coef = hitvec * hitvel;
+				coef *= this.get_f32("hit dmg modifier");
+				f32 mass = Maths::Min(this.getMass(), 1000.0f);
+				f32 mass2 = Maths::Min(blob.getMass(), 200.0f);
+				f32 dmg = vellen * coef * (mass / mass2) / 8.0f;
+
+				if (dmg > 0.25f)
 				{
+					this.server_Hit(blob, point1, hitvel, dmg, this.get_u8("hurtoncollide hitter"), true);
+					//  printf("HIOT " + dmg );
 					return;
-				}
-
-
-				// hack:for boats killing ppl on top
-				if (mass > veryHeavy &&
-				        blob.getPosition().y < this.getPosition().y &&
-				        blob.hasTag("flesh"))
-				{
-					return;
-				}
-
-				// check if we had greater velocity
-				if (vellen >= blob.getShape().vellen &&
-				        vellen > 0.1f &&
-				        blob.getMass() > 0.0f)
-				{
-					hitvel /= vellen;
-					hitvec.Normalize();
-					coef = hitvec * hitvel;
-					coef *= this.get_f32("hit dmg modifier");
-					f32 mass = Maths::Min(this.getMass(), 1000.0f);
-					f32 mass2 = Maths::Min(blob.getMass(), 200.0f);
-					f32 dmg = vellen * coef * (mass / mass2) / 8.0f;
-
-					if (dmg > 0.25f)
-					{
-						this.server_Hit(blob, point1, hitvel, dmg, this.get_u8("hurtoncollide hitter"), true);
-						//  printf("HIOT " + dmg );
-						return;
-					}
 				}
 			}
+		}
 	}
 }
 
