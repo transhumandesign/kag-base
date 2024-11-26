@@ -11,7 +11,10 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-    if (not this.isInWater())
+	Vec2f bottom_pos = this.getPosition() + Vec2f(0, this.getHeight() / 2);
+	CMap@ map = getMap();
+
+	if (!map.isInWater(bottom_pos))
     {
         u8 absorbed = this.get_u8(ABSORBED_PROP);
         absorbed = Maths::Max(0, absorbed - slow_frequency);
