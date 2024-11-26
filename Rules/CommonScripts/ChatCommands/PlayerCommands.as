@@ -49,7 +49,7 @@ class ClassCommand : ChatCommand
 		}
 
 		CBlob@ newBlob = server_CreateBlob(className, blob.getTeamNum(), blob.getPosition());
-		if (newBlob is null)
+		if (newBlob is null || newBlob.getName() != className)
 		{
 			server_AddToChat(getTranslatedString("Unable to change class"), ConsoleColour::ERROR, player);
 			return;
