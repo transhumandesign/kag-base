@@ -45,13 +45,9 @@ bool reportAllowed(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 
 void report(CRules@ this, CPlayer@ player, CPlayer@ baddie, string reason)
 {
-	// TODO: add a way to get this server-side...
-	string serverip = getNet().joined_ip;
-
 	// send report information to server
 	CBitStream report_params;
 	report_params.write_u16(baddie.getNetworkID());
-	report_params.write_string(serverip);
 	report_params.write_string(reason);
 	this.SendCommand(this.getCommandID("report"), report_params);
 }

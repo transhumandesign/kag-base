@@ -109,13 +109,13 @@ void MakeBlocksMenu(CInventory@ this, CBlob@ blob, const Vec2f &in INVENTORY_POS
 		button.selectOneOnClick = true;
 
 		CBitStream missing;
-		if (hasRequirements(this, b.reqs, missing, not b.buildOnGround))
+		if (hasRequirements(this, b.reqs, missing, !b.buildOnGround))
 		{
-			button.hoverText = block_desc + "\n" + getButtonRequirementsText(b.reqs, false);
+			button.hoverText = block_desc + "\n\n" + getButtonRequirementsText(b.reqs, false);
 		}
 		else
 		{
-			button.hoverText = block_desc + "\n" + getButtonRequirementsText(missing, true);
+			button.hoverText = block_desc + "\n\n" + getButtonRequirementsText(missing, true);
 			button.SetEnabled(false);
 		}
 

@@ -280,21 +280,20 @@ void onTick(CBlob@ this)
 			if (isTap(this, minimum_ticks))     // tap - put thing in inventory
 			{
 				CBlob@ held = this.getCarriedBlob();
+
+				ControlsCycle@ onCycle;
+				if (this.get("onCycle handle", @onCycle))
+				{
+					CBitStream params;
+					params.write_u16(this.getNetworkID());
+					params.ResetBitIndex();
+
+					onCycle(params);
+				}
+
 				if (held !is null)
 				{
 					this.SendCommand(this.getCommandID("putinheld"));
-				}
-				else
-				{
-					ControlsCycle@ onCycle;
-					if (this.get("onCycle handle", @onCycle))
-					{
-						CBitStream params;
-						params.write_u16(this.getNetworkID());
-						params.ResetBitIndex();
-
-						onCycle(params);
-					}
 				}
 
 				this.ClearMenus();
