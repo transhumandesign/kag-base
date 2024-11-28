@@ -156,8 +156,8 @@ void MakeBlocksMenu(CInventory@ this, CBlob@ blob, const Vec2f &in INVENTORY_POS
 
 		for(u8 i = 0; i < Builder::PAGE_COUNT; i++)
 		{
-			CBitStream params;
-			params.write_u8(i);
+			CBitStream stream;
+			stream.write_u8(i);
 			CGridButton@ button = page_menu.AddButton("$"+PAGE_NAME[i]+"$", PAGE_NAME[i], "BuilderInventory.as", "Callback_SelectPage", Vec2f(2, 1), stream);
 			if (button is null) continue;
 
