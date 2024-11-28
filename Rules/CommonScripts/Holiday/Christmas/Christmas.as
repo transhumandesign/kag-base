@@ -2,10 +2,12 @@
 //
 //TODO: re-apply new holiday sprites when holiday is active
 //		(check git history around xmas 2018 for holiday versions)
+#include "TreeCommon.as";
+#include "HolidayCommon.as";
 
 #include "TreeCommon.as";
 
-const int present_interval = 30 * 60 * 10; // 10 minutes
+const int present_interval = getTicksASecond() * 60 * 10; // 10 minutes
 const int gifts_per_hoho = 3;
 
 // Snow stuff
@@ -17,9 +19,13 @@ f64 frameTime = 0;
 void onInit(CRules@ this)
 {
 	if (isClient())
-	{
 		this.set_s16("snow_render_id", 0);
-	}
+	
+	if (!this.exists(holiday_head_prop))
+		this.set_u8(holiday_head_prop, 91);
+
+	// no coin cap during christmas holidays
+	this.Tag("remove coincap");
 
 	this.addCommandID("xmas sound");
 
@@ -49,7 +55,7 @@ void onTick(CRules@ this)
 			this.set_s16("snow_render_id", Render::addScript(Render::layer_background, "Christmas.as", "DrawSnow", 0));
 #endif
 		} 
-		else if (renderId != 0 && v_fastrender || this.get_string("holiday") != "Christmas") // Have we just enabled fast render OR is holiday over
+		else if (renderId != 0 && v_fastrender || this.get_string(holiday_prop) != "Christmas") // Have we just enabled fast render OR is holiday over
 		{
 			Render::RemoveScript(renderId);
 			this.set_s16("snow_render_id", 0);
@@ -144,7 +150,7 @@ CBlob@ spawnPresent(Vec2f spawnpos, u8 team)
 
 void onCommand( CRules@ this, u8 cmd, CBitStream @params )
 {
-	if(cmd == this.getCommandID("xmas sound"))
+	if (cmd == this.getCommandID("xmas sound") && isClient())
 	{
 		Sound::Play("Christmas.ogg");
 	}
@@ -154,7 +160,7 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params )
 
 void InitSnow()
 {
-	if(_snow_ready) return;
+	if (_snow_ready) return;
 
 	_snow_ready = true;
 
@@ -162,9 +168,9 @@ void InitSnow()
 	CMap@ map  = getMap();
 	int chunksX = map.tilemapwidth  / 32 + 3;
 	int chunksY = map.tilemapheight / 32 + 3;
-	for(int cX = 0; cX < chunksX; cX++)
+	for (int cX = 0; cX < chunksX; cX++)
 	{
-		for(int cY = 0; cY < chunksY; cY++)
+		for (int cY = 0; cY < chunksY; cY++)
 		{
 			float patch = 256;
 			Verts.push_back(Vertex((cX-1)*patch, (cY)*patch,   -500, 0, 0, snow_col));
@@ -181,7 +187,7 @@ void DrawSnow(int id)
 	frameTime += getRenderApproximateCorrectionFactor();
 	
 	float[] trnsfm;
-	for(int i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		float gt = frameTime * (1.0f + (0.031f * i)) + (997 * i);
 		float X = Maths::Cos(gt/49.0f)*20 +

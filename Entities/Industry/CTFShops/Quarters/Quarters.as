@@ -70,8 +70,13 @@ void onInit(CBlob@ this)
 		bed.SetMouseTaken(true);
 	}
 
+	ShopMadeItem@ onMadeItem = @onShopMadeItem;
+	this.set("onShopMadeItem handle", @onMadeItem);
+
 	this.addCommandID("rest");
 	this.getCurrentScript().runFlags |= Script::tick_hasattached;
+
+	this.Tag("has window");
 
 	//INIT COSTS
 	InitCosts();
@@ -93,6 +98,7 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Beer - 1 Heart", "$quarters_beer$", "beer", Descriptions::beer, false);
 		s.spawnNothing = true;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::beer);
+		AddHurtRequirement(s.requirements);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Meal - Full Health", "$quarters_meal$", "meal", Descriptions::meal, false);
@@ -101,6 +107,7 @@ void onInit(CBlob@ this)
 		s.buttonwidth = 2;
 		s.buttonheight = 1;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::meal);
+		AddHurtRequirement(s.requirements);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Egg - Full Health", "$quarters_egg$", "egg", Descriptions::egg, false);
@@ -116,7 +123,6 @@ void onTick(CBlob@ this)
 {
 	// TODO: Add stage based sleeping, rest(2 * 30) | sleep(heal_amount * (patient.getHealth() - patient.getInitialHealth())) | awaken(1 * 30)
 	// TODO: Add SetScreenFlash(rest_time, 19, 13, 29) to represent the player gradually falling asleep
-	bool isServer = getNet().isServer();
 	AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
 	if (bed !is null)
 	{
@@ -125,7 +131,7 @@ void onTick(CBlob@ this)
 		{
 			if (bed.isKeyJustPressed(key_up) || patient.getHealth() == 0)
 			{
-				if (isServer)
+				if (isServer())
 				{
 					patient.server_DetachFrom(this);
 				}
@@ -138,7 +144,7 @@ void onTick(CBlob@ this)
 					{
 						Sound::Play("Heart.ogg", patient.getPosition(), 0.5);
 					}
-					if (isServer)
+					if (isServer())
 					{
 						f32 oldHealth = patient.getHealth();
 						patient.server_Heal(heal_amount);
@@ -147,7 +153,7 @@ void onTick(CBlob@ this)
 				}
 				else
 				{
-					if (isServer)
+					if (isServer())
 					{
 						patient.server_DetachFrom(this);
 					}
@@ -174,74 +180,90 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	else
 	{
 		this.set_Vec2f("shop offset", Vec2f(6, 0));
-		CBitStream params;
-		params.write_u16(caller.getNetworkID());
-		caller.CreateGenericButton("$rest$", Vec2f(-6, 0), this, this.getCommandID("rest"), getTranslatedString("Rest"), params);
+		caller.CreateGenericButton("$rest$", Vec2f(-6, 0), this, this.getCommandID("rest"), getTranslatedString("Rest"));
 	}
 	this.set_bool("shop available", isOverlapping);
 }
 
+void onShopMadeItem(CBitStream@ params)
+{
+	if (!isServer()) return;
+
+	u16 this_id, caller_id, item_id;
+	string name;
+
+	if (!params.saferead_u16(this_id) || !params.saferead_u16(caller_id) || !params.saferead_u16(item_id) || !params.saferead_string(name))
+	{
+		return;
+	}
+
+	CBlob@ caller = getBlobByNetworkID(caller_id);
+	if (caller is null) return;
+
+	if (name == "beer")
+	{
+		caller.server_Heal(beer_amount);
+	}
+	else if (name == "meal")
+	{
+		caller.server_SetHealth(caller.getInitialHealth());
+	}
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	bool isServer = (getNet().isServer());
-
-	if (cmd == this.getCommandID("shop made item"))
+	if (cmd == this.getCommandID("shop made item client") && isClient())
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
-		u16 caller, item;
-		if (!params.saferead_netid(caller) || !params.saferead_netid(item))
+
+		u16 this_id, caller_id, item_id;
+		string name;
+
+		if (!params.saferead_u16(this_id) || !params.saferead_u16(caller_id) || !params.saferead_u16(item_id) || !params.saferead_string(name))
 		{
 			return;
 		}
-		string name = params.read_string();
+
+		if (name == "beer")
 		{
-			CBlob@ callerBlob = getBlobByNetworkID(caller);
-			if (callerBlob is null)
-			{
-				return;
-			}
-			if (name == "beer")
-			{
-				// TODO: gulp gulp sound
-				if (isServer)
-				{
-					callerBlob.server_Heal(beer_amount);
-				}
-			}
-			else if (name == "meal")
-			{
-				this.getSprite().PlaySound("/Eat.ogg");
-				if (isServer)
-				{
-					callerBlob.server_SetHealth(callerBlob.getInitialHealth());
-				}
-			}
+			this.getSprite().PlaySound("/Gulp.ogg");
+		}
+		else if (name == "meal")
+		{
+			this.getSprite().PlaySound("/Eat.ogg");
 		}
 	}
-	else if (cmd == this.getCommandID("rest"))
+	else if (cmd == this.getCommandID("rest") && isServer())
 	{
-		u16 caller_id;
-		if (!params.saferead_netid(caller_id))
-			return;
+		CPlayer@ player = getNet().getActiveCommandPlayer();
 
-		CBlob@ caller = getBlobByNetworkID(caller_id);
+		if (player is null) 
+		{
+			return;
+		}
+
+		CBlob@ caller = player.getBlob();
+
 		if (caller !is null && !caller.isAttached())
 		{
+			f32 distance = this.getDistanceTo(caller);
+
+			// range check: do not rest if more than 5 blocks away from quarter's center
+			if (distance > 40) return;
+
 			AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
 			if (bed !is null && bedAvailable(this))
 			{
 				CBlob@ carried = caller.getCarriedBlob();
-				if (isServer)
+
+				if (carried !is null)
 				{
-					if (carried !is null)
+					if (!caller.server_PutInInventory(carried))
 					{
-						if (!caller.server_PutInInventory(carried))
-						{
-							carried.server_DetachFrom(caller);
-						}
+						carried.server_DetachFrom(caller);
 					}
-					this.server_AttachTo(caller, "BED");
 				}
+				this.server_AttachTo(caller, "BED");
 			}
 		}
 	}
@@ -347,16 +369,14 @@ void updateLayer(CSprite@ sprite, string name, int index, bool visible, bool rem
 
 bool bedAvailable(CBlob@ this)
 {
+	if (this.getHealth() <= 0.0f) return false;
+
 	AttachmentPoint@ bed = this.getAttachments().getAttachmentPointByName("BED");
 	if (bed !is null)
 	{
-		CBlob@ patient = bed.getOccupied();
-		if (patient !is null)
-		{
-			return false;
-		}
+		return bed.getOccupied() is null;
 	}
-	return true;
+	return false;
 }
 
 bool requiresTreatment(CBlob@ this, CBlob@ caller)

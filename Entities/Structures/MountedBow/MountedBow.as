@@ -3,7 +3,29 @@
 
 // Mounted Bow logic
 
-const Vec2f arm_offset = Vec2f(-6, 0);
+class MountedBowInfo : VehicleInfo
+{
+	void onFire(CBlob@ this, CBlob@ bullet, const u16 &in fired_charge)
+	{
+		if (bullet !is null)
+		{
+			const f32 sign = this.isFacingLeft() ? -1 : 1;
+			f32 angle = wep_angle * sign;
+			angle += (XORRandom(512) - 256) / 64.0f;
+
+			const f32 arrow_speed = 25.0f;
+			Vec2f vel = Vec2f(arrow_speed * sign, 0.0f).RotateBy(angle);
+			bullet.setVelocity(vel);
+
+			// set much higher drag than archer arrow
+			bullet.getShape().setDrag(bullet.getShape().getDrag() * 2.0f);
+
+			bullet.server_SetTimeToDie(-1);   // override lock
+			bullet.server_SetTimeToDie(0.69f);
+			bullet.Tag("bow arrow");
+		}
+	}
+}
 
 void onInit(CBlob@ this)
 {
@@ -11,13 +33,11 @@ void onInit(CBlob@ this)
 	              0.0f, // move speed
 	              0.31f,  // turn speed
 	              Vec2f(0.0f, 0.0f), // jump out velocity
-	              false  // inventory access
+	              false,  // inventory access
+	              MountedBowInfo()
 	             );
 	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
+	if (!this.get("VehicleInfo", @v)) return;
 
 	Vehicle_AddAmmo(this, v,
 	                    25, // fire delay (ticks)
@@ -27,62 +47,63 @@ void onInit(CBlob@ this)
 	                    "Arrows", // name for ammo selection
 	                    "arrow", // bullet config name
 	                    "BowFire", // fire sound
-	                    "EmptyFire" // empty fire sound
+	                    "EmptyFire", // empty fire sound
+	                    Vec2f(-3, 0) //fire position offset
 	                   );
 
-	v.charge = 400;
 	// init arm + cage sprites
 	CSprite@ sprite = this.getSprite();
+	sprite.SetZ(-10.0f);
 	CSpriteLayer@ arm = sprite.addSpriteLayer("arm", sprite.getConsts().filename, 16, 16);
-
 	if (arm !is null)
 	{
 		Animation@ anim = arm.addAnimation("default", 0, false);
-		anim.AddFrame(4);
-		anim.AddFrame(5);
-		arm.SetOffset(arm_offset);
+		int[] frames = { 4, 5 };
+		anim.AddFrames(frames);
+		arm.SetOffset(Vec2f(-6, 0));
+		arm.SetRelativeZ(1.0f);
 	}
 
 	CSpriteLayer@ cage = sprite.addSpriteLayer("cage", sprite.getConsts().filename, 8, 16);
-
 	if (cage !is null)
 	{
 		Animation@ anim = cage.addAnimation("default", 0, false);
-		anim.AddFrame(1);
-		anim.AddFrame(5);
-		anim.AddFrame(7);
+		int[] frames = { 1, 5, 7 };
+		anim.AddFrames(frames);
 		cage.SetOffset(sprite.getOffset());
 		cage.SetRelativeZ(20.0f);
 	}
+
+	UpdateFrame(this);
 
 	this.getShape().SetRotationsAllowed(false);
 
 	string[] autograb_blobs = {"mat_arrows"};
 	this.set("autograb blobs", autograb_blobs);
 
-	sprite.SetZ(-10.0f);
-
-	this.getCurrentScript().runFlags |= Script::tick_hasattached;
+	this.set_bool("facing", true);
 
 	// auto-load on creation
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CBlob@ ammo = server_CreateBlob("mat_arrows");
-		if (ammo !is null)
+		if (ammo !is null && !this.server_PutInInventory(ammo))
 		{
-			if (!this.server_PutInInventory(ammo))
-				ammo.server_Die();
+			ammo.server_Die();
 		}
 	}
+
+	CMap@ map = getMap();
+	if (map is null) return;
+
+	this.SetFacingLeft(this.getPosition().x > (map.tilemapwidth * map.tilesize) / 2);
 }
 
 f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
 {
-	f32 angle = Vehicle_getWeaponAngle(this, v);
-	bool facing_left = this.isFacingLeft();
+	f32 angle = v.wep_angle;
+	const bool facing_left = this.isFacingLeft();
 	AttachmentPoint@ gunner = this.getAttachments().getAttachmentPointByName("GUNNER");
-	bool failed = true;
-
 	if (gunner !is null && gunner.getOccupied() !is null)
 	{
 		gunner.offsetZ = 5.0f;
@@ -115,58 +136,42 @@ f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
 
 void onTick(CBlob@ this)
 {
-	if (this.hasAttached() || this.getTickSinceCreated() < 30) //driver, seat or gunner, or just created
+	if (this.hasAttached() || this.get_bool("facing") != this.isFacingLeft())
 	{
 		VehicleInfo@ v;
-		if (!this.get("VehicleInfo", @v))
-		{
-			return;
-		}
+		if (!this.get("VehicleInfo", @v)) return;
 
-		//set the arm angle based on GUNNER mouse aim, see above ^^^^
-		f32 angle = getAimAngle(this, v);
-		Vehicle_SetWeaponAngle(this, angle, v);
+		const f32 angle = getAimAngle(this, v);
+		v.wep_angle = angle;
+
 		CSprite@ sprite = this.getSprite();
 		CSpriteLayer@ arm = sprite.getSpriteLayer("arm");
-
 		if (arm !is null)
 		{
-			bool facing_left = sprite.isFacingLeft();
-			f32 rotation = angle * (facing_left ? -1 : 1);
-
-			if (v.getCurrentAmmo().loaded_ammo > 0)
-			{
-				arm.animation.frame = 1;
-			}
-			else
-			{
-				arm.animation.frame = 0;
-			}
+			const f32 sign = sprite.isFacingLeft() ? -1 : 1;
+			const f32 rotation = angle * sign;
 
 			arm.ResetTransform();
-			arm.SetFacingLeft(facing_left);
-			arm.SetRelativeZ(1.0f);
-			arm.SetOffset(arm_offset);
-			arm.RotateBy(rotation, Vec2f(facing_left ? -4.0f : 4.0f, 0.0f));
+			arm.RotateBy(rotation, Vec2f(4.0f * sign, 0.0f));
+			arm.animation.frame = v.getCurrentAmmo().loaded_ammo > 0 ? 1 : 0;
 		}
-
 
 		Vehicle_StandardControls(this, v);
 	}
+	this.set_bool("facing", this.isFacingLeft());
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
+	UpdateFrame(this);
+}
 
-	f32 hp = this.getHealth();
-	f32 max_hp = this.getInitialHealth();
-	int damframe = hp < max_hp * 0.4f ? 2 : hp < max_hp * 0.9f ? 1 : 0;
-	CSprite@ sprite = this.getSprite();
-	sprite.animation.frame = damframe;
-	CSpriteLayer@ cage = sprite.getSpriteLayer("cage");
+void UpdateFrame(CBlob@ this)
+{
+	CSpriteLayer@ cage = this.getSprite().getSpriteLayer("cage");
 	if (cage !is null)
 	{
-		cage.animation.frame = damframe;
+		cage.animation.setFrameFromRatio(1.0f - this.getHealth() / this.getInitialHealth());
 	}
 }
 
@@ -177,54 +182,6 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (!Vehicle_AddFlipButton(this, caller))
 	{
 		Vehicle_AddLoadAmmoButton(this, caller);
-	}
-}
-
-
-bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool wasActionPressed, u8 &out chargeValue) {return false;}
-
-void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _unused)
-{
-	if (bullet !is null)
-	{
-		u16 charge = v.charge;
-		f32 angle = Vehicle_getWeaponAngle(this, v);
-		angle = angle * (this.isFacingLeft() ? -1 : 1);
-		angle += ((XORRandom(512) - 256) / 64.0f);
-
-		Vec2f vel = Vec2f(charge / 16.0f * (this.isFacingLeft() ? -1 : 1), 0.0f).RotateBy(angle);
-		bullet.setVelocity(vel);
-		Vec2f offset = arm_offset;
-
-		//(handle facing correctly)
-		offset.x *= (this.isFacingLeft() ? 1 : -1);
-		offset.RotateBy(angle);
-		offset.Normalize();
-		//offset set length from shoot pos
-		offset *= 3.5f;
-		bullet.setPosition(this.getPosition() + offset);
-
-		// set much higher drag than archer arrow
-		bullet.getShape().setDrag(bullet.getShape().getDrag() * 2.0f);
-
-		bullet.server_SetTimeToDie(-1);   // override lock
-		bullet.server_SetTimeToDie(0.69f);
-		bullet.Tag("bow arrow");
-	}
-}
-
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
-{
-	if (cmd == this.getCommandID("fire blob"))
-	{
-		CBlob@ blob = getBlobByNetworkID(params.read_netid());
-		const u8 charge = params.read_u8();
-		VehicleInfo@ v;
-		if (!this.get("VehicleInfo", @v))
-		{
-			return;
-		}
-		Vehicle_onFire(this, v, blob, charge);
 	}
 }
 

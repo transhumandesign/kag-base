@@ -75,6 +75,20 @@ void onInit(CSprite@ this)
 		rope.SetOffset(Vec2f(5.0f, -8.0f));
 		rope.SetRelativeZ(2);
 	}
+	
+	// Lantern
+	CSpriteLayer@ lantern = this.addSpriteLayer("lantern", "Lantern.png", 8, 8);
+	if (lantern !is null)
+	{
+		{
+			lantern.addAnimation("default", 3, true);
+			int[] frames = { 0, 1, 2 };
+			lantern.animation.AddFrames(frames);
+		}
+		lantern.SetOffset(Vec2f(7.0f, -4.0f));
+		lantern.SetRelativeZ(3);
+		lantern.SetVisible(false);
+	}
 }
 
 void onInit(CBlob@ this)
@@ -94,19 +108,18 @@ void onTick(CBlob@ this)
 
 void PickupOverlap(CBlob@ this)
 {
-	if (getNet().isServer())
+	if (!isServer()) return;
+
+	Vec2f tl, br;
+	this.getShape().getBoundingRect(tl, br);
+	CBlob@[] blobs;
+	getMap().getBlobsInBox(tl, br, @blobs);
+	for (uint i = 0; i < blobs.length; i++)
 	{
-		Vec2f tl, br;
-		this.getShape().getBoundingRect(tl, br);
-		CBlob@[] blobs;
-		this.getMap().getBlobsInBox(tl, br, @blobs);
-		for (uint i = 0; i < blobs.length; i++)
+		CBlob@ blob = blobs[i];
+		if (!blob.isAttached() && blob.isOnGround() && blob.hasTag("material") && blob.getName() != "mat_arrows")
 		{
-			CBlob@ blob = blobs[i];
-			if (!blob.isAttached() && blob.isOnGround() && blob.hasTag("material") && blob.getName() != "mat_arrows")
-			{
-				this.server_PutInInventory(blob);
-			}
+			this.server_PutInInventory(blob);
 		}
 	}
 }
@@ -117,50 +130,48 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (caller.getTeamNum() == this.getTeamNum() && caller.isOverlapping(this))
 	{
-		CInventory @inv = caller.getInventory();
+		CInventory@ inv = caller.getInventory();
 		if (inv is null) return;
 
 		if (inv.getItemsCount() > 0)
 		{
-			CBitStream params;
-			params.write_u16(caller.getNetworkID());
-			caller.CreateGenericButton("$store_inventory$", Vec2f(-6, 0), this, this.getCommandID("store inventory"), getTranslatedString("Store"), params);
+			caller.CreateGenericButton("$store_inventory$", Vec2f(-6, 0), this, this.getCommandID("store inventory"), getTranslatedString("Store"));
 		}
 	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (getNet().isServer())
+	if (!isServer()) return;
+	
+	if (cmd == this.getCommandID("store inventory") && isServer())
 	{
-		if (cmd == this.getCommandID("store inventory"))
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+					
+		CBlob@ caller = p.getBlob();
+		if (caller is null) return;
+
+		// overlap check
+		if (!caller.isOverlapping(this)) return;
+
+		// team check
+		if (caller.getTeamNum() != this.getTeamNum()) return;
+
+		CBlob@ carried = caller.getCarriedBlob();
+		if (carried !is null && carried.hasTag("temp blob"))
 		{
-			CBlob@ caller = getBlobByNetworkID(params.read_u16());
-			if (caller !is null)
-			{
-				CInventory @inv = caller.getInventory();
-				if (caller.getConfig() == "builder")
-				{
-					CBlob@ carried = caller.getCarriedBlob();
-					if (carried !is null)
-					{
-						// TODO: find a better way to check and clear blocks + blob blocks || fix the fundamental problem, blob blocks not double checking requirement prior to placement.
-						if (carried.hasTag("temp blob"))
-						{
-							carried.server_Die();
-						}
-					}
-				}
-				if (inv !is null)
-				{
-					while (inv.getItemsCount() > 0)
-					{
-						CBlob @item = inv.getItem(0);
-						caller.server_PutOutInventory(item);
-						this.server_PutInInventory(item);
-					}
-				}
-			}
+			carried.server_Die();
+		}
+
+		CInventory@ inv = caller.getInventory();
+		if (inv is null) return;
+
+		while (inv.getItemsCount() > 0)
+		{
+			CBlob@ item = inv.getItem(0);
+			caller.server_PutOutInventory(item);
+			this.server_PutInInventory(item);
 		}
 	}
 }
@@ -177,153 +188,82 @@ void onRemoveFromInventory(CBlob@ this, CBlob@ blob)
 
 void updateLayers(CBlob@ this, CBlob@ blob)
 {
+	if (!isClient()) return;
+
 	const string blobName = blob.getName();
-	if (!checkName(blobName))
-	{
-		return;
-	}
 	CSprite@ sprite = this.getSprite();
 	CInventory@ inv = this.getInventory();
-	int blobCount = inv.getCount(blobName);
+	const int blobCount = inv.getCount(blobName);
+	bool visible = false;
 	if (blobName == "mat_stone")
 	{
 		CSpriteLayer@ stone = sprite.getSpriteLayer("mat_stone");
 		if (blobCount > 0)
 		{
-			if (blobCount >= 200)
-			{
-				stone.SetFrameIndex(2);
-			}
-			else if (blobCount >= 100)
-			{
-				stone.SetFrameIndex(1);
-			}
-			else
-			{
-				stone.SetFrameIndex(0);
-			}
-			stone.SetVisible(true);
+			const u8 frame = blobCount >= 200 ? 2 :
+							 blobCount >= 100 ? 1 : 0;
+			stone.SetFrameIndex(frame);
+			visible = true;
 		}
-		else
-		{
-			stone.SetVisible(false);
-		}
+
+		stone.SetVisible(visible);
 	}
 	else if (blobName == "mat_wood")
 	{
 		CSpriteLayer@ wood = sprite.getSpriteLayer("mat_wood");
 		if (blobCount > 0)
 		{
-			if (blobCount >= 200)
-			{
-				wood.SetFrameIndex(2);
-			}
-			else if (blobCount >= 100)
-			{
-				wood.SetFrameIndex(1);
-			}
-			else
-			{
-				wood.SetFrameIndex(0);
-			}
-			wood.SetVisible(true);
+			const u8 frame = blobCount >= 200 ? 2 :
+							 blobCount >= 100 ? 1 : 0;
+			wood.SetFrameIndex(frame);
+			visible = true;
 		}
-		else
-		{
-			wood.SetVisible(false);
-		}
+
+		wood.SetVisible(visible);
 	}
 	else if (blobName == "mat_gold")
 	{
 		CSpriteLayer@ gold = sprite.getSpriteLayer("mat_gold");
 		if (blobCount > 0)
 		{
-			if (blobCount >= 200)
-			{
-				gold.SetFrameIndex(2);
-			}
-			else if (blobCount >= 100)
-			{
-				gold.SetFrameIndex(1);
-			}
-			else
-			{
-				gold.SetFrameIndex(0);
-			}
-			gold.SetVisible(true);
+			const u8 frame = blobCount >= 200 ? 2 :
+							 blobCount >= 100 ? 1 : 0;
+			gold.SetFrameIndex(frame);
+			visible = true;
 		}
-		else
-		{
-			gold.SetVisible(false);
-		}
+
+		gold.SetVisible(visible);
 	}
 	else if (blobName == "mat_bombs")
 	{
 		CSpriteLayer@ bombs = sprite.getSpriteLayer("mat_bombs");
 		if (blobCount > 0)
 		{
-			if (blobCount >= 2)
-			{
-				bombs.SetFrameIndex(1);
-			}
-			else
-			{
-				bombs.SetFrameIndex(0);
-			}
-			bombs.SetVisible(true);
+			const u8 frame = blobCount >= 2 ? 1 : 0;
+			bombs.SetFrameIndex(frame);
+			visible = true;
 		}
-		else
-		{
-			bombs.SetVisible(false);
-		}
+
+		bombs.SetVisible(visible);
 	}
 	else if (blobName == "lantern")
 	{
+		CSpriteLayer@ lantern = sprite.getSpriteLayer("lantern");
 		if (blobCount > 0)
 		{
-			AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("LANTERN");
-			if (getNet().isServer() && point.getOccupied() is null)
+			for (int i = 0; i < inv.getItemsCount(); i++)
 			{
-				CBlob@ lantern = server_CreateBlob("lantern");
-				if (lantern !is null)
+				CBlob@ item = inv.getItem(i);
+				if (item.getName() == "lantern" && item.get_bool("lantern lit"))
 				{
-					lantern.server_setTeamNum(this.getTeamNum());
-					lantern.getShape().getConsts().collidable = false;
-					this.server_AttachTo(lantern, "LANTERN");
-					blob.set_u16("lantern id", lantern.getNetworkID());
-					Sound::Play("SparkleShort.ogg", lantern.getPosition());
+					visible = true;
+					break;
 				}
 			}
 		}
-		else
-		{
-			if (blob.exists("lantern id"))
-			{
-				CBlob@ lantern = getBlobByNetworkID(blob.get_u16("lantern id"));
-				if (lantern !is null)
-				{
-					lantern.server_Die();
-				}
-			}
-		}
-	}
-}
 
-void onDie(CBlob@ this)
-{
-	if (this.exists("lantern id"))
-	{
-		CBlob@ lantern = getBlobByNetworkID(this.get_u16("lantern id"));
-		if (lantern !is null)
-		{
-			lantern.server_Die();
-		}
+		lantern.SetVisible(visible);
 	}
-}
-
-bool checkName(string blobName)
-{
-	return (blobName == "mat_stone" || blobName == "mat_wood" || blobName == "mat_gold" || blobName == "mat_bombs" || blobName == "lantern");
 }
 
 bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)

@@ -19,6 +19,11 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
+	ShopMadeItem@ onMadeItem = @onShopMadeItem;
+	this.set("onShopMadeItem handle", @onMadeItem);
+
+	this.Tag("has window");
+
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
 	this.set_Vec2f("shop menu size", Vec2f(4, 4));
@@ -32,7 +37,7 @@ void onInit(CBlob@ this)
 	int team_num = this.getTeamNum();
 
 	{
-		ShopItem@ s = addShopItem(this, "Drill", "$drill$", "drill", Descriptions::drill, false);
+		ShopItem@ s = addShopItem(this, "Drill", getTeamIcon("drill", "Drill.png", team_num, Vec2f(32, 16), 0), "drill", Descriptions::drill, false);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::drill_stone);
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::drill);
 	}
@@ -98,36 +103,36 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	this.set_bool("shop available", this.isOverlapping(caller));
 }
 
+void onShopMadeItem(CBitStream@ params)
+{
+	if (!isServer()) return;
+
+	u16 this_id, caller_id, item_id;
+	string name;
+
+	if (!params.saferead_u16(this_id) || !params.saferead_u16(caller_id) || !params.saferead_u16(item_id) || !params.saferead_string(name))
+	{
+		return;
+	}
+
+	CBlob@ caller = getBlobByNetworkID(caller_id);
+	if (caller is null) return;
+
+	if (name == "filled_bucket")
+	{
+		CBlob@ b = server_CreateBlobNoInit("bucket");
+		b.setPosition(caller.getPosition());
+		b.server_setTeamNum(caller.getTeamNum());
+		b.Tag("_start_filled");
+		b.Init();
+		caller.server_Pickup(b);
+	}
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("shop made item"))
+	if (cmd == this.getCommandID("shop made item client") && isClient())
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
-
-		if (!getNet().isServer()) return; /////////////////////// server only past here
-
-		u16 caller, item;
-		if (!params.saferead_netid(caller) || !params.saferead_netid(item))
-		{
-			return;
-		}
-		string name = params.read_string();
-		{
-			CBlob@ callerBlob = getBlobByNetworkID(caller);
-			if (callerBlob is null)
-			{
-				return;
-			}
-
-			if (name == "filled_bucket")
-			{
-				CBlob@ b = server_CreateBlobNoInit("bucket");
-				b.setPosition(callerBlob.getPosition());
-				b.server_setTeamNum(callerBlob.getTeamNum());
-				b.Tag("_start_filled");
-				b.Init();
-				callerBlob.server_Pickup(b);
-			}
-		}
 	}
 }

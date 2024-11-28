@@ -8,6 +8,16 @@ void onInit(CRules@ this)
 	LoadDefaultMapLoaders();
 	LoadDefaultGUI();
 
+	// comment this out if you want to restore legacy net command script
+	// compatibility. mods that include scripts from before build 4541 may
+	// additionally want to bring back scripts they share commands with.
+	getNet().legacy_cmd = false;
+
+	if (isServer())
+	{
+		getSecurity().reloadSecurity();
+	}
+
 	sv_gravity = 9.81f;
 	particles_gravity.y = 0.25f;
 	sv_visiblity_scale = 1.25f;
@@ -81,12 +91,12 @@ void onEnterChat(CRules @this)
 
 	CBlob@ localblob = getLocalPlayerBlob();
 	if (localblob !is null)
-		set_emote(localblob, Emotes::dots, 100000);
+		set_emote(localblob, "dots", 100000);
 }
 
 void onExitChat(CRules @this)
 {
 	CBlob@ localblob = getLocalPlayerBlob();
 	if (localblob !is null)
-		set_emote(localblob, Emotes::off);
+		set_emote(localblob, "", 0);
 }

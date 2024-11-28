@@ -409,6 +409,12 @@ void onPlayerRequestTeamChange(CRules@ this, CPlayer@ player, u8 newTeam)
 		// if(player.isMyPlayer())
 		// 	client_AddToChat("Can't change teams now - it would imbalance them.");
 
+		if (newTeam >= core.teams.size())
+		{
+			warn(player.getUsername() + " attempted switch from spectator to invalid team, ignoring");
+			return;
+		}
+
 		getNet().server_SendMsg("Switching " + player.getUsername() + " back to "
 		                        + (spect ? "spectator" : core.teams[oldTeam].name) + " - teams unbalanced");
 

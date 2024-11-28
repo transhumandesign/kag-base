@@ -1,5 +1,5 @@
 #include "Hitters.as";
-#include "GameplayEvents.as";
+#include "GameplayEventsCommon.as";
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
@@ -31,11 +31,11 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			break;
 
 		case Hitters::bomb_arrow:
-			dmg *= 8.0f;
+			dmg *= this.exists("bomb resistance") ? this.get_f32("bomb resistance") : 8.0f;
 			break;
 
 		case Hitters::arrow:
-			dmg = this.getMass() > 1000.0f ? 1.0f : 0.5f;
+			dmg = this.getMass() > 1000.0f ? 0.2f : 0.5f;
 			break;
 
 		case Hitters::ballista:
@@ -48,9 +48,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		CPlayer@ damageowner = hitterBlob.getDamageOwnerPlayer();
 		if (damageowner !is null)
 		{
-			if (damageowner.getTeamNum() != this.getTeamNum())
+			if (damageowner.getTeamNum() != this.getTeamNum() && isServer())
 			{
-				SendGameplayEvent(createVehicleDamageEvent(damageowner, dmg));
+				GE_HitVehicle(damageowner.getNetworkID(), dmg); // gameplay event for coins
 			}
 		}
 	}
@@ -64,9 +64,13 @@ void onDie(CBlob@ this)
 	if (p !is null)
 	{
 		CBlob@ b = p.getBlob();
-		if (b !is null && b.getTeamNum() != this.getTeamNum())
+		if (b !is null && b.getTeamNum() != this.getTeamNum() && isServer())
 		{
-			SendGameplayEvent(createVehicleDestroyEvent(this.getPlayerOfRecentDamage()));
+			CPlayer@ p = this.getPlayerOfRecentDamage();
+			if (p !is null)
+			{
+				GE_KillVehicle(p.getNetworkID());
+			}
 		}
 	}
 }

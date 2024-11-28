@@ -13,16 +13,20 @@ const f32 speed_hard_thresh = 2.6f;
 const string buzz_prop = "drill timer";
 
 const string heat_prop = "drill heat";
-const u8 heat_max = 120;
+const u8 heat_max = 150;
+const u8 heat_drop = 140;
+const u8 high_damage_window = 40; // at how much heat before max drill deals increased damage
 
 const string last_drill_prop = "drill last active";
 
-const u8 heat_add = 6;
+const u8 heat_add = 7;
 const u8 heat_add_constructed = 2;
-const u8 heat_add_blob = 8;
+const u8 heat_add_blob = 6;
 const u8 heat_cool_amount = 2;
 
-const u8 heat_cooldown_time = 6;
+const f32 heat_reduction_water = 0.5f;
+
+const u8 heat_cooldown_time = 8;
 const u8 heat_cooldown_time_water = u8(heat_cooldown_time / 3);
 
 const f32 max_heatbar_view_range = 65;
@@ -85,6 +89,11 @@ bool canBePutInInventory( CBlob@ this, CBlob@ inventoryBlob )
 	if (heat > 0) this.set_u32("time_enter",getGameTime()); // set time we enter the invo
 
 	return true;
+}
+
+bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+{
+	return (this.get_u8(heat_prop) < heat_drop);
 }
 
 void onThisRemoveFromInventory( CBlob@ this, CBlob@ inventoryBlob )
@@ -181,22 +190,16 @@ void onTick(CBlob@ this)
 		this.Sync(heat_prop, true);
 	}
 	sprite.SetEmitSoundPaused(true);
-	if (this.isAttached())
+	if (this.isAttachedToPoint("PICKUP"))
 	{
 		AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
 		CBlob@ holder = point.getOccupied();
 
-		if (holder is null) return;
+		if (holder is null || holder.isAttached()) return;
 
 		AimAtMouse(this, holder); // aim at our mouse pos
 
-		// cool faster if holder is moving
-		if (heat > 0 && holder.getShape().vellen > 0.01f && getGameTime() % 3 == 0)
-		{
-			heat--;
-		}
-
-		if (int(heat) >= heat_max - (heat_add * 1.5))
+		if (int(heat) >= heat_drop)
 		{
 			makeSteamPuff(this, 1.5f, 3, false);
 			this.server_Hit(holder, holder.getPosition(), Vec2f(), 0.25f, Hitters::burn, true);
@@ -280,7 +283,7 @@ void onTick(CBlob@ this)
 								// or blobs to increase damage to (for the future)
 								string name = b.getName();
 
-								if (b.hasTag("invincible"))
+								if (b.hasTag("invincible") || b.getName() == "bush")
 								{
 									continue; // carry on onto the next loop, dont waste time & heat on this
 								}
@@ -301,7 +304,7 @@ void onTick(CBlob@ this)
 
 								if (isServer())
 								{
-									if (int(heat) > heat_max * 0.7f) // are we at high heat? more damamge!
+									if (int(heat) >= heat_max - high_damage_window) // are we at high heat? more damage!
 									{
 										attack_dam += 0.5f;
 									}
@@ -425,6 +428,10 @@ void onTick(CBlob@ this)
 		{
 			this.getCurrentScript().runFlags |= Script::tick_not_sleeping;
 		}
+		else
+		{
+			this.getCurrentScript().runFlags &= ~Script::tick_not_sleeping;
+		}
 	}
 }
 
@@ -438,8 +445,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	if (customData == Hitters::water)
 	{
-		s16 current_heat = this.get_u8(heat_prop) - heat_max*0.7f;
-		if (current_heat < 0) current_heat= 0;
+		s16 current_heat = this.get_u8(heat_prop) - heat_max * heat_reduction_water;
+		if (current_heat < 0) current_heat = 0;
 		this.set_u8(heat_prop, current_heat);
 		makeSteamPuff(this);
 	}

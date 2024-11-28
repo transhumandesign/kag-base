@@ -10,6 +10,8 @@ const f32 grass_grow_chance = 0.015f;
 const f32 bush_grow_chance = 0.003f;
 const f32 flower_grow_chance = 0.0005f;
 const f32 grain_grow_chance = flower_grow_chance + 0.0005f; //add flower chance to prevent them from overriding each other
+const f32 chicken_grow_chance = 0.001f; // chickens are plants don't @ me
+const u8 chicken_limit = 10; 
 
 const f32 moss_stone_chance = 0.002f;
 
@@ -210,12 +212,11 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 	}
 }
 
-u32 findTileByCoords(TileInfo@[] tiles, Vec2f coords)
+u32 findTileByCoords(const TileInfo@[] &in tiles, Vec2f coords)
 {
 	for (u32 i = 1; i < tiles.size(); i++)
 	{
-		TileInfo tile = tiles[i];
-		if (tile.coords == coords)
+		if (tiles[i].coords == coords)
 		{
 			return i;
 		}
@@ -230,6 +231,10 @@ void onTick(CRules@ this)
 	{
 		CMap@ map = getMap();
 		float tilesize = map.tilesize;
+
+		CBlob@[] chicken_list;
+		getBlobsByName("chicken", chicken_list);
+		u16 chicken_count = chicken_list.size();
 
 		for (int i = 1; i < dirt_tiles.size(); i++)
 		{
@@ -280,6 +285,14 @@ void onTick(CRules@ this)
 					{
 						server_CreateBlob(plants_stuff[plant], -1, tinfo.coords - Vec2f(0,tilesize));
 					}
+				}
+
+				random_grow = XORRandom(10000) * 0.0001f;
+
+				if (random_grow <= chicken_grow_chance && chicken_count < chicken_limit)
+				{
+					server_CreateBlob("chicken", -1, tinfo.coords - Vec2f(0,tilesize));
+					chicken_count++;
 				}
 			}
 		}

@@ -1,9 +1,7 @@
-#include "SeatsCommon.as"
 
 void onInit(CBlob@ this)
 {
 	AttachmentPoint@[] aps;
-
 	if (this.getAttachmentPoints(@aps))
 	{
 		for (uint i = 0; i < aps.length; i++)
@@ -49,7 +47,6 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	if (attachedPoint.socket)
 	{
-		SetOccupied(attachedPoint, 1);
 		attached.Tag("seated");
 		Sound::Play("GetInVehicle.ogg", attached.getPosition());
 
@@ -63,7 +60,6 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
 	if (attachedPoint.socket)
 	{
-		SetOccupied(attachedPoint, 0);
 		detached.Untag("seated");
 
 		if (!detached.getShape().isRotationsAllowed())
@@ -71,7 +67,8 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 			detached.setAngleDegrees(0.0f);
 		}
 
-		if (detached.getPlayer() is this.getDamageOwnerPlayer()) {
+		if (detached.hasTag("dead") || detached.getPlayer() is this.getDamageOwnerPlayer()) {
+			
 			this.SetDamageOwnerPlayer(null);
 		}
 	}

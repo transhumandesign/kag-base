@@ -4,7 +4,6 @@ void onInit(CMovement@ this)
 {
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().removeIfTag = "dead";
-	this.getCurrentScript().tickFrequency = 3;
 }
 
 void onTick(CMovement@ this)

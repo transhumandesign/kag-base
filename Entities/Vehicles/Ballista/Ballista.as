@@ -1,29 +1,72 @@
 #include "VehicleCommon.as"
-#include "ClassSelectMenu.as";
-#include "StandardRespawnCommand.as";
 #include "GenericButtonCommon.as";
-#include "Costs.as";
 
 // Ballista logic
 
-const u8 cooldown_time = 60;
+const u8 cooldown_time_bolt = 60;
 const u8 cooldown_time_bomb = 90;
 
 //naming here is kinda counter intuitive, but 0 == up, 90 == sideways
 const f32 high_angle = 20.0f;
 const f32 low_angle = 60.0f;
 
+class BallistaInfo : VehicleInfo
+{
+	bool canFire(CBlob@ this, AttachmentPoint@ ap)
+	{
+		if (ap.isKeyPressed(key_action2))
+		{
+			//cancel
+			charge = 0;
+			cooldown_time = Maths::Max(cooldown_time, 15);
+			return false;
+		}
+
+		AmmoInfo@ ammo = getCurrentAmmo();
+		const bool isActionPressed = ap.isKeyPressed(key_action1);
+		if ((charge > 0 || isActionPressed) && ammo.loaded_ammo > 0)
+		{
+			if (charge < ammo.max_charge_time && isActionPressed)
+			{
+				charge++;
+
+				const u8 t = Maths::Round(f32(ammo.max_charge_time) * 0.66f);
+				if ((charge < t && charge % 10 == 0) || (charge >= t && charge % 5 == 0))
+					this.getSprite().PlaySound("/LoadingTick");
+
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	void onFire(CBlob@ this, CBlob@ bullet, const u16 &in fired_charge)
+	{
+		AmmoInfo@ ammo = getCurrentAmmo();
+		if (bullet !is null)
+		{
+			const f32 temp_charge = 5.0f + 15.0f * (f32(fired_charge) / f32(ammo.max_charge_time));
+			const f32 angle = wep_angle + this.getAngleDegrees();
+			Vec2f vel = Vec2f(0.0f, -temp_charge).RotateBy(angle);
+			bullet.setVelocity(vel);
+			bullet.setPosition(bullet.getPosition() + vel);
+
+			if (ammo.ammo_name == "mat_bomb_bolts")
+			{
+				bullet.Tag("bomb ammo");
+				bullet.Sync("bomb ammo", true);
+			}
+		}
+
+		last_charge = fired_charge;
+		charge = 0;
+		cooldown_time = ammo.fire_delay;
+	}
+}
+
 void onInit(CBlob@ this)
 {
-	this.Tag("respawn");
-
-	InitRespawnCommand(this);
-	InitClasses(this);
-	this.Tag("change class drop inventory");
-
-	InitCosts();
-	this.set_s32("gold building amount", CTFCosts::ballista_gold);
-
 	AddIconToken("$Normal_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 0);
 	AddIconToken("$Explosive_Bolt$", "BallistaBolt.png", Vec2f(32, 8), 1);
 
@@ -31,17 +74,15 @@ void onInit(CBlob@ this)
 	              30.0f, // move speed
 	              0.31f,  // turn speed
 	              Vec2f(0.0f, 0.0f), // jump out velocity
-	              false  // inventory access
+	              false,  // inventory access
+	              BallistaInfo()
 	             );
 	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
-	
+	if (!this.get("VehicleInfo", @v)) return;
+
 	// bolt ammo
 	Vehicle_AddAmmo(this, v,
-	                    cooldown_time, // fire delay (ticks)
+	                    cooldown_time_bolt, // fire delay (ticks)
 	                    1, // fire bullets amount
 	                    1, // fire cost
 	                    "mat_bolts", // bullet ammo config name
@@ -49,8 +90,7 @@ void onInit(CBlob@ this)
 	                    "ballista_bolt", // bullet config name
 	                    "CatapultFire", // fire sound
 	                    "EmptyFire", // empty fire sound
-	                    Vehicle_Fire_Style::custom,
-	                    Vec2f(-6.0f, -8.0f), // fire position offset
+	                    Vec2f(8, 4), //fire position offset
 	                    80 // charge time
 	                   );
 
@@ -64,8 +104,7 @@ void onInit(CBlob@ this)
 	                    "ballista_bolt", // bullet config name
 	                    "CatapultFire", // fire sound
 	                    "EmptyFire", // empty fire sound
-	                    Vehicle_Fire_Style::custom,
-	                    Vec2f(-6.0f, -8.0f), // fire position offset
+	                    Vec2f(8, 4), //fire position offset
 	                    80 // charge time
 	                   );
 
@@ -75,49 +114,41 @@ void onInit(CBlob@ this)
 	                         1.0f // movement sound pitch modifier     0.0f = no manipulation
 	                        );
 
-	{ CSpriteLayer@ w = Vehicle_addWoodenWheel(this, v, 0, Vec2f(10.0f, 18.0f)); if (w !is null) w.SetRelativeZ(10.0f); }
-	{ CSpriteLayer@ w = Vehicle_addWoodenWheel(this, v, 0, Vec2f(-1.0f, 18.0f)); if (w !is null) w.SetRelativeZ(10.0f); }
-	{ CSpriteLayer@ w = Vehicle_addWoodenWheel(this, v, 0, Vec2f(-11.0f, 18.0f)); if (w !is null) w.SetRelativeZ(10.0f); }
+	Vehicle_addWoodenWheel(this, v, 0, Vec2f(10.0f, 18.0f), 10.0f);
+	Vehicle_addWoodenWheel(this, v, 0, Vec2f(-1.0f, 18.0f), 10.0f);
+	Vehicle_addWoodenWheel(this, v, 0, Vec2f(-11.0f, 18.0f), 10.0f);
 
 	this.getShape().SetOffset(Vec2f(0, 8));
 
-	Vehicle_SetWeaponAngle(this, low_angle, v);
+	v.wep_angle = low_angle;
 
 	string[] autograb_blobs = {"mat_bolts", "mat_bomb_bolts"};
 	this.set("autograb blobs", autograb_blobs);
 
+	this.set_bool("facing", true);
+
 	// auto-load on creation
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CBlob@ ammo = server_CreateBlob("mat_bolts");
-		if (ammo !is null)
+		if (ammo !is null && !this.server_PutInInventory(ammo))
 		{
-			if (!this.server_PutInInventory(ammo))
-				ammo.server_Die();
+			ammo.server_Die();
 		}
 	}
 
-	// init arm sprites
 	CSprite@ sprite = this.getSprite();
+	sprite.SetZ(-25.0f);
 	CSpriteLayer@ arm = sprite.addSpriteLayer("arm", sprite.getConsts().filename, 24, 40);
-
 	if (arm !is null)
 	{
-		f32 angle = low_angle;
-
 		Animation@ anim = arm.addAnimation("default", 0, false);
 		anim.AddFrame(10);
-
-		CSpriteLayer@ arm = this.getSprite().getSpriteLayer("arm");
-		if (arm !is null)
-		{
-			arm.SetRelativeZ(0.5f);
-			arm.RotateBy(angle, Vec2f(-0.5f, 15.5f));
-			arm.SetOffset(Vec2f(10.0f, -6.0f));
-		}
+		arm.SetRelativeZ(0.5f);
+		arm.RotateBy(low_angle, Vec2f(-0.5f, 15.5f));
+		arm.SetOffset(Vec2f(10.0f, -6.0f));
 	}
 
-	sprite.SetZ(-25.0f);
 	CSpriteLayer@ front = sprite.addSpriteLayer("front layer", sprite.getConsts().filename, 40, 40);
 	if (front !is null)
 	{
@@ -130,26 +161,22 @@ void onInit(CBlob@ this)
 	CSpriteLayer@ flag = sprite.addSpriteLayer("flag layer", sprite.getConsts().filename, 32, 32);
 	if (flag !is null)
 	{
-		flag.addAnimation("default", 3, true);
+		flag.addAnimation("default", XORRandom(3) + 3, true);
 		int[] frames = { 15, 14, 13 };
 		flag.animation.AddFrames(frames);
 		flag.SetRelativeZ(-0.8f);
 		flag.SetOffset(Vec2f(20.0f, -2.0f));
 	}
 
-	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
-	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 7, Vec2f(16, 16));
-	this.SetMinimapRenderAlways(false);
+	UpdateFrame(this);
 }
 
-f32 getAngle(CBlob@ this, const u8 charge, VehicleInfo@ v)
+f32 getAimAngle(CBlob@ this, VehicleInfo@ v)
 {
 	f32 angle = 180.0f; //we'll know if this goes wrong :)
-	bool facing_left = this.isFacingLeft();
-	AttachmentPoint@ gunner = this.getAttachments().getAttachmentPointByName("GUNNER");
-
 	bool not_found = true;
-
+	const bool facing_left = this.isFacingLeft();
+	AttachmentPoint@ gunner = this.getAttachments().getAttachmentPointByName("GUNNER");
 	if (gunner !is null && gunner.getOccupied() !is null)
 	{
 		Vec2f aim_vec = gunner.getPosition() - gunner.getAimPos();
@@ -159,17 +186,15 @@ f32 getAngle(CBlob@ this, const u8 charge, VehicleInfo@ v)
 		{
 			if (aim_vec.x > 0) { aim_vec.x = -aim_vec.x; }
 			aim_vec.RotateBy((facing_left ? 1 : -1) * this.getAngleDegrees());
-
 			angle = (-(aim_vec).getAngle() + 270.0f);
 			angle = Maths::Max(high_angle , Maths::Min(angle , low_angle));
-			//printf("angle " + angle );
 			not_found = false;
 		}
 	}
 
 	if (not_found)
 	{
-		angle = Maths::Abs(Vehicle_getWeaponAngle(this, v));
+		angle = Maths::Abs(v.wep_angle);
 		return (facing_left ? -angle : angle);
 	}
 
@@ -180,166 +205,50 @@ f32 getAngle(CBlob@ this, const u8 charge, VehicleInfo@ v)
 
 void onTick(CBlob@ this)
 {
-	if (this.hasAttached() || this.getTickSinceCreated() < 30)
+	if (this.hasAttached() || this.getTickSinceCreated() < 30 || this.get_bool("facing") != this.isFacingLeft())
 	{
 		VehicleInfo@ v;
-		if (!this.get("VehicleInfo", @v))
-		{
-			return;
-		}
+		if (!this.get("VehicleInfo", @v)) return;
+
 		Vehicle_StandardControls(this, v);
 
-		if (v.cooldown_time > 0)
+		if (this.hasAttached() && v.cooldown_time > 0)
 		{
 			v.cooldown_time--;
 		}
 
-		f32 angle = getAngle(this, v.charge, v);
-		Vehicle_SetWeaponAngle(this, angle, v);
+		const f32 angle = getAimAngle(this, v);
+		v.wep_angle = angle;
 
 		CSprite@ sprite = this.getSprite();
-
 		CSpriteLayer@ arm = sprite.getSpriteLayer("arm");
 		if (arm !is null)
 		{
 			arm.ResetTransform();
-			f32 floattime = getGameTime();
 			arm.RotateBy(angle, Vec2f(-0.5f, 15.5f));
-			arm.SetOffset(Vec2f(10.0f, -6.0f));
-
-			/*if (this.get_u8("loaded ammo") > 0) {
-				arm.animation.frame = 1;
-			}
-			else {
-				arm.animation.frame = 0;
-			}*/
-		}
-
-		if (getNet().isClient())
-		{
-			CPlayer@ p = getLocalPlayer();
-			if (p !is null)
-			{
-				CBlob@ local = p.getBlob();
-				if (local !is null)
-				{
-					CSpriteLayer@ front = sprite.getSpriteLayer("front layer");
-					if (front !is null)
-					{
-						front.SetVisible(!local.isAttachedTo(this));
-					}
-				}
-			}
+			//arm.animation.frame = v.getCurrentAmmo().loaded_ammo > 0 ? 1 : 0;
 		}
 	}
-
+	this.set_bool("facing", this.isFacingLeft());
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	if (isOverlapping(this, caller) && !caller.isAttached())
+	if (!Vehicle_AddFlipButton(this, caller) &&
+	    caller.getTeamNum() == this.getTeamNum() &&
+	    this.getDistanceTo(caller) < this.getRadius() &&
+	    !caller.isAttached())
 	{
-		if (!Vehicle_AddFlipButton(this, caller) && caller.getTeamNum() == this.getTeamNum())
-		{
-			Vehicle_AddLoadAmmoButton(this, caller);
-		}
-		if (/*!isAnotherRespawnClose(this) &&*/ !isFlipped(this))
-		{
-			caller.CreateGenericButton("$change_class$", Vec2f(0, 1), this, buildSpawnMenu, getTranslatedString("Change class"));
-		}
+		Vehicle_AddLoadAmmoButton(this, caller);
 	}
-}
-
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
-{
-	if (cmd == SpawnCmd::changeClass)
-	{
-		onRespawnCommand(this, cmd, params);
-	}
-	else if (cmd == this.getCommandID("fire blob"))
-	{
-		CBlob@ blob = getBlobByNetworkID(params.read_netid());
-		const u8 charge = params.read_u8();
-		
-		VehicleInfo@ v;
-		if (!this.get("VehicleInfo", @v))
-		{
-			return;
-		}
-		
-		// check for valid ammo
-		if (blob.getName() != v.getCurrentAmmo().bullet_name){
-			// output warning
-			warn("Attempted to launch invalid object!");
-			return;
-		}
-		
-		Vehicle_onFire(this, v, blob, charge);
-	}
-}
-
-bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool wasActionPressed, u8 &out chargeValue)
-{
-	v.firing = v.firing || isActionPressed;
-
-	bool hasammo = v.getCurrentAmmo().loaded_ammo > 0;
-
-	u8 charge = v.charge;
-	if ((charge > 0 || isActionPressed) && hasammo)
-	{
-		if (charge < v.getCurrentAmmo().max_charge_time && isActionPressed)
-		{
-			charge++;
-			v.charge = charge;
-
-			u8 t = Maths::Round(float(v.getCurrentAmmo().max_charge_time) * 0.66f);
-			if ((charge < t && charge % 10 == 0) || (charge >= t && charge % 5 == 0))
-				this.getSprite().PlaySound("/LoadingTick");
-
-			chargeValue = charge;
-			return false;
-		}
-		chargeValue = charge;
-		return true;
-	}
-
-	return false;
-}
-
-void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge)
-{
-	if (bullet !is null)
-	{
-		u8 charge_prop = _charge;
-
-		f32 charge = 5.0f + 15.0f * (float(charge_prop) / float(v.getCurrentAmmo().max_charge_time));
-
-		f32 angle = getAngle(this, _charge, v) + this.getAngleDegrees();
-		Vec2f vel = Vec2f(0.0f, -charge).RotateBy(angle);
-		bullet.setVelocity(vel);
-		bullet.setPosition(bullet.getPosition() + vel);
-
-		bool bomb_bolts_selected = v.getCurrentAmmo().ammo_name == "mat_bomb_bolts";
-
-		if (bomb_bolts_selected)
-		{
-			bullet.Tag("bomb ammo");
-			bullet.Sync("bomb ammo", true);
-		}
-	}
-
-	v.last_charge = _charge;
-	v.charge = 0;
-	v.cooldown_time = v.getCurrentAmmo().fire_delay;
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return Vehicle_doesCollideWithBlob_ground(this, blob);
 }
-
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
@@ -351,52 +260,38 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
 	attachedPoint.offsetZ = 1.0f;
-	Vehicle_onAttach(this, v, attached, attachedPoint);
+	UpdateFrontLayer(this.getSprite(), attached, false);
 }
 
-void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint @attachedPoint)
 {
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
-	Vehicle_onDetach(this, v, detached, attachedPoint);
+	UpdateFrontLayer(this.getSprite(), detached, true);
 }
 
-bool isAnotherRespawnClose(CBlob@ this)
+void UpdateFrontLayer(CSprite@ sprite, CBlob@ occupied, const bool &in visible)
 {
-	CBlob@[] blobsInRadius;
-	if (this.getMap().getBlobsInRadius(this.getPosition(), this.getRadius() * 1.5f, @blobsInRadius))
+	CBlob@ localBlob = getLocalPlayerBlob();
+	if (localBlob !is null && occupied is localBlob)
 	{
-		for (uint i = 0; i < blobsInRadius.length; i++)
+		CSpriteLayer@ front = sprite.getSpriteLayer("front layer");
+		if (front !is null)
 		{
-			CBlob @b = blobsInRadius[i];
-			if (b !is this && b.hasTag("respawn") && b.getNetworkID() < this.getNetworkID())
-			{
-				return true;
-			}
+			front.SetVisible(visible);
 		}
 	}
-	return false;
 }
 
-// Blame Fuzzle.
-bool isOverlapping(CBlob@ this, CBlob@ blob)
+void onHealthChange(CBlob@ this, f32 oldHealth)
 {
+	UpdateFrame(this);
+}
 
-	Vec2f tl, br, _tl, _br;
-	this.getShape().getBoundingRect(tl, br);
-	blob.getShape().getBoundingRect(_tl, _br);
-	return br.x > _tl.x
-	       && br.y > _tl.y
-	       && _br.x > tl.x
-	       && _br.y > tl.y;
-
+void UpdateFrame(CBlob@ this)
+{
+	CSpriteLayer@ front = this.getSprite().getSpriteLayer("front layer");
+	if (front !is null)
+	{
+		front.animation.setFrameFromRatio(1.0f - this.getHealth() / this.getInitialHealth());
+	}
 }

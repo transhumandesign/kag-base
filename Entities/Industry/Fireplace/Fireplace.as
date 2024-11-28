@@ -1,15 +1,18 @@
-﻿// Fireplace
+// Fireplace
 
 #include "ProductionCommon.as";
 #include "Requirements.as";
 #include "MakeFood.as";
 #include "FireParticle.as";
+#include "FireCommon.as";
+#include "FireplaceCommon.as";
 #include "Hitters.as";
 
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().tickFrequency = 9;
 	this.getSprite().SetEmitSound("CampfireSound.ogg");
+	this.getSprite().SetEmitSoundPaused(false);
 	this.getSprite().SetAnimation("fire");
 	this.getSprite().SetFacingLeft(XORRandom(2) == 0);
 
@@ -20,8 +23,6 @@ void onInit(CBlob@ this)
 	this.Tag("fire source");
 	//this.server_SetTimeToDie(60*3);
 	this.getSprite().SetZ(-20.0f);
-
-	this.addCommandID("extinguish");
 }
 
 void onTick(CBlob@ this)
@@ -42,16 +43,21 @@ void onTick(CBlob@ this)
 	}
 }
 
-
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {	
-	if (blob !is null && this.getSprite().isAnimation("fire"))
+	if (blob is null) return;
+	
+	if (this.getSprite().isAnimation("fire"))
 	{
 		CBlob@ food = cookFood(blob);
 		if (food !is null)
 		{
 			food.setVelocity(blob.getVelocity().opMul(0.5f));
 		}
+	}
+	else if (blob.hasTag("fire source")) //fire arrow works
+	{
+		Ignite(this);
 	}
 }
 
@@ -96,29 +102,15 @@ void Extinguish(CBlob@ this)
 	makeSmokeParticle(this.getPosition()); //*poof*
 }
 
-void Ignite(CBlob@ this)
-{
-	if (this.getSprite().isAnimation("fire")) return;
-
-	this.SetLight(true);
-	this.Tag("fire source");
-
-	this.getSprite().SetAnimation("fire");
-	this.getSprite().SetEmitSoundPaused(false);
-	this.getSprite().PlaySound("/FireFwoosh.ogg");
-	
-	CSpriteLayer@ fire = this.getSprite().getSpriteLayer("fire_animation_large");
-	if (fire !is null)
-	{
-		fire.SetVisible(true);
-	}
-}
-
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if (customData == Hitters::water)
+	if (isWaterHitter(customData)) 
 	{
 		Extinguish(this);
+	}
+	else if (isIgniteHitter(customData)) 
+	{
+		Ignite(this);
 	}
 	return damage;
 }

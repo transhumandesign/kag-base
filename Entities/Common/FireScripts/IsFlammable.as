@@ -23,9 +23,9 @@ void onInit(CBlob@ this)
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if (isIgniteHitter(customData) ||					 	   // Fire arrows
-	        (this.isOverlapping(hitterBlob) &&
-	         hitterBlob.isInFlames() && !this.isInFlames()))	   // Flaming enemy
+	if (
+		isIgniteHitter(customData) ||		// Fire arrows
+		(this.isOverlapping(hitterBlob) && hitterBlob.isInFlames() && !this.isInFlames())) 	// Flaming enemy
 	{
 		server_setFireOn(this);
 		if (hitterBlob.getDamageOwnerPlayer() !is null){
@@ -70,7 +70,7 @@ void onTick(CBlob@ this)
 
 	s16 burn_time = this.get_s16(burn_timer);
 	//check if we should be getting set on fire or put out
-	if (burn_time < (burn_thresh / fire_wait_ticks) && this.isInFlames())
+	if (burn_time < (burn_thresh / fire_wait_ticks) && this.isInFlames() && !this.hasTag("invincible"))
 	{
 		server_setFireOn(this);
 		burn_time = this.get_s16(burn_timer);
@@ -86,14 +86,17 @@ void onTick(CBlob@ this)
 	//burnination
 	else if (burn_time > 0)
 	{
+		s16 burn_count = this.get_s16(burn_counter);
+		burn_count++;
+	
 		//burninating the other tiles
-		if ((burn_time % 8) == 0 && this.hasTag(spread_fire_tag))
+		if ((burn_count % 8) == 0 && this.hasTag(spread_fire_tag))
 		{
 			BurnRandomNear(pos);
 		}
 
 		//burninating the actor
-		if ((burn_time % 7) == 0)
+		if ((burn_count % 7) == 0)
 		{
 			uint16 netid = this.get_netid("burn starter player");
 			CBlob@ blob = null;
@@ -113,9 +116,15 @@ void onTick(CBlob@ this)
 		//burninating the burning time
 		burn_time--;
 
-		//and making sure it's set correctly!
+		//making sure to set values correctly
 		this.set_s16(burn_timer, burn_time);
+		this.set_s16(burn_counter, burn_count);
 	}
 
 	// (flax roof cottages!)
+}
+
+bool canBePutInInventory(CBlob@ this, CBlob@ inventoryBlob)
+{
+	return !this.hasTag(burning_tag);
 }

@@ -66,7 +66,7 @@ const u8 signal_strength = 20;
 // sub classes
 //////////////////////////////////////
 
-shared class Component
+class Component
 {
 	int x, y;
 
@@ -123,36 +123,46 @@ enum packetType
 	PACKET_END = 255
 };
 
-shared void packet_AddActivate(CBitStream@ stream, u16 id)
+void packet_AddActivate(CBitStream@ stream, u16 id)
 {
 	stream.write_u8(PACKET_ACTIVATE);
 	stream.write_u16(id);
 }
 
-shared void packet_AddDeactivate(CBitStream@ stream, u16 id)
+void packet_AddDeactivate(CBitStream@ stream, u16 id)
 {
 	stream.write_u8(PACKET_DEACTIVATE);
 	stream.write_u16(id);
 }
 
-shared void packet_AddChangeFrame(CBitStream@ stream, u16 id, u8 frame)
+void packet_AddChangeFrame(CBitStream@ stream, u16 id, u8 frame)
 {
 	stream.write_u8(PACKET_CHANGEFRAME);
 	stream.write_u16(id);
 	stream.write_u8(frame);
 }
 
-shared void packet_AddChangeAnimation(CBitStream@ stream, u16 id, string animation)
+void packet_AddChangeAnimation(CBitStream@ stream, u16 id, string animation)
 {
 	stream.write_u8(PACKET_CHANGEANIMATION);
 	stream.write_u16(id);
 	stream.write_string(animation);
 }
 
-shared void packet_SendStream(CRules@ this, CBitStream@ stream)
+void packet_SendStream(CRules@ this, CBitStream@ stream)
 {
-	stream.write_u8(PACKET_END);
-	this.SendCommand(this.getCommandID("mechanisms_packet"), stream);
+	if (isServer())
+	{
+		stream.write_u8(PACKET_END);
+
+		// we don't want a server->server command but we need to run the code on server
+		CBitStream stream_server = stream;
+		stream_server.Reset();
+		packet_RecvStream(this, stream_server);
+
+		// send to client
+		this.SendCommand(this.getCommandID("mechanisms_packet_client"), stream);
+	}
 }
 
 void packet_RecvStream(CRules@ this, CBitStream@ stream)
@@ -254,7 +264,7 @@ void packet_RecChangeAnimation(CBitStream@ stream)
 // of the map's power grid
 //////////////////////////////////////
 
-shared class MapPowerChunk
+class MapPowerChunk
 {
 	//position
 	int x, y;
@@ -450,7 +460,7 @@ shared class MapPowerChunk
 // the grid
 //////////////////////////////////////
 
-shared class MapPowerGrid
+class MapPowerGrid
 {
 	array<MapPowerChunk> chunks;
 	int chunk_count;

@@ -13,19 +13,24 @@ const bool builder_only = false;
 
 void onInit(CBlob@ this)
 {
-	AddIconToken("$stonequarry$", "../Mods/Entities/Industry/CTFShops/Quarry/Quarry.png", Vec2f(40, 24), 4);
+	//AddIconToken("$stonequarry$", "../Mods/Entities/Industry/CTFShops/Quarry/Quarry.png", Vec2f(40, 24), 4);
 	this.set_TileType("background tile", CMap::tile_wood_back);
 	//this.getSprite().getConsts().accurateLighting = true;
 
+	ShopMadeItem@ onMadeItem = @onShopMadeItem;
+	this.set("onShopMadeItem handle", @onMadeItem);
+
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
+
+	this.Tag("has window");
 
 	//INIT COSTS
 	InitCosts();
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f(0, 0));
-	this.set_Vec2f("shop menu size", Vec2f(4, 5));
+	this.set_Vec2f("shop menu size", Vec2f(4, 4));
 	this.set_string("shop description", "Construct");
 	this.set_u8("shop icon", 12);
 	this.Tag(SHOP_AUTOCLOSE);
@@ -68,13 +73,12 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "blob", "mat_wood", "Wood", CTFCosts::tunnel_wood);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::tunnel_gold);
 	}
-
-	{
+	/*{
 		ShopItem@ s = addShopItem(this, "Stone Quarry", "$stonequarry$", "quarry", Descriptions::quarry);
 		AddRequirement(s.requirements, "blob", "mat_stone", "Stone", CTFCosts::quarry_stone);
 		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::quarry_gold);
 		AddRequirement(s.requirements, "no more", "quarry", "Stone Quarry", CTFCosts::quarry_count);
-	}
+	}*/
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -87,29 +91,61 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		this.set_bool("shop available", false);
 }
 
+void onShopMadeItem(CBitStream@ params)
+{
+	if (!isServer()) return;
+
+	u16 this_id, caller_id, item_id;
+	string name;
+
+	if (!params.saferead_u16(this_id) || !params.saferead_u16(caller_id) || !params.saferead_u16(item_id) || !params.saferead_string(name))
+	{
+		return;
+	}
+
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+
+	CBlob@ caller = getBlobByNetworkID(caller_id);
+	if (caller is null) return;
+
+	CBlob@ item = getBlobByNetworkID(item_id);
+	if (item is null) return;
+
+	this.Tag("shop disabled"); //no double-builds
+	this.Sync("shop disabled", true);
+
+	this.server_Die();
+
+	// open factory upgrade menu immediately
+	if (item.getName() == "factory")
+	{
+		CBitStream factoryParams;
+		factoryParams.write_netid(caller.getNetworkID());
+		item.SendCommand(item.getCommandID("upgrade factory menu"), factoryParams); // NOT SANITIZED; TTH
+	}
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	bool isServer = getNet().isServer();
-	if (cmd == this.getCommandID("shop made item"))
+	if (cmd == this.getCommandID("shop made item client") && isClient())
 	{
-		this.Tag("shop disabled"); //no double-builds
+		u16 this_id, caller_id, item_id;
+		string name;
 
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
-		CBlob@ item = getBlobByNetworkID(params.read_netid());
+		if (!params.saferead_u16(this_id) || !params.saferead_u16(caller_id) || !params.saferead_u16(item_id) || !params.saferead_string(name))
+		{
+			return;
+		}
+
+		CBlob@ caller = getBlobByNetworkID(caller_id);
+		CBlob@ item = getBlobByNetworkID(item_id);
+
 		if (item !is null && caller !is null)
 		{
 			this.getSprite().PlaySound("/Construct.ogg");
 			this.getSprite().getVars().gibbed = true;
-			this.server_Die();
 			caller.ClearMenus();
-
-			// open factory upgrade menu immediately
-			if (item.getName() == "factory")
-			{
-				CBitStream factoryParams;
-				factoryParams.write_netid(caller.getNetworkID());
-				item.SendCommand(item.getCommandID("upgrade factory menu"), factoryParams);
-			}
 		}
 	}
 }
