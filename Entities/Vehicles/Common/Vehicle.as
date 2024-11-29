@@ -166,7 +166,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		this.SendCommand(this.getCommandID("swap_ammo_client"));
 	}
-	else if (cmd == this.getCommandID("swap_ammo_client") && isClient())
+	else if (cmd == this.getCommandID("swap_ammo_client") && isClient() && !isServer())
 	{
 		u8 ammoIndex = v.current_ammo_index + 1;
 		if (ammoIndex >= v.ammo_types.size())
