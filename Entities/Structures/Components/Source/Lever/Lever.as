@@ -120,6 +120,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		component.x,                        // x
 		component.y,                        // y
 		info);                              // information
+		this.SendCommand(this.getCommandID("toggle client"));
 	}
 	if (cmd == this.getCommandID("toggle client") && isClient())
 	{
