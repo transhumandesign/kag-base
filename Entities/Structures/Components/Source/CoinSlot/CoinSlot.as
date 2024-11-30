@@ -157,6 +157,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		component.x,                        // x
 		component.y,                        // y
 		INFO_SOURCE | INFO_ACTIVE);         // information
+		
+		this.SendCommand(this.getCommandID("activate client"));
 	}
 	else if (cmd == this.getCommandID("activate client") && isClient())
 	{
