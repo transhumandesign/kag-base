@@ -53,7 +53,15 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 			if (damage > 0.1f)
 			{
-				this.server_Hit(this, point1, normal, damage, Hitters::fall);
+				if (this.exists("trampoline last bounce") && this.get_s32("trampoline last bounce") + 60 > getGameTime())
+				{
+					this.server_Hit(this, point1, normal, damage, Hitters::fall_trampoline);
+				}
+				else
+				{
+					this.server_Hit(this, point1, normal, damage, Hitters::fall);
+				}
+				
 			}
 			else
 			{

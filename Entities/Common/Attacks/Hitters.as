@@ -64,7 +64,13 @@ namespace Hitters
 		muscles,
 
 		// scrolls
-		suddengib
+		suddengib,
+
+		// trampoline
+		fall_trampoline,
+
+		//natural
+		bison
 	};
 }
 
