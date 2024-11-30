@@ -29,7 +29,8 @@ void onInit(CBlob@ this)
 void onTick(CBlob@ this)
 {
 	//(prevent splash when bought filled)
-	if (this.getTickSinceCreated() < 10) {
+	if (this.getTickSinceCreated() < 10) 
+	{
 		return;
 	}
 
@@ -60,7 +61,8 @@ void onTick(CBlob@ this)
 					!occupiedBlob.isKeyPressed(key_inventory)) // prevent splash when doing stuff with inventory
 				{
 					DoSplash(this);
-					this.SendCommand(this.getCommandID("splash client"));
+					if (!(isClient() && isServer()))
+						this.SendCommand(this.getCommandID("splash client"));
 					this.set_u8("water_delay", 30);
 				}
 			}
@@ -75,7 +77,7 @@ void onTick(CBlob@ this)
 
 void onDie(CBlob@ this)
 {
-	if (this.get_u8("filled") > 0)
+	if (this.get_u8("filled") > 0 || this.hasTag("splash on destroy"))
 	{
 		DoSplash(this);
 	}
@@ -90,7 +92,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		{
 			int id = this.getNetworkID();
 			this.setVelocity(this.getVelocity() + Vec2f(1,0).RotateBy((id * 933) % 360));
-			TakeWaterCount(this);
+			DepleteWaterCount(this);
 		}
 	}
 
@@ -138,24 +140,28 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	if (solid && isServer() && this.getShape().vellen > 6.8f && this.get_u8("filled") > 0)
 	{
 		DoSplash(this);
-		this.SendCommand(this.getCommandID("splash client"));
+		
+		if (!(isClient() && isServer()))
+			this.SendCommand(this.getCommandID("splash client"));
 	}
-
 }
 
-void TakeWaterCount(CBlob@ this)
+void DepleteWaterCount(CBlob@ this)
 {
 	if (!isServer()) { return; }
 
-	u8 filled = this.get_u8("filled");
+	u8 filled = this.get_u8("filled");	
 	if (filled > 0)
-		filled--;
-
-	if (filled == 0)
 	{
-		filled = 0;
-		SetFrame(this, false);
+		if (this.getHealth() <= 0)
+		{
+			this.Tag("splash on destroy");
+			this.Sync("splash on destroy", true);
+		}
+		
+		filled--;
 	}
+
 	this.set_u8("filled", filled);
 	this.Sync("filled", true);
 }
@@ -168,11 +174,14 @@ void DoSplash(CBlob@ this)
 {
 	//extinguish fire
 
-	TakeWaterCount(this);
-
+	DepleteWaterCount(this);
 	Splash(this, splash_halfwidth, splash_halfheight, splash_offset, false);
+	
+	if (isClient())
+	{
+		SetFrame(this, this.get_u8("filled") > 0);
+	}
 }
-
 
 //sprite
 
