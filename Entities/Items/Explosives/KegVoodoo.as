@@ -242,3 +242,12 @@ void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 		this.doTickScripts = true;
 	}
 }
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	if (blob is null)
+		return false;
+
+	bool should_collide = this.isAttached() ? (blob.hasTag("projectile hits keg") && blob.getShape().vellen > 0.01f) : true;
+	return should_collide;
+}
