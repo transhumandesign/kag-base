@@ -38,9 +38,6 @@ class Inverter : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("ignore sword");
 
@@ -55,14 +52,14 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic || this.exists("component")) return;
 
-	const Vec2f position = this.getPosition() / 8;
-	const u16 angle = this.getAngleDegrees();
-	const u8 input = rotateTopology(angle, TOPO_DOWN);
+	const Vec2f POSITION = this.getPosition() / 8;
+	const u16 ANGLE = this.getAngleDegrees();
+	const u8 INPUT = rotateTopology(ANGLE, TOPO_DOWN);
 
-	Inverter component(position, this.getNetworkID(), input);
+	Inverter component(POSITION, this.getNetworkID(), INPUT);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -70,18 +67,16 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		grid.setAll(
 		component.x,                        // x
 		component.y,                        // y
-		input,                              // input topology
-		rotateTopology(angle, TOPO_UP),     // output topology
+		INPUT,                              // input topology
+		rotateTopology(ANGLE, TOPO_UP),     // output topology
 		INFO_SPECIAL,                       // information
 		power_source,                       // power
 		component.id);                      // id
 	}
 
+	const bool facing = ANGLE < 180? false : true;
+
 	CSprite@ sprite = this.getSprite();
-	if (sprite is null) return;
-
-	const bool facing = angle < 180? false : true;
-
 	sprite.SetZ(-60);
 	sprite.SetFacingLeft(facing);
 
@@ -94,29 +89,27 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void onDie(CBlob@ this)
 {
-	if (!getNet().isClient() || !this.exists("component")) return;
+	if (!isClient() || !this.exists("component")) return;
 
 	const string image = this.getSprite().getFilename();
 	const Vec2f position = this.getPosition();
 	const u8 team = this.getTeamNum();
 
-	for(u8 i = 0; i < 4; i++)
+	for (u8 i = 0; i < 4; i++)
 	{
-		makeGibParticle(
-		image,                              // file name
-		position,                           // position
-		getRandomVelocity(90, 2, 360),      // velocity
-		i,                                  // column
-		2,                                  // row
-		Vec2f(8, 8),                        // frame size
-		1.0f,                               // scale?
-		0,                                  // ?
-		"",                                 // sound
-		team);                              // team number
+		makeGibParticle(image, position, getRandomVelocity(90, 2, 360), i, 2, Vec2f(8, 8), 1.0f, 0, "", team);
 	}
 }
 
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+void onSendCreateData(CBlob@ this, CBitStream@ stream)
 {
-	return false;
+	stream.write_u8(this.getSprite().getFrameIndex());
+}
+
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	u8 frame;
+	if (!stream.saferead_u8(frame)) return false;
+	this.getSprite().SetFrameIndex(frame);
+	return true;
 }
