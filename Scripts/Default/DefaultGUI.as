@@ -69,7 +69,7 @@ void LoadDefaultGUI()
 		AddIconToken("$bolter$",        "Bolter.png",           Vec2f(16, 16), 3);
 		AddIconToken("$dispenser$",     "Dispenser.png",        Vec2f(16, 16), 3);
 		AddIconToken("$lamp$",          "Lamp.png",             Vec2f(16, 16), 3);
-		AddIconToken("$obstructor$",    "Obstructor.png",       Vec2f(16, 16), 3);
+		AddIconToken("$obstructor$",    "Obstructor.png",       Vec2f(8, 8), 0);
 		AddIconToken("$spiker$",        "Spiker.png",           Vec2f(16, 16), 3);
 
 		// techs
