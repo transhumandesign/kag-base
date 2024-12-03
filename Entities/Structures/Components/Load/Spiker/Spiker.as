@@ -2,7 +2,6 @@
 
 #include "MechanismsCommon.as";
 #include "Hitters.as";
-#include "PlatformCommon.as";
 
 class Spiker : Component
 {
@@ -21,128 +20,84 @@ class Spiker : Component
 	void Activate(CBlob@ this)
 	{
 		Vec2f position = this.getPosition();
+		CSprite@ sprite = this.getSprite();
 
 		CMap@ map = getMap();
-		bool canRayCast = true;
-		HitInfo@[] hitInfos;
-		Vec2f start_pos = position + offset * map.tilesize/2;
-		Vec2f end_pos = position + offset * 11;
-		Vec2f ray_vec = (end_pos - start_pos);
-
-		// check if exit is blocked
-		if (map.getHitInfosFromRay(start_pos, -ray_vec.getAngle(), ray_vec.Length(), this, hitInfos))
+		if (map.rayCastSolid(position + offset * 5, position + offset * 11))
 		{
-			for (int i = 0; i < hitInfos.length; i++)
-			{
-				HitInfo@ hi = hitInfos[i];
-				CBlob@ b = hi.blob;
-
-				if (b is this)
-					continue;
-
-				if (b is null) // hit map
-				{
-					if (map.isTileSolid(hi.hitpos))
-					{
-						canRayCast = false;
-						break;
-					}
-				}
-				else // hit blob
-				{
-					if (b.isCollidable() && b.getShape().isStatic())
-					{
-						if (b.isPlatform() && CollidesWithPlatform(ray_vec, hi.hitpos, b))
-						{
-							canRayCast = false;
-							break;
-						}
-					}
-				}
-			}
-		}
-		
-		if (!canRayCast)
-		{
-			this.getSprite().PlaySound("dry_hit.ogg");
+			sprite.PlaySound("dry_hit.ogg", 0.5f);
 			return;
 		}
 
 		AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
 		if (mechanism is null) return;
 
-		mechanism.offset = Vec2f(0, -7);
-
 		CBlob@ spike = mechanism.getOccupied();
 		if (spike is null) return;
-
-		spike.set_u8("state", 1);
 
 		// hit flesh at target position
 		if (isServer())
 		{
 			CBlob@[] blobs;
-			map.getBlobsAtPosition(offset * 8 + position, @blobs);
-			for(uint i = 0; i < blobs.length; i++)
+			if (spike.getOverlapping(@blobs))
 			{
-				CBlob@ blob = blobs[i];
-				if (!blob.hasTag("flesh")) continue;
+				for (u16 i = 0; i < blobs.length; i++)
+				{
+					CBlob@ blob = blobs[i];
+					if (!blob.hasTag("flesh")) continue;
 
-				spike.server_Hit(blob, blob.getPosition(), blob.getVelocity() * -1, 1.0f, Hitters::spikes, true);
+					spike.server_Hit(blob, blob.getPosition(), blob.getVelocity() * -1, 1.0f, Hitters::spikes, true);
+				}
 			}
 		}
+		
+		spike.set_u8("state", 1);
+		spike.getSprite().animation.SetFrameIndex(1);
 
-		CSprite@ sprite = this.getSprite();
-		if (sprite is null) return;
-
-		sprite.PlaySound("SpikerThrust.ogg", 2.0f);
+		sprite.PlaySound("SpikerThrust.ogg", 0.5f);
 	}
 
 	void Deactivate(CBlob@ this)
 	{
-		// if ! blocked, do stuff
-
 		AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
 		if (mechanism is null) return;
-
-		mechanism.offset = Vec2f(0, 0);
 
 		CBlob@ spike = mechanism.getOccupied();
 		if (spike is null) return;
 
 		spike.set_u8("state", 0);
+		spike.getSprite().animation.SetFrameIndex(0);
 
 		CSprite@ sprite = this.getSprite();
-		if (sprite is null) return;
-
-		sprite.PlaySound("LoadingTick.ogg");
+		this.getSprite().PlaySound("LoadingTick.ogg", 0.4f);
 	}
 }
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("blocks sword");
 
 	// used by TileBackground.as
-	this.set_TileType("background tile", CMap::tile_wood_back);
+	this.set_TileType("background tile", CMap::tile_castle_back);
+
+	this.Tag("has damage owner");
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic || this.exists("component")) return;
 
-	const Vec2f position = this.getPosition() / 8;
-	const u16 angle = this.getAngleDegrees();
-	const Vec2f offset = Vec2f(0, -1).RotateBy(angle);
+	const Vec2f POSITION = this.getPosition() / 8;
+	const u16 ANGLE = this.getAngleDegrees();
+	const Vec2f OFFSET = Vec2f(0, -1).RotateBy(ANGLE);
 
-	Spiker component(position, this.getNetworkID(), offset);
+	Spiker component(POSITION, this.getNetworkID(), OFFSET);
 	this.set("component", component);
 
-	this.getAttachments().getAttachmentPointByName("MECHANISM").offsetZ = -5;
+	AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
+	mechanism.offsetZ = -5;
+	mechanism.offset = Vec2f(0, -7);
 
 	if (isServer())
 	{
@@ -159,10 +114,13 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		component.id);                      // id
 
 		CBlob@ spike = server_CreateBlob("spike", this.getTeamNum(), this.getPosition());
+		spike.SetDamageOwnerPlayer(this.getDamageOwnerPlayer());
 		spike.setAngleDegrees(this.getAngleDegrees());
 		spike.set_u8("state", 0);
 
-		ShapeConsts@ consts = spike.getShape().getConsts();
+		CShape@ shape = spike.getShape();
+		shape.SetStatic(true);
+		ShapeConsts@ consts = shape.getConsts();
 		consts.mapCollisions = false;
 		consts.collideWhenAttached = true;
 
@@ -170,10 +128,8 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if (sprite is null) return;
-
 	sprite.SetZ(500);
-	sprite.SetFrameIndex(angle / 90);
+	sprite.SetFrameIndex(ANGLE / 90);
 	sprite.SetFacingLeft(false);
 
 	CSpriteLayer@ layer = sprite.addSpriteLayer("background", "Spiker.png", 8, 16);
@@ -185,7 +141,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void onDie(CBlob@ this)
 {
-	if (!getNet().isServer()) return;
+	if (!isServer()) return;
 
 	CBlob@ spike = this.getAttachments().getAttachmentPointByName("MECHANISM").getOccupied();
 	if (spike is null) return;
