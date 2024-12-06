@@ -81,7 +81,7 @@ bool isWaterHitter(u8 type)
 
 bool isHeldByTeammate(CBlob@ held_blob, CBlob@ hitter_blob)
 {
-	if (held_blob !is null && held_blob.isAttached())
+	if (held_blob !is null && hitter_blob !is null && held_blob.isAttached())
 	{
 		AttachmentPoint@[] aps;
 		if (held_blob.getAttachmentPoints(@aps))
@@ -94,7 +94,7 @@ bool isHeldByTeammate(CBlob@ held_blob, CBlob@ hitter_blob)
 
 				//if (occ !is null)	print(ap.name + " " + occ.getName());
 
-				if (occ !is null && hitter_blob !is null && occ.getTeamNum() == hitter_blob.getTeamNum()) 
+				if (occ !is null && occ.getTeamNum() == hitter_blob.getTeamNum()) 
 				{
 					return true;
 				}
