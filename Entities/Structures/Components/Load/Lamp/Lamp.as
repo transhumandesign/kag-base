@@ -21,27 +21,22 @@ class Lamp : Component
 		if (power_old != power_new)
 		{
 			CBlob@ blob = getBlobByNetworkID(id);
-			
+
 			if (blob !is null)
 			{
-				if (power_new > 0)
-				{
-					blob.SetLight(true);
-					packet_AddChangeFrame(grid.packet, id, 1);
-					f32 power_factor = Maths::Min((float(power_new + 1) / power_source), 1);
-					f32 power_factor_color = Maths::Max(power_factor, 0.4f);
-					SColor new_color = SColor(255 * power_factor_color, 
-					                         255 * power_factor_color,
-										     240 * power_factor_color, 
-										     171 * power_factor_color);
-					blob.SetLightColor(new_color);
-					blob.SetLightRadius(power_factor * MAX_LIGHT_RADIUS);
-				}
-				else
-				{
-					blob.SetLight(false);
-					packet_AddChangeFrame(grid.packet, id, 0);
-				}
+				CBitStream params;
+				params.write_u8(power_new);
+				params.write_u16(id);
+				blob.SendCommand(blob.getCommandID("load_client"), params);
+			}		
+			
+			if (power_new > 0)
+			{
+				packet_AddChangeFrame(grid.packet, id, 1);
+			}
+			else
+			{
+				packet_AddChangeFrame(grid.packet, id, 0);
 			}
 		}
 
@@ -69,6 +64,8 @@ void onInit(CBlob@ this)
 	this.SetLight(false);
 	this.SetLightRadius(0.0f);
 	this.SetLightColor(SColor(255, 255, 240, 171));
+	
+	this.addCommandID("load_client");
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -109,6 +106,36 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		layer.animation.AddFrame(2);
 		layer.SetRelativeZ(-1);
 		layer.SetFacingLeft(FACING);
+	}
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("load_client") && isClient())
+	{
+		const u8 power_new = params.read_u8();
+		const u16 id = params.read_u16();
+		CBlob@ blob = getBlobByNetworkID(id);
+
+		if (blob !is null)
+		{		
+			if (power_new > 0)
+			{
+				blob.SetLight(true);
+				f32 power_factor = Maths::Min((float(power_new + 1) / power_source), 1);
+				f32 power_factor_color = Maths::Max(power_factor, 0.4f);
+				SColor new_color = SColor(255 * power_factor_color, 
+										 255 * power_factor_color,
+										 240 * power_factor_color, 
+										 171 * power_factor_color);
+				blob.SetLightColor(new_color);
+				blob.SetLightRadius(power_factor * MAX_LIGHT_RADIUS);
+			}
+			else
+			{
+				blob.SetLight(false);
+			}
+		}
 	}
 }
 
