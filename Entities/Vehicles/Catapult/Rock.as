@@ -97,7 +97,10 @@ void MakeRockDustParticle(Vec2f pos, string file, Vec2f vel=Vec2f(0.0, 0.0), int
 
 bool canHitBlob(CBlob@ this, CBlob@ blob)
 {
-	return (this.getTeamNum() != blob.getTeamNum() || !isHeldByTeammate(blob, this) || blob.getShape().isStatic())
+	if (isHeldByTeammate(blob, this))
+		return false;
+
+	return (this.getTeamNum() != blob.getTeamNum() || blob.getShape().isStatic())
 	       && !blob.hasTag("invincible");
 
 }

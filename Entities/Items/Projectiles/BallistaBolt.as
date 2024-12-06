@@ -84,7 +84,10 @@ void onTick(CBlob@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	return (this.getTeamNum() != blob.getTeamNum() || !isHeldByTeammate(blob, this) || blob.getShape().isStatic())
+	if (isHeldByTeammate(blob, this))
+		return false;
+
+	return (this.getTeamNum() != blob.getTeamNum() || blob.getShape().isStatic())
 	       && blob.isCollidable();
 
 }
