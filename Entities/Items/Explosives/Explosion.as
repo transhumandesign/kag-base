@@ -291,26 +291,13 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 		for (uint i = 0; i < blobs.length; i++)
 		{
 			CBlob@ hit_blob = blobs[i];
-			if (hit_blob is this)
+			if (hit_blob is this || isHeldByTeammate(hit_blob, this))
 				continue;
-
-			// don't hit if carried by teammate
-			if (hit_blob.isAttached())
-			{
-				AttachmentPoint@ ap = hit_blob.getAttachments().getAttachmentPointByName("PICKUP");
-				
-				if (ap !is null)
-				{
-					CBlob@ occ = ap.getOccupied();
-					
-					if (occ is null || occ.getTeamNum() == this.getTeamNum()) 
-						continue;
-				}
-			}
 
 			HitBlob(this, m_pos, hit_blob, radius, damage, hitter, true, should_teamkill);
 		}
 	}
+
 }
 
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
@@ -443,7 +430,7 @@ void LinearExplosion(CBlob@ this, Vec2f _direction, f32 length, const f32 width,
 	for (uint i = 0; i < blobs.length; i++)
 	{
 		CBlob@ hit_blob = blobs[i];
-		if (hit_blob is this)
+		if (hit_blob is this || isHeldByTeammate(hit_blob, this))
 			continue;
 
 		float rad = Maths::Max(tilesize, hit_blob.getRadius() * 0.25f);
@@ -600,4 +587,31 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
 					(this.isInInventory() && this.getInventoryBlob() is hit_blob) //is the inventory container
 	               );
 	return true;
+}
+
+
+bool isHeldByTeammate(CBlob@ held_blob, CBlob@ hitter_blob)
+{
+	if (held_blob !is null && held_blob.isAttached())
+	{
+		AttachmentPoint@[] aps;
+		if (held_blob.getAttachmentPoints(@aps))
+		{
+			for (uint i = 0; i < aps.length; i++)
+			{
+				AttachmentPoint@ ap = aps[i];
+
+				CBlob@ occ = ap.getOccupied();
+
+				//if (occ !is null)	print(ap.name + " " + occ.getName());
+
+				if (occ !is null && hitter_blob !is null && occ.getTeamNum() == hitter_blob.getTeamNum()) 
+				{
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
 }
