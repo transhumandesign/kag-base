@@ -1844,30 +1844,3 @@ void CheckSelectedBombRemovedFromInventory(CBlob@ this, CBlob@ blob)
 		SetFirstAvailableBomb(this);
 	}
 }
-
-bool isHeldByTeammate(CBlob@ held_blob, CBlob@ hitter_blob)
-{
-	if (held_blob !is null && held_blob.isAttached())
-	{
-		AttachmentPoint@[] aps;
-		if (held_blob.getAttachmentPoints(@aps))
-		{
-			for (uint i = 0; i < aps.length; i++)
-			{
-				AttachmentPoint@ ap = aps[i];
-
-				CBlob@ occ = ap.getOccupied();
-
-				//if (occ !is null)	print(ap.name + " " + occ.getName());
-
-				if (occ !is null && hitter_blob !is null && occ.getTeamNum() == hitter_blob.getTeamNum()) 
-				{
-					return true;
-				}
-			}
-		}
-	}
-
-	return false;
-}
-

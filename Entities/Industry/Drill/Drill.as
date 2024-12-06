@@ -283,7 +283,7 @@ void onTick(CBlob@ this)
 								// or blobs to increase damage to (for the future)
 								string name = b.getName();
 
-								if (b.hasTag("invincible") || b.getName() == "bush")
+								if (b.hasTag("invincible") || b.getName() == "bush" || isHeldByTeammate(b, this))
 								{
 									continue; // carry on onto the next loop, dont waste time & heat on this
 								}
@@ -299,20 +299,6 @@ void onTick(CBlob@ this)
 								        hit_ground && !is_ground)
 								{
 									continue;
-								}
-								
-								// don't hit if carried by teammate
-								if (b.isAttached())
-								{
-									AttachmentPoint@ ap = b.getAttachments().getAttachmentPointByName("PICKUP");
-									
-									if (ap !is null)
-									{
-										CBlob@ occ = ap.getOccupied();
-										
-										if (occ is null || occ.getTeamNum() == this.getTeamNum()) 
-											continue;
-									}
 								}
 
 								if (isServer())
