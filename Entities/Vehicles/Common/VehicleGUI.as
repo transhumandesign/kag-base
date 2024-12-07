@@ -54,7 +54,7 @@ void drawAmmoCount(CBlob@ blob, VehicleInfo@ v)
 {
 	// draw ammo count
 	Vec2f screenpos = blob.getScreenPos();
-	const f32 y = blob.getHeight() * 3.0f;
+	const f32 y = blob.getHeight() * 2.4f;
 	
 	GUI::SetFont("menu");
 	
