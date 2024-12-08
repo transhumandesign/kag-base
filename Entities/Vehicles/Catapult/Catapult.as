@@ -276,15 +276,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 	else if (cmd == this.getCommandID("fire mag blob client") && isClient())
 	{
-		u16 id;
-		if (!params.saferead_u16(id)) return;
+		if (!isServer())
+		{
+			u16 id;
+			if (!params.saferead_u16(id)) return;
 
-		CBlob@ occupied = getBlobByNetworkID(id);
-		if (occupied is null) return; 
+			CBlob@ occupied = getBlobByNetworkID(id);
+			if (occupied is null) return; 
+
+			v.onFire(this, occupied, v.charge);
+			v.SetFireDelay(v.getCurrentAmmo().fire_delay);
+		}
 
 		this.getSprite().PlayRandomSound(v.getCurrentAmmo().fire_sound);
-		v.onFire(this, occupied, v.charge);
-		v.SetFireDelay(v.getCurrentAmmo().fire_delay);
 	}
 	else if (cmd == this.getCommandID("putin_mag") && isServer())
 	{
