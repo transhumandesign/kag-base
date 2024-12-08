@@ -17,7 +17,13 @@ enum State
 
 void onInit(CBlob@ this)
 {
-	this.getShape().getVars().waterDragScale = 16.0f;
+	CShape@ shape = this.getShape();
+	
+	if (shape !is null)
+	{
+		shape.getVars().waterDragScale = 16.0f;
+		shape.getConsts().collideWhenAttached = true;
+	}
 
 	this.set_f32("explosive_radius", 32.0f);
 	this.set_f32("explosive_damage", 8.0f);
@@ -33,7 +39,7 @@ void onInit(CBlob@ this)
 
 	if (this.exists(MINE_STATE))
 	{
-		if (getNet().isClient())
+		if (isClient())
 		{
 			CSprite@ sprite = this.getSprite();
 
@@ -69,8 +75,9 @@ void onTick(CBlob@ this)
 	if (isServer())
 	{
 		//tick down
-		if (this.getVelocity().LengthSquared() < 1.0f && !this.isAttached())
-		{
+		if (this.getVelocity().LengthSquared() < 1.0f && 
+		   (this.isAttachedToPoint("MAG") || !this.isAttached()))
+		{		
 			u8 timer = this.get_u8(MINE_TIMER);
 			timer++;
 			this.set_u8(MINE_TIMER, timer);
@@ -78,8 +85,6 @@ void onTick(CBlob@ this)
 			if (timer >= MINE_PRIMING_TIME)
 			{
 				this.Untag(MINE_PRIMING);
-
-				if (this.isAttached()) return;
 
 				if (this.isInInventory()) return;
 
@@ -119,8 +124,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint@ attachedPoint)
 {
-	this.Untag(MINE_PRIMING);
-
 	if (this.get_u8(MINE_STATE) == PRIMED)
 	{
 		this.set_u8(MINE_STATE, NONE);
@@ -159,7 +162,7 @@ void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
 		this.Tag(MINE_PRIMING);
 		this.set_u8(MINE_TIMER, 0);
@@ -168,7 +171,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 
 void onThisRemoveFromInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
-	if (getNet().isServer() && !this.isAttached())
+	if (isServer() && !this.isAttached())
 	{
 		this.Tag(MINE_PRIMING);
 		this.set_u8(MINE_TIMER, 0);
