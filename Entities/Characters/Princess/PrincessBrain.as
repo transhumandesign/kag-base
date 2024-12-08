@@ -21,8 +21,8 @@ void onTick(CBrain@ this)
 	{
 		SearchTarget(this);
 
-		CBlob @blob = this.getBlob();
-		CBlob @target = this.getTarget();
+		CBlob@ blob = this.getBlob();
+		CBlob@ target = this.getTarget();
 
 		// logic for target
 
@@ -38,16 +38,5 @@ void onTick(CBrain@ this)
 		}
 
 		FloatInWater(blob);
-	}
-}
-
-// BLOB
-
-//physics logic
-void onCollision(CBlob@ this, CBlob@ blob, bool solid)
-{
-	if (isClient() && blob !is null && blob.hasTag("player") && !this.hasTag("dead"))
-	{
-		this.getSprite().PlaySound("/Kiss.ogg");
 	}
 }
