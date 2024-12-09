@@ -18,7 +18,7 @@ void onRender(CSprite@ this)
 	{
 		//VV right here VV
 		const f32 zoom = getCamera().targetDistance * getDriver().getResolutionScaleFactor();
-		Vec2f pos2d = blob.getScreenPos() + Vec2f(0, 30);
+		Vec2f pos2d = blob.getInterpolatedScreenPos() + Vec2f(0, 30);
 		Vec2f dim = Vec2f(24, 8);
 		const f32 y = blob.getHeight() * zoom;
 		const f32 initialHealth = blob.getInitialHealth();
