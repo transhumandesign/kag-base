@@ -1499,7 +1499,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 {
 	// return if we collided with map, solid (door/platform), or something non-fleshy (like a boulder)
 	// allow shieldbashing enemy bombs so knights can "deflect" them
-	if (blob is null || !solid || (!blob.hasTag("flesh") && blob.getName() != "bomb") || this.getTeamNum() == blob.getTeamNum())
+	if 	(blob is null 
+		|| blob.hasTag("invincible") 
+		|| !solid 
+		|| (!blob.hasTag("flesh") && blob.getName() != "bomb") 
+		|| this.getTeamNum() == blob.getTeamNum())
 	{
 		return;
 	}
@@ -1648,16 +1652,18 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	            knight.state == KnightStates::sword_cut_up ||
 	            knight.state == KnightStates::sword_cut_down
 	        )
-	        && blockAttack(hitBlob, velocity, 0.0f))
+	        && blockAttack(hitBlob, velocity, 0.0f)
+			&& !this.hasTag("invincible"))
 	{
 		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 		setKnocked(this, 30, true);
 	}
 
-	if (customData == Hitters::shield)
+	if (customData == Hitters::shield
+		&& !hitBlob.hasTag("invincible"))
 	{
 		setKnocked(hitBlob, 20, true);
-		this.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
+		hitBlob.getSprite().PlaySound("/Stun", 1.0f, this.getSexNum() == 0 ? 1.0f : 1.5f);
 	}
 }
 
