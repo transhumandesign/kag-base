@@ -11,16 +11,16 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	Vec2f bottom_pos = this.getPosition() + Vec2f(0, this.getHeight() / 2);
-	CMap@ map = getMap();
+	u8 absorbed_amount = this.get_u8(ABSORBED_PROP);
+	u32 absorbed_time = this.get_u32(ABSORBED_TIME);
 
-	if (!map.isInWater(bottom_pos))
+	if (absorbed_amount > 0 &&
+		absorbed_time + 15 < getGameTime()) // did we not remove water in the last 15 ticks?
     {
-        u8 absorbed = this.get_u8(ABSORBED_PROP);
-        absorbed = Maths::Max(0, absorbed - slow_frequency);
-        this.set_u8(ABSORBED_PROP, absorbed);
+        absorbed_amount = Maths::Max(0, absorbed_amount - slow_frequency);
+        this.set_u8(ABSORBED_PROP, absorbed_amount);
         this.Sync(ABSORBED_PROP, true);
-    }
+	}
 }
 
 void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
