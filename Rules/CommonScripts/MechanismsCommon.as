@@ -151,16 +151,17 @@ void packet_AddChangeAnimation(CBitStream@ stream, u16 id, string animation)
 
 void packet_SendStream(CRules@ this, CBitStream@ stream)
 {
-	if (isServer())
+	if (!isServer()) return;
+
+	stream.write_u8(PACKET_END);
+
+	CBitStream stream_server = stream;
+	stream_server.Reset();
+	packet_RecvStream(this, stream_server);
+
+	if (!isClient())
 	{
-		stream.write_u8(PACKET_END);
-
-		// we don't want a server->server command but we need to run the code on server
-		CBitStream stream_server = stream;
-		stream_server.Reset();
-		packet_RecvStream(this, stream_server);
-
-		// send to client
+		//send to client
 		this.SendCommand(this.getCommandID("mechanisms_packet_client"), stream);
 	}
 }
@@ -252,8 +253,6 @@ void packet_RecChangeAnimation(CBitStream@ stream)
 	if(blob is null) return;
 
 	CSprite@ sprite = blob.getSprite();
-	if(sprite is null) return;
-
 	sprite.SetAnimation(animation);
 	sprite.SetFrameIndex(0);
 }
