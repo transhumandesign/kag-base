@@ -8,7 +8,6 @@ const u8 MINE_PRIMING_TIME = 45;
 const string MINE_STATE = "mine_state";
 const string MINE_TIMER = "mine_timer";
 const string MINE_PRIMING = "mine_priming";
-const string MINE_PRIMED = "mine_primed";
 
 enum State
 {
@@ -54,7 +53,7 @@ void onInit(CBlob@ this)
 	}
 
 	this.set_u8(MINE_TIMER, 0);
-	this.addCommandID(MINE_PRIMED);
+	this.addCommandID("mine_primed_client");
 
 	this.getCurrentScript().tickIfTag = MINE_PRIMING;
 }
@@ -67,7 +66,7 @@ void onInit(CSprite@ this)
 
 void onTick(CBlob@ this)
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
 		//tick down
 		if (this.getVelocity().LengthSquared() < 1.0f && !this.isAttached())
@@ -79,7 +78,18 @@ void onTick(CBlob@ this)
 			if (timer >= MINE_PRIMING_TIME)
 			{
 				this.Untag(MINE_PRIMING);
-				this.SendCommand(this.getCommandID(MINE_PRIMED));
+
+				if (this.isAttached()) return;
+
+				if (this.isInInventory()) return;
+
+				if (this.get_u8(MINE_STATE) == PRIMED) return;
+
+				this.set_u8(MINE_STATE, PRIMED);
+
+				this.getShape().checkCollisionsAgain = true;
+
+				this.SendCommand(this.getCommandID("mine_primed_client"));
 			}
 		}
 		//reset if bumped/moved
@@ -92,15 +102,10 @@ void onTick(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream@ params)
 {
-	if (cmd == this.getCommandID(MINE_PRIMED))
+	if (cmd == this.getCommandID("mine_primed_client") && isClient())
 	{
-		if (this.isAttached()) return;
-
-		if (this.isInInventory()) return;
-
-		if (this.get_u8(MINE_STATE) == PRIMED) return;
-
 		this.set_u8(MINE_STATE, PRIMED);
+		
 		this.getShape().checkCollisionsAgain = true;
 
 		CSprite@ sprite = this.getSprite();

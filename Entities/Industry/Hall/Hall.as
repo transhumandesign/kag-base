@@ -36,7 +36,6 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().tickFrequency = 30;
 
 	InitClasses(this);
-	InitRespawnCommand(this);
 	this.set_TileType("background tile", CMap::tile_castle_back);
 	this.Tag("change class store inventory");
 	this.Tag("bed"); // allow spawning in WAR
