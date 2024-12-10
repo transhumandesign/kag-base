@@ -169,44 +169,32 @@ class HealCommand : ChatCommand
 			return;
 		}
 
-		//i hate this but it works
-		float health;
-		float healthClamped;
+		//health calculation and processing
 
-		if (args.size() > 0)
-		{
-			health = healthClamped = parseFloat(args[0]);
+		// going in steps of 0.25
+		float orig_health = args.size() > 0 ? parseFloat(args[0]) : blob.getInitialHealth() * 2;
+		float health_to_heal = orig_health > 0 ? Maths::Floor(orig_health * 4) * 0.25 : Maths::Ceil(orig_health * 4) * 0.25; 
+		bool no_change = health_to_heal == 0;
+		bool healing = health_to_heal > 0;
+		float possible_health_gap =  healing ? blob.getInitialHealth() * 2 - blob.getHealth() * 2 : blob.getHealth() * 2 - 0.25;
 
-			if (blob.getHealth() * 2 + health < 0.5f)
-			{
-				healthClamped = 0.125f - blob.getHealth() * 2;
-			}
-
-			if (blob.getHealth() * 2 + health > blob.getInitialHealth() * 2)
-			{
-				healthClamped = (blob.getInitialHealth() - blob.getHealth()) * 2;
-			}
-		}
-		else
-		{
-			health = blob.getInitialHealth() * 2;
-			healthClamped = (blob.getInitialHealth() - blob.getHealth()) * 2;
-		}
+		// don't go lower than 0.25 or higher than max health
+		health_to_heal = healing ? Maths::Min(health_to_heal, possible_health_gap) : Maths::Max(health_to_heal, -possible_health_gap);
 
 		if (isServer())
 		{
-			blob.server_Heal(healthClamped);
+			blob.server_Heal(health_to_heal);
 		}
 
 		if (player.isMyPlayer())
 		{
-			if (healthClamped == 0)
+			if (health_to_heal == 0)
 			{
-				if (health == 0)
+				if (no_change)
 				{
-					client_AddToChat(getTranslatedString("Specify a valid amount to heal"), ConsoleColour::ERROR);
+					client_AddToChat(getTranslatedString("Specify a valid amount (at least 0.25 or -0.25)"), ConsoleColour::ERROR);
 				}
-				else if (health > 0)
+				else if (healing)
 				{
 					client_AddToChat(getTranslatedString("You are already at full health"), ConsoleColour::ERROR);
 				}
@@ -220,7 +208,7 @@ class HealCommand : ChatCommand
 				CSprite@ sprite = blob.getSprite();
 				if (sprite !is null)
 				{
-					if (health > 0)
+					if (health_to_heal > 0)
 					{
 						sprite.PlaySound("Heart.ogg");
 					}

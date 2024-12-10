@@ -20,9 +20,9 @@ void onInit(CBlob@ this)
 
 	this.Tag("medium weight"); //slow carrier a little
 
-	this.addCommandID("pickup");
-	this.addCommandID("capture");
-	this.addCommandID("return");
+	this.addCommandID("pickup flag client");
+	this.addCommandID("capture flag client");
+	this.addCommandID("return flag client");
 
 	//we actually have our own way of ignoring damage
 	//but this is important for a lot of other scripts
@@ -198,10 +198,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
+	if (!isClient()) return;
+
 	bool needsmessage = false;
 	string message = "";
 
-	if (cmd == this.getCommandID("pickup"))
+	if (cmd == this.getCommandID("pickup flag client"))
 	{
 		u16 id;
 		if (!params.saferead_u16(id)) return;
@@ -215,7 +217,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			Sound::Play("/flag_capture.ogg");
 		}
 	}
-	else if (cmd == this.getCommandID("capture"))
+	else if (cmd == this.getCommandID("capture flag client"))
 	{
 		u16 id;
 		if (!params.saferead_u16(id)) return;
@@ -229,7 +231,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			Sound::Play("/flag_score.ogg");
 		}
 	}
-	else if (cmd == this.getCommandID("return"))
+	else if (cmd == this.getCommandID("return flag client"))
 	{
 		Sound::Play("/flag_return.ogg");
 
