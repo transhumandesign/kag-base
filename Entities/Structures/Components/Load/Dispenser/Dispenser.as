@@ -24,6 +24,7 @@ class Dispenser : Component
 
 		if (isServer())
 		{
+			CMap@ map = getMap();
 			CBlob@[] blobs;
 			getMap().getBlobsAtPosition((offset * -1) * 8 + position, @blobs);
 
