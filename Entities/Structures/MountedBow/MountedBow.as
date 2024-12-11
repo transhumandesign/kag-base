@@ -194,7 +194,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
-	if (this.isAttached() || this.hasAttached() || this.hasTag("unpickable"))	{ return false; }
+	if (this.isAttached() || this.hasAttached() ||this.hasTag("unpickable"))	{ return false; }
 	
-	return true;
+	return (this.getTeamNum() == byBlob.getTeamNum() || this.isOverlapping(byBlob));
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+    return blob.getShape().isStatic();
 }
