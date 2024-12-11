@@ -264,8 +264,9 @@ void onAttach(CBlob@ this, CBlob@ blob, AttachmentPoint@ ap)
 {
 	const u16 friendId = this.get_netid(friend_property);
 	CBlob@ friend = getBlobByNetworkID(friendId);
+	bool friend_wants_to_sit = (friend !is null && blob !is friend);
 
-	if (!ap.socket || this is null || blob is null || !(friend !is null && blob is friend))
+	if (!ap.socket || this is null || blob is null || !friend_wants_to_sit)
 		return;
 
 	MadAt(this, blob);
