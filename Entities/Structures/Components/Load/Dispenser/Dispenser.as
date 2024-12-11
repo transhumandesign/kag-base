@@ -26,7 +26,7 @@ class Dispenser : Component
 		{
 			CMap@ map = getMap();
 			CBlob@[] blobs;
-			getMap().getBlobsAtPosition((offset * -1) * 8 + position, @blobs);
+			map.getBlobsAtPosition((offset * -1) * 8 + position, @blobs);
 
 			for (uint i = 0; i < blobs.length; i++)
 			{
