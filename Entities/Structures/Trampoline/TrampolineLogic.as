@@ -1,4 +1,5 @@
 #include "Help.as";
+#include "Hitters.as";
 
 namespace Trampoline
 {
@@ -138,6 +139,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			velocity.RotateBy(angle);
 
 			blob.setVelocity(velocity);
+			
+			blob.server_Hit(blob, blob.getPosition(), blob.getVelocity(), 0.0f, Hitters::fall_trampoline, true);
+
+			blob.set_s32("trampoline last bounce", getGameTime());
 
 			CSprite@ sprite = this.getSprite();
 			if (sprite !is null)

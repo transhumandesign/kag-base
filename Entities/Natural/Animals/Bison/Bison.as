@@ -2,6 +2,7 @@
 //script for a bison
 
 #include "AnimalConsts.as";
+#include "Hitters.as";
 
 const u8 DEFAULT_PERSONALITY = TAMABLE_BIT | DONT_GO_DOWN_BIT;
 const s16 MAD_TIME = 600;
@@ -179,11 +180,11 @@ void MadAt(CBlob@ this, CBlob@ hitterBlob)
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	MadAt(this, hitterBlob);
+	if (damage > 0.0f)
+		MadAt(this, hitterBlob);
+
 	return damage;
 }
-
-#include "Hitters.as";
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
@@ -216,7 +217,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			if (vel * direction > 0.33f)
 			{
 				f32 power = Maths::Max(0.25f, 1.0f * vellen);
-				this.server_Hit(blob, point1, vel, power, Hitters::flying, false);
+				this.server_Hit(blob, point1, vel, power, Hitters::bison, false);
 			}
 		}
 
@@ -252,7 +253,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
 {
-	if (hitBlob !is null && customData == Hitters::flying)
+	if (hitBlob !is null && customData == Hitters::bison)
 	{
 		Vec2f force = velocity * this.getMass() * 0.35f ;
 		force.y -= 100.0f;
