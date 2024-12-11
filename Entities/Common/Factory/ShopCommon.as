@@ -1,3 +1,5 @@
+funcdef void ShopMadeItem(CBitStream@);
+
 shared class ShopItem
 {
 	string name;

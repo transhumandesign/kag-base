@@ -4,14 +4,11 @@
 //Default Rules Core hooks - simple proxy
 //Make sure you dont forget JoinCoreHooks! :)
 
-#include "GameplayEvents.as"
 #include "SwitchFromSpec.as"
 
 //not server only so that all the players get this
 void onInit(CRules@ this)
 {
-	SetupGameplayEvents(this);
-
 	sv_gravity = 9.81f;
 	particles_gravity.y = 0.25f;
 }
