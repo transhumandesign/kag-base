@@ -48,7 +48,6 @@ void onInit(CBlob@ this)
 
 	this.Tag("respawn");
 
-	InitRespawnCommand(this);
 	InitClasses(this);
 	this.Tag("change class store inventory");
 

@@ -81,7 +81,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("shop made item client"))
+	if (cmd == this.getCommandID("shop made item client") && isClient())
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
 	}

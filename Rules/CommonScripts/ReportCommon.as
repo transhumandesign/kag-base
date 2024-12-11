@@ -13,21 +13,30 @@ bool reportAllowed(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 	// cannot report yourself
 	if (baddie is player)
 	{
-		client_AddToChat(getTranslatedString("You cannot report yourself"), ConsoleColour::ERROR);
+		if (isClient())
+		{
+			client_AddToChat(getTranslatedString("You cannot report yourself"), ConsoleColour::ERROR);
+		}
 		return false;
 	}
 
 	// cannot report bots
 	if (baddie.isBot())
 	{
-		client_AddToChat(getTranslatedString("You cannot report a bot"), ConsoleColour::ERROR);
+		if (isClient())
+		{
+			client_AddToChat(getTranslatedString("You cannot report a bot"), ConsoleColour::ERROR);
+		}
 		return false;
 	}
 
 	// hasn't reported in a while
 	if (s32(s32(Time_Local()) - s32(this.get_u32(p_name + "_reported_at"))) <= reportRepeatTime)
 	{
-		client_AddToChat(getTranslatedString("You have already reported a player recently"), ConsoleColour::ERROR);
+		if (isClient())
+		{
+			client_AddToChat(getTranslatedString("You have already reported a player recently"), ConsoleColour::ERROR);
+		}
 		return false;
 	}
 
@@ -36,17 +45,9 @@ bool reportAllowed(CRules@ this, CPlayer@ player, CPlayer@ baddie)
 
 void report(CRules@ this, CPlayer@ player, CPlayer@ baddie, string reason)
 {
-	string playerUsername = player.getUsername();
-	string baddieUsername = baddie.getUsername();
-	string servername = getNet().joined_servername;
-	string serverip = getNet().joined_ip;
-
 	// send report information to server
 	CBitStream report_params;
-	report_params.write_string(playerUsername);
-	report_params.write_string(baddieUsername);
-	report_params.write_string(servername);
-	report_params.write_string(serverip);
+	report_params.write_u16(baddie.getNetworkID());
 	report_params.write_string(reason);
 	this.SendCommand(this.getCommandID("report"), report_params);
 }
