@@ -154,8 +154,13 @@ class SpawnCommand : BlobCommand
 			return;
 		}
 
-		u8 team = player.getBlob().getTeamNum();
+		CBlob@ playerBlob = player.getBlob();
+		u8 team = playerBlob.getTeamNum();
 		CBlob@ newBlob = server_CreateBlob(blobName, team, pos + Vec2f(0, -5));
+		if (newBlob !is null)
+		{
+			newBlob.SetFacingLeft(playerBlob.isFacingLeft());
+		}
 
 		//invalid blobs will have 'broken' names
 		if (newBlob is null || newBlob.getName() != blobName)
