@@ -4,12 +4,6 @@
 #include "LootCommon.as";
 #include "GenericButtonCommon.as";
 
-enum state
-{
-	DISABLED = 0,
-	POWERED
-};
-
 const u32 DURATION = 40;
 const u8 COIN_COST = 60;
 
@@ -24,9 +18,6 @@ class CoinSlot : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -41,8 +32,8 @@ void onInit(CBlob@ this)
 		addCoin(this, COIN_COST / 3);
 	}
 
-	this.addCommandID("activate");
-	this.addCommandID("activate client");
+	this.addCommandID("server_activate");
+	this.addCommandID("client_activate");
 
 	AddIconToken("$insert_coin$", "InteractionIcons.png", Vec2f(32, 32), 26);
 
@@ -74,8 +65,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if (sprite is null) return;
-
 	sprite.SetFacingLeft(false);
 	sprite.SetZ(-50);
 }
@@ -97,7 +86,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	"$insert_coin$",                            // icon token
 	Vec2f_zero,                                 // button offset
 	this,                                       // button attachment
-	this.getCommandID("activate"),              // command id
+	this.getCommandID("server_activate"),       // command id
 	getTranslatedString("Insert 60 coins"));    // description
 
 	button.radius = 8.0f;
@@ -116,8 +105,6 @@ void onTick(CBlob@ this)
 
 	this.Untag("active");
 
-	this.set_u8("state", DISABLED);
-
 	grid.setInfo(
 	component.x,                        // x
 	component.y,                        // y
@@ -126,11 +113,11 @@ void onTick(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("activate") && isServer())
+	if (cmd == this.getCommandID("server_activate") && isServer())
 	{
 		CPlayer@ player = getNet().getActiveCommandPlayer();
 		if (player is null) return;
-					
+		
 		CBlob@ caller = player.getBlob();
 		if (caller is null) return;
 
@@ -151,18 +138,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		this.set_u32("duration", getGameTime() + DURATION);
 
-		this.set_u8("state", POWERED);
-
 		grid.setInfo(
 		component.x,                        // x
 		component.y,                        // y
 		INFO_SOURCE | INFO_ACTIVE);         // information
+		
+		this.SendCommand(this.getCommandID("client_activate"));
 	}
-	else if (cmd == this.getCommandID("activate client") && isClient())
+	else if (cmd == this.getCommandID("client_activate") && isClient())
 	{
 		CSprite@ sprite = this.getSprite();
-		if (sprite is null) return;
-
 		sprite.SetAnimation("default");
 		sprite.SetAnimation("activate");
 		sprite.PlaySound("Cha.ogg");
@@ -175,9 +160,4 @@ void onDie(CBlob@ this)
 	{
 		server_CreateLoot(this, this.getPosition(), this.getTeamNum());
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }
