@@ -2,6 +2,7 @@
 //script for a bison
 
 #include "AnimalConsts.as";
+#include "Hitters.as";
 
 const u8 DEFAULT_PERSONALITY = TAMABLE_BIT | DONT_GO_DOWN_BIT;
 const s16 MAD_TIME = 600;
@@ -179,11 +180,11 @@ void MadAt(CBlob@ this, CBlob@ hitterBlob)
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	MadAt(this, hitterBlob);
+	if (damage > 0.0f)
+		MadAt(this, hitterBlob);
+
 	return damage;
 }
-
-#include "Hitters.as";
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
