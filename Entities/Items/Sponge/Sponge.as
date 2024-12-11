@@ -1,5 +1,4 @@
 #include "Hitters.as";
-#include "SplashWater.as";
 #include "SpongeCommon.as";
 
 const u8 DRY_COOLDOWN = 8;
@@ -30,23 +29,25 @@ void onTick(CBlob@ this)
 	f32 tilesize = map.tilesize;
 
 	//absorb water
-	if (absorbed < ABSORB_COUNT)
-	{
-		Vec2f[] vectors = {	pos,
-		                    pos + Vec2f(0, -tilesize),
-		                    pos + Vec2f(-tilesize, 0),
-		                    pos + Vec2f(tilesize, 0),
-		                    pos + Vec2f(0, tilesize)
-		                  };
+	Vec2f[] vectors = {	pos,
+		                pos + Vec2f(0, -tilesize),
+		                pos + Vec2f(-tilesize, 0),
+		                pos + Vec2f(tilesize, 0),
+		                pos + Vec2f(0, tilesize)
+		              };
 
-		for (uint i = 0; i < 5; i++)
+	for (uint i = 0; i < 5; i++)
+	{
+		Vec2f temp = vectors[i];
+		if (map.isInWater(temp))
 		{
-			Vec2f temp = vectors[i];
-			if (map.isInWater(temp))
+			if (absorbed < ABSORB_COUNT)
 			{
 				absorbed = adjustAbsorbedAmount(this, 1);
 				map.server_setFloodWaterWorldspace(temp, false);
 			}
+				
+			this.set_u32(ABSORBED_TIME, getGameTime());
 		}
 	}
 	
