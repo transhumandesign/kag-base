@@ -45,42 +45,8 @@ void onRestart(CRules@ this)
 		print("Checking any holidays...");
 
 		holiday_cache = this.get_string(holiday_prop);
-		holiday = "";
-
-		u16 server_year = Time_Year();
-		s16 server_date = Time_YearDate();
-		u8 server_leap = ((server_year % 4 == 0 && server_year % 100 != 0) || server_year % 400 == 0)? 1 : 0;
-
-		Holiday[] calendar = {
-			  Holiday(scriptlist[0], 116 + server_leap - 1, 3)
-			, Holiday(scriptlist[1], 301 + server_leap - 1, 8)
-			, Holiday(scriptlist[2], 357 + server_leap - 2, 16)
-		};
-
-		s16 holiday_start;
-		s16 holiday_end;
-		for (u8 i = 0; i < calendar.length; i++)
-		{
-			holiday_start = calendar[i].m_date;
-			holiday_end = (holiday_start + calendar[i].m_length) % (365 + server_leap);
-
-			bool holiday_active = false;
-			if (holiday_start <= holiday_end)
-			{
-				holiday_active = server_date >= holiday_start && server_date < holiday_end;
-			}
-			else
-			{
-				holiday_active = server_date >= holiday_start || server_date < holiday_end;
-			}
-
-			if (holiday_active)
-			{
-				holiday = calendar[i].m_name;
-				print("Holiday: "+holiday);
-				break;
-			}
-		}
+		holiday = GetCurrentHoliday();
+		
 		sync = true;
 	}
 }
@@ -148,4 +114,43 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 		SyncHoliday(this, _holiday, _holiday_cache);
 	}
+}
+
+// Warning: This is called by the engine on startup to know if there is a holiday going on
+string GetCurrentHoliday()
+{
+	u16 server_year = Time_Year();
+	s16 server_date = Time_YearDate();
+	u8 server_leap = ((server_year % 4 == 0 && server_year % 100 != 0) || server_year % 400 == 0)? 1 : 0;
+
+	Holiday[] calendar = {
+			Holiday(scriptlist[0], 116 + server_leap - 1, 3)
+		, Holiday(scriptlist[1], 301 + server_leap - 1, 8)
+		, Holiday(scriptlist[2], 357 + server_leap - 2, 16)
+	};
+
+	s16 holiday_start;
+	s16 holiday_end;
+	for (u8 i = 0; i < calendar.length; i++)
+	{
+		holiday_start = calendar[i].m_date;
+		holiday_end = (holiday_start + calendar[i].m_length) % (365 + server_leap);
+
+		bool holiday_active = false;
+		if (holiday_start <= holiday_end)
+		{
+			holiday_active = server_date >= holiday_start && server_date < holiday_end;
+		}
+		else
+		{
+			holiday_active = server_date >= holiday_start || server_date < holiday_end;
+		}
+
+		if (holiday_active)
+		{
+			return calendar[i].m_name;
+		}
+	}
+
+	return "";
 }
