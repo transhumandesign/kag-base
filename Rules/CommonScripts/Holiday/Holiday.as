@@ -64,6 +64,9 @@ void SyncHoliday(CRules@ this, string _holiday, string _holiday_cache)
 			print("removing " + _holiday_cache + " holiday script");
 			//remove old holiday
 			this.RemoveScript(_holiday_cache + ".as");
+#ifdef STAGING
+			CFileMatcher::RemoveOverlay(_holiday_cache);
+#endif
 			if (isServer())
 			{
 				holiday_cache = "";
@@ -79,6 +82,10 @@ void SyncHoliday(CRules@ this, string _holiday, string _holiday_cache)
 			print("adding " + _holiday + " holiday script");
 			//adds the holiday script
 			this.AddScript(_holiday+".as");
+
+#ifdef STAGING
+			CFileMatcher::AddOverlay(_holiday);
+#endif
 
 			if(isServer())
 			{
