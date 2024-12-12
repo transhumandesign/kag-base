@@ -37,11 +37,15 @@ void onRestart(CRules@ this)
 	{
 		print("Checking any holidays...");
 
-		holiday_cache = this.get_string(holiday_prop);
+		holiday_cache = getStringFromHoliday(this.get_s8(holiday_prop));
 		holiday = GetCurrentHoliday();
 		
 		sync = true;
 	}
+}
+
+void onReload(CRules@ this) {
+	onRestart(this);
 }
 
 void SyncHoliday(CRules@ this, string _holiday, string _holiday_cache)
@@ -89,6 +93,9 @@ void SyncHoliday(CRules@ this, string _holiday, string _holiday_cache)
 		}
 
 		this.set_s8(holiday_prop, getHolidayFromString(holiday));
+
+		if (isServer())
+			LoadMap(getMap().getMapName());
 	}
 }
 

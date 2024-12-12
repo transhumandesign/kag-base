@@ -25,6 +25,13 @@ int getHolidayFromString(const string&in holiday) {
 	return HolidayList.find(holiday);
 }
 
+string getStringFromHoliday(s8 holiday) {
+	if (holiday == -1)
+		return "";
+	
+	return HolidayList[holiday];
+}
+
 shared class Holiday
 {
 	string m_name;
