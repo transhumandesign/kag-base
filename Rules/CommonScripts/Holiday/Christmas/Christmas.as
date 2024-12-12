@@ -38,7 +38,9 @@ void onRestart(CRules@ this)
 	this.set_s32("present timer", present_interval);
 	frameTime = 0;
 
+#ifdef STAGING
 	getRules().daycycle_speed = 10;
+#endif
 }
 
 void onTick(CRules@ this)
