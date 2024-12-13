@@ -61,8 +61,7 @@ void onTick(CBlob@ this)
 					!occupiedBlob.isKeyPressed(key_inventory)) // prevent splash when doing stuff with inventory
 				{
 					DoSplash(this);
-					if (!(isClient() && isServer()))
-						this.SendCommand(this.getCommandID("splash client"));
+					this.SendCommand(this.getCommandID("splash client"));
 					this.set_u8("water_delay", 30);
 				}
 			}
@@ -93,6 +92,11 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			int id = this.getNetworkID();
 			this.setVelocity(this.getVelocity() + Vec2f(1,0).RotateBy((id * 933) % 360));
 			DepleteWaterCount(this);
+			
+			if (isClient())
+			{
+				SetFrame(this, this.get_u8("filled") > 0);
+			}
 		}
 	}
 
@@ -129,7 +133,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("splash client") && isClient())
+	if (cmd == this.getCommandID("splash client") && isClient() && !isServer())
 	{
 		DoSplash(this);
 	}
