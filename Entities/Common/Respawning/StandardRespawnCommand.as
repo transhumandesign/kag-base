@@ -12,6 +12,7 @@
 #include "ClassSelectMenu.as"
 #include "KnockedCommon.as"
 #include "FireCommon.as"
+#include "Hitters.as"
 
 
 bool canChangeClass(CBlob@ this, CBlob@ blob)
