@@ -170,7 +170,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 		this.getSprite().getVars().gibbed = true;
 		this.server_Die();
 	}
-	else if (cmd == this.getCommandID("shop made item"))   // will this get recieved, caise of Die() ?
+	/*else if (cmd == this.getCommandID("shop made item"))   // will this get recieved, caise of Die() ?
 	{
 		u16 callerID;
 		if (!params.saferead_u16(callerID))
@@ -184,7 +184,7 @@ void onCommand( CBlob@ this, u8 cmd, CBitStream @params )
 			blob.set_u8("migrants count", this.get_u8("migrants count") );
 			this.set_u8("migrants count", 0);
 		}
-	}
+	}*/
 }
 
 

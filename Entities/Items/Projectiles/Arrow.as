@@ -9,6 +9,7 @@
 #include "DoorCommon.as";
 #include "FireplaceCommon.as";
 #include "ArrowCommon.as";
+#include "ActivationThrowCommon.as"
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
@@ -542,9 +543,9 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 
 		if (arrowType == ArrowType::fire)
 		{
-			if (hitBlob.getName() == "keg" && !hitBlob.hasTag("exploding"))
+			if (hitBlob.getName() == "keg" && !hitBlob.hasTag("exploding") && isServer())
 			{
-				hitBlob.SendCommand(hitBlob.getCommandID("activate"));
+				server_Activate(hitBlob);
 			}
 
 			if (hitShield)

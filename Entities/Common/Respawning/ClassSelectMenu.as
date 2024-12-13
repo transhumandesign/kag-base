@@ -1,7 +1,5 @@
 //stuff for building respawn menus
 
-#include "RespawnCommandCommon.as"
-
 //class for getting everything needed for swapping to a class at a building
 
 shared class PlayerClass
@@ -46,9 +44,9 @@ void addClassesToMenu(CBlob@ this, CGridMenu@ menu, u16 callerID)
 			PlayerClass @pclass = classes[i];
 
 			CBitStream params;
-			write_classchange(params, callerID, pclass.configFilename);
+			params.write_u8(i);
 
-			CGridButton@ button = menu.AddButton(pclass.iconName, getTranslatedString(pclass.name), SpawnCmd::changeClass, Vec2f(CLASS_BUTTON_SIZE, CLASS_BUTTON_SIZE), params);
+			CGridButton@ button = menu.AddButton(pclass.iconName, getTranslatedString(pclass.name), this.getCommandID("change class"), Vec2f(CLASS_BUTTON_SIZE, CLASS_BUTTON_SIZE), params);
 			//button.SetHoverText( pclass.description + "\n" );
 		}
 	}

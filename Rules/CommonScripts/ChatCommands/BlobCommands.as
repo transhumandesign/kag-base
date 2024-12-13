@@ -1,36 +1,36 @@
 #include "ChatCommand.as"
 #include "MakeSeed.as";
 #include "MakeCrate.as";
-#include "MakeScroll.as"
+#include "MakeScroll.as";
+#include "WAR_Technology.as";
 
-class TreeCommand : BlobCommand
+class SeedCommand : BlobCommand
 {
-	string[] treeTypes = { "pine", "bushy" };
+	string[] seedTypes = { "tree_pine", "tree_bushy", "grain_plant", "flowers", "bush"};
 
-	TreeCommand()
+	SeedCommand()
 	{
-		super("tree", "Spawn a tree seed");
-		AddAlias("seed");
+		super("seed", "Spawn a seed");
 		SetUsage("[type]");
 	}
 
 	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		string tree = "tree_" + treeTypes[0];
+		string seed = seedTypes[XORRandom(seedTypes.size())];
 
 		if (args.size() > 0)
 		{
 			string type = args[0].toLower();
-			if (treeTypes.find(type) == -1)
+			if (seedTypes.find(type) == -1)
 			{
-				server_AddToChat(getTranslatedString("Specify a valid tree type: " + join(treeTypes, ", ")), ConsoleColour::ERROR, player);
+				server_AddToChat(getTranslatedString("Specify a valid seed type: " + join(seedTypes, ", ")), ConsoleColour::ERROR, player);
 				return;
 			}
 
-			tree = "tree_" + type;
+			seed = type;
 		}
 
-		server_MakeSeed(pos, tree);
+		server_MakeSeed(pos, seed);
 	}
 }
 
@@ -78,14 +78,53 @@ class ScrollCommand : BlobCommand
 
 	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
+		// setting up scrolls if necessary
+		if (!getRules().exists("all scrolls"))
+		{
+			SetupScrolls(getRules());
+		}
+
+		// no name specified, spawn a random scroll
 		if (args.size() == 0)
 		{
-			server_AddToChat(getTranslatedString("Specify the name of a scroll to spawn"), ConsoleColour::ERROR, player);
+			ScrollSet@ allScrolls = getScrollSet("all scrolls");
+			
+			if (allScrolls !is null)
+			{
+				string[] scrolls_list = allScrolls.names;
+				int scrolls_list_size = scrolls_list.size();
+				
+				if (scrolls_list_size > 0)
+				{
+					server_MakePredefinedScroll(pos, scrolls_list[XORRandom(scrolls_list_size)]);
+				}
+			}
 			return;
 		}
 
+		// attempting to spawn scroll by name
 		string scrollName = join(args, " ");
-		server_MakePredefinedScroll(pos, scrollName);
+				
+		CBlob@ scroll = server_MakePredefinedScroll(pos, scrollName);
+		
+		if (scroll is null)
+		{
+			server_AddToChat(getTranslatedString("Specify a valid scroll name:"), ConsoleColour::ERROR, player);
+			
+			ScrollSet@ allScrolls = getScrollSet("all scrolls");
+			
+			if (allScrolls !is null)
+			{
+				string[] scrolls_list = allScrolls.names;
+				
+				if (scrolls_list.size() > 0)
+				{
+					server_AddToChat(join(scrolls_list, ", "), ConsoleColour::ERROR, player);
+				}
+			}
+			
+			return;
+		}
 	}
 }
 

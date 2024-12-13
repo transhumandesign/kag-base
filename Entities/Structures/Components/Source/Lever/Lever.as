@@ -27,6 +27,7 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().waterPasses = true;
 
 	this.addCommandID("toggle");
+	this.addCommandID("toggle client");
 
 	AddIconToken("$lever_0$", "Lever.png", Vec2f(16, 16), 4);
 	AddIconToken("$lever_1$", "Lever.png", Vec2f(16, 16), 5);
@@ -43,7 +44,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.set_u8("state", 0);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -92,28 +93,36 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("toggle"))
+	if (cmd == this.getCommandID("toggle") && isServer())
 	{
-		if (getNet().isServer())
-		{
-			Component@ component = null;
-			if (!this.get("component", @component)) return;
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+					
+		CBlob@ caller = p.getBlob();
+		if (caller is null) return;
 
-			MapPowerGrid@ grid;
-			if (!getRules().get("power grid", @grid)) return;
+		// range check
+		if (this.getDistanceTo(caller) > 20.0f) return;
 
-			u8 state = this.get_u8("state") == 0? 1 : 0;
-			u8 info = state == 0? INFO_SOURCE : INFO_SOURCE | INFO_ACTIVE;
+		Component@ component = null;
+		if (!this.get("component", @component)) return;
 
-			this.set_u8("state", state);
-			this.Sync("state", true);
+		MapPowerGrid@ grid;
+		if (!getRules().get("power grid", @grid)) return;
 
-			grid.setInfo(
-			component.x,                        // x
-			component.y,                        // y
-			info);                              // information
-		}
+		u8 state = this.get_u8("state") == 0? 1 : 0;
+		u8 info = state == 0? INFO_SOURCE : INFO_SOURCE | INFO_ACTIVE;
 
+		this.set_u8("state", state);
+		this.Sync("state", true);
+
+		grid.setInfo(
+		component.x,                        // x
+		component.y,                        // y
+		info);                              // information
+	}
+	if (cmd == this.getCommandID("toggle client") && isClient())
+	{
 		CSprite@ sprite = this.getSprite();
 		if (sprite is null) return;
 
