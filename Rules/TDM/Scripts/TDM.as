@@ -298,8 +298,6 @@ shared class TDMCore : RulesCore
 		sudden_death = false;
 
 		sv_mapautocycle = true;
-
-		SpawnBombs();
 	}
 
 	int gametime;
@@ -762,21 +760,6 @@ shared class TDMCore : RulesCore
 	{
 		CBlob@ powerup = server_CreateBlob("powerup", -1, Vec2f(getMap().tilesize * 0.5f * getMap().tilemapwidth, 50.0f));
 	}
-
-	void SpawnBombs()
-	{
-		Vec2f[] bombPlaces;
-		if (getMap().getMarkers("mat_bombs", bombPlaces))
-		{
-			for (uint i = 0; i < bombPlaces.length; i++)
-			{
-				server_CreateBlob("mat_bombs", -1, bombPlaces[i]);
-			}
-		}
-
-		getMap().RemoveMarkers("mat_bombs");
-	}
-
 
 	void GiveSpawnResources(CBlob@ blob, CPlayer@ player)
 	{
