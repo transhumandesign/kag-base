@@ -80,7 +80,7 @@ void onInit(CBlob@ this)
 	AddIconToken("$transparent_heatbar$", "Entities/Industry/Drill/HeatBar.png", Vec2f(24, 6), 1);
 
 	this.set_u32(last_drill_prop, 0);
-		this.Tag("ignore fall");
+	this.Tag("ignore fall");
 }
 
 bool canBePutInInventory( CBlob@ this, CBlob@ inventoryBlob )
@@ -445,7 +445,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	if (customData == Hitters::water)
 	{
-		s16 current_heat = this.get_u8(heat_prop);
+		u8 current_heat = this.get_u8(heat_prop);
 		
 		if (current_heat > 0)
 			makeSteamPuff(this);
