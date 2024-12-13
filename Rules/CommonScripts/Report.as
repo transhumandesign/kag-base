@@ -5,9 +5,8 @@
 
 void onInit(CRules@ this)
 {
-	this.addCommandID("notify");
 	this.addCommandID("report");
-	this.addCommandID("mod_team");
+	this.addCommandID("report client");
 
 	ChatCommands::RegisterCommand(ModerateCommand());
 	ChatCommands::RegisterCommand(ReportCommand());
@@ -15,39 +14,23 @@ void onInit(CRules@ this)
 
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
-	if (isClient() && this.getCommandID("report") == cmd)
+	if (this.getCommandID("report") == cmd && isServer())
 	{
-		string p_name = params.read_string();
-		string b_name = params.read_string();
-		string servername = params.read_string();
-		string serverip = params.read_string();
-		string reason = params.read_string();
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
 
-		if (getLocalPlayer().isMod())
-		{
-			CPlayer@ baddie = getPlayerByUsername(b_name);
+		u16 id;
+		if (!params.saferead_u16(id)) return;
+		CPlayer@ baddie = getPlayerByNetworkId(id);
+		if (baddie is null) return;
 
-			if(baddie !is null)
-			{
-				client_AddToChat(
-					getTranslatedString("Report has been made for {PLAYER}" + ". Reason: {REASON}")
-						.replace("{PLAYER}", baddie.getCharacterName() + " (" + b_name + ")")
-						.replace("{REASON}", reason),
-				ConsoleColour::CRAZY);
-				Sound::Play("ReportSound.ogg");
-			}
-		}
-	}
-	else if (isServer() && this.getCommandID("report") == cmd)
-	{
-		string p_name = params.read_string();
-		string b_name = params.read_string();
-		string servername = params.read_string();
-		string serverip = params.read_string();
-		string reason = params.read_string();
+		string reason;
+		if (!params.saferead_string(reason)) return;
 
-		CPlayer@ player = getPlayerByUsername(p_name);
-		CPlayer@ baddie = getPlayerByUsername(b_name);
+		string b_name = baddie.getUsername();
+		string p_name = player.getUsername();
+
+		if (!reportAllowed(this, player, baddie)) return;
 
 		// server gets info from client and decides if it will report baddie
 		if(player !is baddie)
@@ -83,7 +66,42 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 			//*REPORT *PLAYER="SirSalami" *BADDIE="vik" *COUNT="1" *SERVER="arbitrary server name" *REASON="bullshit fuckery"
 
 			tcpr("*REPORT *PLAYER=\"" + p_name + "\" *BADDIE=\"" + b_name + "\" *COUNT=\"" + this.get_u8(b_name + "_report_count") +
-			"\" *SERVERNAME=\"" + servername + "\" *SERVERIP=\"" + serverip + "\" *REASON=\"" + reason + "\"");
+			"\" *SERVERNAME=\"" + sv_name + "\" *SERVERIP=\"" + getNet().sv_current_ip + "\" *REASON=\"" + reason + "\"");
+
+			CBitStream bt;
+			bt.write_u16(player.getNetworkID());
+			bt.write_u16(baddie.getNetworkID());
+			bt.write_string(reason);
+			this.SendCommand(this.getCommandID("report client"), bt);
+		}
+	}
+	else if (this.getCommandID("report client") == cmd && isClient())
+	{
+		u16 id;
+		if (!params.saferead_u16(id)) return;
+		CPlayer@ player = getPlayerByNetworkId(id);
+		if (player is null) return;
+
+		u16 b_id;
+		if (!params.saferead_u16(b_id)) return;
+		CPlayer@ baddie = getPlayerByNetworkId(b_id);
+		if (baddie is null) return;
+
+		string reason;
+		if (!params.saferead_string(reason)) return;
+
+		if (getLocalPlayer().isMod())
+		{
+			if(baddie !is null)
+			{
+				client_AddToChat(
+					getTranslatedString("Report has been made for {PLAYER} by {REPORTER}" + ". Reason: {REASON}")
+						.replace("{PLAYER}", baddie.getCharacterName() + " (" + baddie.getUsername() + ")")
+						.replace("{REPORTER}", player.getUsername())
+						.replace("{REASON}", reason),
+				ConsoleColour::CRAZY);
+				Sound::Play("ReportSound.ogg");
+			}
 		}
 	}
 }
