@@ -298,6 +298,8 @@ shared class TDMCore : RulesCore
 		sudden_death = false;
 
 		sv_mapautocycle = true;
+
+		SpawnBombs();
 	}
 
 	int gametime;
@@ -361,9 +363,6 @@ shared class TDMCore : RulesCore
 		//  SpawnPowerups();
 		RulesCore::Update(); //update respawns
 		CheckTeamWon();
-
-		if (getGameTime() % 2000 == 0)
-			SpawnBombs();
 	}
 
 	void updateHUD()
@@ -767,13 +766,15 @@ shared class TDMCore : RulesCore
 	void SpawnBombs()
 	{
 		Vec2f[] bombPlaces;
-		if (getMap().getMarkers("bombs", bombPlaces))
+		if (getMap().getMarkers("mat_bombs", bombPlaces))
 		{
 			for (uint i = 0; i < bombPlaces.length; i++)
 			{
 				server_CreateBlob("mat_bombs", -1, bombPlaces[i]);
 			}
 		}
+
+		getMap().RemoveMarkers("mat_bombs");
 	}
 
 
