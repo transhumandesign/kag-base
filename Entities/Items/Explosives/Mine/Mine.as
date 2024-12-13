@@ -33,7 +33,7 @@ void onInit(CBlob@ this)
 
 	if (this.exists(MINE_STATE))
 	{
-		if (getNet().isClient())
+		if (isClient())
 		{
 			CSprite@ sprite = this.getSprite();
 
@@ -159,7 +159,7 @@ void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
 		this.Tag(MINE_PRIMING);
 		this.set_u8(MINE_TIMER, 0);
@@ -168,7 +168,7 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 
 void onThisRemoveFromInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
-	if (getNet().isServer() && !this.isAttached())
+	if (isServer() && !this.isAttached())
 	{
 		this.Tag(MINE_PRIMING);
 		this.set_u8(MINE_TIMER, 0);
@@ -188,7 +188,7 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (getNet().isServer() && blob !is null)
+	if (isServer() && blob !is null)
 	{
 		if (this.get_u8(MINE_STATE) == PRIMED && explodeOnCollideWithBlob(this, blob))
 		{
@@ -203,7 +203,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 void onDie(CBlob@ this)
 {
-	if (getNet().isServer() && this.hasTag("exploding"))
+	if (isServer() && this.hasTag("exploding"))
 	{
 		const Vec2f POSITION = this.getPosition();
 
@@ -212,8 +212,9 @@ void onDie(CBlob@ this)
 		for(u16 i = 0; i < blobs.length; i++)
 		{
 			CBlob@ target = blobs[i];
-			if (target.hasTag("flesh") &&
-			(target.getTeamNum() != this.getTeamNum() || target.getPlayer() is this.getDamageOwnerPlayer()))
+			if (!target.hasTag("invincible")
+				&& target.hasTag("flesh") 
+				&& (target.getTeamNum() != this.getTeamNum() || target.getPlayer() is this.getDamageOwnerPlayer()))
 			{
 				this.server_Hit(target, POSITION, Vec2f_zero, 8.0f, Hitters::mine_special, true);
 			}
