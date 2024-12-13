@@ -3,12 +3,9 @@
 
 const string burn_duration = "burn duration";
 const string burn_hitter = "burn hitter";
-
 const string burn_timer = "burn timer";
-
 const string burning_tag = "burning";
 const string spread_fire_tag = "spread fire";
-
 const string burn_counter = "burn counter";
 
 const int fire_wait_ticks = 4;
@@ -21,15 +18,12 @@ void server_setFireOn(CBlob@ this)
 {
 	if (!getNet().isServer())
 		return;
+		
 	this.Tag(burning_tag);
 	this.Sync(burning_tag, true);
 
 	this.set_s16(burn_timer, this.get_s16(burn_duration) / fire_wait_ticks);
 	this.Sync(burn_timer, true);
-
-	if ((this.getCurrentScript().runFlags & Script::tick_infire) != 0)
-		this.Tag("had only fire flag");
-	this.getCurrentScript().runFlags &= ~Script::tick_infire;
 }
 
 /**
@@ -47,9 +41,6 @@ void server_setFireOff(CBlob@ this)
 	
 	this.set_s16(burn_counter, 0);
 	this.Sync(burn_counter, true);
-
-	if (this.hasTag("had only fire flag"))
-		this.getCurrentScript().runFlags |= Script::tick_infire;
 }
 
 /**
