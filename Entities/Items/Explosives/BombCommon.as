@@ -2,7 +2,8 @@
 
 #include "Hitters.as"
 
-
+funcdef void ParticleCallback(CSprite@);
+const string custom_particle_prop = "BombParticleCallback";
 
 void SetupBomb(CBlob@ this, const int fuseTicks, const f32 explRadius, const f32 explosive_damage, const f32 map_damage_radius, const f32 map_damage_ratio, const bool map_damage_raycast)
 {
@@ -51,8 +52,12 @@ bool UpdateBomb(CBlob@ this)
 			this.SetLightColor(lightColor);
 		}
 
-		if (XORRandom(2) == 0)
-		{
+		if (this.exists(custom_particle_prop)) {
+			ParticleCallback@ callback;
+			this.get(custom_particle_prop, @callback);
+			
+			callback(this.getSprite());
+		} else if (XORRandom(2) == 0) {
 			sparks(this.getPosition(), this.getAngleDegrees(), 3.5f + (XORRandom(10) / 5.0f), lightColor);
 		}
 
