@@ -8,11 +8,11 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
 
-    //Stop if there is no emote menu.
-    if(!getRules().hasScript("EmoteMenu.as"))
-    {
-        return;
-    }
+	//Stop if there is no emote menu.
+	if(!getRules().hasScript("EmoteMenu.as"))
+	{
+		return;
+	}
 
 	CPlayer@ me = getLocalPlayer();
 	if (me !is null)
