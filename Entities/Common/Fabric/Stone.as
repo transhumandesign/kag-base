@@ -41,13 +41,17 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		return;
 	}
 
-	if (!getNet().isServer())
+	if (!isServer())
 	{
 		return;
 	}
+	
+	TileType tile = getMap().getTile(point1 + this.getOldVelocity()).type;
+	bool hit_stone = getMap().isTileCastle(tile);
+	bool hit_wood = getMap().isTileWood(tile);
 
 	f32 vellen = this.getShape().vellen;
-	bool heavy = this.hasTag("heavy weight");
+	bool heavy = this.hasTag("heavy weight") || this.hasTag("heavy sound");
 	// sound
 	const f32 soundbase = heavy ? 0.7f : 2.5f;
 	const f32 sounddampen = heavy ? soundbase : soundbase * 2.0f;
@@ -60,11 +64,18 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 		{
 			if (vellen > 3.0f)
 			{
-				this.getSprite().PlayRandomSound("/WoodHeavyHit", volume);
-			}
-			else
-			{
-				this.getSprite().PlayRandomSound("/WoodHeavyBump", volume);
+				if (hit_stone)
+				{
+					this.getSprite().PlaySound("rock_hit3.ogg", volume);
+				}
+				else if (hit_wood)
+				{
+					this.getSprite().PlaySound("hitwall.ogg", volume);
+				}
+				else
+				{
+					this.getSprite().PlayRandomSound("/StoneHeavyBump", volume);
+				}
 			}
 		}
 		else
@@ -78,7 +89,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 	//print("stone vel " + vellen + " base " + base );
 	// damage
-	if (getNet().isServer() && vellen > base && !this.hasTag("ignore fall"))
+	if (isServer() && vellen > base && !this.hasTag("ignore fall"))
 	{
 		if (vellen > base * ramp)
 		{
