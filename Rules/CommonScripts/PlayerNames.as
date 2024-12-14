@@ -25,12 +25,16 @@ void onTick(CRules@ this)
 		CPlayer@ player = getPlayer(i);
 		CBlob@ blob = player.getBlob();
 		if (blob is null || blob is my_blob)
+		{
 			continue;
-		
-		if (	team == this.getSpectatorTeamNum() || // always add if we are spectator
+		}
+
+		if (team == this.getSpectatorTeamNum() || // always add if we are spectator
 			team == blob.getTeamNum() && u_shownames || // if teammate and always show teammate names enabled
-			(mouse_pos - blob.getPosition()).Length() <= max_radius) // if hovering over
+			((mouse_pos - blob.getPosition()).Length() <= max_radius && getMap().getColorLight(blob.getPosition()).getRed() >= 30)) // if hovering over & not in darkness
+		{
 			blob_ids.push_back(blob.getNetworkID());
+		}
 	}
 }
 
