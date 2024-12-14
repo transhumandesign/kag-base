@@ -15,10 +15,10 @@ void onTick(CRules@ this)
 	CControls@ c = getControls();
 	Vec2f mouse_pos = c.getMouseWorldPos();
 
-	uint8 team = this.getSpectatorTeamNum();
+	CPlayer@ my_player = getLocalPlayer();
+	uint8 team = my_player !is null ? my_player.getTeamNum() : this.getSpectatorTeamNum();
+
 	CBlob@ my_blob = getLocalPlayerBlob();
-	if (my_blob !is null) // dont change team if we are dead, so that we can see everyone names
-		team = my_blob.getTeamNum();
 
 	for (int i = 0; i < getPlayerCount(); i++)
 	{
@@ -29,9 +29,14 @@ void onTick(CRules@ this)
 			continue;
 		}
 
-		if (team == this.getSpectatorTeamNum() || // always add if we are spectator
-			team == blob.getTeamNum() && u_shownames || // if teammate and always show teammate names enabled
-			((mouse_pos - blob.getPosition()).Length() <= max_radius && getMap().getColorLight(blob.getPosition()).getRed() >= 30)) // if hovering over & not in darkness
+		if (
+			// always show all if spectator
+			team == this.getSpectatorTeamNum()
+			// show teammates if u_shownames config is set
+			|| (team == blob.getTeamNum() && u_shownames)
+			// if dead, or if hovering cursor near enemies while alive, *and* they are lit well enough, show them
+			|| ((my_blob is null || (mouse_pos - blob.getPosition()).Length() <= max_radius) && getMap().getColorLight(blob.getPosition()).getRed() >= 30)
+		)
 		{
 			blob_ids.push_back(blob.getNetworkID());
 		}
