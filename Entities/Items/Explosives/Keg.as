@@ -39,8 +39,6 @@ void onInit(CBlob@ this)
 
 //sprite update
 
-Vec2f tickDirection = Vec2f_zero;
-
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
@@ -61,18 +59,15 @@ void onTick(CSprite@ this)
 
 	fuse.animation.frame = 1 + (fuse.animation.getFramesCount() - 1) * (1.0f - ((timer + 5) / f32(blob.get_f32("keg_time"))));
 
-	if (fuse.animation.frame == 0)
+	if (fuse.animation.frame == 0 || getGameTime() % 3 != 0)
 		return;
 
-	if (getGameTime() % 3 == 0)
-	{
-		CParticle@ p = MakeEmberParticle(this, fuse);
+	CParticle@ p = MakeEmberParticle(this, fuse);
 #ifdef STAGING
-		if (p !is null) {
-			MakeBasicLightParticle(p.position, p.velocity, this.getBlob().getLightColor(), 0.95, 0.3, 60);
-		}
-#endif
+	if (p !is null) {
+		MakeBasicLightParticle(p.position, p.velocity, this.getBlob().getLightColor(), 0.95, 0.3, 60);
 	}
+#endif
 }
 
 void onTick(CBlob@ this)
