@@ -156,7 +156,7 @@ class SpawnCommand : BlobCommand
 
 		u8 team = player.getBlob().getTeamNum();
 		CBlob@ newBlob = server_CreateBlob(blobName, team, Vec2f_zero);
-		
+
 		//invalid blobs will have 'broken' names
 		if (newBlob is null || newBlob.getName() != blobName)
 		{
