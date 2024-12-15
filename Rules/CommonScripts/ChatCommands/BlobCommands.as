@@ -169,22 +169,35 @@ class SpawnCommand : BlobCommand
 		}
 
 		u8 team = player.getBlob().getTeamNum();
+		f32 height = 0;
+		bool success = true;
 
 		for (int i = 0; i < count; ++i)
 		{
-			CBlob@ newBlob = server_CreateBlob(blobName, team, Vec2f_zero);
-
-			//invalid blobs will have 'broken' names
-			if (newBlob is null || newBlob.getName() != blobName)
+			if (height == 0)
 			{
-				server_AddToChat(getTranslatedString("Blob '{BLOB}' not found").replace("{BLOB}", blobName), ConsoleColour::ERROR, player);
+				CBlob@ newBlob = server_CreateBlob(blobName, team, Vec2f_zero);
+				success = !(newBlob is null || newBlob.getName() != blobName);
+				
+				if (success)
+				{
+					// setting blob spawn position based on blob's height
+					height = newBlob.getHeight();
+					Vec2f spawnPos = pos + Vec2f(0, getMap().tilesize) - Vec2f(0, height/2);
+					newBlob.setPosition(spawnPos);
+				}
 			}
 			else
 			{
-				// setting blob spawn position based on blob's height
-				f32 height = newBlob.getHeight();
 				Vec2f spawnPos = pos + Vec2f(0, getMap().tilesize) - Vec2f(0, height/2);
-				newBlob.setPosition(spawnPos);
+				CBlob@ newBlob = server_CreateBlob(blobName, team, spawnPos);
+				success = !(newBlob is null || newBlob.getName() != blobName);
+			}
+
+			if (!success) // null blob or invalid blob with 'broken' name
+			{
+				server_AddToChat(getTranslatedString("Blob '{BLOB}' not found").replace("{BLOB}", blobName), ConsoleColour::ERROR, player);
+				return;
 			}
 		}
 	}
