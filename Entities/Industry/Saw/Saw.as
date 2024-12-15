@@ -105,7 +105,7 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 	{
 		return;
 	}
-	
+
 	tobeblended.Tag("sawed");
 
 	if ((tobeblended.getName() == "waterbomb" || tobeblended.getName() == "bomb") && tobeblended.hasTag("activated"))
