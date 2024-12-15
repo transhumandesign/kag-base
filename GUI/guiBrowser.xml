@@ -1202,7 +1202,7 @@
 				<attributes>
 					<int name="Id" value="10041" />
 					<string name="Caption" value="&quot;current players&quot;" />
-					<rect name="Rect" value="10, 380, 320, 220" />
+					<rect name="Rect" value="10, 350, 320, 450" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
