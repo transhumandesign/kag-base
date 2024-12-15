@@ -405,7 +405,7 @@ class PNGLoader
 			case map_colors::mook_archer:     autotile(offset); AddMarker(map, offset, "mook archer"); break;
 			case map_colors::mook_spawner:    autotile(offset); AddMarker(map, offset, "mook spawner"); break;
 			case map_colors::mook_spawner_10: autotile(offset); AddMarker(map, offset, "mook spawner 10"); break;
-			case map_colors::dummy:           autotile(offset); spawnBlob(map, "dummy", offset, 1, true); break;
+			case map_colors::dummy:           autotile(offset); spawnBlob(map, "dummy", offset, -1, true); break;
 			default:
 				HandleCustomTile( map, offset, pixel );
 			};
