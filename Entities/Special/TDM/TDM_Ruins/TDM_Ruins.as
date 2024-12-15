@@ -3,7 +3,6 @@
 #include "ClassSelectMenu.as"
 #include "StandardRespawnCommand.as"
 #include "StandardControlsCommon.as"
-#include "RespawnCommandCommon.as"
 #include "GenericButtonCommon.as"
 
 void onInit(CBlob@ this)
@@ -15,7 +14,7 @@ void onInit(CBlob@ this)
 	addPlayerClass(this, "Archer", "$archer_class_icon$", "archer", "The Ranged Advantage.");
 	this.getShape().SetStatic(true);
 	this.getShape().getConsts().mapCollisions = false;
-	this.addCommandID("class menu");
+	this.addCommandID("change class");
 
 	this.Tag("change class drop inventory");
 
@@ -49,20 +48,7 @@ void onTick(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("class menu"))
-	{
-		u16 callerID = params.read_u16();
-		CBlob@ caller = getBlobByNetworkID(callerID);
-
-		if (caller !is null && caller.isMyPlayer())
-		{
-			BuildRespawnMenuFor(this, caller);
-		}
-	}
-	else
-	{
-		onRespawnCommand(this, cmd, params);
-	}
+	onRespawnCommand(this, cmd, params);
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
@@ -81,8 +67,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		else
 		{
 			CBitStream params;
-			params.write_u16(caller.getNetworkID());
-			caller.CreateGenericButton("$change_class$", Vec2f(0, 6), this, this.getCommandID("class menu"), getTranslatedString("Change class"), params);
+			caller.CreateGenericButton("$change_class$", Vec2f(0, 0), this, buildSpawnMenu, getTranslatedString("Change class"));
 		}
 	}
 

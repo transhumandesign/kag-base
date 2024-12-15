@@ -1,6 +1,9 @@
 void onTick(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
+	
+	if (blob is null)
+		return;
 
 	if (blob.hasTag("dead")) //check dead
 	{
@@ -29,13 +32,7 @@ void onTick(CSprite@ this)
 	const bool up = blob.isKeyPressed(key_up);
 	const bool down = blob.isKeyPressed(key_down);
 
-	// in love?
-	bool loveIsInTheAir = false;
-	CBrain@ brain = blob.getBrain();
-	if (brain !is null && brain.getTarget() !is null)
-	{
-		loveIsInTheAir = true;
-	}
+	bool loveClient = blob.get_bool("love is in the air");
 
 	if (inair)
 	{
@@ -60,7 +57,7 @@ void onTick(CSprite@ this)
 	}
 	else
 	{
-		this.SetAnimation(loveIsInTheAir ? "love" : "default");
+		this.SetAnimation(loveClient ? "love" : "default");
 	}
 }
 

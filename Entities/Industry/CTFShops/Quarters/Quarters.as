@@ -70,6 +70,9 @@ void onInit(CBlob@ this)
 		bed.SetMouseTaken(true);
 	}
 
+	ShopMadeItem@ onMadeItem = @onShopMadeItem;
+	this.set("onShopMadeItem handle", @onMadeItem);
+
 	this.addCommandID("rest");
 	this.getCurrentScript().runFlags |= Script::tick_hasattached;
 
@@ -182,22 +185,41 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	this.set_bool("shop available", isOverlapping);
 }
 
+void onShopMadeItem(CBitStream@ params)
+{
+	if (!isServer()) return;
+
+	u16 this_id, caller_id, item_id;
+	string name;
+
+	if (!params.saferead_u16(this_id) || !params.saferead_u16(caller_id) || !params.saferead_u16(item_id) || !params.saferead_string(name))
+	{
+		return;
+	}
+
+	CBlob@ caller = getBlobByNetworkID(caller_id);
+	if (caller is null) return;
+
+	if (name == "beer")
+	{
+		caller.server_Heal(beer_amount);
+	}
+	else if (name == "meal")
+	{
+		caller.server_SetHealth(caller.getInitialHealth());
+	}
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("shop made item"))
+	if (cmd == this.getCommandID("shop made item client") && isClient())
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
 
-		u16 caller, item;
+		u16 this_id, caller_id, item_id;
 		string name;
 
-		if (!params.saferead_netid(caller) || !params.saferead_netid(item) || !params.saferead_string(name))
-		{
-			return;
-		}
-
-		CBlob@ callerBlob = getBlobByNetworkID(caller);
-		if (callerBlob is null)
+		if (!params.saferead_u16(this_id) || !params.saferead_u16(caller_id) || !params.saferead_u16(item_id) || !params.saferead_string(name))
 		{
 			return;
 		}
@@ -205,18 +227,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (name == "beer")
 		{
 			this.getSprite().PlaySound("/Gulp.ogg");
-			if (isServer())
-			{
-				callerBlob.server_Heal(beer_amount);
-			}
 		}
 		else if (name == "meal")
 		{
 			this.getSprite().PlaySound("/Eat.ogg");
-			if (isServer())
-			{
-				callerBlob.server_SetHealth(callerBlob.getInitialHealth());
-			}
 		}
 	}
 	else if (cmd == this.getCommandID("rest") && isServer())

@@ -29,9 +29,6 @@ class Lamp : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place ignore facing");
 
@@ -59,7 +56,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Lamp component(POSITION, this.getNetworkID());
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -74,23 +71,31 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		component.id);                      // id
 	}
 
+	const bool FACING = ANGLE < 180? false : true;
+
 	CSprite@ sprite = this.getSprite();
-	if (sprite !is null)
-	{
-		const bool FACING = ANGLE < 180? false : true;
+	sprite.SetZ(-55);
+	sprite.SetFacingLeft(FACING);
 
-		sprite.SetZ(-55);
-		sprite.SetFacingLeft(FACING);
-
-		CSpriteLayer@ layer = sprite.addSpriteLayer("background", "Lamp.png", 16, 16);
-		layer.addAnimation("default", 0, false);
-		layer.animation.AddFrame(2);
-		layer.SetRelativeZ(-1);
-		layer.SetFacingLeft(FACING);
-	}
+	CSpriteLayer@ layer = sprite.addSpriteLayer("background", "Lamp.png", 16, 16);
+	layer.addAnimation("default", 0, false);
+	layer.animation.AddFrame(2);
+	layer.SetRelativeZ(-1);
+	layer.SetFacingLeft(FACING);
 }
 
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+void onSendCreateData(CBlob@ this, CBitStream@ stream)
 {
-	return false;
+	stream.write_bool(this.isLight());
+}
+
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	bool activated;
+	if (!stream.saferead_bool(activated)) return false;
+
+	this.SetLight(activated);
+	this.getSprite().SetFrameIndex(activated ? 1 : 0);
+
+	return true;
 }

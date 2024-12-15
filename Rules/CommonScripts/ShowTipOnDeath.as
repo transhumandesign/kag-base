@@ -47,17 +47,20 @@ void RenderTip()
 	s32 scrw = getScreenWidth();
 	s32 scrh = getScreenHeight();
 
-	s32 w = Maths::Min(800, scrw - 40);
-	s32 h = 40;
+	GUI::SetFont("menu");
+
+	Vec2f textDim;
+	GUI::GetTextDimensions(tip, textDim);
 
 	s32 offset = 200;
 
-	Vec2f tl(scrw / 2 - w / 2, scrh - h - offset);
-	Vec2f br(scrw / 2 + w / 2, scrh - offset);
+	f32 wave = Maths::Sin(getGameTime() / 10.0f) * 3.0f;
+	Vec2f tl(scrw / 2 - textDim.x / 2, scrh - textDim.y - offset + wave);
+	Vec2f br(scrw / 2 + textDim.x / 2, scrh - offset);
+	Vec2f padding(10, 10);
 
-	GUI::DrawButton(tl, br);
-	GUI::SetFont("menu");
-	GUI::DrawText(tip, tl + Vec2f(10, 10), br - Vec2f(10, 10), color_white, true, true, false);
+	GUI::DrawButtonPressed(tl - padding, tl + textDim + padding);
+	GUI::DrawText(tip, tl, br, color_white, true, true, false);
 }
 
 ///////////////////////////////////////

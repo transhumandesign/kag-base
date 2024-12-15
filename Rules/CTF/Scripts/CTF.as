@@ -310,7 +310,7 @@ shared class CTFSpawns : RespawnSystem
 		}
 		else
 		{
-			error("PLAYER TEAM NOT SET CORRECTLY! " + info.team + " / " + CTF_core.teams.length);
+			error("PLAYER TEAM NOT SET CORRECTLY! " + info.team + " / " + CTF_core.teams.length + " for player " + player.getUsername());
 		}
 	}
 
