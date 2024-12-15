@@ -169,32 +169,33 @@ class SpawnCommand : BlobCommand
 		}
 
 		u8 team = player.getBlob().getTeamNum();
-		f32 height = 0;
-		bool success = true;
+		Vec2f spawnPos;
+		bool spawnPosFound = false;
+		bool spawnSuccess = true;
 
 		for (int i = 0; i < count; ++i)
 		{
-			if (height == 0)
+			if (!spawnPosFound)
 			{
 				CBlob@ newBlob = server_CreateBlob(blobName, team, Vec2f_zero);
-				success = !(newBlob is null || newBlob.getName() != blobName);
+				spawnSuccess = !(newBlob is null || newBlob.getName() != blobName);
 				
-				if (success)
+				if (spawnSuccess)
 				{
 					// setting blob spawn position based on blob's height
-					height = newBlob.getHeight();
-					Vec2f spawnPos = pos + Vec2f(0, getMap().tilesize) - Vec2f(0, height/2);
+					f32 height = newBlob.getHeight();
+					spawnPos = pos + Vec2f(0, getMap().tilesize) - Vec2f(0, height/2);
 					newBlob.setPosition(spawnPos);
+					spawnPosFound = true;
 				}
 			}
 			else
 			{
-				Vec2f spawnPos = pos + Vec2f(0, getMap().tilesize) - Vec2f(0, height/2);
 				CBlob@ newBlob = server_CreateBlob(blobName, team, spawnPos);
-				success = !(newBlob is null || newBlob.getName() != blobName);
+				spawnSuccess = !(newBlob is null || newBlob.getName() != blobName);
 			}
 
-			if (!success) // null blob or invalid blob with 'broken' name
+			if (!spawnSuccess) // null blob or invalid blob with 'broken' name
 			{
 				server_AddToChat(getTranslatedString("Blob '{BLOB}' not found").replace("{BLOB}", blobName), ConsoleColour::ERROR, player);
 				return;
