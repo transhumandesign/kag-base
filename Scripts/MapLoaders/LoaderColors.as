@@ -119,12 +119,14 @@ namespace map_colors
 		alpha_receiver         = 0xFFFFB0FF, // ARGB(255, 255, 176, 255);
 		alpha_elbow            = 0xFFFFC0FF, // ARGB(255, 255, 192, 255);
 		alpha_tee              = 0xFFFFD0FF, // ARGB(255, 255, 208, 255);
+		alpha_display          = 0xFFFFE0FF, // ARGB(255, 255, 224, 255);
 
 		alpha_bolter           = 0xFFFFFF00, // ARGB(255, 255, 255,   0);
 		alpha_dispenser        = 0xFFFFFF10, // ARGB(255, 255, 255,  16);
 		alpha_lamp             = 0xFFFFFF20, // ARGB(255, 255, 255,  32);
 		alpha_obstructor       = 0xFFFFFF30, // ARGB(255, 255, 255,  48);
 		alpha_spiker           = 0xFFFFFF40, // ARGB(255, 255, 255,  64);
+		alpha_bell             = 0xFFFFFF50, // ARGB(255, 255, 255,  80);
 
 		// BLOCKS
 		ladder                 = 0xFF42240B, // ARGB(255,  66,  36,  11);
