@@ -519,7 +519,7 @@ void onRender(CSprite@ this)
 				Vec2f dimensions;
 				GUI::SetFont("menu");
 				GUI::GetTextDimensions(invName, dimensions);
-				GUI::DrawText(invName, getDriver().getScreenPosFromWorldPos(mouseBlob.getPosition() - Vec2f(0, -mouseBlob.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);					//	mouseBlob.RenderForHUD( RenderStyle::outline_front );
+				GUI::DrawText(invName, getDriver().getScreenPosFromWorldPos(mouseBlob.getInterpolatedPosition() - Vec2f(0, -mouseBlob.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);					//	mouseBlob.RenderForHUD( RenderStyle::outline_front );
 			}
 		}
 	}

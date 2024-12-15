@@ -7,7 +7,7 @@
 
 #include "TreeCommon.as";
 
-const int present_interval = 30 * 60 * 10; // 10 minutes
+const int present_interval = getTicksASecond() * 60 * 10; // 10 minutes
 const int gifts_per_hoho = 3;
 
 // Snow stuff
@@ -150,7 +150,7 @@ CBlob@ spawnPresent(Vec2f spawnpos)
 
 void onCommand( CRules@ this, u8 cmd, CBitStream @params )
 {
-	if(cmd == this.getCommandID("xmas sound"))
+	if (cmd == this.getCommandID("xmas sound") && isClient())
 	{
 		Sound::Play("Christmas.ogg");
 	}
@@ -160,7 +160,7 @@ void onCommand( CRules@ this, u8 cmd, CBitStream @params )
 
 void InitSnow()
 {
-	if(_snow_ready) return;
+	if (_snow_ready) return;
 
 	_snow_ready = true;
 
@@ -168,9 +168,9 @@ void InitSnow()
 	CMap@ map  = getMap();
 	int chunksX = map.tilemapwidth  / 32 + 3;
 	int chunksY = map.tilemapheight / 32 + 3;
-	for(int cX = 0; cX < chunksX; cX++)
+	for (int cX = 0; cX < chunksX; cX++)
 	{
-		for(int cY = 0; cY < chunksY; cY++)
+		for (int cY = 0; cY < chunksY; cY++)
 		{
 			float patch = 256;
 			Verts.push_back(Vertex((cX-1)*patch, (cY)*patch,   -500, 0, 0, snow_col));
@@ -187,7 +187,7 @@ void DrawSnow(int id)
 	frameTime += getRenderApproximateCorrectionFactor();
 	
 	float[] trnsfm;
-	for(int i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		float gt = frameTime * (1.0f + (0.031f * i)) + (997 * i);
 		float X = Maths::Cos(gt/49.0f)*20 +

@@ -20,11 +20,9 @@ namespace Spike
 	};
 }
 
-
-// Todo: collision normal
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (!getNet().isServer() || this.get_u8("state") == Spike::hidden || blob is null || !blob.hasTag("flesh") || blob.hasTag("invincible")) return;
+	if (!isServer() || this.get_u8("state") == Spike::hidden || blob is null || !blob.hasTag("flesh") || blob.hasTag("invincible")) return;
 
 	Vec2f velocity = blob.getOldVelocity();
 	velocity.Normalize();
@@ -55,24 +53,28 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 	if (!pierced) return;
 
-	this.server_Hit(blob, blob.getPosition(), blob.getVelocity() * -1, 1, Hitters::spikes, true);
+	this.server_Hit(blob, blob.getPosition(), blob.getVelocity() * -1.0f, 0.5f, Hitters::spikes, true);
 }
 
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
 {
-	if (this.exists("bloody")) return;
-
-	this.Tag("bloody");
-
-	if (g_kidssafe) return;
-
-	CSpriteLayer@ layer = this.getSprite().getSpriteLayer("blood");
-	if (layer is null) return;
-
-	layer.SetVisible(true);
+	if (!this.hasTag("bloody"))
+	{
+		this.Tag("bloody");
+		CSprite@ sprite = this.getSprite();
+		sprite.SetAnimation("blood");
+		sprite.animation.SetFrameIndex(this.get_u8("state"));
+	}
 }
 
-bool canBePickedUp( CBlob@ this, CBlob@ byBlob )
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 {
-	return false;
+	CSprite@ sprite = this.getSprite();
+	if (this.hasTag("bloody"))
+	{
+		sprite.SetAnimation("blood");
+	}
+	sprite.animation.SetFrameIndex(this.get_u8("state"));
+
+	return true;
 }
