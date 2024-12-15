@@ -173,7 +173,7 @@ class SpawnCommand : BlobCommand
 		for (int i = 0; i < count; ++i)
 		{
 			CBlob@ newBlob = server_CreateBlob(blobName, team, Vec2f_zero);
-			
+
 			//invalid blobs will have 'broken' names
 			if (newBlob is null || newBlob.getName() != blobName)
 			{
