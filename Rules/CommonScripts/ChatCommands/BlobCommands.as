@@ -155,12 +155,19 @@ class SpawnCommand : BlobCommand
 		}
 
 		u8 team = player.getBlob().getTeamNum();
-		CBlob@ newBlob = server_CreateBlob(blobName, team, pos + Vec2f(0, -5));
-
+		CBlob@ newBlob = server_CreateBlob(blobName, team, Vec2f_zero);
+		
 		//invalid blobs will have 'broken' names
 		if (newBlob is null || newBlob.getName() != blobName)
 		{
 			server_AddToChat(getTranslatedString("Blob '{BLOB}' not found").replace("{BLOB}", blobName), ConsoleColour::ERROR, player);
+		}
+		else
+		{
+			// setting blob spawn position based on blob's height
+			f32 height = newBlob.getHeight();
+			Vec2f spawnPos = pos + Vec2f(0, getMap().tilesize) - Vec2f(0, height/2);
+			newBlob.setPosition(spawnPos);
 		}
 	}
 }
