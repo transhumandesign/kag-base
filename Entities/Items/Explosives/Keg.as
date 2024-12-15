@@ -67,10 +67,11 @@ void onTick(CSprite@ this)
 	if (getGameTime() % 3 == 0)
 	{
 		CParticle@ p = MakeEmberParticle(this, fuse);
-
+#ifdef STAGING
 		if (p !is null) {
 			MakeBasicLightParticle(p.position, p.velocity, this.getBlob().getLightColor(), 0.95, 0.3, 60);
 		}
+#endif
 	}
 }
 
