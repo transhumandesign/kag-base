@@ -135,7 +135,7 @@ class SpawnCommand : BlobCommand
 		super("spawn", "Spawn a blob");
 		AddAlias("blob");
 		AddAlias("s");
-		SetUsage("<blob>");
+		SetUsage("<blob> (count)");
 	}
 
 	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
@@ -154,20 +154,38 @@ class SpawnCommand : BlobCommand
 			return;
 		}
 
-		u8 team = player.getBlob().getTeamNum();
-		CBlob@ newBlob = server_CreateBlob(blobName, team, Vec2f_zero);
+		int count = args.size() >= 2 ? parseInt(args[1]) : 1;
 
-		//invalid blobs will have 'broken' names
-		if (newBlob is null || newBlob.getName() != blobName)
+		if (count <= 0 || count > 100)
 		{
-			server_AddToChat(getTranslatedString("Blob '{BLOB}' not found").replace("{BLOB}", blobName), ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Invalid number of blobs to spawn: {COUNT}").replace("{COUNT}", ""+count), ConsoleColour::ERROR, player);
+			return;
 		}
-		else
+
+		if (count != 1 && (player is null || !player.isMod()))
 		{
-			// setting blob spawn position based on blob's height
-			f32 height = newBlob.getHeight();
-			Vec2f spawnPos = pos + Vec2f(0, getMap().tilesize) - Vec2f(0, height/2);
-			newBlob.setPosition(spawnPos);
+			server_AddToChat(getTranslatedString("You are not allowed to spawn more than one blob at once"), ConsoleColour::ERROR, player);
+			return;
+		}
+
+		u8 team = player.getBlob().getTeamNum();
+
+		for (int i = 0; i < count; ++i)
+		{
+			CBlob@ newBlob = server_CreateBlob(blobName, team, Vec2f_zero);
+			
+			//invalid blobs will have 'broken' names
+			if (newBlob is null || newBlob.getName() != blobName)
+			{
+				server_AddToChat(getTranslatedString("Blob '{BLOB}' not found").replace("{BLOB}", blobName), ConsoleColour::ERROR, player);
+			}
+			else
+			{
+				// setting blob spawn position based on blob's height
+				f32 height = newBlob.getHeight();
+				Vec2f spawnPos = pos + Vec2f(0, getMap().tilesize) - Vec2f(0, height/2);
+				newBlob.setPosition(spawnPos);
+			}
 		}
 	}
 }
