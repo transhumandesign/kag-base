@@ -160,7 +160,7 @@ class SpawnCommand : BlobCommand
 		//invalid blobs will have 'broken' names
 		if (newBlob is null || newBlob.getName() != blobName)
 		{
-			server_AddToChat(getTranslatedString("Blob '{BLOB}' not found").replace("{BLOB}", blobName), ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Blob '{BLOB}' not found. See /help for details.").replace("{BLOB}", blobName), ConsoleColour::ERROR, player);
 		}
 	}
 }

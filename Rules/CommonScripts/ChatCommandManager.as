@@ -61,7 +61,7 @@ class ChatCommandManager
 
 		if (commandNames.size() > 0)
 		{
-			string prefix = ChatCommands::getPrefix();
+			string prefix = ChatCommands::getPrefixes()[0];
 			print("Loaded chat commands: " + prefix + join(commandNames, ", " + prefix), ConsoleColour::CRAZY);
 		}
 		else
@@ -106,13 +106,24 @@ class ChatCommandManager
 
 	bool processCommand(string text, ChatCommand@ &out command, string[] &out args)
 	{
-		text = text.toLower();  // Ignore case
+		// Match against known command prefixes
+		string prefixMatch;
+		const string[] prefixes = ChatCommands::getPrefixes();
+		for (uint i = 0; i < prefixes.size(); ++i)
+		{
+			if (text.substr(0, prefixes[i].size()) == prefixes[i])
+			{
+				prefixMatch = prefixes[i];
+				break;
+			}
+		}
 
-		string prefix = ChatCommands::getPrefix();
-		if (text.substr(0, prefix.size()) != prefix && text.substr(0, 1) != "!") return false;  // Allow ! instead of /
+		if (prefixMatch == "") { return false; }
 
-		string name = text.substr(1, 1);
-		if (name == "" || name == " ") return false;
+		string textNoPrefix = text.substr(1);
+
+		string firstLetter = textNoPrefix.substr(1, 1);
+		if (firstLetter == "" || firstLetter == " ") { return false; }
 
 		ChatCommand@[] commands = isServer() ? getEnabledCommands() : allCommands;
 		for (uint i = 0; i < commands.size(); i++)
@@ -122,7 +133,7 @@ class ChatCommandManager
 			for (uint j = 0; j < command.aliases.size(); j++)
 			{
 				string alias = command.aliases[j];
-				string aliasCandidate = text.substr(1, alias.size() + 1).toLower();
+				string aliasCandidate = textNoPrefix.substr(0, alias.size() + 1).toLower();
 				if (aliasCandidate == alias || aliasCandidate == alias + " ")
 				{
 					args = aliasCandidate == alias ? array<string>() : text.substr(alias.size() + 2).split(" ");
