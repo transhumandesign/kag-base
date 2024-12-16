@@ -119,7 +119,6 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			if (inv !is null)
 			{
 				if (this.hasTag("change class drop inventory"))
-
 				{
 					while (inv.getItemsCount() > 0)
 					{
