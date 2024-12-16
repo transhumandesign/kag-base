@@ -169,12 +169,10 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				newBlob.Tag(burning_tag);
 				newBlob.set_s16(burn_duration, caller.get_s16(burn_duration));
 				newBlob.set_s16(burn_timer, caller.get_s16(burn_timer));
-				newBlob.set_u8(burn_hitter, Hitters::burn);
 	
 				newBlob.Sync(burning_tag, true);
 				newBlob.Sync(burn_duration, true);
 				newBlob.Sync(burn_timer, true);
-				newBlob.Sync(burn_hitter, true);
 			}
 
 			// plug the soul

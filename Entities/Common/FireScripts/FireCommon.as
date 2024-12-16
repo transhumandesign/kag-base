@@ -1,8 +1,5 @@
 
-#include "Hitters.as"
-
 const string burn_duration = "burn duration";
-const string burn_hitter = "burn hitter";
 const string burn_timer = "burn timer";
 const string burning_tag = "burning";
 const string spread_fire_tag = "spread fire";
@@ -16,7 +13,7 @@ const int burn_thresh = 70;
  */
 void server_setFireOn(CBlob@ this)
 {
-	if (!getNet().isServer())
+	if (!isServer())
 		return;
 		
 	this.Tag(burning_tag);
@@ -31,7 +28,7 @@ void server_setFireOn(CBlob@ this)
  */
 void server_setFireOff(CBlob@ this)
 {
-	if (!getNet().isServer())
+	if (!isServer())
 		return;
 	this.Untag(burning_tag);
 	this.Sync(burning_tag, true);
@@ -41,12 +38,4 @@ void server_setFireOff(CBlob@ this)
 	
 	this.set_s16(burn_counter, 0);
 	this.Sync(burn_counter, true);
-}
-
-/**
- * Hitters that should start something burning when hit
- */
-bool isIgniteHitter(u8 hitter)
-{
-	return hitter == Hitters::fire;
 }
