@@ -70,7 +70,6 @@ void onInit(CBlob@ this)
 	//setup shop
 	InitWorkshop(this);
 	//set up shape
-	this.getShape().SetStatic(true);
 	this.getShape().getConsts().mapCollisions = false;
 	// move inventory to sack on change class
 	this.Tag("change class store inventory");
