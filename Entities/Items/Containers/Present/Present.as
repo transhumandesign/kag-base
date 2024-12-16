@@ -3,12 +3,17 @@
 #include "LootCommon.as";
 #include "GenericButtonCommon.as";
 
+// blob
+
 void onInit(CBlob@ this)
 {
 	this.Tag("activatable");
 	this.addCommandID("activate");
 	this.addCommandID("activate client");
 
+	this.Tag("ignore_saw");
+	this.Tag("ignore fall");
+	this.Tag("dont blend immediately");
 	this.Tag("medium weight");
 
 	AddIconToken("$chest_open$", "InteractionIcons.png", Vec2f(32, 32), 20);
@@ -136,4 +141,18 @@ void HideParachute(CBlob@ this)
 		parachute.SetVisible(false);
 		ParticlesFromSprite(parachute);
 	}
+}
+
+void onDie(CBlob@ this)
+{
+	CSprite@ s = this.getSprite();
+	if (s !is null)
+		s.Gib();
+}
+
+// sprite
+
+void onInit(CSprite@ this)
+{
+	this.ReloadSprites(XORRandom(8), 0);
 }
