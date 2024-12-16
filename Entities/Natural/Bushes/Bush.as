@@ -8,6 +8,7 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::remove_after_this;
 	this.Tag("builder always hit");
 	this.Tag("scenary");
+	this.Tag("dont blend immediately");
 }
 
 //void onDie( CBlob@ this )
