@@ -3,7 +3,7 @@ const f32 FREQ = 90;
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().tickFrequency = 0;	 // start without ticking
-	this.addCommandID("start sink");
+	this.addCommandID("start sink client");
 	if (this.hasTag("sinking"))
 		this.getCurrentScript().tickFrequency = FREQ;
 }
@@ -27,19 +27,20 @@ void onTick(CBlob@ this)
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
 //	printf("health boat " + this.getHealth() );
-	if (getNet().isServer() && this.getHealth() < this.getInitialHealth() * 0.3f && !this.hasTag("sinking"))
-	{
-		this.SendCommand(this.getCommandID("start sink"));
-	}
-}
-
-
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
-{
-	if (cmd == this.getCommandID("start sink"))
+	if (isServer() && this.getHealth() < this.getInitialHealth() * 0.3f && !this.hasTag("sinking"))
 	{
 		this.getCurrentScript().tickFrequency = FREQ;
 		this.Tag("sinking");
+		this.Sync("sinking", true);
+		this.SendCommand(this.getCommandID("start sink client"));
+	}
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("start sink client") && isClient())
+	{
+		this.getCurrentScript().tickFrequency = FREQ;
 		this.getSprite().PlaySound("BoatSinking.ogg");
 	}
 }

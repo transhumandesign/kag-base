@@ -82,10 +82,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	if (!this.get("VehicleInfo", @v)) return;
 
 	/// LOAD AMMO
-	if (isServer() && cmd == this.getCommandID("load_ammo"))
+	if (cmd == this.getCommandID("load_ammo") && isServer())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
+		CPlayer@ callerp = getNet().getActiveCommandPlayer();
+		if (callerp is null) return;
+
+		CBlob@ caller = callerp.getBlob();
 		if (caller is null) return;
+
+		// range check
+		if (this.getDistanceTo(caller) > this.getRadius()) return;
+
+		// team check
+		if (this.getTeamNum() != caller.getTeamNum()) return;
 
 		CBlob@[] ammos;
 		string[] eligible_ammo_names;
@@ -125,7 +134,39 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		RecountAmmo(this, v);
 	}
 	/// SWAP AMMO
-	else if (cmd == this.getCommandID("swap_ammo"))
+	else if (cmd == this.getCommandID("swap_ammo") && isServer())
+	{
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+
+		CBlob@ b = p.getBlob();
+		if (b is null) return;
+
+		// don't swap ammo if only 1 ammo type
+		if (v.ammo_types.size() <= 1) return;
+
+		// don't swap ammo mid-charge
+		if (v.charge > 0) return;
+
+		// attached checks
+		CAttachment@ ca = this.getAttachments();
+		if (ca is null) return;
+		AttachmentPoint@ ap = ca.getAttachmentPointByName("GUNNER");
+		if (ap is null) return;
+		CBlob@ attachedblob = ap.getOccupied();
+		if (attachedblob is null) return;
+		if (attachedblob !is b) return;
+
+		u8 ammoIndex = v.current_ammo_index + 1;
+		if (ammoIndex >= v.ammo_types.size())
+		{
+			ammoIndex = 0;
+		}
+		v.current_ammo_index = ammoIndex;
+
+		this.SendCommand(this.getCommandID("swap_ammo_client"));
+	}
+	else if (cmd == this.getCommandID("swap_ammo_client") && isClient() && !isServer())
 	{
 		u8 ammoIndex = v.current_ammo_index + 1;
 		if (ammoIndex >= v.ammo_types.size())
@@ -135,22 +176,58 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		v.current_ammo_index = ammoIndex;
 	}
 	/// FIRE
-	else if (cmd == this.getCommandID("fire"))
+	else if (cmd == this.getCommandID("fire") && isServer())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
-		const u8 charge = params.read_u8();
+		CPlayer@ callerp = getNet().getActiveCommandPlayer();
+		if (callerp is null) return;
+
+		CBlob@ caller = callerp.getBlob();
+		if (caller is null) return;
+
+		CBitStream bt;
+		bt.write_u16(caller.getNetworkID());
+		bt.write_u16(v.charge);
+		this.SendCommand(this.getCommandID("fire client"), bt);
+
+		Fire(this, v, caller, v.charge);
+	}
+	else if (cmd == this.getCommandID("fire client") && isClient())
+	{
+		u16 id;
+		if (!params.saferead_u16(id)) return;
+
+		u16 charge;
+		if (!params.saferead_u16(charge)) return;
+
+		CBlob@ caller = getBlobByNetworkID(id);
+		if (caller is null) return;
+
 		Fire(this, v, caller, charge);
 	}
 	/// POST FIRE
-	else if (cmd == this.getCommandID("fire blob"))
+	else if (cmd == this.getCommandID("fire blob client") && isClient())
 	{
-		CBlob@ blob = getBlobByNetworkID(params.read_netid());
-		const u8 charge = params.read_u8();
+		u16 id;
+		if (!params.saferead_u16(id)) return;
+
+		u16 charge;
+		if (!params.saferead_u16(charge)) return;
+
+		CBlob@ blob = getBlobByNetworkID(id);
 		v.onFire(this, blob, charge);
 	}
 	/// FLIP OVER
-	else if (cmd == this.getCommandID("flip_over"))
+	else if (cmd == this.getCommandID("flip_over") && isServer())
 	{
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+
+		CBlob@ b = p.getBlob();
+		if (b is null) return;
+
+		// range check
+		if (this.getDistanceTo(b) > 64.0f) return;
+
 		if (isFlipped(this))
 		{
 			this.getShape().SetStatic(false);
@@ -160,11 +237,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 	}
 	/// SYNC AMMUNITION
-	else if (!isServer() && cmd == this.getCommandID("recount ammo"))
+	else if (cmd == this.getCommandID("recount ammo client") && isClient())
 	{
-		const u8 current_recounted = params.read_u8();
-		v.ammo_types[current_recounted].ammo_stocked = params.read_u16();
-		v.ammo_types[current_recounted].loaded_ammo = params.read_u8();
+		u8 current_recounted;
+		if (!params.saferead_u8(current_recounted)) return;
+		if (!params.saferead_u16(v.ammo_types[current_recounted].ammo_stocked)) return;
+		if (!params.saferead_u8(v.ammo_types[current_recounted].loaded_ammo)) return;
 	}
 }
 
