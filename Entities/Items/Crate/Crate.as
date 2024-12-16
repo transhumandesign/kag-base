@@ -9,6 +9,7 @@
 #include "GenericButtonCommon.as"
 #include "KnockedCommon.as"
 #include "NoSwearsCommon.as"
+#include "ActivationThrowCommon.as"
 
 // crate tags and their uses
 
@@ -41,11 +42,17 @@ void onInit(CBlob@ this)
 {
 	this.checkInventoryAccessibleCarefully = true;
 
+	this.Tag("activatable");
+
 	this.addCommandID("unpack");
+	this.addCommandID("unpack_client"); // just sets the drag...
 	this.addCommandID("getin");
 	this.addCommandID("getout");
 	this.addCommandID("stop unpack");
 	this.addCommandID("boobytrap");
+
+	Activate@ func = @onActivate;
+	this.set("activate handle", @func);
 
 	const string packed = this.exists("packed") ? this.get_string("packed") : "";
 	if (!packed.isEmpty())
@@ -282,9 +289,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		if (sneaky_player.getTeamNum() == caller.getTeamNum())
 		{
-			CBitStream params;
-			params.write_netid(caller.getNetworkID());
-			CButton@ button = caller.CreateGenericButton(6, buttonpos, this, this.getCommandID("getout"), getTranslatedString("Get out"), params);
+			CButton@ button = caller.CreateGenericButton(6, buttonpos, this, this.getCommandID("getout"), getTranslatedString("Get out"));
 			if (putting)
 			{
 				button.SetEnabled(false);
@@ -296,17 +301,15 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		}
 		else // make fake buttons for enemy
 		{
-			CBitStream params;
-			params.write_netid(caller.getNetworkID());
 			if (carried is this)
 			{
 				// Fake get in button
-				caller.CreateGenericButton(4, buttonpos, this, this.getCommandID("getout"), getTranslatedString("Get inside"), params);
+				caller.CreateGenericButton(4, buttonpos, this, this.getCommandID("getout"), getTranslatedString("Get inside"));
 			}
 			else
 			{
 				// Fake inventory button
-				CButton@ button = caller.CreateGenericButton(13, buttonpos, this, this.getCommandID("getout"), getTranslatedString("Crate"), params);
+				CButton@ button = caller.CreateGenericButton(13, buttonpos, this, this.getCommandID("getout"), getTranslatedString("Crate"));
 				button.enableRadius = 20.0f;
 			}
 		}
@@ -338,50 +341,80 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 			button.enableRadius = 20.0f;
 		}
 		else if (hasSomethingPacked(this))
-		{
-			CBitStream params;
-			params.write_netid(caller.getNetworkID());
-			
-			string text = getTranslatedString("Unpack {ITEM}").replace("{ITEM}", getTranslatedString(packed_name));
-			CButton@ button = caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), text, params);
-			
-			button.enableRadius = 20.0f;
-		}
-		else if (carried is this)
-		{
-			CBitStream params;
-			params.write_netid(caller.getNetworkID());
-			caller.CreateGenericButton(4, buttonpos, this, this.getCommandID("getin"), getTranslatedString("Get inside"), params);
-		}
-		else if (this.getTeamNum() != caller.getTeamNum() && !this.isOverlapping(caller))
-		{
-			// We need a fake crate inventory button to hint to players that they need to get closer
-			// And also so they're unable to discern which crates have hidden players
-			if (carried is null || (putting && !canput))
-			{
-				CButton@ button = caller.CreateGenericButton(13, buttonpos, this, this.getCommandID("getout"), getTranslatedString("Crate"));
-				button.SetEnabled(false); // they shouldn't be able to actually press it tho
-			}
-		}
+	  {		
+		  string text = getTranslatedString("Stop {ITEM}").replace("{ITEM}", getTranslatedString(packed_name));
+	  	CButton@ button = caller.CreateGenericButton("$DISABLED$", buttonpos, this, this.getCommandID("stop unpack"), text);
+
+		  button.enableRadius = 20.0f;
+	  }
+	  else if (hasSomethingPacked(this))
+	  {
+		  string text = getTranslatedString("Unpack {ITEM}").replace("{ITEM}", getTranslatedString(packed_name));
+		  CButton@ button = caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), text);
+
+		  button.enableRadius = 20.0f;
+	  }
+  	else if (carried is this)
+    {
+      caller.CreateGenericButton(4, buttonpos, this, this.getCommandID("getin"), getTranslatedString("Get inside"));
+    }
+    else if (this.getTeamNum() != caller.getTeamNum() && !this.isOverlapping(caller))
+    {
+      // We need a fake crate inventory button to hint to players that they need to get closer
+      // And also so they're unable to discern which crates have hidden players
+      if (carried is null || (putting && !canput))
+      {
+        CButton@ button = caller.CreateGenericButton(13, buttonpos, this, this.getCommandID("getout"), getTranslatedString("Crate"));
+        button.SetEnabled(false); // they shouldn't be able to actually press it tho
+      }
+    }
 	}
+}
+
+void onActivate(CBitStream@ params)
+{
+	if (!isServer()) return;
+
+	u16 this_id;
+	if (!params.saferead_u16(this_id)) return;
+
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+		
+	u16 caller_id;
+	if (!params.saferead_u16(caller_id)) return;
+
+	CBlob@ caller = getBlobByNetworkID(caller_id);
+	if (caller is null) return;
+
+	DumpOutItems(this, 5.0f, caller.getVelocity(), false);
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("unpack"))
+	if (cmd == this.getCommandID("unpack") && isServer())
 	{
 		if (hasSomethingPacked(this))
 		{
 			if (canUnpackHere(this))
 			{
+				CPlayer@ p = getNet().getActiveCommandPlayer();
+				if (p is null) return;
+					
+				CBlob@ caller = p.getBlob();
+				if (caller is null) return;
+
+				// range check
+				if (this.getDistanceTo(caller) > 32.0f) return;
+
+				this.server_setTeamNum(caller.getTeamNum());
+
 				this.set_u32("unpack time", getGameTime() + this.get_u32("unpack secs") * getTicksASecond());
+				this.Sync("unpack time", true);
+
 				this.getShape().setDrag(10.0f);
 
-				CBlob@ caller = getBlobByNetworkID(params.read_netid());
-				if (caller !is null) 
-				{ 
-					this.server_setTeamNum(caller.getTeamNum());
-				}
+				this.SendCommand(this.getCommandID("unpack_client"));
 			}
 		}
 		else
@@ -390,17 +423,41 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			this.server_Die();
 		}
 	}
-	else if (cmd == this.getCommandID("stop unpack"))
+	else if (cmd == this.getCommandID("unpack_client") && isClient())
 	{
-		this.set_u32("unpack time", 0);
+		this.getShape().setDrag(10.0f);
 	}
-	else if (cmd == this.getCommandID("getin"))
+	else if (cmd == this.getCommandID("stop unpack") && isServer())
 	{
-		if (this.getHealth() <= 0)
-		{
-			return;
-		}
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+
+		CBlob@ caller = p.getBlob();
+		if (caller is null) return;
+
+		// range check
+		f32 distance = this.getDistanceTo(caller);
+		if (distance > 32.0f) return;
+
+		this.set_u32("unpack time", 0);
+		this.Sync("unpack time", true);
+	}
+	else if (cmd == this.getCommandID("getin") && isServer())
+	{
+		// i don't know why this check is here so not touching it...
+		if (this.getHealth() <= 0) return;
+
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+
+		CBlob@ caller = p.getBlob();
+		if (caller is null) return;
+
+		// only getin if caller is holding this crate
+		CBlob@ helditem = caller.getCarriedBlob();
+		if (helditem is null) return;
+		if (helditem !is this) return;
+
 		CInventory@ inv = this.getInventory();
 		if (caller !is null && inv !is null) 
 		{
@@ -411,10 +468,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				CBlob@ item = inv.getItem(i);
 				if (item.getName() == "mine" && item.getTeamNum() != caller.getTeamNum())
 				{
-					CBitStream params;
-					params.write_netid(caller.getNetworkID());
-					params.write_netid(item.getNetworkID());
-					this.SendCommand(this.getCommandID("boobytrap"), params);
+					BoobyTrap(this, caller, item);
 					return;
 				}
 			}
@@ -433,9 +487,18 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			this.setVelocity(velocity);
 		}
 	}
-	else if (cmd == this.getCommandID("getout"))
+	else if (cmd == this.getCommandID("getout") && isServer())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+
+		CBlob@ caller = p.getBlob();
+		if (caller is null) return;
+
+		// range check
+		f32 distance = this.getDistanceTo(caller);
+		if (distance > 32.0f) return;
+
 		CBlob@ sneaky_player = getPlayerInside(this);
 		if (caller !is null && sneaky_player !is null)
 		{
@@ -447,37 +510,66 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				}
 			}
 			this.Tag("crate escaped");
+			this.Sync("crate escaped", true);
 			this.server_PutOutInventory(sneaky_player);
 		}
 		// Attack self to pop out items
 		this.server_Hit(this, this.getPosition(), Vec2f(), 100.0f, Hitters::crush, true);
 		this.server_Die();
 	}
-	else if (cmd == this.getCommandID("boobytrap"))
+	else if (cmd == this.getCommandID("boobytrap") && isServer())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
-		CBlob@ mine = getBlobByNetworkID(params.read_netid());
-		if (caller !is null && mine !is null && this.get_u32("boobytrap_cooldown_time") <= getGameTime())
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+
+		CBlob@ caller = p.getBlob();
+		if (caller is null) return;
+
+		// range check
+		f32 distance = this.getDistanceTo(caller);
+		if (distance > 32.0f) return;
+
+		CInventory@ inv = this.getInventory();
+		for (int i = 0; i < inv.getItemsCount(); i++)
 		{
-			this.set_u32("boobytrap_cooldown_time", getGameTime() + 30);
-			this.server_PutOutInventory(mine);
-			Vec2f pos = this.getPosition();
-			pos.y = this.getTeamNum() == caller.getTeamNum() ? pos.y - 5
-						: caller.getPosition().y - caller.getRadius() - 5;
-			pos.y = Maths::Min(pos.y, this.getPosition().y - 5);
-			mine.setPosition(pos);
-			mine.setVelocity(Vec2f((caller.getPosition().x - mine.getPosition().x) / 30.0f, -5.0f));
-			mine.set_u8("mine_timer", 255);
-			mine.SendCommand(mine.getCommandID("mine_primed"));
+			CBlob@ item = inv.getItem(i);
+			if (item.hasTag("player"))
+			{
+				// This command should not have been sent if there's a player in the crate
+				return;
+			}
+			if (item.getName() == "mine" && item.getTeamNum() != caller.getTeamNum())
+			{
+				// tell server to activate trap
+				BoobyTrap(this, caller, item);
+				break;
+			}
 		}
 	}
-	else if (cmd == this.getCommandID("activate"))
+}
+
+void BoobyTrap(CBlob@ this, CBlob@ caller, CBlob@ mine)
+{
+	if (caller !is null && mine !is null && this.get_u32("boobytrap_cooldown_time") <= getGameTime())
 	{
-		CBlob@ carrier = this.getAttachments().getAttachmentPointByName("PICKUP").getOccupied();
-		if (carrier !is null)
-		{
-			DumpOutItems(this, 5.0f, carrier.getVelocity(), false);
-		}
+		this.set_u32("boobytrap_cooldown_time", getGameTime() + 30);
+		this.Sync("boobytrap_cooldown_time", true);
+		this.server_PutOutInventory(mine);
+		Vec2f pos = this.getPosition();
+		pos.y = this.getTeamNum() == caller.getTeamNum() ? pos.y - 5
+					: caller.getPosition().y - caller.getRadius() - 5;
+		pos.y = Maths::Min(pos.y, this.getPosition().y - 5);
+		mine.setPosition(pos);
+		mine.setVelocity(Vec2f((caller.getPosition().x - mine.getPosition().x) / 30.0f, -5.0f));
+
+		// maybe add MineCommon.as in the future..?
+		mine.set_u8("mine_timer", 255);
+		mine.Sync("mine_timer", true);
+		mine.set_u8("mine_state", 1);
+		mine.Sync("mine_state", true);
+		mine.getShape().checkCollisionsAgain = true;
+
+		mine.SendCommand(mine.getCommandID("mine_primed_client"));
 	}
 }
 
@@ -563,10 +655,8 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 		}
 		if (item.getName() == "mine" && item.getTeamNum() != forBlob.getTeamNum())
 		{
-			CBitStream params;
-			params.write_netid(forBlob.getNetworkID());
-			params.write_netid(item.getNetworkID());
-			this.SendCommand(this.getCommandID("boobytrap"), params);
+			// tell server to activate trap
+			this.SendCommand(this.getCommandID("boobytrap"));
 			break;
 		}
 	}

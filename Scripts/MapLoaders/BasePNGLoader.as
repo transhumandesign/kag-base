@@ -379,7 +379,7 @@ class PNGLoader
 			case map_colors::bomber:      autotile(offset); spawnVehicle(map, "bomber",   offset); break;
 
 			// Ammo
-			case map_colors::bombs:       autotile(offset); AddMarker(map, offset, "mat_bombs"); break;
+			case map_colors::bombs:       autotile(offset); spawnBlob(map, "mat_bombs",       offset); break;
 			case map_colors::waterbombs:  autotile(offset); spawnBlob(map, "mat_waterbombs",  offset); break;
 			case map_colors::arrows:      autotile(offset); spawnBlob(map, "mat_arrows",      offset); break;
 			case map_colors::bombarrows:  autotile(offset); spawnBlob(map, "mat_bombarrows",  offset); break;

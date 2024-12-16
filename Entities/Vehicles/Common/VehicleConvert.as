@@ -147,6 +147,7 @@ void onTick(CBlob@ this)
 void onChangeTeam(CBlob@ this, const int oldTeam)
 {
 	ConvertAttachments(this);
+	ConvertItems(this);
 
 	if (this.getTeamNum() < 10)
 	{
@@ -175,6 +176,19 @@ void ConvertAttachments(CBlob@ this)
 		
 		if (convertPoints.find(point.name) == -1) continue;
 		
+		blob.server_setTeamNum(this.getTeamNum());
+	}
+}
+
+void ConvertItems(CBlob@ this)
+{
+	if (!isServer()) return;
+
+	CInventory@ inventory = this.getInventory();
+	for (uint i = 0; i < inventory.getItemsCount(); i++)
+	{
+		CBlob@ blob = inventory.getItem(i);
+		if (blob is null || blob.getTeamNum() == 255) continue;
 		blob.server_setTeamNum(this.getTeamNum());
 	}
 }

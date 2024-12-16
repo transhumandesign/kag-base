@@ -3,35 +3,35 @@
 #include "MakeCrate.as";
 #include "MakeScroll.as";
 #include "MakeSign.as";
+#include "WAR_Technology.as";
 
-class TreeCommand : BlobCommand
+class SeedCommand : BlobCommand
 {
-	string[] treeTypes = { "pine", "bushy" };
+	string[] seedTypes = { "tree_pine", "tree_bushy", "grain_plant", "flowers", "bush"};
 
-	TreeCommand()
+	SeedCommand()
 	{
-		super("tree", "Spawn a tree seed");
-		AddAlias("seed");
+		super("seed", "Spawn a seed");
 		SetUsage("[type]");
 	}
 
 	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		string tree = "tree_" + treeTypes[0];
+		string seed = seedTypes[XORRandom(seedTypes.size())];
 
 		if (args.size() > 0)
 		{
 			string type = args[0].toLower();
-			if (treeTypes.find(type) == -1)
+			if (seedTypes.find(type) == -1)
 			{
-				server_AddToChat(getTranslatedString("Specify a valid tree type: " + join(treeTypes, ", ")), ConsoleColour::ERROR, player);
+				server_AddToChat(getTranslatedString("Specify a valid seed type: " + join(seedTypes, ", ")), ConsoleColour::ERROR, player);
 				return;
 			}
 
-			tree = "tree_" + type;
+			seed = type;
 		}
 
-		server_MakeSeed(pos, tree);
+		server_MakeSeed(pos, seed);
 	}
 }
 
@@ -102,14 +102,53 @@ class ScrollCommand : BlobCommand
 
 	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
+		// setting up scrolls if necessary
+		if (!getRules().exists("all scrolls"))
+		{
+			SetupScrolls(getRules());
+		}
+
+		// no name specified, spawn a random scroll
 		if (args.size() == 0)
 		{
-			server_AddToChat(getTranslatedString("Specify the name of a scroll to spawn"), ConsoleColour::ERROR, player);
+			ScrollSet@ allScrolls = getScrollSet("all scrolls");
+			
+			if (allScrolls !is null)
+			{
+				string[] scrolls_list = allScrolls.names;
+				int scrolls_list_size = scrolls_list.size();
+				
+				if (scrolls_list_size > 0)
+				{
+					server_MakePredefinedScroll(pos, scrolls_list[XORRandom(scrolls_list_size)]);
+				}
+			}
 			return;
 		}
 
+		// attempting to spawn scroll by name
 		string scrollName = join(args, " ");
-		server_MakePredefinedScroll(pos, scrollName);
+				
+		CBlob@ scroll = server_MakePredefinedScroll(pos, scrollName);
+		
+		if (scroll is null)
+		{
+			server_AddToChat(getTranslatedString("Specify a valid scroll name:"), ConsoleColour::ERROR, player);
+			
+			ScrollSet@ allScrolls = getScrollSet("all scrolls");
+			
+			if (allScrolls !is null)
+			{
+				string[] scrolls_list = allScrolls.names;
+				
+				if (scrolls_list.size() > 0)
+				{
+					server_AddToChat(join(scrolls_list, ", "), ConsoleColour::ERROR, player);
+				}
+			}
+			
+			return;
+		}
 	}
 }
 
@@ -120,7 +159,7 @@ class SpawnCommand : BlobCommand
 		super("spawn", "Spawn a blob");
 		AddAlias("blob");
 		AddAlias("s");
-		SetUsage("<blob>");
+		SetUsage("<blob> (count)");
 	}
 
 	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
@@ -139,13 +178,32 @@ class SpawnCommand : BlobCommand
 			return;
 		}
 
-		u8 team = player.getBlob().getTeamNum();
-		CBlob@ newBlob = server_CreateBlob(blobName, team, pos + Vec2f(0, -5));
+		int count = args.size() >= 2 ? parseInt(args[1]) : 1;
 
-		//invalid blobs will have 'broken' names
-		if (newBlob is null || newBlob.getName() != blobName)
+		if (count <= 0 || count > 100)
 		{
-			server_AddToChat(getTranslatedString("Blob '{BLOB}' not found").replace("{BLOB}", blobName), ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Invalid number of blobs to spawn: {COUNT}").replace("{COUNT}", ""+count), ConsoleColour::ERROR, player);
+			return;
+		}
+
+		if (count != 1 && (player is null || !player.isMod()))
+		{
+			server_AddToChat(getTranslatedString("You are not allowed to spawn more than one blob at once"), ConsoleColour::ERROR, player);
+			return;
+		}
+
+		u8 team = player.getBlob().getTeamNum();
+
+		for (int i = 0; i < count; ++i)
+		{
+			CBlob@ newBlob = server_CreateBlob(blobName, team, pos + Vec2f(0, -5));
+
+			//invalid blobs will have 'broken' names
+			if (newBlob is null || newBlob.getName() != blobName)
+			{
+				server_AddToChat(getTranslatedString("Blob '{BLOB}' not found. See /help for details.").replace("{BLOB}", blobName), ConsoleColour::ERROR, player);
+				return;
+			}
 		}
 	}
 }
