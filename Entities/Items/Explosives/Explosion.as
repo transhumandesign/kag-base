@@ -20,6 +20,7 @@
 #include "Hitters.as";
 #include "ShieldCommon.as";
 #include "SplashWater.as";
+#include "ParticlesCommon.as";
 
 bool isOwnerBlob(CBlob@ this, CBlob@ that)
 {
@@ -34,6 +35,10 @@ bool isOwnerBlob(CBlob@ this, CBlob@ that)
 
 void makeSmallExplosionParticle(Vec2f pos)
 {
+#ifdef STAGING
+	MakeExplosionLightParticle(pos);
+#endif
+
 	ParticleAnimated("Entities/Effects/Sprites/SmallExplosion" + (XORRandom(3) + 1) + ".png",
 	                 pos, Vec2f(0, 0.5f), 0.0f, 1.0f,
 	                 3 + XORRandom(3),
@@ -42,6 +47,10 @@ void makeSmallExplosionParticle(Vec2f pos)
 
 void makeLargeExplosionParticle(Vec2f pos)
 {
+#ifdef STAGING
+	MakeExplosionLightParticle(pos);
+#endif
+
 	ParticleAnimated("Entities/Effects/Sprites/Explosion.png",
 	                 pos, Vec2f(0, 0.5f), 0.0f, 1.0f,
 	                 3 + XORRandom(3),

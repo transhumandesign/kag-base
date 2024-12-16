@@ -51,12 +51,7 @@ void onTick(CBlob@ this)
 		else
 		{
 			SColor lightColor = SColor(255, 255, Maths::Min(255, uint(timer * 0.7)), 0);
-			this.SetLightColor(lightColor);
-
-			if (XORRandom(2) == 0)
-			{
-				sparks(this.getPosition(), this.getAngleDegrees(), 1.5f + (XORRandom(10) / 5.0f), lightColor);
-			}
+			this.SetLightColor(lightColor);			
 
 			if (timer < 90)
 			{

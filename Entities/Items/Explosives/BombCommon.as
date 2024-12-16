@@ -2,8 +2,6 @@
 
 #include "Hitters.as"
 
-
-
 void SetupBomb(CBlob@ this, const int fuseTicks, const f32 explRadius, const f32 explosive_damage, const f32 map_damage_radius, const f32 map_damage_ratio, const bool map_damage_raycast)
 {
 	this.set_s32("bomb_timer", getGameTime() + fuseTicks);
@@ -51,8 +49,7 @@ bool UpdateBomb(CBlob@ this)
 			this.SetLightColor(lightColor);
 		}
 
-		if (XORRandom(2) == 0)
-		{
+		if (XORRandom(2) == 0) {
 			sparks(this.getPosition(), this.getAngleDegrees(), 3.5f + (XORRandom(10) / 5.0f), lightColor);
 		}
 
