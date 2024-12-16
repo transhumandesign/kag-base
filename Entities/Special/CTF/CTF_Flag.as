@@ -110,7 +110,7 @@ void onRender(CSprite@ this)
 		return;
 
 	CBlob@ blob = this.getBlob();
-	if (blob.isAttached())
+	if (blob is null || blob.isAttached())
 	{
 		//todo: render "go to here" gui
 		return;
@@ -152,14 +152,14 @@ void onRender(CSprite@ this)
 
 	if (getGameTime() % 15 > 10)
 	{
+		Vec2f base_position = blob.get_Vec2f("flag base position");
+		Vec2f flag_position = blob.getPosition();
+		s16 right_add = base_position.x > flag_position.x ? 1 : -1;
+
 		if (!shouldFastReturn(blob))
-		{
-			GUI::DrawIconByName("$return_indicator$", Vec2f(pos2d.x-8.0f, pos2d.y-41.0f));
-		}
+			GUI::DrawIconByName("$return_indicator$", Vec2f(pos2d.x+8*right_add, pos2d.y-41.0f), 1.0f * -right_add, 1.0f, 0, SColor(0xffffffff));
 		else
-		{
-			GUI::DrawIconByName("$fast_return_indicator$", Vec2f(pos2d.x-18.0f, pos2d.y-41.0f));
-		}
+			GUI::DrawIconByName("$fast_return_indicator$", Vec2f(pos2d.x+18*right_add, pos2d.y-41.0f), 1.0f * -right_add, 1.0f, 0, SColor(0xffffffff));
 	}
 }
 
