@@ -17,6 +17,8 @@ void onInit(CBlob@ this)
 		{
 			this.server_AttachTo(flag, "FLAG");
 			this.set_netid("flag id", flag.getNetworkID());
+			flag.set_Vec2f("flag base position", this.getPosition());
+			flag.Sync("flag base position", true);
 		}
 	}
 
