@@ -78,17 +78,17 @@ class SignCommand : BlobCommand
 
 	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
 	{
-		u8 team = player.getBlob().getTeamNum();
-
-		if (args.size() == 0)
+		string playerName = player.getUsername();
+		string description = args.size() == 0 ? "" : join(args, " ") + "\n\n ~ " + playerName;
+		
+		CBlob@ sign = createSign(pos, description);
+		if (sign is null)
 		{
-			createSign(pos, "");
+			server_AddToChat(getTranslatedString("Sign could not be created."), ConsoleColour::ERROR, player);
 			return;
 		}
 
-		string description = join(args, " ");
-		
-		createSign(pos, description);
+		sign.set_string("message author", playerName);
 	}
 }
 
