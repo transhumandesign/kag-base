@@ -54,3 +54,15 @@ f32 FallDamageAmount(float vely)
 	}
 	return 0.0f;
 }
+
+void CancelFallDamageThisTick(CBlob@ blob)
+{
+	blob.setVelocity(Vec2f_zero);
+	blob.set_u32("falldamage prevent", getGameTime());
+}
+
+bool isFallDamageCancelledThisTick(CBlob@ blob)
+{
+	return blob.exists("falldamage prevent")
+		&& (blob.get_u32("falldamage prevent") == getGameTime());
+}
