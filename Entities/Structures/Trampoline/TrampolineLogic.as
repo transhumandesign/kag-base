@@ -21,13 +21,11 @@ void onInit(CBlob@ this)
 	this.set(Trampoline::TIMER, cooldowns);
 	this.getShape().getConsts().collideWhenAttached = true;
 
+	this.Tag("no action while carrying");
 	this.Tag("no falldamage");
 	this.Tag("medium weight");
 	// Because BlobPlacement.as is *AMAZING*
 	this.Tag("place norotate");
-
-	AttachmentPoint@ point = this.getAttachments().getAttachmentPointByName("PICKUP");
-	point.SetKeysToTake(key_action1 | key_action2);
 
 	this.getCurrentScript().runFlags |= Script::tick_attached;
 }
