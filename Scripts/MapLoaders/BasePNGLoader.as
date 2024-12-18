@@ -379,7 +379,7 @@ class PNGLoader
 			case map_colors::bomber:      autotile(offset); spawnVehicle(map, "bomber",   offset); break;
 
 			// Ammo
-			case map_colors::bombs:       autotile(offset); AddMarker(map, offset, "mat_bombs"); break;
+			case map_colors::bombs:       autotile(offset); spawnBlob(map, "mat_bombs",       offset); break;
 			case map_colors::waterbombs:  autotile(offset); spawnBlob(map, "mat_waterbombs",  offset); break;
 			case map_colors::arrows:      autotile(offset); spawnBlob(map, "mat_arrows",      offset); break;
 			case map_colors::bombarrows:  autotile(offset); spawnBlob(map, "mat_bombarrows",  offset); break;
@@ -473,9 +473,9 @@ class PNGLoader
 		map.CreateSkyGradient("Sprites/skygradient.png"); // override sky color with gradient
 
 		// background
-		map.AddBackground("Sprites/Back/BackgroundPlains.png", Vec2f(0.0f, -18.0f), Vec2f(0.3f, 0.3f), color_white);
-		map.AddBackground("Sprites/Back/BackgroundTrees.png", Vec2f(0.0f,  -5.0f), Vec2f(0.4f, 0.4f), color_white);
-		map.AddBackground("Sprites/Back/BackgroundIsland.png", Vec2f(0.0f, 0.0f), Vec2f(0.6f, 0.6f), color_white);
+		map.AddBackground("Sprites/Back/BackgroundPlains.png", Vec2f(0.0f, -40.0f), Vec2f(0.06f, 20.0f), color_white);
+		map.AddBackground("Sprites/Back/BackgroundTrees.png", Vec2f(0.0f,  -100.0f), Vec2f(0.18f, 70.0f), color_white);
+		map.AddBackground("Sprites/Back/BackgroundIsland.png", Vec2f(0.0f, -220.0f), Vec2f(0.3f, 180.0f), color_white);
 
 		// fade in
 		SetScreenFlash(255,   0,   0,   0);

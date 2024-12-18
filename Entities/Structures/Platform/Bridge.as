@@ -1,6 +1,6 @@
-#include "Hitters.as"
-
-#include "FireCommon.as"
+#include "Hitters.as";
+#include "DoorCommon.as";
+#include "FireCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -36,16 +36,26 @@ void onInit(CBlob@ this)
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
-	MakeDamageFrame(this);
+	f32 hp = this.getHealth();
+	bool repaired = (hp > oldHealth);
+	MakeDamageFrame(this, repaired);
 }
 
-void MakeDamageFrame(CBlob@ this)
+void MakeDamageFrame(CBlob@ this, bool repaired = false)
 {
+	CSprite@ sprite = this.getSprite();
 	f32 hp = this.getHealth();
 	f32 full_hp = this.getInitialHealth();
-	int frame_count = this.getSprite().animation.getFramesCount();
-	int frame = frame_count - hp / full_hp * frame_count;
-	this.getSprite().animation.frame = frame;
+	int frame_count = sprite.animation.getFramesCount();
+	int frame = frame_count - frame_count * (hp / full_hp);
+	string animation_string = isOpen(this) ? "open" : "destruction";
+	sprite.SetAnimation(animation_string);
+	sprite.animation.frame = frame;
+
+	if (repaired)
+	{
+		sprite.PlaySound("/build_wood.ogg");
+	}
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -54,11 +64,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	this.getCurrentScript().tickFrequency = 3;
 	this.getSprite().PlaySound("/build_wood.ogg");
-}
-
-bool isOpen(CBlob@ this)
-{
-	return !this.getShape().getConsts().collidable;
 }
 
 void setOpen(CBlob@ this, bool open)
@@ -89,7 +94,7 @@ void setOpen(CBlob@ this, bool open)
 	else
 	{
 		sprite.SetZ(100.0f);
-		sprite.SetAnimation("default");
+		sprite.SetAnimation("destruction");
 		shape.getConsts().collidable = true;
 		sprite.PlaySound("bridge_close.ogg");
 
@@ -170,7 +175,7 @@ bool canOpen(CBlob@ this, CBlob@ blob)
 {
 	if (this.getTeamNum() != blob.getTeamNum()
 		&& blob.getShape().getConsts().collidable
-		&& (blob.hasTag("player") || blob.hasTag("vehicle")))
+		&& (blob.hasTag("player") || blob.hasTag("dead player") || blob.hasTag("vehicle")))
 	{
 		return true;
 

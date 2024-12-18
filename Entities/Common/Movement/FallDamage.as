@@ -5,9 +5,16 @@
 #include "KnockedCommon.as";
 #include "FallDamageCommon.as";
 
+const u8 knockdown_time = 12;
+
+void onInit(CBlob@ this)
+{
+	this.getCurrentScript().tickIfTag = "dead";
+}
+
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (!solid || this.isInInventory())
+	if (!solid || this.isInInventory() || this.hasTag("invincible"))
 	{
 		return;
 	}
@@ -54,12 +61,12 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			}
 		}
 
-		// stun on fall
-		const u8 knockdown_time = 12;
+		if (doknockdown)
+			setKnocked(this, knockdown_time);
 
-		if (doknockdown && setKnocked(this, knockdown_time))
-		{
-			if (damage < this.getHealth()) //not dead
+		if (!this.hasTag("should be silent"))
+		{				
+			if (this.getHealth() > damage) //not dead
 				Sound::Play("/BreakBone", this.getPosition());
 			else
 			{
@@ -67,4 +74,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			}
 		}
 	}
+}
+
+void onTick(CBlob@ this)
+{
+	this.Tag("should be silent");
+	this.getCurrentScript().tickFrequency = 0;
 }

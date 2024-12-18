@@ -10,9 +10,8 @@ const int DROP_SECS = 8;
 
 void onInit(CBlob@ this)
 {
-	this.addCommandID("stock");
 	this.addCommandID("buy");
-	this.addCommandID("reload menu");
+	this.addCommandID("play sound");
 	AddIconToken("$" + this.getName() + "$", "TradingPost.png", Vec2f(16, 16), 15);
 	AddIconToken("$parachute$", "Crate.png", Vec2f(32, 32), 4);
 	AddIconToken("$trade$", "Coins.png", Vec2f(16, 16), 1);
@@ -55,10 +54,58 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (!this.hasTag("dead"))
 	{
-		CBitStream params;
-		params.write_u16(caller.getNetworkID());
-		CButton@ button = caller.CreateGenericButton("$trade$", Vec2f_zero, this, this.getCommandID("stock"), getTranslatedString("Shop"), params);
+		CButton@ button = caller.CreateGenericButton("$trade$", Vec2f_zero, this, BuildTradingMenu, getTranslatedString("Shop"));
 		button.enableRadius = 32;
+	}
+}
+
+void Callback_Buy(CBitStream@ params)
+{
+	CPlayer@ p = getLocalPlayer();
+	if (p is null) return;
+
+	CBlob@ caller = p.getBlob();
+	if (caller is null) return;
+
+	u8 item_index;
+	if (!params.saferead_u8(item_index)) return;
+
+	bool hotkey;
+	if (!params.saferead_bool(hotkey)) return;
+
+	u16 this_id;
+	if (!params.saferead_u16(this_id)) return;
+
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+
+	u16 gold_count = caller.getBlobCount("mat_gold");
+
+	if (caller !is null)
+	{
+		if (!isInRadius(this, caller))
+		{
+			caller.ClearMenus();
+			return;
+		}
+
+		// localhost check because AddItemToShip is a meme function
+		if (isClient() && !isServer())
+		{
+			TradeItem@ item = AddItemToShip(this, caller, item_index, gold_count);
+
+			if (item is null) // reload menu
+			{
+				caller.ClearMenus();
+				BuildTradingMenu(this, caller);
+				return;
+			}
+		}
+
+		CBitStream new_params;
+		new_params.write_u8(item_index);
+		new_params.write_bool(true); //used hotkey?
+		this.SendCommand(this.getCommandID("buy"), new_params);
 	}
 }
 
@@ -94,13 +141,11 @@ void BuildTradingMenu(CBlob@ this, CBlob @caller)
 				else
 				{
 					CBitStream params;
-					params.write_u16(caller.getNetworkID());
 					params.write_u8(i + sepCount);
-					const u16 goldCount = caller.getBlobCount("mat_gold");
-					params.write_u16(goldCount);
 					params.write_bool(true); //used hotkey?
+					params.write_u16(this.getNetworkID());
 
-					menu.AddKeyCommand(numKeys[i], this.getCommandID("buy"), params);
+					menu.AddKeyCallback(numKeys[i], "TradingMenu.as", "Callback_Buy", params);
 
 					//successful bind, so move onto next keybind
 					i++;
@@ -134,13 +179,11 @@ void addTradeItemsToMenu(CBlob@ this, CGridMenu@ menu, u16 callerID)
 			else
 			{
 				CBitStream params;
-				params.write_u16(callerID);
 				params.write_u8(i);
-				const u16 goldCount = caller.getBlobCount("mat_gold");
-				params.write_u16(goldCount);
 				params.write_bool(false); //used hotkey?
+				params.write_u16(this.getNetworkID());
 
-				CGridButton@ button = menu.AddButton(item.iconName, getTranslatedString(item.name), this.getCommandID("buy"), params);
+				CGridButton@ button = menu.AddButton(item.iconName, getTranslatedString(item.name), "TradingMenu.as", "Callback_Buy", params);
 				if (button !is null)
 				{
 					if (item.boughtTime != 0 && item.boughtTime + item.unavailableTime > gametime)
@@ -154,6 +197,8 @@ void addTradeItemsToMenu(CBlob@ this, CGridMenu@ menu, u16 callerID)
 
 						if (item.prepaidGold)
 						{
+							u16 goldCount = caller.getBlobCount("mat_gold");
+
 							if (goldCount > 0)
 							{
 								button.SetEnabled(true);
@@ -179,49 +224,33 @@ bool isInRadius(CBlob@ this, CBlob @caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("stock"))
+	if (cmd == this.getCommandID("buy") && isServer())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		BuildTradingMenu(this, caller);
+		u8 item_index;
+		if (!params.saferead_u8(item_index)) return;
+
+		bool hotkey;
+		if (!params.saferead_bool(hotkey)) return;
+
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+
+		CBlob@ caller = p.getBlob();
+		if (caller is null) return;
+
+		if (!isInRadius(this, caller)) return;
+
+		u16 gold_count = caller.getBlobCount("mat_gold");
+
+		TradeItem@ item = AddItemToShip(this, caller, item_index, gold_count);
 	}
-	else if (cmd == this.getCommandID("buy"))
+	else if (cmd == this.getCommandID("play sound") && isClient())
 	{
-		u16 callerid = params.read_u16();
-		u8 itemIndex = params.read_u8();
-		u16 goldCount = params.read_u16();
-		bool hotkey = params.read_bool();
-		CBlob@ caller = getBlobByNetworkID(callerid);
+		bool is_gold;
+		if (!params.saferead_bool(is_gold)) return;
 
-		if (caller !is null)
-		{
-			if (hotkey)
-			{
-				caller.SendCommand(caller.getCommandID("prevent emotes"));
-			}
-
-			if (!isInRadius(this, caller))
-			{
-				caller.ClearMenus();
-				return;
-			}
-
-			TradeItem@ item = AddItemToShip(this, caller, itemIndex, goldCount);
-
-			if (item is null) // reload menu
-			{
-				caller.ClearMenus();
-				BuildTradingMenu(this, caller);
-			}
-		}
-	}
-	else if (cmd == this.getCommandID("reload menu"))
-	{
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		if (caller !is null)
-		{
-			caller.ClearMenus();
-			BuildTradingMenu(this, caller);
-		}
+		if (is_gold) this.getSprite().PlaySound("/Cha.ogg");
+		else this.getSprite().PlaySound("/ChaChing.ogg");
 	}
 }
 
@@ -292,7 +321,13 @@ TradeItem@ AddItemToShip(CBlob@ this, CBlob@ caller, const uint itemIndex, const
 				{
 					item.paidGold += goldCount;
 					server_TakeRequirements(inv, modReqs);
-					this.getSprite().PlaySound("/Cha.ogg");
+
+					if (isServer())
+					{
+						CBitStream sparams;
+						sparams.write_bool(true);
+						this.SendCommand(this.getCommandID("play sound"), sparams);
+					}
 				}
 			}
 		}
@@ -301,7 +336,7 @@ TradeItem@ AddItemToShip(CBlob@ this, CBlob@ caller, const uint itemIndex, const
 
 	if (item.instantShipping)
 	{
-		CBlob@ blob = MakeBlobFromItem(item);
+		CBlob@ blob = MakeBlobFromItem(this, item, this.getTeamNum());
 		if (blob !is null)
 		{
 			blob.set_u16("buyer", caller.getPlayer().getNetworkID());
@@ -330,7 +365,12 @@ TradeItem@ AddItemToShip(CBlob@ this, CBlob@ caller, const uint itemIndex, const
 
 	item.boughtTime = getGameTime();
 
-	this.getSprite().PlaySound("/ChaChing.ogg");
+	if (isServer())
+	{
+		CBitStream sparams;
+		sparams.write_bool(false);
+		this.SendCommand(this.getCommandID("play sound"), sparams);
+	}
 
 	return item;
 }
@@ -385,7 +425,7 @@ void RecursiveCrate(CBlob@ this, uint[]@ shipment, uint index, CBlob@ itemThatDi
 			for (uint i = index; i < shipment.length; i++)
 			{
 				TradeItem@ item = items[shipment[i]];
-				CBlob@ blobItem = MakeBlobFromItem(item);
+				CBlob@ blobItem = MakeBlobFromItem(this, item, this.getTeamNum());
 
 				if (blobItem !is null)
 				{
@@ -405,7 +445,7 @@ void RecursiveCrate(CBlob@ this, uint[]@ shipment, uint index, CBlob@ itemThatDi
 	}
 }
 
-CBlob@ MakeBlobFromItem(TradeItem@ item)
+CBlob@ MakeBlobFromItem(CBlob@ this, TradeItem@ item, int team)
 {
 	if (!isServer()) return null;
 
@@ -415,11 +455,11 @@ CBlob@ MakeBlobFromItem(TradeItem@ item)
 	}
 	else
 	{
-		return MakeItem(item.configFilename);
+		return MakeItem(this, item.configFilename, team);
 	}
 }
 
-CBlob@ MakeItem(const string& in name)
+CBlob@ MakeItem(CBlob@ this, const string& in name, int team)
 {
 	string[]@ tokens = name.split(" ");
 
@@ -429,7 +469,7 @@ CBlob@ MakeItem(const string& in name)
 	}
 	else
 	{
-		return server_CreateBlob(name);      // normal blob
+		return server_CreateBlob(name, team, this.getPosition());      // normal blob
 	}
 }
 

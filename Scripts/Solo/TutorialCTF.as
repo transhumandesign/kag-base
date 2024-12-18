@@ -6,4 +6,11 @@ void LoadMap()
 	sv_mapcycle_shuffle = false;
 	LoadMapCycle("Rules/Tutorials/tutorial_ctf_maps.cfg");
 	LoadNextMap();
+	
+	CRules@ r = getRules();
+	if(r !is null)
+	{
+		r.AddScript("RestartAfterShortPostGame.as");
+		r.RemoveScript("PostGameMapVotes.as");
+	}
 }

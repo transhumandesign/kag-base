@@ -668,9 +668,6 @@ void DrawArrowToBlob(CBlob@ this, Vec2f start, const string &in name, bool spawn
 
 				if (it)
 				{
-					//Vec2f dim;
-					//GUI::GetTextDimensions( blob.getInventoryName() , dim );
-					//GUI::DrawText( blob.getInventoryName(), Vec2f(screenpos.x - dim.x/2.0f, screenpos.y - (i+1)*dim.y), Vec2f(screenpos.x + dim.x/2.0f, screenpos.y - i*dim.y), color_black, false, false, true );
 					Vec2f offset(0.5f, 0.5f);
 					GUI::DrawSplineArrow(start + offset, blob.getPosition() + offset, color_black);
 					GUI::DrawSplineArrow(start, blob.getPosition(), color_white);

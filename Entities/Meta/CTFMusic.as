@@ -217,7 +217,7 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 					for (uint i = 0; i < flagBases.length; i++)
 					{
 						CBlob @b = flagBases[i];
-						if (b.hasTag("flag missing"))
+						if (!b.hasAttached())
 						{
 							chosen = world_battle;
 							break;

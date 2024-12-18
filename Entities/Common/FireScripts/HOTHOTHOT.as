@@ -14,8 +14,11 @@ void onTick(CMovement@ this)
 	CBlob@ blob = this.getBlob();
 	if (blob.getHealth() > 0.0f)
 	{
-		if (blob.hasTag(burning_tag)) //double check
+		if (blob.hasTag(burning_tag)) // double check
 		{
+			blob.Tag("tick after burning is done");
+			this.getCurrentScript().tickIfTag = "tick after burning is done";
+
 			MovementVars@ vars = this.getVars();
 
 			if (blob.isFacingLeft())
@@ -33,6 +36,13 @@ void onTick(CMovement@ this)
 			{
 				blob.getSprite().PlaySound("/MigrantScream");
 			}
+		}
+		else
+		{
+			blob.setKeyPressed(key_left, false);
+			blob.setKeyPressed(key_right, false);
+			blob.Untag("tick after burning is done");
+			this.getCurrentScript().tickIfTag = burning_tag;
 		}
 	}
 }

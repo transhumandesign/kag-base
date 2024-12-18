@@ -73,3 +73,8 @@ bool isExplosionHitter(u8 type)
 {
 	return type == Hitters::bomb || type == Hitters::explosion || type == Hitters::mine || type == Hitters::bomb_arrow;
 }
+
+bool isWaterHitter(u8 type)
+{
+	return type == Hitters::water || type == Hitters::water_stun_force || type == Hitters::water_stun;
+}

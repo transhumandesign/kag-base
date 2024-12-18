@@ -91,6 +91,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		// disable tags
 		this.Untag("shielding");
 		this.Untag("player");
+		this.Tag("dead player");
 		this.getShape().getVars().isladder = false;
 		this.getShape().getVars().onladder = false;
 		this.getShape().checkCollisionsAgain = true;

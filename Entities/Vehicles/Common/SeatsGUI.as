@@ -1,55 +1,41 @@
-#include "SeatsCommon.as"
 
 // optimization: we use script globals here cause all seats GUI use the same value for this
 f32 bounce;
 u32 lastBounceTime;
 
+const f32 arrowVisibleRadius = 15.0f;
+
 void onRender(CSprite@ this)
 {
 	if (g_videorecording)
 		return;
-	if (this is null) return; //can happen with bad reload
+		
+	if (this is null) //can happen with bad reload
+		return;
 
 	// draw only for local player
 	CBlob@ localBlob = getLocalPlayerBlob();
-
-	if (localBlob is null || localBlob.isAttached() || localBlob.isInInventory())
-	{
-		return;
-	}
 	CBlob@ blob = this.getBlob();
-
-	f32 arrowVisibleRadius = blob.getRadius() + 15.0f;
+	
+	if (localBlob is null || localBlob.isAttached() || localBlob.isInInventory() || blob.isInInventory() || blob.isAttachedToPoint("PICKUP"))
+		return;
 
 	//too far away
-	if ((localBlob.getPosition() - blob.getPosition()).getLength() > arrowVisibleRadius)
-	{
+	if ((localBlob.getPosition() - blob.getPosition()).getLength() > blob.getRadius() + arrowVisibleRadius)
 		return;
-	}
-	//carrying us
-	if (localBlob.getCarriedBlob() is blob)
-	{
-		return;
-	}
+
 	//not same team
 	if ((blob.getTeamNum() <= 8 && blob.getTeamNum() != localBlob.getTeamNum()))
-	{
 		return;
-	}
 
 	//behind solid blocks
-	if (localBlob.getMap().rayCastSolid(localBlob.getPosition(), blob.getPosition()))
-	{
+	if (getMap().rayCastSolid(localBlob.getPosition(), blob.getPosition()))
 		return;
-	}
 
 	// dont draw if angle is upside down
-	f32 angle = blob.getAngleDegrees();
-
+	const f32 angle = blob.getAngleDegrees();
 	if (angle > 70.0f && angle < 290.0f)
-	{
 		return;
-	}
 
 	// draw arrows pointing towards seats
 	if (lastBounceTime != getGameTime())
@@ -59,39 +45,35 @@ void onRender(CSprite@ this)
 	}
 
 	if (bounce > 0.8f)
-	{
 		return;
-	}
 
 	AttachmentPoint@[] aps;
-	if (blob.getAttachmentPoints(@aps))
+	if (!blob.getAttachmentPoints(@aps))
+		return;
+
+	string lastPointName;
+	for (uint i = 0; i < aps.length; i++)
 	{
-		string lastPointName;
-		for (uint i = 0; i < aps.length; i++)
+		AttachmentPoint@ ap = aps[i];
+		if (ap.getOccupied() is null && ap.socket && ap.getKeysToTake() > 0 && ap.radius > 0.0f && lastPointName != ap.name) // gather empty controllers attachments/seats
 		{
-			AttachmentPoint@ ap = aps[i];
+			const bool driver = ap.name == "DRIVER";  // HACK:
+			if (driver && blob.hasTag("immobile")) continue;
 
-			if (ap.getOccupied() is null && ap.socket && ap.getKeysToTake() > 0 && ap.radius > 0.0f && lastPointName != ap.name) // gather empty controllers attachments/seats
+			if (!driver || (driver && !blob.isAttached()))
 			{
-				int occupied = ap.customData;
-				const bool driver = ap.name == "DRIVER";  // HACK:
-				if (driver && blob.hasTag("immobile")) continue;
-
-				if (occupied == 0 && (!driver || (driver && !blob.isAttached())))
+				Vec2f pos = getDriver().getScreenPosFromWorldPos(ap.getPosition());
+				pos.y += -3.0f + 10.0f * bounce;
+				if (blob.isFacingLeft())
 				{
-					Vec2f pos = getDriver().getScreenPosFromWorldPos(ap.getPosition());
-					pos.y += -3.0f + 10.0f * bounce;
-					if (blob.isFacingLeft())
-					{
-						pos.x -= 8.0f;
-					}
+					pos.x -= 8.0f;
+				}
 
-					GUI::DrawIconByName("$down_arrow$", pos);
+				GUI::DrawIconByName("$down_arrow$", pos);
 
-					if (g_debug == 0)
-					{
-						lastPointName = ap.name;  // draw just one of a kind
-					}
+				if (g_debug == 0)
+				{
+					lastPointName = ap.name;  // draw just one of a kind
 				}
 			}
 		}

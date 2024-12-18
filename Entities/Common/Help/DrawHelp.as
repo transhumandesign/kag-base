@@ -71,11 +71,11 @@ void onTick(CSprite@ this)
 		doSave();
 		return;
 	}
-	if (!u_showtutorial)
+	/*if (!u_showtutorial)
 	{
 		doSave();
 		return;
-	}
+	}*/
 
 	CBlob@ blob = this.getBlob();
 	const u32 gametime = getGameTime();
@@ -487,44 +487,46 @@ void onRender(CSprite@ this)
 	Vec2f offset(52.0f, getDriver().getScreenHeight() - 68.0f);
 
 	CBlob@ blob = this.getBlob();
-	if (u_showtutorial)
+
+	int count = 0;
+
+	// render helps
+
+	const int size = renderHelps.size();
+	for (int i = size - 1; i >= 0; i--)
 	{
-		int count = 0;
-
-		// render helps
-
-		const int size = renderHelps.size();
-		for (int i = size - 1; i >= 0; i--)
+		if (renderHelps[i].showAlways == true || u_showtutorial)
 		{
 			offset = DrawHelp(blob, renderHelps[i], offset);
 		}
+	}
 
-		// draw item captions
+	// draw item captions
 
+	if (u_showtutorial)
+	{
+		if (getHUD().menuState == 0 && !getHUD().hasButtons() && !getHUD().hasMenus() &&
+		        !blob.isKeyPressed(key_left) && !blob.isKeyPressed(key_right) &&
+		        !blob.isKeyPressed(key_up) && !blob.isKeyPressed(key_action1) &&
+		        !blob.isKeyPressed(key_down) && !blob.isKeyPressed(key_action2) &&
+		        !blob.isKeyPressed(key_pickup) && !blob.isKeyPressed(key_inventory)
+		   )
 		{
-			if (getHUD().menuState == 0 && !getHUD().hasButtons() && !getHUD().hasMenus() &&
-			        !blob.isKeyPressed(key_left) && !blob.isKeyPressed(key_right) &&
-			        !blob.isKeyPressed(key_up) && !blob.isKeyPressed(key_action1) &&
-			        !blob.isKeyPressed(key_down) && !blob.isKeyPressed(key_action2) &&
-			        !blob.isKeyPressed(key_pickup) && !blob.isKeyPressed(key_inventory)
-			   )
+			CBlob@ mouseBlob = getMap().getBlobAtPosition(getControls().getMouseWorldPos());
+			if (mouseBlob !is null && (!mouseBlob.hasTag("player") || mouseBlob.hasTag("migrant")))
 			{
-				CBlob@ mouseBlob = getMap().getBlobAtPosition(getControls().getMouseWorldPos());
-				if (mouseBlob !is null && (!mouseBlob.hasTag("player") || mouseBlob.hasTag("migrant")))
-				{
-					string invName = getTranslatedString(mouseBlob.getInventoryName());
-					Vec2f dimensions;
-					GUI::SetFont("menu");
-					GUI::GetTextDimensions(invName, dimensions);
-					GUI::DrawText(invName, getDriver().getScreenPosFromWorldPos(mouseBlob.getPosition() - Vec2f(0, -mouseBlob.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);					//	mouseBlob.RenderForHUD( RenderStyle::outline_front );
-				}
+				string invName = getTranslatedString(mouseBlob.getInventoryName());
+				Vec2f dimensions;
+				GUI::SetFont("menu");
+				GUI::GetTextDimensions(invName, dimensions);
+				GUI::DrawText(invName, getDriver().getScreenPosFromWorldPos(mouseBlob.getInterpolatedPosition() - Vec2f(0, -mouseBlob.getHeight() / 2)) - Vec2f(dimensions.x / 2, -8.0f), color_white);					//	mouseBlob.RenderForHUD( RenderStyle::outline_front );
 			}
 		}
 	}
 
 	// draw arrow for noobs
 
-	if (showHelpHelp)
+	if (showHelpHelp && u_showtutorial)
 	{
 		int bounce = 4 * Maths::Sin((getGameTime() + blob.getNetworkID()) / 4.5f);
 		Vec2f upperleft = offset + Vec2f(-30.0f, -199.0f + bounce);
@@ -560,7 +562,7 @@ Vec2f DrawHelpText(const string &in text, Vec2f offset, f32 donePercent, const b
 	GUI::SetFont("menu");
 	GUI::GetTextDimensions(text, dim);
 	Vec2f ul = Vec2f(pos.x - 50, y - 18.0f);
-	Vec2f lr = Vec2f(pos.x + 180.0f, y + 18.0f);
+	Vec2f lr = Vec2f(pos.x + 240.0f, y + 18.0f);
 	if (drawBackground)
 	{
 		if (!drawGlow)

@@ -45,7 +45,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 	this.ClearButtons();
 
-	if (getNet().isClient())
+	if (isClient())
 	{
 		RemoveHelps(this, "help throw");
 
@@ -59,6 +59,7 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 }
 
 // set the Z back
+// The baseZ is assumed to be 0
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
 	this.getSprite().SetZ(0.0f);
@@ -67,4 +68,12 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return this.hasTag("migrant") || this.hasTag("dead");
+}
+
+// make Suicide ignore invincibility
+f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
+{
+	if (this.hasTag("invincible") && customData == 11)
+		this.Untag("invincible");
+	return damage;
 }

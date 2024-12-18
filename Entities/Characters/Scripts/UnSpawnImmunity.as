@@ -17,7 +17,7 @@ void onTick(CBlob@ this)
 	float time_modifier = (this.isKeyPressed(key_action1) ? 0.75f : 1.0f);
 
 	u32 ticksSinceImmune = getGameTime() - this.get_u32("spawn immunity time");
-	u32 maximumImmuneTicks = getRules().get_f32("immunity sec") * getTicksASecond() * time_modifier;
+	u32 maximumImmuneTicks = this.exists("custom immunity time") ? this.get_u32("custom immunity time") : (getRules().get_f32("immunity sec") * getTicksASecond() * time_modifier);
 	if (ticksSinceImmune < maximumImmuneTicks)
 	{
 		CSprite@ s = this.getSprite();

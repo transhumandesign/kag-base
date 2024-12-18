@@ -26,8 +26,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	if (blob !is null && blob.hasTag("player") && !blob.hasTag("dead"))
 	{
 		string tag = this.get_string("powerup");
-//      printf("POWERUP : " + tag );
-		getNet().server_SendMsg("" + blob.getInventoryName() + " picked up '" + tag + "'");
+		string text = getTranslatedString("{NAME} picked up '{TAG}'")
+			.replace("{NAME}", getTranslatedString(blob.getInventoryName()))
+			.replace("{TAG}", getTranslatedString(tag));
+		getNet().server_SendMsg(text);
 		blob.Tag(tag);
 		blob.Sync(tag, true);
 		this.server_Die();

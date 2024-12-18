@@ -1,18 +1,126 @@
 #include "VehicleCommon.as"
 #include "KnockedCommon.as";
-#include "MakeCrate.as";
-#include "MiniIconsInc.as";
 #include "GenericButtonCommon.as";
 
 // Catapult logic
 
-const u8 baseline_charge = 15;
-
-const u8 charge_contrib = 35;
-
-const u8 cooldown_time = 45;
-const u8 cooldown_time_player = 90;
+const u8 cooldown_time_ammo = 45;
+const u8 cooldown_time_player = 91;
 const u8 startStone = 100;
+
+class CatapultInfo : VehicleInfo
+{
+	Random _r(0xca7a);
+	u8 baseline_charge = 15;
+
+	bool canFire(CBlob@ this, AttachmentPoint@ ap)
+	{
+		if (ap.isKeyPressed(key_action2))
+		{
+			//cancel
+			charge = 0;
+			cooldown_time = Maths::Max(cooldown_time, 15);
+			return false;
+		}
+
+		if (cooldown_time > 0)
+		{
+			return false;
+		}
+
+		const bool isActionPressed = ap.isKeyPressed(key_action1);
+		if (charge > 0 || isActionPressed)
+		{
+			if (charge < getCurrentAmmo().max_charge_time && isActionPressed)
+			{
+				charge++;
+
+				const u8 t = Maths::Round(f32(getCurrentAmmo().max_charge_time) * 0.66f);
+				if ((charge < t && charge % 10 == 0) || (charge >= t && charge % 5 == 0))
+					this.getSprite().PlaySound("/LoadingTick");
+				return false;
+			}
+
+			if (charge < baseline_charge)
+				return false;
+
+			CBlob@ occupied = this.getAttachments().getAttachmentPoint("MAG").getOccupied();
+			CBlob@ caller = ap.getOccupied();
+			if (occupied !is null && caller !is null)
+			{
+				if (isServer())
+				{
+					VehicleInfo@ v;
+					if (!this.get("VehicleInfo", @v)) return false;
+
+					if (!occupied.hasTag("player"))
+						occupied.SetDamageOwnerPlayer(caller.getPlayer());
+
+					this.server_DetachFrom(occupied);
+
+					if (!occupied.hasTag("player"))
+						occupied.SetDamageOwnerPlayer(caller.getPlayer());
+
+					v.onFire(this, occupied, v.charge);
+					v.SetFireDelay(v.getCurrentAmmo().fire_delay);
+
+					CBitStream bt;
+					bt.write_u16(occupied.getNetworkID());
+					this.SendCommand(this.getCommandID("fire mag blob client"), bt);
+				}
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	void onFire(CBlob@ this, CBlob@ bullet, const u16 &in fired_charge)
+	{
+		const u8 charge_contrib = 35;
+		const f32 temp_charge = baseline_charge + (f32(fired_charge) / f32(getCurrentAmmo().max_charge_time)) * charge_contrib;
+
+		// we override the default time because we want to base it on charge
+		int delay = 30 + (temp_charge / (250 / 30));
+
+		if (bullet !is null)
+		{
+			const f32 player_launch_modifier = 0.75f;
+			const f32 other_launch_modifier = 1.1f;
+
+			const f32 sign = this.isFacingLeft() ? -1.0f : 1.0f;
+			Vec2f vel = Vec2f(sign, -0.5f) * temp_charge * 0.3f;
+			vel += (Vec2f((_r.NextFloat() - 0.5f) * 128, (_r.NextFloat() - 0.5f) * 128) * 0.01f);
+			vel.RotateBy(this.getAngleDegrees());
+
+			if (bullet.hasTag("player"))
+			{
+				delay *= f32(cooldown_time_player) / cooldown_time_ammo;
+				bullet.setVelocity(vel * player_launch_modifier);
+			}
+			else
+			{
+				bullet.setVelocity(vel * other_launch_modifier);
+			}
+
+			if (isKnockable(bullet)) //causes an error on reload
+			{
+				setKnocked(bullet, 30);
+			}
+
+			if (bullet.getName() == "boulder") // rock n' roll baby
+			{
+				bullet.getShape().getConsts().mapCollisions = false;
+				bullet.getShape().getConsts().collidable = false;
+			}
+		}
+
+		last_charge = fired_charge;
+		charge = 0;
+		getCurrentAmmo().fire_delay = delay;
+		cooldown_time = delay;
+	}
+}
 
 void onInit(CBlob@ this)
 {
@@ -20,25 +128,22 @@ void onInit(CBlob@ this)
 	              30.0f, // move speed
 	              0.31f,  // turn speed
 	              Vec2f(0.0f, 0.0f), // jump out velocity
-	              false  // inventory access
+	              false,  // inventory access
+	              CatapultInfo()
 	             );
 	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
+	if (!this.get("VehicleInfo", @v)) return;
 
 	Vehicle_AddAmmo(this, v,
-	                    cooldown_time, // fire delay (ticks)
-	                    5, // fire bullets amount
-	                    2, // fire cost
+	                    cooldown_time_ammo, // fire delay (ticks)
+	                    7, // fire bullets amount
+	                    3, // fire cost
 	                    "mat_stone", // bullet ammo config name
 	                    "Catapult Rocks", // name for ammo selection
 	                    "cata_rock", // bullet config name
 	                    "CatapultFire", // fire sound
 	                    "CatapultFire", // empty fire sound
-	                    Vehicle_Fire_Style::custom,
-	                    Vec2f(-6.0f, -8.0f), // fire position offset
+	                    Vec2f(0, -16), //fire position offset
 	                    90 // charge time
 	);
 
@@ -50,12 +155,17 @@ void onInit(CBlob@ this)
 	Vehicle_addWheel(this, v, "WoodenWheels.png", 16, 16, 0, Vec2f(8.0f, 10.0f));
 
 	this.getShape().SetOffset(Vec2f(0, 6));
+	
+	this.addCommandID("putin_mag");
+	this.addCommandID("fire mag blob client");
 
 	string[] autograb_blobs = {"mat_stone"};
 	this.set("autograb blobs", autograb_blobs);
 
+	this.set_bool("facing", true);
+
 	// auto-load on creation
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CBlob@ ammo = server_CreateBlob("mat_stone");
 		if (ammo !is null)
@@ -65,28 +175,17 @@ void onInit(CBlob@ this)
 				ammo.server_Die();
 		}
 	}
-
-	//fix
-	v.fire_time = 0;
 }
 
 void onTick(CBlob@ this)
 {
-	const int time = this.getTickSinceCreated();
-	const bool hasAttached = this.hasAttached();
-	const bool hadAttached = this.get_bool("had_attached");
-
 	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-		return;
+	if (!this.get("VehicleInfo", @v)) return;
 
-	const u16 delay = float(v.getCurrentAmmo().fire_delay);
-	const f32 time_til_fire = Maths::Max(0, Maths::Min(v.fire_time - getGameTime(), delay));
-
-	// hadAttached is here so it sets the arm angle the tick after the last player detaches
-	if (hasAttached || hadAttached || time < 30 || time_til_fire > 0) //driver, seat or gunner, or just created
+	AmmoInfo@ ammo = v.getCurrentAmmo();
+	const f32 time_til_fire = Maths::Max(0, Maths::Min(v.fire_time - getGameTime(), ammo.fire_delay));
+	if (this.hasAttached() || this.get_bool("hadattached") || this.get_bool("facing") != this.isFacingLeft() || time_til_fire > 0)
 	{
-		// load new item if present in inventory
 		Vehicle_StandardControls(this, v);
 
 		if (v.cooldown_time > 0)
@@ -94,187 +193,145 @@ void onTick(CBlob@ this)
 			v.cooldown_time--;
 		}
 
-		if (getNet().isClient() && delay != 0) //only matters visually on client
+		if (isClient()) //only matters visually on client
 		{
-			//set the arm angle based on how long ago we fired
-			f32 rechargeRatio = (time_til_fire / delay);
-			f32 angle = 360.0f * (1.0f - rechargeRatio);
 			CSpriteLayer@ arm = this.getSprite().getSpriteLayer("arm");
-
 			if (arm !is null)
 			{
-				f32 armAngle = 20 + (angle / 9) + (float(v.charge) / float(v.getCurrentAmmo().max_charge_time)) * 20;
-
-				f32 floattime = getGameTime();
-				f32 sign = this.isFacingLeft() ? -1.0f : 1.0f;
+				//set the arm angle based on how long ago we fired
+				const f32 rechargeRatio = time_til_fire / ammo.fire_delay;
+				const f32 angle = 360.0f * (1.0f - rechargeRatio);
+				const f32 armAngle = 20 + (angle / 9) + (f32(v.charge) / f32(ammo.max_charge_time)) * 20;
 
 				Vec2f armOffset = Vec2f(-12.0f, -10.0f);
 				arm.SetOffset(armOffset);
 
 				arm.ResetTransform();
 				arm.SetRelativeZ(-10.5f);
-				arm.RotateBy(armAngle * -sign, Vec2f(0.0f, 13.0f));
+				arm.RotateBy(armAngle * (this.isFacingLeft() ? 1 : -1), Vec2f(0.0f, 13.0f));
 
-				if (getMagBlob(this) is null && v.getCurrentAmmo().loaded_ammo > 0)
-				{
-					arm.animation.frame = 1;
-				}
-				else
-				{
-					arm.animation.frame = 0;
-				}
-
+				AttachmentPoint@ mag = this.getAttachments().getAttachmentPoint("MAG");
+				arm.animation.frame = mag.getOccupied() is null && ammo.loaded_ammo > 0 ? 1 : 0;
+				
 				// set the bowl attachment offset
 				Vec2f offset = Vec2f(4, -10);
 				offset.RotateBy(-armAngle, Vec2f(0.0f, 13.0f));
 				offset += armOffset + Vec2f(28, 0);
-
-				this.getAttachments().getAttachmentPointByName("MAG").offset = offset;
+				mag.offset = offset;
 			}
 		}
 	}
-	else if (time % 30 == 0)
-		Vehicle_StandardControls(this, v); //just make sure it's updated
-
-	this.set_bool("had_attached", hasAttached);
+	this.set_bool("facing", this.isFacingLeft());
+	this.set_bool("hadattached", this.hasAttached());
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	CBlob@ occupiedBlob = this.getAttachments().getAttachmentPointByName("MAG").getOccupied();
-	if (
-		!Vehicle_AddFlipButton(this, caller) &&
-		this.getTeamNum() == caller.getTeamNum() &&
-		isOverlapping(this, caller) &&
-		!caller.isAttached() &&
-		(occupiedBlob is null || !occupiedBlob.hasTag("player"))
-	) {
-		Vehicle_AddLoadAmmoButton(this, caller);
-	}
-}
-
-bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool wasActionPressed, u8 &out chargeValue)
-{
-	u8 charge = v.charge;
-
-	if (v.cooldown_time > 0)
+	AttachmentPoint@ mag = this.getAttachments().getAttachmentPoint("MAG");
+	CBlob@ occupied = mag.getOccupied();
+	if (!Vehicle_AddFlipButton(this, caller) &&
+	    this.getTeamNum() == caller.getTeamNum() &&
+	    this.getDistanceTo(caller) < this.getRadius() &&
+	    !caller.isAttached() &&
+	    (occupied is null || !occupied.hasTag("player")))
 	{
-		return false;
-	}
-
-	if (charge > 0 || isActionPressed)
-	{
-
-		if (charge < v.getCurrentAmmo().max_charge_time && isActionPressed)
+		// put in what is carried into mag
+		CBlob@ carried = caller.getCarriedBlob();
+		if (carried !is null && !carried.hasTag("temp blob"))
 		{
-			charge++;
-			v.charge = charge;
+			CBitStream callerParams;
 
-			u8 t = Maths::Round(float(v.getCurrentAmmo().max_charge_time) * 0.66f);
-			if ((charge < t && charge % 10 == 0) || (charge >= t && charge % 5 == 0))
-				this.getSprite().PlaySound("/LoadingTick");
+			string name = carried.getInventoryName();
+			const string msg = getTranslatedString("Load {ITEM}").replace("{ITEM}", name);
 
-			chargeValue = charge;
-			return false;
+			string iconName = "$" + carried.getName() + "$"; 
+			if (GUI::hasIconName("$" + carried.getInventoryName() + "$"))
+			{
+				iconName = "$" + carried.getInventoryName() + "$";
+			}
+
+			caller.CreateGenericButton(iconName, mag.offset, this, this.getCommandID("putin_mag"), msg, callerParams);
+			return;
 		}
 
-		chargeValue = charge;
-
-		if (charge < baseline_charge)
-			return false;
-
-		v.firing = true;
-
-		return true;
+		//otherwise load in ammo
+		Vehicle_AddLoadAmmoButton(this, caller, mag.offset);
 	}
-
-	return false;
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("fire"))
+	VehicleInfo@ v;
+	if (!this.get("VehicleInfo", @v)) return;
+	
+	if (cmd == this.getCommandID("fire") && isServer())
 	{
-		VehicleInfo@ v;
-		if (!this.get("VehicleInfo", @v))
-		{
-			return;
-		}
-		v.firing = false;
+		v.charge = 0; //for empty shots
+	}
+	else if (cmd == this.getCommandID("fire client") && isClient())
+	{
 		v.charge = 0;
 	}
-	else if (cmd == this.getCommandID("fire blob"))
+	else if (cmd == this.getCommandID("fire mag blob client") && isClient())
 	{
-		CBlob@ blob = getBlobByNetworkID(params.read_netid());
-		const u8 charge = params.read_u8();
-		VehicleInfo@ v;
-		if (!this.get("VehicleInfo", @v))
+		if (!isServer())
 		{
-			return;
+			u16 id;
+			if (!params.saferead_u16(id)) return;
+
+			CBlob@ occupied = getBlobByNetworkID(id);
+			if (occupied is null) return; 
+
+			v.onFire(this, occupied, v.charge);
+			v.SetFireDelay(v.getCurrentAmmo().fire_delay);
 		}
-		Vehicle_onFire(this, v, blob, charge);
+
+		this.getSprite().PlayRandomSound(v.getCurrentAmmo().fire_sound);
 	}
-}
-
-Random _r(0xca7a);
-
-void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 _charge)
-{
-	f32 charge = baseline_charge + (float(_charge) / float(v.getCurrentAmmo().max_charge_time)) * charge_contrib;
-
-	bool shot_player = false;
-
-	if (bullet !is null)
+	else if (cmd == this.getCommandID("putin_mag") && isServer())
 	{
-		f32 angle = this.getAngleDegrees();
-		f32 sign = this.isFacingLeft() ? -1.0f : 1.0f;
+		CPlayer@ callerp = getNet().getActiveCommandPlayer();
+		if (callerp is null) return;
 
-		Vec2f vel = Vec2f(sign, -0.5f) * charge * 0.3f;
+		CBlob@ caller = callerp.getBlob();
+		if (caller is null) return;
 
-		vel += (Vec2f((_r.NextFloat() - 0.5f) * 128, (_r.NextFloat() - 0.5f) * 128) * 0.01f);
-		vel.RotateBy(angle);
+		CBlob@ carried = caller.getCarriedBlob();
+		if (carried is null) return;
 
-		bullet.setVelocity(vel);
+		AttachmentPoint@ mag = this.getAttachments().getAttachmentPoint("MAG");
+		// player in mag? don't replace
+		CBlob@ occupied = mag.getOccupied();
+		if (occupied !is null && occupied.hasTag("player")) return; 
 
-		if (isKnockable(bullet))
+		// team check
+		if (this.getTeamNum() != caller.getTeamNum()) return;
+
+		// range check
+		if (this.getDistanceTo(caller) > this.getRadius()) return;
+
+		// attach check
+		if (caller.isAttached()) return;
+
+		if (caller !is null && carried !is null && carried.isAttachedTo(caller))
 		{
-			setKnocked(bullet, 30);
-		}
-
-		if (bullet.getName() == "boulder") // rock n' roll baby
-		{
-			bullet.getShape().getConsts().mapCollisions = false;
-			bullet.getShape().getConsts().collidable = false;
-		}
-		if(bullet.hasTag("player"))
-		{
-			shot_player = true;
+			CBlob@ occupied = this.getAttachments().getAttachmentPoint("MAG").getOccupied();
+			if (occupied !is null)
+			{
+				occupied.server_DetachFromAll();
+			}
+			carried.server_DetachFromAll();
+			this.server_AttachTo(carried, "MAG");
 		}
 	}
-
-	// we override the default time because we want to base it on charge
-	int delay = 30 + (charge / (250 / 30));
-
-	v.last_charge = _charge;
-	v.charge = 0;
-
-	// mildly hacky, but this is probably the cleaniest way to do it with how the code currently works
-	if(shot_player)
-	{
-		delay = delay * (float(cooldown_time_player) / cooldown_time);
-	}
-
-	v.getCurrentAmmo().fire_delay = delay;
-	v.cooldown_time = delay;
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return Vehicle_doesCollideWithBlob_ground(this, blob);
 }
-
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
@@ -287,33 +344,13 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
 	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
+	if (!this.get("VehicleInfo", @v)) return;
+	
+	if (isServer() && attached.getName() == v.getCurrentAmmo().ammo_name)
 	{
-		return;
+		// put stone material in inventory
+		attached.server_DetachFromAll();
+		this.server_PutInInventory(attached);
+		server_LoadAmmo(this, attached, v.getCurrentAmmo().fire_amount, v);
 	}
-	Vehicle_onAttach(this, v, attached, attachedPoint);
-}
-
-void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
-{
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
-	Vehicle_onDetach(this, v, detached, attachedPoint);
-}
-
-// Blame Fuzzle.
-bool isOverlapping(CBlob@ this, CBlob@ blob)
-{
-
-	Vec2f tl, br, _tl, _br;
-	this.getShape().getBoundingRect(tl, br);
-	blob.getShape().getBoundingRect(_tl, _br);
-	return br.x > _tl.x
-	       && br.y > _tl.y
-	       && _br.x > tl.x
-	       && _br.y > tl.y;
-
 }

@@ -2,6 +2,7 @@
 
 #include "Hitters.as";
 #include "MapFlags.as";
+#include "DoorCommon.as";
 
 int openRecursion = 0;
 
@@ -63,11 +64,6 @@ void MakeDamageFrame(CBlob@ this)
 	f32 full_hp = this.getInitialHealth();
 	int frame = (hp > full_hp * 0.9f) ? 0 : ((hp > full_hp * 0.4f) ? 1 : 2);
 	this.getSprite().animation.frame = frame;
-}
-
-bool isOpen(CBlob@ this)
-{
-	return !this.getShape().getConsts().collidable;
 }
 
 void setOpen(CBlob@ this, bool open)

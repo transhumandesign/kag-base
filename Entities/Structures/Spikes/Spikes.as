@@ -256,6 +256,7 @@ void onTick(CBlob@ this)
 	{
 		this.getCurrentScript().tickFrequency = 25;
 		this.getSprite().SetAnimation("default");
+		this.set_u8(state_prop, 0);
 		this.set_u8(timer_prop, 0);
 	}
 
@@ -378,7 +379,11 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 
 		if (!this.hasTag("bloody"))
 		{
-			sprite.animation.frame += 3;
+			if (!g_kidssafe)
+			{
+				sprite.animation.frame += 3;
+			}
+
 			this.Tag("bloody");
 		}
 	}
@@ -390,7 +395,7 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 	f32 full_hp = this.getInitialHealth();
 	int frame = (hp > full_hp * 0.9f) ? 0 : ((hp > full_hp * 0.4f) ? 1 : 2);
 
-	if (this.hasTag("bloody"))
+	if (this.hasTag("bloody") && !g_kidssafe)
 	{
 		frame += 3;
 	}
@@ -413,6 +418,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 		case Hitters::keg:
 			dmg *= 2.0f;
+			break;
 
 		case Hitters::arrow:
 			dmg = 0.0f;

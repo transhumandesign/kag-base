@@ -5,44 +5,21 @@
 
 void onInit(CRules@ rules)
 {
-	string filename = "EmoteEntries.cfg";
-	string cachefilename = "../Cache/" + filename;
-	ConfigFile cfg;
-
-	//attempt to load from cache first
-	bool loaded = false;
-	if (CFileMatcher(cachefilename).getFirst() == cachefilename && cfg.loadFile(cachefilename))
-	{
-		loaded = true;
-	}
-	else if (cfg.loadFile(filename))
-	{
-		loaded = true;
-	}
-
-	if (!loaded)
-	{
-		return;
-	}
+	ConfigFile@ cfg = loadEmoteConfig();
+	LoadEmotes(rules, cfg);
 
 	WheelMenu@ menu = get_wheel_menu("emotes");
 	menu.option_notice = getTranslatedString("Select emote");
 
-	string[] names;
-	cfg.readIntoArray_string(names, "emotes");
-
-	if (names.length % 2 != 0)
+	Emote@[] wheelEmotes = getWheelEmotes(rules, cfg);
+	for (uint i = 0; i < wheelEmotes.size(); i++)
 	{
-		error("EmoteEntries.cfg is not in the form of visible_name; token;");
-		return;
-	}
+		Emote@ emote = wheelEmotes[i];
 
-	for (uint i = 0; i < names.length; i += 2)
-	{
-		IconWheelMenuEntry entry(names[i+1]);
-		entry.visible_name = getTranslatedString(names[i]);
-		entry.texture_name = "Emoticons.png";
-		entry.frame = Emotes::names.find(names[i+1]);
+		IconWheelMenuEntry entry(emote.token);
+		entry.visible_name = getTranslatedString(emote.name);
+		entry.texture_name = emote.pack.filePath;
+		entry.frame = emote.index;
 		entry.frame_size = Vec2f(32.0f, 32.0f);
 		entry.scale = 1.0f;
 		entry.offset = Vec2f(0.0f, -3.0f);
@@ -69,7 +46,7 @@ void onTick(CRules@ rules)
 	else if (blob.isKeyJustReleased(key_bubbles) && get_active_wheel_menu() is menu)
 	{
 		WheelMenuEntry@ selected = menu.get_selected();
-		set_emote(blob, (selected !is null ? Emotes::names.find(selected.name) : Emotes::off));
+		set_emote(blob, (selected !is null ? selected.name : ""));
 		set_active_wheel_menu(null);
 	}
 }

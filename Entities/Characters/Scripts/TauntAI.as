@@ -43,9 +43,9 @@ class BotPersonality
 	 * the emote "strings" that the bot will use
 	 * for certain events
 	 */
-	u8[] hurt_enemy_emotes;
-	u8[] kill_enemy_emotes;
-	u8[] get_hurt_emotes;
+	string[] hurt_enemy_emotes;
+	string[] kill_enemy_emotes;
+	string[] get_hurt_emotes;
 
 	/**
 	 * A list of taunts that the bot will use
@@ -90,16 +90,16 @@ void onInit(CBlob@ this)
 	b.name = "default";
 
 	//emotes
-	b.hurt_enemy_emotes.push_back(Emotes::smile);
-	b.hurt_enemy_emotes.push_back(Emotes::mad);
-	b.hurt_enemy_emotes.push_back(Emotes::laugh);
+	b.hurt_enemy_emotes.push_back("smile");
+	b.hurt_enemy_emotes.push_back("mad");
+	b.hurt_enemy_emotes.push_back("laugh");
 
-	b.kill_enemy_emotes.push_back(Emotes::laugh);
+	b.kill_enemy_emotes.push_back("laugh");
 
-	b.get_hurt_emotes.push_back(Emotes::frown);
-	b.get_hurt_emotes.push_back(Emotes::mad);
-	b.get_hurt_emotes.push_back(Emotes::attn);
-	b.get_hurt_emotes.push_back(Emotes::cry);
+	b.get_hurt_emotes.push_back("frown");
+	b.get_hurt_emotes.push_back("mad");
+	b.get_hurt_emotes.push_back("attn");
+	b.get_hurt_emotes.push_back("cry");
 
 	//chats
 	{
@@ -236,13 +236,13 @@ void DoAction(CBlob@ this, u8 action)
 
 		case chat:
 			this.Chat(this.get_string("taunt chat"));
-			set_emote(this, Emotes::off);
+			set_emote(this, "");
 			break;
 	}
 
 }
 
-void ChatOrEmote(CBlob@ this, bool chatter, const u8[]& emotes, const string[]& chats, BotPersonality@ b = null)
+void ChatOrEmote(CBlob@ this, bool chatter, const string[]& emotes, const string[]& chats, BotPersonality@ b = null)
 {
 	if (!chatter)
 	{
@@ -253,11 +253,11 @@ void ChatOrEmote(CBlob@ this, bool chatter, const u8[]& emotes, const string[]& 
 		if (b is null)
 		{
 			this.Chat(chats[XORRandom(chats.length)]);
-			set_emote(this, Emotes::off);
+			set_emote(this, "");
 		}
 		else
 		{
-			set_emote(this, Emotes::dots);
+			set_emote(this, "dots");
 
 			string chat_text = chats[XORRandom(chats.length)];
 			this.set_string("taunt chat", chat_text);

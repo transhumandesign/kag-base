@@ -77,11 +77,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
     SetSolidFlag(this, false);
 }*/
 
-bool isOpen(CBlob@ this)
-{
-	return !this.getShape().getConsts().collidable;
-}
-
 void setOpen(CBlob@ this, bool open, bool faceLeft = false)
 {
 	CSprite@ sprite = this.getSprite();
@@ -149,6 +144,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	if (blob !is null)
 	{
 		this.getCurrentScript().tickFrequency = 3;
+		if (!isOpen(this) && canOpenDoor(this, blob)) 
+		{
+			OpenDoor(this, blob, true);
+		}
 	}
 }
 
@@ -167,66 +166,75 @@ void onEndCollision(CBlob@ this, CBlob@ blob)
 	}
 }
 
-
 bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return false;
 }
 
-// this is such a pain - can't edit animations at the moment, so have to just carefully add destruction frames to the close animation >_>
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	if (customData == Hitters::boulder)
 		return 0;
 
-	//print("custom data: "+customData+" builder: "+Hitters::builder);
-	if (customData == Hitters::builder)
-		damage *= 2;
-	if (customData == Hitters::drill)                //Hitters::saw is the drill hitter.... why //fixed
-		damage *= 2;
-	if (customData == Hitters::bomb)
-		damage *= 1.3f;
+	switch (customData)
+	{
+		case Hitters::builder:
+			damage *= 2.0f;
+			break;
+		case Hitters::sword:
+			damage *= 1.5f;
+			break;
+		case Hitters::bomb:
+			damage *= 1.4f;
+			if (hitterBlob.getTeamNum() == this.getTeamNum())
+				damage *= 0.65f;
+			break;
+		case Hitters::drill:
+			damage *= 2.0f;
+			break;
+		default:
+			break;
+	}
+
+	if (this.hasTag("will_soon_collapse"))
+	{
+		damage *= 1.25f;
+	}
 
 	return damage;
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
 {
-	CSprite @sprite = this.getSprite();
+	f32 hp = this.getHealth();
+	bool repaired = (hp > oldHealth);
+	MakeDamageFrame(this, repaired);
+}
 
-	if (sprite !is null)
+void MakeDamageFrame(CBlob@ this, bool repaired=false)
+{
+	CSprite@ sprite = this.getSprite();
+	f32 hp = this.getHealth();
+	f32 full_hp = this.getInitialHealth();
+	Animation@ destruction_anim = sprite.getAnimation("destruction");
+
+	if (destruction_anim !is null)
 	{
-		u8 frame = 0;
-
-		Animation @destruction_anim = sprite.getAnimation("destruction");
-
-		if (destruction_anim !is null)
-		{
-			f32 newHealth = this.getHealth();
-
-			if (newHealth < this.getInitialHealth())
-			{
-				f32 ratio = newHealth / this.getInitialHealth();
-
-				if (ratio <= 0.0f)
-				{
-					frame = destruction_anim.getFramesCount() - 1;
-				}
-				else
-				{
-					frame = (1.0f - ratio) * (destruction_anim.getFramesCount());
-				}
-
-				frame = destruction_anim.getFrame(frame);
-			}
-		}
+		int frame_count = destruction_anim.getFramesCount();
+		int frame = frame_count - frame_count * (hp / full_hp);
+		destruction_anim.frame = frame;
 
 		Animation @close_anim = sprite.getAnimation("close");
-		u8 lastframe = close_anim.getFrame(close_anim.getFramesCount() - 1);
-		if (lastframe < frame) // if our current final frame is less damaged than our door actually is
+
+		if(close_anim !is null)
 		{
-			close_anim.RemoveFrame(lastframe);
-			close_anim.AddFrame(frame); // replace the final frame by a more damaged one
+			close_anim.RemoveFrame(close_anim.getFramesCount() - 1);
+			close_anim.AddFrame(destruction_anim.getFrame(frame));
+		}
+
+		if(repaired)
+		{
+			sprite.PlaySound("/build_door.ogg");
 		}
 	}
 }
@@ -238,7 +246,6 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 	if (canOpenDoor(this, blob))
 	{
-		OpenDoor(this, blob);
 		return false;
 	}
 

@@ -16,10 +16,8 @@ void onInit(CBlob@ this)
 	              true  // inventory access
 	             );
 	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
+	if (!this.get("VehicleInfo", @v)) return;
+
 	Vehicle_SetupWaterSound(this, v, "BoatRowing",  // movement sound
 	                        0.0f, // movement sound volume modifier   0.0f = no manipulation
 	                        0.0f // movement sound pitch modifier     0.0f = no manipulation
@@ -31,7 +29,10 @@ void onInit(CBlob@ this)
 	//block knight sword
 	this.Tag("blocks sword");
 
-	this.getShape().SetOffset(Vec2f(-6, 16));
+	//bomb arrow damage value
+	this.set_f32("bomb resistance", 3.1f);
+
+	this.getShape().SetOffset(Vec2f(0, 16));
 	this.getShape().getConsts().bullet = false;
 	this.getShape().getConsts().transports = true;
 
@@ -47,7 +48,6 @@ void onInit(CBlob@ this)
 
 	this.Tag("respawn");
 
-	InitRespawnCommand(this);
 	InitClasses(this);
 	this.Tag("change class store inventory");
 
@@ -109,24 +109,28 @@ void onInit(CBlob@ this)
 		int[] frames = { 0, 4, 5 };
 		front.animation.AddFrames(frames);
 		front.SetRelativeZ(55.0f);
+		front.SetOffset(Vec2f(-6, 0));
 	}
 
 	CSpriteLayer@ flag = sprite.addSpriteLayer("flag", sprite.getConsts().filename, 40, 56);
 	if (flag !is null)
 	{
-		flag.addAnimation("default", 3, true);
+		flag.addAnimation("default", XORRandom(3) + 3, true);
 		int[] frames = { 5, 4, 3 };
 		flag.animation.AddFrames(frames);
 		flag.SetRelativeZ(-5.0f);
-		flag.SetOffset(Vec2f(28, -24));
+		flag.SetOffset(Vec2f(22, -24));
 	}
 
 	this.set_f32("oar offset", 54.0f);
 
+	CMap@ map = getMap();
 	// add pole ladder
-	getMap().server_AddMovingSector(Vec2f(-28.0f, -32.0f), Vec2f(-12.0f, 0.0f), "ladder", this.getNetworkID());
+	map.server_AddMovingSector(Vec2f(-26.0f, -32.0f), Vec2f(-10.0f, 0.0f), "ladder", this.getNetworkID());
 	// add back ladder
-	getMap().server_AddMovingSector(Vec2f(-50.0f, 0.0f), Vec2f(-35.0f, 20.0f), "ladder", this.getNetworkID());
+	map.server_AddMovingSector(Vec2f(-48.0f, 0.0f), Vec2f(-33.0f, 20.0f), "ladder", this.getNetworkID());
+	// add custom capture zone
+	map.server_AddMovingSector(Vec2f(-34.0f, -30.0f), Vec2f(16.0f, 5.0f), "capture zone "+this.getNetworkID(), this.getNetworkID());
 
 	//set custom minimap icon
 	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
@@ -134,12 +138,11 @@ void onInit(CBlob@ this)
 	this.SetMinimapRenderAlways(true);
 
 	// mounted bow
-	if (getNet().isServer())// && hasTech( this, "mounted bow"))
+	if (isServer())// && hasTech( this, "mounted bow"))
 	{
-		CBlob@ bow = server_CreateBlob("mounted_bow");
+		CBlob@ bow = server_CreateBlob("mounted_bow", this.getTeamNum(), this.getPosition());
 		if (bow !is null)
 		{
-			bow.server_setTeamNum(this.getTeamNum());
 			this.server_AttachTo(bow, "BOW");
 			this.set_u16("bowid", bow.getNetworkID());
 		}
@@ -148,36 +151,25 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	const int time = this.getTickSinceCreated();
-	if (this.hasAttached() || time < 30) //driver, seat or gunner, or just created
+	if (this.hasAttached()) //driver, seat or gunner, or just created
 	{
 		VehicleInfo@ v;
-		if (!this.get("VehicleInfo", @v))
-		{
-			return;
-		}
+		if (!this.get("VehicleInfo", @v)) return;
+
 		Vehicle_StandardControls(this, v);
 	}
 
-	if (time % 12 == 0)
+	if (this.getTickSinceCreated() % 12 == 0)
 	{
 		Vehicle_DontRotateInWater(this);
 	}
 }
 
-void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 charge) {}
-bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool wasActionPressed, u8 &out chargeValue) {return false;}
-
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (blob.getShape().getConsts().platform)
-		return false;
+	//if (blob.getShape().getConsts().platform)
+		//return false;
 	return Vehicle_doesCollideWithBlob_boat(this, blob);
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }
 
 void onTick(CSprite@ this)
@@ -186,27 +178,6 @@ void onTick(CSprite@ this)
 	CBlob@ blob = this.getBlob();
 	this.animation.setFrameFromRatio(1.0f - (blob.getHealth() / blob.getInitialHealth()));
 }
-
-void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
-{
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
-	Vehicle_onAttach(this, v, attached, attachedPoint);
-}
-
-void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
-{
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
-	Vehicle_onDetach(this, v, detached, attachedPoint);
-}
-
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {

@@ -103,7 +103,6 @@ void onTick(CBlob@ this)
 							Vec2f vel = this.getVelocity();
 							for (int particle_step = 0; particle_step < 3; ++particle_step)
 							{
-
 								Splash(pos, vel, particle_step);
 							}
 						}
@@ -146,10 +145,9 @@ void onTick(CBlob@ this)
 		f32 side = this.isFacingLeft() ? this.getWidth() : -this.getWidth();
 		side *= 0.45f;
 		pos.x += side;
-		pos.y += 14.0f;
+		pos.y += this.getHeight() * 0.5f + 4.0f;
 		Splash(pos, this.getVelocity(), XORRandom(3));
 	}
-
 }
 
 // show oars when someone hopped in as rower

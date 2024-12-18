@@ -52,6 +52,8 @@ namespace Material
 		if (sum <= this.maxQuantity)
 		{
 			this.server_SetQuantity(sum);
+			blob.Tag("AdminAlertIgnore");
+			blob.Sync("AdminAlertIgnore", true);
 			blob.server_Die();
 		}
 		else

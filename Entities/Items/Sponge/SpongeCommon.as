@@ -2,17 +2,16 @@
 const int ABSORB_COUNT = 100;
 const string ABSORBED_PROP = "absorbed";
 
-
 void spongeUpdateSprite(CSprite@ this, u8 absorbed)
 {
 	uint16 old_frame_index = this.getFrameIndex();
 	this.animation.setFrameFromRatio(f32(absorbed) / ABSORB_COUNT);
+	this.getBlob().inventoryIconFrame = this.animation.frame;
 	if (old_frame_index > this.getFrameIndex())
 	{
 		makeSteamPuff(this.getBlob());
 	}
 }
-
 
 void makeSteamParticle(CBlob@ this, const Vec2f vel, const string filename = "SmallSteam")
 {

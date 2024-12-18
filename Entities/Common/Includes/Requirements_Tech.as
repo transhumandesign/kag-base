@@ -134,6 +134,7 @@ void SetItemDescription_Tech( CGridButton@ button, CBlob@ caller, CBitStream &in
 
 		if (hasRequirements_Tech( caller.getInventory(), anotherInventory, reqs, missing )) {
 			button.hoverText = description + "\n\n " + getButtonRequirementsText( reqs, false );
+			button.SetEnabled( true );
 		}
 		else
 		{

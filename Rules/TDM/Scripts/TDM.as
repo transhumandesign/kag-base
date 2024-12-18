@@ -106,7 +106,8 @@ shared class TDMSpawns : RespawnSystem
 			}
 
 			info.can_spawn_time--;
-			spawn_property = u8(Maths::Min(250, (info.can_spawn_time / 30)));
+			// Round time up (except for final few ticks)
+			spawn_property = u8(Maths::Min(250, ((info.can_spawn_time + getTicksASecond() - 5) / getTicksASecond())));
 		}
 
 		string propname = "tdm spawn time " + info.username;
@@ -360,9 +361,6 @@ shared class TDMCore : RulesCore
 		//  SpawnPowerups();
 		RulesCore::Update(); //update respawns
 		CheckTeamWon();
-
-		if (getGameTime() % 2000 == 0)
-			SpawnBombs();
 	}
 
 	void updateHUD()
@@ -762,19 +760,6 @@ shared class TDMCore : RulesCore
 	{
 		CBlob@ powerup = server_CreateBlob("powerup", -1, Vec2f(getMap().tilesize * 0.5f * getMap().tilemapwidth, 50.0f));
 	}
-
-	void SpawnBombs()
-	{
-		Vec2f[] bombPlaces;
-		if (getMap().getMarkers("bombs", bombPlaces))
-		{
-			for (uint i = 0; i < bombPlaces.length; i++)
-			{
-				server_CreateBlob("mat_bombs", -1, bombPlaces[i]);
-			}
-		}
-	}
-
 
 	void GiveSpawnResources(CBlob@ blob, CPlayer@ player)
 	{

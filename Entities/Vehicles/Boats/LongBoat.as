@@ -14,22 +14,26 @@ void onInit(CBlob@ this)
 	              true  // inventory access
 	             );
 	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
+	if (!this.get("VehicleInfo", @v)) return;
+
 	Vehicle_SetupWaterSound(this, v, "BoatRowing",  // movement sound
 	                        0.0f, // movement sound volume modifier   0.0f = no manipulation
 	                        0.0f // movement sound pitch modifier     0.0f = no manipulation
 	                       );
-	this.getShape().SetOffset(Vec2f(-3, 12));
+	this.getShape().SetOffset(Vec2f(0, 12));
 	this.getShape().SetCenterOfMassOffset(Vec2f(-1.5f, 6.0f));
 	this.getShape().getConsts().transports = true;
 	this.getShape().getConsts().bullet = false;
 	this.set_f32("map dmg modifier", 150.0f);
 
+	// add custom capture zone
+	getMap().server_AddMovingSector(Vec2f(-27.0f, -16.0f), Vec2f(28.0f, 4.0f), "capture zone "+this.getNetworkID(), this.getNetworkID());
+
 	//block knight sword
 	this.Tag("blocks sword");
+
+	//bomb arrow damage value
+	this.set_f32("bomb resistance", 2.5f);
 
 	// additional shape
 
@@ -48,12 +52,11 @@ void onInit(CBlob@ this)
 
 	// sprites
 
+	CSprite@ sprite = this.getSprite();
+	const Vec2f mastOffset(-1, -3);
+
 	// add mast
-	this.set_bool("has mast", true);
-
-	const Vec2f mastOffset(2, -3);
-
-	CSpriteLayer@ mast = this.getSprite().addSpriteLayer("mast", 48, 64);
+	CSpriteLayer@ mast = sprite.addSpriteLayer("mast", 48, 64);
 	if (mast !is null)
 	{
 		Animation@ anim = mast.addAnimation("default", 0, false);
@@ -63,11 +66,10 @@ void onInit(CBlob@ this)
 		mast.SetRelativeZ(-10.0f);
 	}
 
-	if (this.get_bool("has mast"))		// client-side join - might be false
+	if (!this.hasTag("no sail")) //joining clients
 	{
 		// add sail
-
-		CSpriteLayer@ sail = this.getSprite().addSpriteLayer("sail " + sail_index, 32, 32);
+		CSpriteLayer@ sail = sprite.addSpriteLayer("sail " + sail_index, 32, 32);
 		if (sail !is null)
 		{
 			Animation@ anim = sail.addAnimation("default", 3, false);
@@ -75,7 +77,6 @@ void onInit(CBlob@ this)
 			anim.AddFrames(frames);
 			sail.SetOffset(Vec2f(1, -10) + mastOffset);
 			sail.SetRelativeZ(-9.0f);
-
 			sail.SetVisible(false);
 		}
 	}
@@ -88,16 +89,16 @@ void onInit(CBlob@ this)
 	}
 
 	// add head
+	CSpriteLayer@ head = sprite.addSpriteLayer("head", 16, 16);
+	if (head !is null)
 	{
-		CSpriteLayer@ head = this.getSprite().addSpriteLayer("head", 16, 16);
-		if (head !is null)
-		{
-			Animation@ anim = head.addAnimation("default", 0, false);
-			anim.AddFrame(5);
-			head.SetOffset(Vec2f(-32, -13));
-			head.SetRelativeZ(1.0f);
-		}
+		Animation@ anim = head.addAnimation("default", 0, false);
+		anim.AddFrame(5);
+		head.SetOffset(Vec2f(-35, -13));
+		head.SetRelativeZ(1.0f);
 	}
+
+	sprite.animation.setFrameFromRatio(1.0f - (this.getHealth() / this.getInitialHealth()));
 
 	//add minimap icon
 	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", 6, Vec2f(16, 8));
@@ -105,30 +106,24 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	const int time = this.getTickSinceCreated();
-	if (this.hasAttached() || time < 30)
+	if (this.hasAttached())
 	{
 		VehicleInfo@ v;
-		if (!this.get("VehicleInfo", @v))
-		{
-			return;
-		}
+		if (!this.get("VehicleInfo", @v)) return;
+
 		Vehicle_StandardControls(this, v);
 	}
 
-	if (time % 12 == 0)
+	if (this.getTickSinceCreated() % 12 == 0)
 	{
 		Vehicle_DontRotateInWater(this);
 	}
 }
 
-void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 charge) {}
-bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool wasActionPressed, u8 &out chargeValue) {return false;}
-
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-	if (blob.getShape().getConsts().platform)
-		return false;
+	//if (blob.getShape().getConsts().platform)
+		//return false;
 	return Vehicle_doesCollideWithBlob_boat(this, blob);
 }
 
@@ -137,9 +132,8 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 	const f32 tier1 = this.getInitialHealth() * 0.6f;
 	const f32 health = this.getHealth();
 
-	if (health < tier1 && oldHealth >= tier1)
+	if (health < tier1 && !this.hasTag("no sail"))
 	{
-		this.set_bool("has mast", false);
 		this.Tag("no sail");
 
 		CSprite@ sprite = this.getSprite();
@@ -152,29 +146,4 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 		if (sail !is null)
 			sail.SetVisible(false);
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
-}
-
-void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
-{
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
-	Vehicle_onAttach(this, v, attached, attachedPoint);
-}
-
-void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
-{
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
-	Vehicle_onDetach(this, v, detached, attachedPoint);
 }

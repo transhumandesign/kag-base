@@ -11,7 +11,7 @@ void onInit(CRules@ this)
 f32 onPlayerTakeDamage(CRules@ this, CPlayer@ victim, CPlayer@ attacker, f32 DamageScale)
 {
 	CBlob@ victimblob = victim.getBlob();
-	if (victimblob !is null && victimblob.getTickSinceCreated() < getTicksASecond() * IMMUNITY_SECS && victim !is attacker)
+	if (victimblob !is null && victimblob.getTickSinceCreated() < (victimblob.exists("custom immunity time") ? victimblob.get_u32("custom immunity time") : (getTicksASecond() * IMMUNITY_SECS)))
 	{
 		if (victimblob.hasTag("invincible"))
 		{

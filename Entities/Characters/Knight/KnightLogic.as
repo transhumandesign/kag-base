@@ -1,13 +1,14 @@
 // Knight logic
 
-#include "ThrowCommon.as"
+#include "ActivationThrowCommon.as"
 #include "KnightCommon.as";
 #include "RunnerCommon.as";
 #include "Hitters.as";
 #include "ShieldCommon.as";
 #include "KnockedCommon.as"
 #include "Help.as";
-#include "Requirements.as"
+#include "Requirements.as";
+#include "StandardControlsCommon.as";
 
 
 //attacks limited to the one time per-actor before reset.
@@ -82,7 +83,13 @@ void onInit(CBlob@ this)
 	this.Tag("player");
 	this.Tag("flesh");
 
-	this.addCommandID("get bomb");
+	ControlsSwitch@ controls_switch = @onSwitch;
+	this.set("onSwitch handle", @controls_switch);
+
+	ControlsCycle@ controls_cycle = @onCycle;
+	this.set("onCycle handle", @controls_cycle);
+
+	this.addCommandID("activate/throw bomb");
 
 	this.push("names to activate", "keg");
 
@@ -309,9 +316,7 @@ void onTick(CBlob@ this)
 						}
 						else
 						{
-							CBitStream params;
-							params.write_u8(bombType);
-							this.SendCommand(this.getCommandID("get bomb"), params);
+							client_SendThrowOrActivateCommandBomb(this, bombType);
 							thrown = true;
 						}
 						break;
@@ -1070,24 +1075,119 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 		}
 }
 
+// clientside
+void onCycle(CBitStream@ params)
+{
+	u16 this_id;
+	if (!params.saferead_u16(this_id)) return;
+
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+
+	if (bombTypeNames.length == 0) return;
+
+	// cycle bombs
+	u8 type = this.get_u8("bomb type");
+	int count = 0;
+	while (count < bombTypeNames.length)
+	{
+		type++;
+		count++;
+		if (type >= bombTypeNames.length)
+			type = 0;
+		if (hasBombs(this, type))
+		{
+			CycleToBombType(this, type);
+			CBitStream sparams;
+			sparams.write_u8(type);
+			this.SendCommand(this.getCommandID("switch"), sparams);
+			break;
+		}
+	}
+}
+
+void onSwitch(CBitStream@ params)
+{
+	u16 this_id;
+	if (!params.saferead_u16(this_id)) return;
+
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+
+	if (bombTypeNames.length == 0) return;
+
+	u8 type;
+	if (!params.saferead_u8(type)) return;
+
+	if (hasBombs(this, type))
+	{
+		CycleToBombType(this, type);
+		CBitStream sparams;
+		sparams.write_u8(type);
+		this.SendCommand(this.getCommandID("switch"), sparams);
+	}
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("get bomb"))
+	if (cmd == this.getCommandID("switch") && isServer())
 	{
-		if (this.getCarriedBlob() !is null)
-			return;
+		CPlayer@ callerp = getNet().getActiveCommandPlayer();
+		if (callerp is null) return;
 
-		const u8 bombType = params.read_u8();
-		if (bombType >= bombTypeNames.length)
-			return;
+		CBlob@ caller = callerp.getBlob();
+		if (caller is null) return;
 
-		const string bombTypeName = bombTypeNames[bombType];
-		this.Tag(bombTypeName + " done activate");
-		if (hasItem(this, bombTypeName))
+		if (caller !is this) return;
+		// cycle bombs
+		u8 type;
+		if (!params.saferead_u8(type)) return;
+
+		CycleToBombType(this, type);
+	}
+	else if (cmd == this.getCommandID("activate/throw") && isServer())
+	{
+		SetFirstAvailableBomb(this);
+	}
+	else if (cmd == this.getCommandID("activate/throw bomb") && isServer())
+	{
+		Vec2f pos = this.getVelocity();
+		Vec2f vector = this.getAimPos() - this.getPosition();
+		Vec2f vel = this.getVelocity();
+
+		u8 bombType; 
+		if (!params.saferead_u8(bombType)) return;
+
+		CBlob @carried = this.getCarriedBlob();
+
+		if (carried !is null)
 		{
-			if (bombType == 0)
+			bool holding_bomb = false;
+			// are we actually holding a bomb or something else?
+			for (uint i = 0; i < bombNames.length; i++)
 			{
-				if (getNet().isServer())
+				if(carried.getName() == bombNames[i])
+				{
+					holding_bomb = true;
+					DoThrow(this, carried, pos, vector, vel);
+				}
+			}
+
+			if (!holding_bomb)
+			{
+				ActivateBlob(this, carried, pos, vector, vel);
+			}
+		}
+		else
+		{
+			if (bombType >= bombTypeNames.length)
+				return;
+
+			const string bombTypeName = bombTypeNames[bombType];
+			this.Tag(bombTypeName + " done activate");
+			if (hasItem(this, bombTypeName))
+			{
+				if (bombType == 0)
 				{
 					CBlob @blob = server_CreateBlob("bomb", this.getTeamNum(), this.getPosition());
 					if (blob !is null)
@@ -1096,10 +1196,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 						this.server_Pickup(blob);
 					}
 				}
-			}
-			else if (bombType == 1)
-			{
-				if (getNet().isServer())
+				else if (bombType == 1)
 				{
 					CBlob @blob = server_CreateBlob("waterbomb", this.getTeamNum(), this.getPosition());
 					if (blob !is null)
@@ -1112,49 +1209,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 						blob.set_bool("map_damage_raycast", false);
 						blob.set_string("custom_explosion_sound", "/GlassBreak");
 						blob.set_u8("custom_hitter", Hitters::water);
-                        blob.Tag("splash ray cast");
-
+						blob.Tag("splash ray cast");
 					}
 				}
 			}
-			else
-			{
-			}
-
-			SetFirstAvailableBomb(this);
 		}
-	}
-	else if (cmd == this.getCommandID("cycle"))  //from standardcontrols
-	{
-		// cycle bombs
-		u8 type = this.get_u8("bomb type");
-		int count = 0;
-		while (count < bombTypeNames.length)
-		{
-			type++;
-			count++;
-			if (type >= bombTypeNames.length)
-				type = 0;
-			if (hasBombs(this, type))
-			{
-				CycleToBombType(this, type);
-				break;
-			}
-		}
-	}
-	else if (cmd == this.getCommandID("switch"))
-	{
-		u8 type;
-		if (params.saferead_u8(type) && hasBombs(this, type))
-		{
-			CycleToBombType(this, type);
-		}
-	}
-	else if (cmd == this.getCommandID("activate/throw"))
-	{
 		SetFirstAvailableBomb(this);
 	}
-	else
+	else if (isServer())
 	{
 		for (uint i = 0; i < bombTypeNames.length; i++)
 		{
@@ -1218,71 +1280,96 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 	HitInfo@[] hitInfos;
 	if (map.getHitInfosFromArc(pos, aimangle, arcdegrees, radius + attack_distance, this, @hitInfos))
 	{
-		//HitInfo objects are sorted, first come closest hits
-		for (uint i = 0; i < hitInfos.length; i++)
+		// HitInfo objects are sorted, first come closest hits
+		// start from furthest ones to avoid doing too many redundant raycasts
+		for (int i = hitInfos.size() - 1; i >= 0; i--)
 		{
 			HitInfo@ hi = hitInfos[i];
 			CBlob@ b = hi.blob;
-			if (b !is null && !dontHitMore) // blob
+
+			if (b !is null)
 			{
-				if (b.hasTag("ignore sword")) continue;
-
-				//big things block attacks
-				const bool large = b.hasTag("blocks sword") && !b.isAttached() && b.isCollidable();
-
-				if (!canHit(this, b))
+				if (b.hasTag("ignore sword") 
+				    || !canHit(this, b)
+				    || knight_has_hit_actor(this, b)) 
 				{
-					// no TK
-					if (large)
-						dontHitMore = true;
-
 					continue;
 				}
 
-				if (knight_has_hit_actor(this, b))
+				Vec2f hitvec = hi.hitpos - pos;
+
+				// we do a raycast to given blob and hit everything hittable between knight and that blob
+				// raycast is stopped if it runs into a "large" blob (typically a door)
+				// raycast length is slightly higher than hitvec to make sure it reaches the blob it's directed at
+				HitInfo@[] rayInfos;
+				map.getHitInfosFromRay(pos, -(hitvec).getAngleDegrees(), hitvec.Length() + 2.0f, this, rayInfos);
+
+				for (int j = 0; j < rayInfos.size(); j++)
 				{
-					if (large)
-						dontHitMore = true;
+					CBlob@ rayb = rayInfos[j].blob;
+					
+					if (rayb is null) break; // means we ran into a tile, don't need blobs after it if there are any
+					if (rayb.hasTag("ignore sword") || !canHit(this, rayb)) continue;
 
-					continue;
-				}
-
-				f32 temp_damage = damage;
-
-				knight_add_actor_limit(this, b);
-				if (!dontHitMore && (b.getName() != "log" || !dontHitMoreLogs))
-				{
-					Vec2f velocity = b.getPosition() - pos;
-
-					if (b.getName() == "log")
+					bool large = rayb.hasTag("blocks sword") && !rayb.isAttached() && rayb.isCollidable(); // usually doors, but can also be boats/some mechanisms
+					if (knight_has_hit_actor(this, rayb)) 
 					{
-						temp_damage /= 3;
-						dontHitMoreLogs = true;
-						CBlob@ wood = server_CreateBlobNoInit("mat_wood");
-						if (wood !is null)
+						// check if we hit any of these on previous ticks of slash
+						if (large) break;
+						if (rayb.getName() == "log")
 						{
-							int quantity = Maths::Ceil(float(temp_damage) * 20.0f);
-							int max_quantity = b.getHealth() / 0.024f; // initial log health / max mats
-							
-							quantity = Maths::Max(
-								Maths::Min(quantity, max_quantity),
-								0
-							);
-
-							wood.Tag('custom quantity');
-							wood.Init();
-							wood.setPosition(hi.hitpos);
-							wood.server_SetQuantity(quantity);
+							dontHitMoreLogs = true;
 						}
-
+						continue;
 					}
 
-					this.server_Hit(b, hi.hitpos, velocity, temp_damage, type, true);  // server_Hit() is server-side only
+					f32 temp_damage = damage;
+					
+					if (rayb.getName() == "log")
+					{
+						if (!dontHitMoreLogs)
+						{
+							temp_damage /= 3;
+							dontHitMoreLogs = true; // set this here to prevent from hitting more logs on the same tick
+							CBlob@ wood = server_CreateBlobNoInit("mat_wood");
+							if (wood !is null)
+							{
+								int quantity = Maths::Ceil(float(temp_damage) * 20.0f);
+								int max_quantity = rayb.getHealth() / 0.024f; // initial log health / max mats
+								
+								quantity = Maths::Max(
+									Maths::Min(quantity, max_quantity),
+									0
+								);
 
-					// end hitting if we hit something solid, don't if its flesh
+								wood.Tag('custom quantity');
+								wood.Init();
+								wood.setPosition(rayInfos[j].hitpos);
+								wood.server_SetQuantity(quantity);
+							}
+						}
+						else 
+						{
+							// print("passed a log on " + getGameTime());
+							continue; // don't hit the log
+						}
+					}
+					
+					knight_add_actor_limit(this, rayb);
+
+					
+					Vec2f velocity = rayb.getPosition() - pos;
+					velocity.Normalize();
+					velocity *= 12; // knockback force is same regardless of distance
+
+					if (rayb.getTeamNum() != this.getTeamNum() || rayb.hasTag("dead player"))
+					{
+						this.server_Hit(rayb, rayInfos[j].hitpos, velocity, temp_damage, type, true);
+					}
+
 					if (large)
 					{
-						dontHitMore = true;
+						break; // don't raycast past the door after we do damage to it
 					}
 				}
 			}
@@ -1575,9 +1662,24 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 }
 
 
+void Callback_PickBomb(CBitStream@ params)
+{
+	CPlayer@ player = getLocalPlayer();
+	if (player is null) return;
+
+	CBlob@ blob = player.getBlob();
+	if (blob is null) return;
+
+	u8 bomb_id;
+	if (!params.saferead_u8(bomb_id)) return;
+
+	string matname = bombTypeNames[bomb_id];
+	blob.set_u8("bomb type", bomb_id);
+
+	blob.SendCommand(blob.getCommandID("pick " + matname));
+}
 
 // bomb pick menu
-
 void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 {
 	if (bombTypeNames.length == 0)
@@ -1598,7 +1700,9 @@ void onCreateInventoryMenu(CBlob@ this, CBlob@ forBlob, CGridMenu @gridmenu)
 		for (uint i = 0; i < bombTypeNames.length; i++)
 		{
 			string matname = bombTypeNames[i];
-			CGridButton @button = menu.AddButton(bombIcons[i], getTranslatedString(bombNames[i]), this.getCommandID("pick " + matname));
+			CBitStream params;
+			params.write_u8(i);
+			CGridButton @button = menu.AddButton(bombIcons[i], getTranslatedString(bombNames[i]), "KnightLogic.as", "Callback_PickBomb", params);
 
 			if (button !is null)
 			{
@@ -1703,28 +1807,23 @@ void SetFirstAvailableBomb(CBlob@ this)
 // Blame Fuzzle.
 bool canHit(CBlob@ this, CBlob@ b)
 {
-
-	if (b.hasTag("invincible"))
+	if (b.hasTag("invincible") || b.hasTag("temp blob"))
 		return false;
+	
+	// don't hit picked up items (except players and specially tagged items)
+	return b.hasTag("player") || b.hasTag("slash_while_in_hand") || !isBlobBeingCarried(b);
+}
 
-	// Don't hit temp blobs and items carried by teammates.
-	if (b.isAttached())
+bool isBlobBeingCarried(CBlob@ b)
+{	
+	CAttachment@ att = b.getAttachments();
+	if (att is null)
 	{
-
-		CBlob@ carrier = b.getCarriedBlob();
-
-		if (carrier !is null)
-			if (carrier.hasTag("player")
-			        && (this.getTeamNum() == carrier.getTeamNum() || b.hasTag("temp blob")))
-				return false;
-
+		return false;
 	}
 
-	if (b.hasTag("dead"))
-		return true;
-
-	return b.getTeamNum() != this.getTeamNum();
-
+	// Look for a "PICKUP" attachment point where socket=false and occupied=true
+	return att.getAttachmentPoint("PICKUP", false, true) !is null;
 }
 
 void onRemoveFromInventory(CBlob@ this, CBlob@ blob)

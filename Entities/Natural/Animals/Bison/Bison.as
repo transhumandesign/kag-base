@@ -199,7 +199,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 	const u16 friendId = this.get_netid(friend_property);
 	CBlob@ friend = getBlobByNetworkID(friendId);
-	if ((friend is null || blob.getTeamNum() != friend.getTeamNum()) && blob.getName() != this.getName() && blob.hasTag("flesh"))
+	if ((friend is null || blob.getTeamNum() != friend.getTeamNum()) 
+		&& blob.getName() != this.getName() 
+		&& blob.hasTag("flesh")
+		&& !blob.hasTag("invincible"))
 	{
 		const f32 vellen = this.getShape().vellen;
 		if (vellen > 0.1f)

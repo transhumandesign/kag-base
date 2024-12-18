@@ -135,6 +135,8 @@ void onTick(CSprite@ this)
 			{
 				bool hitting_wood = false;
 				bool hitting_stone = false;
+				bool hitting_structure = false; // hitting player-built blocks
+
 				if (hitdata.tilepos != Vec2f_zero)
 				{
 					CMap@ map = getMap();
@@ -147,6 +149,15 @@ void onTick(CSprite@ this)
 					else if(t.type != CMap::tile_empty)
 					{
 						hitting_stone = true;
+					}
+
+					if (map.isTileWood(t.type) || // wood tile
+						(t.type >= CMap::tile_wood_back && t.type <= 207) || // wood backwall
+						map.isTileCastle(t.type) || // castle block
+						(t.type >= CMap::tile_castle_back && t.type <= 79) || // castle backwall
+					 	t.type == CMap::tile_castle_back_moss) // castle mossbackwall
+					{
+						hitting_structure = true;
 					}
 				}
 				else if(hitdata.blobID != 0)
@@ -165,16 +176,35 @@ void onTick(CSprite@ this)
 							hitting_stone = true;
 						}
 
+						if (attacked_name == "bridge" ||
+							attacked_name == "wooden_platform" ||
+							attacked.hasTag("door") ||
+							attacked_name == "ladder" ||
+							attacked_name == "spikes"
+							)
+						{
+							hitting_structure = true;
+						}
+
 					}
 				}
 
-				if (hitting_wood)
+				if (hitting_wood || hitting_stone)
 				{
-					attack_anim = "chop";
-				}
-				else if(hitting_stone)
-				{
-					attack_anim = "strike";
+					attack_anim = hitting_wood ? "chop" : "strike";
+
+					Animation @anim = this.getAnimation(attack_anim);
+
+					int framecount = anim.getFramesCount();
+
+					if (hitting_structure && anim.getFrame(0) == anim.getFrame(framecount - 1)) 
+					{
+						anim.RemoveFrame(anim.getFrame(framecount - 1)); // remove last anim (which is same as first)
+					}
+					else if (!hitting_structure && anim.getFrame(0) != anim.getFrame(framecount - 1))
+					{
+						anim.AddFrame(anim.getFrame(0)); // add it back
+					}
 				}
 
 				this.SetAnimation(attack_anim);
@@ -207,12 +237,13 @@ void onTick(CSprite@ this)
 			{
 				this.SetAnimation("fall");
 				this.animation.timer = 0;
+				bool inwater = blob.isInWater();
 
-				if (vy < -1.5)
+				if (vy < -1.5 * (inwater ? 0.7 : 1))
 				{
 					this.animation.frame = 0;
 				}
-				else if (vy > 1.5)
+				else if (vy > 1.5 * (inwater ? 0.7 : 1))
 				{
 					this.animation.frame = 2;
 				}
@@ -299,7 +330,6 @@ void onRender(CSprite@ this)
 
 	if (blob.isKeyPressed(key_action1) || this.isAnimation("strike") || this.isAnimation("chop"))
 	{
-
 		HitData@ hitdata;
 		blob.get("hitdata", @hitdata);
 		CBlob@ hitBlob = hitdata.blobID > 0 ? getBlobByNetworkID(hitdata.blobID) : null;

@@ -3,10 +3,12 @@
 
 void onInit(CRules@ rules)
 {
-	rules.addCommandID(voteEndTag);
-	rules.addCommandID(voteSelectMapTag);
-	rules.addCommandID(voteUnselectMapTag);
+	rules.addCommandID(voteRequestSelectMapTag);
+	rules.addCommandID(voteRequestUnselectMapTag);
+	rules.addCommandID(voteInfoSelectMapTag);
+	rules.addCommandID(voteInfoUnselectMapTag);
 	rules.addCommandID(voteSyncTag);
+	rules.addCommandID(voteInfoWonMapTag);
 
 	MapVotesMenu mvm();
 	rules.set("MapVotesMenu", @mvm);
@@ -30,6 +32,8 @@ void onInit(CRules@ rules)
 //       as a workaround, we make it call on the first tick that occurs after onInit.
 bool shouldCallOnRestart = false;
 
+Vec2f lastSavedScrenSize;
+
 void onRestart(CRules@ rules)
 {
 	MapVotesMenu@ mvm;
@@ -39,17 +43,18 @@ void onRestart(CRules@ rules)
 		return;
 	}
 
+	mvm.ClearVotes();
 	if (isServer())
 	{
     	mvm.Randomize();
 		mvm.Sync();
 	}
-
-	mvm.ClearVotes();
 }
 
 void onNewPlayerJoin(CRules@ rules, CPlayer@ player)
 {
+	if (!isServer()) { return; }
+
 	MapVotesMenu@ mvm;
 	if (!rules.get("MapVotesMenu", @mvm))
 	{
@@ -62,10 +67,21 @@ void onNewPlayerJoin(CRules@ rules, CPlayer@ player)
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
-	CBitStream params;
+	if (!isServer() || player is null) { return; }
+
+	MapVotesMenu@ mvm;
+	if (!this.get("MapVotesMenu", @mvm))
+	{
+		warn("MapVotesMenu null in onPlayerLeave");
+		return;
+	}
+
 	u16 id = player.getNetworkID();
+	mvm.RemoveVotesFrom(id);
+
+	CBitStream params;
 	params.write_u16(id);
-	this.SendCommand(this.getCommandID(voteUnselectMapTag), params);
+	this.SendCommand(this.getCommandID(voteInfoUnselectMapTag), params);
 }
 
 void onTick( CRules@ this )
@@ -90,54 +106,47 @@ void onTick( CRules@ this )
 		return;
 	}
 
-	if (!mvm.isSetup)
+	Vec2f currentScreenSize = getDriver().getScreenDimensions();
+	if (!mvm.isSetup || lastSavedScrenSize != currentScreenSize)
 	{
 		mvm.Refresh();
+		lastSavedScrenSize = currentScreenSize;
 		return;
 	}
 
-	u8 count1 = mvm.votes1.length();
-	u8 count2 = mvm.votes2.length();
-	u8 count3 = mvm.votes3.length();
+	if (ticksRemainingForMapVote() == 0 && isServer())
+	{
+		mvm.mostVoted = mvm.selectMostVoted();
 
-	if (count1 > count2 && count1 > count3)
-	{	//map 1 got the most votes
-		mvm.mostVoted = 1;
-	}
-	else if (count3 > count1 && count3 > count2)
-	{	//map 3 got the most votes
-		mvm.mostVoted = 3;
-	}
-	else
-	{	//random map got the most votes or inconclusive
-		mvm.mostVoted = 2;
+		CBitStream params;
+		params.write_u8(mvm.mostVoted);
+		this.SendCommand(this.getCommandID(voteInfoWonMapTag), params);
 	}
 
 	CBitStream params;
 	if (isServer() && ticksRemainingBeforeRestart() <= 0)
 	{
-		params.write_u8(mvm.mostVoted);
-		this.SendCommand(this.getCommandID(voteEndTag), params);
+		// FIXME: this is not correct anymore! needed for kagstats, probably.
+		// tcpr("(MapVotes) Map1: "+mvm.button1.shortname+" = "+mvm.votes1.length()+" Map2: "+mvm.button3.shortname+" = "+mvm.votes3.length()+" Random = "+mvm.votes2.length());
+		mvm.getButton(mvm.mostVoted).loadMap();
+		this.minimap = true;
 	}
 
 	//--------------------- CLIENT -----------------------\\
 	if (isServer() && !isClient()) return; //not server, but also not localhost
 
-	if (isMapVoteOver()) return;
+	if (!isMapVoteActive() || isMapVoteOver()) return;
 
 	CControls@ controls = getControls();
 	if (controls is null) return;
 
-	u8 newSelectedNum = 0;
+	u8 newSelectedNum;
 	mvm.Update(controls, newSelectedNum);
 
-	if (newSelectedNum != 0)
+	if (newSelectedNum != 255)
 	{
-		CPlayer@ me = getLocalPlayer();
-		u16 id = me.getNetworkID();
-		params.write_u16(id);
 		params.write_u8(newSelectedNum);
-		this.SendCommand(this.getCommandID(voteSelectMapTag), params);
+		this.SendCommand(this.getCommandID(voteRequestSelectMapTag), params);
 	}
 }
 
@@ -146,103 +155,94 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 	MapVotesMenu@ mvm;
 	if (!this.get("MapVotesMenu", @mvm)) return;
 
-	if (cmd == this.getCommandID(voteSelectMapTag))
+	if (cmd == this.getCommandID(voteRequestSelectMapTag) && isServer())
 	{
-		u16 id = params.read_u16();
+		CPlayer@ sender = getNet().getActiveCommandPlayer();
+		if (sender is null) { return; }
+		u16 id = sender.getNetworkID();
+
 		u8 selected = params.read_u8();
 
-		int p1 = mvm.votes1.find(id);
-		if (p1 != -1) mvm.votes1.removeAt(p1);
-		int p2 = mvm.votes2.find(id);
-		if (p2 != -1) mvm.votes2.removeAt(p2);
-		int p3 = mvm.votes3.find(id);
-		if (p3 != -1) mvm.votes3.removeAt(p3);
-
-		switch (selected)
+		if (isMapVoteOver())
 		{
-			case 0: break;
-			case 1: if (p1 == -1) mvm.votes1.push_back(id); break;
-			case 2: if (p2 == -1) mvm.votes2.push_back(id); break;
-			case 3: if (p3 == -1) mvm.votes3.push_back(id); break;
+			return;
+		}
+
+		mvm.RemoveVotesFrom(id);
+		if (selected < mvm.votes.size())
+		{
+			mvm.votes[selected].push_back(id);
+		}
+
+		CBitStream params;
+		params.write_netid(id);
+		params.write_u8(selected);
+		this.SendCommand(this.getCommandID(voteInfoSelectMapTag), params);
+	}
+	else if (cmd == this.getCommandID(voteInfoSelectMapTag) && isClient())
+	{
+		u16 id = params.read_netid();
+		u8 selected = params.read_u8();
+
+		mvm.RemoveVotesFrom(id);
+
+		if (selected < mvm.votes.size())
+		{
+			mvm.votes[selected].push_back(id);
 		}
 
 		CPlayer@ player = getPlayerByNetworkId(id);
-		if (getNet().isClient() && player !is null && player.isMyPlayer())
+		if (isClient() && player !is null && player.isMyPlayer())
 		{
 			mvm.selectedOption = selected;
 			Sound::Play("buttonclick.ogg");
 		}
 	}
-	else if (cmd == this.getCommandID(voteUnselectMapTag))
+	else if (cmd == this.getCommandID(voteRequestUnselectMapTag) && isServer())
+	{
+		CPlayer@ sender = getNet().getActiveCommandPlayer();
+		if (sender is null) { return; }
+		u16 id = sender.getNetworkID();
+
+		mvm.RemoveVotesFrom(id);
+	}
+	else if (cmd == this.getCommandID(voteInfoUnselectMapTag) && isClient())
 	{
 		u16 id = params.read_u16();
-		int p1 = mvm.votes1.find(id);
-		if (p1 != -1) mvm.votes1.removeAt(p1);
-		int p2 = mvm.votes2.find(id);
-		if (p2 != -1) mvm.votes2.removeAt(p2);
-		int p3 = mvm.votes3.find(id);
-		if (p3 != -1) mvm.votes3.removeAt(p3);
+		mvm.RemoveVotesFrom(id);
 	}
-	else if (getNet().isClient() && cmd == this.getCommandID(voteSyncTag))
+	else if (cmd == this.getCommandID(voteSyncTag) && isClient())
 	{
-		mvm.button1.filename = params.read_string();
-		mvm.button3.filename = params.read_string();
-		mvm.button1.shortname = params.read_string();
-		mvm.button3.shortname = params.read_string();
-		mvm.mostVoted = params.read_u8();
-
-		u8 l1 = params.read_u8();
-		u8 l2 = params.read_u8();
-		u8 l3 = params.read_u8();
-
-		for (uint i = 0; i < l1; i++)
-		{
-			mvm.votes1.push_back(params.read_u8());
-		}
-
-		for (uint i = 0; i < l2; i++)
-		{
-			mvm.votes2.push_back(params.read_u8());
-		}
-
-		for (uint i = 0; i < l3; i++)
-		{
-			mvm.votes3.push_back(params.read_u8());
-		}
-
-		if (!Texture::exists(mvm.button1.shortname))
-		{
-			CreateMapTexture(mvm.button1.shortname, mvm.button1.filename);
-		}
-
-		if (!Texture::exists(mvm.button3.shortname))
-		{
-			CreateMapTexture(mvm.button3.shortname, mvm.button3.filename);
-		}
-
 		mvm.ClearVotes();
-	}
-	else if (getNet().isServer() && cmd == this.getCommandID(voteEndTag))
-	{
-		tcpr("(MapVotes) Map1: "+mvm.button1.shortname+" = "+mvm.votes1.length()+" Map2: "+mvm.button3.shortname+" = "+mvm.votes3.length()+" Random = "+mvm.votes2.length());
+		mvm.ParseFromStream(params);
 
-		u8 mostVoted = params.read_u8();
-		switch (mostVoted)
+		for (uint i = 0; i < mvm.imageButtons.size(); ++i)
 		{
-			case 1: LoadMap(mvm.button1.filename); break;
-			case 3:	LoadMap(mvm.button3.filename); break;
-			default: LoadNextMap(); break;
+			MapImageVoteButton@ button = @mvm.imageButtons[i];
+			if (!Texture::exists(button.shortname))
+			{
+				CreateMapTexture(button.shortname, button.filename);
+			}
 		}
+	}
+	else if (cmd == this.getCommandID(voteInfoWonMapTag) && isClient())
+	{
+		params.saferead_u8(mvm.mostVoted);
 	}
 }
 
 void RenderRaw(int id)
 {
+	if (!isMapVoteActive())
+	{
+		return;
+	}
+
 	MapVotesMenu@ mvm;
 	if (!getRules().get("MapVotesMenu", @mvm)) return;
 	if (!getRules().isGameOver() || !mvm.isSetup) return;
-	if (!getNet().isClient()) return;
-	if (ticksSinceGameOver() < 5*getTicksASecond()) return;
+	if (!isClient()) return;
+	if (!isMapVoteVisible()) return;
 
 	CRules@ rules = getRules();
 	rules.Untag("animateGameOver");
@@ -252,4 +252,6 @@ void RenderRaw(int id)
 	Render::SetBackfaceCull(true);
 	Render::SetZBuffer(false, false);
 	mvm.Render();
+	
+	getRules().minimap = false;
 }

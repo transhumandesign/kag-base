@@ -49,7 +49,17 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	Vec2f f(x_side, y_side);
 
-	if (damage > 0.125f)
+	bool enemy_water = false;
+
+	if (hitterBlob.getTeamNum() != this.getTeamNum())
+	{
+		if (isWaterHitter(customData))
+		{
+			enemy_water = true;
+		}
+	}
+
+	if (damage > 0.125f || enemy_water)
 	{
 		this.AddForce(f * 40.0f * scale * Maths::Log(2.0f * (10.0f + (damage * 2.0f))));
 	}

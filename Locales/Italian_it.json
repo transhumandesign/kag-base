@@ -493,7 +493,7 @@
 	"Out of stock. Come back later.":"Scorte terminate. Torna più tardi.",
 
 //HelpfulDeathTips.cfg
-	"To hide these tips, and other in-game help, hit F1.":
+	"To hide in-game help and tips, hit F1.":
 	"Per nascondere questi consigli ed altri aiuti in gioco premi F1.",
 	"Enemies can use your tunnels so protect them well!":
 	"I nemici possono usare i tuoi tunnel, quindi proteggili per bene!",
@@ -551,7 +551,7 @@
 	"Le trivelle sono un mezzo veloce per scavare, ma trattengono solo il 50%. Non usarle sul prezioso oro o durante il tempo per costruire.",
 	"Good players can play any class when needed.":
 	"I bravi giocatori possono giocare qualsiasi classe quando ce ne è bisogno.",
-	"Make sure you're helping your team advance; don't just hide out in the back!":
+	"Make sure you're helping your team advance. Don't just hide out in the back!":
 	"Assicurati di aiutare la tua squadra ad avanzare, non nasconderti solo nelle retrovie!",
 	"Ride a shark on land and press up to pick him up.":
 	"Cavalca uno squalo sulla terra e premi W per raccoglierlo.",

@@ -24,7 +24,7 @@ void ManageCursors(CBlob@ this)
 		if (this.isAttached() && this.isAttachedToPoint("GUNNER"))
 		{
 			getHUD().SetCursorImage("Entities/Characters/Archer/ArcherCursor.png", Vec2f(32, 32));
-			getHUD().SetCursorOffset(Vec2f(-32, -32));
+			getHUD().SetCursorOffset(Vec2f(-16, -16) * cl_mouse_scale);
 		}
 		else
 		{
@@ -57,4 +57,11 @@ void onRender(CSprite@ this)
 	// draw class icon
 
 	GUI::DrawIcon(iconsFilename, 3, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -13), 1.0f);
+
+	// draw resupply icon
+
+	if (shouldRenderResupplyIndicator(blob))
+	{
+		DrawResupplyOnHUD(blob, tl + Vec2f(8 + (slotsSize) * 40, -4));
+	}
 }

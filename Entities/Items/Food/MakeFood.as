@@ -1,6 +1,6 @@
 CBlob@ server_MakeFood(Vec2f atpos, const string &in name, const u8 spriteIndex)
 {
-	if (!getNet().isServer()) { return null; }
+	if (!isServer())  return null; 
 
 	CBlob@ blob = server_CreateBlobNoInit("food");
 	if (blob !is null)
@@ -26,27 +26,28 @@ ShopItem@ addFoodItem(CBlob@ this, const string &in foodName, const u8 spriteInd
 	return item;
 }
 
-CBlob@ cookFood(CBlob@ this)
+CBlob@ cookFood(CBlob@ ingredient)
 {
 	string cookedName;
 	u8 spriteIndex;
+	string n = ingredient.getName();
 
-	if (this.getName() == "fishy")
+	if (n == "fishy")
 	{
 		cookedName = "Cooked Fish";
 		spriteIndex = 1;
 	}
-	else if (this.getName() == "steak")
+	else if (n == "steak")
 	{
 		cookedName = "Cooked Steak";
 		spriteIndex = 0;
 	}
-	else if (this.getName() == "grain")
+	else if (n == "grain")
 	{
 		cookedName = "Bread";
 		spriteIndex = 4;
 	}
-	else if (this.getName() == "egg")
+	else if (n == "egg")
 	{
 		cookedName = "Cake";
 		spriteIndex = 5;
@@ -56,13 +57,16 @@ CBlob@ cookFood(CBlob@ this)
 		return null;
 	}
 
-	CBlob@ food = server_MakeFood(this.getPosition(), cookedName, spriteIndex);
+	CBlob@ food = server_MakeFood(ingredient.getPosition(), cookedName, spriteIndex);
+	
+	ingredient.getSprite().PlaySound("SparkleShort.ogg");
+	
 	if (food !is null)
 	{
-		this.server_Die();
-		food.setVelocity(this.getVelocity());
-		food.getSprite().PlaySound("SparkleShort.ogg");
+		ingredient.server_Die();
+		food.setVelocity(ingredient.getVelocity());
 		return food;
 	}
+	
 	return null;
 }

@@ -13,7 +13,8 @@ void LoadDefaultGUI()
 		string interaction = "/GUI/InteractionIcons.png";
 		AddIconToken("$NONE$", interaction, Vec2f(32, 32), 9);
 		AddIconToken("$TIME$", interaction, Vec2f(32, 32), 0);
-		AddIconToken("$COIN$", "Sprites/coins.png", Vec2f(16, 16), 1);
+		AddIconToken("$COIN$", "Sprites/coins.png", Vec2f(16, 16), 1, Vec2f(0, -8));
+		AddIconToken("$HEART$", "GUI/HeartNBubble.png", Vec2f(12, 12), 1);
 		AddIconToken("$TEAMS$", "GUI/MenuItems.png", Vec2f(32, 32), 1);
 		AddIconToken("$SPECTATOR$", "GUI/MenuItems.png", Vec2f(32, 32), 19);
 		AddIconToken("$FLAG$", CFileMatcher("flag.png").getFirst(), Vec2f(32, 16), 0);
@@ -68,7 +69,7 @@ void LoadDefaultGUI()
 		AddIconToken("$bolter$",        "Bolter.png",           Vec2f(16, 16), 3);
 		AddIconToken("$dispenser$",     "Dispenser.png",        Vec2f(16, 16), 3);
 		AddIconToken("$lamp$",          "Lamp.png",             Vec2f(16, 16), 3);
-		AddIconToken("$obstructor$",    "Obstructor.png",       Vec2f(16, 16), 3);
+		AddIconToken("$obstructor$",    "Obstructor.png",       Vec2f(8, 8), 0);
 		AddIconToken("$spiker$",        "Spiker.png",           Vec2f(16, 16), 3);
 
 		// techs
@@ -96,5 +97,14 @@ void LoadDefaultGUI()
 
 		// vehicles
 		AddIconToken("$LoadAmmo$", interaction, Vec2f(16, 16), 7, 7);
+
+		// indicators
+		AddIconToken("$SmallIndicatorInactive$", "GUI/MenuItems.png", Vec2f(8, 8), 1*16+13);
+		AddIconToken("$SmallIndicatorOn$", "GUI/MenuItems.png", Vec2f(8, 8), 1*16+14);
+		AddIconToken("$SmallIndicatorOff$", "GUI/MenuItems.png", Vec2f(8, 8), 1*16+15);
+
+		AddIconToken("$IndicatorInactive$", "GUI/MenuItems.png", Vec2f(16, 16), 10*8+1);
+		AddIconToken("$IndicatorOff$", "GUI/MenuItems.png", Vec2f(16, 16), 11*8+0);
+		AddIconToken("$IndicatorOn$", "GUI/MenuItems.png", Vec2f(16, 16), 11*8+1);
 	}
 }

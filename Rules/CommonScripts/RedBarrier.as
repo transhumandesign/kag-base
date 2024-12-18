@@ -1,291 +1,242 @@
-// red barrier before match starts
+#include "RedBarrierCommon.as"
 
-const f32 BARRIER_PERCENT = 0.175f;
-//extra area of no build around the barrier
-//(unpopular)
-const float noBuildExtra = 0.0f;
-//if the barrier has been set
-bool barrier_set = false;
-//
-int barrier_wait = 30;
-int barrier_timer = 0;
-//if the barrier has been cached
-bool done_sync = false;
+////  VARS  ////
 
-bool shouldBarrier(CRules@ this)
-{
-	return this.isIntermission() || this.isWarmup() || this.isBarrier();
-}
+// Server owners should edit the value inside RedBarrierVars.cfg
+f32 BARRIER_PERCENT = 0.175;
+f32 VEL_PUSHBACK = 1.35;
 
-void onTick(CRules@ this)
-{
-	
-	if(!done_sync)
-	{
-		if(isServer())
-		{
-			//do not move to onRestart, script is not init and cmd will not run
-			f32 x1, x2, y1, y2;
-			CBitStream cbs;
-			getBarrierPositions(x1, x2, y1, y2);
+// Var to know if the barrier is currently up 
+// (used for clearing the barrier once when its game time)
+// 
+// Defaults to true because we want clients to remove the barrier
+// if they join and its no longer warm up (fixes some rare bug)
+bool IS_BARRIER_SET = true; 
 
-			cbs.write_f32(x1);
-			cbs.write_f32(x2);
-			cbs.write_f32(y1);
-			cbs.write_f32(y2);
+// Gets toggled to true when we know the 
+// config has different values
+bool SYNC_CUSTOM_VARS = false;
 
-			this.SendCommand(this.getCommandID("set_barrier_pos"), cbs, true);
-		}
-		return;
-	}
-
-	if (shouldBarrier(this))
-	{
-		if (!barrier_set)
-		{
-			if (barrier_timer < barrier_wait)
-			{
-				barrier_timer++;
-			}
-			else
-			{
-				barrier_set = true;
-				addBarrier();
-			}
-		}
-
-		f32 x1, x2, y1, y2;
-		getBarrierPositions(x1, x2, y1, y2);
-		const f32 middle = x1 + (x2 - x1) * 0.5f;
-
-		CBlob@[] blobsInBox;
-		if (getMap().getBlobsInBox(Vec2f(x1, y1), Vec2f(x2, y2), @blobsInBox))
-		{
-			for (uint i = 0; i < blobsInBox.length; i++)
-			{
-				CBlob @b = blobsInBox[i];
-				if (b.getTeamNum() < 100 || b.hasTag("no barrier pass"))
-				{
-					Vec2f pos = b.getPosition();
-
-					//players clamped to edge
-					if (b.getPlayer() !is null)
-					{
-						Vec2f pos = b.getPosition();
-						if (pos.x >= x1 && pos.x <= x2)
-						{
-							Vec2f vel = b.getVelocity();
-							float margin = 0.01f;
-							float vel_base = 0.01f;
-							if (pos.x < middle)
-							{
-								pos.x = Maths::Min(x1 - margin, pos.x) - margin;
-								vel.x = Maths::Min(-vel_base, -Maths::Abs(vel.x));
-							}
-							else
-							{
-								pos.x = Maths::Max(x2 + margin, pos.x) + margin;
-								vel.x = Maths::Max(vel_base, Maths::Abs(vel.x));
-							}
-							b.setPosition(pos);
-							b.setVelocity(vel);
-						}
-					}
-					//other objects pushed softly (annoying for players apparently)
-					else
-					{
-						f32 f = b.getMass() * 2.0f;
-
-						if (pos.x < middle)
-						{
-							b.AddForce(Vec2f(-f, -f * 0.1f));
-						}
-						else
-						{
-							b.AddForce(Vec2f(f, -f * 0.1f));
-						}
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		if (barrier_set)
-		{
-			removeBarrier();
-			barrier_set = false;
-			barrier_timer = 0;
-		}
-	}
-}
+////  HOOKS  ////
 
 void onInit(CRules@ this)
 {
 	this.addCommandID("set_barrier_pos");
+	this.addCommandID("set_barrier_vars");
+
 	onRestart(this);
 }
 
 void onRestart(CRules@ this)
 {
-	barrier_set = false;
-	done_sync = false;
-	barrier_timer = 0;
-}
-
-void onRender(CRules@ this)
-{
-	if (!done_sync) return;
-
-	if (shouldBarrier(this))
+	if (!isServer())
 	{
-		f32 x1, x2, y1, y2;
-		getBarrierPositions(x1, x2, y1, y2);
-		float alpha = Maths::Clamp01(float(barrier_timer) / float(barrier_wait));
-		GUI::DrawRectangle(
-			getDriver().getScreenPosFromWorldPos(Vec2f(x1, y1)),
-			getDriver().getScreenPosFromWorldPos(Vec2f(x2, y2)),
-			SColor(int(100 * alpha), 235, 0, 0)
-		);
+		IS_BARRIER_SET = true;
+		return;
+	}
+
+	LoadConfigVars();
+
+	SetBarrierPosition(this);
+
+	const int playerCount = getPlayerCount();
+	for (int a = 0; a < playerCount; a++)
+	{
+		CPlayer@ player = getPlayer(a);
+
+		if (player is null)
+			continue;
+
+		SyncToPlayer(this, player);
+
+		if (SYNC_CUSTOM_VARS)
+			SyncVarsToPlayer(this, player);
 	}
 }
 
-
-void getBarrierPositions(f32 &out x1, f32 &out x2, f32 &out y1, f32 &out y2)
+void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
-	if (done_sync)
+	if (!isServer() && !shouldBarrier(this))
+		return;
+
+	SyncToPlayer(this, player);
+
+	if (SYNC_CUSTOM_VARS)
+		SyncVarsToPlayer(this, player);
+}
+
+
+void onTick(CRules@ this)
+{
+	if (!shouldBarrier(this))
 	{
-		CRules@ rules = getRules();
-		x1 = rules.get_f32("barrier_x1");
-		x2 = rules.get_f32("barrier_x2");
-		y1 = rules.get_f32("barrier_y1");
-		y2 = rules.get_f32("barrier_y2");
+		IS_BARRIER_SET = false;
 		return;
 	}
 
 	CMap@ map = getMap();
 
-	const f32 mapWidth = map.tilemapwidth * map.tilesize;
-	const f32 mapMiddle = mapWidth * 0.5f;
-	const f32 barrierWidth = Maths::Floor(BARRIER_PERCENT * map.tilemapwidth) * map.tilesize;
-	const f32 extraWidth = ((map.tilemapwidth % 2 == 1) ? 0.5f : 0.0f) * map.tilesize;
+	Vec2f tl, br;
+	getBarrierRect(@this, tl, br);
 
-	// set horizontal positions based on BARRIER_PERCENT
-	x1 = mapMiddle - (barrierWidth + extraWidth);
-	x2 = mapMiddle + (barrierWidth + extraWidth);
-
-	// overwrite x1 and x2 if 2 red barrier markers are found
-	Vec2f[] barrierPositions;
-	if (map.getMarkers("red barrier", barrierPositions))
+	CBlob@[] blobsInBox;
+	if (map.getBlobsInBox(tl, br, @blobsInBox))
 	{
-		if (barrierPositions.length() == 2)
+		for (uint i = 0; i < blobsInBox.length; i++)
 		{
-			int left = barrierPositions[0].x < barrierPositions[1].x ? 0 : 1;
-			x1 = barrierPositions[left].x;
-			x2 = barrierPositions[1 - left].x + map.tilesize;
+			CBlob @b = blobsInBox[i];
+
+			if (!b.getShape().isStatic() && 
+				(b.getTeamNum() < 100 || b.hasTag("no barrier pass") || 
+				 b.hasTag("material") || b.getName() == "spikes"))
+			{
+				PushBlob(b, (tl.x + br.x) * 0.5, tl.x, br.x);
+			}
 		}
 	}
-	//different behaviour based on "default" barriers or not
-	//default area we can build shouldn't change based on this
-	//change so the barrier area has to move instead
+}
+
+void onRender(CRules@ this)
+{
+	if (!shouldBarrier(this))
+		return;
+
+	const u16 x1 = this.get_u16("barrier_x1");
+	const u16 x2 = this.get_u16("barrier_x2");
+
+	Driver@ driver = getDriver();
+	Vec2f left  = driver.getScreenPosFromWorldPos(Vec2f(x1, 0));
+	Vec2f right = driver.getScreenPosFromWorldPos(Vec2f(x2, 0));
+	
+	left.y = 0;
+	right.y = driver.getScreenHeight();
+
+	GUI::DrawRectangle(left, right, SColor(100, 235, 0, 0));
+}
+
+void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
+{
+	if (!isClient())
+		return;
+
+	if (cmd == this.getCommandID("set_barrier_pos"))
+	{
+		const u16 x1 = params.read_u16();
+		const u16 x2 = params.read_u16();
+
+		this.set_u16("barrier_x1", x1);
+		this.set_u16("barrier_x2", x2);
+	}
+	else if (cmd == this.getCommandID("set_barrier_vars"))
+	{
+		VEL_PUSHBACK = params.read_f32();
+	}
+}
+
+////  FUNCTIONS  ////
+
+void PushBlob(CBlob@ blob, const u16 &in middle, const u16 &in x1, const u16 &in x2)
+{
+	Vec2f vel = blob.getVelocity();
+	Vec2f pos = blob.getPosition();
+	
+	//players clamped to edge
+	if (blob.getPlayer() !is null)
+	{
+		if (pos.x >= x1 && pos.x <= x2)
+		{
+			const f32 margin = 0.01f;
+			const f32 vel_base = 0.01f;
+			if (pos.x < middle)
+			{
+				pos.x = Maths::Min(x1 - margin, pos.x) - margin;
+				vel.x = Maths::Min(-vel_base, -Maths::Abs(vel.x));
+			}
+			else
+			{
+				pos.x = Maths::Max(x2 + margin, pos.x) + margin;
+				vel.x = Maths::Max(vel_base, Maths::Abs(vel.x));
+			}
+			blob.setPosition(pos);
+		}
+	}
 	else
 	{
-		x1 += noBuildExtra;
-		x2 -= noBuildExtra;
+		vel.x += pos.x < middle ? -VEL_PUSHBACK : VEL_PUSHBACK;
 	}
 
-	// set vertical positions (hugely outside map area)
-	y2 = map.tilemapheight * map.tilesize;
-	y1 = -y2;
-	y2 *= 2.0f;
+	blob.setVelocity(vel);
 }
 
-/**
- * Adding the barrier sector to the map
- */
-
-void addBarrier()
+void LoadConfigVars()
 {
+	ConfigFile cfg;
+	if (!cfg.loadFile("RedBarrierVars.cfg"))
+		return; // We tried :(
+
+	BARRIER_PERCENT = cfg.read_f32("barrier_percent", 0.175f);
+
+	// Check that we have edited the var
+	// and that the client needs said value
+	const f32 pushback = cfg.read_f32("blob_pushback", 1.35f);
+
+	if (pushback != VEL_PUSHBACK)
+	{
+		SYNC_CUSTOM_VARS = true;
+		VEL_PUSHBACK = pushback;
+	}
+}
+
+// Only used server side, client doesnt normally have info required
+void SetBarrierPosition(CRules@ this)
+{
+	IS_BARRIER_SET = true;
+
+	Vec2f[] barrierPositions;
 	CMap@ map = getMap();
+	u16 x1, x2;
 
-	f32 x1, x2, y1, y2;
-	getBarrierPositions(x1, x2, y1, y2);
-
-	Vec2f ul(x1, y1);
-	Vec2f lr(x2, y2);
-
-	if (map.getSectorAtPosition((ul + lr) * 0.5, "barrier") is null)
+	// Are there barrier markers?
+	if (map.getMarkers("red barrier", barrierPositions) 
+		&& barrierPositions.length() == 2)
 	{
-		//actual barrier sector
-		map.server_AddSector(Vec2f(x1, y1), Vec2f(x2, y2), "barrier");
-
-		if(noBuildExtra > 0.0f)
-		{
-			//no build sector
-			map.server_AddSector(Vec2f(x1 - noBuildExtra, y1), Vec2f(x2 + noBuildExtra, y2), "no build");
-		}
+		const int left = barrierPositions[0].x < barrierPositions[1].x ? 0 : 1;
+		x1 = barrierPositions[left].x;
+		x2 = barrierPositions[1 - left].x + map.tilesize;
 	}
+	else // No? Okay lets make our own!
+	{
+		const f32 mapWidth = map.tilemapwidth * map.tilesize;
+		const f32 mapMiddle = mapWidth * 0.5f;
+		const f32 barrierWidth = Maths::Floor(BARRIER_PERCENT * map.tilemapwidth) * map.tilesize;
+		const f32 extraWidth = ((map.tilemapwidth % 2 == 1) ? 0.5f : 0.0f) * map.tilesize;
+
+		x1 = mapMiddle - (barrierWidth + extraWidth);
+		x2 = mapMiddle + (barrierWidth + extraWidth);
+	}
+
+	this.set_u16("barrier_x1", x1);
+	this.set_u16("barrier_x2", x2);
 }
 
-/**
- * Removing the barrier sector from the map
- */
-
-void removeBarrier()
+// Sync barrier to said player
+// Only send x as we dont have horizontal barriers (mods will add that in manually anyhow)
+void SyncToPlayer(CRules@ this, CPlayer@ player)
 {
-	CMap@ map = getMap();
+	CBitStream stream;
+	stream.write_u16(this.get_u16("barrier_x1"));
+	stream.write_u16(this.get_u16("barrier_x2"));
 
-	f32 x1, x2, y1, y2;
-	getBarrierPositions(x1, x2, y1, y2);
-
-	Vec2f mid(
-		//(exact middle of the zone horizontally)
-		(x1 + x2) * 0.5,
-		//remove at the bottom of the map rather than the middle
-		//to avoid potentially removing a no build zone from a hall or something
-		(map.tilemapheight - 2) * map.tilesize
-	);
-
-	map.RemoveSectorsAtPosition(mid, "barrier");
-	map.RemoveSectorsAtPosition(mid, "no build");
+	this.SendCommand(this.getCommandID("set_barrier_pos"), stream, player);
 }
 
-void onCommand(CRules@ this, u8 cmd, CBitStream @params)
+// Server will send its vars to the current player
+// We only send this if we know that the cfg has been edited
+void SyncVarsToPlayer(CRules@ this, CPlayer@ player)
 {
-	if(cmd == this.getCommandID("set_barrier_pos"))
-	{
-		f32 x1, x2, y1, y2;
+	// Only send pushback as its the only one client needs
+	CBitStream stream;
+	stream.write_f32(VEL_PUSHBACK);
 
-		//grab
-		x1 = params.read_f32();
-		x2 = params.read_f32();
-		y1 = params.read_f32();
-		y2 = params.read_f32();
-		//save for later
-		this.set_f32("barrier_x1", x1);
-		this.set_f32("barrier_x2", x2);
-		this.set_f32("barrier_y1", y1);
-		this.set_f32("barrier_y2", y2);
-		done_sync = true;
-	}
-}
-
-void onNewPlayerJoin( CRules@ this, CPlayer@ player )
-{
-	if(isServer())
-	{
-		if(!this.isWarmup()) return;
-		
-		f32 x1, x2, y1, y2;
-		CBitStream cbs;
-		getBarrierPositions(x1, x2, y1, y2);
-
-		cbs.write_f32(x1);
-		cbs.write_f32(x2);
-		cbs.write_f32(y1);
-		cbs.write_f32(y2);
-
-		this.SendCommand(this.getCommandID("set_barrier_pos"), cbs, player);
-
-	}
+	this.SendCommand(this.getCommandID("set_barrier_vars"), stream, player);
 }

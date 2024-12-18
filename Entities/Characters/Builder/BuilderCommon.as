@@ -3,7 +3,7 @@
 #include "BuildBlock.as";
 #include "PlacementCommon.as";
 #include "CheckSpam.as";
-#include "GameplayEvents.as";
+#include "GameplayEventsCommon.as";
 
 const f32 allow_overlap = 2.0f;
 
@@ -47,7 +47,7 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 	this.set_TileType("buildtile", 0);
 
 	CBlob@ anotherBlob = inv.getItem(b.name);
-	if (getNet().isServer() && anotherBlob !is null)
+	if (isServer() && anotherBlob !is null)
 	{
 		this.server_Pickup(anotherBlob);
 		this.set_u8("buildblob", 255);
@@ -143,11 +143,17 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 
 		pos = offsetPos + space * map.tilesize * 0.5f;
 
-		this.getSprite().PlaySound("/Construct");
 		// take inv here instead of in onDetach
 		server_TakeRequirements(inv, b.reqs);
 		DestroyScenary(tl, br);
-		SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), b.name));
+		if (isServer())
+		{
+			CPlayer@ p = this.getPlayer();
+			if (p !is null)
+			{
+				GE_BuildBlob(p.getNetworkID(), b.name); // gameplay event for coins
+			}
+		}
 	}
 
 	this.set_u8("buildblob", index);

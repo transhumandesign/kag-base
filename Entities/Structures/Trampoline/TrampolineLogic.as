@@ -1,4 +1,4 @@
-// TrampolineLogic.as
+#include "Help.as";
 
 namespace Trampoline
 {
@@ -41,12 +41,28 @@ void onTick(CBlob@ this)
 
 	Vec2f ray = holder.getAimPos() - this.getPosition();
 	ray.Normalize();
-
+	
 	f32 angle = ray.Angle();
-	angle = angle > 135 || angle < 45? (holder.isFacingLeft()? 135 : 45) : 90;
-	angle -= 90;
 
-	this.setAngleDegrees(-angle);
+	if (point.isKeyPressed(key_action2))
+	{
+		// set angle to what was on previous tick
+		angle = this.get_f32("old angle");
+		this.setAngleDegrees(angle);
+	}
+	else if (point.isKeyPressed(key_action1))
+	{
+		// rotate in 45 degree steps
+		angle = Maths::Floor((angle - 67.5f) / 45) * 45;
+		this.setAngleDegrees(-angle);
+	}
+	else
+	{
+		// follow cursor normally
+		this.setAngleDegrees(-angle + 90);
+	}
+	
+	this.set_f32("old angle", this.getAngleDegrees());
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1, Vec2f point2)
@@ -132,6 +148,23 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			}
 		}
 	}
+}
+
+// for help text
+void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
+{
+	if (!attached.isMyPlayer()) return;
+
+	SetHelp(attached, "trampoline help lmb", "", getTranslatedString("$trampoline$ Lock to 45° steps  $KEY_HOLD$$LMB$"), "", 3, true);
+	SetHelp(attached, "trampoline help rmb", "", getTranslatedString("$trampoline$ Lock current angle  $KEY_HOLD$$RMB$"), "", 3, true);
+}
+
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
+{
+	if (!detached.isMyPlayer()) return;
+
+	RemoveHelps(detached, "trampoline help lmb");
+	RemoveHelps(detached, "trampoline help rmb");
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)

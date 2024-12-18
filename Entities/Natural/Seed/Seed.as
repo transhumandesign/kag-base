@@ -34,15 +34,16 @@ void onInit(CBlob@ this)
 	{
 		u8 spriteIndex = this.get_u8("sprite index");
 
+		if (spriteIndex < seed_names.length)
+		{
+			this.setInventoryName(seed_names[spriteIndex]);
+		}
+
 		if (spriteIndex < seed_sprites.length)
 		{
 			LoadSprite(this, seed_sprites[spriteIndex], spriteIndex);
 		}
 
-		if (spriteIndex < seed_names.length)
-		{
-			this.setInventoryName(seed_names[spriteIndex]);
-		}
 	}
 	else
 	{
@@ -100,6 +101,13 @@ void LoadSprite(CBlob@ this, string filename, u8 spriteIndex)
 
 		sprite.SetAnimation(anim);
 		this.SetInventoryIcon(filename, anim.getFrame(0), Vec2f(frameWidth, frameHeight));
+		
+		// add icon to be used when loading into catapult
+		string iconName = "$" + this.getInventoryName() + "$";
+		if (!GUI::hasIconName(iconName))
+		{
+			AddIconToken(iconName, filename, Vec2f(frameWidth, frameHeight), anim.getFrame(0));
+		}
 	}
 }
 
@@ -125,6 +133,8 @@ void onTick(CBlob@ this)
 
 	if (seed_grow_time <= OPT_TICK)
 	{
+		this.Tag("AdminAlertIgnore");
+		this.Sync("AdminAlertIgnore", true);
 		this.server_Die();
 
 		if (getNet().isServer())

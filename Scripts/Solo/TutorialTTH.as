@@ -11,5 +11,7 @@ void LoadMap()
 	if(r !is null)
 	{
 		r.set_bool("tutorial",true);
+		r.AddScript("RestartAfterShortPostGame.as");
+		r.RemoveScript("PostGameMapVotes.as");
 	}
 }

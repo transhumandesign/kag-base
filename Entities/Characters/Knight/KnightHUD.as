@@ -22,12 +22,12 @@ void ManageCursors(CBlob@ this)
 		if (this.isAttached() && this.isAttachedToPoint("GUNNER"))
 		{
 			getHUD().SetCursorImage("Entities/Characters/Archer/ArcherCursor.png", Vec2f(32, 32));
-			getHUD().SetCursorOffset(Vec2f(-32, -32));
+			getHUD().SetCursorOffset(Vec2f(-16, -16) * cl_mouse_scale);
 		}
 		else
 		{
 			getHUD().SetCursorImage("Entities/Characters/Knight/KnightCursor.png", Vec2f(32, 32));
-			getHUD().SetCursorOffset(Vec2f(-22, -22));
+			getHUD().SetCursorOffset(Vec2f(-11, -11) * cl_mouse_scale);
 		}
 	}
 }

@@ -328,7 +328,7 @@ void GoToBlob(CBrain@ this, CBlob @target)
 			JustGo(this, target);
 			if (!stuck)
 			{
-				blob.set_u8("emote", Emotes::off);
+				blob.set_string("emote", "");
 			}
 		}
 		else
@@ -346,7 +346,7 @@ void GoToBlob(CBrain@ this, CBlob @target)
 
 			case CBrain::searching:
 				//if (XORRandom(100) == 0)
-				//	set_emote( blob, Emotes::dots );
+				//	set_emote( blob, "dots" );
 				break;
 
 			case CBrain::has_path:
@@ -357,14 +357,14 @@ void GoToBlob(CBrain@ this, CBlob @target)
 				Repath(this);
 				if (XORRandom(100) == 0)
 				{
-					set_emote(blob, Emotes::frown);
+					set_emote(blob, "frown");
 					f32 dist = Maths::Abs(targetpos.x - mypos.x);
 					if (dist > 20.0f)
 					{
 						if (dist < 50.0f)
-							set_emote(blob, targetpos.y > mypos.y ? Emotes::down : Emotes::up);
+							set_emote(blob, targetpos.y > mypos.y ? "down" : "up");
 						else
-							set_emote(blob, targetpos.x > mypos.x ? Emotes::right : Emotes::left);
+							set_emote(blob, targetpos.x > mypos.x ? "right" : "left");
 					}
 				}
 				break;
@@ -374,9 +374,9 @@ void GoToBlob(CBrain@ this, CBlob @target)
 				if (XORRandom(100) == 0)
 				{
 					if (Maths::Abs(targetpos.x - mypos.x) < 50.0f)
-						set_emote(blob, targetpos.y > mypos.y ? Emotes::down : Emotes::up);
+						set_emote(blob, targetpos.y > mypos.y ? "down" : "up");
 					else
-						set_emote(blob, targetpos.x > mypos.x ? Emotes::right : Emotes::left);
+						set_emote(blob, targetpos.x > mypos.x ? "right" : "left");
 				}
 				break;
 		}
