@@ -11,9 +11,10 @@ const f32 FAST_SPEED = 16.0f;
 
 void onInit(CBlob@ this)
 {
-
 	this.set_u8("blocks_pierced", 0);
 	this.set_bool("static", false);
+
+	this.Tag("projectile hits keg");
 
 	this.server_SetTimeToDie(20);
 
