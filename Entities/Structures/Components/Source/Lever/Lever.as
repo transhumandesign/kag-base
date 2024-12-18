@@ -23,7 +23,7 @@ void onInit(CBlob@ this)
 	// background, let water overlap
 	this.getShape().getConsts().waterPasses = true;
 
-	this.set_bool("activated", true);
+	this.set_bool("activated", false);
 
 	this.addCommandID("server_activate");
 	this.addCommandID("client_activate");
