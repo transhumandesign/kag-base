@@ -4,7 +4,9 @@ bool dissalowDecaying(CBlob@ this)
 {
 	return (
 	           this.getControls() !is null ||
-	           this.isInInventory()
+	           this.isInInventory() ||
+			   this.isAttached() ||
+			   this.hasTag("invincible")
 	       );
 }
 
