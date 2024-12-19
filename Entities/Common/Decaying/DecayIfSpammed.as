@@ -22,8 +22,6 @@ void onTick(CBlob@ this)
 
 		int sameBlobCount = 0;
 		u16[] blobNetIDsToDamage;
-		u16 numberOfBlobsToDamage = 0;
-		u8 spamLimit = this.exists("spam limit") ? this.get_u8("spam limit") : 4;
 
 		// first loop - finding and counting same blobs
 		for (uint i = 0; i < blobsInRadius.length; i++)
@@ -36,7 +34,8 @@ void onTick(CBlob@ this)
 			sameBlobCount++;
 		}
 
-		numberOfBlobsToDamage = Maths::Floor((sameBlobCount - 1) / spamLimit);
+		u8 spamLimit = this.exists("spam limit") ? this.get_u8("spam limit") : 4;
+		u16 numberOfBlobsToDamage = Maths::Floor((sameBlobCount - 1) / spamLimit);
 		blobNetIDsToDamage.sortAsc();
 
 		// second loop - damaging blobs
