@@ -653,12 +653,7 @@ CBlob@ spawnBlob(CMap@ map, const string& in name, int offset, u8 team = 255, bo
 
 CBlob@ spawnVehicle(CMap@ map, const string& in name, int offset, int team = -1)
 {
-	CBlob@ blob = server_CreateBlob(name, team, getSpawnPosition( map, offset));
-	if(blob !is null)
-	{
-		blob.RemoveScript("DecayIfLeftAlone.as");
-	}
-	return blob;
+	return server_CreateBlob(name, team, getSpawnPosition( map, offset));
 }
 
 void AddMarker(CMap@ map, int offset, const string& in name)

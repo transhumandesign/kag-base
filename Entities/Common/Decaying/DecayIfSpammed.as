@@ -12,6 +12,9 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	if (disallowDecaying(this))
+		return;
+
 	CBlob@[] blobsInRadius;
 	if (this.getMap().getBlobsInRadius(this.getPosition(), 64, @blobsInRadius))
 	{
