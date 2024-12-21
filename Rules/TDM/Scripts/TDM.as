@@ -838,5 +838,14 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 		return;
 
 	if (blob.hasTag("is component"))
+	{	
+		u8 team = blob.getTeamNum();
 		blob.server_setTeamNum(255);
+
+		CSprite@ s = blob.getSprite();
+		if (s !is null)
+		{
+			spr.ReloadSprites(team, 0);
+		}
+	}
 }
