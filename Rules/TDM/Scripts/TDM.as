@@ -831,3 +831,12 @@ void onInit(CRules@ this)
 {
 	Reset(this);
 }
+
+void onBlobCreated(CRules@ this, CBlob@ blob)
+{
+	if (blob is null)
+		return;
+
+	if (blob.hasTag("is component"))
+		blob.server_setTeamNum(255);
+}
