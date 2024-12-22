@@ -30,6 +30,9 @@ class Explosive: Component
 
 void onInit(CBlob@ this)
 {
+	// used by BlobPlacement.as
+	this.Tag("place norotate");
+
 	// used by BuilderHittable.as
 	this.Tag("builder always hit");
 
