@@ -4,7 +4,7 @@
 #include "BombCommon.as";
 #include "FireCommon.as";
 
-const u8 FUSE_TIME = 30;
+const u8 FUSE_TIME = 4;
 
 class Explosive: Component
 {
@@ -63,7 +63,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		component.x,                        // x
 		component.y,                        // y
 		TOPO_CARDINAL,                      // input topology
-		TOPO_CARDINAL,                      // output topology
+		TOPO_NONE,                          // output topology
 		INFO_LOAD,                          // information
 		0,                                  // power
 		component.id);                      // id
