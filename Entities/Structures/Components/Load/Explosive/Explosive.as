@@ -20,10 +20,7 @@ class Explosive: Component
 
 	void Activate(CBlob@ this)
 	{
-		if (isServer())
-		{
-			SetToExplode(this);
-		}
+		SetToExplode(this);
 	}
 
 	void Deactivate(CBlob@ this)
