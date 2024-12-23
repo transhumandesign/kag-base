@@ -34,12 +34,15 @@ void onTick(CBlob@ this)
 			sameBlobCount++;
 		}
 
-		u8 spamLimit = this.exists("spam limit") ? this.get_u8("spam limit") : 4;
-		u16 numberOfBlobsToDamage = Maths::Floor((sameBlobCount - 1) / spamLimit);
 		blobNetIDsToDamage.sortAsc();
 
 		// second loop - damaging blobs
-		for (uint j = 0; j < numberOfBlobsToDamage; j++)
+		u16 numberOfBlobsToDamage = blobNetIDsToDamage.length;
+		u8 spamLimit = this.exists("spam limit") ? this.get_u8("spam limit") : 5;
+		if (numberOfBlobsToDamage < spamLimit)
+			return;
+
+		for (uint j = spamLimit; j < numberOfBlobsToDamage; j++)
 		{
 			CBlob@ b = getBlobByNetworkID(blobNetIDsToDamage[j]);
 			if (b !is null && b is this) // 'this' solely responsible for hurting itself
