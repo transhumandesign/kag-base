@@ -25,10 +25,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 				CBlob@ occBlob = ap.getOccupied();
 				if (occBlob !is null) //detach button
 				{
-					if (this.isOnGround() && occBlob.getName() != "mounted_bow")	  // HACK:
+					if (this.isOnGround() || occBlob.getName() == "mounted_bow")	  // HACK:
 					{
+						Vec2f button_offset = ap.offset/2;
+						button_offset.RotateByDegrees(occBlob.getAngleDegrees());
 						string text = getTranslatedString("Detach {ITEM}").replace("{ITEM}", getTranslatedString(occBlob.getInventoryName()));
-						caller.CreateGenericButton(1, ap.offset, this, this.getCommandID("detach vehicle"), text);
+						CButton@ button = caller.CreateGenericButton(1, button_offset, this, this.getCommandID("detach vehicle"), text);
 					}
 				}
 			}
@@ -60,7 +62,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 						// range check
 						if (this.getDistanceTo(b) > 64.0f) return;
 
-						if (this.isOnGround() && occBlob.getName() != "mounted_bow")
+						if (this.isOnGround() || occBlob.getName() == "mounted_bow")
 						{
 							occBlob.server_DetachFrom(this);
 						}
