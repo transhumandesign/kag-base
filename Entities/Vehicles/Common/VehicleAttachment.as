@@ -30,7 +30,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 						Vec2f button_offset = ap.offset/2;
 						button_offset.RotateByDegrees(occBlob.getAngleDegrees());
 						string text = getTranslatedString("Detach {ITEM}").replace("{ITEM}", getTranslatedString(occBlob.getInventoryName()));
-						CButton@ button = caller.CreateGenericButton(1, button_offset, this, this.getCommandID("detach vehicle"), text);
+						caller.CreateGenericButton(1, button_offset, this, this.getCommandID("detach vehicle"), text);
 					}
 				}
 			}
