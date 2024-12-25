@@ -23,7 +23,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	//printf("gibHealth " + gibHealth + " health " + this.getHealth() );
 	if (this.getHealth() <= gibHealth)
 	{
-		this.getSprite().Gib();
+		if (!g_kidssafe)
+			this.getSprite().Gib();
+
 		this.server_Die();
 	}
 
