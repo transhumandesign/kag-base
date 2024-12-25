@@ -1,10 +1,11 @@
 #include "Hitters.as";
+#include "UpdateBloodySprite.as";
 
 void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheight,
             const f32 splash_offset, const bool shouldStun = true)
 {
 	//extinguish fire
-	CMap@ map = this.getMap();
+	CMap@ map = getMap();
 	Sound::Play("SplashSlow.ogg", this.getPosition(), 3.0f);
 
 
@@ -12,7 +13,6 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 
 	if (map !is null)
 	{
-		bool is_server = getNet().isServer();
 		Vec2f pos = this.getPosition() +
 		            Vec2f(this.isFacingLeft() ?
 		                  -splash_halfwidth * map.tilesize*splash_offset :
@@ -27,7 +27,7 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 				Vec2f outpos;
 
 				//extinguish the fire at this pos
-				if (is_server)
+				if (isServer())
 				{
 					map.server_setFireWorldspace(wpos, false);
 				}
@@ -51,7 +51,8 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 		Vec2f offset = Vec2f(splash_halfwidth * map.tilesize + map.tilesize, splash_halfheight * map.tilesize + map.tilesize);
 		Vec2f tl = pos - offset * 0.5f;
 		Vec2f br = pos + offset * 0.5f;
-		if (is_server)
+
+		if (isServer())
 		{
 			CBlob@ ownerBlob;
 			CPlayer@ damagePlayer = this.getDamageOwnerPlayer();
@@ -65,6 +66,33 @@ void Splash(CBlob@ this, const uint splash_halfwidth, const uint splash_halfheig
 			for (uint i = 0; i < blobs.length; i++)
 			{
 				CBlob@ blob = blobs[i];
+
+				if (blob is null)
+					continue;
+
+				// remove blood
+				if (blob.hasTag("bloody"))
+				{
+					blob.Untag("bloody");
+					UpdateBloodySprite(blob);
+
+					if (isClient())
+					{
+						if (!v_fastrender && !g_kidssafe)
+						{
+							// sparkle particles and sound
+							if (!blob.hasScript("CleanSparkles.as"))
+								blob.AddScript("CleanSparkles.as");
+							blob.Tag("sparkling");
+							blob.set_u16("sparkling time", getGameTime());
+
+							Sound::Play("CleanSparkle.ogg", blob.getPosition());
+						}
+					}
+				}
+
+				if (!isServer() || blob.hasTag("invincible"))
+					continue;
 
 				bool hitHard = blob.getTeamNum() != this.getTeamNum() || ownerBlob is blob;
 

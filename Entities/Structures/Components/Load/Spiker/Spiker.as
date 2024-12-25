@@ -20,9 +20,9 @@ class Spiker : Component
 	void Activate(CBlob@ this)
 	{
 		Vec2f position = this.getPosition();
-		CSprite@ sprite = this.getSprite();
 
 		CMap@ map = getMap();
+		CSprite@ sprite = this.getSprite();
 		if (map.rayCastSolid(position + offset * 5, position + offset * 11))
 		{
 			sprite.PlaySound("dry_hit.ogg", 0.5f);
@@ -32,8 +32,12 @@ class Spiker : Component
 		AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
 		if (mechanism is null) return;
 
+		mechanism.offset = Vec2f(0, -7);
+
 		CBlob@ spike = mechanism.getOccupied();
 		if (spike is null) return;
+
+		spike.set_u8("state", 1);
 
 		// hit flesh at target position
 		if (isServer())
@@ -50,9 +54,6 @@ class Spiker : Component
 				}
 			}
 		}
-		
-		spike.set_u8("state", 1);
-		spike.getSprite().animation.SetFrameIndex(1);
 
 		sprite.PlaySound("SpikerThrust.ogg", 0.5f);
 	}
@@ -62,11 +63,12 @@ class Spiker : Component
 		AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
 		if (mechanism is null) return;
 
+		mechanism.offset = Vec2f(0, 0);
+
 		CBlob@ spike = mechanism.getOccupied();
 		if (spike is null) return;
 
 		spike.set_u8("state", 0);
-		spike.getSprite().animation.SetFrameIndex(0);
 
 		CSprite@ sprite = this.getSprite();
 		this.getSprite().PlaySound("LoadingTick.ogg", 0.4f);
@@ -97,7 +99,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 	AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
 	mechanism.offsetZ = -5;
-	mechanism.offset = Vec2f(0, -7);
 
 	if (isServer())
 	{
@@ -118,6 +119,9 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		spike.setAngleDegrees(this.getAngleDegrees());
 		spike.set_u8("state", 0);
 
+		spike.set_u16("spiker id", this.getNetworkID());
+		spike.Sync("spiker id", true);
+
 		CShape@ shape = spike.getShape();
 		shape.SetStatic(true);
 		ShapeConsts@ consts = shape.getConsts();
@@ -128,13 +132,16 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
+	if (sprite is null) return;
+
 	sprite.SetZ(500);
 	sprite.SetFrameIndex(ANGLE / 90);
 	sprite.SetFacingLeft(false);
 
 	CSpriteLayer@ layer = sprite.addSpriteLayer("background", "Spiker.png", 8, 16);
 	layer.addAnimation("default", 0, false);
-	layer.animation.AddFrame(4);
+	int[] frames = {4, 5}; // non-bloody and bloody
+	layer.animation.AddFrames(frames);
 	layer.SetRelativeZ(-10);
 	layer.SetFacingLeft(false);
 }
