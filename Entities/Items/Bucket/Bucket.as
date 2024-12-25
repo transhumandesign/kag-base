@@ -23,24 +23,28 @@ void onInit(CBlob@ this)
 
 	this.set_u8("filled", this.hasTag("_start_filled") ? splashes : 0);
 	this.Tag("ignore fall");
-	this.getCurrentScript().runFlags |= Script::tick_attached;
 }
 
 void onTick(CBlob@ this)
 {
-	//(prevent splash when bought filled)
-	if (this.getTickSinceCreated() < 10) 
+	bool in_water_unfilled = this.isInWater() && this.get_u8("filled") < splashes;
+	bool should_tick = this.isAttached() || in_water_unfilled || this.hasTag("update frame");
+
+	if (this.getTickSinceCreated() < 10 || 	//(prevent splash when bought filled)
+		!should_tick) 
 	{
 		return;
 	}
 
 	if (isServer())
 	{
-		if (this.isInWater() && this.get_u8("filled") < splashes)
+		if (in_water_unfilled)
 		{
 			this.set_u8("filled", splashes);
 			this.set_u8("water_delay", 30);
+			this.Tag("update frame");
 			this.Sync("filled", true);
+			this.Sync("update frame", true);
 		}
 
 		if (this.get_u8("filled") != 0)
@@ -68,10 +72,9 @@ void onTick(CBlob@ this)
 		}
 	}
 
-	if (isClient())
-	{
-		SetFrame(this, this.get_u8("filled") > 0);
-	}
+	// update frame on client
+	SetFrame(this, this.get_u8("filled") > 0);
+	this.Untag("update frame");
 }
 
 void onDie(CBlob@ this)
@@ -92,11 +95,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			int id = this.getNetworkID();
 			this.setVelocity(this.getVelocity() + Vec2f(1,0).RotateBy((id * 933) % 360));
 			DepleteWaterCount(this);
-			
-			if (isClient())
-			{
-				SetFrame(this, this.get_u8("filled") > 0);
-			}
+			SetFrame(this, this.get_u8("filled") > 0);
 		}
 	}
 
@@ -123,7 +122,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 				this.set_u8("water_delay", 5); // only slight delay
 				this.set_u8("filled", (filled + d));
+				this.Tag("update frame");
 				this.Sync("filled", true);
+				this.Sync("update frame", true);
 			}
 		}
 	}
@@ -180,11 +181,7 @@ void DoSplash(CBlob@ this)
 
 	DepleteWaterCount(this);
 	Splash(this, splash_halfwidth, splash_halfheight, splash_offset, false);
-	
-	if (isClient())
-	{
-		SetFrame(this, this.get_u8("filled") > 0);
-	}
+	SetFrame(this, this.get_u8("filled") > 0);
 }
 
 //sprite
@@ -198,6 +195,8 @@ void onInit(CSprite@ this)
 
 void SetFrame(CBlob@ blob, bool filled)
 {
+	if (!isClient()) return;
+
 	Animation@ animation = blob.getSprite().getAnimation("default");
 	if (animation !is null)
 	{
