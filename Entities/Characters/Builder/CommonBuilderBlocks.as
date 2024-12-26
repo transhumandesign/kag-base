@@ -281,6 +281,12 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 40);
 			blocks[3].push_back(b);
 		}
+		{
+			BuildBlock b(0, "explosive", "$explosive$", "Explosive");
+			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 30);
+			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
+			blocks[3].push_back(b);
+		}
 	}
 }
 

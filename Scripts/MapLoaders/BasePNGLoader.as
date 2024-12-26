@@ -146,6 +146,7 @@ class PNGLoader
 			case map_colors::alpha_lamp:            autotile(offset); spawnBlob(map, "lamp",                                  255, position,                             true); break;
 			case map_colors::alpha_obstructor:      autotile(offset); spawnBlob(map, "obstructor",                            255, position,                             true); break;
 			case map_colors::alpha_spiker:          autotile(offset); spawnBlob(map, "spiker",                                255, position, getAngleFromChannel(alpha), true); break;
+			case map_colors::alpha_explosive:       autotile(offset); spawnBlob(map, "explosive",                             255, position, getAngleFromChannel(alpha), true); break;
 			case map_colors::alpha_lever:
 			{
 				autotile(offset);
@@ -951,6 +952,11 @@ void getInfoFromBlob(CBlob@ this, SColor &out color, Vec2f &out offset)
 		else if(name == "spiker")
 		{
 			color = map_colors::alpha_spiker;
+			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()));
+		}
+		else if(name == "explosive")
+		{
+			color = map_colors::alpha_flamer;
 			color.setAlpha(getChannelFromAngle(this.getAngleDegrees()));
 		}
 	}
