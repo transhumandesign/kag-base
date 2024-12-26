@@ -35,8 +35,6 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	print("tick");
-
 	CMixer@ mixer = getMixer();
 	if (mixer is null) { return; } //prevents aids on server
 
