@@ -2,6 +2,8 @@
 
 #define CLIENT_ONLY
 
+#include "MusicCommon.as";
+
 enum GameMusicTags
 {
 	world_ambient,
@@ -22,11 +24,19 @@ void onInit(CBlob@ this)
 	CMixer@ mixer = getMixer();
 	if (mixer is null) { return; } //prevents aids on server
 
+	if (musicAlreadyExists(this))
+	{
+		this.server_Die();
+		this.getCurrentScript().runFlags |= Script::remove_after_this;
+	}
+
 	this.set_bool("initialized game", false);
 }
 
 void onTick(CBlob@ this)
 {
+	print("tick");
+
 	CMixer@ mixer = getMixer();
 	if (mixer is null) { return; } //prevents aids on server
 

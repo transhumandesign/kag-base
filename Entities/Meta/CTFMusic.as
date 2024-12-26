@@ -2,6 +2,8 @@
 
 #define CLIENT_ONLY
 
+#include "MusicCommon.as";
+
 const string[] classList = {"knight", "archer", "builder"};
 const string[] blobList = {"knight", "archer", "builder", "ballista", "tunnel", "keg"};
 
@@ -28,7 +30,12 @@ void onInit(CBlob@ this)
 	if (mixer is null)
 		return;
 
-	mixer.ResetMixer();
+	if (musicAlreadyExists(this))
+	{
+		this.server_Die();
+		this.getCurrentScript().runFlags |= Script::remove_after_this;
+	}
+
 	this.set_bool("initialized game", false);
 
 	this.getCurrentScript().tickFrequency = 10;
