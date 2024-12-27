@@ -75,5 +75,9 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 {
 	if (this.hasTag("invincible") && customData == 11)
 		this.Untag("invincible");
+
+	// when runner is hit, forget last trampoline bounce
+	this.set_s32("trampoline last bounce", -1);
+
 	return damage;
 }

@@ -149,42 +149,30 @@ class KillFeed
 			switch (message.hitter)
 			{
 				case Hitters::fall:     		hitterIcon = "$killfeed_fall$"; break;
-
+				case Hitters::fall_trampoline:  hitterIcon = "$killfeed_trampoline$"; break;
 				case Hitters::drown:     		hitterIcon = "$killfeed_water$"; break;
-
 				case Hitters::fire:
 				case Hitters::burn:     		hitterIcon = "$killfeed_fire$"; break;
-
 				case Hitters::stomp:    		hitterIcon = "$killfeed_stomp$"; break;
-
 				case Hitters::builder:  		hitterIcon = "$killfeed_builder$"; break;
-
 				case Hitters::spikes:  			hitterIcon = "$killfeed_spikes$"; break;
-
 				case Hitters::sword:    		hitterIcon = "$killfeed_sword$"; break;
-
 				case Hitters::shield:   		hitterIcon = "$killfeed_shield$"; break;
-
 				case Hitters::bomb_arrow:		hitterIcon = "$killfeed_bombarrow$"; break;
-
 				case Hitters::bomb:
 				case Hitters::explosion:     	hitterIcon = "$killfeed_bomb$"; break;
-
 				case Hitters::keg:     			hitterIcon = "$killfeed_keg$"; break;
-
 				case Hitters::mine:             hitterIcon = "$killfeed_mine$"; break;
 				case Hitters::mine_special:     hitterIcon = "$killfeed_mine$"; break;
-
 				case Hitters::arrow:    		hitterIcon = "$killfeed_arrow$"; break;
-
 				case Hitters::ballista: 		hitterIcon = "$killfeed_ballista$"; break;
-
 				case Hitters::boulder:
 				case Hitters::cata_stones:
 				case Hitters::cata_boulder:  	hitterIcon = "$killfeed_boulder$"; break;
-
 				case Hitters::drill:			hitterIcon = "$killfeed_drill$"; break;
 				case Hitters::saw:				hitterIcon = "$killfeed_saw$"; break;
+				case Hitters::bite:				hitterIcon = "$killfeed_shark$"; break;
+				case Hitters::bison:			hitterIcon = "$killfeed_bison$"; break;
 
 				default: 						hitterIcon = "$killfeed_fall$";
 			}
@@ -255,24 +243,23 @@ void onInit(CRules@ this)
 	AddIconToken("$killfeed_water$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 2);
 	AddIconToken("$killfeed_fire$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 3);
 	AddIconToken("$killfeed_stomp$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 4);
-
 	AddIconToken("$killfeed_builder$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 8);
 	AddIconToken("$killfeed_axe$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 9);
 	AddIconToken("$killfeed_spikes$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 10);
 	AddIconToken("$killfeed_boulder$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 11);
-
 	AddIconToken("$killfeed_sword$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 12);
 	AddIconToken("$killfeed_shield$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 13);
 	AddIconToken("$killfeed_bomb$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 14);
 	AddIconToken("$killfeed_keg$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 15);
 	AddIconToken("$killfeed_mine$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 18);
-
 	AddIconToken("$killfeed_arrow$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 16);
 	AddIconToken("$killfeed_bombarrow$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 21);
 	AddIconToken("$killfeed_ballista$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 17);
-
 	AddIconToken("$killfeed_drill$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 19);
 	AddIconToken("$killfeed_saw$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 20);
+	AddIconToken("$killfeed_shark$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 22);
+	AddIconToken("$killfeed_bison$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 23);
+	AddIconToken("$killfeed_trampoline$", "GUI/KillfeedIcons.png", Vec2f(32, 16), 24);
 }
 
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customdata)
