@@ -207,10 +207,10 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 
 		if (dot > 0.8f)
 		{
-			if (blob.hasTag("flesh") && isServer())
+			if (blob.hasTag("flesh"))
 			{
 				this.Tag("bloody");
-				this.Sync("bloody", true);
+				UpdateSprite(this);
 			}
 
 			return true;
@@ -371,8 +371,6 @@ void onTick(CBlob@ this)
 		Vec2f around(0.5f, -0.5f);
 		chop.RotateBy(30.0f, around);
 	}
-
-	UpdateSprite(this);
 }
 
 //sprite update
