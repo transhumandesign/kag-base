@@ -2,6 +2,7 @@
 
 #include "MechanismsCommon.as";
 #include "Hitters.as";
+#include "SpikeCommon.as";
 
 class Spiker : Component
 {
@@ -56,6 +57,8 @@ class Spiker : Component
 		}
 
 		sprite.PlaySound("SpikerThrust.ogg", 0.5f);
+		
+		UpdateSprite(spike);
 	}
 
 	void Deactivate(CBlob@ this)
@@ -63,7 +66,7 @@ class Spiker : Component
 		AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
 		if (mechanism is null) return;
 
-		mechanism.offset = Vec2f(0, 0);
+		mechanism.offset = Vec2f(0, -3);
 
 		CBlob@ spike = mechanism.getOccupied();
 		if (spike is null) return;
@@ -72,6 +75,8 @@ class Spiker : Component
 
 		CSprite@ sprite = this.getSprite();
 		this.getSprite().PlaySound("LoadingTick.ogg", 0.4f);
+		
+		UpdateSprite(spike);
 	}
 }
 
@@ -98,6 +103,12 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	this.set("component", component);
 
 	AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
+	CBlob@ occ = mechanism.getOccupied();
+	if (occ is null)
+		mechanism.offset = Vec2f(0, -3); // no spike attached yet, set to "hidden" offset
+	else
+		mechanism.offset = Vec2f(0, occ.get_u8("state") == 0 ? -3 : -7); // spike is attached, set offset depending on current state
+
 	mechanism.offsetZ = -5;
 
 	if (isServer())
@@ -119,16 +130,14 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		spike.setAngleDegrees(this.getAngleDegrees());
 		spike.set_u8("state", 0);
 
-		spike.set_u16("spiker id", this.getNetworkID());
-		spike.Sync("spiker id", true);
-
 		CShape@ shape = spike.getShape();
-		shape.SetStatic(true);
 		ShapeConsts@ consts = shape.getConsts();
 		consts.mapCollisions = false;
 		consts.collideWhenAttached = true;
 
 		this.server_AttachTo(spike, "MECHANISM");
+		
+		UpdateSprite(spike);
 	}
 
 	CSprite@ sprite = this.getSprite();
@@ -137,13 +146,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	sprite.SetZ(500);
 	sprite.SetFrameIndex(ANGLE / 90);
 	sprite.SetFacingLeft(false);
-
-	CSpriteLayer@ layer = sprite.addSpriteLayer("background", "Spiker.png", 8, 16);
-	layer.addAnimation("default", 0, false);
-	int[] frames = {4, 5}; // non-bloody and bloody
-	layer.animation.AddFrames(frames);
-	layer.SetRelativeZ(-10);
-	layer.SetFacingLeft(false);
 }
 
 void onDie(CBlob@ this)

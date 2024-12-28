@@ -1,24 +1,7 @@
 // Spike.as
 
 #include "Hitters.as";
-
-namespace Spike
-{
-	enum pointing
-	{
-		pointing_up = 0,
-		pointing_right,
-		pointing_down,
-		pointing_left
-	};
-
-	enum state
-	{
-		hidden = 0,
-		stabbing,
-		falling
-	};
-}
+#include "SpikeCommon.as";
 
 void onInit(CBlob@ this)
 {
@@ -67,7 +50,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
 {
-	if (!this.hasTag("bloody"))
+	if (hitBlob !is null 
+		&& hitBlob !is this 
+		&& damage > 0.0f
+		&& !this.isInWater())
 	{
 		this.Tag("bloody");
 		UpdateSprite(this);
@@ -79,40 +65,8 @@ bool canBePickedUp( CBlob@ this, CBlob@ byBlob )
 	return false;
 }
 
-void UpdateSprite(CBlob@ this)
-{
-	if (isClient())
-	{
-		// spike frame
-		uint frame_add = this.hasTag("bloody") && !g_kidssafe ? 1 : 0;
-		
-		this.getSprite().animation.frame = frame_add;
-	
-		// spiker spritelayer frame
-		if (this.exists("spiker id"))
-		{
-			CBlob@ spiker = getBlobByNetworkID(this.get_u16("spiker id"));
-			if (spiker !is null)
-			{
-				CSprite@ sprite = spiker.getSprite();
-				
-				if (sprite !is null)
-				{
-					CSpriteLayer@ layer = sprite.getSpriteLayer("background");
-					if (layer !is null)
-					{
-						layer.animation.frame = frame_add;
-					}
-				}
-			}
-		}
-	}
-}
-
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 {
 	UpdateSprite(this);
-
 	return true;
 }
-
