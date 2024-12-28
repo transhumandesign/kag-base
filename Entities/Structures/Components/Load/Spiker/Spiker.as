@@ -21,9 +21,9 @@ class Spiker : Component
 	void Activate(CBlob@ this)
 	{
 		Vec2f position = this.getPosition();
-
-		CMap@ map = getMap();
 		CSprite@ sprite = this.getSprite();
+		CMap@ map = getMap();
+
 		if (map.rayCastSolid(position + offset * 5, position + offset * 11))
 		{
 			sprite.PlaySound("dry_hit.ogg", 0.5f);
@@ -107,7 +107,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	if (occ is null)
 		mechanism.offset = Vec2f(0, -3); // no spike attached yet, set to "hidden" offset
 	else
-		mechanism.offset = Vec2f(0, occ.get_u8("state") == 0 ? -3 : -7); // spike is attached, set offset depending on current state
+		mechanism.offset = Vec2f(0, occ.get_u8("state") == Spike::hidden ? -3 : -7); // spike is attached, set offset depending on current state
 
 	mechanism.offsetZ = -5;
 
