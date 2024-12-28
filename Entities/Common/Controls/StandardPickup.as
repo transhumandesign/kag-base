@@ -24,49 +24,6 @@ void onInit(CBlob@ this)
 	if (menu.entries.length == 0)
 	{
 		menu.option_notice = "Pickup";
-
-		// knight stuff
-		menu.add_entry(PickupWheelMenuEntry("Keg", "$keg$", "keg"));
-
-		const PickupWheelOption[] bomb_options = {PickupWheelOption("bomb", 1), PickupWheelOption("mat_bombs", 0)};
-		menu.add_entry(PickupWheelMenuEntry("Bomb", "$mat_bombs$", bomb_options, Vec2f(0, -8.0f)));
-
-		const PickupWheelOption[] waterbomb_options = {PickupWheelOption("waterbomb", 1), PickupWheelOption("mat_waterbombs", 0)};
-		menu.add_entry(PickupWheelMenuEntry("Water Bomb", "$mat_waterbombs$", waterbomb_options, Vec2f(0, -6.0f)));
-
-		menu.add_entry(PickupWheelMenuEntry("Mine", "$mine$", "mine"));
-
-		// archer stuff
-		menu.add_entry(PickupWheelMenuEntry("Arrows", "$mat_arrows$", "mat_arrows", Vec2f(0, -8.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Water Arrows", "$mat_waterarrows$", "mat_waterarrows", Vec2f(0, 2.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Fire Arrows", "$mat_firearrows$", "mat_firearrows", Vec2f(0, -6.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Bomb Arrows", "$mat_bombarrows$", "mat_bombarrows"));
-
-		// builder stuff
-		menu.add_entry(PickupWheelMenuEntry("Gold", "$mat_gold$", "mat_gold", Vec2f(0, -6.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Stone", "$mat_stone$", "mat_stone", Vec2f(0, -6.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Wood", "$mat_wood$", "mat_wood", Vec2f(0, -6.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Drill", "$drill$", "drill", Vec2f(-16.0f, 0.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Saw", "$saw$", "saw", Vec2f(-16.0f, -16.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Trampoline", "$trampoline$", "trampoline", Vec2f(-16.0f, -8.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Boulder", "$boulder$", "boulder"));
-		menu.add_entry(PickupWheelMenuEntry("Sponge", "$sponge$", "sponge", Vec2f(0, 8.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Seed", "$seed$", "seed", Vec2f(8.0f, 8.0f)));
-
-		// misc
-		menu.add_entry(PickupWheelMenuEntry("Log", "$log$", "log"));
-		const PickupWheelOption[] food_options = {
-			PickupWheelOption("food"),
-			PickupWheelOption("heart"),
-			PickupWheelOption("fishy"),
-			PickupWheelOption("grain"),
-			PickupWheelOption("steak"),
-			PickupWheelOption("egg")
-		};
-		menu.add_entry(PickupWheelMenuEntry("Food", "$food$", food_options));
-		menu.add_entry(PickupWheelMenuEntry("Ballista Ammo", "$mat_bolts$", "mat_bolts"));
-		menu.add_entry(PickupWheelMenuEntry("Crate", "$crate$", "crate", Vec2f(-16.0f, 0)));
-		menu.add_entry(PickupWheelMenuEntry("Bucket", "$filled_bucket$", "bucket"));
 	}
 }
 
@@ -82,10 +39,10 @@ void onTick(CBlob@ this)
 	CControls@ controls = getControls();
 
 	// drop / pickup / throw
-	if (controls.ActionKeyPressed(AK_PICKUP_MODIFIER))
+	if (controls.ActionKeyPressed(AK_PICKUP_MODIFIER) && this.isKeyPressed(key_pickup))
 	{
 		WheelMenu@ menu = get_wheel_menu("pickup");
-		if (this.isKeyPressed(key_pickup) && menu !is get_active_wheel_menu())
+		if (menu !is get_active_wheel_menu())
 		{
 			set_active_wheel_menu(@menu);
 		}
@@ -95,28 +52,29 @@ void onTick(CBlob@ this)
 		CBlob@[] available;
 		FillAvailable(this, available);
 
-		for (uint i = 0; i < menu.entries.length; i++)
+		WheelMenuEntry@[] entries;
+		string[] names;
+		for (u16 i = 0; i < available.length; i++)
 		{
-			PickupWheelMenuEntry@ entry = cast<PickupWheelMenuEntry>(menu.entries[i]);
-			entry.disabled = true;
+			CBlob@ item = available[i];
+			Vec2f dim = item.inventoryFrameDimension;
+			const f32 offset_x = Maths::Clamp(16 - dim.x, -dim.x, dim.x);
+			const f32 offset_y = Maths::Clamp(16 - dim.y, -dim.y, dim.y);
 
-			for (uint j = 0; j < available.length; j++)
-			{
-				string bname = available[j].getName();
-				for (uint k = 0; k < entry.options.length; k++)
-				{
-					if (entry.options[k].name == bname)
-					{
-						entry.disabled = false;
-						break;
-					}
-				}
+			const string name = item.getName();
+			if (names.find(name) != -1) continue;
 
-				if (!entry.disabled)
-				{
-					break;
-				}
-			}
+			const string inventory_name = item.getInventoryName();
+			const string icon = GUI::hasIconName("$"+inventory_name+"$") ? "$"+inventory_name+"$" : "$"+name+"$";
+			PickupWheelMenuEntry entry(inventory_name, icon, name, Vec2f(offset_x, offset_y));
+			entries.push_back(entry);
+			names.push_back(name);
+		}
+
+		if (haveEntriesChanged(entries, menu.entries))
+		{
+			menu.entries = entries;
+			menu.update();
 		}
 	}
 	else if (this.isKeyJustPressed(key_pickup))
@@ -232,6 +190,18 @@ void onTick(CBlob@ this)
 			pickup_netids.clear();
 		}
 	}
+}
+
+bool haveEntriesChanged(WheelMenuEntry@[]@ a, WheelMenuEntry@[]@ b)
+{
+	if (a.length != b.length) return true;
+
+	for (uint i = 0; i < a.length; i++)
+	{
+		if (a[i].visible_name != b[i].visible_name) return true;
+	}
+
+	return false;
 }
 
 void GatherPickupBlobs(CBlob@ this)
