@@ -1,6 +1,4 @@
 
-#include "SpikeCommon.as";
-
 // used in ToggleBloodyStuff.as and SplashWater.as
 
 void UpdateBloodySprite(CBlob@ this)
@@ -35,7 +33,7 @@ void UpdateBloodySprite(CBlob@ this)
 	{
 		// spike frame
 		uint frame_add = this.hasTag("bloody") && !g_kidssafe ? 1 : 0;
-		bool is_hidden = this.get_u8("state") == Spike::hidden;
+		bool is_hidden = this.get_u8("state") == 0;
 		
 		this.getSprite().animation.frame = is_hidden ? 2 + frame_add: frame_add;
 	}
