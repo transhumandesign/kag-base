@@ -1,17 +1,41 @@
 //common "can a plant grow at this tile" code
 
-bool isNotTouchingOthers(CBlob@ this)
+bool isNotBlockedByOthers(CBlob@ this)
 {
-	CBlob@[] overlapping;
+	CBlob@[] blobsInRadius;
+	CMap@ map = getMap();
 
-	if (this.getOverlapping(@overlapping))
+	if (map.getBlobsInRadius(this.getPosition(), map.tilesize / 4, @blobsInRadius))
 	{
-		for (uint i = 0; i < overlapping.length; i++)
+		u16 lowest_net_id = this.getNetworkID();
+		bool found_seed = false;
+	
+		for (uint i = 0; i < blobsInRadius.length; i++)
 		{
-			CBlob@ blob = overlapping[i];
-			if (blob.getName() == "seed" || blob.getName() == "tree_bushy" || blob.getName() == "tree_pine")
+			CBlob@ blob = blobsInRadius[i];
+
+			if (blob.getName() == "seed")
+			{
+				found_seed = true;
+
+				u16 blob_net_id = blob.getNetworkID();
+				if (blob_net_id < lowest_net_id)
+				{
+					lowest_net_id = blob_net_id;
+				}
+			}
+			else if (blob.getName().find("tree") == -1)
 			{
 				return false;
+			}
+		}
+		
+		if (found_seed)
+		{
+			CBlob@ seed_to_grow = getBlobByNetworkID(lowest_net_id);
+			if (seed_to_grow !is null)
+			{
+				return (seed_to_grow is this);
 			}
 		}
 	}
@@ -23,7 +47,7 @@ bool canGrowAt(CBlob@ this, Vec2f pos)
 {
 	if (!this.getShape().isStatic()) // they can be static from grid placement
 	{
-		if (!this.isOnGround() || this.isInWater() || this.isAttached() || !isNotTouchingOthers(this))
+		if (!this.isOnGround() || this.isInWater() || this.isAttached() || !isNotBlockedByOthers(this))
 		{
 			return false;
 		}
