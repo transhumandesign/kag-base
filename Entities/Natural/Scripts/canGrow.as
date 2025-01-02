@@ -9,7 +9,7 @@ bool isNotBlockedByOthers(CBlob@ this)
 	{
 		u16 lowest_net_id = this.getNetworkID();
 		bool found_seed = false;
-	
+
 		for (uint i = 0; i < blobsInRadius.length; i++)
 		{
 			CBlob@ blob = blobsInRadius[i];
@@ -29,7 +29,8 @@ bool isNotBlockedByOthers(CBlob@ this)
 				return false;
 			}
 		}
-		
+
+		// if there are 2 or more seeds, allow the seed with the lowest net id to grow
 		if (found_seed)
 		{
 			CBlob@ seed_to_grow = getBlobByNetworkID(lowest_net_id);
