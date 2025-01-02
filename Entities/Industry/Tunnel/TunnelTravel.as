@@ -31,6 +31,7 @@ void onInit(CBlob@ this)
 {
 	this.addCommandID("travel to");
 	this.addCommandID("travel to client");
+	this.addCommandID("travel finished");
 	this.Tag("travel tunnel");
 
 	int team = this.getTeamNum();
@@ -99,6 +100,17 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (tunnel is null) return;
 
 		client_Travel(this, caller, tunnel);
+	}
+	else if (cmd == this.getCommandID("travel finished") && isServer())
+	{
+		// lose invincible after travelling
+		u16 caller_id;
+		if (!params.saferead_u16(caller_id)) return;
+		CBlob@ caller = getBlobByNetworkID(caller_id);
+		if (caller is null) return;
+
+		caller.Untag("invincible");
+		caller.Sync("invincible", true);
 	}
 }
 
@@ -252,10 +264,6 @@ void server_Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 		//(prevents tunnel spam and ensures traps get you)
 		if (isKnockable(caller))
 		{
-			//if you travel, you lose invincible
-			caller.Untag("invincible");
-			caller.Sync("invincible", true);
-
 			//actually do the knocking
 			setKnocked(caller, 30, true);
 		}
@@ -287,6 +295,10 @@ void client_Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 			caller.setPosition(position);
 			caller.setVelocity(Vec2f_zero);
 			Sound::Play("Travel.ogg");
+
+			CBitStream params;
+			params.write_u16(caller.getNetworkID());
+			this.SendCommand(this.getCommandID("travel finished"), params);
 		}
 		else
 		{
