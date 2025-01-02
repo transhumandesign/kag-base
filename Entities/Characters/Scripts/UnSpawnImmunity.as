@@ -12,6 +12,12 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	if (!this.hasTag("invincible"))
+	{
+		EndInvincibility(this);
+		return;
+	}
+
 	bool immunity = false;
 
 	float time_modifier = (this.isKeyPressed(key_action1) ? 0.75f : 1.0f);
@@ -33,11 +39,16 @@ void onTick(CBlob@ this)
 
 	if (!immunity || this.getPlayer() is null)
 	{
-		this.Untag("invincible");
-		this.Tag("invincibility done");
-		this.Sync("invincibility done", true);
-
-		this.getCurrentScript().runFlags |= Script::remove_after_this;
-		this.getSprite().setRenderStyle(RenderStyle::normal);
+		EndInvincibility(this);
 	}
+}
+
+void EndInvincibility(CBlob@ this)
+{
+	this.Untag("invincible");
+	this.Tag("invincibility done");
+	this.Sync("invincibility done", true);
+
+	this.getCurrentScript().runFlags |= Script::remove_after_this;
+	this.getSprite().setRenderStyle(RenderStyle::normal);
 }
