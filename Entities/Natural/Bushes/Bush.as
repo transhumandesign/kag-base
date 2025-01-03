@@ -22,8 +22,8 @@ void onTick(CBlob@ this)
 
 	CSprite@ s = this.getSprite();
 
-	if (s !is null 
-		&&this.get_u32("anim end time") <= getGameTime())
+	if (s !is null &&
+		this.get_u32("anim end time") <= getGameTime())
 	{
 		Animation@ anim = s.getAnimation("wiggle");
 		if (anim is null)	return;
@@ -42,9 +42,10 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 	CSprite@ s = this.getSprite();
 
-	if (blob !is null 
-		&& s !is null
-		&& blob.hasTag("player"))
+	if (s !is null &&
+		blob !is null &&
+		blob.hasTag("player") &&
+		!this.hasTag("is animated"))
 	{	
 		Animation@ anim = s.getAnimation("wiggle");
 		if (anim is null)	return;
