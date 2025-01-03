@@ -41,6 +41,8 @@ void onTick(CBlob@ this)
 	// drop / pickup / throw
 	if (controls.ActionKeyPressed(AK_PICKUP_MODIFIER) && this.isKeyPressed(key_pickup))
 	{
+		closest_netids.clear();
+
 		WheelMenu@ menu = get_wheel_menu("pickup");
 		if (menu !is get_active_wheel_menu())
 		{
@@ -52,26 +54,43 @@ void onTick(CBlob@ this)
 		CBlob@[] available;
 		FillAvailable(this, available);
 
+		const u8 pickup_wheel_size = 20;
 		WheelMenuEntry@[] entries;
+		for (u32 i = 0; i < pickup_wheel_size; i++)
+		{
+			PickupWheelMenuEntry entry;
+			entry.disabled = true;
+			entries.push_back(entry);
+		}
+
 		string[] names;
 		for (u16 i = 0; i < available.length; i++)
 		{
 			CBlob@ item = available[i];
-			Vec2f dim = item.inventoryFrameDimension;
-			const f32 offset_x = Maths::Clamp(16 - dim.x, -dim.x, dim.x);
-			const f32 offset_y = Maths::Clamp(16 - dim.y, -dim.y, dim.y);
-
 			const string name = item.getName();
 			if (names.find(name) != -1) continue;
 
+			Vec2f dim = item.inventoryFrameDimension;
+			const f32 offset_x = Maths::Clamp(16 - dim.x, -dim.x, dim.x);
+			const f32 offset_y = Maths::Clamp(16 - dim.y, -dim.y, dim.y);
 			const string inventory_name = item.getInventoryName();
 			const string icon = GUI::hasIconName("$"+inventory_name+"$") ? "$"+inventory_name+"$" : "$"+name+"$";
-			PickupWheelMenuEntry entry(inventory_name, icon, name, Vec2f(offset_x, offset_y));
-			entries.push_back(entry);
+			PickupWheelMenuEntry entry(name, inventory_name, icon, Vec2f(offset_x, offset_y));
 			names.push_back(name);
+			
+			const u32 index = name.getHash() % pickup_wheel_size;
+			for (u32 p = 0; p < pickup_wheel_size; p++)
+			{
+				const u32 probe = (index + p) % pickup_wheel_size;
+				if (entries[probe].disabled)
+				{
+					@entries[probe] = @entry;
+					break;
+				}
+			}
 		}
 
-		if (haveEntriesChanged(entries, menu.entries))
+		if (entries != menu.entries)
 		{
 			menu.entries = entries;
 			menu.update();
@@ -125,34 +144,24 @@ void onTick(CBlob@ this)
 			CBlob@[] blobsInRadius;
 			if (getMap().getBlobsInRadius(this.getPosition(), this.getRadius() + 50.0f, @blobsInRadius))
 			{
-				uint highestPriority = 0;
 				float closestScore = 600.0f;
 				CBlob@ closest;
 
 				for (uint i = 0; i < blobsInRadius.length; i++)
 				{
 					CBlob@ b = blobsInRadius[i];
+					if (b.getName() != selected.name) continue;
 
-					string bname = b.getName();
-					for (uint j = 0; j < selected.options.length; j++)
+					if (!canBlobBePickedUp(this, b)) continue;
+
+					const f32 maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
+					const f32 dist = (this.getPosition() - b.getPosition()).Length();
+					const f32 factor = dist / maxDist;
+					const f32 score = getPriorityPickupScale(this, b, factor);
+					if (score < closestScore)
 					{
-						PickupWheelOption@ selectedOption = @selected.options[j];
-						if (bname != selectedOption.name) continue;
-
-						if (!canBlobBePickedUp(this, b)) break;
-
-						float maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
-						float dist = (this.getPosition() - b.getPosition()).Length();
-						float factor = dist / maxDist;
-
-						float score = getPriorityPickupScale(this, b, factor);
-
-						if (score < closestScore || selectedOption.priority > highestPriority)
-						{
-							highestPriority = selectedOption.priority;
-							closestScore = score;
-							@closest = @b;
-						}
+						closestScore = score;
+						@closest = @b;
 					}
 				}
 
@@ -190,18 +199,6 @@ void onTick(CBlob@ this)
 			pickup_netids.clear();
 		}
 	}
-}
-
-bool haveEntriesChanged(WheelMenuEntry@[]@ a, WheelMenuEntry@[]@ b)
-{
-	if (a.length != b.length) return true;
-
-	for (uint i = 0; i < a.length; i++)
-	{
-		if (a[i].visible_name != b[i].visible_name) return true;
-	}
-
-	return false;
 }
 
 void GatherPickupBlobs(CBlob@ this)
