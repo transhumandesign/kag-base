@@ -1,3 +1,5 @@
+#include "ProductionCommon.as";
+
 CBlob@ server_MakeFood(Vec2f atpos, const string &in name, const u8 spriteIndex)
 {
 	if (!isServer())  return null; 
@@ -26,47 +28,34 @@ ShopItem@ addFoodItem(CBlob@ this, const string &in foodName, const u8 spriteInd
 	return item;
 }
 
-CBlob@ cookFood(CBlob@ ingredient)
+CBlob@ CookInFireplace(CBlob@ ingredient) // used by Fireplace.as
 {
-	string cookedName;
-	u8 spriteIndex;
-	string n = ingredient.getName();
+	if (ingredient.hasTag("cookable in fireplace"))
+	{
+		return Cook(ingredient);
+	}
+	return null;
+}
 
-	if (n == "fishy")
-	{
-		cookedName = "Cooked Fish";
-		spriteIndex = 1;
-	}
-	else if (n == "steak")
-	{
-		cookedName = "Cooked Steak";
-		spriteIndex = 0;
-	}
-	else if (n == "grain")
-	{
-		cookedName = "Bread";
-		spriteIndex = 4;
-	}
-	else if (n == "egg")
-	{
-		cookedName = "Cake";
-		spriteIndex = 5;
-	}
-	else
-	{
+CBlob@ Cook(CBlob@ ingredient) // used by Chicken.as and Fishy.as
+{
+	if (ingredient.hasTag("cooked") || ingredient.hasTag("healed") || !ingredient.exists("cooked name"))
 		return null;
-	}
 
-	CBlob@ food = server_MakeFood(ingredient.getPosition(), cookedName, spriteIndex);
+	string cooked_name 	= ingredient.get_string("cooked name");
+	u8 sprite_index	= ingredient.get_u8("cooked sprite index");
+
+	CBlob@ food = server_MakeFood(ingredient.getPosition(), cooked_name, sprite_index);
 	
 	ingredient.getSprite().PlaySound("SparkleShort.ogg");
 	
 	if (food !is null)
 	{
+		ingredient.Tag("cooked");
+		ingredient.Sync("cooked", true);
 		ingredient.server_Die();
 		food.setVelocity(ingredient.getVelocity());
 		return food;
 	}
-	
 	return null;
 }
