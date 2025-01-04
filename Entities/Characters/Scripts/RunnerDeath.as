@@ -9,6 +9,9 @@ const f32 HEAVY_CARRIED_BLOB_VEL_SCALE = 0.6;
 
 void onInit(CBlob@ this)
 {
+	if (this.hasTag("dead"))
+		this.Untag("player");
+
 	this.set_f32("hit dmg modifier", 0.0f);
 	this.set_f32("hit dmg modifier", 0.0f);
 	this.getCurrentScript().tickFrequency = 0; // make it not run ticks until dead
