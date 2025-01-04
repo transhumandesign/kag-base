@@ -34,6 +34,7 @@ void onInit(CBlob@ this)
 
 	this.addCommandID("server_activate");
 	this.addCommandID("client_activate");
+	this.addCommandID("client_fail");
 
 	AddIconToken("$insert_coin$", "InteractionIcons.png", Vec2f(32, 32), 26);
 
@@ -71,12 +72,15 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
-
-	if (!this.isOverlapping(caller) || !this.getShape().isStatic()) return;
+	if (!canSeeButtons(this, caller) ||
+		!this.isOverlapping(caller) || 
+		!this.getShape().isStatic())
+	{
+		return;
+	}
 
 	CPlayer@ player = caller.getPlayer();
-	if (player !is null && player.isMyPlayer() && player.getCoins() < COIN_COST)
+	if (player !is null && player.isMyPlayer() && (player.getCoins() < COIN_COST || this.hasTag("defunct")))
 	{
 		this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 		return;
@@ -124,6 +128,20 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		// range check
 		if (this.getDistanceTo(caller) > 20.0f) return;
 
+		if (this.hasTag("defunct"))
+		{
+			this.SendCommand(this.getCommandID("activate fail client"));
+			return;
+		}
+
+		CRules@ rules = getRules();
+
+		if (rules.gamemode_name == TDM)
+		{
+			this.Tag("defunct");
+			this.Sync("defunct", true);
+		}
+
 		Component@ component = null;
 		if (!this.get("component", @component)) return;
 
@@ -151,6 +169,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		sprite.SetAnimation("default");
 		sprite.SetAnimation("activate");
 		sprite.PlaySound("Cha.ogg");
+	}
+	else if (cmd == this.getCommandID("client_fail") && isClient())
+	{
+		this.getSprite().PlaySound("NoAmmo.ogg", 0.5);
 	}
 }
 
