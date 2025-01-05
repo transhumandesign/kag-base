@@ -287,20 +287,6 @@ bool focusOnBlob(CBlob@[] blobs)
 	return false;
 }
 
-void ViewEntireMap()
-{
-	CMap@ map = getMap();
-
-	if (map !is null)
-	{
-		Vec2f mapDim = map.getMapDimensions();
-		posTarget = mapDim / 2.0f;
-		Vec2f zoomLevel = calculateZoomLevel(mapDim.x, mapDim.y);
-		zoomTarget = Maths::Min(zoomLevel.x, zoomLevel.y);
-		zoomTarget = Maths::Clamp(zoomTarget, 0.5f, 2.0f);
-	}
-}
-
 bool cinematicEnabled = true;
 bool cinematicForceDisabled = false;
 
