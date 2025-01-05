@@ -28,6 +28,11 @@ void onInit(CBlob@ this)
 
 	this.getCurrentScript().tickFrequency = 10;
 	this.getCurrentScript().tickIfTag = "exploding";
+	
+	this.getSprite().SetEmitSound("/Sparkle.ogg");
+	this.getSprite().SetEmitSoundSpeed(1.0f);
+	this.getSprite().SetEmitSoundVolume(1.0f);
+	this.getSprite().SetEmitSoundPaused(!this.hasTag("exploding"));
 }
 
 void onTick(CBlob@ this)
@@ -135,9 +140,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		this.SetLight(true);
 		this.SetLightRadius(this.get_f32("explosive_radius") * 0.5f);
-		this.getSprite().SetEmitSound("/Sparkle.ogg");
-		this.getSprite().SetEmitSoundSpeed(1.0f);
-		this.getSprite().SetEmitSoundVolume(1.0f);
 		this.getSprite().SetEmitSoundPaused(false);
 	}
 	else if (cmd == this.getCommandID("deactivate client") && isClient())
