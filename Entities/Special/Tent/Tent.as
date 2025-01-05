@@ -88,10 +88,10 @@ void onDie(CBlob@ this)
 	Vec2f pos = this.getPosition();
 	Vec2f vel = this.getVelocity();
 	const string fname = CFileMatcher("/Tent.png").getFirst();
-	for (int i = 0; i < 25; i++)
+	for (int i = 0; i < 100; i++)
 	{
-		uint frame = i + Maths::Floor(i / 5) * 5;
-		makeGibParticle(fname, pos, vel + getRandomVelocity(0, 6 + XORRandom(10), 180), 0, frame, Vec2f(8, 8), 2.0f, 20, "Sounds/material_drop.ogg", this.getTeamNum());
+		uint frame = i + Maths::Floor(i / 10) * 10;
+		makeGibParticle(fname, pos, vel + getRandomVelocity(0, 6 + XORRandom(10), 180), 0, frame, Vec2f(4, 4), 2.0f, 20, "Sounds/material_drop.ogg", this.getTeamNum());
 	}
 }
 
