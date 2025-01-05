@@ -53,14 +53,8 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 	Vec2f pos = this.getPosition();
 	CMap@ map = this.getMap();
 
-	if (!this.exists("custom_explosion_sound"))
-	{
-		Sound::Play("Bomb.ogg", this.getPosition());
-	}
-	else
-	{
-		Sound::Play(this.get_string("custom_explosion_sound"), this.getPosition());
-	}
+	string explosion_sound = this.exists("custom_explosion_sound") ? this.get_string("custom_explosion_sound") : "Bomb.ogg";
+	Sound::Play(explosion_sound, this.getPosition());
 
 	if (this.isInInventory())
 	{
@@ -152,7 +146,7 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 		}
 	}
 
-	if (getNet().isServer())
+	if (isServer())
 	{
         Vec2f m_pos = (pos / map.tilesize);
         m_pos.x = Maths::Floor(m_pos.x);
