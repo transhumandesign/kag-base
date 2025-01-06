@@ -48,7 +48,7 @@ class CrateCommand : BlobCommand
 
 		if (args.size() == 0)
 		{
-			server_MakeCrate("", "", 0, team, pos);
+			server_CreateBlob("crate", team, pos);
 			return;
 		}
 
