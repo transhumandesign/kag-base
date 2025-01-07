@@ -241,6 +241,11 @@ void onTick(CBlob@ this)
 		return;
 	}
 
+	if (!knocked)
+	{
+		RunStateMachine(this, knight, moveVars);
+	}
+
 	Vec2f pos = this.getPosition();
 	Vec2f vel = this.getVelocity();
 	Vec2f aimpos = this.getAimPos();
@@ -275,12 +280,6 @@ void onTick(CBlob@ this)
 		pressed_a1 = false;
 		pressed_a2 = false;
 		walking = false;
-
-	}
-	else
-	{
-		RunStateMachine(this, knight, moveVars);
-
 	}
 
 	//throwing bombs
