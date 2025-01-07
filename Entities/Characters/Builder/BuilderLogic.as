@@ -698,24 +698,26 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 			return;
 		}
 
-		uint i = this.get_u8("buildblob");
-		if (i >= 0 && i < blocks[PAGE].length)
+		const u8 i = this.get_u8("buildblob");
+		if (i >= blocks[PAGE].length) return;
+
+		BuildBlock@ b = blocks[PAGE][i];
+		if (b.name == detached.getName())
 		{
-			BuildBlock@ b = blocks[PAGE][i];
-			if (b.name == detached.getName())
+			this.set_u8("buildblob", 255);
+			this.set_TileType("buildtile", 0);
+			
+			if (isServer())
 			{
-				this.set_u8("buildblob", 255);
-				this.set_TileType("buildtile", 0);
-
 				CInventory@ inv = this.getInventory();
-
 				CBitStream missing;
-				if (hasRequirements(inv, b.reqs, missing, not b.buildOnGround))
+				if (hasRequirements(inv, b.reqs, missing, !b.buildOnGround))
 				{
 					server_TakeRequirements(inv, b.reqs);
 				}
 				// take out another one if in inventory
 				server_BuildBlob(this, blocks[PAGE], i);
+				this.Sync("buildblob", true);
 			}
 		}
 	}
