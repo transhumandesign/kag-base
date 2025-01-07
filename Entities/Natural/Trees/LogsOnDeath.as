@@ -12,7 +12,7 @@ void onDie(CBlob@ this)
 		fall_angle = this.get_f32("tree_fall_angle");
 	}
 
-	TreeSegment[]@ segments;
+	TreeSegment@[]@ segments;
 	this.get("TreeSegments", @segments);
 	if (segments is null)
 		return;
