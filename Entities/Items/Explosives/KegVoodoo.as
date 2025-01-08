@@ -43,10 +43,7 @@ void onTick(CBlob@ this)
 
 		if (timer <= 0)
 		{
-			if (getNet().isServer())
-			{
-				Boom(this);
-			}
+			Boom(this);
 		}
 		else
 		{
@@ -155,41 +152,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void Boom(CBlob@ this)
 {
-	this.server_SetHealth(-1.0f);
-	this.server_Die();
-
-	if (isClient()) 
+	if (isServer())
 	{
-		// screenshake when close to a Keg
-
-		CBlob @blob = getLocalPlayerBlob();
-		CPlayer@ player = getLocalPlayer();
-		Vec2f pos;
-
-	    CCamera @camera = getCamera();
-		if (camera !is null) 
-		{
-			// If the player is a spectating, base their location off of their camera.	
-			if (player !is null && player.getTeamNum() == getRules().getSpectatorTeamNum())
-			{
-				pos = camera.getPosition();
-			}
-			else if (blob !is null)
-			{
-				pos = blob.getPosition();
-			} 
-			else 
-			{
-				return;
-			}
-
-			pos -= this.getPosition();
-			f32 dist = pos.Length();
-			if (dist < 300) 
-			{
-				ShakeScreen(200, 60, this.getPosition());
-			}
-		}
+		this.server_SetHealth(-1.0f);
+		this.server_Die();
 	}
 }
 
@@ -203,7 +169,44 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 void onDie(CBlob@ this)
 {
-	this.getSprite().SetEmitSoundPaused(true);
+	if (isClient())
+	{
+		this.getSprite().SetEmitSoundPaused(true);
+
+		if (this.hasTag("exploding"))
+		{
+			// screenshake when close to a Keg
+
+			CBlob @blob = getLocalPlayerBlob();
+			CPlayer@ player = getLocalPlayer();
+			Vec2f pos;
+
+			CCamera @camera = getCamera();
+			if (camera !is null) 
+			{
+				// If the player is a spectating, base their location off of their camera.	
+				if (player !is null && player.getTeamNum() == getRules().getSpectatorTeamNum())
+				{
+					pos = camera.getPosition();
+				}
+				else if (blob !is null)
+				{
+					pos = blob.getPosition();
+				} 
+				else 
+				{
+					return;
+				}
+
+				pos -= this.getPosition();
+				f32 dist = pos.Length();
+				if (dist < 300) 
+				{
+					ShakeScreen(200, 60, this.getPosition());
+				}
+			}
+		}
+	}
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
