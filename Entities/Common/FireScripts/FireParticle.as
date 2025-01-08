@@ -29,5 +29,10 @@ void makeSmokeParticle(Vec2f pos, f32 gravity = -0.06f)
 		case 1: texture = "Entities/Effects/Sprites/SmallSmoke2.png"; break;
 	}
 
-	ParticleAnimated(texture, pos, Vec2f(0, 0), 0.0f, 1.0f, 5, gravity, true);
+	ParticleAnimated(texture, pos, Vec2f(0, 0), 0.0f, 1.0f, 5, gravity, true);	
+}
+
+void makeBigSmokeParticle(Vec2f pos, f32 gravity = -0.06f)
+{
+	ParticleAnimated("Entities/Effects/Sprites/LargeSmoke.png", pos, Vec2f(0, 0), 0.0f, 1.0f, 4, gravity, true);	
 }

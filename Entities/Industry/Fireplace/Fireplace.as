@@ -1,9 +1,6 @@
 // Fireplace
 
-#include "ProductionCommon.as";
-#include "Requirements.as";
 #include "MakeFood.as";
-#include "FireParticle.as";
 #include "FireCommon.as";
 #include "FireplaceCommon.as";
 #include "Hitters.as";
@@ -12,17 +9,12 @@ void onInit(CBlob@ this)
 {
 	this.getCurrentScript().tickFrequency = 9;
 	this.getSprite().SetEmitSound("CampfireSound.ogg");
-	this.getSprite().SetEmitSoundPaused(false);
-	this.getSprite().SetAnimation("fire");
 	this.getSprite().SetFacingLeft(XORRandom(2) == 0);
-
-	this.SetLight(true);
+	
 	this.SetLightRadius(164.0f);
 	this.SetLightColor(SColor(255, 255, 240, 171));
-
-	this.Tag("fire source");
-	//this.server_SetTimeToDie(60*3);
-	this.getSprite().SetZ(-20.0f);
+	
+	SetFire(this, !this.hasTag("extinguished"));
 }
 
 void onTick(CBlob@ this)
@@ -44,12 +36,12 @@ void onTick(CBlob@ this)
 }
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
-{	
+{
 	if (blob is null) return;
-	
+
 	if (this.getSprite().isAnimation("fire"))
 	{
-		CBlob@ food = cookFood(blob);
+		CBlob@ food = CookInFireplace(blob); // MakeFood.as
 		if (food !is null)
 		{
 			food.setVelocity(blob.getVelocity().opMul(0.5f));
@@ -63,7 +55,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 void onInit(CSprite@ this)
 {
-	this.SetZ(-50); //background
+	this.SetZ(-50.0f);
 
 	//init flame layer
 	CSpriteLayer@ fire = this.addSpriteLayer("fire_animation_large", "Entities/Effects/Sprites/LargeFire.png", 16, 16, -1, -1);
@@ -78,28 +70,13 @@ void onInit(CSprite@ this)
 			anim.AddFrame(2);
 			anim.AddFrame(3);
 		}
-		fire.SetVisible(true);
+
+		CBlob@ blob = this.getBlob();
+
+		if (blob is null) return;
+
+		fire.SetVisible(!blob.hasTag("extinguished"));
 	}
-}
-
-void Extinguish(CBlob@ this)
-{
-	if (this.getSprite().isAnimation("nofire")) return;
-
-	this.SetLight(false);
-	this.Untag("fire source");
-
-	this.getSprite().SetAnimation("nofire");
-	this.getSprite().SetEmitSoundPaused(true);
-	this.getSprite().PlaySound("/ExtinguishFire.ogg");
-	
-	CSpriteLayer@ fire = this.getSprite().getSpriteLayer("fire_animation_large");
-	if (fire !is null)
-	{
-		fire.SetVisible(false);
-	}
-	
-	makeSmokeParticle(this.getPosition()); //*poof*
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
