@@ -845,7 +845,7 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 		CSprite@ s = blob.getSprite();
 		if (s !is null)
 		{
-			spr.ReloadSprites(team, 0);
+			s.ReloadSprites(team, 0);
 		}
 	}
 }
