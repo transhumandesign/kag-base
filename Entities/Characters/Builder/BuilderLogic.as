@@ -367,7 +367,7 @@ void Pickaxe(CBlob@ this)
 		{
 			CBitStream params;
 			params.write_u16(hitdata.blobID);
-			params.write_Vec2f(hitdata.tilepos);
+			params.write_Vec2f(tilepos);
 			this.SendCommand(this.getCommandID("pickaxe"), params);
 
 			// for smaller delay
