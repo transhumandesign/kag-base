@@ -23,7 +23,7 @@ void onInit(CBlob@ this)
 	WheelMenu@ menu = get_wheel_menu("pickup");
 	if (menu.entries.length == 0)
 	{
-		menu.option_notice = "Pickup";
+		menu.option_notice = getTranslatedString("Pickup");
 	}
 }
 
@@ -75,7 +75,7 @@ void onTick(CBlob@ this)
 			const f32 offset_y = Maths::Clamp(16 - dim.y, -dim.y, dim.y);
 			const string inventory_name = item.getInventoryName();
 			const string icon = GUI::hasIconName("$"+inventory_name+"$") ? "$"+inventory_name+"$" : "$"+name+"$";
-			PickupWheelMenuEntry entry(name, inventory_name, icon, Vec2f(offset_x, offset_y));
+			PickupWheelMenuEntry entry(name, getTranslatedString(inventory_name), icon, Vec2f(offset_x, offset_y));
 			names.push_back(name);
 			
 			const u32 index = name.getHash() % pickup_wheel_size;
