@@ -73,7 +73,12 @@ void onInit(CBlob@ this)
 	states.push_back(ResheathState(KnightStates::resheathing_slash, KnightVars::resheath_slash_time));
 
 	this.set("knightStates", @states);
-	this.set_s32("currentKnightState", 0);
+	
+	if (this.exists("currentKnightState"))
+		knight.state = this.get_s32("currentKnightState");
+	else 
+		this.set_s32("currentKnightState", 0);
+	
 
 	this.set_f32("gib health", -1.5f);
 	addShieldVars(this, SHIELD_BLOCK_ANGLE, 2.0f, 5.0f);
