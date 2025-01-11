@@ -166,9 +166,8 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			{
 				newBlob.set_string("emote", caller.get_string("emote"));
 				newBlob.set_u32("emotetime", caller.get_u32("emotetime"));
-				bool client = caller.getPlayer() !is null && caller.isMyPlayer();
-				newBlob.Sync("emote", !client);
-				newBlob.Sync("emotettime", !client);
+				newBlob.Sync("emote", true);
+				newBlob.Sync("emotetime", true);
 			}
 
 			// plug the soul
