@@ -119,23 +119,23 @@ void onSetPlayer(CBlob@ this, CPlayer@ player)
 	}
 }
 
-
-void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
-{
+void HandleSyncedState(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
+{	
 	KnightState@[]@ states;
 	if (!this.get("knightStates", @states))
 	{
 		return;
 	}
 
-	s32 currentStateIndex = this.get_s32("currentKnightState");
-
-	if (getNet().isClient())
+	if (isClient())
 	{
 		if (this.exists("serverKnightState"))
 		{
+			s32 currentStateIndex = this.get_s32("currentKnightState");
 			s32 serverStateIndex = this.get_s32("serverKnightState");
+
 			this.set_s32("serverKnightState", -1);
+			
 			if (serverStateIndex != -1 && serverStateIndex != currentStateIndex)
 			{
 				KnightState@ serverState = states[serverStateIndex];
@@ -152,7 +152,6 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 								serverState.stateEnteredTime = getGameTime();
 								serverState.StateEntered(this, knight, serverState.getStateValue());
 								this.set_s32("currentKnightState", serverStateIndex);
-								currentStateIndex = serverStateIndex;
 							}
 
 						}
@@ -165,14 +164,24 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 					serverState.stateEnteredTime = getGameTime();
 					serverState.StateEntered(this, knight, serverState.getStateValue());
 					this.set_s32("currentKnightState", serverStateIndex);
-					currentStateIndex = serverStateIndex;
 				}
 
 			}
+
 		}
 	}
+}
 
 
+void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
+{
+	KnightState@[]@ states;
+	if (!this.get("knightStates", @states))
+	{
+		return;
+	}
+
+	s32 currentStateIndex = this.get_s32("currentKnightState");
 
 	u8 state = knight.state;
 	KnightState@ currentState = states[currentStateIndex];
@@ -193,7 +202,7 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 				nextState.stateEnteredTime = getGameTime();
 				nextState.StateEntered(this, knight, currentState.getStateValue());
 				this.set_s32("currentKnightState", nextStateIndex);
-				if (getNet().isServer() && knight.state >= KnightStates::sword_drawn && knight.state <= KnightStates::sword_power_super)
+				if (isServer() && knight.state >= KnightStates::shielding && knight.state <= KnightStates::sword_power_super)
 				{
 					this.set_s32("serverKnightState", nextStateIndex);
 					this.Sync("serverKnightState", true);
@@ -202,7 +211,6 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 				if (tickNext)
 				{
 					RunStateMachine(this, knight, moveVars);
-
 				}
 				break;
 			}
@@ -243,6 +251,7 @@ void onTick(CBlob@ this)
 
 	if (!knocked)
 	{
+		HandleSyncedState(this, knight, moveVars);
 		RunStateMachine(this, knight, moveVars);
 	}
 
