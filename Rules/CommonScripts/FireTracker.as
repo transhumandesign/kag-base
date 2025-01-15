@@ -7,26 +7,27 @@ uint[] active_positions;
 Vec2f offsetToWorldspace(uint offset) {
     CMap@ map = @getMap();
     int X = offset % map.tilemapwidth;
-	int Y = offset / map.tilemapwidth;
+    int Y = offset / map.tilemapwidth;
 
-	Vec2f pos = Vec2f(X, Y);
-	float ts = map.tilesize;
+    Vec2f pos = Vec2f(X, Y);
+    float ts = map.tilesize;
 
     return pos * ts;
 }
 
-void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out col)
+void onMapFloodLayerUpdate( CMap@ map, s32 offset )
 {
-    if (map.isInFire(offsetToWorldspace(offset)))
-	{
+    Vec2f posWorldspace = map.getTileWorldPosition(offset);
+
+    if (map.isInFire(posWorldspace))
+    {
         if (active_positions.find(offset) >= 0)
         {
             return;
         }
 
-
         active_positions.insertLast(offset);
-	}
+    }
     else
     {
         int index = active_positions.find(offset);
@@ -35,8 +36,6 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
             active_positions.removeAt(index);
         }
     }
-
-    col = col;
 }
 
 void onRestart(CRules@ rules)
@@ -64,11 +63,11 @@ void onTick(CRules@ rules)
         {
             MakeBasicLightParticle(
                 offsetToWorldspace(active_positions[i]) + half_tile,
-                Vec2f(0.0f, -0.8f - r.NextFloat() * 1.6f),
+                Vec2f(0.0f, -0.8f - r.NextFloat() * 0.8f),
                 SColor(255, 120, 10, 0),
-                0.97f,
+                0.94f,
                 0.3f,
-                45
+                40
             );
         }
     }
