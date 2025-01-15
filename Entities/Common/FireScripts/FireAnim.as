@@ -40,7 +40,7 @@ void onTick(CSprite@ this)
 		//if we're burning
 		if (blob.hasTag(burning_tag))
 		{
-			this.getCurrentScript().tickFrequency = 8;
+			this.getCurrentScript().tickFrequency = 5;
 
 			fire.SetVisible(true);
 
@@ -57,7 +57,7 @@ void onTick(CSprite@ this)
 			MakeBasicLightParticle(
 				blob.getPosition(),
 				blob.getVelocity() * 0.2f + Vec2f(0.0f, -0.8f - r.NextFloat() * 0.8f),
-				SColor(255, 120, 10, 0),
+				SColor(255, 75, 7, 0),
 				0.94f,
 				0.3f,
 				40
