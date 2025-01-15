@@ -241,12 +241,19 @@ void onTick(CBlob@ this)
 			this.getSprite().SetAnimation("fire");
 
 			offset.RotateBy(-angle);
-			offset += (Vec2f(r.NextFloat(), r.NextFloat()) - Vec2f(0.5, 0.5)) * 3.0f;
+			offset += (Vec2f(r.NextFloat(), r.NextFloat()) - Vec2f(0.5, 0.5)) * 6.0f;
+
 			CParticle@ fire = makeFireParticle(this.getPosition() + offset, 4);
-			fire.velocity = this.getVelocity() * 0.03f - Vec2f(0.0f, 0.8f + r.NextFloat() * 0.4f);
+			fire.velocity = -this.getVelocity() * 0.06f - Vec2f(0.0f, 0.8f + r.NextFloat() * 0.4f);
 			fire.gravity = Vec2f(0.0f, 0.0f);
-			// fire.collides = true;
-			// fire.fastcollision = true;
+
+			if (this.getVelocity().Length() > 2.0f)
+			{
+				offset += (Vec2f(r.NextFloat(), r.NextFloat()) - Vec2f(0.5, 0.5)) * 6.0f;
+				CParticle@ fire2 = makeFireParticle(Vec2f_lerp(this.getOldPosition(), this.getPosition(), 0.5f) + offset, 4);
+				fire.velocity = -Vec2f_lerp(this.getOldVelocity(), this.getOldVelocity(), 0.5f)  * 0.06f - Vec2f(0.0f, 0.8f + r.NextFloat() * 0.4f);
+				fire.gravity = Vec2f(0.0f, 0.0f);
+			}
 
 			if (this.isInWater())
 			{
