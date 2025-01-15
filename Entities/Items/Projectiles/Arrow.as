@@ -263,7 +263,7 @@ void onTick(CBlob@ this)
 
 		if (gametime % 1 == 0)
 		{
-			CParticle@ light = MakeBasicLightParticle(this.getPosition() + offset, Vec2f(0.0f, -0.25f), SColor(255, 100, 25, 0), 0.92f, 0.2f, 30);
+			CParticle@ light = MakeBasicLightParticle(this.getPosition() + offset, Vec2f(0.0f, -0.9f), SColor(255, 100, 25, 0), 0.92f, 0.2f, 30);
 		}
 	}
 }
