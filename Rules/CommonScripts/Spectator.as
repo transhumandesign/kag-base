@@ -222,7 +222,7 @@ void Spectator(CRules@ this)
 			}
 		}
 	}
-	else if (!waitForRelease && controls.isKeyPressed(KEY_LBUTTON) && camera.getTarget() is null) //classic-like held mouse moving
+	else if (!waitForRelease && controls.isKeyPressed(KEY_LBUTTON) && camera.getTarget() is null && getHUD().getHoveredMenu() is null) //classic-like held mouse moving
 	{
 		// HACK: this is terrible and we need proper GUI and cursor capture shit
 		// ofc this is still an issue with the queue stuff now :upside_down:
