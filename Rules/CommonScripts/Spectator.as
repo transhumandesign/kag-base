@@ -137,64 +137,84 @@ void Spectator(CRules@ this)
 		timeToScroll -= getRenderApproximateCorrectionFactor();
 	}
 
-	//move camera using action movement keys
-	if (controls.ActionKeyPressed(AK_MOVE_LEFT))
+	CBlob@ spawnMenuBlob;
+	CBlob@ spawnSoonBlob;
+	if (this.get("hovered spawn menu blob", @spawnMenuBlob) && spawnMenuBlob !is null)
 	{
-		posActual.x -= camSpeed;
-		SetTargetPlayer(null);
-		setCinematicEnabled(false);
-	}
-	if (controls.ActionKeyPressed(AK_MOVE_RIGHT))
-	{
-		posActual.x += camSpeed;
-		SetTargetPlayer(null);
-		setCinematicEnabled(false);
-	}
-	if (controls.ActionKeyPressed(AK_MOVE_UP))
-	{
-		posActual.y -= camSpeed;
-		SetTargetPlayer(null);
-		setCinematicEnabled(false);
-	}
-	if (controls.ActionKeyPressed(AK_MOVE_DOWN))
-	{
-		posActual.y += camSpeed;
-		SetTargetPlayer(null);
-		setCinematicEnabled(false);
-	}
+		// force peek at hovered spawn blob
+		camera.setTarget(@spawnMenuBlob);
+		camera.setPosition(spawnMenuBlob.getInterpolatedPosition());
 
-    if (controls.isKeyJustReleased(KEY_LBUTTON))
-    {
-        waitForRelease = false;
-    }
-
-	if (!isCinematicEnabled() || targetPlayer() !is null) //player-controlled zoom
+		return;
+	}
+	else if (this.get("spawn soon blob", @spawnSoonBlob) && spawnSoonBlob !is null)
 	{
-		if (Maths::Abs(camera.targetDistance - zoomTarget) > 0.001f)
+		posTarget = spawnSoonBlob.getInterpolatedPosition();
+		const float corrFactor = getRenderApproximateCorrectionFactor();
+		camera.targetDistance = (camera.targetDistance * (3.0f - getRenderApproximateCorrectionFactor() + 1.0f) + (0.5f * getRenderApproximateCorrectionFactor())) / 4.0f;
+		posActual = Vec2f_lerp(posActual, posTarget, 0.1f);
+	}
+	else
+	{
+		//move camera using action movement keys
+		if (controls.ActionKeyPressed(AK_MOVE_LEFT))
 		{
-			camera.targetDistance = (camera.targetDistance * (3.0f - getRenderApproximateCorrectionFactor() + 1.0f) + (zoomTarget * getRenderApproximateCorrectionFactor())) / 4.0f;
+			posActual.x -= camSpeed;
+			SetTargetPlayer(null);
+			setCinematicEnabled(false);
 		}
-		else
+		if (controls.ActionKeyPressed(AK_MOVE_RIGHT))
 		{
-			camera.targetDistance = zoomTarget;
+			posActual.x += camSpeed;
+			SetTargetPlayer(null);
+			setCinematicEnabled(false);
+		}
+		if (controls.ActionKeyPressed(AK_MOVE_UP))
+		{
+			posActual.y -= camSpeed;
+			SetTargetPlayer(null);
+			setCinematicEnabled(false);
+		}
+		if (controls.ActionKeyPressed(AK_MOVE_DOWN))
+		{
+			posActual.y += camSpeed;
+			SetTargetPlayer(null);
+			setCinematicEnabled(false);
+		}
+	
+		if (controls.isKeyJustReleased(KEY_LBUTTON))
+		{
+			waitForRelease = false;
 		}
 
-		if (AUTO_CINEMATIC_TIME > 0)
+		if (!isCinematicEnabled() || targetPlayer() !is null) //player-controlled zoom
 		{
-			timeToCinematic -= getRenderSmoothDeltaTime();
-			if (timeToCinematic <= 0)
+			if (Maths::Abs(camera.targetDistance - zoomTarget) > 0.001f)
 			{
-				setCinematicEnabled(true);
+				camera.targetDistance = (camera.targetDistance * (3.0f - getRenderApproximateCorrectionFactor() + 1.0f) + (zoomTarget * getRenderApproximateCorrectionFactor())) / 4.0f;
+			}
+			else
+			{
+				camera.targetDistance = zoomTarget;
+			}
+
+			if (AUTO_CINEMATIC_TIME > 0)
+			{
+				timeToCinematic -= getRenderSmoothDeltaTime();
+				if (timeToCinematic <= 0)
+				{
+					setCinematicEnabled(true);
+				}
 			}
 		}
-	}
-	else //cinematic camera
-	{
-		const float corrFactor = getRenderApproximateCorrectionFactor();
-		camera.targetDistance += (zoomTarget - camera.targetDistance) / CINEMATIC_ZOOM_EASE * corrFactor * zoomEaseModifier;
+		else //cinematic camera
+		{
+			const float corrFactor = getRenderApproximateCorrectionFactor();
+			camera.targetDistance += (zoomTarget - camera.targetDistance) / CINEMATIC_ZOOM_EASE * corrFactor * zoomEaseModifier;
 
-		posActual.x = ease(posActual.x, posTarget.x, corrFactor / CINEMATIC_PAN_X_EASE);
-		posActual.y = ease(posActual.y, posTarget.y, corrFactor / CINEMATIC_PAN_Y_EASE);
+			posActual.x = ease(posActual.x, posTarget.x, corrFactor / CINEMATIC_PAN_X_EASE);
+			posActual.y = ease(posActual.y, posTarget.y, corrFactor / CINEMATIC_PAN_Y_EASE);
+		}
 	}
 
 	//click on players to track them or set camera to mousePos
