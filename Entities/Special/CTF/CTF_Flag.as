@@ -202,6 +202,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 	bool needsmessage = false;
 	string message = "";
+	string username = "";
 
 	if (cmd == this.getCommandID("pickup flag client"))
 	{
@@ -212,7 +213,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (blob !is null && blob.getPlayer() !is null)
 		{
 			needsmessage = true;
-			message = "picked up by " + blob.getPlayer().getUsername() + "!";
+			message = "picked up by {PLAYER}!";
+			username = blob.getPlayer().getUsername();
 
 			Sound::Play("/flag_capture.ogg");
 		}
@@ -226,7 +228,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (blob !is null && blob.getPlayer() !is null)
 		{
 			needsmessage = true;
-			message = "captured by " + blob.getPlayer().getUsername() + "!";
+			message = "captured by {PLAYER}!";
+			username = blob.getPlayer().getUsername();
 
 			Sound::Play("/flag_score.ogg");
 		}
@@ -247,9 +250,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		CRules@ rules = getRules();
 		const int team = this.getTeamNum();
-		const string myTeamName = (team < rules.getTeamsCount() ? rules.getTeam(team).getName() + "'s" : "");
+		const string myTeamName = (team < rules.getTeamsCount() ? getTranslatedString("{TEAM}'s ").replace("{TEAM}", getTranslatedString(rules.getTeam(team).getName())) : "");
 
-		client_AddToChat(myTeamName + " flag has been " + message);
+		client_AddToChat(getTranslatedString("{TEAM_S}flag has been " + message).replace("{TEAMS}", myTeamName).replace("{PLAYER}", username));
 	}
 }
 

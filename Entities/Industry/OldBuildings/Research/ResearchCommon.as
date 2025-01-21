@@ -69,7 +69,7 @@ shared void ResearchCompleteNotify( ScrollDef@ def, const u8 team )
 	if (player !is null && player.getTeamNum() == team && !getNet().isServer())  // only on multiplayer
 	{
 		Sound::Play("/ResearchComplete.ogg");
-		client_AddToChat( def.name + " available." );
+		client_AddToChat(getTranslatedString("{NAME} available.").replace("{NAME}",  def.name));
 	}	
 }
 
