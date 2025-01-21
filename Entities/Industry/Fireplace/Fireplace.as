@@ -94,16 +94,16 @@ void onInit(CSprite@ this)
 
 void onTick(CSprite@ this)
 {
-	if (getGameTime() % 2 == 0)
+	if (getGameTime() % 2 == 0 && this.isAnimation("fire"))
 	{
 		Random r(XORRandom(9999));
 
 		CParticle@ light = MakeBasicLightParticle(
 			this.getBlob().getPosition() + Vec2f((r.NextFloat() - 0.5f) * 16.0f, (r.NextFloat() - 0.5f) * 16.0f),
-			Vec2f(0.0f, -3.0f),
-			SColor(255, 120, 60, 20),
-			0.92f,
-			0.4f,
+			Vec2f((r.NextFloat() - 0.5f) * 2.0f, -2.0f - (r.NextFloat() - 0.5f) * 1.0f),
+			SColor(255, 120, 30, 25),
+			0.95f,
+			0.3f + r.NextFloat() * 0.2f,
 			30
 		);
 	}
