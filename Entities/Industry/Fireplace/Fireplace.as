@@ -11,7 +11,7 @@
 
 void onInit(CBlob@ this)
 {
-	this.getCurrentScript().tickFrequency = 9;
+	this.getCurrentScript().tickFrequency = 8;
 	this.getSprite().SetEmitSound("CampfireSound.ogg");
 	this.getSprite().SetEmitSoundPaused(false);
 	this.getSprite().SetAnimation("fire");
@@ -30,7 +30,16 @@ void onTick(CBlob@ this)
 {
 	if (this.getSprite().isAnimation("fire"))
 	{
-		makeFireParticle(this.getPosition() + getRandomVelocity(90.0f, 3.0f, 90.0f));
+		Vec2f variation = getRandomVelocity(90.0f, 5.0f, 90.0f);
+		CParticle@ particle = makeFireParticle(this.getPosition() + Vec2f(0.0, 6.0f) + variation);
+
+		if (particle !is null)
+		{
+			particle.velocity.x -= variation.x * 0.03;
+			particle.velocity.y -= 0.2f;
+			particle.gravity.y *= 0.5f;
+			// particle.framestep *= 2;
+		}
 	}
 
 	if (this.isInWater())
