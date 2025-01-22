@@ -14,7 +14,10 @@ void onInit(CBlob@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (!solid || this.isInInventory() || this.hasTag("invincible"))
+	if (!solid 
+		|| this.isInInventory()
+		|| this.hasTag("invincible")
+		|| (this.exists("last fall hit") && this.get_u32("last fall hit") == getGameTime()))
 	{
 		return;
 	}
@@ -59,11 +62,14 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			if (damage > 0.1f)
 			{
 				this.server_Hit(this, point1, normal, damage, Hitters::fall);
+				this.set_u32("last fall hit", getGameTime()); // fixes bug of this code running twice in the same tick
 			}
 			else
 			{
 				doknockdown = false;
 			}
+			
+			
 		}
 
 		if (doknockdown)
