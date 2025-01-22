@@ -1,4 +1,5 @@
 #include "Help.as";
+#include "RunnerCommon.as";
 
 namespace Trampoline
 {
@@ -138,6 +139,17 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			velocity.RotateBy(angle);
 
 			blob.setVelocity(velocity);
+			
+			// reset wall climb status
+			if (blob.hasTag("player"))
+			{
+				RunnerMoveVars@ moveVars;
+				if (blob.get("moveVars", @moveVars))
+				{
+					moveVars.wallrun_count = 0;
+					moveVars.walljumped_side = Walljump::NONE;
+				}
+			}
 
 			CSprite@ sprite = this.getSprite();
 			if (sprite !is null)
