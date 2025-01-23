@@ -10,6 +10,21 @@ void onInit(CRules@ this)
 		this.set_u32("game_end_time", 0);
 	if (!this.exists("end_in"))
 		this.set_s32("end_in", 0);
+	if (!this.exists("exclude_global_messages"))
+		this.set_bool("exclude_global_messages", false);
+}
+
+void handleGlobalMessage(CRules@ this, string message, string messageToReplace = "", string replaceWith = "")
+{
+	if (this.get_bool("exclude_global_messages"))
+	{
+		return;
+	}
+	this.SetGlobalMessage(message);
+	if (messageToReplace != "" && replaceWith != "")
+	{
+		this.AddGlobalMessageReplacement(messageToReplace, replaceWith);
+	}
 }
 
 void onTick(CRules@ this)
@@ -45,18 +60,16 @@ void onTick(CRules@ this)
 			if (teamWon !is null)
 			{
 				hasWinner = true;
-				this.SetGlobalMessage("Time is up!\n{WINNING_TEAM} wins the game!");
-				this.AddGlobalMessageReplacement("WINNING_TEAM", teamWon.getName());
-				
+				handleGlobalMessage(this, "Time is up!\n{WINNING_TEAM} wins the game!", "WINNING_TEAM", teamWon.getName());
 			}
 		}
 
 		if (!hasWinner)
 		{
-			this.SetGlobalMessage("Time is up!\nIt's a tie!");
+			handleGlobalMessage(this, "Time is up!\nIt's a tie!");
 		}
-
-		//GAME OVER
+		
+		// GAME_OVER
 		this.SetCurrentState(3);
 	}
 }
