@@ -6,6 +6,7 @@
 #include "RunnerTextures.as"
 #include "Accolades.as"
 #include "HolidayCommon.as"
+#include "CustomHeadData.as";
 
 const s32 NUM_HEADFRAMES = 4;
 const s32 NUM_UNIQUEHEADS = 30;
@@ -120,8 +121,15 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 		{
 			Accolades@ acc = getPlayerAccolades(player.getUsername());
 			CRules@ rules = getRules();
-
-			if (acc.hasCustomHead())
+			
+			if (true || player.getSupportTier() >= SUPPORT_TIER_ROYALGUARD)
+			{
+				texture_file = player.getUsername() + "-CustomHead";
+				headIndex = 0;
+				headsPackIndex = 0;
+				override_frame = true;
+			}
+			else if (acc.hasCustomHead())
 			{
 				texture_file = acc.customHeadTexture;
 				headIndex = acc.customHeadIndex;
@@ -155,7 +163,9 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	int skin = doSkinColour(headsPackIndex) ? blob.getSkinNum() : 0;
 
 	//add new head
-	CSpriteLayer@ head = this.addSpriteLayer("head", texture_file, 16, 16, team, skin);
+	
+	CSpriteLayer@ head = this.addTexturedSpriteLayer("head", texture_file, 16, 16);
+	// CSpriteLayer@ head = this.addSpriteLayer("head", texture_file, 16, 16, team, skin);
 
 	//
 	headIndex = headIndex % 256; // wrap DLC heads into "pack space"
