@@ -119,20 +119,12 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 		//todo: consider pulling other custom head stuff out to here
 		if (player !is null && !player.isBot() && headIndex >= NUM_UNIQUEHEADS)
 		{
-			Accolades@ acc = getPlayerAccolades(player.getUsername());
 			CRules@ rules = getRules();
 			
-			if (true || player.getSupportTier() >= SUPPORT_TIER_ROYALGUARD)
+			if (isCustomHeadAllowed(player))
 			{
-				texture_file = player.getUsername() + "-CustomHead";
+				texture_file = getPlayerHeadName(player);
 				headIndex = 0;
-				headsPackIndex = 0;
-				override_frame = true;
-			}
-			else if (acc.hasCustomHead())
-			{
-				texture_file = acc.customHeadTexture;
-				headIndex = acc.customHeadIndex;
 				headsPackIndex = 0;
 				override_frame = true;
 			}

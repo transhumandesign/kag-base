@@ -77,3 +77,13 @@ bool isCustomHeadAllowed(CPlayer@ player)
 
     return false;
 }
+
+string getPlayerHeadName(CPlayer@ player)
+{
+    if (player is null) {
+        warn("getPlayerHeadName was passed a null player");
+        return "";
+    }
+
+    return player.getUsername() + "-CustomHead";
+}
