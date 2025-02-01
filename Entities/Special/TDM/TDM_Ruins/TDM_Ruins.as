@@ -12,7 +12,6 @@ void onInit(CBlob@ this)
 	//TDM classes
 	addPlayerClass(this, "Knight", "$knight_class_icon$", "knight", "Hack and Slash.");
 	addPlayerClass(this, "Archer", "$archer_class_icon$", "archer", "The Ranged Advantage.");
-	this.getShape().SetStatic(true);
 	this.getShape().getConsts().mapCollisions = false;
 	this.addCommandID("change class");
 
