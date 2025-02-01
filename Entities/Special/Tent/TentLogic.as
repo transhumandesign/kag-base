@@ -19,6 +19,13 @@ void onInit(CBlob@ this)
 	this.Tag("change class drop inventory");
 
 	this.Tag("respawn");
+	
+	CShape@ shape = this.getShape();
+	if (shape !is null)
+	{
+		shape.SetStatic(true);
+		shape.getConsts().mapCollisions = false;
+	}
 
 	// minimap
 	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);

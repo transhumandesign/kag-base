@@ -54,6 +54,8 @@ namespace Material
 			this.server_SetQuantity(sum);
 			blob.Tag("AdminAlertIgnore");
 			blob.Sync("AdminAlertIgnore", true);
+
+			blob.server_SetQuantity(0);
 			blob.server_Die();
 		}
 		else
@@ -70,6 +72,8 @@ namespace Material
 		if (this.getName() != blob.getName()) return false;
 
 		if (this is blob) return false;
+
+		if (blob.getQuantity() == 0) return false;
 
 		// Materials in-use are supposed
 		// to have a fixed quantity

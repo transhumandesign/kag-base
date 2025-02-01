@@ -1,11 +1,8 @@
 // Obstructor.as
 
-#include "MechanismsCommon.as";
 #include "DummyCommon.as";
+#include "MechanismsCommon.as";
 #include "Hitters.as";
-
-const u8 BURNOUT_COUNTER_MAX = 32;
-const u8 BURNOUT_TIME_STEP = 8;
 
 class Obstructor : Component
 {
@@ -21,68 +18,47 @@ class Obstructor : Component
 
 	void Activate(CBlob@ this)
 	{
-		if (!isObstructed(this))
-		{
-			if (getNet().isServer())
-			{
-				getMap().server_SetTile(this.getPosition(), Dummy::OBSTRUCTOR);
-			}
+		CSprite@ sprite = this.getSprite();
+		sprite.SetAnimation("closed");
+		sprite.PlaySound("door_close.ogg");
+		sprite.SetRelativeZ(600);
+		MakeDamageFrame(this);
 
-			this.getSprite().PlaySound("door_close.ogg");
-		}
-		else
-		{
-			this.Tag("obstructed");
-
-			this.set_u32("burnout_time", getGameTime() + BURNOUT_TIME_STEP);
-			this.set_u8("burnout_counter", 0);
-
-			CSprite@ sprite = this.getSprite();
-			if (sprite !is null)
-			{
-				sprite.RewindEmitSound();
-				sprite.SetEmitSoundPaused(false);
-			}
-		}
+		SetMapObstructed(this, true);
 	}
 
 	void Deactivate(CBlob@ this)
 	{
-		this.Untag("obstructed");
-
-		CMap@ map = getMap();
-		if (map !is null)
+		CSprite@ sprite = this.getSprite();
+		sprite.SetAnimation("open");
+		sprite.PlaySound("door_close.ogg");
+		sprite.SetRelativeZ(0);
+		MakeDamageFrame(this);
+		
+		for (u16 i = 0; i < this.getTouchingCount(); i++)
 		{
-			this.getSprite().SetEmitSoundPaused(true);
-
-			if (map.getTile(this.getPosition()).type == Dummy::OBSTRUCTOR)
-			{
-				this.getSprite().PlaySound("door_close.ogg");
-			}
-
-			if (getNet().isServer())
-			{
-				map.server_SetTile(this.getPosition(), Dummy::OBSTRUCTOR_BACKGROUND);
-			}
+			this.getTouchingByIndex(i).AddForce(Vec2f_zero); // forces collision checks again
 		}
+
+		SetMapObstructed(this, false);
 	}
 }
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
 	// used by KnightLogic.as
 	this.Tag("ignore sword");
 
-	// used by DummyOnStatic.as
-	this.set_TileType(Dummy::TILE, Dummy::OBSTRUCTOR_BACKGROUND);
+	// used by TileBackground.as
+	this.set_TileType("background tile", CMap::tile_castle_back);
 
-	this.getCurrentScript().tickIfTag = "obstructed";
+	this.getShape().getConsts().collidable = false;
+	this.getShape().getConsts().waterPasses = true;
+
+	this.server_setTeamNum(-1);
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -94,7 +70,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Obstructor component(POSITION, this.getNetworkID());
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -110,73 +86,73 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if (sprite !is null)
+	sprite.SetZ(-50);
+	sprite.SetFacingLeft(false);
+	MakeDamageFrame(this);
+}
+
+void onBlobCollapse(CBlob@ this)
+{
+	this.server_Die();
+}
+
+void onDie(CBlob@ this)
+{
+	if (this.exists("component"))
 	{
-		sprite.SetZ(-50);
-		sprite.SetFacingLeft(false);
-		sprite.SetEmitSound("Jammed.ogg");
+		getMap().server_SetTile(this.getPosition(), CMap::tile_empty);
 	}
 }
 
-void onTick(CBlob@ this)
+void SetMapObstructed(CBlob@ this, const bool&in obstructed)
 {
-	const u32 TIME = getGameTime();
-	if (this.get_u32("burnout_time") + BURNOUT_TIME_STEP > TIME)
+	this.getShape().getConsts().collidable = obstructed;
+
+	CMap@ map = getMap();
+	const u16 type = obstructed ? Dummy::OBSTRUCTOR : Dummy::OBSTRUCTOR_BACKGROUND;
+	map.server_SetTile(this.getPosition(), type);
+}
+
+void onHealthChange(CBlob@ this, f32 oldHealth)
+{
+	MakeDamageFrame(this);
+}
+
+void MakeDamageFrame(CBlob@ this)
+{
+	CSprite@ sprite = this.getSprite();
+	const f32 hp = this.getHealth();
+	const f32 full_hp = this.getInitialHealth();
+	if (hp < full_hp)
 	{
-		if (!isObstructed(this))
+		const f32 ratio = hp / full_hp;
+		if (ratio <= 0.0f)
 		{
-			this.Untag("obstructed");
-
-			if (getNet().isServer())
-			{
-				getMap().server_SetTile(this.getPosition(), Dummy::OBSTRUCTOR);
-			}
-
-			CSprite@ sprite = this.getSprite();
-			if (sprite !is null)
-			{
-				sprite.SetEmitSoundPaused(true);
-				sprite.PlaySound("door_close.ogg");
-			}
+			sprite.animation.frame = sprite.animation.getFramesCount() - 1;
 		}
 		else
 		{
-			const u8 BURNOUT_COUNTER = this.get_u8("burnout_counter") + 1;
-			if (BURNOUT_COUNTER < BURNOUT_COUNTER_MAX)
-			{
-				this.set_u32("burnout_time", TIME + BURNOUT_TIME_STEP);
-				this.set_u8("burnout_counter", BURNOUT_COUNTER);
-			}
-			else
-			{
-				this.Untag("obstructed");
-
-				this.getSprite().SetEmitSoundPaused(true);
-			}
+			sprite.animation.frame = (1.0f - ratio) * (sprite.animation.getFramesCount());
 		}
 	}
 }
 
-bool isObstructed(CBlob@ this)
+void onSendCreateData(CBlob@ this, CBitStream@ stream)
 {
-	const Vec2f POSITION = this.getPosition();
-
-	CBlob@[] blobs;
-	if (getMap().getBlobsAtPosition(POSITION, @blobs))
-	{
-		for(u32 i = 0; i < blobs.length; i++)
-		{
-			CBlob@ blob = blobs[i];
-			if (blob !is this)
-			{
-				return true;
-			}
-		}
-	}
-	return false;
+	stream.write_bool(this.getShape().getConsts().collidable);
 }
 
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 {
-	return false;
+	bool collidable;
+	if (!stream.saferead_bool(collidable)) return false;
+
+	this.getShape().getConsts().collidable = collidable;
+
+	CSprite@ sprite = this.getSprite();
+	sprite.SetAnimation(collidable ? "closed" : "open");
+	sprite.SetRelativeZ(collidable ? 600 : 0);
+	MakeDamageFrame(this);
+
+	return true;
 }
