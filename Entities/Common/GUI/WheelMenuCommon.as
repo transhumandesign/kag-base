@@ -38,6 +38,7 @@ class WheelMenuEntry
 	float angle_min, angle_max;
 	Vec2f position;
 	bool hovered;
+	bool disabled = false;
 
 	SColor get_color()
 	{
@@ -59,6 +60,11 @@ class WheelMenuEntry
 	void render()
 	{
 		GUI::DrawTextCentered(visible_name, position, get_color());
+	}
+	
+	bool opEquals(WheelMenuEntry@ other)
+	{
+		return this.name == other.name;
 	}
 };
 
@@ -89,53 +95,23 @@ class IconWheelMenuEntry : WheelMenuEntry
 	}
 };
 
-class PickupWheelOption
-{
-	string name;
-
-	// If two options are available with a different priority, regardless of score, we pick the one with the highest priority.
-	uint priority;
-
-	PickupWheelOption(const string&in p_name, uint p_priority = 0)
-	{
-		name = p_name;
-		priority = p_priority;
-	}
-};
-
 class PickupWheelMenuEntry : WheelMenuEntry
 {
 	// Visual parameters
 	string icon_name;
-	float scale;
-	bool disabled;
-	PickupWheelOption[] options;
 	Vec2f offset;
 
-	PickupWheelMenuEntry(const string&in p_name, const string&in p_icon_name, const string&in p_option, Vec2f p_offset = Vec2f(0, 0))
-	{
-		this = PickupWheelMenuEntry(p_name, p_icon_name, PickupWheelOption[](1, PickupWheelOption(p_option)), p_offset);
-	}
-
-	PickupWheelMenuEntry(const string&in p_name, const string&in p_icon_name, PickupWheelOption[] p_options, Vec2f p_offset = Vec2f(0, 0))
+	PickupWheelMenuEntry(const string&in p_name, const string&in p_visible_name, const string&in p_icon_name, Vec2f p_offset = Vec2f(0, 0))
 	{
 		super(p_name);
-		visible_name = p_name;
+		visible_name = p_visible_name;
 		icon_name = p_icon_name;
-		options = p_options;
-		scale = 1.0f;
-		disabled = false;
 		offset = p_offset;
 		item_distance = 0.25f; // override
 	}
 
 	void render() override
 	{
-		if (disabled)
-		{
-			return;
-		}
-
 		GUI::DrawIcon(
 			"InteractionIconsBackground.png",
 			0,
@@ -147,7 +123,7 @@ class PickupWheelMenuEntry : WheelMenuEntry
 		GUI::DrawIconByName(
 			icon_name,
 			position + offset - Vec2f(16, 16),
-			scale
+			1.0f
 		);
 	}
 };
@@ -207,7 +183,10 @@ class WheelMenu
 		// ignore cursor at center of the screen
 		if (is_cursor_in_range(cursor, WheelMenu::hover_distance))
 		{
-			@hovered = get_entry_from_position(cursor);
+			WheelMenuEntry@ entry = get_entry_from_position(cursor);
+			if (entry !is null && entry.disabled) return;
+
+			@hovered = entry;
 
             if (previously_hovered !is hovered)
 			{
@@ -309,8 +288,11 @@ class WheelMenu
 
 		for (int i = 0; i < entries.length; ++i)
 		{
-			entries[i].hovered = (entries[i] is hovered);
-			entries[i].render();
+			WheelMenuEntry@ entry = entries[i];
+			if (entry.disabled) continue;
+
+			entry.hovered = entry is hovered;
+			entry.render();
 		}
 	}
 
