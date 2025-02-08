@@ -155,9 +155,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	int skin = doSkinColour(headsPackIndex) ? blob.getSkinNum() : 0;
 
 	//add new head
-	
-	CSpriteLayer@ head = this.addTexturedSpriteLayer("head", texture_file, 16, 16);
-	// CSpriteLayer@ head = this.addSpriteLayer("head", texture_file, 16, 16, team, skin);
+	CSpriteLayer@ head = this.addTexturedSpriteLayer("head", ApplyTeamTexture(texture_file, team, skin), 16, 16);
 
 	//
 	headIndex = headIndex % 256; // wrap DLC heads into "pack space"
