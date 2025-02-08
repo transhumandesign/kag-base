@@ -105,6 +105,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	int headsPackIndex = getHeadsPackIndex(headIndex);
 	HeadsPack@ pack = getHeadsPackByIndex(headsPackIndex);
 	string texture_file = pack.filename;
+	bool useTextureData = false;
 
 	bool override_frame = false;
 
@@ -123,6 +124,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 			
 			if (isCustomHeadAllowed(player))
 			{
+				useTextureData = true;
 				texture_file = getCustomPlayerHeadName(player);
 				headIndex = 0;
 				headsPackIndex = 0;
@@ -155,7 +157,10 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	int skin = doSkinColour(headsPackIndex) ? blob.getSkinNum() : 0;
 
 	//add new head
-	CSpriteLayer@ head = this.addTexturedSpriteLayer("head", ApplyTeamTexture(texture_file, team, skin), 16, 16);
+	CSpriteLayer@ head = useTextureData ?
+		this.addTexturedSpriteLayer("head", ApplyTeamTexture(texture_file, team, skin), 16, 16) :
+		this.addSpriteLayer("head", texture_file, 16, 16, team, skin);
+
 
 	//
 	headIndex = headIndex % 256; // wrap DLC heads into "pack space"
