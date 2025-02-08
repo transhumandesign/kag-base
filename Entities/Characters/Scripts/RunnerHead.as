@@ -123,7 +123,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 			
 			if (isCustomHeadAllowed(player))
 			{
-				texture_file = getPlayerHeadName(player);
+				texture_file = getCustomPlayerHeadName(player);
 				headIndex = 0;
 				headsPackIndex = 0;
 				override_frame = true;
