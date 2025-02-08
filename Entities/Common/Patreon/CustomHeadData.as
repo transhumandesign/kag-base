@@ -55,25 +55,30 @@ HeadStorage@[]@ GetHeadStorage(CRules@ this)
 // - Super admin seclev (for localhost/server owner support)
 bool isCustomHeadAllowed(CPlayer@ player)
 {
-    if (player is null)
-        return false;
+    try {
+        if (player is null)
+            return false;
 
-    // NOTE to modders:
-    // Please keep Patreon heads enabled as it's what keeps KAG going!
-    if (player.getSupportTier() >= SUPPORT_TIER_ROUNDTABLE)
-        return true;
+        // NOTE to modders:
+        // Please keep Patreon heads enabled as it's what keeps KAG going!
+        if (player.getSupportTier() >= SUPPORT_TIER_ROUNDTABLE)
+            return true;
 
-    if (player.isDev() || player.hasCustomHead())
-        return true;
+        if (player.isDev() || player.hasCustomHead())
+            return true;
 
-    // TODO: Check how this works client side?
-    CSeclev@ seclev = getSecurity().getPlayerSeclev(player);
-    if (seclev.getName() == "Super Admin")
-        return true;
+        // TODO: Check how this works client side?
+        CSeclev@ seclev = getSecurity().getPlayerSeclev(player);
+        if (seclev.getName() == "Super Admin")
+            return true;
 
-    Accolades@ acc = getPlayerAccolades(player.getUsername());
-    if (acc.hasCustomHead())
-        return true;
+        Accolades@ acc = getPlayerAccolades(player.getUsername());
+        if (acc.hasCustomHead())
+            return true;
+
+    } catch {
+        warn("isCustomHeadAllowed failed, you may want to look into this!");
+    }
 
     return false;
 }
