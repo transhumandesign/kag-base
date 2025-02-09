@@ -1,0 +1,2 @@
+const int MAX_CHICKENS = 4;
+const f32 CHICKEN_LIMIT_RADIUS = 80.0f;
