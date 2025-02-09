@@ -1,7 +1,7 @@
 //Rock logic
 
-#include "/Entities/Common/Attacks/Hitters.as";
-#include "MakeDustParticle.as"
+#include "Hitters.as";
+#include "MakeDustParticle.as";
 
 // defines amount of damage as well as maximum separate hits
 // - in terms of this's health. see config
@@ -24,7 +24,7 @@ Random _r(0xca7a);
 
 void onInit(CBlob@ this)
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
 		this.server_SetTimeToDie(4 + _r.NextRanged(2));
 	}
@@ -97,13 +97,8 @@ void MakeRockDustParticle(Vec2f pos, string file, Vec2f vel=Vec2f(0.0, 0.0), int
 
 bool canHitBlob(CBlob@ this, CBlob@ blob)
 {
-
-	CBlob@ carrier = blob.getCarriedBlob();
-
-	if (carrier !is null)
-		if (carrier.hasTag("player")
-		        && (this.getTeamNum() == carrier.getTeamNum() || blob.hasTag("temp blob")))
-			return false;
+	if (isHeldByTeammate(blob, this))
+		return false;
 
 	return (this.getTeamNum() != blob.getTeamNum() || blob.getShape().isStatic())
 	       && !blob.hasTag("invincible");
