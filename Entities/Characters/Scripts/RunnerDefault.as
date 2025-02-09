@@ -41,6 +41,19 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 
 void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 {
+	if (attached.hasTag("no action while carrying"))
+	{
+		CAttachment@ att = attached.getAttachments();
+		if (att !is null) 
+		{
+			AttachmentPoint@ ap = att.getAttachmentPointByName("PICKUP");
+			if (ap !is null)
+			{
+				ap.SetKeysToTake(key_action1 | key_action2);
+			}
+		}
+	}
+
 	this.getSprite().PlaySound("/Pickup.ogg");
 
 	this.ClearButtons();

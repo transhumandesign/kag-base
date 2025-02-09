@@ -1339,4 +1339,12 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 		archer.grappling = false;
 		SyncGrapple(this);
 	}
+	
+	// make archer not shoot when picking up heavy objects
+	
+	if (attached.hasTag("no action while carrying") && attachedPoint.name == "PICKUP")
+	{
+		archer.charge_state = 0;
+		archer.charge_time = 0;
+	}
 }
