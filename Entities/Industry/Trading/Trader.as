@@ -17,6 +17,7 @@ void onInit(CBlob@ this)
 	this.getShape().SetRotationsAllowed(false);
 	this.set_f32("gib health", -1.5f);
 	this.Tag("flesh");
+	this.Tag("no death sound"); // has their own death scream
 	this.getBrain().server_SetActive(true);
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
