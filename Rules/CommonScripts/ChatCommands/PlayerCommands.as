@@ -104,7 +104,7 @@ class TeamCommand : ChatCommand
 			{
 				CBlob@ item = inv.getItem(i);
 				
-				if (item !is null)
+				if (item !is null && item.hasScript("SetTeamToCarrier.as"))
 				{
 					item.server_setTeamNum(team);
 				}
