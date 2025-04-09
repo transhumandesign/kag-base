@@ -12,6 +12,8 @@ u16[] pickup_netids;
 u16[] closest_netids;
 u16 hover_netid = 0;
 
+dictionary pickup_menu_indexes;
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
@@ -20,10 +22,48 @@ void onInit(CBlob@ this)
 	AddIconToken("$filled_bucket$", "Bucket.png", Vec2f(16, 16), 1);
 
 	// setup pickup menu wheel
-	WheelMenu@ menu = get_wheel_menu("pickup");
-	if (menu.entries.length == 0)
+	if (pickup_menu_indexes.getSize() == 0)
 	{
+		WheelMenu@ menu = get_wheel_menu("pickup");
 		menu.option_notice = getTranslatedString("Pickup");
+		
+		// knight stuff
+		pickup_menu_indexes.set("keg", 0);
+		pickup_menu_indexes.set("mat_bombs", 1);
+		pickup_menu_indexes.set("bomb", 1);
+		pickup_menu_indexes.set("mat_waterbombs", 2);
+		pickup_menu_indexes.set("waterbomb", 2);
+		pickup_menu_indexes.set("mine", 3);
+		
+		// archer stuff
+		pickup_menu_indexes.set("mat_arrows", 4);
+		pickup_menu_indexes.set("mat_waterarrows", 5);
+		pickup_menu_indexes.set("mat_firearrows", 6);
+		pickup_menu_indexes.set("mat_bombarrows", 7);
+		
+		// builder stuff
+		pickup_menu_indexes.set("mat_gold", 8);
+		pickup_menu_indexes.set("mat_stone", 9);
+		pickup_menu_indexes.set("mat_wood", 10);
+		pickup_menu_indexes.set("drill", 11);
+		pickup_menu_indexes.set("saw", 12);
+		pickup_menu_indexes.set("trampoline", 13);
+		pickup_menu_indexes.set("boulder", 14);
+		pickup_menu_indexes.set("sponge", 15);
+		pickup_menu_indexes.set("seed", 16);
+		
+		// misc
+		pickup_menu_indexes.set("log", 17);
+		pickup_menu_indexes.set("food", 18);
+		pickup_menu_indexes.set("heart", 18);
+		pickup_menu_indexes.set("fishy", 18);
+		pickup_menu_indexes.set("grain", 18);
+		pickup_menu_indexes.set("steak", 18);
+		pickup_menu_indexes.set("egg", 18);
+		pickup_menu_indexes.set("mat_bolts", 19);
+		pickup_menu_indexes.set("mat_bomb_bolts", 19);
+		pickup_menu_indexes.set("crate", 20);
+		pickup_menu_indexes.set("bucket", 21);
 	}
 }
 
@@ -78,7 +118,12 @@ void onTick(CBlob@ this)
 			PickupWheelMenuEntry entry(name, getTranslatedString(inventory_name), icon, Vec2f(offset_x, offset_y));
 			names.push_back(name);
 			
-			const u32 index = name.getHash() % pickup_wheel_size;
+			u32 index = name.getHash() % pickup_wheel_size;
+			if (pickup_menu_indexes.exists(name))
+			{
+				pickup_menu_indexes.get(name, index);
+			}
+
 			for (u32 p = 0; p < pickup_wheel_size; p++)
 			{
 				const u32 probe = (index + p) % pickup_wheel_size;
