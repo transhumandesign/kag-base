@@ -94,7 +94,7 @@ void onTick(CBlob@ this)
 		CBlob@[] available;
 		FillAvailable(this, available);
 
-		const u8 pickup_wheel_size = 20;
+		const u32 pickup_wheel_size = 22;
 		WheelMenuEntry@[] entries;
 		for (u32 i = 0; i < pickup_wheel_size; i++)
 		{
