@@ -1,4 +1,4 @@
-#include "CustomHead.as";
+#include "CustomHeads.as";
 
 // DUMB HACK:
 // getLocalPlayer is null in onInit(Crules@), 

@@ -1510,7 +1510,7 @@
 				<attributes>
 					<int name="Id" value="13625" />
 					<string name="Caption" value="Open Folder" />
-					<rect name="Rect" value="15, 80, 170, 120" />
+					<rect name="Rect" value="15, 160, 170, 200" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1537,7 +1537,7 @@
 				<attributes>
 					<int name="Id" value="13620" />
 					<string name="Caption" value="Refresh Head" />
-					<rect name="Rect" value="180, 80, 340, 120" />
+					<rect name="Rect" value="180, 160, 340, 200" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1563,7 +1563,7 @@
 				<attributes>
 					<int name="Id" value="-1" />
 					<string name="Caption" value="" />
-					<rect name="Rect" value="40, 125, 525, 240" />
+					<rect name="Rect" value="40, 20, 525, 158" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1580,7 +1580,7 @@
 				<attributes>
 					<int name="Id" value="-1" />
 					<string name="Caption" value="Idle Frame" />
-					<rect name="Rect" value="25, 135, 204, 224" />
+					<rect name="Rect" value="25, 35, 204, 114" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1609,9 +1609,34 @@
 
 			<element type="image">
 				<attributes>
+					<int name="Id" value="-1" />
+					<string name="Caption" value="" />
+					<rect name="Rect" value="26, 104, 94, 152" />
+					<position name="MinSize" value="1, 1" />
+					<position name="MaxSize" value="0, 0" />
+					<enum name="LeftAlign" value="upperLeft" />
+					<enum name="RightAlign" value="upperLeft" />
+					<enum name="TopAlign" value="upperLeft" />
+					<enum name="BottomAlign" value="upperLeft" />
+					<bool name="Visible" value="true" />
+					<bool name="Enabled" value="true" />
+					<bool name="TabStop" value="false" />
+					<bool name="TabGroup" value="false" />
+					<int name="TabOrder" value="-1" />
+					<bool name="NoClip" value="false" />
+					<texture name="Texture" value="Entities/Characters/Knight/KnightMale.png" />
+					<rect name="SourceRect" value="7, 16, 24, 28" />
+					<bool name="UseAlphaChannel" value="true" />
+					<color name="Color" value="ffffffff" />
+					<bool name="ScaleImage" value="true" />
+				</attributes>
+			</element>
+
+			<element type="image">
+				<attributes>
 					<int name="Id" value="13615" />
 					<string name="Caption" value="" />
-					<rect name="Rect" value="30, 160, 94, 224" />
+					<rect name="Rect" value="30, 60, 94, 124" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1638,7 +1663,7 @@
 				<attributes>
 					<int name="Id" value="-1" />
 					<string name="Caption" value="Attack Frame" />
-					<rect name="Rect" value="130, 135, 329, 224" />
+					<rect name="Rect" value="130, 35, 329, 114" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1667,9 +1692,34 @@
 
 			<element type="image">
 				<attributes>
+					<int name="Id" value="-1" />
+					<string name="Caption" value="" />
+					<rect name="Rect" value="140, 104, 208, 152" />
+					<position name="MinSize" value="1, 1" />
+					<position name="MaxSize" value="0, 0" />
+					<enum name="LeftAlign" value="upperLeft" />
+					<enum name="RightAlign" value="upperLeft" />
+					<enum name="TopAlign" value="upperLeft" />
+					<enum name="BottomAlign" value="upperLeft" />
+					<bool name="Visible" value="true" />
+					<bool name="Enabled" value="true" />
+					<bool name="TabStop" value="false" />
+					<bool name="TabGroup" value="false" />
+					<int name="TabOrder" value="-1" />
+					<bool name="NoClip" value="false" />
+					<texture name="Texture" value="Entities/Characters/Knight/KnightMale.png" />
+					<rect name="SourceRect" value="7, 16, 24, 28" />
+					<bool name="UseAlphaChannel" value="true" />
+					<color name="Color" value="ffffffff" />
+					<bool name="ScaleImage" value="true" />
+				</attributes>
+			</element>
+
+			<element type="image">
+				<attributes>
 					<int name="Id" value="13616" />
 					<string name="Caption" value="" />
-					<rect name="Rect" value="144, 160, 209, 224" />
+					<rect name="Rect" value="144, 60, 208, 124" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1690,13 +1740,13 @@
 				</attributes>
 			</element>
 
-			<!-- Dead Head Frame -->
+			<!-- Death Head Frame -->
 
 			<element type="staticText">
 				<attributes>
 					<int name="Id" value="-1" />
-					<string name="Caption" value=" Dead Frame" />
-					<rect name="Rect" value="245, 135, 344, 224" />
+					<string name="Caption" value="Death Frame" />
+					<rect name="Rect" value="245, 35, 344, 114" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1725,9 +1775,34 @@
 
 			<element type="image">
 				<attributes>
+					<int name="Id" value="-1" />
+					<string name="Caption" value="" />
+					<rect name="Rect" value="255, 104, 323, 152" />
+					<position name="MinSize" value="1, 1" />
+					<position name="MaxSize" value="0, 0" />
+					<enum name="LeftAlign" value="upperLeft" />
+					<enum name="RightAlign" value="upperLeft" />
+					<enum name="TopAlign" value="upperLeft" />
+					<enum name="BottomAlign" value="upperLeft" />
+					<bool name="Visible" value="true" />
+					<bool name="Enabled" value="true" />
+					<bool name="TabStop" value="false" />
+					<bool name="TabGroup" value="false" />
+					<int name="TabOrder" value="-1" />
+					<bool name="NoClip" value="false" />
+					<texture name="Texture" value="Entities/Characters/Knight/KnightMale.png" />
+					<rect name="SourceRect" value="7, 16, 24, 28" />
+					<bool name="UseAlphaChannel" value="true" />
+					<color name="Color" value="ffffffff" />
+					<bool name="ScaleImage" value="true" />
+				</attributes>
+			</element>
+
+			<element type="image">
+				<attributes>
 					<int name="Id" value="13617" />
 					<string name="Caption" value="" />
-					<rect name="Rect" value="259, 160, 323, 224" />
+					<rect name="Rect" value="259, 60, 323, 124" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1752,7 +1827,7 @@
 				<attributes>
 					<int name="Id" value="13605" />
 					<string name="Caption" value="Use custom head" />
-					<rect name="Rect" value="15, 250 , 280, 270"/>
+					<rect name="Rect" value="15, 210, 280, 230"/>
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />

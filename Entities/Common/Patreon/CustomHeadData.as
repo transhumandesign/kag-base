@@ -64,7 +64,7 @@ bool isCustomHeadAllowed(CPlayer@ player)
         if (player.getSupportTier() >= SUPPORT_TIER_ROUNDTABLE)
             return true;
 
-        if (player.isDev() || player.hasCustomHead())
+        if (player.isDev())
             return true;
 
         // TODO: Check how this works client side?
