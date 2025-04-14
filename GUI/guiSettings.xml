@@ -1694,7 +1694,7 @@
 				<attributes>
 					<int name="Id" value="-1" />
 					<string name="Caption" value="" />
-					<rect name="Rect" value="140, 104, 208, 152" />
+					<rect name="Rect" value="152, 104, 212, 152" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1708,7 +1708,7 @@
 					<int name="TabOrder" value="-1" />
 					<bool name="NoClip" value="false" />
 					<texture name="Texture" value="Entities/Characters/Knight/KnightMale.png" />
-					<rect name="SourceRect" value="7, 16, 24, 28" />
+					<rect name="SourceRect" value="168, 112, 183, 124" />
 					<bool name="UseAlphaChannel" value="true" />
 					<color name="Color" value="ffffffff" />
 					<bool name="ScaleImage" value="true" />
@@ -1777,7 +1777,7 @@
 				<attributes>
 					<int name="Id" value="-1" />
 					<string name="Caption" value="" />
-					<rect name="Rect" value="255, 104, 323, 152" />
+					<rect name="Rect" value="227, 76, 315, 116" /><!--88,44-->
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1791,7 +1791,7 @@
 					<int name="TabOrder" value="-1" />
 					<bool name="NoClip" value="false" />
 					<texture name="Texture" value="Entities/Characters/Knight/KnightMale.png" />
-					<rect name="SourceRect" value="7, 16, 24, 28" />
+					<rect name="SourceRect" value="73, 211, 95, 221" />
 					<bool name="UseAlphaChannel" value="true" />
 					<color name="Color" value="ffffffff" />
 					<bool name="ScaleImage" value="true" />
