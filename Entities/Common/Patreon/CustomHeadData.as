@@ -14,17 +14,16 @@ enum HEAD
 
 class HeadStorage
 {
-    CPlayer@ player = null;
+    string playerName = "";
     string texture = "";
 
-    HeadStorage(CPlayer@ p, CBitStream@ data)
+    HeadStorage(CPlayer@ player, CBitStream@ data)
     {
-        @player = p;
+        playerName = player.getUsername();
         texture = player.getUsername() + '-CustomHead';
+
         if (!CreateHeadFromStream(data))
-        {
             RemoveHead();
-        }
     }
 
     ~HeadStorage()
@@ -42,7 +41,7 @@ class HeadStorage
 
         if (!Texture::createFromData(texture, temp))
         {
-            warn("Could not create texture for " + player.getUsername());
+            warn("Could not create texture for " + playerName);
             return false;
         }
 
@@ -51,12 +50,17 @@ class HeadStorage
 
     bool isHeadStillValid()
     {
-        return player !is null;
+        return player() !is null;
+    }
+
+    CPlayer@ player()
+    {
+        return getPlayerByUsername(playerName);
     }
 
     void RemoveHead()
     {
-        @player = null;
+        playerName = "";
         texture = "";
         Texture::destroy(texture);
     }
@@ -134,7 +138,7 @@ void SyncCurrentHeadStorage(CRules@ this, CPlayer@ player)
     for (int i = 0; i < heads.length; ++i)
     {
         CBitStream stream;
-        stream.write_u16(heads[i].player.getNetworkID());
+        stream.write_u16(heads[i].player().getNetworkID());
         heads[i].WriteToStream(@stream);
 
         this.SendCommand(this.getCommandID("syncHead"), stream, player);
@@ -146,7 +150,7 @@ void RemoveUnusedPlayerHeads(CRules@ this)
     HeadStorage[]@ heads = GetHeadStorage(this);
     for (int i = 0; i < heads.length; ++i)
     {
-        if (heads[i].player is null)
+        if (heads[i].player() is null)
         {
             heads[i].RemoveHead();
             heads.removeAt(i);
@@ -157,13 +161,13 @@ void RemoveUnusedPlayerHeads(CRules@ this)
 
 void AddNewHead(CRules@ this, HeadStorage@ newHead)
 {
-    if (newHead.player is null) 
+    if (newHead.player() is null) 
         return;
 
     HeadStorage[]@ heads = GetHeadStorage(this);
     for (int i = 0; i < heads.length; i++)
     {
-        if (heads[i].player is newHead.player)
+        if (heads[i].player() is newHead.player())
         {
             heads[i].RemoveHead();
             heads.removeAt(i);
@@ -179,7 +183,7 @@ HeadStorage@ GetHead(CRules@ this, CPlayer@ player)
     HeadStorage[]@ heads = GetHeadStorage(this);
     for (int i = 0; i < heads.length; i++)
     {
-        if (heads[i].player is player)
+        if (heads[i].player() is player)
             return @heads[i];
     }
 

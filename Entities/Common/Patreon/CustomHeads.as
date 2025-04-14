@@ -132,13 +132,10 @@ void onRender(CRules@ this)
     {
         HeadStorage@ head = @heads[i];
 
-        if (head !is null && head.player !is null)
+        if (head !is null)
         {
-            ImGui::Text(head.player.getUsername() + " custom head");
-            if (Texture::exists(head.texture))
-            {
-                // ImGui::Image(head.texture, Vec2f(HEAD::Width * 4, HEAD::Height * 4));
-            }
+            ImGui::Text(head.playerName + " custom head");
+            ImGui::Image(head.texture, Vec2f(HEAD::Width * 4, HEAD::Height * 4));
         }
     }
 
