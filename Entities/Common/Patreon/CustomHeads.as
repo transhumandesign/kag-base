@@ -8,6 +8,9 @@
 // - Validate any incoming heads
 // - Sync all known heads on new player join
 #include "CustomHeadData.as";
+#include "RunnerHead.as";
+
+bool HAS_SYNCED = false;
 
 void onInit(CRules@ this)
 {
@@ -15,9 +18,6 @@ void onInit(CRules@ this)
     this.addCommandID("syncHead");
     
     ResetHeadStorage(this);
-
-    if (isClient())
-        this.AddScript("ClientSyncHead.as");
 }
 
 void onReload(CRules@ this)
@@ -33,15 +33,31 @@ void onNewPlayerJoin(CRules@ this, CPlayer@ player)
         SyncCurrentHeadStorage(this, player);
 }
 
+void onTick(CRules@ this)
+{
+    if (HAS_SYNCED == false && isClient() && getLocalPlayer() != null)
+    {
+        Client_SendHead(this);
+        HAS_SYNCED = true;
+    }
+
+    if (getGameTime() % 300 == 0)
+    {
+        RemoveUnusedPlayerHeads(this);
+    }
+}
+
+// Note: This only runs on the server
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
-    // TODO: Check if this can run server side
     RemoveUnusedPlayerHeads(this);
 }
 
 void Client_SendHead(CRules@ this)
 {
-    if (!isClient() || !cl_use_custom_head || !Texture::createFromFile(TEMP_TEXTURE, FILENAME))
+    if (!isClient() || !cl_use_custom_head || 
+        !isCustomHeadAllowed(getLocalPlayer()) ||
+        !Texture::createFromFile(TEMP_TEXTURE, FILENAME))
         return;
 
     ImageData@ data = Texture::data(TEMP_TEXTURE);
@@ -56,11 +72,9 @@ void Client_SendHead(CRules@ this)
 
     CBitStream stream;
     stream.write_u16(getLocalPlayer().getNetworkID());
-
     WriteHeadToStream(@data, @stream);
 
     this.SendCommand(this.getCommandID("syncHead"), stream);
-    
     
     Texture::destroy(TEMP_TEXTURE);
 }
@@ -78,20 +92,13 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @stream)
             return;
         }
 
-        string textureName = player.getUsername() + "-CustomHead";
-
-        if (Texture::exists(textureName))
-            Texture::destroy(textureName);
-
-        ImageData@ tempData = ReadHeadFromStream(@stream);
-
-        if (!Texture::createFromData(textureName, tempData))
+        if (isServer() && !isCustomHeadAllowed(player))
         {
-            warn("Could not create texture for " + player.getUsername());
+            warn(player.getUsername() + " attempted to sync their custom head without passing allowed checks");
             return;
         }
 
-        AddNewHead(this, HeadStorage(player, textureName));
+        AddNewHead(this, HeadStorage(player, @stream));
 
         // Sync the incoming head to clients
         if (isServer() && !isClient())
@@ -99,6 +106,13 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @stream)
             // Just reuse the buffer
             stream.ResetBitIndex();
             this.SendCommand(this.getCommandID("syncHead"), stream);
+        }
+
+        if (isClient()) 
+        {
+            CBlob@ blob = player.getBlob();
+            if (blob !is null)
+                LoadHead(blob.getSprite(), blob.getHeadNum());
         }
 	}
 }
@@ -112,14 +126,20 @@ void onRender(CRules@ this)
         return;
     }
 
-    HeadStorage@[]@ heads = GetHeadStorage(this);
+    HeadStorage[]@ heads = GetHeadStorage(this);
 
     for (int i = 0; i < heads.length; i++)
     {
-        HeadStorage@ head = heads[i];
+        HeadStorage@ head = @heads[i];
 
-        ImGui::Text(head.player.getUsername() + " custom head");
-        ImGui::Image(head.textureName, Vec2f(HEAD::Width * 4, HEAD::Height * 4));
+        if (head !is null && head.player !is null)
+        {
+            ImGui::Text(head.player.getUsername() + " custom head");
+            if (Texture::exists(head.texture))
+            {
+                // ImGui::Image(head.texture, Vec2f(HEAD::Width * 4, HEAD::Height * 4));
+            }
+        }
     }
 
     ImGui::End();

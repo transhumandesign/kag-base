@@ -15,94 +15,57 @@ enum HEAD
 class HeadStorage
 {
     CPlayer@ player = null;
-    string textureName = "";
+    string texture = "";
 
-    HeadStorage(CPlayer@ p, string texture)
+    HeadStorage(CPlayer@ p, CBitStream@ data)
     {
         @player = p;
-        textureName = texture;
+        texture = player.getUsername() + '-CustomHead';
+        if (!CreateHeadFromStream(data))
+        {
+            RemoveHead();
+        }
     }
-}
 
-void ResetHeadStorage(CRules@ this)
-{
-    if (this.exists(HEAD_STORAGE_PROP))
+    ~HeadStorage()
     {
-        HeadStorage@[]@ heads = GetHeadStorage(this);
-        heads.clear();
-    } 
-    else 
-    {
-        HeadStorage@[]@ storage = {};
-        this.set("CustomHeadStorage", @storage);    
+        RemoveHead();
     }
-}
 
-HeadStorage@[]@ GetHeadStorage(CRules@ this)
-{
-    HeadStorage@[]@ heads = {};
-    this.get("CustomHeadStorage", @heads);
-
-    return @heads;
-}
-
-void SyncCurrentHeadStorage(CRules@ this, CPlayer@ player)
-{
-    HeadStorage@[]@ heads = GetHeadStorage(this);
-
-    for (int i = 0; i < heads.length; ++i)
+    // Return's false if head could not be made
+    bool CreateHeadFromStream(CBitStream@ data)
     {
-        CBitStream stream;
-        stream.write_u16(heads[i].player.getNetworkID());
+        if (Texture::exists(texture))
+            Texture::destroy(texture);
 
-        ImageData@ data = Texture::data(heads[i].textureName);
+        ImageData@ temp = ReadHeadFromStream(data);
+
+        if (!Texture::createFromData(texture, temp))
+        {
+            warn("Could not create texture for " + player.getUsername());
+            return false;
+        }
+
+        return true;
+    }
+
+    bool isHeadStillValid()
+    {
+        return player !is null;
+    }
+
+    void RemoveHead()
+    {
+        @player = null;
+        texture = "";
+        Texture::destroy(texture);
+    }
+
+    void WriteToStream(CBitStream@ stream)
+    {
+        ImageData@ data = Texture::data(texture);
         WriteHeadToStream(@data, @stream);
-
-        this.SendCommand(this.getCommandID("syncHead"), stream, player);
     }
-}
-
-void RemoveUnusedPlayerHeads(CRules@ this)
-{
-    HeadStorage@[]@ heads = GetHeadStorage(this);
-    for (int i = 0; i < heads.length; ++i)
-    {
-        if (heads[i].player is null)
-        {
-            heads.removeAt(i);
-            i--;
-        }
-    }
-}
-
-void AddNewHead(CRules@ this, HeadStorage@ newHead)
-{
-    if (!Texture::exists(newHead.textureName))
-        return;
-
-    HeadStorage@[]@ heads = GetHeadStorage(this);
-    for (int i = 0; i < heads.length; i++)
-    {
-        if (heads[i].player is newHead.player)
-        {
-            heads.removeAt(i);
-            i--;
-        }
-    }
-
-    heads.push_back(newHead);
-}
-
-HeadStorage@ GetHead(CRules@ this, CPlayer@ player)
-{
-    HeadStorage@[]@ heads = GetHeadStorage(this);
-    for (int i = 0; i < heads.length; i++)
-    {
-        if (heads[i].player is player)
-            return @heads[i];
-    }
-
-    return null;
 }
 
 void WriteHeadToStream(ImageData@ data, CBitStream@ stream)
@@ -143,6 +106,85 @@ ImageData@ ReadHeadFromStream(CBitStream@ stream)
     return @data;
 }
 
+void ResetHeadStorage(CRules@ this)
+{
+    if (this.exists(HEAD_STORAGE_PROP))
+    {
+        GetHeadStorage(this).clear();
+    } 
+    else 
+    {
+        HeadStorage[] storage = {};
+        this.set("CustomHeadStorage", storage);    
+    }
+}
+
+HeadStorage[]@ GetHeadStorage(CRules@ this)
+{
+    HeadStorage[]@ heads;
+    this.get("CustomHeadStorage", @heads);
+
+    return @heads;
+}
+
+void SyncCurrentHeadStorage(CRules@ this, CPlayer@ player)
+{
+    HeadStorage[]@ heads = GetHeadStorage(this);
+
+    for (int i = 0; i < heads.length; ++i)
+    {
+        CBitStream stream;
+        stream.write_u16(heads[i].player.getNetworkID());
+        heads[i].WriteToStream(@stream);
+
+        this.SendCommand(this.getCommandID("syncHead"), stream, player);
+    }
+}
+
+void RemoveUnusedPlayerHeads(CRules@ this)
+{
+    HeadStorage[]@ heads = GetHeadStorage(this);
+    for (int i = 0; i < heads.length; ++i)
+    {
+        if (heads[i].player is null)
+        {
+            heads[i].RemoveHead();
+            heads.removeAt(i);
+            i--;
+        }
+    }
+}
+
+void AddNewHead(CRules@ this, HeadStorage@ newHead)
+{
+    if (newHead.player is null) 
+        return;
+
+    HeadStorage[]@ heads = GetHeadStorage(this);
+    for (int i = 0; i < heads.length; i++)
+    {
+        if (heads[i].player is newHead.player)
+        {
+            heads[i].RemoveHead();
+            heads.removeAt(i);
+            i--;
+        }
+    }
+
+    heads.push_back(newHead);
+}
+
+HeadStorage@ GetHead(CRules@ this, CPlayer@ player)
+{
+    HeadStorage[]@ heads = GetHeadStorage(this);
+    for (int i = 0; i < heads.length; i++)
+    {
+        if (heads[i].player is player)
+            return @heads[i];
+    }
+
+    return null;
+}
 
 // Can a player use the custom head system?
 // Checks for:

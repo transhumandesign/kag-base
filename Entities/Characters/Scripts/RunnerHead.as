@@ -131,7 +131,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 					headIndex = 0;
 					headsPackIndex = 0;
 					override_frame = true;
-					texture_file = head.textureName;
+					texture_file = head.texture;
 				}
 			}
 			else if (rules.exists(holiday_prop))
