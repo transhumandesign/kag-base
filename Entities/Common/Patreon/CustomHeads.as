@@ -106,7 +106,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @stream)
 void onRender(CRules@ this)
 {
     ImGui::SetNextWindowBgAlpha(0.8);
-    if (!ImGui::Begin("HeadDebugger")) {
+    if (!ImGui::Begin("HeadDebugger")) 
+    {
         ImGui::End();
         return;
     }

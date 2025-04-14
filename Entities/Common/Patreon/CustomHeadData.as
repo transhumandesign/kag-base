@@ -77,9 +77,8 @@ void RemoveUnusedPlayerHeads(CRules@ this)
 
 void AddNewHead(CRules@ this, HeadStorage@ newHead)
 {
-    if (!Texture::exists(newHead.textureName)) {
+    if (!Texture::exists(newHead.textureName))
         return;
-    }
 
     HeadStorage@[]@ heads = GetHeadStorage(this);
     for (int i = 0; i < heads.length; i++)
@@ -165,8 +164,11 @@ bool isCustomHeadAllowed(CPlayer@ player)
     if (player.isDev() || player.hasCustomHead())
         return true;
 
-    // TODO: Check how this works client side?
-    CSeclev@ seclev = getSecurity().getPlayerSeclev(player);
+    CSecurity@ sec = getSecurity();
+    if (sec.isPlayerIgnored(player))
+        return false;
+
+    CSeclev@ seclev = sec.getPlayerSeclev(player);
     if (seclev.getName() == "Super Admin")
         return true;
 
