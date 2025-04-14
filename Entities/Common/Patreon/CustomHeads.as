@@ -41,7 +41,7 @@ void onPlayerLeave(CRules@ this, CPlayer@ player)
 
 void Client_SendHead(CRules@ this)
 {
-    if (!isClient() || !Texture::createFromFile(TEMP_TEXTURE, FILENAME))
+    if (!isClient() || !cl_use_custom_head || !Texture::createFromFile(TEMP_TEXTURE, FILENAME))
         return;
 
     ImageData@ data = Texture::data(TEMP_TEXTURE);
@@ -106,8 +106,10 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @stream)
 void onRender(CRules@ this)
 {
     ImGui::SetNextWindowBgAlpha(0.8);
-    if (!ImGui::Begin("HeadDebugger"))
+    if (!ImGui::Begin("HeadDebugger")) {
+        ImGui::End();
         return;
+    }
 
     HeadStorage@[]@ heads = GetHeadStorage(this);
 

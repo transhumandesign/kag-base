@@ -124,11 +124,15 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 			
 			if (isCustomHeadAllowed(player))
 			{
-				useTextureData = true;
-				texture_file = getCustomPlayerHeadName(player);
-				headIndex = 0;
-				headsPackIndex = 0;
-				override_frame = true;
+				HeadStorage@ head = GetHead(getRules(), player);
+				if (head !is null) 
+				{
+					useTextureData = true;
+					headIndex = 0;
+					headsPackIndex = 0;
+					override_frame = true;
+					texture_file = head.textureName;
+				}
 			}
 			else if (rules.exists(holiday_prop))
 			{

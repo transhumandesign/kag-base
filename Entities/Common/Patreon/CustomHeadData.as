@@ -69,7 +69,6 @@ void RemoveUnusedPlayerHeads(CRules@ this)
     {
         if (heads[i].player is null)
         {
-            print("removing unused head")
             heads.removeAt(i);
             i--;
         }
@@ -78,18 +77,33 @@ void RemoveUnusedPlayerHeads(CRules@ this)
 
 void AddNewHead(CRules@ this, HeadStorage@ newHead)
 {
+    if (!Texture::exists(newHead.textureName)) {
+        return;
+    }
+
     HeadStorage@[]@ heads = GetHeadStorage(this);
     for (int i = 0; i < heads.length; i++)
     {
         if (heads[i].player is newHead.player)
         {
-            print("removing head");
             heads.removeAt(i);
             i--;
         }
     }
 
     heads.push_back(newHead);
+}
+
+HeadStorage@ GetHead(CRules@ this, CPlayer@ player)
+{
+    HeadStorage@[]@ heads = GetHeadStorage(this);
+    for (int i = 0; i < heads.length; i++)
+    {
+        if (heads[i].player is player)
+            return @heads[i];
+    }
+
+    return null;
 }
 
 void WriteHeadToStream(ImageData@ data, CBitStream@ stream)
@@ -141,7 +155,7 @@ ImageData@ ReadHeadFromStream(CBitStream@ stream)
 bool isCustomHeadAllowed(CPlayer@ player)
 {
     if (player is null)
-    return false;
+        return false;
 
     // NOTE to modders:
     // Please keep Patreon heads enabled as it's what keeps KAG going!
@@ -161,15 +175,4 @@ bool isCustomHeadAllowed(CPlayer@ player)
         return true;
 
     return false;
-}
-
-string getCustomPlayerHeadName(CPlayer@ player)
-{
-    if (player is null)
-    {
-        warn("getCustomPlayerHeadName was passed a null player");
-        return "";
-    }
-
-    return player.getUsername() + "-CustomHead";
 }
