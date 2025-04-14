@@ -17,9 +17,7 @@ void onInit(CRules@ this)
     ResetHeadStorage(this);
 
     if (isClient())
-    {
         this.AddScript("ClientSyncHead.as");
-    }
 }
 
 void onReload(CRules@ this)
@@ -32,34 +30,13 @@ void onReload(CRules@ this)
 void onNewPlayerJoin(CRules@ this, CPlayer@ player)
 {
     if (isServer())
-    {
-        HeadStorage@[]@ heads = GetHeadStorage(this);
-        for (int i = 0; i < heads.length; ++i)
-        {
-            CBitStream stream;
-
-            stream.write_u16(heads[i].player.getNetworkID());
-
-            ImageData@ data = Texture::data(heads[i].textureName);
-
-            WriteHeadToStream(@data, @stream);
-
-            this.SendCommand(this.getCommandID("syncHead"), stream, player);
-        }
-    }
+        SyncCurrentHeadStorage(this, player);
 }
 
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
-    HeadStorage@[]@ heads = GetHeadStorage(this);
-    for (int i = 0; i < heads.length; ++i)
-    {
-        if (heads[i].player is player)
-        {
-            heads.removeAt(i);
-            break;
-        }
-    }
+    // TODO: Check if this can run server side
+    RemoveUnusedPlayerHeads(this);
 }
 
 void Client_SendHead(CRules@ this)
@@ -69,7 +46,7 @@ void Client_SendHead(CRules@ this)
 
     ImageData@ data = Texture::data(TEMP_TEXTURE);
 
-    if (data.width() != HEAD::Width || data.height() != HEAD::Height )
+    if (data.width() != HEAD::Width || data.height() != HEAD::Height)
     {
         error(FILENAME + " is not " + HEAD::Width + " by " + HEAD::Height + " (was " + data.width() + " by " + data.height() + "), not going to sync");
         Texture::destroy(TEMP_TEXTURE);
@@ -78,14 +55,9 @@ void Client_SendHead(CRules@ this)
     }
 
     CBitStream stream;
-
     stream.write_u16(getLocalPlayer().getNetworkID());
 
     WriteHeadToStream(@data, @stream);
-
-#ifdef STAGING
-    //stream.Compress(6);
-#endif
 
     this.SendCommand(this.getCommandID("syncHead"), stream);
     
@@ -94,48 +66,10 @@ void Client_SendHead(CRules@ this)
 }
 
 
-void WriteHeadToStream(ImageData@ data, CBitStream@ stream)
-{
-    SColor color;
-
-    for (int y = 0; y < HEAD::Height; y++)
-        for (int x = 0; x < HEAD::Width; x++)
-        {
-            color = data.get(x, y);
-
-            stream.write_u8(color.getAlpha());
-            stream.write_u8(color.getRed());
-            stream.write_u8(color.getGreen());
-            stream.write_u8(color.getBlue());
-        }
-}
-
-ImageData@ ReadHeadFromStream(CBitStream@ stream)
-{
-    ImageData@ data = ImageData(HEAD::Width, HEAD::Height);
-
-    for (int y = 0; y < HEAD::Height; y++)
-        for (int x = 0; x < HEAD::Width; x++)
-        {
-            u8 alpha = stream.read_u8();
-            u8 red = stream.read_u8();
-            u8 green = stream.read_u8();
-            u8 blue = stream.read_u8();
-
-            data.put(x, y, SColor(alpha, red, green, blue));
-        }
-
-    return @data;
-}
-
-
 void onCommand(CRules@ this, u8 cmd, CBitStream @stream)
 {
     if (cmd == this.getCommandID("syncHead"))
 	{
-#ifdef STAGING
-        //stream.Decompress();
-#endif 
         u16 id = stream.read_u16();
         CPlayer@ player = getPlayerByNetworkId(id);
         if (player is null)
@@ -146,8 +80,8 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @stream)
 
         string textureName = player.getUsername() + "-CustomHead";
 
-        // DEBUG
-        Texture::destroy(textureName);
+        if (Texture::exists(textureName))
+            Texture::destroy(textureName);
 
         ImageData@ tempData = ReadHeadFromStream(@stream);
 
@@ -157,9 +91,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @stream)
             return;
         }
 
-        HeadStorage@[]@ storage = GetHeadStorage(this);
-        
-        storage.push_back(HeadStorage(player, textureName));
+        AddNewHead(this, HeadStorage(player, textureName));
 
         // Sync the incoming head to clients
         if (isServer() && !isClient())
