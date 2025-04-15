@@ -202,6 +202,12 @@ bool isCustomHeadAllowed(CPlayer@ player)
     if (player is null)
         return false;
 
+    // Is the player muted (by an admin)
+    // or is our player ignoring them
+    CSecurity@ sec = getSecurity();
+    if (sec.isPlayerIgnored(player))
+        return false;
+
     // NOTE to modders:
     // Please keep Patreon heads enabled as it's what keeps KAG going!
     if (player.getSupportTier() >= SUPPORT_TIER_ROUNDTABLE)
@@ -209,10 +215,6 @@ bool isCustomHeadAllowed(CPlayer@ player)
 
     if (player.isDev() || player.hasCustomHead())
         return true;
-
-    CSecurity@ sec = getSecurity();
-    if (sec.isPlayerIgnored(player))
-        return false;
 
     CSeclev@ seclev = sec.getPlayerSeclev(player);
     if (seclev.getName() == "Super Admin")
