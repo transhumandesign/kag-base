@@ -83,7 +83,7 @@ void Client_SendHead(CRules@ this)
 void onCommand(CRules@ this, u8 cmd, CBitStream @stream)
 {
     if (cmd == this.getCommandID("syncHead"))
-	{
+    {
         u16 id = stream.read_u16();
         CPlayer@ player = getPlayerByNetworkId(id);
         if (player is null)
@@ -114,7 +114,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @stream)
             if (blob !is null)
                 LoadHead(blob.getSprite(), blob.getHeadNum());
         }
-	}
+    }
 }
 
 void onRender(CRules@ this)
