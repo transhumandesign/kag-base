@@ -57,15 +57,15 @@ void Client_SendHead(CRules@ this)
 {
     if (!isClient() || !cl_use_custom_head || 
         !isCustomHeadAllowed(getLocalPlayer()) ||
-        !Texture::createFromFile(TEMP_TEXTURE, FILENAME))
+        !Texture::createFromFile(HEAD_TEMP_TEXTURE, HEAD_FILENAME))
         return;
 
-    ImageData@ data = Texture::data(TEMP_TEXTURE);
+    ImageData@ data = Texture::data(HEAD_TEMP_TEXTURE);
 
     if (data.width() != HEAD::Width || data.height() != HEAD::Height)
     {
-        error(FILENAME + " is not " + HEAD::Width + " by " + HEAD::Height + " (was " + data.width() + " by " + data.height() + "), not going to sync");
-        Texture::destroy(TEMP_TEXTURE);
+        error(HEAD_FILENAME + " is not " + HEAD::Width + " by " + HEAD::Height + " (was " + data.width() + " by " + data.height() + "), not going to sync");
+        Texture::destroy(HEAD_TEMP_TEXTURE);
 
         return;
     }
@@ -76,7 +76,7 @@ void Client_SendHead(CRules@ this)
 
     this.SendCommand(this.getCommandID("syncHead"), stream);
     
-    Texture::destroy(TEMP_TEXTURE);
+    Texture::destroy(HEAD_TEMP_TEXTURE);
 }
 
 

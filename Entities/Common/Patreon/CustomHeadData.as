@@ -1,21 +1,29 @@
-#include "Accolades.as"
+#include "CustomHeadCheck.as"
 
-// Find and sync this file to the server on join
-const string FILENAME = "CustomHead.png";
-const string TEMP_TEXTURE = "TempCustomHeadTexture";
+const string HEAD_FILENAME = "CustomHead.png";
+const string HEAD_TEMP_TEXTURE = "TempCustomHeadTexture";
 const string HEAD_STORAGE_PROP = "CustomHeadStorage";
 
-// Falls apart if the texture ever becomes a square :3
+// How big is our head png file?
 enum HEAD
 {
     Width = 48,
-    Height = 16
+    Height = 16,
+    Length = Width + Height
 }
 
 class HeadStorage
 {
+    // Use playerName instead of a CPlayer@ handle
     string playerName = "";
     string texture = "";
+
+    // Note: you must manually call head.CreateHeadFromStream!
+    HeadStorage(CPlayer@ player)
+    {
+        playerName = player.getUsername();
+        texture = player.getUsername() + '-CustomHead';
+    }
 
     HeadStorage(CPlayer@ player, CBitStream@ data)
     {
@@ -48,6 +56,7 @@ class HeadStorage
         return true;
     }
 
+    // Is our player still alive?
     bool isHeadStillValid()
     {
         return player() !is null;
@@ -119,7 +128,7 @@ void ResetHeadStorage(CRules@ this)
     else 
     {
         HeadStorage[] storage = {};
-        this.set("CustomHeadStorage", storage);    
+        this.set(HEAD_STORAGE_PROP, storage);    
     }
 }
 
@@ -188,41 +197,4 @@ HeadStorage@ GetHead(CRules@ this, CPlayer@ player)
     }
 
     return null;
-}
-
-// Can a player use the custom head system?
-// Checks for:
-// - KAG Patreon
-// - THD Staff
-// - Accolades head flag
-// - Permanent head owners
-// - Super admin seclev (for localhost/server owner support)
-bool isCustomHeadAllowed(CPlayer@ player)
-{
-    if (player is null)
-        return false;
-
-    // Is the player muted (by an admin)
-    // or is our player ignoring them
-    CSecurity@ sec = getSecurity();
-    if (sec.isPlayerIgnored(player))
-        return false;
-
-    // NOTE to modders:
-    // Please keep Patreon heads enabled as it's what keeps KAG going!
-    if (player.getSupportTier() >= SUPPORT_TIER_ROUNDTABLE)
-        return true;
-
-    if (player.isDev() || player.hasCustomHead())
-        return true;
-
-    CSeclev@ seclev = sec.getPlayerSeclev(player);
-    if (seclev.getName() == "Super Admin")
-        return true;
-
-    Accolades@ acc = getPlayerAccolades(player.getUsername());
-    if (acc.hasCustomHead())
-        return true;
-
-    return false;
 }
