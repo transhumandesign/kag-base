@@ -4,6 +4,11 @@ const string HEAD_FILENAME = "CustomHead.png";
 const string HEAD_TEMP_TEXTURE = "TempCustomHeadTexture";
 const string HEAD_STORAGE_PROP = "CustomHeadStorage";
 
+const string HEAD_SYNC_CMD = "syncHead";
+const string HEAD_RM_CMD = "removeHead";
+
+const string HeadSyncedTag = "CustomHeadSynced";
+
 // How big is our head png file?
 enum HEAD
 {
@@ -187,6 +192,23 @@ void AddNewHead(CRules@ this, HeadStorage@ newHead)
     heads.push_back(newHead);
 }
 
+void RemoveHead(CRules@ this, CPlayer@ player)
+{
+    if (player is null)
+        return;
+
+    HeadStorage[]@ heads = GetHeadStorage(this);
+    for (int i = 0; i < heads.length; i++)
+    {
+        if (heads[i].player() is player)
+        {
+            heads[i].RemoveHead();
+            heads.removeAt(i);
+            i--;
+        }
+    }
+}
+
 HeadStorage@ GetHead(CRules@ this, CPlayer@ player)
 {
     HeadStorage[]@ heads = GetHeadStorage(this);
@@ -197,4 +219,43 @@ HeadStorage@ GetHead(CRules@ this, CPlayer@ player)
     }
 
     return null;
+}
+
+void Client_SendHead(CRules@ this)
+{
+    if (!isClient() || !cl_use_custom_head || 
+        !isCustomHeadAllowed(getLocalPlayer()) ||
+        !Texture::createFromFile(HEAD_TEMP_TEXTURE, HEAD_FILENAME))
+        return;
+
+    ImageData@ data = Texture::data(HEAD_TEMP_TEXTURE);
+
+    if (data.width() != HEAD::Width || data.height() != HEAD::Height)
+    {
+        error(HEAD_FILENAME + " is not " + HEAD::Width + " by " + HEAD::Height + " (was " + data.width() + " by " + data.height() + "), not going to sync");
+        Texture::destroy(HEAD_TEMP_TEXTURE);
+
+        return;
+    }
+
+    CBitStream stream;
+    stream.write_u16(getLocalPlayer().getNetworkID());
+    WriteHeadToStream(@data, @stream);
+
+    this.SendCommand(this.getCommandID(HEAD_SYNC_CMD), stream);
+    this.Tag(HeadSyncedTag);
+    
+    Texture::destroy(HEAD_TEMP_TEXTURE);
+}
+
+void Client_RemoveHead(CRules@ this)
+{
+    if (!isClient())
+        return;
+
+    CBitStream stream;
+    stream.write_u16(getLocalPlayer().getNetworkID());
+
+    this.SendCommand(this.getCommandID(HEAD_RM_CMD), stream);
+    this.Untag(HeadSyncedTag);
 }
