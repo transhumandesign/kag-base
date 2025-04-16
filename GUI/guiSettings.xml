@@ -1510,7 +1510,7 @@
 				<attributes>
 					<int name="Id" value="13625" />
 					<string name="Caption" value="Open Folder" />
-					<rect name="Rect" value="15, 160, 170, 200" />
+					<rect name="Rect" value="15, 170, 170, 210" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1537,7 +1537,7 @@
 				<attributes>
 					<int name="Id" value="13620" />
 					<string name="Caption" value="Refresh Head" />
-					<rect name="Rect" value="180, 160, 340, 200" />
+					<rect name="Rect" value="180, 170, 340, 210" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1823,11 +1823,37 @@
 				</attributes>
 			</element>
 
+			<element type="button">
+				<attributes>
+					<int name="Id" value="13630" />
+					<string name="Caption" value="Support us on Patreon" />
+					<rect name="Rect" value="15, 220, 340, 260" />
+					<position name="MinSize" value="1, 1" />
+					<position name="MaxSize" value="0, 0" />
+					<enum name="LeftAlign" value="upperLeft" />
+					<enum name="RightAlign" value="upperLeft" />
+					<enum name="TopAlign" value="upperLeft" />
+					<enum name="BottomAlign" value="upperLeft" />
+					<bool name="Visible" value="true" />
+					<bool name="Enabled" value="true" />
+					<bool name="TabStop" value="true" />
+					<bool name="TabGroup" value="false" />
+					<int name="TabOrder" value="6" />
+					<bool name="NoClip" value="false" />
+					<bool name="PushButton" value="false" />
+					<rect name="ImageRect" value="0, 0, 128, 32" />
+					<bool name="UseAlphaChannel" value="true" />
+					<bool name="Border" value="true" />
+					<bool name="ScaleImage" value="false" />
+				</attributes>
+			</element>
+
+
 			<element type="checkBox">
 				<attributes>
 					<int name="Id" value="13605" />
 					<string name="Caption" value="Use custom head" />
-					<rect name="Rect" value="15, 210, 280, 230"/>
+					<rect name="Rect" value="15, 270, 280, 290"/>
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1843,7 +1869,6 @@
 					<bool name="Checked" value="false" />
 				</attributes>
 			</element>
-
 		</element>
 	</element>
 
