@@ -804,12 +804,6 @@ bool canUnpackHere(CBlob@ this)
 		}
 	}
 
-	//no unpacking at map ceiling
-	if (pos.y + 4 < (space.y + 2) * map.tilesize)
-	{
-		return false;
-	}
-
 	const bool water = this.hasTag("unpack_only_water");
 	bool inwater = this.isInWater() || map.isInWater(pos + Vec2f(0.0f, map.tilesize));
 	if (this.isAttached())
