@@ -26,11 +26,11 @@ void onRestart(CRules@ this)
 
 	// Prevents any solid blocks
 	brCeiling.y += barrierHeight;
-    map.server_AddSector(tlCeiling, brCeiling, "no solids");
+	map.server_AddSector(tlCeiling, brCeiling, "no solids");
 
 	// Prevents any blobs
-    brCeiling.y += map.tilesize;
-    map.server_AddSector(tlCeiling, brCeiling, "no blobs");
+	brCeiling.y += map.tilesize;
+	map.server_AddSector(tlCeiling, brCeiling, "no blobs");
 
 	// Left
 	Vec2f tlLeft = Vec2f(0.0f, barrierHeight);
