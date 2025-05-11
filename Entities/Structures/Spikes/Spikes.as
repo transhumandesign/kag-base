@@ -126,6 +126,18 @@ void onTick(CBlob@ this)
 		facing = temp.facing;
 		placedOnStone = temp.placedOnStone;
 		onSurface = temp.onSurface;
+
+		// Allow spike drop at top of map
+        CMap::Sector@[] sectors;
+        map.getSectorsAtPosition(pos, sectors);
+        for (u8 i = 0; i < sectors.length; i++)
+        {
+            if (sectors[i] !is null && (sectors[i].name == "no build" || sectors[i].name == "no solids" || sectors[i].name == "no blobs"))
+            {
+                onSurface = false;
+				break;
+            }
+        }
 	}
 
 	if (!onSurface && getNet().isServer())

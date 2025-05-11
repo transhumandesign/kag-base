@@ -24,6 +24,14 @@ void onRestart(CRules@ this)
 	Vec2f brCeiling = Vec2f(mapWidth, barrierHeight);
 	map.server_AddSector(tlCeiling, brCeiling, "no build");
 
+	// Prevents any solid blocks
+	brCeiling.y += barrierHeight;
+    map.server_AddSector(tlCeiling, brCeiling, "no solids");
+
+	// Prevents any blobs
+    brCeiling.y += map.tilesize;
+    map.server_AddSector(tlCeiling, brCeiling, "no blobs");
+
 	// Left
 	Vec2f tlLeft = Vec2f(0.0f, barrierHeight);
 	Vec2f brLeft = Vec2f(barrierWidth, mapHeight);

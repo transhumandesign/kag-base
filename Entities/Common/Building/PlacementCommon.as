@@ -16,6 +16,7 @@ shared class BlockCursor
 	bool blobActive;
 	bool sameTileOnBack;
 	CBitStream missing;
+	u16 blockType;
 
 	BlockCursor()
 	{
@@ -163,7 +164,12 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 			}
 		}
 
-		if (!isSeed && !isLadder && (buildSolid || isSpikes || isDoor || isPlatform) && map.getSectorAtPosition(middle, "no build") !is null)
+		// Prevent placing in no build, no solids, and no blobs sectors
+		const bool no_build  = !isLadder && (buildSolid || isSpikes || isDoor || isPlatform) && map.getSectorAtPosition(middle, "no build") !is null;
+        const bool no_solids = buildSolid && map.getSectorAtPosition(middle, "no solids") !is null;
+        const bool no_blobs  = blob !is null && map.getSectorAtPosition(middle, "no blobs") !is null;
+        const bool has_adjacent = map.isTileSolid(up) || map.isTileSolid(down) || map.isTileSolid(left) || map.isTileSolid(right);
+		if (!isSeed && (no_build || (!isSpikes || has_adjacent) && (no_solids || no_blobs)))
 		{
 			return false;
 		}

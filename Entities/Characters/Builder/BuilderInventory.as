@@ -466,8 +466,20 @@ void onRender(CSprite@ this)
 						if (!bc.buildableAtPos && !bc.sameTileOnBack) //no build indicator drawing
 						{
 							CMap@ map = getMap();
-							Vec2f middle = blob.getAimPos() + Vec2f(map.tilesize*0.5f, map.tilesize*0.5f);
-							CMap::Sector@ sector = map.getSectorAtPosition( middle, "no build");
+							Vec2f middle = map.getAlignedWorldPos(blob.getAimPos());
+						CMap::Sector@ sector;
+						if (bc.blobActive)
+						{
+							@sector = map.getSectorAtPosition(middle, "no blobs");
+						}
+						if (sector is null && bc.blockActive && map.isTileSolid(bc.blockType))
+							{
+							@sector = map.getSectorAtPosition(middle, "no solids");  
+						}
+						if (sector is null)
+						{
+							@sector = map.getSectorAtPosition( middle, "no build");
+						}
 							if (sector !is null)
 							{
 								GUI::DrawRectangle( getDriver().getScreenPosFromWorldPos(sector.upperleft), getDriver().getScreenPosFromWorldPos(sector.lowerright), SColor(0x65ed1202) );
