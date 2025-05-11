@@ -473,8 +473,8 @@ void onRender(CSprite@ this)
 								@sector = map.getSectorAtPosition(middle, "no blobs");
 							}
 							if (sector is null && bc.blockActive && map.isTileSolid(bc.blockType))
-								{
-							@sector = map.getSectorAtPosition(middle, "no solids");  
+							{
+								@sector = map.getSectorAtPosition(middle, "no solids");  
 							}
 							if (sector is null)
 							{
