@@ -467,19 +467,19 @@ void onRender(CSprite@ this)
 						{
 							CMap@ map = getMap();
 							Vec2f middle = map.getAlignedWorldPos(blob.getAimPos());
-						CMap::Sector@ sector;
-						if (bc.blobActive)
-						{
-							@sector = map.getSectorAtPosition(middle, "no blobs");
-						}
-						if (sector is null && bc.blockActive && map.isTileSolid(bc.blockType))
+							CMap::Sector@ sector;
+							if (bc.blobActive)
 							{
+								@sector = map.getSectorAtPosition(middle, "no blobs");
+							}
+							if (sector is null && bc.blockActive && map.isTileSolid(bc.blockType))
+								{
 							@sector = map.getSectorAtPosition(middle, "no solids");  
-						}
-						if (sector is null)
-						{
-							@sector = map.getSectorAtPosition( middle, "no build");
-						}
+							}
+							if (sector is null)
+							{
+								@sector = map.getSectorAtPosition( middle, "no build");
+							}
 							if (sector !is null)
 							{
 								GUI::DrawRectangle( getDriver().getScreenPosFromWorldPos(sector.upperleft), getDriver().getScreenPosFromWorldPos(sector.lowerright), SColor(0x65ed1202) );
