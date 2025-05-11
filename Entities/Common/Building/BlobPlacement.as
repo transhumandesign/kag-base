@@ -91,7 +91,7 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repa
 
 	if (pos.Length() > 30)
 		return false;
-    
+	
 	// Are we still on cooldown?
 	if (isBuildDelayed(blob)) 
 		return true;
@@ -111,41 +111,41 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repa
 	if (map.isTileCollapsing(cursorPos))
 		return false;
 
+	// Prevent building in no build, no solids, and no blobs sectors
 	pos = cursorPos + Vec2f(map.tilesize * 0.2f, map.tilesize * 0.2f);
-    CMap::Sector@[] sectors;
-    map.getSectorsAtPosition(pos, sectors);
-    for (u8 i = 0; i < sectors.length; i++)
-    {
-        if (sectors[i] is null)
-        {
-            continue;
-        }
+	CMap::Sector@[] sectors;
+	map.getSectorsAtPosition(pos, sectors);
+	for (u8 i = 0; i < sectors.length; i++)
+	{
+		if (sectors[i] is null)
+		{
+			continue;
+		}
 
-		CBlob@ owner = getBlobByNetworkID(sectors[i].ownerID);
+		const bool no_build = sectors[i].name == "no build";
+		const bool no_solids = sectors[i].name == "no solids";
+		const bool no_blobs = sectors[i].name == "no blobs";
 
-        const bool no_build = sectors[i].name == "no build";
-        const bool no_solids = sectors[i].name == "no solids";
-        const bool no_blobs = sectors[i].name == "no blobs";
 		// Allow spike dropping at the top of the map
-        if (blobToPlace.getName() == "spikes")
-        {
-            const bool has_adjacent = (// Can't place next to something it'd stick to
-                map.isTileSolid(pos + Vec2f(0,             map.tilesize))  ||
-                map.isTileSolid(pos + Vec2f(0,             -map.tilesize)) ||
-                map.isTileSolid(pos + Vec2f(map.tilesize,  0))             ||
-                map.isTileSolid(pos + Vec2f(-map.tilesize, 0))
-            );
-            if (no_build || (no_solids || no_blobs) && has_adjacent)
-            {
-                return false;
-            }
-        }
+		if (blobToPlace.getName() == "spikes")
+		{
+			const bool has_adjacent = (// Can't place next to something it'd stick to
+				map.isTileSolid(pos + Vec2f(0,             map.tilesize))  ||
+				map.isTileSolid(pos + Vec2f(0,             -map.tilesize)) ||
+				map.isTileSolid(pos + Vec2f(map.tilesize,  0))             ||
+				map.isTileSolid(pos + Vec2f(-map.tilesize, 0))
+			);
+			if (no_build || (no_solids || no_blobs) && has_adjacent)
+			{
+				return false;
+			}
+		}
 		// Is our blob not a ladder and are we trying to place it into a no build, solids, or blobs area
-        else if (no_build && blobToPlace.getName() != "ladder" || no_solids || no_blobs)
-        {
+		else if (no_build && blobToPlace.getName() != "ladder" || no_solids || no_blobs)
+		{
 			return false;
-        }
-    }
+		}
+	}
 	
 	// Are we trying to place a blob on a door/ladder/platform/bridge (usually due to lag)?
 	if (fakeHasTileSolidBlobs(cursorPos) && !repairing)
@@ -590,10 +590,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (PlaceBlob(this, carryBlob, aimpos))
 		{
 			CPlayer@ p = this.getPlayer();
-            if (p !is null)
-            {
-                GE_BuildBlob(p.getNetworkID(), carryBlob.getName()); // gameplay event for coins
-            }
+			if (p !is null)
+			{
+				GE_BuildBlob(p.getNetworkID(), carryBlob.getName()); // gameplay event for coins
+			}
 		}
 
 	}
@@ -623,7 +623,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				if (p !is null)
 				{
 					GE_BuildBlob(p.getNetworkID(), carryBlob.getName()); // gameplay event for coins
-                }
+				}
 			}
 		}
 		else // there's nothing here so we can place a new one

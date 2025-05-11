@@ -79,7 +79,7 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 
 	// Is our tile solid and are we trying to place it into a no build or no solids sectors
 	BuildBlock @blockToPlace = getBlockByIndex(blob, tileIndex);
-	if (map.isTileSolid(blockToPlace.tile))
+	if (map.isTileSolid(blockToPlace.tile) || cursorPos.y < map.tilesize * 3.0f)
 	{
 		pos = cursorPos + Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
 
