@@ -86,7 +86,7 @@ void onTick(CBlob@ this)
 	{
 		if (queued_hit !is null && getGameTime() >= queued_hit.scheduled_tick)
 		{
-			HandlePickaxeCommand(this, queued_hit.params);
+			HandlePickaxeCommand(this, queued_hit.blobID, queued_hit.tilepos);
 			this.set("queued pickaxe", null);
 		}
 	}
@@ -367,7 +367,7 @@ void Pickaxe(CBlob@ this)
 		{
 			CBitStream params;
 			params.write_u16(hitdata.blobID);
-			params.write_Vec2f(hitdata.tilepos);
+			params.write_Vec2f(tilepos);
 			this.SendCommand(this.getCommandID("pickaxe"), params);
 
 			// for smaller delay
@@ -531,20 +531,15 @@ bool canHit(CBlob@ this, CBlob@ b, Vec2f tpos, bool extra = true)
 
 class QueuedHit
 {
-	CBitStream params;
+	u16 blobID;
+	Vec2f tilepos;
 	int scheduled_tick;
 }
 
-void HandlePickaxeCommand(CBlob@ this, CBitStream@ params)
+void HandlePickaxeCommand(CBlob@ this, u16 blobID, Vec2f tilepos)
 {
 	PickaxeInfo@ SPI;
 	if (!this.get("spi", @SPI)) return;
-
-	u16 blobID;
-	Vec2f tilepos;
-
-	if (!params.saferead_u16(blobID)) return;
-	if (!params.saferead_Vec2f(tilepos)) return;
 
 	Vec2f blobPos = this.getPosition();
 	Vec2f aimPos = this.getAimPos();
@@ -649,18 +644,24 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 
+		u16 blobID;
+		Vec2f tilepos;
+
+		if (!params.saferead_u16(blobID) || !params.saferead_Vec2f(tilepos)) return;
+
 		// allow for one queued hit in-flight; reject any incoming one in the
 		// mean time (would only happen with massive lag in legit scenarios)
 		if (getGameTime() - SPI.last_pickaxed < delay)
 		{
 			QueuedHit queued_hit;
-			queued_hit.params = params;
+			queued_hit.blobID = blobID;
+			queued_hit.tilepos = tilepos;
 			queued_hit.scheduled_tick = SPI.last_pickaxed + delay;
 			this.set("queued pickaxe", @queued_hit);
 			return;
 		}
 
-		HandlePickaxeCommand(this, @params);
+		HandlePickaxeCommand(this, blobID, tilepos);
 	}
 }
 
@@ -697,24 +698,26 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 			return;
 		}
 
-		uint i = this.get_u8("buildblob");
-		if (i >= 0 && i < blocks[PAGE].length)
+		const u8 i = this.get_u8("buildblob");
+		if (i >= blocks[PAGE].length) return;
+
+		BuildBlock@ b = blocks[PAGE][i];
+		if (b.name == detached.getName())
 		{
-			BuildBlock@ b = blocks[PAGE][i];
-			if (b.name == detached.getName())
+			this.set_u8("buildblob", 255);
+			this.set_TileType("buildtile", 0);
+			
+			if (isServer())
 			{
-				this.set_u8("buildblob", 255);
-				this.set_TileType("buildtile", 0);
-
 				CInventory@ inv = this.getInventory();
-
 				CBitStream missing;
-				if (hasRequirements(inv, b.reqs, missing, not b.buildOnGround))
+				if (hasRequirements(inv, b.reqs, missing, !b.buildOnGround))
 				{
 					server_TakeRequirements(inv, b.reqs);
 				}
 				// take out another one if in inventory
 				server_BuildBlob(this, blocks[PAGE], i);
+				this.Sync("buildblob", true);
 			}
 		}
 	}
