@@ -1008,7 +1008,7 @@ void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 			CPlayer@ player = getPlayerByNetworkId(playerid);
 			if (player is null) return;
 
-			if (!server_canPlayerStartVote(this, byplayer, player, cmd)) return;
+			if (!server_canPlayerStartVote(this, byplayer, player, vote_type_kick)) return;
 
 			this.set_s32("last vote counter player " + byplayer.getUsername(), 0);
 			this.SyncToPlayer("last vote counter player " + byplayer.getUsername(), byplayer);
