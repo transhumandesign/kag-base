@@ -183,7 +183,7 @@ class PNGLoader
 				string name;
 				if(alpha == items.length) // random
 				{
-					name = items[XORRandom(items.length - 1)];
+					name = items[XORRandom(items.length)];
 				}
 				else
 				{
