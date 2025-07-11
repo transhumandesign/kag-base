@@ -51,6 +51,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (s !is null)
 		{
 			s.Gib();
+			s.PlaySound("/EggCrack" + XORRandom(2) + ".ogg");
 		}
 	}
 }
