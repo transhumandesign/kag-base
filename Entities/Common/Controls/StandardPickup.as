@@ -12,6 +12,8 @@ u16[] pickup_netids;
 u16[] closest_netids;
 u16 hover_netid = 0;
 
+dictionary pickup_menu_indexes;
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
@@ -20,53 +22,48 @@ void onInit(CBlob@ this)
 	AddIconToken("$filled_bucket$", "Bucket.png", Vec2f(16, 16), 1);
 
 	// setup pickup menu wheel
-	WheelMenu@ menu = get_wheel_menu("pickup");
-	if (menu.entries.length == 0)
+	if (pickup_menu_indexes.getSize() == 0)
 	{
-		menu.option_notice = "Pickup";
-
+		WheelMenu@ menu = get_wheel_menu("pickup");
+		menu.option_notice = getTranslatedString("Pickup");
+		
 		// knight stuff
-		menu.add_entry(PickupWheelMenuEntry("Keg", "$keg$", "keg"));
-
-		const PickupWheelOption[] bomb_options = {PickupWheelOption("bomb", 1), PickupWheelOption("mat_bombs", 0)};
-		menu.add_entry(PickupWheelMenuEntry("Bomb", "$mat_bombs$", bomb_options, Vec2f(0, -8.0f)));
-
-		const PickupWheelOption[] waterbomb_options = {PickupWheelOption("waterbomb", 1), PickupWheelOption("mat_waterbombs", 0)};
-		menu.add_entry(PickupWheelMenuEntry("Water Bomb", "$mat_waterbombs$", waterbomb_options, Vec2f(0, -6.0f)));
-
-		menu.add_entry(PickupWheelMenuEntry("Mine", "$mine$", "mine"));
-
+		pickup_menu_indexes.set("keg", 0);
+		pickup_menu_indexes.set("mat_bombs", 1);
+		pickup_menu_indexes.set("bomb", 1);
+		pickup_menu_indexes.set("mat_waterbombs", 2);
+		pickup_menu_indexes.set("waterbomb", 2);
+		pickup_menu_indexes.set("mine", 3);
+		
 		// archer stuff
-		menu.add_entry(PickupWheelMenuEntry("Arrows", "$mat_arrows$", "mat_arrows", Vec2f(0, -8.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Water Arrows", "$mat_waterarrows$", "mat_waterarrows", Vec2f(0, 2.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Fire Arrows", "$mat_firearrows$", "mat_firearrows", Vec2f(0, -6.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Bomb Arrows", "$mat_bombarrows$", "mat_bombarrows"));
-
+		pickup_menu_indexes.set("mat_arrows", 4);
+		pickup_menu_indexes.set("mat_waterarrows", 5);
+		pickup_menu_indexes.set("mat_firearrows", 6);
+		pickup_menu_indexes.set("mat_bombarrows", 7);
+		
 		// builder stuff
-		menu.add_entry(PickupWheelMenuEntry("Gold", "$mat_gold$", "mat_gold", Vec2f(0, -6.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Stone", "$mat_stone$", "mat_stone", Vec2f(0, -6.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Wood", "$mat_wood$", "mat_wood", Vec2f(0, -6.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Drill", "$drill$", "drill", Vec2f(-16.0f, 0.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Saw", "$saw$", "saw", Vec2f(-16.0f, -16.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Trampoline", "$trampoline$", "trampoline", Vec2f(-16.0f, -8.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Boulder", "$boulder$", "boulder"));
-		menu.add_entry(PickupWheelMenuEntry("Sponge", "$sponge$", "sponge", Vec2f(0, 8.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Seed", "$seed$", "seed", Vec2f(8.0f, 8.0f)));
-
+		pickup_menu_indexes.set("mat_gold", 8);
+		pickup_menu_indexes.set("mat_stone", 9);
+		pickup_menu_indexes.set("mat_wood", 10);
+		pickup_menu_indexes.set("drill", 11);
+		pickup_menu_indexes.set("saw", 12);
+		pickup_menu_indexes.set("trampoline", 13);
+		pickup_menu_indexes.set("boulder", 14);
+		pickup_menu_indexes.set("sponge", 15);
+		pickup_menu_indexes.set("seed", 16);
+		
 		// misc
-		menu.add_entry(PickupWheelMenuEntry("Log", "$log$", "log"));
-		const PickupWheelOption[] food_options = {
-			PickupWheelOption("food"),
-			PickupWheelOption("heart"),
-			PickupWheelOption("fishy"),
-			PickupWheelOption("grain"),
-			PickupWheelOption("steak"),
-			PickupWheelOption("egg")
-		};
-		menu.add_entry(PickupWheelMenuEntry("Food", "$food$", food_options));
-		menu.add_entry(PickupWheelMenuEntry("Ballista Ammo", "$mat_bolts$", "mat_bolts"));
-		menu.add_entry(PickupWheelMenuEntry("Crate", "$crate$", "crate", Vec2f(-16.0f, 0)));
-		menu.add_entry(PickupWheelMenuEntry("Bucket", "$filled_bucket$", "bucket"));
+		pickup_menu_indexes.set("log", 17);
+		pickup_menu_indexes.set("food", 18);
+		pickup_menu_indexes.set("heart", 18);
+		pickup_menu_indexes.set("fishy", 18);
+		pickup_menu_indexes.set("grain", 18);
+		pickup_menu_indexes.set("steak", 18);
+		pickup_menu_indexes.set("egg", 18);
+		pickup_menu_indexes.set("mat_bolts", 19);
+		pickup_menu_indexes.set("mat_bomb_bolts", 19);
+		pickup_menu_indexes.set("crate", 20);
+		pickup_menu_indexes.set("bucket", 21);
 	}
 }
 
@@ -82,10 +79,12 @@ void onTick(CBlob@ this)
 	CControls@ controls = getControls();
 
 	// drop / pickup / throw
-	if (controls.ActionKeyPressed(AK_PICKUP_MODIFIER))
+	if (controls.ActionKeyPressed(AK_PICKUP_MODIFIER) && this.isKeyPressed(key_pickup))
 	{
+		closest_netids.clear();
+
 		WheelMenu@ menu = get_wheel_menu("pickup");
-		if (this.isKeyPressed(key_pickup) && menu !is get_active_wheel_menu())
+		if (menu !is get_active_wheel_menu())
 		{
 			set_active_wheel_menu(@menu);
 		}
@@ -95,28 +94,51 @@ void onTick(CBlob@ this)
 		CBlob@[] available;
 		FillAvailable(this, available);
 
-		for (uint i = 0; i < menu.entries.length; i++)
+		const u32 pickup_wheel_size = 22;
+		WheelMenuEntry@[] entries;
+		for (u32 i = 0; i < pickup_wheel_size; i++)
 		{
-			PickupWheelMenuEntry@ entry = cast<PickupWheelMenuEntry>(menu.entries[i]);
+			PickupWheelMenuEntry entry;
 			entry.disabled = true;
+			entries.push_back(entry);
+		}
 
-			for (uint j = 0; j < available.length; j++)
+		string[] names;
+		for (u16 i = 0; i < available.length; i++)
+		{
+			CBlob@ item = available[i];
+			const string name = item.getName();
+			if (names.find(name) != -1) continue;
+
+			Vec2f dim = item.inventoryFrameDimension;
+			const f32 offset_x = Maths::Clamp(16 - dim.x, -dim.x, dim.x);
+			const f32 offset_y = Maths::Clamp(16 - dim.y, -dim.y, dim.y);
+			const string inventory_name = item.getInventoryName();
+			const string icon = GUI::hasIconName("$"+inventory_name+"$") ? "$"+inventory_name+"$" : "$"+name+"$";
+			PickupWheelMenuEntry entry(name, getTranslatedString(inventory_name), icon, Vec2f(offset_x, offset_y));
+			names.push_back(name);
+			
+			u32 index = name.getHash() % pickup_wheel_size;
+			if (pickup_menu_indexes.exists(name))
 			{
-				string bname = available[j].getName();
-				for (uint k = 0; k < entry.options.length; k++)
-				{
-					if (entry.options[k].name == bname)
-					{
-						entry.disabled = false;
-						break;
-					}
-				}
+				pickup_menu_indexes.get(name, index);
+			}
 
-				if (!entry.disabled)
+			for (u32 p = 0; p < pickup_wheel_size; p++)
+			{
+				const u32 probe = (index + p) % pickup_wheel_size;
+				if (entries[probe].disabled)
 				{
+					@entries[probe] = @entry;
 					break;
 				}
 			}
+		}
+
+		if (entries != menu.entries)
+		{
+			menu.entries = entries;
+			menu.update();
 		}
 	}
 	else if (this.isKeyJustPressed(key_pickup))
@@ -167,34 +189,24 @@ void onTick(CBlob@ this)
 			CBlob@[] blobsInRadius;
 			if (getMap().getBlobsInRadius(this.getPosition(), this.getRadius() + 50.0f, @blobsInRadius))
 			{
-				uint highestPriority = 0;
 				float closestScore = 600.0f;
 				CBlob@ closest;
 
 				for (uint i = 0; i < blobsInRadius.length; i++)
 				{
 					CBlob@ b = blobsInRadius[i];
+					if (b.getName() != selected.name) continue;
 
-					string bname = b.getName();
-					for (uint j = 0; j < selected.options.length; j++)
+					if (!canBlobBePickedUp(this, b)) continue;
+
+					const f32 maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
+					const f32 dist = (this.getPosition() - b.getPosition()).Length();
+					const f32 factor = dist / maxDist;
+					const f32 score = getPriorityPickupScale(this, b, factor);
+					if (score < closestScore)
 					{
-						PickupWheelOption@ selectedOption = @selected.options[j];
-						if (bname != selectedOption.name) continue;
-
-						if (!canBlobBePickedUp(this, b)) break;
-
-						float maxDist = Maths::Max(this.getRadius() + b.getRadius() + 20.0f, 36.0f);
-						float dist = (this.getPosition() - b.getPosition()).Length();
-						float factor = dist / maxDist;
-
-						float score = getPriorityPickupScale(this, b, factor);
-
-						if (score < closestScore || selectedOption.priority > highestPriority)
-						{
-							highestPriority = selectedOption.priority;
-							closestScore = score;
-							@closest = @b;
-						}
+						closestScore = score;
+						@closest = @b;
 					}
 				}
 
