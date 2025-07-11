@@ -92,7 +92,8 @@ void ManageGrapple(CBlob@ this, ArcherInfo@ archer)
 		&& !archer.grappling
 		&& this.isOnGround()
 		&& !this.isKeyPressed(key_action1)
-		&& !this.wasKeyPressed(key_action1))
+		&& !this.wasKeyPressed(key_action1)
+		&& !this.isAttached())
 	{
 		Vec2f aimpos = this.getAimPos();
 		CBlob@[] blobs;
@@ -1307,7 +1308,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 void fletchArrow(CBlob@ this)
 {
 	// fletch arrow
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CBlob@ mat_arrows = server_CreateBlobNoInit("mat_arrows");
 		if (mat_arrows !is null)
@@ -1332,6 +1333,16 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 	if (!this.get("archerInfo", @archer))
 	{
 		return;
+	}
+
+	archer.charge_state = ArcherParams::not_aiming;
+	archer.charge_time = 0;
+	getHUD().SetCursorFrame(0);
+	
+	CSprite@ sprite = this.getSprite();
+	if (sprite !is null)
+	{
+		sprite.SetEmitSoundPaused(true);
 	}
 
 	if (this.isAttached() && (canSend(this) || isServer()))
