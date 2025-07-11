@@ -23,38 +23,38 @@ void onInit(CBlob@ this)
 	WheelMenu@ menu = get_wheel_menu("pickup");
 	if (menu.entries.length == 0)
 	{
-		menu.option_notice = "Pickup";
+		menu.option_notice = getTranslatedString("Pickup");
 
 		// knight stuff
-		menu.add_entry(PickupWheelMenuEntry("Keg", "$keg$", "keg"));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Keg"), "$keg$", "keg"));
 
 		const PickupWheelOption[] bomb_options = {PickupWheelOption("bomb", 1), PickupWheelOption("mat_bombs", 0)};
-		menu.add_entry(PickupWheelMenuEntry("Bomb", "$mat_bombs$", bomb_options, Vec2f(0, -8.0f)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Bomb"), "$mat_bombs$", bomb_options, Vec2f(0, -8.0f)));
 
 		const PickupWheelOption[] waterbomb_options = {PickupWheelOption("waterbomb", 1), PickupWheelOption("mat_waterbombs", 0)};
-		menu.add_entry(PickupWheelMenuEntry("Water Bomb", "$mat_waterbombs$", waterbomb_options, Vec2f(0, -6.0f)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Water Bomb"), "$mat_waterbombs$", waterbomb_options, Vec2f(0, -6.0f)));
 
-		menu.add_entry(PickupWheelMenuEntry("Mine", "$mine$", "mine"));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Mine"), "$mine$", "mine"));
 
 		// archer stuff
-		menu.add_entry(PickupWheelMenuEntry("Arrows", "$mat_arrows$", "mat_arrows", Vec2f(0, -8.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Water Arrows", "$mat_waterarrows$", "mat_waterarrows", Vec2f(0, 2.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Fire Arrows", "$mat_firearrows$", "mat_firearrows", Vec2f(0, -6.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Bomb Arrows", "$mat_bombarrows$", "mat_bombarrows"));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Arrows"), "$mat_arrows$", "mat_arrows", Vec2f(0, -8.0f)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Water Arrows"), "$mat_waterarrows$", "mat_waterarrows", Vec2f(0, 2.0f)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Fire Arrows"), "$mat_firearrows$", "mat_firearrows", Vec2f(0, -6.0f)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Bomb Arrows"), "$mat_bombarrows$", "mat_bombarrows"));
 
 		// builder stuff
-		menu.add_entry(PickupWheelMenuEntry("Gold", "$mat_gold$", "mat_gold", Vec2f(0, -6.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Stone", "$mat_stone$", "mat_stone", Vec2f(0, -6.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Wood", "$mat_wood$", "mat_wood", Vec2f(0, -6.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Drill", "$drill$", "drill", Vec2f(-16.0f, 0.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Saw", "$saw$", "saw", Vec2f(-16.0f, -16.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Trampoline", "$trampoline$", "trampoline", Vec2f(-16.0f, -8.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Boulder", "$boulder$", "boulder"));
-		menu.add_entry(PickupWheelMenuEntry("Sponge", "$sponge$", "sponge", Vec2f(0, 8.0f)));
-		menu.add_entry(PickupWheelMenuEntry("Seed", "$seed$", "seed", Vec2f(8.0f, 8.0f)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Gold"), "$mat_gold$", "mat_gold", Vec2f(0, -6.0f)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Stone"), "$mat_stone$", "mat_stone", Vec2f(0, -6.0f)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Wood"), "$mat_wood$", "mat_wood", Vec2f(0, -6.0f)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Drill"), "$drill$", "drill", Vec2f(-16.0f, 0.0f)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Saw"), "$saw$", "saw", Vec2f(-16.0f, -16.0f)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Trampoline"), "$trampoline$", "trampoline", Vec2f(-16.0f, -8.0f)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Boulder"), "$boulder$", "boulder"));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Sponge"), "$sponge$", "sponge", Vec2f(0, 8.0f)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Seed"), "$seed$", "seed", Vec2f(8.0f, 8.0f)));
 
 		// misc
-		menu.add_entry(PickupWheelMenuEntry("Log", "$log$", "log"));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Log"), "$log$", "log"));
 		const PickupWheelOption[] food_options = {
 			PickupWheelOption("food"),
 			PickupWheelOption("heart"),
@@ -63,10 +63,11 @@ void onInit(CBlob@ this)
 			PickupWheelOption("steak"),
 			PickupWheelOption("egg")
 		};
-		menu.add_entry(PickupWheelMenuEntry("Food", "$food$", food_options));
-		menu.add_entry(PickupWheelMenuEntry("Ballista Ammo", "$mat_bolts$", "mat_bolts"));
-		menu.add_entry(PickupWheelMenuEntry("Crate", "$crate$", "crate", Vec2f(-16.0f, 0)));
-		menu.add_entry(PickupWheelMenuEntry("Bucket", "$filled_bucket$", "bucket"));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Food"), "$food$", food_options));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Ballista Bolts"), "$mat_bolts$", "mat_bolts"));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Ballista Shells"), "$mat_bomb_bolts$", "mat_bomb_bolts"));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Crate"), "$crate$", "crate", Vec2f(-16.0f, 0)));
+		menu.add_entry(PickupWheelMenuEntry(getTranslatedString("Bucket"), "$filled_bucket$", "bucket"));
 	}
 }
 

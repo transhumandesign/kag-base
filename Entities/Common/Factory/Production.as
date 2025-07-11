@@ -594,7 +594,7 @@ void onRender(CSprite@ this)
 
 							if (mouseHover) // draw missing requirements
 							{
-								string reqsText = item.name + getTranslatedString("\n\nrequires\n{MISSING}\nAdd materials in storage.").replace("{MISSING}", getButtonRequirementsText(item.requirementsMissing, true));
+								string reqsText = getTranslatedString(item.name) + getTranslatedString("\n\nrequires\n{MISSING}\nAdd materials in storage.").replace("{MISSING}", getTranslatedString(getButtonRequirementsText(item.requirementsMissing, true)));
 								GUI::SetFont("menu");
 								GUI::DrawText(reqsText, Vec2f(upperleft.x - 25.0f, lowerright.y + 20.0f), Vec2f(lowerright.x + 25.0f, lowerright.y + 90.0f), color_black, false, false, true);
 							}
@@ -614,9 +614,9 @@ void onRender(CSprite@ this)
 							//}
 
 							if (!available)
-								reqsText += getTranslatedString("Producing {ITEM}...").replace("{ITEM}", item.name);
+								reqsText += getTranslatedString("Producing {ITEM}...").replace("{ITEM}", getTranslatedString(item.name));
 							else
-								reqsText += getTranslatedString("{ITEM}" + (onDemand ? " available on respawn" : " limit reached.")).replace("{ITEM}", item.name);
+								reqsText += getTranslatedString("{ITEM}" + (onDemand ? " available on respawn" : " limit reached.")).replace("{ITEM}", getTranslatedString(item.name));
 
 							GUI::SetFont("menu");
 							GUI::DrawText(reqsText, Vec2f(upperleft.x - 25.0f, lowerright.y + 20.0f), Vec2f(lowerright.x + 25.0f, lowerright.y + 100.0f), color_black, false, false, true);

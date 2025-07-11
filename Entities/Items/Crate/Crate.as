@@ -102,7 +102,7 @@ void onInit(CBlob@ this)
 	{
 		const string name = getTranslatedString(this.get_string("packed name"));
 		if (name.length > 1)
-			this.setInventoryName("Crate with " + name);
+			this.setInventoryName(getTranslatedString("Crate with {ITEM}").replace("{ITEM}", name));
 	}
 
 	if (!this.exists("required space"))
