@@ -5,6 +5,7 @@
 void onInit(CBlob@ this)
 {
 	this.Tag("builder always hit");
+	this.Tag("is component");
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
