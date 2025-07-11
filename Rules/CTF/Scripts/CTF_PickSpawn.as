@@ -18,6 +18,34 @@ void RemoveRespawnMenu()
 		menu.kill = true;
 }
 
+CBlob@ getHoveredSpawnPoint()
+{
+    CGridMenu@ respawn_menu = @getRespawnMenu();
+    if (respawn_menu is null) { return null; }
+
+    u16[]@ respawn_netids;
+    if (!getRules().get("pickspawn respawns", @respawn_netids)) { return null; }
+
+    if (respawn_menu.getButtonsCount() != respawn_netids.length)
+    {
+        warning("getHoveredSpawnPoint bug: mismatch in respawns vs respawn menu");
+        return null;
+    }
+
+    CGridButton@ hovered_button = getHUD().getHoveredButton();
+
+    for (uint i = 0; i < respawn_menu.getButtonsCount(); ++i)
+    {
+        CGridButton@ button = respawn_menu.getButtonOfIndex(i);
+        if (button is hovered_button)
+        {
+            return getBlobByNetworkID(respawn_netids[i]);
+        }
+    }
+
+	return null;
+}
+
 void BuildRespawnMenu(CRules@ this, CPlayer@ player, CBlob@[] respawns)
 {
 	RemoveRespawnMenu();
@@ -38,6 +66,13 @@ void BuildRespawnMenu(CRules@ this, CPlayer@ player, CBlob@[] respawns)
 	}
 
 	SortByPosition(@respawns);
+
+	u16[] respawn_netids;
+	for (uint i = 0; i < respawns.length; ++i)
+	{
+		respawn_netids.push_back(respawns[i].getNetworkID());
+	}
+	this.set("pickspawn respawns", @respawn_netids);
 
 	// build menu for spawns
 	const Vec2f menupos = getDriver().getScreenCenterPos() + Vec2f(0.0f, getDriver().getScreenHeight() / 2.0f - BUTTON_SIZE - 46.0f);
@@ -90,6 +125,9 @@ void onTick(CRules@ this)
 			BuildRespawnMenu(this, player, respawns);
 		}
 	}
+
+	CBlob@ hoveredSpawnBlob = getHoveredSpawnPoint();
+	this.set("hovered spawn menu blob", @hoveredSpawnBlob);
 }
 
 //hook after the change has been decided
