@@ -48,6 +48,7 @@ void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 	manager.RegisterCommand(SeedCommand());
 	manager.RegisterCommand(WaterCommand());
 	manager.RegisterCommand(CrateCommand());
+	manager.RegisterCommand(SignCommand());
 	manager.RegisterCommand(ScrollCommand());
 	manager.RegisterCommand(BotCommand());
 	manager.RegisterCommand(SpawnCommand());
