@@ -102,6 +102,7 @@ CParticle@ MakeBasicLightParticle(Vec2f position, Vec2f velocity, SColor colour,
     p.colour = colour;
     p.fadeout = true;
     p.fadeoutmod = fadeoutmod;
+    p.scale = scale;
     p.setRenderStyle(RenderStyle::light, false, true);
 
     return @p;

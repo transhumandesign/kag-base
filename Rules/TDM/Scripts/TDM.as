@@ -830,4 +830,8 @@ void onRestart(CRules@ this)
 void onInit(CRules@ this)
 {
 	Reset(this);
+
+#ifdef STAGING
+	this.shadowmap_config.back_scale = 0.73f;
+#endif
 }
