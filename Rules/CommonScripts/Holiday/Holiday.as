@@ -94,8 +94,12 @@ void SyncHoliday(CRules@ this, string _holiday, string _holiday_cache)
 
 		this.set_s8(holiday_prop, getHolidayFromString(holiday));
 
-		if (isServer())
+		// avoid restarting the map if we are in the middle of a game, which can
+		// happen when rebuilding the holiday script
+		if (isServer() && getGameTime() == 0)
+		{
 			LoadMap(getMap().getMapName());
+		}
 	}
 }
 
@@ -143,6 +147,8 @@ string GetCurrentHoliday()
 	{
 		holiday_start = calendar[i].m_date;
 		holiday_end = (holiday_start + calendar[i].m_length) % (365 + server_leap);
+
+		if (i == 2) { return calendar[i].m_name; } // HACK TEST
 
 		bool holiday_active = false;
 		if (holiday_start <= holiday_end)
