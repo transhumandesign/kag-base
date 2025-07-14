@@ -66,9 +66,32 @@ void MakeDamageFrame(CBlob@ this)
 	this.getSprite().animation.frame = frame;
 }
 
+void setLightPass(CBlob@ this, u32 offset, bool pass)
+{
+	// set both on shape and in map flags for future compat in case we want to
+	// tweak behavior, e.g. make MarkTileLightDirty update from tileflags itself
+	this.getShape().getConsts().lightPasses = pass;
+
+	CMap@ map = getMap();
+
+	if (pass)
+	{
+		map.AddTileFlag(offset, Tile::LIGHT_PASSES);
+	}
+	else
+	{
+		map.RemoveTileFlag(offset, Tile::LIGHT_PASSES);
+	}
+
+	map.MarkTileLightDirty(offset);
+}
+
 void setOpen(CBlob@ this, bool open)
 {
 	CSprite@ sprite = this.getSprite();
+
+	int offset = getMap().getTileOffset(this.getPosition());
+	setLightPass(this, offset, open);
 
 	if (open)
 	{

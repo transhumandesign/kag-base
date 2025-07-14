@@ -9,6 +9,7 @@
 #include "DoorCommon.as";
 #include "FireplaceCommon.as";
 #include "ActivationThrowCommon.as"
+#include "ParticlesCommon.as"
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
@@ -94,7 +95,6 @@ void onInit(CBlob@ this)
 
 void turnOffFire(CBlob@ this)
 {
-	this.SetLight(false);
 	this.set_u8("arrow type", ArrowType::normal);
 	this.Untag("fire source");
 	this.getSprite().SetAnimation("arrow");
@@ -103,7 +103,6 @@ void turnOffFire(CBlob@ this)
 
 void turnOnFire(CBlob@ this)
 {
-	this.SetLight(true);
 	this.set_u8("arrow type", ArrowType::fire);
 	this.Tag("fire source");
 	this.getSprite().SetAnimation("fire arrow");
@@ -231,24 +230,40 @@ void onTick(CBlob@ this)
 	{
 		const s32 gametime = getGameTime();
 
-		if (gametime % 6 == 0)
+		Vec2f offset = Vec2f(this.getWidth(), 0.0f);
+
+		float flame_frequency = this.getVelocity().Length() > 2.0f ? 1 : 6;
+
+		Random r(XORRandom(9999));
+
+		if (gametime % flame_frequency == 0)
 		{
 			this.getSprite().SetAnimation("fire");
 
-			Vec2f offset = Vec2f(this.getWidth(), 0.0f);
 			offset.RotateBy(-angle);
-			makeFireParticle(this.getPosition() + offset, 4);
+			offset += (Vec2f(r.NextFloat(), r.NextFloat()) - Vec2f(0.5, 0.5)) * 6.0f;
 
-			if (!this.isInWater())
+			CParticle@ fire = makeFireParticle(this.getPosition() + offset, 4);
+			fire.velocity = -this.getVelocity() * 0.06f - Vec2f(0.0f, 0.8f + r.NextFloat() * 0.4f);
+			fire.gravity = Vec2f(0.0f, 0.0f);
+
+			if (this.getVelocity().Length() > 2.0f)
 			{
-				this.SetLight(true);
-				this.SetLightColor(SColor(255, 250, 215, 178));
-				this.SetLightRadius(20.5f);
+				offset += (Vec2f(r.NextFloat(), r.NextFloat()) - Vec2f(0.5, 0.5)) * 6.0f;
+				CParticle@ fire2 = makeFireParticle(Vec2f_lerp(this.getOldPosition(), this.getPosition(), 0.5f) + offset, 4);
+				fire.velocity = -Vec2f_lerp(this.getOldVelocity(), this.getOldVelocity(), 0.5f)  * 0.06f - Vec2f(0.0f, 0.8f + r.NextFloat() * 0.4f);
+				fire.gravity = Vec2f(0.0f, 0.0f);
 			}
-			else
+
+			if (this.isInWater())
 			{
 				turnOffFire(this);
 			}
+		}
+
+		if (gametime % 1 == 0)
+		{
+			CParticle@ light = MakeBasicLightParticle(this.getPosition() + offset, Vec2f(0.0f, -0.9f), SColor(255, 100, 25, 0), 0.92f, 0.2f, 30);
 		}
 	}
 }
