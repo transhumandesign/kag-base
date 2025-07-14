@@ -5,16 +5,19 @@ const string holiday_head_prop = "holiday head num";
 const string holiday_head_texture_prop = "holiday head custom texture";
 
 enum Holidays {
-	None = -1,
-	Birthday = 0,
-	Halloween = 1,
-	Christmas = 2,
+	HOLIDAY_NONE = 0, // so that init to 0 is HOLIDAY_NONE
+
+	HOLIDAY_FIRST = 1,
+	HOLIDAY_BIRTHDAY = 1, // == first
+	HOLIDAY_HALLOWEEN = 2,
+	HOLIDAY_CHRISTMAS = 3,
 }
 
-string[] HolidayList = {
-	"Birthday",
-	"Halloween",
-	"Christmas",
+string[] holiday_names = {
+	"",                // HOLIDAY_NONE
+	"Birthday",        // HOLIDAY_BIRTHDAY
+	"Halloween",       // HOLIDAY_HALLOWEEN
+	"Christmas",       // HOLIDAY_CHRISTMAS
 };
 
 int getHoliday() {
@@ -22,14 +25,12 @@ int getHoliday() {
 }
 
 int getHolidayFromString(const string&in holiday) {
-	return HolidayList.find(holiday);
+	const int idx = holiday_names.find(holiday);
+	return idx != -1 ? idx : HOLIDAY_NONE;
 }
 
 string getStringFromHoliday(s8 holiday) {
-	if (holiday == -1)
-		return "";
-	
-	return HolidayList[holiday];
+	return holiday_names[holiday];
 }
 
 shared class Holiday

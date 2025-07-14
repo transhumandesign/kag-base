@@ -8,7 +8,7 @@
 void onInit(CBlob@ this)
 {
 #ifdef STAGING
-	if (getHoliday() == Holidays::Christmas)
+	if (getHoliday() == HOLIDAY_CHRISTMAS)
 		this.getSprite().ReloadSprite("Tent", 48, 40);
 #endif
 

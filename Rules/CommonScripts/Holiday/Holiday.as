@@ -54,7 +54,7 @@ void SyncHoliday(CRules@ this, string _holiday, string _holiday_cache)
 	{
 		if (_holiday_cache != "")
 		{
-			if (HolidayList.find(_holiday_cache) == -1) {
+			if (holiday_names.find(_holiday_cache) == -1) {
 				warn("script " + _holiday_cache + " cache not found inside script list");
 				return;
 			} 
@@ -71,7 +71,7 @@ void SyncHoliday(CRules@ this, string _holiday, string _holiday_cache)
 		}
 		if (_holiday != "")
 		{
-			if (HolidayList.find(_holiday) == -1) {
+			if (holiday_names.find(_holiday) == -1) {
 				warn("script " + _holiday + " not found inside script list");
 				return;
 			}
@@ -81,7 +81,10 @@ void SyncHoliday(CRules@ this, string _holiday, string _holiday_cache)
 			this.AddScript(_holiday+".as");
 
 #ifdef STAGING
-			CFileMatcher::AddOverlay(_holiday);
+			if (g_holiday_assets)
+			{
+				CFileMatcher::AddOverlay(_holiday);
+			}
 #endif
 
 			if(isServer())
@@ -108,10 +111,16 @@ void onTick(CRules@ this)
 	if (isServer() && sync)
 	{
 		SyncHoliday(this, holiday, holiday_cache);
-		CBitStream params;
-		params.write_string(holiday);
-		params.write_string(holiday_cache);
-		this.SendCommand(this.getCommandID(SYNC_HOLIDAY_ID), params);
+
+		// the (confusingly named) SyncHoliday call is enough in localhost
+		if (!isClient())
+		{
+			CBitStream params;
+			params.write_string(holiday);
+			params.write_string(holiday_cache);
+			this.SendCommand(this.getCommandID(SYNC_HOLIDAY_ID), params);
+		}
+
 		sync = false;
 	}
 }
@@ -136,9 +145,9 @@ string GetCurrentHoliday()
 	u8 server_leap = ((server_year % 4 == 0 && server_year % 100 != 0) || server_year % 400 == 0)? 1 : 0;
 
 	Holiday[] calendar = {
-			Holiday(HolidayList[Holidays::Birthday], 116 + server_leap - 1, 3)
-		, Holiday(HolidayList[Holidays::Halloween], 301 + server_leap - 1, 8)
-		, Holiday(HolidayList[Holidays::Christmas], 357 + server_leap - 2, 16)
+		Holiday(holiday_names[HOLIDAY_BIRTHDAY], 116 + server_leap - 1, 3)
+		, Holiday(holiday_names[HOLIDAY_HALLOWEEN], 301 + server_leap - 1, 8)
+		, Holiday(holiday_names[HOLIDAY_CHRISTMAS], 357 + server_leap - 2, 16)
 	};
 
 	s16 holiday_start;

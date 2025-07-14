@@ -40,7 +40,28 @@ void onRestart(CRules@ this)
 
 #ifdef STAGING
 	getRules().daycycle_speed = 10;
+
+	if (isClient())
+	{
+		if (g_holiday_assets)
+		{
+			getMap().CreateSkyGradient("Sprites/skygradient.png");
+		}
+		else
+		{
+			getMap().CreateSkyGradient("Sprites/skygradient_dayonly.png");
+		}
+	}
 #endif
+}
+
+bool isSnowEnabled()
+{
+	return (
+		!v_fastrender
+		&& g_holiday_assets
+		&& getHoliday() == HOLIDAY_CHRISTMAS
+	);
 }
 
 void onTick(CRules@ this)
@@ -49,7 +70,7 @@ void onTick(CRules@ this)
 	{
 		s16 renderId = this.get_s16("snow_render_id");
 		// Have we just disabled fast render
-		if (renderId == 0 && !v_fastrender)
+		if (renderId == 0 && isSnowEnabled())
 		{
 			// TEMP
 #ifdef STAGING
@@ -59,7 +80,7 @@ void onTick(CRules@ this)
 			this.set_s16("snow_render_id", Render::addScript(Render::layer_background, "Christmas.as", "DrawSnow", 0));
 #endif
 		} 
-		else if (renderId != 0 && v_fastrender || getHoliday() != Holidays::Christmas) // Have we just enabled fast render OR is holiday over
+		else if (renderId != 0 && !isSnowEnabled()) // Have we just enabled fast render OR is holiday over
 		{
 			Render::RemoveScript(renderId);
 			this.set_s16("snow_render_id", 0);
