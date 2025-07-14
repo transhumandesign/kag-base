@@ -26,6 +26,7 @@ namespace Descriptions
 	ballista_ammo              = getTranslatedString("Piercing bolts for ballista."),
 	ballista_bomb_ammo         = getTranslatedString("Explosive bolts for ballista."),
 	outpost                    = getTranslatedString("A deployable respawn point that allows class change. Has a storage and a tunnel that allows fast travel."),
+	bomber                     = getTranslatedString("Air vehicle, can carry two people and some cargo."),
 
 	stone                      = getTranslatedString("Raw stone material."),
 	wood                       = getTranslatedString("Raw wood material."),
