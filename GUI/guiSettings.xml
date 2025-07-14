@@ -1478,6 +1478,29 @@
 
 			</element>
 
+			<element type="checkBox">
+
+				<attributes>
+					<int name="Id" value="13580" />
+					<string name="Caption" value="Enable holiday assets" />
+					<rect name="Rect" value="40, 285, 250, 305" />
+					<position name="MinSize" value="1, 1" />
+					<position name="MaxSize" value="0, 0" />
+					<enum name="LeftAlign" value="upperLeft" />
+					<enum name="RightAlign" value="upperLeft" />
+					<enum name="TopAlign" value="upperLeft" />
+					<enum name="BottomAlign" value="upperLeft" />
+					<bool name="Visible" value="true" />
+					<bool name="Enabled" value="true" />
+					<bool name="TabStop" value="true" />
+					<bool name="TabGroup" value="false" />
+					<int name="TabOrder" value="9" />
+					<bool name="NoClip" value="false" />
+					<bool name="Checked" value="false" />
+				</attributes>
+
+			</element>
+
 		</element>
 
 	</element>
