@@ -21,6 +21,12 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::tick_onscreen;
 
 	SetSawOn(this, true);
+	
+	CRules@ rules = getRules();
+	if (!rules.hasScript("ToggleBloodyStuff.as"))
+	{
+		rules.AddScript("ToggleBloodyStuff.as");
+	}
 }
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
@@ -201,10 +207,10 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 
 		if (dot > 0.8f)
 		{
-			if (blob.hasTag("flesh") && isServer())
+			if (blob.hasTag("flesh"))
 			{
 				this.Tag("bloody");
-				this.Sync("bloody", true);
+				UpdateSprite(this);
 			}
 
 			return true;
@@ -335,9 +341,9 @@ void UpdateSprite(CBlob@ this)
 		}
 		
 		CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
-		if (chop !is null && this.hasTag("bloody") && !g_kidssafe)
+		if (chop !is null)
 		{
-			chop.animation.frame = 1;
+			chop.animation.frame = this.hasTag("bloody") && !g_kidssafe ? 1 : 0;
 		}
 	}
 }
@@ -347,6 +353,24 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return (byBlob.getTeamNum() == this.getTeamNum() ||
 	        byBlob.getPosition().y > this.getPosition().y + 4);
+}
+
+void onTick(CBlob@ this)
+{
+	CSprite@ sprite = this.getSprite();
+	if (sprite is null) return;
+
+	sprite.SetZ(this.isAttached() ? 10.0f : -10.0f);
+
+	//spin saw blade
+	CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
+	if (chop !is null && getSawOn(this))
+	{
+		chop.SetFacingLeft(false);
+
+		Vec2f around(0.5f, -0.5f);
+		chop.RotateBy(30.0f, around);
+	}
 }
 
 //sprite update
@@ -373,24 +397,4 @@ void onInit(CSprite@ this)
 		back.SetAnimation(anim);
 		back.SetRelativeZ(-5.0f);
 	}
-}
-
-void onTick(CBlob@ blob)
-{
-	CSprite@ sprite = blob.getSprite();
-	if (sprite is null) return;
-
-	sprite.SetZ(blob.isAttached() ? 10.0f : -10.0f);
-
-	//spin saw blade
-	CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
-	if (chop !is null && getSawOn(blob))
-	{
-		chop.SetFacingLeft(false);
-
-		Vec2f around(0.5f, -0.5f);
-		chop.RotateBy(30.0f, around);
-	}
-
-	UpdateSprite(blob);
 }
