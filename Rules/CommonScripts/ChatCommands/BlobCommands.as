@@ -183,3 +183,85 @@ class SpawnCommand : BlobCommand
 		}
 	}
 }
+
+class KnightCommand : BlobCommand
+{
+	KnightCommand()
+	{
+		super("knight", "Spawn a knight with activated brain");
+		SetUsage("(level, max and default 15)");
+	}
+
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
+	{
+		string blobName = "knight";
+
+		if (isBlobBlacklisted(blobName, player))
+		{
+			server_AddToChat(getTranslatedString("This blacklisted blob cannot be spawned"), ConsoleColour::ERROR, player);
+			return;
+		}
+
+		int level = args.size() >= 1 ? parseInt(args[0]) : 15;
+
+		if (level < 0 || level > 15)
+		{
+			server_AddToChat(getTranslatedString("Level must be >= 0 and <= 15"), ConsoleColour::ERROR, player);
+			return;
+		}
+
+		u8 team = player.getBlob().getTeamNum();
+
+		CBlob@ newBlob = server_CreateBlob(blobName, team, pos + Vec2f(0, -5));
+
+		if (newBlob !is null)
+		{
+			newBlob.set_s32("difficulty", level);
+			newBlob.getBrain().server_SetActive(true);
+		}
+	}
+}
+
+class ArcherCommand : BlobCommand
+{
+	ArcherCommand()
+	{
+		super("archer", "Spawn a archer with activated brain");
+		SetUsage("(level, max and default 15)");
+	}
+
+	void SpawnBlobAt(Vec2f pos, string[] args, CPlayer@ player)
+	{
+		string blobName = "archer";
+
+		if (isBlobBlacklisted(blobName, player))
+		{
+			server_AddToChat(getTranslatedString("This blacklisted blob cannot be spawned"), ConsoleColour::ERROR, player);
+			return;
+		}
+
+		int level = args.size() >= 1 ? parseInt(args[0]) : 15;
+
+		if (level < 0 || level > 15)
+		{
+			server_AddToChat(getTranslatedString("Level must be >= 0 and <= 15"), ConsoleColour::ERROR, player);
+			return;
+		}
+
+		u8 team = player.getBlob().getTeamNum();
+
+		CBlob@ newBlob = server_CreateBlob(blobName, team, pos + Vec2f(0, -5));
+
+		if (newBlob !is null)
+		{
+			newBlob.set_s32("difficulty", level);
+			newBlob.getBrain().server_SetActive(true);
+
+			CBlob@ mat = server_CreateBlob("mat_arrows");
+			if (mat !is null)
+			{
+				newBlob.server_PutInInventory(mat);
+			}
+		}
+	}
+}
