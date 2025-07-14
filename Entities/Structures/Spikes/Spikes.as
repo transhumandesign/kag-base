@@ -46,6 +46,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	if (!isStatic) return;
 
 	this.getSprite().PlaySound("/build_wall2.ogg");
+	this.getSprite().SetZ(500);
 }
 
 //temporary struct used to pass some variables by reference
@@ -87,7 +88,7 @@ void onTick(CBlob@ this)
 	Vec2f pos = this.getPosition();
 	const f32 tilesize = map.tilesize;
 
-	if (getNet().isServer() &&
+	if (isServer() &&
 	        (map.isTileSolid(map.getTile(pos)) || map.rayCastSolid(pos - this.getVelocity(), pos)))
 	{
 		this.server_Hit(this, pos, Vec2f(0, -1), 3.0f, Hitters::fall, true);
@@ -128,7 +129,7 @@ void onTick(CBlob@ this)
 		onSurface = temp.onSurface;
 	}
 
-	if (!onSurface && getNet().isServer())
+	if (!onSurface && isServer())
 	{
 		this.getCurrentScript().runFlags &= ~Script::tick_blob_in_proximity;
 		this.getCurrentScript().tickFrequency = 1;
@@ -145,15 +146,12 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	if (getNet().isClient() && !this.hasTag("_frontlayer"))
+	if (isClient() && !this.hasTag("_frontlayer"))
 	{
 		CSprite@ sprite = this.getSprite();
-		sprite.SetZ(500.0f);
-
 		if (sprite !is null)
 		{
 			CSpriteLayer@ panel = sprite.addSpriteLayer("panel", sprite.getFilename() , 8, 16, this.getTeamNum(), this.getSkinNum());
-
 			if (panel !is null)
 			{
 				panel.SetOffset(Vec2f(0, 3));
