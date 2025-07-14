@@ -6,6 +6,7 @@
 #include "RunnerTextures.as"
 #include "Accolades.as"
 #include "HolidayCommon.as"
+#include "CustomHeadData.as";
 
 const s32 NUM_HEADFRAMES = 4;
 const s32 NUM_UNIQUEHEADS = 30;
@@ -104,6 +105,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	int headsPackIndex = getHeadsPackIndex(headIndex);
 	HeadsPack@ pack = getHeadsPackByIndex(headsPackIndex);
 	string texture_file = pack.filename;
+	bool useTextureData = false;
 
 	bool override_frame = false;
 
@@ -118,15 +120,19 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 		//todo: consider pulling other custom head stuff out to here
 		if (player !is null && !player.isBot() && headIndex >= NUM_UNIQUEHEADS)
 		{
-			Accolades@ acc = getPlayerAccolades(player.getUsername());
 			CRules@ rules = getRules();
-
-			if (acc.hasCustomHead())
+			
+			if (isCustomHeadAllowed(player))
 			{
-				texture_file = acc.customHeadTexture;
-				headIndex = acc.customHeadIndex;
-				headsPackIndex = 0;
-				override_frame = true;
+				HeadStorage@ head = GetHead(getRules(), player);
+				if (head !is null) 
+				{
+					useTextureData = true;
+					headIndex = 0;
+					headsPackIndex = 0;
+					override_frame = true;
+					texture_file = head.texture;
+				}
 			}
 			else if (rules.exists(holiday_prop))
 			{
@@ -155,7 +161,10 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 	int skin = doSkinColour(headsPackIndex) ? blob.getSkinNum() : 0;
 
 	//add new head
-	CSpriteLayer@ head = this.addSpriteLayer("head", texture_file, 16, 16, team, skin);
+	CSpriteLayer@ head = useTextureData ?
+		this.addTexturedSpriteLayer("head", ApplyTeamTexture(texture_file, team, skin), 16, 16) :
+		this.addSpriteLayer("head", texture_file, 16, 16, team, skin);
+
 
 	//
 	headIndex = headIndex % 256; // wrap DLC heads into "pack space"
