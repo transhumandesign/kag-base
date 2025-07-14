@@ -14,6 +14,7 @@ void onInit(CBlob@ this)
 	this.set_u8(growth_time, default_growth_time);
 
 	this.Tag("scenary");
+	this.Tag("dont blend immediately");
 }
 
 
