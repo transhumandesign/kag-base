@@ -10,6 +10,7 @@ void onInit(CBlob@ this)
 	this.set_f32("gib health", -1.5f);
 	this.Tag("player");
 	this.Tag("flesh");
+	this.Tag("no death sound"); // has their own death scream
 	this.Tag("ignore_arrow");
 
 	this.getCurrentScript().tickFrequency = 150; // opt

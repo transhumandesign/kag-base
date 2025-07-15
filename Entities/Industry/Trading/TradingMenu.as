@@ -12,7 +12,8 @@ void onInit(CBlob@ this)
 {
 	this.addCommandID("buy");
 	this.addCommandID("play sound");
-	AddIconToken("$" + this.getName() + "$", "TradingPost.png", Vec2f(16, 16), 15);
+	
+	//AddIconToken("$" + this.getName() + "$", "TradingPost.png", Vec2f(16, 16), 15);
 	AddIconToken("$parachute$", "Crate.png", Vec2f(32, 32), 4);
 	AddIconToken("$trade$", "Coins.png", Vec2f(16, 16), 1);
 
