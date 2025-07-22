@@ -320,8 +320,8 @@ shared class TDMCore : RulesCore
 		{
 			rules.SetCurrentState(GAME);
 		}
-		else if (ticksToStart > 0 && rules.isWarmup()) //is the start of the game, spawn everyone + give mats
-		{
+		else if (ticksToStart > 29 && rules.isWarmup()) // is the start of the game, spawn everyone + give mats. 
+		{ // Prevent the game by '> 29' from displaying "Match starts in 1". Not sure if thats a good approach
 			rules.SetGlobalMessage("Match starts in {SEC}");
 			rules.AddGlobalMessageReplacement("SEC", "" + ((ticksToStart / 30) + 1));
 			tdm_spawns.force = true;
@@ -350,7 +350,6 @@ shared class TDMCore : RulesCore
 		{
 			gametime = getGameTime() + warmUpTime;
 			rules.set_u32("game_end_time", gametime + gameDuration);
-			rules.SetGlobalMessage("Not enough players in each team for the game to start.\nPlease wait for someone to join...");
 			tdm_spawns.force = true;
 		}
 		else if (rules.isMatchRunning())
@@ -661,7 +660,6 @@ shared class TDMCore : RulesCore
 			{
 				rules.SetTeamWon(-1);   //game over!
 				rules.SetCurrentState(GAME_OVER);
-				rules.SetGlobalMessage("It's a tie!");
 				return;
 			}
 
@@ -820,6 +818,7 @@ void Reset(CRules@ this)
 	this.set("start_gametime", getGameTime() + core.warmUpTime);
 	this.set_u32("game_end_time", getGameTime() + core.gameDuration); //for TimeToEnd.as
 	this.set_s32("restart_rules_after_game_time", (core.spawnTime < 0 ? 5 : 10) * 30 );
+	this.set_bool("exclude_global_messages", true);
 }
 
 void onRestart(CRules@ this)

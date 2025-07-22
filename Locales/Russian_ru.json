@@ -267,7 +267,7 @@
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
 	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"Следующее пополнение запасов через {SEC} {TIMESUFFIX} {ACTION}!",
-	"Go Fight"                                     :"Сражайтесь",
+	"Go Fight!"                                     :"Сражайтесь!",
 	"Go Build"                                     :"Стройте",
 	"Prepare for Battle"                           :"Готовьтесь к бою",
 	" seconds"                                     :"сек.",
@@ -1027,7 +1027,8 @@
 	"Well done. Loading next map...":"Отлично. Загрузка следующей карты...",
 	"You saved the princess!":"Вы спасли принцессу!",
 	"The princess died!":"Принцесса умерла!",
-	"Not enough players in each team for the game to start.\nPlease wait for someone to join...":"Недостаточно игроков в каждой команде для начала игры.\nПожалуйста, подождите, пока кто-нибудь присоединится...",
+	"Not enough players in each team for the game to start.":"Недостаточно игроков в каждой команде для начала игры.",
+	"Please wait for someone to join...": "Пожалуйста, подождите, пока кто-нибудь присоединится...",
 	"{LOSING_TEAM} Surrendered! {WINNING_TEAM} wins the Game!":"{LOSING_TEAM} сдалась! {WINNING_TEAM} побеждает!",
 	"{WINNING_TEAM} wins the game!":"{WINNING_TEAM} побеждает!",
 	"Stalemate: both teams have no uncaptured flags.\nFlags returning in: {TIME}":"Обе команды потеряли свои флаги.\nФлаги будут возвращены через {TIME}",

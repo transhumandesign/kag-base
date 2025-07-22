@@ -249,7 +249,7 @@
   //// RESUPPLIES ////
   //CTF_GiveSpawnItems.as
   "Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!": "Επόμενος ανεφοδιασμός σε {ΔΕΥΤ}{TIMESUFFIX}, {ΕΝΕΡΓΕΙΑ}!",
-  "Go Fight": "Πήγαινε πολέμα",
+  "Go Fight!": "Πήγαινε πολέμα!",
   "Go Build": "Πήγαινε χτίσε",
   "Prepare for Battle": "Ετοιμάσου για τη μάχη",
   " seconds": " δευτερολεπτα",

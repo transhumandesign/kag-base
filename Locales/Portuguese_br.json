@@ -434,7 +434,8 @@
 	"Well done. Loading next map...": "Muito bem. Carregando próximo mapa...",
 	"You saved the princess!": "Você salvou a princesa!",
 	"The princess died!": "A princesa foi morta!",
-	"Not enough players in each team for the game to start.\nPlease wait for someone to join...": "Sem jogadores suficientes.\nPor favor espere alguém conectar...",
+	"Not enough players in each team for the game to start.": "Sem jogadores suficientes.",
+	"Please wait for someone to join...": "Por favor espere alguém conectar...",
 	"{LOSING_TEAM} Surrendered! {WINNING_TEAM} wins the Game!": "{LOSING_TEAM} desitiu! {WINNING_TEAM} venceu o jogo!",
 	"{WINNING_TEAM} wins the game!": "{WINNING_TEAM} venceu o jogo!",
 	"Stalemate: both teams have no uncaptured flags.\nFlags returning in: {TIME}": "Os dois times estão sem bandeiras.\nBandeiras retornando em {TIME}",
@@ -596,7 +597,7 @@
 
 //CTF_GiveSpawnItems.as
 	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!": "Proximo reabastecimento em {SEC}{TIMESUFFIX}, {ACTION}!",
-	"Go Fight"                                     : "Vá lutar",
+	"Go Fight!"                                     : "Vá lutar!",
 	"Go Build"                                     : "Vá construir",
 	"Prepare for Battle"                           : "Se prepare para batalha",
 	" seconds"                                     : " segundos",

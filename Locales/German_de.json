@@ -273,7 +273,7 @@
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
 	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"Nächster Nachschub in {SEC}{TIMESUFFIX}, {ACTION}!",
-	"Go Fight"                                     :"Kämpft",
+	"Go Fight!"                                     :"Kämpft!",
 	"Go Build"                                     :"Baue",
 	"Prepare for Battle"                           :"Bereite dich auf den Kampf vor",
 	" seconds"                                     :" Sekunden",

@@ -249,7 +249,7 @@ KING ARTHUR'S GOLD TRANSLATION FILE
 //// RESUPPLIES ////
 //CTF_GiveSpawnItems.as
 	"Next resupply in {SEC}{TIMESUFFIX}, {ACTION}!":"Następne zaopatrzenie za {SEC}{TIMESUFFIX}, {ACTION}!",
-	"Go Fight"                                     :"Idź walczyć",
+	"Go Fight!"                                     :"Idź walczyć!",
 	"Go Build"                                     :"Buduj",
 	"Prepare for Battle"                           :"Przygotuj się na walkę",
 	" seconds"                                     :" sekund",
@@ -734,15 +734,16 @@ KING ARTHUR'S GOLD TRANSLATION FILE
 ////GLOBAL MESSAGES////
 	"Match starts in {SEC}": "Mecz zaczyna się za {SEC}",
 	"Starting in... {SEC}s": "Początek gry za... {SEC}s",
-	"It's a tie!":"Remis!",
-	"Well done. Loading next map...":"dobra robota. Ładowanie kolejnej mapy...",
-	"You saved the princess!":"Uratowałeś księżniczkę!",
-	"The princess died!":"Księżniczka zginęła!",
-	"Not enough players in each team for the game to start.\nPlease wait for someone to join...":"Brak wystarczającej ilości graczy w każdej drużynie, aby gra się rozpoczęła.\nProszę czekać, aż ktoś dołączy...",
-	"{LOSING_TEAM} Surrendered! {WINNING_TEAM} wins the Game!":"{LOSING_TEAM} Poddała się! {WINNING_TEAM} Wygrywa grę!",
-	"{WINNING_TEAM} wins the game!":"{WINNING_TEAM} Wygrywa grę!",
+	"It's a tie!": "Remis!",
+	"Well done. Loading next map...": "dobra robota. Ładowanie kolejnej mapy...",
+	"You saved the princess!": "Uratowałeś księżniczkę!",
+	"The princess died!": "Księżniczka zginęła!",
+	"Not enough players in each team for the game to start.": "Brak wystarczającej ilości graczy w każdej drużynie, aby gra się rozpoczęła.",
+	"Please wait for someone to join...": "Proszę czekać, aż ktoś dołączy...",
+	"{LOSING_TEAM} Surrendered! {WINNING_TEAM} wins the Game!": "{LOSING_TEAM} Poddała się! {WINNING_TEAM} Wygrywa grę!",
+	"{WINNING_TEAM} wins the game!": "{WINNING_TEAM} Wygrywa grę!",
 //TimeToEnd.as
-	"Time is up!\n{WINNING_TEAM} wins the game!":"Koniec czasu!\n{WINNING_TEAM} Wygrywa grę!",
+	"Time is up!\n{WINNING_TEAM} wins the game!": "Koniec czasu!\n{WINNING_TEAM} Wygrywa grę!",
 	"Time is up!\nIt's a tie!"          :"Koniec czasu!\nRemis!",
 	"Time left: {MIN}:{SEC}"            :"Pozostały czas: {MIN}:{SEC}",
 
