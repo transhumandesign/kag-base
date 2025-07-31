@@ -14,6 +14,7 @@ const string[] builder_alwayshit =
 	"trap_block",
 	"bridge",
 	"flowers",
+	"dummy",
 
 	//buildings
 	"factory",
