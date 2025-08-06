@@ -25,6 +25,7 @@ void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 	manager.RegisterCommand(TeamCommand());
 	manager.RegisterCommand(CoinsCommand());
 	manager.RegisterCommand(HealCommand());
+	manager.RegisterCommand(SuicideCommand());
 
 	//materials
 	manager.RegisterCommand(WoodCommand());
