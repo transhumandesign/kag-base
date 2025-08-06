@@ -182,7 +182,11 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 			}
 		}
 
-		victim.server_setCoins(victim.getCoins() - coinsOnDeathLose);
+		if (this.isMatchRunning() || (killer !is null && killer.getTeamNum() != victim.getTeamNum()))
+		{
+			// subtract coins after a match only when opponent team player killed us
+			victim.server_setCoins(victim.getCoins() - coinsOnDeathLose);
+		}
 	}
 }
 
