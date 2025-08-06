@@ -60,12 +60,25 @@ void onTick(CRules@ this)
 		}
 
 		Vec2f pos = b.getPosition();
-		Vec2f[] postocheck =
+		
+		CShape@ shape = b.getShape();
+		if (shape is null) continue;
+		
+		ShapeConsts@ consts = shape.getConsts();
+		if (consts is null) continue;
+
+		Vec2f[] postocheck;
+
+		postocheck.push_back(pos);
+
+		if (!consts.waterPasses)
 		{
-			pos + Vec2f(map.tilesize, 0),
-			pos + Vec2f(-map.tilesize, 0),
-			pos + Vec2f(0, -map.tilesize)
-		};
+			// check left, top and right
+			postocheck.push_back(pos + Vec2f(map.tilesize, 0));
+			postocheck.push_back(pos + Vec2f(-map.tilesize, 0));
+			postocheck.push_back(pos + Vec2f(0, -map.tilesize));
+		}
+
 		bool water = false;
 		for (uint j = 0; j < postocheck.length; j++)
 		{
