@@ -37,6 +37,8 @@ void onInit(CBlob@ this)
 		this.getShape().getConsts().net_threshold_multiplier = 4.0f;
 		this.set_u32("last collided tile", -1);
 	}
+
+	this.Tag("projectile hits keg");
 }
 
 void onTick(CBlob@ this)

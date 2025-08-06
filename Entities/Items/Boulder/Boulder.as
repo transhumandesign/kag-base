@@ -13,6 +13,7 @@ void onInit(CBlob @ this)
 	this.set_u8("launch team", 255);
 	this.server_setTeamNum(-1);
 	this.Tag("medium weight");
+	this.Tag("projectile hits keg");
 
 	LimitedAttack_setup(this);
 
