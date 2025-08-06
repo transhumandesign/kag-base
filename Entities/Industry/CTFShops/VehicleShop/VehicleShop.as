@@ -22,7 +22,7 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(4, 4));
+	this.set_Vec2f("shop menu size", Vec2f(6, 4));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
 
@@ -41,6 +41,15 @@ void onInit(CBlob@ this)
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista);
 	}
 	{
+		string mounted_bow_icon = getTeamIcon("mounted_bow", "MountedBow.png", team_num, Vec2f(16, 16), 6);
+		ShopItem@ s = addShopItem(this, "Mounted Bow", mounted_bow_icon, "mounted_bow", mounted_bow_icon + "\n\n\n" + Descriptions::mounted_bow, true, false);
+		s.crate_icon = 6;
+		s.customButton = true;
+		s.buttonwidth = 2;
+		s.buttonheight = 2;
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::mounted_bow);
+	}
+	{
 		string outpost_icon = getTeamIcon("outpost", "VehicleIcons.png", team_num, Vec2f(32, 32), 6);
 		ShopItem@ s = addShopItem(this, "Outpost", outpost_icon, "outpost", outpost_icon + "\n\n\n" + Descriptions::outpost, false, true);
 		s.crate_icon = 7;
@@ -52,7 +61,7 @@ void onInit(CBlob@ this)
 		s.crate_icon = 5;
 		s.customButton = true;
 		s.buttonwidth = 2;
-		s.buttonheight = 1;
+		s.buttonheight = 2;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista_ammo);
 	}
 	{
@@ -60,7 +69,7 @@ void onInit(CBlob@ this)
 		s.crate_icon = 5;
 		s.customButton = true;
 		s.buttonwidth = 2;
-		s.buttonheight = 1;
+		s.buttonheight = 2;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista_bomb_ammo);
 	}
 }

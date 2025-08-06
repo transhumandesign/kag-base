@@ -19,9 +19,6 @@ class MountedBowInfo : VehicleInfo
 
 			// set much higher drag than archer arrow
 			bullet.getShape().setDrag(bullet.getShape().getDrag() * 2.0f);
-
-			bullet.server_SetTimeToDie(-1);   // override lock
-			bullet.server_SetTimeToDie(0.69f);
 			bullet.Tag("bow arrow");
 		}
 	}
@@ -29,6 +26,8 @@ class MountedBowInfo : VehicleInfo
 
 void onInit(CBlob@ this)
 {
+	this.Tag("medium weight");
+
 	Vehicle_Setup(this,
 	              0.0f, // move speed
 	              0.31f,  // turn speed
@@ -40,7 +39,7 @@ void onInit(CBlob@ this)
 	if (!this.get("VehicleInfo", @v)) return;
 
 	Vehicle_AddAmmo(this, v,
-	                    25, // fire delay (ticks)
+	                    35, // fire delay (ticks)
 	                    1, // fire bullets amount
 	                    1, // fire cost
 	                    "mat_arrows", // bullet ammo config name
@@ -191,4 +190,16 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	{
 		TryToAttachVehicle(this, blob);
 	}
+}
+
+bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+{
+	if (this.isAttached() || this.hasAttached() ||this.hasTag("unpickable"))	{ return false; }
+	
+	return (this.getTeamNum() == byBlob.getTeamNum() || this.isOverlapping(byBlob));
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+    return blob.getShape().isStatic();
 }
