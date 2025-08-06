@@ -261,11 +261,13 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 		if (arrowType == ArrowType::normal)
 		{
-			if (
-				blob.getName() == "fireplace" &&
-				blob.getSprite().isAnimation("fire") &&
+			bool fiery_fireplace = blob.getName() == "fireplace" && blob.getSprite().isAnimation("fire");
+			bool fiery_platform = blob.isPlatform() && blob.hasTag("burning");
+			
+			if ((fiery_fireplace || fiery_platform) &&
 				this.getTickSinceCreated() > 1 //forces player to shoot through fire
-			) {
+				) 
+			{
 				turnOnFire(this);
 			}
 		}
