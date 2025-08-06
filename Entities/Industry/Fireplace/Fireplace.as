@@ -114,3 +114,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 	return damage;
 }
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	return blob.getShape().isStatic();
+}
