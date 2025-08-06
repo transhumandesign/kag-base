@@ -820,6 +820,8 @@ void Reset(CRules@ this)
 	this.set("start_gametime", getGameTime() + core.warmUpTime);
 	this.set_u32("game_end_time", getGameTime() + core.gameDuration); //for TimeToEnd.as
 	this.set_s32("restart_rules_after_game_time", (core.spawnTime < 0 ? 5 : 10) * 30 );
+	
+	this.set_bool("no purchase post match", true);
 }
 
 void onRestart(CRules@ this)

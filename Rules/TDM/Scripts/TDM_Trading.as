@@ -39,6 +39,7 @@ TradeItem@ addItemForCoin(CBlob@ this, const string &in name, int cost, const bo
 	if (item !is null)
 	{
 		AddRequirement(item.reqs, "coin", "", "Coins", cost);
+		AddMatchNotEndedRequirement(item.reqs);
 		item.buyIntoInventory = true;
 	}
 	return item;
