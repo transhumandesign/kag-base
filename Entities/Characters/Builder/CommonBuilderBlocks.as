@@ -169,6 +169,11 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 			blocks[1].push_back(b);
 		}
 		{
+			BuildBlock b(0, "display", "$display$", "Display");
+			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
+			blocks[1].push_back(b);
+		}
+		{
 			BuildBlock b(0, "diode", "$diode$", "Diode");
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
 			blocks[1].push_back(b);
@@ -279,6 +284,12 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 			BuildBlock b(0, "spiker", "$spiker$", "Spiker");
 			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 40);
+			blocks[3].push_back(b);
+		}
+		{
+			BuildBlock b(0, "bell", "$bell$", "Bell");
+			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
+			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 10);
 			blocks[3].push_back(b);
 		}
 	}
