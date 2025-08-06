@@ -393,6 +393,9 @@ void Reset(CRules@ this)
 
 	kegCount = 0;
 	mineCount = 0;
+	
+	this.Tag("faster building");
+	this.Tag("faster mining");
 }
 
 void onBlobCreated(CRules@ this, CBlob@ blob)
