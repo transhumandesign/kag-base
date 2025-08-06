@@ -8,6 +8,8 @@ const string[] builder_alwayshit =
 	"workbench",
 	"fireplace",
 	"ladder",
+	"sign",
+	"dummy",
 
 	//faketiles
 	"spikes",
