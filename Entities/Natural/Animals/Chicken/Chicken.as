@@ -2,21 +2,18 @@
 //script for a chicken
 
 #include "AnimalConsts.as";
+#include "ChickenCommon.as";
 
 const u8 DEFAULT_PERSONALITY = SCARED_BIT;
-const int MAX_EGGS = 2; //maximum symultaneous eggs
-const int MAX_CHICKENS = 6;
-const f32 CHICKEN_LIMIT_RADIUS = 120.0f;
-
-int g_lastSoundPlayedTime = 0;
-int g_layEggInterval = 0;
+const string ALLOW_SOUND_TIME = "last sound time";
+const u8 SOUND_DELAY = getTicksASecond();
+const string EGG_INTERVAL = "egg interval";
 
 //sprite
 
 void onInit(CSprite@ this)
 {
 	this.ReloadSprites(0, 0); //always blue
-
 }
 
 void onTick(CSprite@ this)
@@ -82,24 +79,19 @@ void onInit(CBlob@ this)
 	this.set_f32(terr_rad_property, 75.0f);
 	this.set_u8(target_lose_random, 14);
 
-	//for shape
+	// for shape
 	this.getShape().SetRotationsAllowed(false);
 
-	//for flesh hit
+	// for flesh hit
 	this.set_f32("gib health", -0.0f);
 	this.Tag("flesh");
 
 	this.getShape().SetOffset(Vec2f(0, 6));
 
-	this.getCurrentScript().runFlags |= Script::tick_blob_in_proximity;
-	this.getCurrentScript().runProximityTag = "player";
-	this.getCurrentScript().runProximityRadius = 320.0f;
+	// breeding/sound
 
-	// attachment
-
-	//todo: some tag-based keys to take interference (doesn't work on net atm)
-	/*AttachmentPoint@ att = this.getAttachments().getAttachmentPointByName("PICKUP");
-	att.SetKeysToTake(key_action1);*/
+	this.set_u32(ALLOW_SOUND_TIME, 0);
+	this.set_u8(EGG_INTERVAL, 0);
 
 	// movement
 
@@ -142,6 +134,7 @@ void onTick(CBlob@ this)
 		}
 	}
 
+	u32 allow_sound_time = this.get_u32(ALLOW_SOUND_TIME);
 	if (this.isAttached())
 	{
 		AttachmentPoint@ att = this.getAttachmentPoint(0);   //only have one
@@ -150,18 +143,6 @@ void onTick(CBlob@ this)
 			CBlob@ b = att.getOccupied();
 			if (b !is null)
 			{
-				// too annoying
-
-				//if (g_lastSoundPlayedTime+20+XORRandom(10) < getGameTime())
-				//{
-				//	if (XORRandom(2) == 1)
-				//		this.getSprite().PlaySound("/ScaredChicken");
-				//	else
-				//		this.getSprite().PlaySound("/Pluck");
-				//
-				//	g_lastSoundPlayedTime = getGameTime();
-				//}
-
 				Vec2f vel = b.getVelocity();
 				if (vel.y > 0.5f)
 				{
@@ -178,28 +159,28 @@ void onTick(CBlob@ this)
 			this.AddForce(Vec2f(0, -10));
 		}
 	}
-	else if (XORRandom(128) == 0 && g_lastSoundPlayedTime + 30 < getGameTime())
+	else if (XORRandom(128) == 0 && allow_sound_time < getGameTime())
 	{
 		this.getSprite().PlaySound("/Pluck");
-		g_lastSoundPlayedTime =  getGameTime();
+		this.set_u32(ALLOW_SOUND_TIME, getGameTime() + SOUND_DELAY);
 
 		// lay eggs
 		if (getNet().isServer())
 		{
-			g_layEggInterval++;
-			if (g_layEggInterval % 13 == 0)
+			u8 egg_interval = this.get_u8(EGG_INTERVAL) + 1;
+			this.set_u8(EGG_INTERVAL, egg_interval);
+			if (egg_interval % 13 == 0)
 			{
 				Vec2f pos = this.getPosition();
 				bool otherChicken = false;
-				int eggsCount = 0;
-				int chickenCount = 0;
+				int count = 1;
 				string name = this.getName();
 				CBlob@[] blobs;
 				this.getMap().getBlobsInRadius(pos, CHICKEN_LIMIT_RADIUS, @blobs);
 				for (uint step = 0; step < blobs.length; ++step)
 				{
 					CBlob@ other = blobs[step];
-					if (other is this)
+					if (other is this || other.isAttached() || other.isInInventory())
 						continue;
 
 					const string otherName = other.getName();
@@ -209,15 +190,15 @@ void onTick(CBlob@ this)
 						{
 							otherChicken = true;
 						}
-						chickenCount++;
+						count++;
 					}
-					if (otherName == "egg")
+					else if (otherName == "egg")
 					{
-						eggsCount++;
+						count++;
 					}
 				}
 
-				if (otherChicken && eggsCount < MAX_EGGS && chickenCount < MAX_CHICKENS)
+				if (otherChicken && count < MAX_CHICKENS)
 				{
 					server_CreateBlob("egg", this.getTeamNum(), this.getPosition() + Vec2f(0.0f, 5.0f));
 				}
@@ -231,10 +212,9 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	if (blob is null)
 		return;
 
-	if (blob.getRadius() > this.getRadius() && g_lastSoundPlayedTime + 25 < getGameTime() && blob.hasTag("flesh"))
+	if (blob.getRadius() > this.getRadius() && this.get_u32(ALLOW_SOUND_TIME) < getGameTime() && blob.hasTag("flesh"))
 	{
 		this.getSprite().PlaySound("/ScaredChicken");
-		g_lastSoundPlayedTime = getGameTime();
+		this.set_u32(ALLOW_SOUND_TIME, getGameTime() + SOUND_DELAY);
 	}
 }
-
