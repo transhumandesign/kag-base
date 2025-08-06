@@ -78,3 +78,8 @@ bool isWaterHitter(u8 type)
 {
 	return type == Hitters::water || type == Hitters::water_stun_force || type == Hitters::water_stun;
 }
+
+bool isIgniteHitter(u8 type)
+{
+	return type == Hitters::fire;
+}
