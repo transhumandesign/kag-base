@@ -2,6 +2,8 @@
 #include "/Entities/Common/Attacks/Hitters.as";
 #include "KnockedCommon.as"
 
+const u8 STOMP_AGAIN_THRESHOLD = 15;
+
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (blob is null)   // map collision?
@@ -40,6 +42,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		if (enemydam > 0)
 		{
 			this.server_Hit(blob, this.getPosition(), Vec2f(0, 1) , enemydam, Hitters::stomp);
+
+			blob.set_u16("stomped_time", getGameTime());
+			blob.set_u16("stomped_by_id", this.getNetworkID());
+			blob.Sync("stomped_time", true);
+			blob.Sync("stomped_by_id", true);
 		}
 	}
 }
@@ -55,4 +62,19 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 
 	return damage;
+}
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{
+	if (!this.exists("stomped_time"))
+	{
+		return true;
+	}
+
+	u16 stomped_time = this.get_u16("stomped_time");
+	CBlob@ stomper = getBlobByNetworkID(this.get_u16("stomped_by_id"));
+	bool recently_stomped_by_blob = (stomper !is null && stomper is blob && stomped_time + STOMP_AGAIN_THRESHOLD > getGameTime());
+	bool falling_faster_than_blob = this.getVelocity().y > blob.getVelocity().y;
+
+	return !(recently_stomped_by_blob && falling_faster_than_blob);
 }
