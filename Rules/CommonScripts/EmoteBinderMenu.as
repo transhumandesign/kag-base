@@ -1,9 +1,6 @@
-//TODO: display emote names when hovered (would require a complete list which EmoteEntries.cfg is not)
-//		update emotes instantly
-
 #include "EmotesCommon.as";
 
-const u8 MENU_WIDTH = 9;
+const u8 MENU_WIDTH = 13;
 
 const string EMOTE_CMD = "emote command";
 enum EMOTE_SUBCMD {
@@ -149,6 +146,15 @@ void ShowEmotesMenu(CPlayer@ player)
 		CGridButton@ separator = menu.AddTextButton(getTranslatedString("Select a keybind below, then select the emote you want"), Vec2f(MENU_WIDTH, 1));
 		separator.SetEnabled(false);
 
+		float paddingWidth = (MENU_WIDTH - 9) / 2.0f;
+		u8 leftPaddingWidth = Maths::Floor(paddingWidth);
+		u8 rightPaddingWidth = Maths::Ceil(paddingWidth);
+
+		if (leftPaddingWidth > 0)
+		{
+			menu.AddTextButton("", Vec2f(leftPaddingWidth, 2));
+		}
+
 		//display row of current emote keybinds
 		for (int i = 0; i < emoteBinds.size(); i++)
 		{
@@ -165,6 +171,11 @@ void ShowEmotesMenu(CPlayer@ player)
 			if (selected_keybind == i)
 			{
 				button.SetSelected(1);
+			}
+
+			if (i == 8 && rightPaddingWidth > 0)
+			{
+				menu.AddTextButton("", Vec2f(rightPaddingWidth, 2));
 			}
 		}
 	}
