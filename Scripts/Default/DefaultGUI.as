@@ -71,6 +71,7 @@ void LoadDefaultGUI()
 		AddIconToken("$lamp$",          "Lamp.png",             Vec2f(16, 16), 3);
 		AddIconToken("$obstructor$",    "Obstructor.png",       Vec2f(8, 8), 0);
 		AddIconToken("$spiker$",        "Spiker.png",           Vec2f(16, 16), 3);
+		AddIconToken("$flamer$",        "Flamer.png",           Vec2f(16, 16), 3);
 
 		// techs
 		AddIconToken("$tech_stone$", "GUI/TechnologyIcons.png", Vec2f(16, 16), 16);
