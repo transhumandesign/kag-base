@@ -234,6 +234,12 @@ void addCommonBuilderBlocks(BuildBlock[][]@ blocks, int team_num = 0, const stri
 			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 40);
 			blocks[2].push_back(b);
 		}
+		{
+			BuildBlock b(0, "solarpanel", "$solarpanel$", "Solar Panel");
+			AddRequirement(b.reqs, "blob", "mat_wood", "Wood", 10);
+			AddRequirement(b.reqs, "blob", "mat_stone", "Stone", 30);
+			blocks[2].push_back(b);
+		}
 
 		BuildBlock[] page_3;
 		blocks.push_back(page_3);
