@@ -3,9 +3,11 @@
 #include "CTF_Common.as";
 
 bool shouldRenderResupplyIndicator(CBlob@ blob)
-{
-	return ((getRules().gamemode_name == "CTF" || getRules().gamemode_name == "SmallCTF") &&
-		(blob.getName() == "builder"));
+{	
+	string gname = getRules().gamemode_name;
+	string bname = blob.getName();
+	
+	return (gname == "CTF" || gname == "SmallCTF" || gname == "Sandbox") && (bname == "builder" || bname == "archer");
 }
 
 f32 getHUDX()
@@ -42,38 +44,68 @@ void DrawResupplyOnHUD(CBlob@ this, Vec2f tl)
 	if (p is null) return;
 	
 	string name = this.getName();
+	string resupply_available, resupply_unavailable;
 
 	GUI::SetFont("menu");
 
-	string propname = getCTFTimerPropertyName(p, "builder");
+	string bname = this.getName();
+	string propname = getCTFTimerPropertyName(p, bname);
 
 	if (!getRules().exists(propname)) return;
-
-	int wood_amount = matchtime_wood_amount;
-	int stone_amount = matchtime_stone_amount;
-	if (getRules().isWarmup())
-	{
-		wood_amount = warmup_wood_amount;
-		stone_amount = warmup_stone_amount;
-	}
 
 	s32 next_items = getRules().get_s32(propname);
 
 	u32 secs = ((next_items - 1 - getGameTime()) / getTicksASecond()) + 1;
 	string units = ((secs != 1) ? " seconds" : " second");
+	
+	Vec2f dim_res_av;
+	u8 resupply_icon_frame;
 
-	string resupply_available = getTranslatedString("Go to a builder shop or a respawn point to get a resupply of {WOOD} wood and {STONE} stone.")
+	if (bname == "builder")
+	{
+		int wood_amount = matchtime_wood_amount;
+		int stone_amount = matchtime_stone_amount;
+		if (getRules().isWarmup())
+		{
+			wood_amount = warmup_wood_amount;
+			stone_amount = warmup_stone_amount;
+		}
+		
+		resupply_available = getTranslatedString("Go to a builder shop or a respawn point to get a resupply of {WOOD} wood and {STONE} stone.")
 		.replace("{WOOD}", "" + wood_amount)
 		.replace("{STONE}", "" + stone_amount);
 
-	Vec2f dim_res_av;
-	GUI::GetTextDimensions(resupply_available, dim_res_av);
+		GUI::GetTextDimensions(resupply_available, dim_res_av);
 
-	string resupply_unavailable = getTranslatedString("Next resupply of {WOOD} wood and {STONE} stone in {SEC}{TIMESUFFIX}.")
+		resupply_unavailable = getTranslatedString("Next resupply of {WOOD} wood and {STONE} stone in {SEC}{TIMESUFFIX}.")
 		.replace("{SEC}", "" + secs)
 		.replace("{TIMESUFFIX}", getTranslatedString(units))
 		.replace("{WOOD}", "" + wood_amount)
 		.replace("{STONE}", "" + stone_amount);
+		
+		resupply_icon_frame = 1;
+	}
+	else if (bname == "archer")
+	{
+		int arrows_amount = matchtime_arrows_amount;
+		if (getRules().isWarmup())
+		{
+			arrows_amount = warmup_arrows_amount;
+		}
+		
+		resupply_available = getTranslatedString("Go to an archer shop or a respawn point to get a resupply of {ARROWS} arrows.")
+		.replace("{ARROWS}", "" + arrows_amount);
+
+		GUI::GetTextDimensions(resupply_available, dim_res_av);
+
+		resupply_unavailable = getTranslatedString("Next resupply of {ARROWS} arrows in {SEC}{TIMESUFFIX}.")
+		.replace("{SEC}", "" + secs)
+		.replace("{TIMESUFFIX}", getTranslatedString(units))
+		.replace("{ARROWS}", "" + arrows_amount);
+		
+		resupply_icon_frame = 3;
+	}
+
 
 	Vec2f dim_res_unav;
 	GUI::GetTextDimensions(resupply_unavailable, dim_res_unav);
@@ -97,7 +129,7 @@ void DrawResupplyOnHUD(CBlob@ this, Vec2f tl)
 	}
 	else
 	{
-		GUI::DrawIcon("Entities/Common/GUI/ResupplyIcon.png", 1, icon_size, icon_pos + Vec2f(0, 6), 1.0f);
+		GUI::DrawIcon("Entities/Common/GUI/ResupplyIcon.png", resupply_icon_frame, icon_size, icon_pos + Vec2f(0, 6), 1.0f);
 
 		if (hover)
 		{

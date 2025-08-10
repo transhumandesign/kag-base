@@ -1,6 +1,6 @@
 //builder HUD
 
-#include "/Entities/Common/GUI/ActorHUDStartPos.as";
+#include "ActorHUDStartPos.as";
 
 const string iconsFilename = "Entities/Characters/Builder/BuilderIcons.png";
 const int slotsSize = 6;
@@ -45,23 +45,19 @@ void onRender(CSprite@ this)
 	CPlayer@ player = blob.getPlayer();
 
 	// draw inventory
-
 	Vec2f tl = getActorHUDStartPosition(blob, slotsSize);
 	DrawInventoryOnHUD(blob, tl);
 
 	// draw coins
-
 	const int coins = player !is null ? player.getCoins() : 0;
 	DrawCoinsOnHUD(blob, coins, tl, slotsSize - 2);
 
 	// draw class icon
-
 	GUI::DrawIcon(iconsFilename, 3, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -13), 1.0f);
-
+	
 	// draw resupply icon
-
 	if (shouldRenderResupplyIndicator(blob))
-	{
+	{	
 		DrawResupplyOnHUD(blob, tl + Vec2f(8 + (slotsSize) * 40, -4));
 	}
 }
