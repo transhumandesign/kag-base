@@ -267,6 +267,11 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
     if (!isServer())
         return;
 
+    if (attached.getName() != "flag_base") {
+		this.Tag("has attached to player");
+		this.Sync("has attached to player", true);
+	}
+
 	CRules@ rules = getRules();
 
 	UIData@ ui;
@@ -300,4 +305,11 @@ void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
 
 	rules.set_CBitStream("ctf_serialised_team_hud", bt);
 	rules.Sync("ctf_serialised_team_hud", true);
+}
+
+void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint) {
+    if (!isServer()) return;
+
+	this.Untag("has attached to player");
+	this.Sync("has attached to player", true);
 }
