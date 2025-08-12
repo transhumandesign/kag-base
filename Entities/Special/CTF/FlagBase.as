@@ -123,7 +123,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	{
 		//carrying enemy flag
 		CBlob@ flag = blob.getCarriedBlob();
-		if (flag !is null && flag.getName() == flag_name && flag.getTeamNum() != this.getTeamNum())
+		if (flag !is null && !flag.hasTag("was captured") && flag.getName() == flag_name && flag.getTeamNum() != this.getTeamNum())
 		{
 			CPlayer@ p = blob.getPlayer();
 			if (p !is null)
@@ -142,6 +142,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			CBitStream params;
 			params.write_netid(blob.getNetworkID());
 			flag.SendCommand(flag.getCommandID("capture flag client"), params);
+			flag.Tag("was captured");
 		}
 	}
 }
