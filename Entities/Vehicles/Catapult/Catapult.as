@@ -162,7 +162,7 @@ void onInit(CBlob@ this)
 	string[] autograb_blobs = {"mat_stone"};
 	this.set("autograb blobs", autograb_blobs);
 
-	this.set_bool("facing", true);
+	this.set_bool("facing", false);
 
 	// auto-load on creation
 	if (isServer())
@@ -184,7 +184,7 @@ void onTick(CBlob@ this)
 
 	AmmoInfo@ ammo = v.getCurrentAmmo();
 	const f32 time_til_fire = Maths::Max(0, Maths::Min(v.fire_time - getGameTime(), ammo.fire_delay));
-	if (this.hasAttached() || this.get_bool("hadattached") || this.get_bool("facing") != this.isFacingLeft() || time_til_fire > 0)
+	if (this.hasAttached() || this.get_bool("hadattached") || this.getTickSinceCreated() < 30 || this.get_bool("facing") != this.isFacingLeft() || time_til_fire > 0)
 	{
 		Vehicle_StandardControls(this, v);
 
