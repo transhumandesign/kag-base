@@ -1,6 +1,7 @@
 // Lamp.as
 
 #include "MechanismsCommon.as";
+#include "TeamColour.as";
 
 class Lamp : Component
 {
@@ -17,13 +18,35 @@ class Lamp : Component
 	void Activate(CBlob@ this)
 	{
 		this.SetLight(true);
-		this.getSprite().SetFrameIndex(1);
+		CSprite@ sprite = this.getSprite();
+		
+		if (sprite !is null)
+		{
+			sprite.SetFrameIndex(1);
+			CSpriteLayer@ light = sprite.getSpriteLayer("light");
+			
+			if (light !is null)
+			{
+				light.setRenderStyle(RenderStyle::light);
+			}
+		}
 	}
 
 	void Deactivate(CBlob@ this)
 	{
 		this.SetLight(false);
-		this.getSprite().SetFrameIndex(0);
+		CSprite@ sprite = this.getSprite();
+		
+		if (sprite !is null)
+		{
+			sprite.SetFrameIndex(0);
+			CSpriteLayer@ light = sprite.getSpriteLayer("light");
+			
+			if (light !is null)
+			{
+				light.setRenderStyle(RenderStyle::normal);
+			}
+		}
 	}
 }
 
@@ -41,9 +64,16 @@ void onInit(CBlob@ this)
 	// background, let water overlap
 	this.getShape().getConsts().waterPasses = true;
 
+	// blob light
 	this.SetLight(false);
-	this.SetLightRadius(96.0f);
-	this.SetLightColor(SColor(255, 255, 240, 171));
+	this.SetLightRadius(64.0f);
+	const u8 team = this.getTeamNum();
+	const SColor team_color = getTeamColor(team);
+	this.SetLightColor(team_color);
+	
+	// spritelayer that will be set to RenderStyle::light
+	CSprite@ sprite = this.getSprite();
+	sprite.addSpriteLayer("light", sprite.getFilename(), 8,8, team, this.getSkinNum());
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
