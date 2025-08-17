@@ -378,52 +378,58 @@ void onTick(CMovement@ this)
 					set_contact = true;
 				}
 
-				// wallrun: is the player still trying to climb up, and is he not falling too fast to allow it
-				if (vel.y < slidespeed &&
-				        ((left && surface_left && !jumpedLEFT) || (right && surface_right && !jumpedRIGHT) || set_contact))
+				// didn't bounce from trampoline recently
+				bool recent_trampoline_bounce = blob.exists("trampoline last bounce time") && blob.get_u16("trampoline last bounce time") + 5 > getGameTime();
+				
+				if (!recent_trampoline_bounce)
 				{
-					// allow 1st climb "unconditionally" (there were checks above)
-					// allow next climbs depending on a velocity condition
-					const bool should_trigger_climb = set_contact || (!set_contact_candidate && vel.y >= -2.0f);
-
-					// limit climbs to an arbitrarily choosen number
-					if (should_trigger_climb && moveVars.wallrun_count < 2)
+					// wallrun: is the player still trying to climb up, and is he not falling too fast to allow it
+					if (vel.y < slidespeed &&
+							((left && surface_left && !jumpedLEFT) || (right && surface_right && !jumpedRIGHT) || set_contact))
 					{
-						vel.Set(0, -moveVars.jumpMaxVel * 1.4f);
+						// allow 1st climb "unconditionally" (there were checks above)
+						// allow next climbs depending on a velocity condition
+						const bool should_trigger_climb = set_contact || (!set_contact_candidate && vel.y >= -2.0f);
+
+						// limit climbs to an arbitrarily choosen number
+						if (should_trigger_climb && moveVars.wallrun_count < 2)
+						{
+							vel.Set(0, -moveVars.jumpMaxVel * 1.4f);
+							blob.setVelocity(vel);
+
+							// reduce sound spam, especially when climbing 2 air gap large towers
+							if (!set_contact) { blob.getSprite().PlayRandomSound("/StoneJump"); }
+							dust = true;
+
+							++moveVars.wallrun_count;
+							moveVars.walljumped = true;
+						}
+						else
+						{
+							moveVars.walljumped = false;
+						}
+					}
+					//walljump
+					else if (vel.y < slidespeed &&
+							 ((left && surface_right) || (right && surface_left)) &&
+							 !surface_below && !jumpedLEFT && !jumpedRIGHT)
+					{
+						f32 walljumpforce = 4.0f;
+						vel.Set(surface_right ? -walljumpforce : walljumpforce, -2.0f);
 						blob.setVelocity(vel);
 
-						// reduce sound spam, especially when climbing 2 air gap large towers
-						if (!set_contact) { blob.getSprite().PlayRandomSound("/StoneJump"); }
 						dust = true;
 
-						++moveVars.wallrun_count;
-						moveVars.walljumped = true;
-					}
-					else
-					{
-						moveVars.walljumped = false;
-					}
-				}
-				//walljump
-				else if (vel.y < slidespeed &&
-				         ((left && surface_right) || (right && surface_left)) &&
-				         !surface_below && !jumpedLEFT && !jumpedRIGHT)
-				{
-					f32 walljumpforce = 4.0f;
-					vel.Set(surface_right ? -walljumpforce : walljumpforce, -2.0f);
-					blob.setVelocity(vel);
+						moveVars.jumpCount = 0;
 
-					dust = true;
-
-					moveVars.jumpCount = 0;
-
-					if (right)
-					{
-						moveVars.walljumped_side = Walljump::JUMPED_LEFT;
-					}
-					else
-					{
-						moveVars.walljumped_side = Walljump::JUMPED_RIGHT;
+						if (right)
+						{
+							moveVars.walljumped_side = Walljump::JUMPED_LEFT;
+						}
+						else
+						{
+							moveVars.walljumped_side = Walljump::JUMPED_RIGHT;
+						}
 					}
 				}
 
