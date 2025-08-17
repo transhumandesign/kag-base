@@ -1,5 +1,7 @@
 void onInit(CBlob@ this)
 {
+	this.Tag("no action while carrying");
+
 	// add oar sprites to ROWER attachment points
 	CSprite@ sprite = this.getSprite();
 	AttachmentPoint@[] aps;
@@ -30,12 +32,6 @@ void onInit(CBlob@ this)
 					oarSprite.SetVisible(false);
 					oarSprite.SetRelativeZ(oar_offset);
 				}
-			}
-
-			// disable acion keys when carrying this
-			if (oar.name == "PICKUP")
-			{
-				oar.SetKeysToTake(key_action1 | key_action2);
 			}
 		}
 	}
