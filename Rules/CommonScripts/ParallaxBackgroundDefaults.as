@@ -22,16 +22,22 @@ void SetDefaultBackgrounds(CRules@ rules)
     RepeatedParallaxBackground@ castle = AddScriptedBackground("Sprites/Back/BackgroundCastle.png", Vec2f(0.0f, 100.0f), 220.0f, 475.0f, color_white, baseZ + 30.0f);
     castle.stretchDown = true;
 
-    for (int i = 0; i < 25; ++i)
+    const float cloudParallaxAmplitude = 0.5;
+    const int cloudBehindPlains = 22;
+    const int cloudInFrontPlains = 12;
+
+    for (int i = 0; i < cloudBehindPlains; ++i)
     {
         // behind plains
-        AddCloud(@plains, -5.0f + (i * 0.1f), Vec2f(0.0f, 220.0f), Vec2f(1024.0f, 70.0f), i*0.01 + 0.95f, SColor(85, 242, 247, 250));
+        const float parallaxAmplitude = 1.0 - (float(i) / cloudBehindPlains) * cloudParallaxAmplitude;
+        AddCloud(@plains, -5.0f + (i * 0.1f), Vec2f(0.0f, 220.0f), Vec2f(1024.0f, 70.0f), parallaxAmplitude, SColor(85, 242, 247, 250));
     }
 
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < cloudInFrontPlains; ++i)
     {
         // in front of plains
-        AddCloud(@plains, 5.0f + (i * 0.1f), Vec2f(0.0f, 190.0f), Vec2f(1024.0f, 50.0f), i*0.01 + 1.00f, SColor(50, 230, 235, 238));
+        const float parallaxAmplitude = 1.0 + (float(i) / cloudInFrontPlains) * cloudParallaxAmplitude;
+        AddCloud(@plains, 5.0f + (i * 0.1f), Vec2f(0.0f, 190.0f), Vec2f(1024.0f, 50.0f), parallaxAmplitude, SColor(50, 230, 235, 238));
     }
 
     // for (int i = 0; i < 20; ++i)
