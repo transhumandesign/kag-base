@@ -38,15 +38,15 @@ void RenderParallaxBackground(RepeatedParallaxBackground@ bg)
     color.setBlue((color.getBlue() * ambient.getBlue()) / 255);
 
     const float mapHeight = getMap().getMapDimensions().y;
-    const float minMapHeight = 400.0f; // reduce parallax effect on small maps, push the backgrounds more up
+    const float minMapHeight = 600.0f; // reduce parallax effect on small maps, push the backgrounds more up
 
     for (int repeat = Maths::Min(0, -bg.repeatCount); repeat < Maths::Max(1, bg.repeatCount); ++repeat)
     {
         Vec2f origin = cameraPosition;
         origin.x -= bg.absoluteScrollX * cameraPosition.x;
-        origin.y -= (bg.relativeHeightScrollY * cameraPosition.y) / mapHeight;
+        origin.y -= (bg.relativeHeightScrollY * cameraPosition.y) / Maths::Max(mapHeight, minMapHeight);
         if (mapHeight < minMapHeight) {
-            origin.y -= bg.relativeHeightScrollY * (minMapHeight - mapHeight) / mapHeight;
+            origin.y -= bg.relativeHeightScrollY * (minMapHeight - mapHeight) / Maths::Max(mapHeight, minMapHeight);
         }
         origin.x += repeat * bg.repeatEveryX;
         origin += bg.offset;
