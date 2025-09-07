@@ -3,6 +3,7 @@ shared class BackgroundLayer
 {
     bool alphaBlending;
     string texture;
+    Vec2f texSize;
     Vec2f offset;
     float absoluteScrollX;
     float relativeHeightScrollY;
@@ -14,7 +15,19 @@ shared class BackgroundLayer
 
 shared class RepeatedParallaxBackground : BackgroundLayer
 {
+    Render2D::SimpleMaterial mat;
 };
+
+Render2D::SimpleMaterial GetBackgroundMaterial(const RepeatedParallaxBackground &in bg)
+{
+    Render2D::SimpleMaterial mat;
+    mat.SetTexture(bg.texture);
+    mat.renderStyle = bg.alphaBlending ? RenderStyle::normal : RenderStyle::normal_no_alpha_blending;
+    mat.filter = Render2D::Filter::None;
+    mat.zTest = true;
+    mat.zWrite = !bg.alphaBlending;
+    return mat;
+}
 
 BackgroundLayer@[]@ GetBackgroundList()
 {
@@ -39,6 +52,7 @@ RepeatedParallaxBackground@ AddScriptedBackground(const string &in textureFilena
     backgrounds.push_back(@bg);
     bg.alphaBlending = false;
     bg.texture = textureFilename;
+    bg.texSize = Vec2f(Texture::width(textureFilename), Texture::height(textureFilename));
     bg.offset = offset;
     bg.absoluteScrollX = absoluteScrollX / Texture::width(textureFilename);
     bg.relativeHeightScrollY = relativeHeightScrollY;
@@ -46,12 +60,13 @@ RepeatedParallaxBackground@ AddScriptedBackground(const string &in textureFilena
     bg.z = z;
     bg.repeatEveryX = Texture::width(textureFilename);
     bg.repeatCount = 4;
+    bg.mat = GetBackgroundMaterial(bg);
     return @bg;
 }
 
-BackgroundLayer@ AddCloud(BackgroundLayer@ hookOn, float relativeZ, Vec2f offset, Vec2f randomAmplitude, float scrollMultX, SColor color)
+void AddCloud(BackgroundLayer@ hookOn, float relativeZ, Vec2f offset, Vec2f randomAmplitude, float scrollMultX, SColor color)
 {
-    if (!isClient()) { return null; }
+    if (!isClient()) { return; }
 
     Random r(69420 + GetBackgroundList().length);
 
@@ -62,6 +77,7 @@ BackgroundLayer@ AddCloud(BackgroundLayer@ hookOn, float relativeZ, Vec2f offset
         backgrounds.push_back(@bg);
         bg.alphaBlending = true;
         bg.texture = CFileMatcher("Sprites/Back/Cloud?.png").getRandom();
+        bg.texSize = Vec2f(Texture::width(bg.texture), Texture::height(bg.texture));
         Vec2f jitter(r.NextFloat() * randomAmplitude.x, (r.NextFloat() - 0.5) * randomAmplitude.y);
         bg.offset = hookOn.offset + offset + Vec2f(repeat * hookOn.repeatEveryX, 0.0f) + jitter;
         bg.absoluteScrollX = hookOn.absoluteScrollX * scrollMultX;
@@ -70,6 +86,7 @@ BackgroundLayer@ AddCloud(BackgroundLayer@ hookOn, float relativeZ, Vec2f offset
         bg.z = hookOn.z + relativeZ;
         bg.repeatEveryX = 0;
         bg.repeatCount = 0;
+        bg.mat = GetBackgroundMaterial(bg);
     }
 
     return null;
