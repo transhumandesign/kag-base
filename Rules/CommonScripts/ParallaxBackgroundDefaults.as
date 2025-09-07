@@ -16,10 +16,11 @@ void SetDefaultBackgrounds(CRules@ rules)
 
     const float baseZ = -9000.0f;
 
-    RepeatedParallaxBackground@ plains = AddScriptedBackground("Sprites/Back/BackgroundPlains.png", Vec2f(0.0f, -210.0f), 60.0f, 150.0f, color_white, baseZ);
-    RepeatedParallaxBackground@ trees = AddScriptedBackground("Sprites/Back/BackgroundTrees.png", Vec2f(0.0f,  -200.0f), 120.0f, 148.0f, color_white, baseZ + 10.0f);
-    RepeatedParallaxBackground@ island = AddScriptedBackground("Sprites/Back/BackgroundIsland.png", Vec2f(0.0f, -190.0f), 160.0f, 146.0f, color_white, baseZ + 20.0f);
-    AddScriptedBackground("Sprites/Back/BackgroundCastle.png", Vec2f(0.0f, -70.0f), 200.0f, 144.0f, color_white, baseZ + 30.0f);
+    RepeatedParallaxBackground@ plains = AddScriptedBackground("Sprites/Back/BackgroundPlains.png", Vec2f(0.0f, -70.0f), 80.0f, 400.0f, color_white, baseZ);
+    RepeatedParallaxBackground@ trees = AddScriptedBackground("Sprites/Back/BackgroundTrees.png", Vec2f(0.0f,  -60.0f), 160.0f, 425.0f, color_white, baseZ + 10.0f);
+    RepeatedParallaxBackground@ island = AddScriptedBackground("Sprites/Back/BackgroundIsland.png", Vec2f(0.0f, 0.0f), 190.0f, 450.0f, color_white, baseZ + 20.0f);
+    RepeatedParallaxBackground@ castle = AddScriptedBackground("Sprites/Back/BackgroundCastle.png", Vec2f(0.0f, 100.0f), 220.0f, 475.0f, color_white, baseZ + 30.0f);
+    castle.stretchDown = true;
 
     for (int i = 0; i < 25; ++i)
     {

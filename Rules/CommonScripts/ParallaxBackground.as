@@ -59,6 +59,21 @@ void RenderParallaxBackground(RepeatedParallaxBackground@ bg)
             .ZWrite(!bg.alphaBlending)
             .StrictOrdering(bg.alphaBlending)
             .RenderForWorld(bg.z, ZSetMode::OrderingHint);
+
+        if (bg.stretchDown)
+        {
+            origin.y += bg.texSize.y;
+            vertices[0] = Vertex(origin.x,                origin.y,           bg.z, 0.0f, 0.99f, color);
+            vertices[1] = Vertex(origin.x + bg.texSize.x, origin.y,           bg.z, 1.0f, 0.99f, color);
+            vertices[2] = Vertex(origin.x,                origin.y + 1000.0f, bg.z, 0.0f, 0.99f, color);
+            vertices[3] = Vertex(origin.x + bg.texSize.x, origin.y + 1000.0f, bg.z, 1.0f, 0.99f, color);
+
+            CustomShape2D(bg.mat, vertices, indices)
+                .shape
+                .ZWrite(!bg.alphaBlending)
+                .StrictOrdering(bg.alphaBlending)
+                .RenderForWorld(bg.z, ZSetMode::OrderingHint);
+        }
     }
 }
 

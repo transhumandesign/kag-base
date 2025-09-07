@@ -5,12 +5,13 @@ shared class BackgroundLayer
     string texture;
     Vec2f texSize;
     Vec2f offset;
-    float absoluteScrollX;
-    float relativeHeightScrollY;
+    float absoluteScrollX = 0.0f;
+    float relativeHeightScrollY = 0.0f;
     SColor baseColor;
     float z;
     float repeatEveryX;
-    int repeatCount;
+    int repeatCount = 0;
+    bool stretchDown = false;
 };
 
 shared class RepeatedParallaxBackground : BackgroundLayer
@@ -60,6 +61,7 @@ RepeatedParallaxBackground@ AddScriptedBackground(const string &in textureFilena
     bg.z = z;
     bg.repeatEveryX = Texture::width(textureFilename);
     bg.repeatCount = 4;
+    bg.stretchDown = true;
     bg.mat = GetBackgroundMaterial(bg);
     return @bg;
 }
