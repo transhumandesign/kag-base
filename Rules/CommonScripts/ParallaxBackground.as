@@ -77,6 +77,12 @@ void RenderBackgroundCallback(int id)
         ParallaxBackground@ bg = @backgrounds[i];
         const Vec2f texSize(Texture::width(bg.texture), Texture::height(bg.texture));
 
+        SColor color = bg.baseColor;
+        SColor ambient = getMap().ambientLight;
+        color.setRed((color.getRed() * ambient.getRed()) / 255);
+        color.setGreen((color.getGreen() * ambient.getGreen()) / 255);
+        color.setBlue((color.getBlue() * ambient.getBlue()) / 255);
+
         for (int repeat = -5; repeat < 5; ++repeat)
         {
             auto mat = GetBackgroundMaterial(bg);
@@ -89,10 +95,10 @@ void RenderBackgroundCallback(int id)
             Vec2f origin = cameraPosition + Vec2f(parallaxPanningX, parallaxPanningY) + repeatOffset + bg.offset;
 
             Vertex[] vertices = {
-                Vertex(origin + ElementMul(offsets[0], texSize), z, offsets[0], bg.baseColor),
-                Vertex(origin + ElementMul(offsets[1], texSize), z, offsets[1], bg.baseColor),
-                Vertex(origin + ElementMul(offsets[2], texSize), z, offsets[2], bg.baseColor),
-                Vertex(origin + ElementMul(offsets[3], texSize), z, offsets[3], bg.baseColor),
+                Vertex(origin + ElementMul(offsets[0], texSize), z, offsets[0], color),
+                Vertex(origin + ElementMul(offsets[1], texSize), z, offsets[1], color),
+                Vertex(origin + ElementMul(offsets[2], texSize), z, offsets[2], color),
+                Vertex(origin + ElementMul(offsets[3], texSize), z, offsets[3], color),
             };
 
             CustomShape2D(mat, vertices, indices)
