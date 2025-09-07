@@ -88,8 +88,6 @@ void AddCloud(BackgroundLayer@ hookOn, float relativeZ, Vec2f offset, Vec2f rand
         bg.repeatCount = 0;
         bg.mat = GetBackgroundMaterial(bg);
     }
-
-    return null;
 }
 #endif
 
