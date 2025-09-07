@@ -3,7 +3,8 @@ shared class ParallaxBackground
 {
     string texture;
     Vec2f offset;
-    Vec2f scrollSpeed;
+    float absoluteScrollX;
+    float relativeHeightScrollY;
     SColor baseColor;
 };
 
@@ -21,7 +22,7 @@ ParallaxBackground[]@ GetBackgroundList()
     return @list;
 }
 
-void AddScriptedBackground(const string &in textureFilename, Vec2f offset, Vec2f scrollSpeed, SColor baseColor)
+void AddScriptedBackground(const string &in textureFilename, Vec2f offset, float absoluteScrollX, float relativeHeightScrollY, SColor baseColor)
 {
     if (!isClient()) { return; }
 
@@ -30,7 +31,8 @@ void AddScriptedBackground(const string &in textureFilename, Vec2f offset, Vec2f
     ParallaxBackground@ bg = @backgrounds[backgrounds.size() - 1];
     bg.texture = textureFilename;
     bg.offset = offset;
-    bg.scrollSpeed = scrollSpeed;
+    bg.absoluteScrollX = absoluteScrollX;
+    bg.relativeHeightScrollY = relativeHeightScrollY;
     bg.baseColor = baseColor;
 }
 #endif

@@ -12,7 +12,6 @@ SimpleMaterial GetBackgroundMaterial(const ParallaxBackground &in bg)
     mat.renderStyle = RenderStyle::normal_no_alpha_blending;
     mat.filter = Filter::None;
     mat.zTest = true;
-    // HACK: we rely on the ordering logic from render2d to not require Z writes
     mat.zWrite = false;
     return mat;
 }
@@ -23,7 +22,7 @@ Vec2f ElementMul(Vec2f a, Vec2f b)
     return a;
 }
 
-// hacky variable to avoid having duplicate Render:: calls
+// hacky variable to avoid having duplicate Render:: calls when rebuilding
 int activeRenderScript = -1;
 
 void onInit(CRules@ rules)
@@ -76,20 +75,18 @@ void RenderBackgroundCallback(int id)
     for (int i = 0; i < backgrounds.length; ++i)
     {
         ParallaxBackground@ bg = @backgrounds[i];
-        // const Vec2f texSize(Texture::width(bg.texture), Texture::height(bg.texture));
-        Vec2f texSize(1000.0f, 500.0f);
+        const Vec2f texSize(Texture::width(bg.texture), Texture::height(bg.texture));
 
         for (int repeat = -5; repeat < 5; ++repeat)
         {
             auto mat = GetBackgroundMaterial(bg);
 
-            Vec2f panning = -bg.scrollSpeed;
-            panning *= cameraPosition;
-            panning /= texSize;
-            panning += cameraPosition * 0.5;
+            float parallaxPanningX = (-bg.absoluteScrollX * cameraPosition.x) / texSize.x;
+            float parallaxPanningY = (-bg.relativeHeightScrollY * cameraPosition.y) / getMap().getMapDimensions().y;
 
-            Vec2f origin = panning;
-            origin.x -= repeat * texSize.x;
+            Vec2f repeatOffset(repeat * texSize.x, 0.0f);
+
+            Vec2f origin = cameraPosition + Vec2f(parallaxPanningX, parallaxPanningY) + repeatOffset + bg.offset;
 
             Vertex[] vertices = {
                 Vertex(origin + ElementMul(offsets[0], texSize), z, offsets[0], bg.baseColor),
@@ -100,10 +97,10 @@ void RenderBackgroundCallback(int id)
 
             CustomShape2D(mat, vertices, indices)
                 .shape
-                .ZWrite(false)
+                .ZWrite(true)
                 .RenderForWorld(10000.0f, ZSetMode::OrderingHint);
 
-            z -= 10.0f;
+            z += 10.0f;
         }
     }
 }
