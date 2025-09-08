@@ -40,6 +40,9 @@ void RenderParallaxBackground(RepeatedParallaxBackground@ bg)
     const float mapHeight = getMap().getMapDimensions().y;
     const float minMapHeight = 600.0f; // reduce parallax effect on small maps, push the backgrounds more up
 
+    Vertex[] vertices;
+    vertices.resize(4);
+
     for (int repeat = Maths::Min(0, -bg.repeatCount); repeat < Maths::Max(1, bg.repeatCount); ++repeat)
     {
         Vec2f origin = cameraPosition;
@@ -51,8 +54,6 @@ void RenderParallaxBackground(RepeatedParallaxBackground@ bg)
         origin.x += repeat * bg.repeatEveryX;
         origin += bg.offset;
 
-        Vertex[] vertices;
-        vertices.resize(4);
         vertices[0] = Vertex(origin.x,                origin.y,                bg.z, 0.0f, 0.0f, color);
         vertices[1] = Vertex(origin.x + bg.texSize.x, origin.y,                bg.z, 1.0f, 0.0f, color);
         vertices[2] = Vertex(origin.x,                origin.y + bg.texSize.y, bg.z, 0.0f, 1.0f, color);
