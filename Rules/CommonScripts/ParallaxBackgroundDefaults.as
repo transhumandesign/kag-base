@@ -1,3 +1,5 @@
+#define CLIENT_ONLY
+
 #include "ParallaxBackgroundCommon.as"
 
 void onInit(CRules@ rules)
