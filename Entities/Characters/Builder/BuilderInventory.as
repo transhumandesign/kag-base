@@ -487,25 +487,29 @@ void onRender(CSprite@ this)
 							}
 							else
 							{
-								for (uint i = 0; i < blobsInRadius.length; i++)
+								CBlob@[] blobsInRadius;
+								if (map.getBlobsInRadius( middle, map.tilesize, @blobsInRadius ))
 								{
-									CBlob @b = blobsInRadius[i];
-									if (!b.isAttached())
+									for (uint i = 0; i < blobsInRadius.length; i++)
 									{
-										Vec2f bpos = b.getInterpolatedPosition();
-										float w = b.getWidth();
-										float h = b.getHeight();
-
-										if (b.getAngleDegrees() % 180 != 0) //swap dimentions
+										CBlob @b = blobsInRadius[i];
+										if (!b.isAttached())
 										{
-											float t = w;
-											w = h;
-											h = t;
-										}
+											Vec2f bpos = b.getInterpolatedPosition();
+											float w = b.getWidth();
+											float h = b.getHeight();
 
-										GUI::DrawRectangle(getDriver().getScreenPosFromWorldPos(bpos + Vec2f(w/-2.0f, h/-2.0f)),
-										                   getDriver().getScreenPosFromWorldPos(bpos + Vec2f(w/2.0f, h/2.0f)),
-										                   SColor(0x65ed1202));
+											if (b.getAngleDegrees() % 180 != 0) //swap dimentions
+											{
+												float t = w;
+												w = h;
+												h = t;
+											}
+
+											GUI::DrawRectangle(getDriver().getScreenPosFromWorldPos(bpos + Vec2f(w/-2.0f, h/-2.0f)),
+															getDriver().getScreenPosFromWorldPos(bpos + Vec2f(w/2.0f, h/2.0f)),
+															SColor(0x65ed1202));
+										}
 									}
 								}
 							}
