@@ -7,7 +7,7 @@ f32 segment_length = 14.0f;
 
 void InitVars(CBlob@ this)
 {
-	TreeSegment[] segments;
+	TreeSegment@[] segments;
 	this.set("TreeSegments", segments);
 
 	AddIconToken("$Tree$", "Entities/Common/GUI/HelpIcons.png", Vec2f(16, 16), 1);
@@ -235,7 +235,7 @@ void addSegment(CBlob@ this, TreeVars@ vars)
 	}
 
 	segment.end_pos = segment.start_pos + Vec2f(0, -segment.length).RotateBy(segment.angle, Vec2f(0, 0));
-	this.push("TreeSegments", segment);
+	this.push("TreeSegments", @segment);
 	this.server_Heal(0.666f);
 }
 

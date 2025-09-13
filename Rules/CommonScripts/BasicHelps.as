@@ -5,10 +5,10 @@
 void onInit(CRules@ this)
 {
 	// knight
-	AddIconToken("$Bomb$", "Entities/Characters/Knight/KnightIcons.png", Vec2f(16, 32), 0);
-	AddIconToken("$WaterBomb$", "Entities/Characters/Knight/KnightIcons.png", Vec2f(16, 32), 2);
+	AddIconToken("$BombIcon$", "Entities/Characters/Knight/KnightIcons.png", Vec2f(16, 32), 0);
+	AddIconToken("$WaterBombIcon$", "Entities/Characters/Knight/KnightIcons.png", Vec2f(16, 32), 2);
 	AddIconToken("$Satchel$", "Entities/Characters/Knight/KnightIcons.png", Vec2f(16, 32), 3);
-	AddIconToken("$Keg$", "Entities/Characters/Knight/KnightIcons.png", Vec2f(16, 32), 4);
+	AddIconToken("$KegIcon$", "Entities/Characters/Knight/KnightIcons.png", Vec2f(16, 32), 4);
 	AddIconToken("$Help_Bomb1$", "Entities/Common/GUI/HelpIcons.png", Vec2f(8, 16), 30);
 	AddIconToken("$Help_Bomb2$", "Entities/Common/GUI/HelpIcons.png", Vec2f(8, 16), 31);
 	AddIconToken("$Swap$", "Entities/Common/GUI/HelpIcons.png", Vec2f(16, 16), 7);

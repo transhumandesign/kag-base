@@ -194,17 +194,20 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 
 							Vec2f bpos = b.getPosition();
 
+							bool placingSeedOnNonStaticBlob = isSeed && !b.getShape().isStatic();
+							bool replacingSeed = isSeed && b.getName() == "seed";
 							bool cantBuild = isBlocking(b);
 							bool buildingOnTeam = isDoor && (b.getTeamNum() == this.getTeamNum() || b.getTeamNum() == 255) && !b.getShape().isStatic() && this !is b;
 							bool ladderBuild = isLadder && !b.getShape().isStatic();
 
 							// cant place on any other blob
-							if (!ladderBuild &&
+							if ((!ladderBuild &&
 								!buildingOnTeam &&
-								cantBuild &&
+								(cantBuild && !(placingSeedOnNonStaticBlob)) &&
 								!b.hasTag("dead") &&
 								!b.hasTag("material") &&
 								!b.hasTag("projectile"))
+								|| replacingSeed)
 							{
 								f32 angle_decomp = Maths::FMod(Maths::Abs(b.getAngleDegrees()), 180.0f);
 								bool rotated = angle_decomp > 45.0f && angle_decomp < 135.0f;

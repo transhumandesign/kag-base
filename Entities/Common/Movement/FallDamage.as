@@ -14,7 +14,10 @@ void onInit(CBlob@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (!solid || this.isInInventory() || this.hasTag("invincible"))
+	if (!solid 
+		|| this.isInInventory()
+		|| this.hasTag("invincible")
+		|| (this.exists("last fall hit") && this.get_u32("last fall hit") == getGameTime()))
 	{
 		return;
 	}
@@ -33,39 +36,47 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	{
 		bool doknockdown = true;
 
+		// better check for trampolines
+		CBlob@[] blobs_around;
+		if (getMap().getBlobsInRadius(this.getPosition(), this.getRadius() * 4, blobs_around))
+		{
+			for (uint i = 0; i < blobs_around.length; i++)
+			{
+				CBlob@ b = blobs_around[i];
+
+				if (!b.hasTag("no falldamage")) continue;
+
+				Vec2f b_pos = b.getPosition();
+				Vec2f pos = this.getPosition();
+
+				if (Maths::Abs(b_pos.x - pos.x) > b.getWidth()) continue;
+
+				if (Maths::Abs(b_pos.y - pos.y) > b.getWidth()) continue;
+
+				return;
+			}
+		}
+
 		if (damage > 0.0f)
 		{
-			// check if we aren't touching a trampoline
-			CBlob@[] overlapping;
-
-			if (this.getOverlapping(@overlapping))
-			{
-				for (uint i = 0; i < overlapping.length; i++)
-				{
-					CBlob@ b = overlapping[i];
-
-					if (b.hasTag("no falldamage"))
-					{
-						return;
-					}
-				}
-			}
-
 			if (damage > 0.1f)
 			{
 				this.server_Hit(this, point1, normal, damage, Hitters::fall);
+				this.set_u32("last fall hit", getGameTime()); // fixes bug of this code running twice in the same tick
 			}
 			else
 			{
 				doknockdown = false;
 			}
+			
+			
 		}
 
 		if (doknockdown)
 			setKnocked(this, knockdown_time);
 
 		if (!this.hasTag("should be silent"))
-		{				
+		{
 			if (this.getHealth() > damage) //not dead
 				Sound::Play("/BreakBone", this.getPosition());
 			else

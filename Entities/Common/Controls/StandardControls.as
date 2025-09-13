@@ -10,9 +10,6 @@ int zoomLevel = 1; // we can declare a global because this script is just used b
 void onInit(CBlob@ this)
 {
 	this.set_s32("tap_time", getGameTime());
-	CBlob@[] blobs;
-	this.set("pickup blobs", blobs);
-	this.set_u16("hover netid", 0);
 	this.set_bool("release click", false);
 	this.set_bool("can button tap", true);
 	this.addCommandID("pickup");
@@ -73,6 +70,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (pickedup.isAttached()) return;
 
+		pickedup.setPosition(caller.getPosition());
 		caller.server_Pickup(pickedup);
 	}
 	else if (cmd == this.getCommandID("detach"))
@@ -280,21 +278,20 @@ void onTick(CBlob@ this)
 			if (isTap(this, minimum_ticks))     // tap - put thing in inventory
 			{
 				CBlob@ held = this.getCarriedBlob();
+
+				ControlsCycle@ onCycle;
+				if (this.get("onCycle handle", @onCycle))
+				{
+					CBitStream params;
+					params.write_u16(this.getNetworkID());
+					params.ResetBitIndex();
+
+					onCycle(params);
+				}
+
 				if (held !is null)
 				{
 					this.SendCommand(this.getCommandID("putinheld"));
-				}
-				else
-				{
-					ControlsCycle@ onCycle;
-					if (this.get("onCycle handle", @onCycle))
-					{
-						CBitStream params;
-						params.write_u16(this.getNetworkID());
-						params.ResetBitIndex();
-
-						onCycle(params);
-					}
 				}
 
 				this.ClearMenus();
