@@ -4,8 +4,6 @@
 
 void onInit(CBlob@ this)
 {
-	this.Tag("ignore blocking actors");
-
 	CShape@ shape = this.getShape();
 	if (shape is null) return;
 

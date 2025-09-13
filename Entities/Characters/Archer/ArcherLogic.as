@@ -765,7 +765,10 @@ bool checkGrappleStep(CBlob@ this, ArcherInfo@ archer, CMap@ map, const f32 dist
 
 		archer.grapple_ratio = Maths::Max(0.2, Maths::Min(archer.grapple_ratio, dist / archer_grapple_length));
 
-		archer.grapple_pos.y = Maths::Max(0.0, archer.grapple_pos.y);
+		// Only limit grapple to top of map if it's a cave map
+		CRules@ rules = getRules();
+		archer.grapple_pos.y = rules is null || rules.get_bool("collide with ceiling") ? Maths::Max(0.0, archer.grapple_pos.y) : archer.grapple_pos.y;
+
 
 		if (canSend(this) || isServer()) SyncGrapple(this);
 

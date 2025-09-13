@@ -466,28 +466,50 @@ void onRender(CSprite@ this)
 						}
 						else
 						{
-							CBlob@[] blobsInRadius;
-							if (map.getBlobsInRadius(middle, map.tilesize, @blobsInRadius))
+							CMap@ map = getMap();
+							Vec2f middle = map.getAlignedWorldPos(blob.getAimPos());
+							CMap::Sector@ sector;
+							if (bc.blobActive)
 							{
-								for (uint i = 0; i < blobsInRadius.length; i++)
+								@sector = map.getSectorAtPosition(middle, "no blobs");
+							}
+							if (sector is null && bc.blockActive && map.isTileSolid(bc.blockType))
+							{
+								@sector = map.getSectorAtPosition(middle, "no solids");  
+							}
+							if (sector is null)
+							{
+								@sector = map.getSectorAtPosition( middle, "no build");
+							}
+							if (sector !is null)
+							{
+								GUI::DrawRectangle( getDriver().getScreenPosFromWorldPos(sector.upperleft), getDriver().getScreenPosFromWorldPos(sector.lowerright), SColor(0x65ed1202) );
+							}
+							else
+							{
+								CBlob@[] blobsInRadius;
+								if (map.getBlobsInRadius( middle, map.tilesize, @blobsInRadius ))
 								{
-									CBlob @b = blobsInRadius[i];
-									if (!b.isAttached())
+									for (uint i = 0; i < blobsInRadius.length; i++)
 									{
-										Vec2f bpos = b.getInterpolatedPosition();
-										float w = b.getWidth();
-										float h = b.getHeight();
-
-										if (b.getAngleDegrees() % 180 != 0) //swap dimentions
+										CBlob @b = blobsInRadius[i];
+										if (!b.isAttached())
 										{
-											float t = w;
-											w = h;
-											h = t;
-										}
+											Vec2f bpos = b.getInterpolatedPosition();
+											float w = b.getWidth();
+											float h = b.getHeight();
 
-										GUI::DrawRectangle(getDriver().getScreenPosFromWorldPos(bpos + Vec2f(w/-2.0f, h/-2.0f)),
-										                   getDriver().getScreenPosFromWorldPos(bpos + Vec2f(w/2.0f, h/2.0f)),
-										                   SColor(0x65ed1202));
+											if (b.getAngleDegrees() % 180 != 0) //swap dimentions
+											{
+												float t = w;
+												w = h;
+												h = t;
+											}
+
+											GUI::DrawRectangle(getDriver().getScreenPosFromWorldPos(bpos + Vec2f(w/-2.0f, h/-2.0f)),
+															getDriver().getScreenPosFromWorldPos(bpos + Vec2f(w/2.0f, h/2.0f)),
+															SColor(0x65ed1202));
+										}
 									}
 								}
 							}

@@ -88,7 +88,7 @@ void onTick(CBlob@ this)
 	const f32 tilesize = map.tilesize;
 
 	if (getNet().isServer() &&
-	        (map.isTileSolid(map.getTile(pos)) || map.rayCastSolid(pos - this.getVelocity(), pos)))
+			(map.isTileSolid(map.getTile(pos)) || map.rayCastSolid(pos - this.getVelocity(), pos)))
 	{
 		this.server_Hit(this, pos, Vec2f(0, -1), 3.0f, Hitters::fall, true);
 		return;
@@ -126,6 +126,18 @@ void onTick(CBlob@ this)
 		facing = temp.facing;
 		placedOnStone = temp.placedOnStone;
 		onSurface = temp.onSurface;
+
+		// Allow spike drop at top of map
+		CMap::Sector@[] sectors;
+		map.getSectorsAtPosition(pos, sectors);
+		for (u8 i = 0; i < sectors.length; i++)
+		{
+			if (sectors[i] !is null && (sectors[i].name == "no build" || sectors[i].name == "no solids" || sectors[i].name == "no blobs"))
+			{
+				onSurface = false;
+				break;
+			}
+		}
 	}
 
 	if (!onSurface && getNet().isServer())
