@@ -35,6 +35,8 @@ void onInit(CBlob@ this)
 	}
 
 	this.set_f32("important-pickup", 30.0f);
+
+	this.getShape().SetActiveSync(true);
 }
 
 //sprite update
