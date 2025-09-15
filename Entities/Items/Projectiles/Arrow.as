@@ -32,6 +32,7 @@ void onInit(CBlob@ this)
 	consts.bullet = false;
 	consts.net_threshold_multiplier = 4.0f;
 	this.Tag("projectile");
+	this.getShape().SetActiveSync(true);
 
 	//dont collide with top of the map
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
