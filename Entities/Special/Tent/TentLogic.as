@@ -3,9 +3,15 @@
 #include "StandardRespawnCommand.as"
 #include "StandardControlsCommon.as"
 #include "GenericButtonCommon.as"
+#include "HolidayCommon.as"
 
 void onInit(CBlob@ this)
 {
+#ifdef STAGING
+	if (getHoliday() == HOLIDAY_CHRISTMAS)
+		this.getSprite().ReloadSprite("Tent", 48, 40);
+#endif
+
 	this.getSprite().SetZ(-50.0f);
 
 	this.CreateRespawnPoint("tent", Vec2f(0.0f, -4.0f));

@@ -13,6 +13,21 @@ void onInit(CRules@ this)
 void onRestart(CRules@ this)
 {
 	getMap().SetDayTime(0.85);
+
+#ifdef STAGING
+	if (isClient())
+	{
+		if (g_holiday_assets)
+		{
+			getMap().CreateSkyGradient("Sprites/skygradient.png");
+		}
+		else
+		{
+			getMap().CreateSkyGradient("Sprites/skygradient_dayonly.png");
+		}
+	}
+#endif
+
 	if (!this.exists("greg time"))
 		this.set_s32("greg time", greg_interval); //30 minutes
 
