@@ -37,7 +37,7 @@ void onInit(CBlob@ this)
 
 	AddIconToken("$insert_coin$", "InteractionIcons.png", Vec2f(32, 32), 26);
 
-	//this.getCurrentScript().tickIfTag = "active";
+	this.getCurrentScript().tickIfTag = "active";
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
