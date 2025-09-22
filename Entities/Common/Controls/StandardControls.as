@@ -60,18 +60,24 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller.isInInventory()) return;
 		if (caller.isAttached()) return;
 
-		u16 pickedup_id;
-		if (!params.saferead_u16(pickedup_id)) return;
+		bool hasBlob;
+		if (!params.saferead_bool(hasBlob)) return;
 
-		CBlob@ pickedup = getBlobByNetworkID(pickedup_id);
-		if (pickedup is null) return;
+		if (hasBlob && this.get_bool("release click"))
+		{
+			u16 pickedup_id;
+			if (!params.saferead_u16(pickedup_id)) return;
 
-		if (!pickedup.canBePickedUp(caller)) return;
+			CBlob@ pickedup = getBlobByNetworkID(pickedup_id);
+			if (pickedup is null) return;
 
-		if (pickedup.isAttached()) return;
+			if (!pickedup.canBePickedUp(caller)) return;
 
-		pickedup.setPosition(caller.getPosition());
-		caller.server_Pickup(pickedup);
+			if (pickedup.isAttached()) return;
+
+			pickedup.setPosition(caller.getPosition());
+			caller.server_Pickup(pickedup);
+		}
 	}
 	else if (cmd == this.getCommandID("detach"))
 	{

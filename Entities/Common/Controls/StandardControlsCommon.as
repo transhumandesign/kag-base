@@ -5,10 +5,14 @@ void client_Pickup(CBlob@ this, CBlob@ pickBlob)
 {
     if (!isClient()) return;
 
-	if (this is null || pickBlob is null || pickBlob.isAttached()) return;
+	if (this is null) return;
 
 	CBitStream params;
-	params.write_netid(pickBlob.getNetworkID());
+	params.write_bool(pickBlob !is null);
+	if (pickBlob !is null)
+	{
+		params.write_netid(pickBlob.getNetworkID());
+	}
 	this.SendCommand(this.getCommandID("pickup"), params);
 }
 
