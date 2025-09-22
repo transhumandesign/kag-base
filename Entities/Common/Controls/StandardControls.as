@@ -45,7 +45,22 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller.isAttached()) return;
 
 		CBlob@ held = this.getCarriedBlob();
-		if (held is null) return;
+		if (held is null)
+		{
+			bool quickswitch;
+			if (!params.saferead_bool(quickswitch)) return;
+
+			ControlsCycle@ onCycle;
+			if (quickswitch && this.get("onCycle handle", @onCycle))
+			{
+				CBitStream params;
+				params.write_u16(this.getNetworkID());
+				params.ResetBitIndex();
+
+				onCycle(params);
+			}
+			return;
+		}
 
 		putInHeld(caller);
 	}
@@ -283,23 +298,7 @@ void onTick(CBlob@ this)
 
 			if (isTap(this, minimum_ticks))     // tap - put thing in inventory
 			{
-				CBlob@ held = this.getCarriedBlob();
-
-				ControlsCycle@ onCycle;
-				if (this.get("onCycle handle", @onCycle))
-				{
-					CBitStream params;
-					params.write_u16(this.getNetworkID());
-					params.ResetBitIndex();
-
-					onCycle(params);
-				}
-
-				if (held !is null)
-				{
-					this.SendCommand(this.getCommandID("putinheld"));
-				}
-
+				client_PutInHeld(this, true);
 				this.ClearMenus();
 				return;
 			}

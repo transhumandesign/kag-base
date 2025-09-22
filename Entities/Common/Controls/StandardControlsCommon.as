@@ -16,13 +16,15 @@ void client_Pickup(CBlob@ this, CBlob@ pickBlob)
 	this.SendCommand(this.getCommandID("pickup"), params);
 }
 
-void client_PutInHeld(CBlob@ this)
+void client_PutInHeld(CBlob@ this, bool quickswitch = false)
 {
     if (!isClient()) return;
 
 	if (this is null) return;
 
-	this.SendCommand(this.getCommandID("putinheld"));
+    CBitStream params;
+    params.write_bool(quickswitch);
+	this.SendCommand(this.getCommandID("putinheld"), params);
 }
 
 void Tap(CBlob@ this)

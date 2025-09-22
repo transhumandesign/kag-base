@@ -1075,7 +1075,6 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 		}
 }
 
-// clientside
 void onCycle(CBitStream@ params)
 {
 	u16 this_id;
