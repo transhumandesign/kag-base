@@ -900,6 +900,7 @@ CBlob@ CreateArrow(CBlob@ this, Vec2f arrowPos, Vec2f arrowVel, u8 arrowType)
 	return arrow;
 }
 
+// serverside
 void onCycle(CBitStream@ params)
 {
 	u16 this_id;
