@@ -51,20 +51,12 @@ void onInit(CBlob@ this)
 	this.addCommandID("pickup arrow");
 	this.addCommandID("pickup arrow client");
 	this.addCommandID("request shoot");
-	this.addCommandID("arrow sync");
-	this.addCommandID("arrow sync client");
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
 	this.addCommandID(grapple_sync_cmd);
 
 	SetHelp(this, "help self hide", "archer", getTranslatedString("Hide    $KEY_S$"), "", 1);
 	SetHelp(this, "help self action2", "archer", getTranslatedString("$Grapple$ Grappling hook    $RMB$"), "", 3);
-
-	//add a command ID for each arrow type
-	for (uint i = 0; i < arrowTypeNames.length; i++)
-	{
-		this.addCommandID("pick " + arrowTypeNames[i]);
-	}
 
 	this.getCurrentScript().runFlags |= Script::tick_not_attached;
 	this.getCurrentScript().removeIfTag = "dead";
@@ -346,14 +338,11 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		if (!hasarrow && hasnormal)
 		{
 			// set back to default
-			archer.arrow_type = ArrowType::normal;
-			ClientSendArrowState(this);
+			CycleToArrowType(this, ArrowType::normal);
+			CBitStream sparams;
+			sparams.write_u8(ArrowType::normal);
+			this.SendCommand(this.getCommandID("client pick utility"), sparams);
 			hasarrow = hasnormal;
-
-			if (ismyplayer)
-			{
-				Sound::Play("/CycleInventory.ogg");
-			}
 		}
 
 		if (hasarrow != this.get_bool("has_arrow"))
@@ -447,14 +436,11 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 
 			if (!hasarrow && hasnormal)
 			{
-				archer.arrow_type = ArrowType::normal;
-				ClientSendArrowState(this);
+				CycleToArrowType(this, ArrowType::normal);
+				CBitStream sparams;
+				sparams.write_u8(ArrowType::normal);
+				this.SendCommand(this.getCommandID("client pick utility"), sparams);
 				hasarrow = hasnormal;
-
-				if (ismyplayer)
-				{
-					Sound::Play("/CycleInventory.ogg");
-				}
 			}
 
 			if (responsible)
@@ -930,7 +916,10 @@ void onCycle(CBitStream@ params)
 		}
 		if (hasArrows(this, type))
 		{
-			CycleToArrowType(this, archer, type);
+			CycleToArrowType(this, type);
+			CBitStream sparams;
+			sparams.write_u8(type);
+			this.SendCommand(this.getCommandID("server pick utility"), sparams);
 			break;
 		}
 	}
@@ -949,15 +938,12 @@ void onSwitch(CBitStream@ params)
 	u8 type;
 	if (!params.saferead_u8(type)) return;
 
-	ArcherInfo@ archer;
-	if (!this.get("archerInfo", @archer))
-	{
-		return;
-	}
-
 	if (hasArrows(this, type))
 	{
-		CycleToArrowType(this, archer, type);
+		CycleToArrowType(this, type);
+		CBitStream sparams;
+		sparams.write_u8(type);
+		this.SendCommand(this.getCommandID("server pick utility"), sparams);
 	}
 }
 
@@ -1054,7 +1040,12 @@ void onSendCreateData(CBlob@ this, CBitStream@ params)
 
 bool onReceiveCreateData(CBlob@ this, CBitStream@ params)
 {
-	return ReceiveArrowState(this, params);
+	ArcherInfo@ archer;
+	if (!this.get("archerInfo", @archer)) return false;
+
+	if (!params.saferead_u8(archer.arrow_type)) return false;
+
+	return true; 
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
@@ -1079,13 +1070,27 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		ShootArrow(this);
 	}
-	else if (cmd == this.getCommandID("arrow sync") && isServer())
+	else if (cmd == this.getCommandID("client pick utility") && isServer())
 	{
-		ReceiveArrowState(this, params);
+		CPlayer@ callerp = getNet().getActiveCommandPlayer();
+		if (callerp is null) return;
+
+		CBlob@ caller = callerp.getBlob();
+		if (caller is null) return;
+
+		if (caller !is this) return;
+
+		u8 type;
+		if (!params.saferead_u8(type)) return;
+
+		CycleToArrowType(this, type);
 	}
-	else if (cmd == this.getCommandID("arrow sync client") && isClient())
+	else if (cmd == this.getCommandID("server pick utility") && isClient())
 	{
-		ReceiveArrowState(this, params);
+		u8 type;
+		if (!params.saferead_u8(type)) return;
+
+		CycleToArrowType(this, type);
 	}
 	else if (cmd == this.getCommandID("pickup arrow") && isServer())
 	{
@@ -1142,35 +1147,21 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		HandleGrapple(this, params, !canSend(this));
 	}
-	else if (isServer())
-	{
-		ArcherInfo@ archer;
-		if (!this.get("archerInfo", @archer))
-		{
-			return;
-		}
-		for (uint i = 0; i < arrowTypeNames.length; i++)
-		{
-			if (cmd == this.getCommandID("pick " + arrowTypeNames[i]))
-			{
-				CBitStream params;
-				params.write_u8(i);
-				archer.arrow_type = i;
-				this.SendCommand(this.getCommandID("arrow sync client"), params);
-				break;
-			}
-		}
-	}
 }
 
-void CycleToArrowType(CBlob@ this, ArcherInfo@ archer, u8 arrowType)
+void CycleToArrowType(CBlob@ this, u8 arrowType)
 {
+	ArcherInfo@ archer;
+	if (!this.get("archerInfo", @archer)) return;
+
+	u8 prevArrowType = archer.arrow_type;
+	if (arrowType == prevArrowType) return;
+	
 	archer.arrow_type = arrowType;
 	if (this.isMyPlayer())
 	{
 		Sound::Play("/CycleInventory.ogg");
 	}
-	ClientSendArrowState(this);
 }
 
 void Callback_PickArrow(CBitStream@ params)
@@ -1184,16 +1175,10 @@ void Callback_PickArrow(CBitStream@ params)
 	u8 arrow_id;
 	if (!params.saferead_u8(arrow_id)) return;
 
-	ArcherInfo@ archer;
-	if (!blob.get("archerInfo", @archer))
-	{
-		return;
-	}
-
-	archer.arrow_type = arrow_id;
-
-	string matname = arrowTypeNames[arrow_id];
-	blob.SendCommand(blob.getCommandID("pick " + matname));
+	CycleToArrowType(blob, arrow_id);
+	CBitStream sparams;
+	sparams.write_u8(arrow_id);
+	blob.SendCommand(blob.getCommandID("client pick utility"), sparams);
 }
 
 // arrow pick menu
@@ -1285,12 +1270,10 @@ void onAddToInventory(CBlob@ this, CBlob@ blob)
 		{
 			if (itemname == arrowTypeNames[i])
 			{
-				archer.arrow_type = i;
-				ClientSendArrowState(this);
-				if (this.isMyPlayer())
-				{
-					Sound::Play("/CycleInventory.ogg");
-				}
+				CycleToArrowType(this, i);
+				CBitStream sparams;
+				sparams.write_u8(i);
+				this.SendCommand(this.getCommandID("client pick utility"), sparams);
 			}
 		}
 	}

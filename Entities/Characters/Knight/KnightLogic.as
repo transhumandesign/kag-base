@@ -90,8 +90,6 @@ void onInit(CBlob@ this)
 	this.set("onCycle handle", @controls_cycle);
 
 	this.addCommandID("activate/throw bomb");
-	this.addCommandID("client pick bomb");
-	this.addCommandID("server pick bomb");
 
 	this.push("names to activate", "keg");
 
@@ -1098,7 +1096,7 @@ void onCycle(CBitStream@ params)
 			CycleToBombType(this, type);
 			CBitStream sparams;
 			sparams.write_u8(type);
-			this.SendCommand(this.getCommandID("server pick bomb"), sparams);
+			this.SendCommand(this.getCommandID("server pick utility"), sparams);
 			break;
 		}
 	}
@@ -1122,13 +1120,13 @@ void onSwitch(CBitStream@ params)
 		CycleToBombType(this, type);
 		CBitStream sparams;
 		sparams.write_u8(type);
-		this.SendCommand(this.getCommandID("server pick bomb"), sparams);
+		this.SendCommand(this.getCommandID("server pick utility"), sparams);
 	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("client pick bomb") && isServer())
+	if (cmd == this.getCommandID("client pick utility") && isServer())
 	{
 		CPlayer@ callerp = getNet().getActiveCommandPlayer();
 		if (callerp is null) return;
@@ -1143,7 +1141,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		CycleToBombType(this, type);
 	}
-	else if (cmd == this.getCommandID("server pick bomb") && isClient())
+	else if (cmd == this.getCommandID("server pick utility") && isClient())
 	{
 		u8 type;
 		if (!params.saferead_u8(type)) return;
@@ -1673,7 +1671,7 @@ void Callback_PickBomb(CBitStream@ params)
 	CycleToBombType(blob, bomb_id);
 	CBitStream sparams;
 	sparams.write_u8(bomb_id);
-	blob.SendCommand(blob.getCommandID("client pick bomb"), sparams);
+	blob.SendCommand(blob.getCommandID("client pick utility"), sparams);
 }
 
 // bomb pick menu

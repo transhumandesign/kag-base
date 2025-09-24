@@ -103,35 +103,6 @@ void ClientSendArrowState(CBlob@ this)
 	}
 }
 
-bool ReceiveArrowState(CBlob@ this, CBitStream@ params)
-{
-	// valid both on client and server
-
-	if (isServer() && isClient()) { return false; }
-
-	ArcherInfo@ archer;
-	if (!this.get("archerInfo", @archer)) { return false; }
-
-	u8 prevType = archer.arrow_type;
-	archer.arrow_type = 0;
-	if (!params.saferead_u8(archer.arrow_type)) { return false; }
-
-	if (prevType != archer.arrow_type && this.isMyPlayer())
-	{
-		Sound::Play("/CycleInventory.ogg");
-	}
-
-	if (isServer())
-	{
-		CBitStream reserialized;
-		reserialized.write_u8(archer.arrow_type);
-
-		this.SendCommand(this.getCommandID("arrow sync client"), reserialized);
-	}
-
-	return true;
-}
-
 const string grapple_sync_cmd = "grapple sync";
 
 void SyncGrapple(CBlob@ this)

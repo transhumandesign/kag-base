@@ -16,6 +16,8 @@ void onInit(CBlob@ this)
 	this.addCommandID("putinheld");
 	this.addCommandID("getout");
 	this.addCommandID("detach");
+	this.addCommandID("client pick utility");
+	this.addCommandID("server pick utility");
 
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
