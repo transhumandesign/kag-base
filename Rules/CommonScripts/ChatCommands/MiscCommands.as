@@ -84,9 +84,13 @@ class WaterCommand : ChatCommand
 
 class TimeCommand : ChatCommand
 {
+	string[] timeLabels = {"dawn", "noon", "day", "sunset", "night"};
+	f32[] timeValues = {0.12, 0.33, 0.5, 0.82, 0.94};
+
 	TimeCommand()
 	{
 		super("time", "Change day time");
+		SetUsage("[daytime]");
 	}
 
 	void Execute(string[] args, CPlayer@ player)
@@ -95,19 +99,27 @@ class TimeCommand : ChatCommand
 		
 		if (args.size() == 0)
 		{
-			server_AddToChat(getTranslatedString("Specify the time: day, night or a number in range from 0.0 to 1.0"), ConsoleColour::ERROR, player);
+			server_AddToChat(getTranslatedString("Specify the time: " + join(timeLabels, ", ") + " or a number between 0.0 to 1.0"), ConsoleColour::ERROR, player);
 			return;
 		}
 
 		string timeString = args[0];
 		float time = 0;
-		if (timeString == "day")
-			time = 0.14;
-		else if (timeString == "night")
-			time = 0.94;
+		int stringIndex = timeLabels.find(timeString);
+
+		if (stringIndex != -1)
+		{
+			time = timeValues[stringIndex];
+		}
 		else
-			time = parseFloat(timeString);
-		
+		{			
+			if (time < 0 || time > 1)
+			{
+				server_AddToChat(getTranslatedString("Specify a number between 0.0 and 1.0"), ConsoleColour::ERROR, player);
+				return;
+			}
+		}
+
 		getMap().SetDayTime(time);
 	}
 }
