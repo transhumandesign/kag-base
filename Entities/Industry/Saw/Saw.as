@@ -35,6 +35,7 @@ bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
 void SetSawOn(CBlob@ this, const bool on)
 {
 	this.set_bool("saw_on", on);
+	UpdateSprite(this);
 }
 
 bool getSawOn(CBlob@ this)
@@ -90,7 +91,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID(toggle_id_client) && isClient() && !isServer())
 	{
 		SetSawOn(this, !getSawOn(this));
-		UpdateSprite(this);
 	}
 }
 
@@ -161,6 +161,8 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 	{
 		s.Gib();
 	}
+
+	UpdateSprite(this);
 
 	//give no fucks about teamkilling
 	tobeblended.server_SetHealth(-1.0f);
@@ -318,26 +320,38 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
     }
 }
 
+void onHealthChange(CBlob@ this, f32 oldHealth)
+{
+	UpdateSprite(this);
+}
+
 void UpdateSprite(CBlob@ this)
 {
 	if (isClient())
 	{
 		CSprite@ sprite = this.getSprite();
+		f32 hp = this.getHealth();
+		f32 full_hp = this.getInitialHealth();
+		int frame_count = Maths::Floor(sprite.animation.getFramesCount() / 2);
+		int frame = frame_count - frame_count * (hp / full_hp);
+		bool bloody = this.hasTag("bloody") && !g_kidssafe;
+		bool saw_on = getSawOn(this);
 
-		const u8 frame = getSawOn(this) ? 0 : 1;
+		// main frame
+		sprite.animation.frame = !saw_on ? frame + 2 : frame;
 
-		sprite.animation.frame = frame;
-
+		// back
 		CSpriteLayer@ back = sprite.getSpriteLayer("back");
 		if (back !is null)
 		{
-			back.animation.frame = frame;
+			back.animation.frame = saw_on ? 0 : 1;
 		}
 		
+		// chop
 		CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
-		if (chop !is null && this.hasTag("bloody") && !g_kidssafe)
+		if (chop !is null)
 		{
-			chop.animation.frame = 1;
+			chop.animation.frame = bloody ? frame + 2 : frame;
 		}
 	}
 }
@@ -349,7 +363,30 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 	        byBlob.getPosition().y > this.getPosition().y + 4);
 }
 
-//sprite update
+void onTick(CBlob@ this)
+{
+	CSprite@ sprite = this.getSprite();
+	if (sprite is null) return;
+
+	sprite.SetZ(this.isAttached() ? 10.0f : -10.0f);
+
+	//spin saw blade
+	CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
+	if (chop !is null && getSawOn(this))
+	{
+		chop.SetFacingLeft(false);
+
+		Vec2f around(0.5f, -0.5f);
+		chop.RotateBy(30.0f, around);
+	}
+}
+
+void onDie(CBlob@ this)
+{
+	this.getSprite().Gib();
+}
+
+//sprite
 void onInit(CSprite@ this)
 {
 	this.SetZ(-10.0f);
@@ -358,8 +395,10 @@ void onInit(CSprite@ this)
 	if (chop !is null)
 	{
 		Animation@ anim = chop.addAnimation("default", 0, false);
-		anim.AddFrame(3);
-		anim.AddFrame(7);
+		anim.AddFrame(8);
+		anim.AddFrame(9);
+		anim.AddFrame(10);
+		anim.AddFrame(11);
 		chop.SetAnimation(anim);
 		chop.SetRelativeZ(-1.0f);
 	}
@@ -368,29 +407,8 @@ void onInit(CSprite@ this)
 	if (back !is null)
 	{
 		Animation@ anim = back.addAnimation("default", 0, false);
-		anim.AddFrame(1);
-		anim.AddFrame(3);
+		anim.AddFrame(2);
 		back.SetAnimation(anim);
 		back.SetRelativeZ(-5.0f);
 	}
-}
-
-void onTick(CBlob@ blob)
-{
-	CSprite@ sprite = blob.getSprite();
-	if (sprite is null) return;
-
-	sprite.SetZ(blob.isAttached() ? 10.0f : -10.0f);
-
-	//spin saw blade
-	CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
-	if (chop !is null && getSawOn(blob))
-	{
-		chop.SetFacingLeft(false);
-
-		Vec2f around(0.5f, -0.5f);
-		chop.RotateBy(30.0f, around);
-	}
-
-	UpdateSprite(blob);
 }
