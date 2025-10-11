@@ -1,7 +1,5 @@
 // Bush logic
 
-#include "canGrow.as";
-
 void onInit(CBlob@ this)
 {
 	this.set_bool("grown", true);
