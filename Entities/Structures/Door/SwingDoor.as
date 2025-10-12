@@ -215,28 +215,31 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 
 void MakeDamageFrame(CBlob@ this, bool repaired=false)
 {
-	CSprite@ sprite = this.getSprite();
-	f32 hp = this.getHealth();
-	f32 full_hp = this.getInitialHealth();
-	Animation@ destruction_anim = sprite.getAnimation("destruction");
-
-	if (destruction_anim !is null)
+	if (isClient())
 	{
-		int frame_count = destruction_anim.getFramesCount();
-		int frame = frame_count - frame_count * (hp / full_hp);
-		destruction_anim.frame = frame;
+		CSprite@ sprite = this.getSprite();
+		f32 hp = this.getHealth();
+		f32 full_hp = this.getInitialHealth();
+		Animation@ destruction_anim = sprite.getAnimation("destruction");
 
-		Animation @close_anim = sprite.getAnimation("close");
-
-		if(close_anim !is null)
+		if (destruction_anim !is null)
 		{
-			close_anim.RemoveFrame(close_anim.getFramesCount() - 1);
-			close_anim.AddFrame(destruction_anim.getFrame(frame));
-		}
+			int frame_count = destruction_anim.getFramesCount();
+			int frame = frame_count - frame_count * (hp / full_hp);
+			destruction_anim.frame = frame;
 
-		if(repaired)
-		{
-			sprite.PlaySound("/build_door.ogg");
+			Animation @close_anim = sprite.getAnimation("close");
+
+			if(close_anim !is null)
+			{
+				close_anim.RemoveFrame(close_anim.getFramesCount() - 1);
+				close_anim.AddFrame(destruction_anim.getFrame(frame));
+			}
+
+			if(repaired)
+			{
+				sprite.PlaySound("/build_door.ogg");
+			}
 		}
 	}
 }

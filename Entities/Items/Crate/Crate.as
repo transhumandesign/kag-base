@@ -904,15 +904,18 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 
 void MakeDamageFrame(CBlob@ this, bool repaired = false)
 {
-	CSprite@ sprite = this.getSprite();
-	f32 hp = this.getHealth();
-	f32 full_hp = this.getInitialHealth();
-	int frame_count = sprite.animation.getFramesCount();
-	int frame = frame_count - frame_count * (hp / full_hp);
-	const string packed = this.exists("packed") ? this.get_string("packed") : "";
-	string animation_string = (this.exists("frame") && !packed.isEmpty()) ? "label" : "destruction";
-	sprite.SetAnimation(animation_string);
-	sprite.animation.frame = frame;
+	if (isClient())
+	{
+		CSprite@ sprite = this.getSprite();
+		f32 hp = this.getHealth();
+		f32 full_hp = this.getInitialHealth();
+		int frame_count = sprite.animation.getFramesCount();
+		int frame = frame_count - frame_count * (hp / full_hp);
+		const string packed = this.exists("packed") ? this.get_string("packed") : "";
+		string animation_string = (this.exists("frame") && !packed.isEmpty()) ? "label" : "destruction";
+		sprite.SetAnimation(animation_string);
+		sprite.animation.frame = frame;
+	}
 }
 
 // SPRITE
