@@ -339,13 +339,6 @@ void UpdateSprite(CBlob@ this)
 
 		// main frame
 		sprite.animation.frame = !saw_on ? frame + 2 : frame;
-
-		// back
-		CSpriteLayer@ back = sprite.getSpriteLayer("back");
-		if (back !is null)
-		{
-			back.animation.frame = saw_on ? 0 : 1;
-		}
 		
 		// chop
 		CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
@@ -406,9 +399,7 @@ void onInit(CSprite@ this)
 	CSpriteLayer@ back = this.addSpriteLayer("back", "/Saw.png", 24, 16);
 	if (back !is null)
 	{
-		Animation@ anim = back.addAnimation("default", 0, false);
-		anim.AddFrame(2);
-		back.SetAnimation(anim);
+		back.SetFrameIndex(2);
 		back.SetRelativeZ(-5.0f);
 	}
 }
