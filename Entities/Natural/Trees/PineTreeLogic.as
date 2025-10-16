@@ -59,7 +59,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 		this.animation.frame = 1;
 	}
 
-	TreeSegment[]@ segments;
+	TreeSegment@[]@ segments;
 	blob.get("TreeSegments", @segments);
 	if (segments is null)
 		return;
@@ -172,13 +172,13 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 						newsegment.ResetTransform();
 						newsegment.SetRelativeZ(-550.0f - (vars.height * 10.0f));
 
-						bool flip = (segment.r.NextRanged(2) == 0);
+						flip = (segment.r.NextRanged(2) == 0);
 						newsegment.SetFacingLeft(flip);
 
-						newsegment.SetOffset(segment.start_pos + Vec2f(((vars.max_height - i * 2) + segment.r.NextRanged(8)) * 0.5 + 8.0f , 4.0f));
+						newsegment.SetOffset(segment.start_pos + Vec2f((float(vars.max_height) - i * 2) + segment.r.NextRanged(4) + 5.0f, 3.0f + segment.r.NextRanged(4)));
 					}
 
-					if (segment.r.NextRanged(2) == 0)
+					if (true) // always make 2nd segment for now
 					{
 						CSpriteLayer@ secondnewsegment = this.addSpriteLayer("leaves doubleside " + i, "Entities/Natural/Trees/Trees.png" , 32, 32, 0, 0);
 
@@ -191,10 +191,9 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 							secondnewsegment.SetRelativeZ(-550.0f - (vars.height * 10.0f));
 
 							flip = !flip;
-
 							secondnewsegment.SetFacingLeft(flip);
 
-							secondnewsegment.SetOffset(segment.start_pos + Vec2f(((vars.max_height - i * 2) + segment.r.NextRanged(8)) * 0.5 + 8.0f , 4.0f));
+							secondnewsegment.SetOffset(segment.start_pos + Vec2f((float(vars.max_height) - i * 2) + segment.r.NextRanged(4) + 5.0f, 3.0f + segment.r.NextRanged(4)));
 						}
 					}
 				}

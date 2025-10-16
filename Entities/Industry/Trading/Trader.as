@@ -50,6 +50,12 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 	{
 		this.Tag("dead");
 		this.server_SetTimeToDie(20);
+		
+		CSprite@ sprite = this.getSprite();
+		if (sprite !is null)
+		{
+			sprite.PlaySound("/TraderScream");
+		}
 	}
 
 	if (this.getHealth() < 0)
@@ -105,9 +111,6 @@ void onTick(CSprite@ this)
 
 	if (blob.hasTag("dead"))
 	{
-		if (!this.isAnimation("dead"))
-			this.PlaySound("/TraderScream");
-
 		this.SetAnimation("dead");
 
 		if (blob.isOnGround())
