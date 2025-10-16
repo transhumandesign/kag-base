@@ -36,7 +36,7 @@ void SetFire(CBlob@ this, bool fire_on)
 
 	sprite.SetEmitSoundPaused(!fire_on);
 	this.SetLight(fire_on);
-	
+
 	if (fire_on)
 	{
 		this.Tag("fire source");
@@ -49,7 +49,7 @@ void SetFire(CBlob@ this, bool fire_on)
 		this.Tag("extinguished");
 		sprite.SetAnimation("nofire");
 	}
-	
+
 	CSpriteLayer@ fire = sprite.getSpriteLayer("fire_animation_large");
 	if (fire !is null)
 	{
