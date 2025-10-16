@@ -21,7 +21,7 @@ void Extinguish(CBlob@ this)
 	CSprite@ sprite = this.getSprite();
 	if (sprite !is null)
 	{
-		this.getSprite().PlaySound("/ExtinguishFire.ogg");
+		sprite.PlaySound("/ExtinguishFire.ogg");
 	}
 
 	makeBigSmokeParticle(this.getPosition()); //*poof*
