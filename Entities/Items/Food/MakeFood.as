@@ -28,18 +28,9 @@ ShopItem@ addFoodItem(CBlob@ this, const string &in foodName, const u8 spriteInd
 	return item;
 }
 
-CBlob@ CookInFireplace(CBlob@ ingredient) // used by Fireplace.as
+CBlob@ Cook(CBlob@ ingredient) // used by Fireplace.as
 {
-	if (ingredient.hasTag("cookable in fireplace"))
-	{
-		return Cook(ingredient);
-	}
-	return null;
-}
-
-CBlob@ Cook(CBlob@ ingredient) // used by Chicken.as and Fishy.as
-{
-	if (ingredient.hasTag("cooked") || ingredient.hasTag("healed") || !ingredient.exists("cooked name"))
+	if (!ingredient.exists("cooked name") || ingredient.hasTag("cooked") || ingredient.hasTag("healed"))
 		return null;
 
 	string cooked_name 	= ingredient.get_string("cooked name");

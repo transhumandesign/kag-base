@@ -9,7 +9,6 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().tickFrequency = 120;
 	this.addCommandID("hatch client");
 	
-	this.Tag("cookable in fireplace");
 	this.set_string("cooked name", "Cake");
 	this.set_u8("cooked sprite index", 5);
 }

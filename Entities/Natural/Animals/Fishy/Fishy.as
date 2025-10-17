@@ -79,7 +79,6 @@ void onInit(CBlob@ this)
 
 	this.Tag("pushedByDoor");
 
-	this.Tag("cookable in fireplace");
 	this.set_string("cooked name", "Cooked Fish");
 	this.set_u8("cooked sprite index", 1);
 }
