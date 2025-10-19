@@ -68,6 +68,7 @@ class VoteObject
 	int timeremaining;
 
 	bool cancel_on_restart;
+	bool cancel_on_gameover;
 };
 
 shared SColor vote_message_colour() { return SColor(0xff444444); }
