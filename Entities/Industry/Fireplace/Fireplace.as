@@ -14,14 +14,14 @@ void onInit(CBlob@ this)
 	this.SetLightRadius(250.0f);
 	this.SetLightColor(SColor(255, 220, 40, 0));
 
-	SetFire(this, !this.hasTag("extinguished"));
-
 	CSprite@ sprite = this.getSprite();
 	if (sprite !is null)
 	{
 		sprite.SetEmitSound("CampfireSound.ogg");
 		sprite.SetFacingLeft(XORRandom(2) == 0);
 	}
+
+	SetFire(this, !this.hasTag("extinguished"));
 }
 
 void onTick(CBlob@ this)
