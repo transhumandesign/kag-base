@@ -285,7 +285,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	}
 
 	if (state == falling)
-	{	
+	{
 		float vellen = this.getVelocity().Length();
 		if (vellen < 4.0f) //slow, minimal dmg
 			this.server_Hit(blob, point, Vec2f(0, 1), 1.0f, Hitters::spikes, true);
