@@ -45,6 +45,7 @@ class VoteObject
 		timeremaining = 30 * 30; //default 30s
 		required_percent = 0.5f; //default 50%
 		cancel_on_restart = false;
+		cancel_on_gameover = false;
 	}
 
 	VoteFunctor@ onvotepassed;
