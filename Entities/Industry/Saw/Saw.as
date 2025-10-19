@@ -5,7 +5,8 @@
 #include "ParticleSparks.as"
 
 const string toggle_id = "toggle_power";
-const string sawteammate_id = "sawteammate";
+const string toggle_id_client = "toggle_power_client";
+const string sawteammate_id_client = "sawteammate_client";
 
 void onInit(CBlob@ this)
 {
@@ -14,7 +15,10 @@ void onInit(CBlob@ this)
 	this.getShape().SetRotationsAllowed(false);
 
 	this.addCommandID(toggle_id);
-	this.addCommandID(sawteammate_id);
+	this.addCommandID(toggle_id_client);
+	this.addCommandID(sawteammate_id_client);
+
+	this.getCurrentScript().runFlags |= Script::tick_onscreen;
 
 	SetSawOn(this, true);
 }
@@ -50,13 +54,11 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID(sawteammate_id))
+	if (cmd == this.getCommandID(sawteammate_id_client) && isClient())
 	{
 		CBlob@ tobeblended = getBlobByNetworkID(params.read_netid());
 		if (tobeblended !is null)
 		{
-			tobeblended.Tag("sawed");
-
 			CSprite@ s = tobeblended.getSprite();
 			if (s !is null)
 			{
@@ -65,10 +67,27 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 
 		this.getSprite().PlaySound("SawOther.ogg");
-		cmd = this.getCommandID(toggle_id);	// proceed with toggle_id stuff
 	}
+	else if (cmd == this.getCommandID(toggle_id) && isServer())
+	{
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
 
-	if (cmd == this.getCommandID(toggle_id))
+		CBlob@ b = p.getBlob();
+		if (b is null) return;
+
+		// range check
+		if (this.getDistanceTo(b) > 32) return;
+
+		// team check
+		if (this.getTeamNum() != b.getTeamNum()) return;
+
+		SetSawOn(this, !getSawOn(this));
+
+		CBitStream params;
+		this.SendCommand(this.getCommandID(toggle_id_client), params);
+	}
+	else if (cmd == this.getCommandID(toggle_id_client) && isClient() && !isServer())
 	{
 		SetSawOn(this, !getSawOn(this));
 		UpdateSprite(this);
@@ -121,9 +140,20 @@ void Blend(CBlob@ this, CBlob@ tobeblended)
 		(tobeblended.hasTag("flesh"))) && //dead body
 		tobeblended.getTeamNum() == this.getTeamNum()) //same team as saw
 	{
-		CBitStream params;
-		params.write_netid(tobeblended.getNetworkID());
-		this.SendCommand(this.getCommandID(sawteammate_id), params);
+		if (isServer())
+		{
+			// gib and play sound on client
+			tobeblended.Tag("sawed");
+			tobeblended.Sync("sawed", true);
+			CBitStream params;
+			params.write_netid(tobeblended.getNetworkID());
+			this.SendCommand(this.getCommandID(sawteammate_id_client), params);
+
+			// turn off the saw and update for client
+			SetSawOn(this, !getSawOn(this));
+			CBitStream params2;
+			this.SendCommand(this.getCommandID(toggle_id_client), params2);
+		}
 	}
 	
 	CSprite@ s = tobeblended.getSprite();
@@ -171,10 +201,10 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 
 		if (dot > 0.8f)
 		{
-			if (blob.hasTag("flesh"))
+			if (blob.hasTag("flesh") && isServer())
 			{
 				this.Tag("bloody");
-				UpdateSprite(this);
+				this.Sync("bloody", true);
 			}
 
 			return true;
@@ -345,15 +375,15 @@ void onInit(CSprite@ this)
 	}
 }
 
-void onTick(CSprite@ this)
+void onTick(CBlob@ blob)
 {
-	CBlob@ blob = this.getBlob();
-	if (blob is null) return;
+	CSprite@ sprite = blob.getSprite();
+	if (sprite is null) return;
 
-	this.SetZ(blob.isAttached() ? 10.0f : -10.0f);
+	sprite.SetZ(blob.isAttached() ? 10.0f : -10.0f);
 
 	//spin saw blade
-	CSpriteLayer@ chop = this.getSpriteLayer("chop");
+	CSpriteLayer@ chop = sprite.getSpriteLayer("chop");
 	if (chop !is null && getSawOn(blob))
 	{
 		chop.SetFacingLeft(false);
@@ -361,4 +391,6 @@ void onTick(CSprite@ this)
 		Vec2f around(0.5f, -0.5f);
 		chop.RotateBy(30.0f, around);
 	}
+
+	UpdateSprite(blob);
 }

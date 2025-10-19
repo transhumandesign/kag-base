@@ -50,12 +50,23 @@ class CatapultInfo : VehicleInfo
 			{
 				if (isServer())
 				{
-					this.server_DetachFrom(occupied); //detach before sending the command to avoid velocity issues
-					CBitStream params;
-					params.write_netid(caller.getNetworkID());
-					params.write_netid(occupied.getNetworkID());
-					params.write_u8(charge);
-					this.SendCommand(this.getCommandID("fire mag blob"), params);
+					VehicleInfo@ v;
+					if (!this.get("VehicleInfo", @v)) return false;
+
+					if (!occupied.hasTag("player"))
+						occupied.SetDamageOwnerPlayer(caller.getPlayer());
+
+					this.server_DetachFrom(occupied);
+
+					if (!occupied.hasTag("player"))
+						occupied.SetDamageOwnerPlayer(caller.getPlayer());
+
+					v.onFire(this, occupied, v.charge);
+					v.SetFireDelay(v.getCurrentAmmo().fire_delay);
+
+					CBitStream bt;
+					bt.write_u16(occupied.getNetworkID());
+					this.SendCommand(this.getCommandID("fire mag blob client"), bt);
 				}
 				return false;
 			}
@@ -146,7 +157,7 @@ void onInit(CBlob@ this)
 	this.getShape().SetOffset(Vec2f(0, 6));
 	
 	this.addCommandID("putin_mag");
-	this.addCommandID("fire mag blob");
+	this.addCommandID("fire mag blob client");
 
 	string[] autograb_blobs = {"mat_stone"};
 	this.set("autograb blobs", autograb_blobs);
@@ -231,8 +242,6 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		if (carried !is null && !carried.hasTag("temp blob"))
 		{
 			CBitStream callerParams;
-			callerParams.write_netid(caller.getNetworkID());
-			callerParams.write_netid(carried.getNetworkID());
 
 			string name = carried.getInventoryName();
 			const string msg = getTranslatedString("Load {ITEM}").replace("{ITEM}", name);
@@ -257,36 +266,64 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	VehicleInfo@ v;
 	if (!this.get("VehicleInfo", @v)) return;
 	
-	if (cmd == this.getCommandID("fire"))
+	if (cmd == this.getCommandID("fire") && isServer())
 	{
 		v.charge = 0; //for empty shots
 	}
-	else if (cmd == this.getCommandID("fire mag blob"))
+	else if (cmd == this.getCommandID("fire client") && isClient())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
-		CBlob@ occupied = getBlobByNetworkID(params.read_netid());
-		const u8 charge = params.read_u8();
+		v.charge = 0;
+	}
+	else if (cmd == this.getCommandID("fire mag blob client") && isClient())
+	{
+		if (!isServer())
+		{
+			u16 id;
+			if (!params.saferead_u16(id)) return;
 
-		if (caller !is null && occupied !is null && !occupied.hasTag("player"))
-			occupied.SetDamageOwnerPlayer(caller.getPlayer());
+			CBlob@ occupied = getBlobByNetworkID(id);
+			if (occupied is null) return; 
+
+			v.onFire(this, occupied, v.charge);
+			v.SetFireDelay(v.getCurrentAmmo().fire_delay);
+		}
 
 		this.getSprite().PlayRandomSound(v.getCurrentAmmo().fire_sound);
-		v.onFire(this, occupied, charge);
-		v.SetFireDelay(v.getCurrentAmmo().fire_delay);
 	}
-	else if (isServer() && cmd == this.getCommandID("putin_mag"))
+	else if (cmd == this.getCommandID("putin_mag") && isServer())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_netid());
-		CBlob@ blob = getBlobByNetworkID(params.read_netid());
-		if (caller !is null && blob !is null && blob.isAttachedTo(caller))
+		CPlayer@ callerp = getNet().getActiveCommandPlayer();
+		if (callerp is null) return;
+
+		CBlob@ caller = callerp.getBlob();
+		if (caller is null) return;
+
+		CBlob@ carried = caller.getCarriedBlob();
+		if (carried is null) return;
+
+		AttachmentPoint@ mag = this.getAttachments().getAttachmentPoint("MAG");
+		// player in mag? don't replace
+		CBlob@ occupied = mag.getOccupied();
+		if (occupied !is null && occupied.hasTag("player")) return; 
+
+		// team check
+		if (this.getTeamNum() != caller.getTeamNum()) return;
+
+		// range check
+		if (this.getDistanceTo(caller) > this.getRadius()) return;
+
+		// attach check
+		if (caller.isAttached()) return;
+
+		if (caller !is null && carried !is null && carried.isAttachedTo(caller))
 		{
 			CBlob@ occupied = this.getAttachments().getAttachmentPoint("MAG").getOccupied();
 			if (occupied !is null)
 			{
 				occupied.server_DetachFromAll();
 			}
-			blob.server_DetachFromAll();
-			this.server_AttachTo(blob, "MAG");
+			carried.server_DetachFromAll();
+			this.server_AttachTo(carried, "MAG");
 		}
 	}
 }

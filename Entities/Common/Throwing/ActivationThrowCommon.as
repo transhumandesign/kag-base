@@ -1,4 +1,7 @@
-//throwing common functionality.
+// Activating & Throwing common functionality.
+
+funcdef void Activate(CBitStream@);
+funcdef void Deactivate(CBitStream@);
 
 void client_SendThrowOrActivateCommand(CBlob@ this)
 {
@@ -6,9 +9,6 @@ void client_SendThrowOrActivateCommand(CBlob@ this)
 	if (this.isMyPlayer())
 	{
 		CBitStream params;
-		params.write_Vec2f(this.getPosition());
-		params.write_Vec2f(this.getAimPos() - this.getPosition());
-		params.write_Vec2f(this.getVelocity());
 		this.SendCommand(this.getCommandID("activate/throw"), params);
 	}
 }
@@ -18,9 +18,6 @@ void client_SendThrowOrActivateCommandBomb(CBlob@ this, u8 bombtype)
     if (this.isMyPlayer())
     {
         CBitStream params;
-        params.write_Vec2f(this.getPosition());
-        params.write_Vec2f(this.getAimPos() - this.getPosition());
-        params.write_Vec2f(this.getVelocity());
         params.write_u8(bombtype);
         this.SendCommand(this.getCommandID("activate/throw bomb"), params);
     }
@@ -39,12 +36,39 @@ void client_SendThrowCommand(CBlob@ this)
 	}
 }
 
-void server_ActivateCommand(CBlob@ this, CBlob@ blob)
+void server_Activate(CBlob@ blob, CBlob@ caller = null)
 {
-	if (blob !is null && getNet().isServer())
+	if (blob !is null && isServer())
 	{
-		blob.SendCommand(blob.getCommandID("activate"));
+		Activate@ onActivate;
+		if (blob.get("activate handle", @onActivate)) 
+		{
+			CBitStream params;
+			params.write_u16(blob.getNetworkID());
+			if (caller !is null)
+			{
+				params.write_u16(caller.getNetworkID());
+			}
+			params.ResetBitIndex();
+			onActivate(params); // Callback implemented in the blob's main logic script
+		}
 		blob.Tag("activated");
+		blob.Sync("activated", true);
+	}
+}
+
+void server_Deactivate(CBlob@ blob)
+{
+	if (blob !is null && isServer())
+	{
+		Deactivate@ onDeactivate;
+		if (blob.get("deactivate handle", @onDeactivate))
+		{
+			CBitStream params;
+			params.write_u16(blob.getNetworkID());
+			params.ResetBitIndex();
+			onDeactivate(params); // Callback implemented in the blob's main logic script
+		}
 	}
 }
 
@@ -67,10 +91,9 @@ bool ActivateBlob(CBlob@ this, CBlob@ blob, Vec2f pos, Vec2f vector, Vec2f vel)
 					//if compatible
 					if (isServer() && blob.hasTag("activatable"))
 					{
-						blob.SendCommand(blob.getCommandID("activate"));
+						server_Activate(blob, this);
 					}
 
-					blob.Tag("activated");//just in case
 					shouldthrow = false;
 					this.Tag(blob.getName() + " done activate");
 

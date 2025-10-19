@@ -1,3 +1,5 @@
+const string[] prefixes = {"/", "!"};
+
 namespace ChatCommands
 {
 	ChatCommandManager@ getManager()
@@ -16,9 +18,9 @@ namespace ChatCommands
 		ChatCommands::getManager().RegisterCommand(command);
 	}
 
-	string getPrefix()
+	string[] getPrefixes()
 	{
-		return "/";
+		return prefixes;
 	}
 }
 
@@ -102,6 +104,6 @@ void CommandNotImplemented(string name, CPlayer@ player)
 	}
 	else
 	{
-		print("Unable to execute " + ChatCommands::getPrefix() + name + " command because it is not implemented", ConsoleColour::ERROR);
+		print("Unable to execute " + ChatCommands::getPrefixes()[0] + name + " command because it is not implemented", ConsoleColour::ERROR);
 	}
 }

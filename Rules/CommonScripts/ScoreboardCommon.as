@@ -1,3 +1,5 @@
+#define SERVER_ONLY
+
 #include "ColoredNameToggleCommon.as"
 
 f32 getKDR(CPlayer@ p)
@@ -56,9 +58,7 @@ void setSpectatePlayer(string username)
 		CRules@ rules = getRules();
 		rules.set_bool("set new target", true);
 		rules.set_string("new target", username);
-
 	}
-
 }
 
 float drawServerInfo(float y)
@@ -113,7 +113,6 @@ float drawServerInfo(float y)
 
 
 	return bot.y;
-
 }
 
 string timestamp(uint s)
@@ -136,6 +135,40 @@ string timestamp(uint s)
 	ret += seconds + getTranslatedString("s ");
 
 	return ret;
+}
+
+void getMapName(CRules@ this)
+{
+	CMap@ map = getMap();
+
+	if (map !is null && isServer())
+	{
+		string[] name = map.getMapName().split('/');     //Official server maps seem to show up as
+		string mapName = name[name.length() - 1];        //``Maps/CTF/MapNameHere.png`` while using this instead of just the .png
+		mapName = getFilenameWithoutExtension(mapName);  // Remove extension from the filename if it exists
+
+		this.set_string("map_name", mapName);
+		this.Sync("map_name",true);
+	}
+}
+
+void setMatchTime(CRules@ this)
+{
+	this.set_u32("match_time", 0);
+	this.Sync("match_time", true);
+}
+
+void getMatchTime(CRules@ this)
+{
+	if (this.getCurrentState() == GAME)
+	{
+		this.add_u32("match_time", 1);
+
+		if (isServer() && this.get_u32("match_time") % (10 * getTicksASecond()) == 0)
+		{
+			this.Sync("match_time", true);
+		}
+	}
 }
 
 void drawPlayerCard(CPlayer@ player, Vec2f pos)

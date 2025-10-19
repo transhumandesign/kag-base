@@ -90,7 +90,13 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 	topleft.y += stepheight;
 
 	//draw team info
-	GUI::SetFont("AveriaSerif-Bold_22");
+	// because averia dont have cyrillic symbols, we need use another font
+	if (g_locale == "ru") {
+		GUI::SetFont("menu");
+	} else {
+		GUI::SetFont("AveriaSerif-Bold_22");
+	}
+
 	GUI::DrawText(teamName, Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
 
 	GUI::SetFont("menu");
@@ -763,17 +769,20 @@ void drawHoverExplanation(int hovered_accolade, int hovered_age, int hovered_tie
 	GUI::DrawText(desc, tl + expand, SColor(0xffffffff));
 }
 
+void onInit(CRules@ this)
+{
+	onRestart(this);
+
+	if (!GUI::isFontLoaded("AveriaSerif-Bold_22"))
+	{
+		string AveriaSerif = CFileMatcher("AveriaSerif-Bold.ttf").getFirst();
+		GUI::LoadFont("AveriaSerif-Bold_22", AveriaSerif, 22, true);
+	}
+}
+
 void onTick(CRules@ this)
 {
-	if (this.getCurrentState() == GAME)
-	{
-		this.add_u32("match_time", 1);
-
-		if (isServer() && this.get_u32("match_time") % (10 * getTicksASecond()) == 0)
-		{
-			this.Sync("match_time", true);
-		}
-	}
+	getMatchTime(this);
 
 	// plain stupidity to track player heads even when dead
 	const int playerCount = getPlayersCount();
@@ -794,39 +803,10 @@ void onTick(CRules@ this)
 	}
 }
 
-void onInit(CRules@ this)
-{
-	onRestart(this);
-
-	if (!GUI::isFontLoaded("AveriaSerif-Bold_22"))
-	{
-		string AveriaSerif = CFileMatcher("AveriaSerif-Bold.ttf").getFirst();
-		GUI::LoadFont("AveriaSerif-Bold_22", AveriaSerif, 22, true);
-	}
-}
-
 void onRestart(CRules@ this)
 {
-	if(isServer())
-	{
-		this.set_u32("match_time", 0);
-		this.Sync("match_time", true);
-		getMapName(this);
-	}
-}
-
-void getMapName(CRules@ this)
-{
-	CMap@ map = getMap();
-	if(map !is null)
-	{
-		string[] name = map.getMapName().split('/');	 //Official server maps seem to show up as
-		string mapName = name[name.length() - 1];		 //``Maps/CTF/MapNameHere.png`` while using this instead of just the .png
-		mapName = getFilenameWithoutExtension(mapName);  // Remove extension from the filename if it exists
-
-		this.set_string("map_name", mapName);
-		this.Sync("map_name",true);
-	}
+	setMatchTime(this);
+	getMapName(this);
 }
 
 void drawAgeIcon(int age, Vec2f position)

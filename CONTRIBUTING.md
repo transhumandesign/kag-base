@@ -152,9 +152,7 @@ We may be able to organise engine access if you have a good contribution history
 
 ## Is there a reward? Will I be paid?
 
-Unless organised ahead of time, contribution is made on a volunteer/gratis basis. Your reward is that your changes make the game better for everyone, everywhere, and that you're fostering a culture of collaboration that will improve the sustainability of the game :)
-
-However, we are willing to negotiate compensation for big/interesting changes - we'd love to hear from you if you have something in mind!
+Contribution is made on a volunteer/gratis basis. Your reward is that your changes make the game better for everyone, everywhere, and that you're fostering a culture of collaboration that will improve the sustainability of the game :)
 
 ## My question wasn't answered...
 

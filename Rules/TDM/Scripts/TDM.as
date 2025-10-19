@@ -361,9 +361,6 @@ shared class TDMCore : RulesCore
 		//  SpawnPowerups();
 		RulesCore::Update(); //update respawns
 		CheckTeamWon();
-
-		if (getGameTime() % 2000 == 0)
-			SpawnBombs();
 	}
 
 	void updateHUD()
@@ -764,19 +761,6 @@ shared class TDMCore : RulesCore
 		CBlob@ powerup = server_CreateBlob("powerup", -1, Vec2f(getMap().tilesize * 0.5f * getMap().tilemapwidth, 50.0f));
 	}
 
-	void SpawnBombs()
-	{
-		Vec2f[] bombPlaces;
-		if (getMap().getMarkers("bombs", bombPlaces))
-		{
-			for (uint i = 0; i < bombPlaces.length; i++)
-			{
-				server_CreateBlob("mat_bombs", -1, bombPlaces[i]);
-			}
-		}
-	}
-
-
 	void GiveSpawnResources(CBlob@ blob, CPlayer@ player)
 	{
 		// give archer arrows
@@ -836,6 +820,11 @@ void Reset(CRules@ this)
 	this.set("start_gametime", getGameTime() + core.warmUpTime);
 	this.set_u32("game_end_time", getGameTime() + core.gameDuration); //for TimeToEnd.as
 	this.set_s32("restart_rules_after_game_time", (core.spawnTime < 0 ? 5 : 10) * 30 );
+
+	// if (isClient())
+	// {
+	// 	this.shadowmap_config.back_scale = 0.73f;
+	// }
 }
 
 void onRestart(CRules@ this)

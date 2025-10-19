@@ -55,23 +55,29 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
 	{ 
 		col = color_castle;
 	} 
-	else if (map.isTileBackgroundNonEmpty(ctile) && !map.isTileGrass(tile)) {
-		
-		// TODO(hobey): maybe check if there's a door/platform on this backwall and make a custom color for them?
-		if (tile == CMap::tile_castle_back) 
-		{ 
-			col = color_castle_backwall;
-		} 
-		else if (tile == CMap::tile_wood_back)   
-		{ 
-			col = color_wood_backwall;
-		} 
-		else                                     
-		{ 
-			col = color_dirt_backwall;
-		}
-		
+	else if (tile == CMap::tile_castle_back) 
+	{ 
+		col = color_castle_backwall;
 	} 
+	else if (tile == CMap::tile_wood_back)   
+	{ 
+		col = color_wood_backwall;
+	} 
+	else if (tile == CMap::tile_ground_back)                                    
+	{ 
+		col = color_dirt_backwall;
+	} 
+	else if (tile != CMap::tile_empty && !map.isTileGrass(tile))
+	{
+		if (map.isTileBackground(ctile))
+		{
+			col = col.getInterpolated(color_castle_backwall, 0.5f);
+		}
+		else
+		{
+			col = color_castle_backwall;
+		}
+	}
 	else 
 	{
 		col = color_sky;
@@ -129,11 +135,14 @@ namespace MiniMap
 		CMap@ map = getMap();
 
 		//add sync script
-		//done here to avoid needing to modify gamemode.cfg
+		//was done here to avoid needing to modify gamemode.cfg
+		//seems to be unnecessary
+
+		/*
 		if (!rules.hasScript("MinimapSync.as"))
 		{
 			rules.AddScript("MinimapSync.as");
-		}
+		}*/
 
 		//init appropriately
 		if (isServer())

@@ -4,12 +4,6 @@
 #include "LootCommon.as";
 #include "GenericButtonCommon.as";
 
-enum state
-{
-	DISABLED = 0,
-	POWERED
-};
-
 const u32 DURATION = 40;
 const u8 COIN_COST = 60;
 
@@ -24,9 +18,6 @@ class CoinSlot : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -36,12 +27,13 @@ void onInit(CBlob@ this)
 	// background, let water overlap
 	this.getShape().getConsts().waterPasses = true;
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		addCoin(this, COIN_COST / 3);
 	}
 
-	this.addCommandID("activate");
+	this.addCommandID("server_activate");
+	this.addCommandID("client_activate");
 
 	AddIconToken("$insert_coin$", "InteractionIcons.png", Vec2f(32, 32), 26);
 
@@ -57,7 +49,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	CoinSlot component(POSITION);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -73,8 +65,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if (sprite is null) return;
-
 	sprite.SetFacingLeft(false);
 	sprite.SetZ(-50);
 }
@@ -92,16 +82,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 		return;
 	}
 
-	CBitStream params;
-	params.write_u16(player.getNetworkID());
-
 	CButton@ button = caller.CreateGenericButton(
 	"$insert_coin$",                            // icon token
 	Vec2f_zero,                                 // button offset
 	this,                                       // button attachment
-	this.getCommandID("activate"),              // command id
-	getTranslatedString("Insert 60 coins"),     // description
-	params);                                    // cbitstream parameters
+	this.getCommandID("server_activate"),       // command id
+	getTranslatedString("Insert 60 coins"));    // description
 
 	button.radius = 8.0f;
 	button.enableRadius = 20.0f;
@@ -109,7 +95,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onTick(CBlob@ this)
 {
-	if (!getNet().isServer() || this.get_u32("duration") > getGameTime()) return;
+	if (!isServer() || this.get_u32("duration") > getGameTime()) return;
 
 	Component@ component = null;
 	if (!this.get("component", @component)) return;
@@ -119,8 +105,6 @@ void onTick(CBlob@ this)
 
 	this.Untag("active");
 
-	this.set_u8("state", DISABLED);
-
 	grid.setInfo(
 	component.x,                        // x
 	component.y,                        // y
@@ -129,41 +113,41 @@ void onTick(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("activate"))
+	if (cmd == this.getCommandID("server_activate") && isServer())
 	{
-		if (getNet().isServer())
-		{
-			Component@ component = null;
-			if (!this.get("component", @component)) return;
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+		
+		CBlob@ caller = player.getBlob();
+		if (caller is null) return;
 
-			MapPowerGrid@ grid;
-			if (!getRules().get("power grid", @grid)) return;
+		// range check
+		if (this.getDistanceTo(caller) > 20.0f) return;
 
-			u16 id;
-			if (!params.saferead_u16(id)) return;
+		Component@ component = null;
+		if (!this.get("component", @component)) return;
 
-			CPlayer@ player = getPlayerByNetworkId(id);
-			if (player !is null)
-			{
-				player.server_setCoins(Maths::Max(player.getCoins() - COIN_COST, 0));
-			}
-			addCoin(this, COIN_COST / 3);
+		MapPowerGrid@ grid;
+		if (!getRules().get("power grid", @grid)) return;
 
-			this.Tag("active");
+		player.server_setCoins(Maths::Max(player.getCoins() - COIN_COST, 0));
 
-			this.set_u32("duration", getGameTime() + DURATION);
+		addCoin(this, COIN_COST / 3);
 
-			this.set_u8("state", POWERED);
+		this.Tag("active");
 
-			grid.setInfo(
-			component.x,                        // x
-			component.y,                        // y
-			INFO_SOURCE | INFO_ACTIVE);         // information
-		}
+		this.set_u32("duration", getGameTime() + DURATION);
 
+		grid.setInfo(
+		component.x,                        // x
+		component.y,                        // y
+		INFO_SOURCE | INFO_ACTIVE);         // information
+		
+		this.SendCommand(this.getCommandID("client_activate"));
+	}
+	else if (cmd == this.getCommandID("client_activate") && isClient())
+	{
 		CSprite@ sprite = this.getSprite();
-		if (sprite is null) return;
-
 		sprite.SetAnimation("default");
 		sprite.SetAnimation("activate");
 		sprite.PlaySound("Cha.ogg");
@@ -172,13 +156,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void onDie(CBlob@ this)
 {
-	if (getNet().isServer() && this.exists("component"))
+	if (isServer() && this.exists("component"))
 	{
 		server_CreateLoot(this, this.getPosition(), this.getTeamNum());
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

@@ -23,7 +23,7 @@ class HelpCommand : ChatCommand
 			for (uint i = 0; i < command.aliases.size(); i++)
 			{
 				string alias = command.aliases[i];
-				string cmdName = ChatCommands::getPrefix() + alias;
+				string cmdName = ChatCommands::getPrefixes()[0] + alias;
 				if (command.usage != "")
 				{
 					cmdName += " " + command.usage;
@@ -44,14 +44,15 @@ class BotCommand : ChatCommand
 	BotCommand()
 	{
 		super("bot", "Spawn a bot");
-		AddAlias("henry");
+		SetUsage("[name]");
 	}
 
 	void Execute(string[] args, CPlayer@ player)
 	{
 		if (isServer())
 		{
-			AddBot("Henry");
+			string name = args.size() > 0 ? join(args, " ") : "Henry";
+			AddBot(name);
 		}
 	}
 }
@@ -78,6 +79,36 @@ class WaterCommand : ChatCommand
 		{
 			server_AddToChat(getTranslatedString("Water cannot be created while dead or spectating"), ConsoleColour::ERROR, player);
 		}
+	}
+}
+
+class TimeCommand : ChatCommand
+{
+	TimeCommand()
+	{
+		super("time", "Change day time");
+	}
+
+	void Execute(string[] args, CPlayer@ player)
+	{
+		if (!isServer()) return;
+		
+		if (args.size() == 0)
+		{
+			server_AddToChat(getTranslatedString("Specify the time: day, night or a number in range from 0.0 to 1.0"), ConsoleColour::ERROR, player);
+			return;
+		}
+
+		string timeString = args[0];
+		float time = 0;
+		if (timeString == "day")
+			time = 0.14;
+		else if (timeString == "night")
+			time = 0.94;
+		else
+			time = parseFloat(timeString);
+		
+		getMap().SetDayTime(time);
 	}
 }
 
