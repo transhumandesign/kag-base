@@ -49,7 +49,7 @@ bool canGrowAt(CBlob@ this, Vec2f pos)
 {
 	if (!this.getShape().isStatic()) // they can be static from grid placement
 	{
-		if (!this.isOnGround() || this.isInWater() || this.isAttached() || this.isInInventory() || !isNotBlockedByOthers(this))
+		if (!this.isOnGround() || this.isInWater() || this.isAttached() || !isNotBlockedByOthers(this))
 		{
 			return false;
 		}
