@@ -2,17 +2,19 @@
 
 bool isNotBlockedByOthers(CBlob@ this)
 {
-	CBlob@[] blobsInRadius;
+	CBlob@[] overlapping;
 	CMap@ map = getMap();
 
-	if (map.getBlobsInRadius(this.getPosition(), map.tilesize / 4, @blobsInRadius))
+	if (this.getOverlapping(@overlapping))
 	{
 		u16 lowest_net_id = this.getNetworkID();
 		bool found_seed = false;
 
-		for (uint i = 0; i < blobsInRadius.length; i++)
+		for (uint i = 0; i < overlapping.length; i++)
 		{
-			CBlob@ blob = blobsInRadius[i];
+			CBlob@ blob = overlapping[i];
+
+			if (blob is null) continue;
 
 			if (blob.getName() == "seed")
 			{
@@ -24,7 +26,7 @@ bool isNotBlockedByOthers(CBlob@ this)
 					lowest_net_id = blob_net_id;
 				}
 			}
-			else if (blob.getName().find("tree") == -1)
+			else if (blob.getName().find("tree") != -1)
 			{
 				return false;
 			}
@@ -48,7 +50,7 @@ bool canGrowAt(CBlob@ this, Vec2f pos)
 {
 	if (!this.getShape().isStatic()) // they can be static from grid placement
 	{
-		if (!this.isOnGround() || this.isInWater() || this.isAttached() || !isNotBlockedByOthers(this))
+		if (!this.isOnGround() || this.isInWater() || this.isAttached() || this.isInInventory() || !isNotBlockedByOthers(this))
 		{
 			return false;
 		}
