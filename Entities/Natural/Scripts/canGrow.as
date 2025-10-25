@@ -3,7 +3,6 @@
 bool isNotBlockedByOthers(CBlob@ this)
 {
 	CBlob@[] overlapping;
-	CMap@ map = getMap();
 
 	if (this.getOverlapping(@overlapping))
 	{
