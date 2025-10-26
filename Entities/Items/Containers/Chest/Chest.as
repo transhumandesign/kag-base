@@ -144,8 +144,8 @@ void onDie(CBlob@ this)
 		this.get_u8("team_color"));         // team number
 	}
 
-	// water splash if underwater
-	if (this.isInWater())
+	// water splash if underwater and unopened
+	if (!this.hasTag("_chest_open") && this.isInWater())
 		ParticleAnimated("Splash.png", this.getPosition(), Vec2f_zero, 0.0f, 1.0f, 3, 0.0f, true);
 }
 
