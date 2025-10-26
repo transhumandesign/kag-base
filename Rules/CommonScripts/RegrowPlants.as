@@ -212,6 +212,19 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 	}
 }
 
+bool onMapTileCollapse(CMap@ this, u32 offset)
+{
+	Vec2f pos = this.getTileWorldPosition(offset);
+	u32 tindex_castle = findTileByCoords(castle_tiles, pos);
+
+	// castle tile collapsed, remove from array
+	if (tindex_castle != 0 && castle_tiles.size() > 0)
+	{
+		castle_tiles.removeAt(tindex_castle);
+	}
+	return true;
+}
+
 u32 findTileByCoords(const TileInfo@[] &in tiles, Vec2f coords)
 {
 	for (u32 i = 1; i < tiles.size(); i++)
