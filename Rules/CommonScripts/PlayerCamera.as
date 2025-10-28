@@ -180,11 +180,6 @@ void onRender(CRules@ this)
 		return;
 	}
 
-	if (!v_camera_cinematic)
-	{
-		return;
-	}
-
 	CBlob@ localblob = getLocalPlayerBlob();
 
 	if (localblob !is null)
@@ -203,6 +198,11 @@ void onRender(CRules@ this)
 			Vec2f(getScreenWidth() / 2 + 90, getScreenHeight() * (0.2f) + 30),
 			SColor(0xffffffff), true, true
 		);
+	}
+
+	if (!v_camera_cinematic)
+	{
+		return;
 	}
 
 	int time = getGameTime() + getInterpolationFactor();
