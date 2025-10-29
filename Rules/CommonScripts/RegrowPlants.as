@@ -246,11 +246,18 @@ void onTick(CRules@ this)
 			{
 				f32 random_grow = XORRandom(10000) * 0.0001f;
 
+				// GRASS
 				if (random_grow - tinfo.grassLuck() <= grass_grow_chance && !map.isTileGrass(tile_above.type))
 				{
-					map.server_SetTile(tinfo.coords - Vec2f(0, tilesize), CMap::tile_grass + XORRandom(3));
+					Vec2f tile_position = tinfo.coords - Vec2f(0, tilesize);
+
+					if (!map.isInWater(tile_position)) // don't grow underwater
+					{
+						map.server_SetTile(tile_position, CMap::tile_grass + XORRandom(3));
+					}
 				}
 
+				// PLANTS
 				random_grow = XORRandom(10000) * 0.0001f; // generate new random_grow for every growth check to prevent situations where either nothing grows or everything grows on one tile
 
 				s16 plant = -1;
@@ -262,9 +269,15 @@ void onTick(CRules@ this)
 				if (plant != -1)
 				{
 					CBlob@[] blobs;
-					bool near_plant = false;
+					bool dont_grow = false;
 
-					if (map.getBlobsInRadius(tinfo.coords, 8.0f, blobs))
+					Vec2f spawn_position = tinfo.coords - Vec2f(0, tilesize);
+
+					if (map.isInWater(spawn_position)) // don't grow underwater
+					{
+						dont_grow = true;
+					}
+					else if (map.getBlobsInRadius(tinfo.coords, 8.0f, blobs))
 					{
 						for (int a = 0; a < blobs.size(); a++)
 						{
@@ -273,26 +286,33 @@ void onTick(CRules@ this)
 							{
 								continue;
 							}
+
 							if (plants_stuff.find(blob.getName()) != -1) // check for plants, don't grow if there's already one nearby
 							{
-								near_plant = true; 
+								dont_grow = true; 
 								break;
 							}
 						}
 					}
 
-					if (!near_plant)
+					if (!dont_grow)
 					{
 						server_CreateBlob(plants_stuff[plant], -1, tinfo.coords - Vec2f(0,tilesize));
 					}
 				}
 
+				// CHICKENS
 				random_grow = XORRandom(10000) * 0.0001f;
 
 				if (random_grow <= chicken_grow_chance && chicken_count < chicken_limit)
 				{
-					server_CreateBlob("chicken", -1, tinfo.coords - Vec2f(0,tilesize));
-					chicken_count++;
+					Vec2f spawn_position = tinfo.coords - Vec2f(0, tilesize);
+
+					if (!map.isInWater(spawn_position)) // don't spawn chicken inside water	
+					{					
+						server_CreateBlob("chicken", -1, spawn_position);
+						chicken_count++;
+					}
 				}
 			}
 		}
