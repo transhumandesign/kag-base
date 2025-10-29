@@ -37,7 +37,7 @@ void onTick(CRules@ this)
 				Vec2f spawn_position = (first_fish.getPosition() + second_fish.getPosition()) * 0.5f;
 			
 				if (map.isBlobInRadius("mine", spawn_position, 16.0f) // don't spawn fishy inside mines
-					|| !map.isInWater(spawn_position)) // don't spawn fishy outside of water
+					|| !map.isInWater(spawn_position)) // spawn fishy only in water
 				{
 					return;
 				}
