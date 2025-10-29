@@ -291,8 +291,13 @@ void onTick(CRules@ this)
 
 				if (random_grow <= chicken_grow_chance && chicken_count < chicken_limit)
 				{
-					server_CreateBlob("chicken", -1, tinfo.coords - Vec2f(0,tilesize));
-					chicken_count++;
+					Vec2f spawn_position = tinfo.coords - Vec2f(0, tilesize);
+
+					if (!map.isBlobInRadius("mine", spawn_position, 32.0f)) // don't spawn chicken near mines
+					{					
+						server_CreateBlob("chicken", -1, spawn_position);
+						chicken_count++;
+					}
 				}
 			}
 		}
