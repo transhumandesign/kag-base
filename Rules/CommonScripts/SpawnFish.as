@@ -34,11 +34,19 @@ void onTick(CRules@ this)
 			        !first_fish.hasTag("dead") && //both parents alive
 			        !second_fish.hasTag("dead"))
 			{
+				Vec2f spawn_position = (first_fish.getPosition() + second_fish.getPosition()) * 0.5f;
+			
+				if (map.isBlobInRadius("mine", spawn_position, 16.0f) // don't spawn fishy inside mines
+					|| !map.isInWater(spawn_position)) // don't spawn fishy outside of water
+				{
+					return;
+				}
+			
 				CBlob@ babby_fish = server_CreateBlobNoInit(fish_name);
 				if (babby_fish !is null)
 				{
 					babby_fish.server_setTeamNum(-1);
-					babby_fish.setPosition((first_fish.getPosition() + second_fish.getPosition()) * 0.5f);
+					babby_fish.setPosition(spawn_position);
 
 					u8 col1 = first_fish.get_u8("colour");
 					u8 col2 = second_fish.get_u8("colour");
@@ -66,10 +74,12 @@ void onTick(CRules@ this)
 				int i = 0;
 				while (i ++ < 3)
 				{
-					Vec2f pos = Vec2f(x, y - i * map.tilesize);
-					if (map.isInWater(pos))
+					Vec2f spawn_position = Vec2f(x, y - i * map.tilesize);
+					
+					if (!map.isBlobInRadius("mine", spawn_position, 32.0f) // don't spawn fishy near mines
+					&& map.isInWater(spawn_position)) // spawn fishy only in water
 					{
-						server_CreateBlob(fish_name, -1, pos);
+						server_CreateBlob(fish_name, -1, spawn_position);
 						break;
 					}
 				}
