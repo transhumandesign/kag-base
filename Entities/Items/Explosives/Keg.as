@@ -22,7 +22,6 @@ void onInit(CBlob@ this)
 	this.set_u16("_keg_carrier_id", 0xffff);
 
 	CSprite@ sprite = this.getSprite();
-
 	if (sprite !is null)
 	{
 		CSpriteLayer@ fuse = sprite.addSpriteLayer("fuse", "Keg.png" , 16, 16, 0, 0);

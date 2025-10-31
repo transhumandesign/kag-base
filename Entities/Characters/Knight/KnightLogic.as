@@ -241,15 +241,9 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	Vec2f pos = this.getPosition();
-	Vec2f vel = this.getVelocity();
-	Vec2f aimpos = this.getAimPos();
-	const bool inair = getInAir(this);
-
 	Vec2f vec;
 
 	const int direction = this.getAimDirection(vec);
-	const f32 side = (this.isFacingLeft() ? 1.0f : -1.0f);
 	bool shieldState = isShieldState(knight.state);
 	bool specialShieldState = isSpecialShieldState(knight.state);
 	bool swordState = isSwordState(knight.state);
@@ -612,7 +606,6 @@ class ShieldGlideState : KnightState
 			{
 				knight.state = KnightStates::shielding;
 			}
-
 		}
 
 		return false;
