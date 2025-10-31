@@ -1307,7 +1307,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 void fletchArrow(CBlob@ this)
 {
 	// fletch arrow
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CBlob@ mat_arrows = server_CreateBlobNoInit("mat_arrows");
 		if (mat_arrows !is null)

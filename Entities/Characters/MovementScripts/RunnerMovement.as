@@ -34,7 +34,7 @@ void onTick(CMovement@ this)
 
 	const bool isknocked = isKnocked(blob);
 
-	const bool is_client = getNet().isClient();
+	const bool is_client = isClient();
 
 	CMap@ map = blob.getMap();
 	Vec2f vel = blob.getVelocity();
@@ -212,7 +212,7 @@ void onTick(CMovement@ this)
 		blob.AddForce(waterForce);
 
 
-		if (!blob.isOnGround() && !blob.isOnLadder())
+		if (!onground)
 		{
 			CleanUp(this, blob, moveVars);
 			return;				//done for swimming -----------------------
@@ -636,7 +636,6 @@ void onTick(CMovement@ this)
 		blob.Untag("dont stop til ground");
 	}
 
-	bool left_or_right = (left || right);
 	{
 		// carrying heavy
 		CBlob@ carryBlob = blob.getCarriedBlob();
@@ -655,7 +654,6 @@ void onTick(CMovement@ this)
 		}
 
 		bool facingleft = blob.isFacingLeft();
-		bool stand = blob.isOnGround() || blob.isOnLadder();
 		Vec2f walkDirection;
 		const f32 turnaroundspeed = 1.3f;
 		const f32 normalspeed = 1.0f;
@@ -698,7 +696,7 @@ void onTick(CMovement@ this)
 		f32 lim = 0.0f;
 
 		{
-			if (left_or_right)
+			if (left || right)
 			{
 				lim = moveVars.walkSpeed;
 				if (!onground)

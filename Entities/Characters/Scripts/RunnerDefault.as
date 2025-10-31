@@ -1,5 +1,4 @@
 #include "RunnerCommon.as";
-#include "Hitters.as";
 #include "KnockedCommon.as"
 #include "FireCommon.as"
 #include "Help.as"

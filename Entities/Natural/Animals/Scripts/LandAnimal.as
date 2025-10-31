@@ -7,7 +7,6 @@
 
 #define SERVER_ONLY
 
-#include "Hitters.as";
 #include "AnimalConsts.as";
 
 
