@@ -11,17 +11,20 @@ void onInit(CRules@ this)
 	if (!this.exists(holiday_head_texture_prop))
 		this.set_string(holiday_head_texture_prop, "BirthdayHeads.png");
 
-	// Also add balloons to map-initiated blobs
-	CBlob@[] blobs;
-	for (u8 i = 0; i < holiday_blobs.length(); i++)
+	if (g_holiday_assets)
 	{
-		getBlobsByName(holiday_blobs[i], @blobs);
-	}
+		// Also add balloons to map-initiated blobs
+		CBlob@[] blobs;
+		for (u8 i = 0; i < holiday_blobs.length(); i++)
+		{
+			getBlobsByName(holiday_blobs[i], @blobs);
+		}
 
-	for (u8 i = 0; i < blobs.length(); i++)
-	{
-		CBlob@ b = blobs[i];
-		AddBalloons(b.getSprite(), b.getName());
+		for (u8 i = 0; i < blobs.length(); i++)
+		{
+			CBlob@ b = blobs[i];
+			AddBalloons(b.getSprite(), b.getName());
+		}
 	}
 }
 

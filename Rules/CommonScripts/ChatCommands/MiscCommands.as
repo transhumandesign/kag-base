@@ -23,7 +23,7 @@ class HelpCommand : ChatCommand
 			for (uint i = 0; i < command.aliases.size(); i++)
 			{
 				string alias = command.aliases[i];
-				string cmdName = ChatCommands::getPrefix() + alias;
+				string cmdName = ChatCommands::getPrefixes()[0] + alias;
 				if (command.usage != "")
 				{
 					cmdName += " " + command.usage;

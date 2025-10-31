@@ -34,6 +34,7 @@ void Reset(CRules@ this)
 	zoomEaseModifier = 1.0f;
 
 	timeToCinematic = 0;
+	deathTime = 0;
 }
 
 void onRestart(CRules@ this)

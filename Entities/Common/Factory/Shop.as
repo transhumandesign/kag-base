@@ -11,11 +11,6 @@
 
 void onInit(CBlob@ this)
 {
-	if (isClient())
-	{
-		this.getSprite().PlaySound("/Construct");
-	}
-
 	this.addCommandID("shop buy");
 	this.addCommandID("shop made item client");
 
@@ -48,7 +43,7 @@ void onInit(CBlob@ this)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller) || caller.isAttachedTo(this)) return;
+	if (!canSeeButtons(this, caller)) return;
 
 	ShopItem[]@ shop_items;
 	if (!this.get(SHOP_ARRAY, @shop_items))

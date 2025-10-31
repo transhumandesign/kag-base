@@ -59,7 +59,7 @@ void GrowSprite(CSprite@ this, TreeVars@ vars)
 		this.animation.frame = 1;
 	}
 
-	TreeSegment[]@ segments;
+	TreeSegment@[]@ segments;
 	blob.get("TreeSegments", @segments);
 	if (segments is null)
 		return;
