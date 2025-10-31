@@ -902,7 +902,7 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 	MakeDamageFrame(this);
 }
 
-void MakeDamageFrame(CBlob@ this, bool repaired = false)
+void MakeDamageFrame(CBlob@ this)
 {
 	if (isClient())
 	{

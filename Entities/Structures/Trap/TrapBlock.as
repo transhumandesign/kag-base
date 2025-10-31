@@ -58,7 +58,7 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 	}
 }
 
-void MakeDamageFrame(CBlob@ this)
+void MakeDamageFrame(CBlob@ this, bool repaired = false)
 {
 	if (isClient())
 	{
@@ -66,6 +66,11 @@ void MakeDamageFrame(CBlob@ this)
 		f32 full_hp = this.getInitialHealth();
 		int frame = (hp > full_hp * 0.9f) ? 0 : ((hp > full_hp * 0.4f) ? 1 : 2);
 		this.getSprite().animation.frame = frame;
+
+		if (repaired)
+		{
+			this.getSprite().PlaySound("/build_door.ogg");
+		}
 	}
 }
 
