@@ -111,11 +111,6 @@ void turnOnFire(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	CShape@ shape = this.getShape();
-
-	const u8 arrowType = this.get_u8("arrow type");
-
-	f32 angle;
 	bool processSticking = true;
 	if (!this.hasTag("collided")) //we haven't hit anything yet!
 	{
@@ -140,9 +135,10 @@ void onTick(CBlob@ this)
 			}
 		}
 
-		angle = (this.getVelocity()).Angle();
+		f32 angle = (this.getVelocity()).Angle();
 		Pierce(this);   //map
 		this.setAngleDegrees(-angle);
+		CShape@ shape = this.getShape();
 
 		if (shape.vellen > 0.0001f)
 		{
@@ -157,7 +153,9 @@ void onTick(CBlob@ this)
 
 			processSticking = false;
 		}
-		
+
+		const u8 arrowType = this.get_u8("arrow type");
+
 		if (arrowType == ArrowType::bomb)
 		{
 			CSprite@ sprite = this.getSprite();
@@ -830,7 +828,7 @@ void onDie(CBlob@ this)
 
 void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
-	if (!getNet().isServer())
+	if (!isServer())
 	{
 		return;
 	}
