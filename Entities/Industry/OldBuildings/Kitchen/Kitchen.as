@@ -48,13 +48,15 @@ void onInit( CBlob@ this )
 	this.getShape().getConsts().mapCollisions = false;
 	this.getSprite().getConsts().accurateLighting = true;
 
+	MakeDamageFrame(this);
+
 	this.getCurrentScript().tickFrequency = 87; // opt
 }
    
 // leave a pile of wood	after death
 void onDie(CBlob@ this)
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CBlob@ blob = server_CreateBlob( "mat_wood", this.getTeamNum(), this.getPosition() );
 		if (blob !is null)
@@ -66,7 +68,7 @@ void onDie(CBlob@ this)
 
 void onTick( CBlob@ this )
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CBlob@[] blobsInRadius;	   
 		if (this.getMap().getBlobsInRadius( this.getPosition(), this.getRadius() * 1.5f, @blobsInRadius )) 
@@ -101,4 +103,24 @@ void onAddToInventory( CBlob@ this, CBlob@ blob )
 		blob.maxQuantity = 10;
 		blob.server_SetQuantity(10);
 	} 
+}
+
+
+void onHealthChange(CBlob@ this, f32 oldHealth)
+{
+	MakeDamageFrame(this);
+}
+
+void MakeDamageFrame(CBlob@ this)
+{
+	if (isClient())
+	{
+		CSprite@ sprite = this.getSprite();
+		f32 hp = this.getHealth();
+		f32 full_hp = this.getInitialHealth();
+		int frame_count = sprite.animation.getFramesCount();
+		int frame = frame_count - frame_count * (hp / full_hp);;
+		sprite.SetAnimation("destruction");
+		sprite.animation.frame = frame;
+	}
 }
