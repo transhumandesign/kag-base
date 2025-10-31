@@ -1,7 +1,6 @@
 // Trader logic
 
 #include "RunnerCommon.as"
-#include "Help.as";
 #include "TraderWantedList.as";
 
 //trader methods
