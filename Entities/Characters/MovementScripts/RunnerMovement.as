@@ -36,7 +36,6 @@ void onTick(CMovement@ this)
 
 	const bool is_client = isClient();
 
-	CMap@ map = blob.getMap();
 	Vec2f vel = blob.getVelocity();
 	Vec2f pos = blob.getPosition();
 	CShape@ shape = blob.getShape();
@@ -145,11 +144,11 @@ void onTick(CMovement@ this)
 	shape.SetGravityScale(1.0f);
 	shape.getVars().onladder = false;
 
+	CMap@ map = getMap();
+
 	//swimming - overrides other movement partially
 	if (blob.isInWater() && !isknocked)
 	{
-		CMap@ map = getMap();
-
 		const f32 swimspeed = moveVars.swimspeed;
 		const f32 swimforce = moveVars.swimforce;
 		const f32 edgespeed = moveVars.swimspeed * moveVars.swimEdgeScale;
@@ -296,7 +295,7 @@ void onTick(CMovement@ this)
 
 			Vec2f pos = blob.getPosition() + Vec2f(0, 12);
 			CBlob@[] blobs;
-			if (getMap().getBlobsInRadius(pos, 4, blobs))
+			if (map.getBlobsInRadius(pos, 4, blobs))
 			{
 				for (int i = 0; i < blobs.size(); i++)
 				{
