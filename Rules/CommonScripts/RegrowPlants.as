@@ -66,7 +66,7 @@ class TileInfo
 		for (u8 i = 0; i < adjacentTilePos.size(); i++)
 		{
 			Tile tile = map.getTile(coords - adjacentTilePos[i]);
-			u32 index = findTileByCoords(castle_tiles, coords - adjacentTilePos[i]);
+			s32 index = findTileByCoords(castle_tiles, coords - adjacentTilePos[i]);
 
 			bool mossyCastle = castle_moss_stuff.find(tile.type) != -1;
 
@@ -187,8 +187,9 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 	u32 x = index % this.tilemapwidth;
 	u32 y = index / this.tilemapwidth;
 	Vec2f coords(x * this.tilesize, y * this.tilesize);
-	u32 tindex_dirt = findTileByCoords(dirt_tiles, coords);
-	u32 tindex_stone = findTileByCoords(castle_tiles, coords);
+	s32 tindex_dirt = findTileByCoords(dirt_tiles, coords);
+	s32 tindex_stone = findTileByCoords(castle_tiles, coords);
+	print("called from onsettile " + x + " " + y + " " + index);
 
 	// dirt leaves dirt background after it's destroyed, so no need to check for dirt tiles below it
 	// onSetTile runs when a tile is damaged, so check if new tile is just more damaged dirt
@@ -209,7 +210,7 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 	}
 }
 
-u32 findTileByCoords(const TileInfo@[] &in tiles, Vec2f coords)
+s32 findTileByCoords(const TileInfo@[] &in tiles, Vec2f coords)
 {
 	for (u32 i = 0; i < tiles.size(); i++)
 	{
@@ -245,6 +246,7 @@ void onTick(CRules@ this)
 
 				if (random_grow - tinfo.grassLuck() <= grass_grow_chance && !map.isTileGrass(tile_above.type))
 				{
+					print(i + " " + tinfo.coords + " " + map.getTileSpacePosition(tinfo.coords));
 					map.server_SetTile(tinfo.coords - Vec2f(0, tilesize), CMap::tile_grass + XORRandom(3));
 				}
 
