@@ -142,9 +142,6 @@ void onInit(CRules@ this)
 	CMap@ map = getMap();
 	if (map !is null)
 	{
-		// add fake tiles to the start of TileInfo arrays so if findTileByCoords returns 0 it doesn't refer to a tile we should've updated
-		dirt_tiles.insertLast(TileInfo(Vec2f(-1,-1), 0, map.getTile(Vec2f(0,0))));
-		castle_tiles.insertLast(TileInfo(Vec2f(-1,-1), 0, map.getTile(Vec2f(0,0))));
 		for (u32 x = 0; x < map.tilemapwidth; x++)
 		{
 			for (u32 y = 0; y < map.tilemapheight; y++)
@@ -195,18 +192,18 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 
 	// dirt leaves dirt background after it's destroyed, so no need to check for dirt tiles below it
 	// onSetTile runs when a tile is damaged, so check if new tile is just more damaged dirt
-	if (this.isTileGround(oldtile) && !this.isTileGround(newtile) && tindex_dirt != 0 && dirt_tiles.size() > 0)
+	if (this.isTileGround(oldtile) && !this.isTileGround(newtile) && tindex_dirt != -1 && dirt_tiles.size() > 0)
 	{
 		dirt_tiles.removeAt(tindex_dirt);
 	}
 	// castle tile got destroyed/damaged/mossified, remove from array
 	// don't check if new tile is just a damaged castle, because we don't mossify damaged stone (only full hp stone has moss variants)
-	if (castle_stuff.find(oldtile) != -1 && tindex_stone != 0 && castle_tiles.size() > 0)
+	if (castle_stuff.find(oldtile) != -1 && tindex_stone != -1 && castle_tiles.size() > 0)
 	{
 		castle_tiles.removeAt(tindex_stone);
 	}
 	// castle tile was built, add to array
-	if (castle_stuff.find(newtile) != -1 && tindex_stone == 0)
+	if (castle_stuff.find(newtile) != -1 && tindex_stone == -1)
 	{
 		castle_tiles.insertLast(TileInfo(coords, getGameTime(), this.getTile(coords)));
 	}
@@ -214,7 +211,7 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 
 u32 findTileByCoords(const TileInfo@[] &in tiles, Vec2f coords)
 {
-	for (u32 i = 1; i < tiles.size(); i++)
+	for (u32 i = 0; i < tiles.size(); i++)
 	{
 		if (tiles[i].coords == coords)
 		{
@@ -222,7 +219,7 @@ u32 findTileByCoords(const TileInfo@[] &in tiles, Vec2f coords)
 		}
 	}
 
-	return 0;
+	return -1;
 }
 
 void onTick(CRules@ this)
@@ -236,7 +233,7 @@ void onTick(CRules@ this)
 		getBlobsByName("chicken", chicken_list);
 		u16 chicken_count = chicken_list.size();
 
-		for (int i = 1; i < dirt_tiles.size(); i++)
+		for (int i = 0; i < dirt_tiles.size(); i++)
 		{
 			TileInfo tinfo = dirt_tiles[i];
 			if (tinfo is null) return;
@@ -299,7 +296,7 @@ void onTick(CRules@ this)
 
 		if (moss_stone)
 		{
-			for (int i = 1; i < castle_tiles.size(); i++)
+			for (int i = 0; i < castle_tiles.size(); i++)
 			{
 				TileInfo tinfo = castle_tiles[i];
 				f32 random_grow = XORRandom(10000) * 0.0001f;
