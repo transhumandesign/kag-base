@@ -189,7 +189,6 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 	Vec2f coords(x * this.tilesize, y * this.tilesize);
 	s32 tindex_dirt = findTileByCoords(dirt_tiles, coords);
 	s32 tindex_stone = findTileByCoords(castle_tiles, coords);
-	print("called from onsettile " + x + " " + y + " " + index);
 
 	// dirt leaves dirt background after it's destroyed, so no need to check for dirt tiles below it
 	// onSetTile runs when a tile is damaged, so check if new tile is just more damaged dirt
@@ -246,7 +245,6 @@ void onTick(CRules@ this)
 
 				if (random_grow - tinfo.grassLuck() <= grass_grow_chance && !map.isTileGrass(tile_above.type))
 				{
-					print(i + " " + tinfo.coords + " " + map.getTileSpacePosition(tinfo.coords));
 					map.server_SetTile(tinfo.coords - Vec2f(0, tilesize), CMap::tile_grass + XORRandom(3));
 				}
 
