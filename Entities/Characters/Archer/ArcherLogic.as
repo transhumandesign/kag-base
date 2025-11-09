@@ -751,7 +751,7 @@ bool checkGrappleBarrier(Vec2f pos)
 
 bool checkGrappleStep(CBlob@ this, ArcherInfo@ archer, CMap@ map, const f32 dist)
 {
-	if (checkGrappleBarrier(archer.grapple_pos)) // red barrier
+	if (this.getTeamNum() != 255 && checkGrappleBarrier(archer.grapple_pos)) // red barrier
 	{
 		if (canSend(this) || isServer())
 		{
