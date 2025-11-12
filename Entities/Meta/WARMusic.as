@@ -11,6 +11,8 @@ enum GameMusicTag
 	world_ambient,
 	world_ambient_underground,
 	world_ambient_mountain,
+	world_ambient_water,
+	world_ambient_underwater,
 	world_ambient_night,
 
 	world_ambient_end,
@@ -82,6 +84,8 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 	mixer.AddTrack("Sounds/Music/ambient_mountain.ogg", world_ambient_mountain);
 	mixer.AddTrack("Sounds/Music/ambient_cavern.ogg", world_ambient_underground);
 	mixer.AddTrack("Sounds/Music/ambient_night.ogg", world_ambient_night);
+	mixer.AddTrack("Sounds/Music/ambient_water.ogg", world_ambient_water);
+	mixer.AddTrack("Sounds/Music/ambient_underwater.ogg", world_ambient_underwater);
 	mixer.AddTrack("Sounds/Music/KAGWorldIntroShortA.ogg", world_intro);
 	mixer.AddTrack("Sounds/Music/KAGWorld1-1a.ogg", world_home);
 	mixer.AddTrack("Sounds/Music/KAGWorld1-2a.ogg", world_home);
@@ -126,17 +130,23 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 	//calc ambience
 	if (timer % 30 == 0)
 	{
-		bool isNight = map.getDayTime() > 0.75f;
-		bool isUnderground = map.rayCastSolid(pos, Vec2f(pos.x, pos.y - 60.0f));
-		if (isUnderground)
+		if (isUnderwater(blob, pos, map)) // in water
+		{
+			changeAmbience(mixer, world_ambient_underwater, 4.0f, 4.0f);
+		}
+		else if (isUnderground(pos, map)) // cave
 		{
 			changeAmbience(mixer, world_ambient_underground, 4.0f, 4.0f);
 		}
-		else if (pos.y < map.tilemapheight * map.tilesize * 0.2f) // top one fifth of map is windy
+		else if (isNearWater(pos, map)) // near water
+		{
+			changeAmbience(mixer, world_ambient_water, 4.0f, 4.0f);
+		}
+		else if (isSky(pos, map)) // sky
 		{
 			changeAmbience(mixer, world_ambient_mountain, 4.0f, 4.0f);
 		}
-		else if (isNight)
+		else if (isNight(map)) // night
 		{
 			changeAmbience(mixer, world_ambient_night, 4.0f, 4.0f);
 		}
@@ -230,4 +240,38 @@ void changeAmbience(CMixer@ mixer, int nextTrack, f32 fadeoutTime = 0.0f, f32 fa
 	}
 
 	mixer.FadeInRandom(nextTrack, fadeinTime);
+}
+
+bool isUnderground(Vec2f pos, CMap@ map)
+{
+	u8 ts = map.tilesize;
+	return (map.getTile(pos).dirt > 0 &&
+		map.getTile(pos + Vec2f(-ts, -ts)).dirt > 0 &&
+		map.getTile(pos + Vec2f(ts, -ts)).dirt > 0 &&
+		map.getTile(pos + Vec2f(-ts, ts)).dirt > 0 &&
+		map.getTile(pos + Vec2f(ts, ts)).dirt > 0);
+}
+
+bool isNearWater(Vec2f pos, CMap@ map)
+{
+	u8 ts = map.tilesize;
+	return (map.isInWater(pos + Vec2f(-ts * 3, ts * 2)) ||
+	map.isInWater(pos + Vec2f(-ts * 4, ts)) ||
+	map.isInWater(pos + Vec2f(ts * 3, ts * 2)) ||
+	map.isInWater(pos + Vec2f(ts * 4, ts)));
+}
+
+bool isUnderwater(CBlob@ blob, Vec2f pos, CMap@ map)
+{
+	return blob !is null && map.isInWater(pos) && map.isInWater(pos + Vec2f(0.0f, -blob.getRadius() * 0.66f));
+}
+
+bool isSky(Vec2f pos, CMap@ map)
+{
+	return pos.y < map.tilemapheight * map.tilesize * 0.2f;
+}
+
+bool isNight(CMap@ map)
+{
+	return map.getDayTime() > 0.75f;
 }

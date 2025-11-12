@@ -8,6 +8,8 @@ enum GameMusicTags
 	world_ambient_underground,
 	world_ambient_mountain,
 	world_ambient_night,
+	world_ambient_water,
+	world_ambient_underwater,
 	world_intro,
 	world_home,
 	world_calm,
@@ -56,6 +58,8 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 	mixer.AddTrack("Sounds/Music/ambient_mountain.ogg", world_ambient_mountain);
 	mixer.AddTrack("Sounds/Music/ambient_cavern.ogg", world_ambient_underground);
 	mixer.AddTrack("Sounds/Music/ambient_night.ogg", world_ambient_night);
+	mixer.AddTrack("Sounds/Music/ambient_water.ogg", world_ambient_water);
+	mixer.AddTrack("Sounds/Music/ambient_underwater.ogg", world_ambient_underwater);
 	mixer.AddTrack("Sounds/Music/KAGWorldIntroShortA.ogg", world_intro);
 	mixer.AddTrack("Sounds/Music/KAGWorld1-1a.ogg", world_home);
 	mixer.AddTrack("Sounds/Music/KAGWorld1-2a.ogg", world_home);
@@ -97,17 +101,23 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 		if (timer % 48 != 0)
 			return;
 
-		bool isNight = map.getDayTime() > 0.85f && map.getDayTime() < 0.1f;
-		bool isUnderground = map.rayCastSolid(pos, Vec2f(pos.x, pos.y - 60.0f));
-		if (isUnderground)
+		if (isUnderwater(blob, pos, map)) // in water
+		{
+			changeMusic(mixer, world_ambient_underwater, 2.0f, 4.0f);
+		}
+		if (isUnderground(pos, map)) // cave
 		{
 			changeMusic(mixer, world_ambient_underground, 2.0f, 4.0f);
 		}
-		else if (pos.y < 312.0f)
+		else if (isNearWater(pos, map)) // near water
+		{
+			changeMusic(mixer, world_ambient_water, 2.0f, 4.0f);
+		}
+		else if (isSky(pos, map)) // sky
 		{
 			changeMusic(mixer, world_ambient_mountain, 2.0f, 4.0f);
 		}
-		else if (isNight)
+		else if (isNight(map)) // night
 		{
 			changeMusic(mixer, world_ambient_night, 2.0f, 4.0f);
 		}
@@ -137,7 +147,9 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 			if (mixer.isPlaying(world_ambient) 
 				|| mixer.isPlaying(world_ambient_underground) 
 				|| mixer.isPlaying(world_ambient_mountain)
-				|| mixer.isPlaying(world_ambient_night))
+				|| mixer.isPlaying(world_ambient_night)
+				|| mixer.isPlaying(world_ambient_water)
+				|| mixer.isPlaying(world_ambient_underwater))
 			{
 				mixer.FadeOutAll(0.0f, 0.01f);
 			}
@@ -156,4 +168,38 @@ void changeMusic(CMixer@ mixer, int nextTrack, f32 fadeoutTime = 1.6f, f32 fadei
 	}
 
 	mixer.FadeInRandom(nextTrack, fadeinTime);
+}
+
+bool isUnderground(Vec2f pos, CMap@ map)
+{
+	u8 ts = map.tilesize;
+	return (map.getTile(pos).dirt > 0 &&
+		map.getTile(pos + Vec2f(-ts, -ts)).dirt > 0 &&
+		map.getTile(pos + Vec2f(ts, -ts)).dirt > 0 &&
+		map.getTile(pos + Vec2f(-ts, ts)).dirt > 0 &&
+		map.getTile(pos + Vec2f(ts, ts)).dirt > 0);
+}
+
+bool isNearWater(Vec2f pos, CMap@ map)
+{
+	u8 ts = map.tilesize;
+	return (map.isInWater(pos + Vec2f(-ts * 3, ts * 2)) ||
+	map.isInWater(pos + Vec2f(-ts * 4, ts)) ||
+	map.isInWater(pos + Vec2f(ts * 3, ts * 2)) ||
+	map.isInWater(pos + Vec2f(ts * 4, ts)));
+}
+
+bool isUnderwater(CBlob@ blob, Vec2f pos, CMap@ map)
+{
+	return blob !is null && map.isInWater(pos) && map.isInWater(pos + Vec2f(0.0f, -blob.getRadius() * 0.66f));
+}
+
+bool isSky(Vec2f pos, CMap@ map)
+{
+	return pos.y < map.tilemapheight * map.tilesize * 0.2f;
+}
+
+bool isNight(CMap@ map)
+{
+	return map.getDayTime() > 0.75f;
 }
