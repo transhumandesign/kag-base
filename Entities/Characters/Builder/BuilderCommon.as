@@ -4,6 +4,7 @@
 #include "PlacementCommon.as";
 #include "CheckSpam.as";
 #include "GameplayEventsCommon.as";
+#include "RedBarrierCommon.as";
 
 const f32 allow_overlap = 2.0f;
 
@@ -79,7 +80,7 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 				{
 					Vec2f temp = (Vec2f(step_x + 0.5, step_y + 0.5) * map.tilesize);
 					Vec2f v = offsetPos + temp;
-					if (map.getSectorAtPosition(v , "no build") !is null || map.isTileSolid(v))
+					if (map.getSectorAtPosition(v , "no build") !is null || map.isTileSolid(v) || inBarrier(v.x))
 					{
 						fail = true;
 						break;
