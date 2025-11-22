@@ -30,7 +30,7 @@ void onTick(CBlob@ this)
 	CMixer@ mixer = getMixer();
 	if (mixer is null) { return; } //prevents aids on server
 
-	if (s_soundon != 0 && s_musicvolume > 0.0f)
+	if (s_soundon != 0 && s_gamemusic && s_musicvolume > 0.0f)
 	{
 		if (!this.get_bool("initialized game"))
 		{
@@ -92,7 +92,7 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 	if (map is null) return;
 	Vec2f pos = blob.getPosition();
 
-	if (!s_gamemusic || rules.isWarmup())
+	if (rules.isWarmup())
 	{
 		if (timer % 48 != 0)
 			return;
