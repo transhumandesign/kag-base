@@ -1,3 +1,5 @@
+#include "PlacementCommon.as";
+
 void AddTilesBySector(Vec2f ul, Vec2f lr, string sectorName, TileType tile, TileType omitTile = 255, bool hasWindow = false)
 {
 	if (isServer())
@@ -23,4 +25,6 @@ void AddTilesBySector(Vec2f ul, Vec2f lr, string sectorName, TileType tile, Tile
 			tpos.y = ul.y;
 		}
 	}
+
+	DestroyScenary(ul, lr);
 }
