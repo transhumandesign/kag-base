@@ -81,6 +81,8 @@ void onInit(CBlob@ this)
 
 	this.set_u32(last_drill_prop, 0);
 		this.Tag("ignore fall");
+
+	this.addCommandID("overheat client");
 }
 
 bool canBePutInInventory( CBlob@ this, CBlob@ inventoryBlob )
@@ -199,12 +201,11 @@ void onTick(CBlob@ this)
 
 		AimAtMouse(this, holder); // aim at our mouse pos
 
-		if (int(heat) >= heat_drop)
+		if (int(heat) >= heat_drop && isServer())
 		{
-			makeSteamPuff(this, 1.5f, 3, false);
 			this.server_Hit(holder, holder.getPosition(), Vec2f(), 0.25f, Hitters::burn, true);
 			this.server_DetachFrom(holder);
-			sprite.PlaySound("DrillOverheat.ogg");
+			this.SendCommand(this.getCommandID("overheat client"));
 		}
 
 		if (holder.getName() == required_class || sv_gamemode == "TDM")
@@ -431,6 +432,19 @@ void onTick(CBlob@ this)
 		else
 		{
 			this.getCurrentScript().runFlags &= ~Script::tick_not_sleeping;
+		}
+	}
+}
+
+void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+{
+	if (cmd == this.getCommandID("overheat client") && isClient())
+	{
+		makeSteamPuff(this, 1.5f, 3, false);
+		CSprite@ sprite = this.getSprite();
+		if (sprite !is null)
+		{
+			sprite.PlaySound("DrillOverheat.ogg");
 		}
 	}
 }
