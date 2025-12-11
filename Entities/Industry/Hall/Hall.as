@@ -36,7 +36,6 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().tickFrequency = 30;
 
 	InitClasses(this);
-	InitRespawnCommand(this);
 	this.set_TileType("background tile", CMap::tile_castle_back);
 	this.Tag("change class store inventory");
 	this.Tag("bed"); // allow spawning in WAR
@@ -52,7 +51,7 @@ void onInit(CBlob@ this)
 
 	this.addCommandID(framecmd);
 
-	this.set_s32("capture time", 0);
+	this.set_u16("capture time", 0);
 	this.set_s32("respawned time", 0);
 
 	this.set_s32("regenerate time", getGameTime());
@@ -215,7 +214,7 @@ void onTick(CBlob@ this)
 			{
 
 				const int tickFreq = this.getCurrentScript().tickFrequency;
-				s32 captureTime = this.get_s32("capture time");
+				s32 captureTime = this.get_u16("capture time");
 
 				f32 imbalanceFactor = 1.0f;
 				CRules@ rules = getRules();
@@ -251,7 +250,7 @@ void onTick(CBlob@ this)
 				}
 
 				captureTime += tickFreq * Maths::Max(1, Maths::Min(Maths::Round(Maths::Sqrt(attackersCount)), 8)) * imbalanceFactor;   // the more attackers the faster
-				this.set_s32("capture time", captureTime);
+				this.set_u16("capture time", captureTime);
 
 				s32 captureLimit = getCaptureLimit(this);
 				if (!not_neutral)   // immediate capture neutral hall
@@ -299,7 +298,7 @@ void onTick(CBlob@ this)
 
 		// reduce capture if nothing going on
 
-		s32 captureTime = this.get_s32("capture time");
+		s32 captureTime = this.get_u16("capture time");
 		if (captureTime > 0)
 		{
 			captureTime -= this.getCurrentScript().tickFrequency;
@@ -309,7 +308,7 @@ void onTick(CBlob@ this)
 			captureTime = 0;
 		}
 
-		this.set_s32("capture time", captureTime);
+		this.set_u16("capture time", captureTime);
 		this.Sync("capture time", true);
 		this.Sync("hall state", true);
 		this.Sync("under raid", true);
@@ -463,7 +462,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	{
 		this.set_u8("hall state", HallState::underwater);
 		this.Untag("under raid");
-		this.set_s32("capture time", 0);
+		this.set_u16("capture time", 0);
 		this.getSprite().animation.frame = 2;
 	}
 	else if (cmd == this.getCommandID("shipment"))
@@ -525,7 +524,7 @@ void onChangeTeam(CBlob@ this, const int oldTeam)
 	if (this.getTeamNum() >= 0 && this.getTeamNum() < 10)
 	{
 		Sound::Play("/VehicleCapture");
-		this.set_s32("capture time", 0);
+		this.set_u16("capture time", 0);
 
 		// add Researching.as
 		if (!getRules().exists("no research"))
@@ -624,7 +623,7 @@ void onRender(CSprite@ this)
 		s32 captureLimit = getCaptureLimit(blob);
 		if (getGameTime() % 20 > 4 && captureLimit > 0)
 		{
-			const s32 captureTime = blob.get_s32("capture time");
+			const s32 captureTime = blob.get_u16("capture time");
 			GUI::DrawProgressBar(Vec2f(pos2d.x - 80.0f, pos2d.y + 45.0f), Vec2f(pos2d.x + 80.0f, pos2d.y + 60.0f), float(captureTime) / float(captureLimit));
 		}
 

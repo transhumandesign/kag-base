@@ -12,10 +12,7 @@ void onInit(CBlob@ this)
 	              true  // inventory access
 	             );
 	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
+	if (!this.get("VehicleInfo", @v)) return;
 	Vehicle_SetupAirship(this, v, -350.0f);
 
 	this.SetLight(true);
@@ -77,15 +74,13 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (this.hasAttached() || this.getTickSinceCreated() < 30)
+	if (this.hasAttached())
 	{
 		if (this.getHealth() > 1.0f)
 		{
 			VehicleInfo@ v;
-			if (!this.get("VehicleInfo", @v))
-			{
-				return;
-			}
+			if (!this.get("VehicleInfo", @v)) return;
+
 			Vehicle_StandardControls(this, v);
 
 			//TODO: move to atmosphere damage script
@@ -115,39 +110,10 @@ void onTick(CBlob@ this)
 	}
 }
 
-void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 charge) {}
-bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool wasActionPressed, u8 &out chargeValue) {return false;}
-
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	return Vehicle_doesCollideWithBlob_ground(this, blob);
 }
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
-}
-
-void onAttach(CBlob@ this, CBlob@ attached, AttachmentPoint @attachedPoint)
-{
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
-	Vehicle_onAttach(this, v, attached, attachedPoint);
-}
-
-void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
-{
-	VehicleInfo@ v;
-	if (!this.get("VehicleInfo", @v))
-	{
-		return;
-	}
-	Vehicle_onDetach(this, v, detached, attachedPoint);
-}
-
 
 // SPRITE
 
@@ -173,24 +139,26 @@ void onTick(CSprite@ this)
 	}
 
 	CSpriteLayer@ burner = this.getSpriteLayer("burner");
-	if (burner !is null)
+	AttachmentPoint@ ap = blob.getAttachments().getAttachmentPoint("FLYER");
+	if (burner !is null && ap !is null)
 	{
+		const bool up = ap.isKeyPressed(key_action1);
+		const bool down = ap.isKeyPressed(key_action2) || ap.isKeyPressed(key_down);
 		burner.SetOffset(Vec2f(0.0f, -14.0f));
-		s8 dir = blob.get_s8("move_direction");
-		if (dir == 0)
-		{
-			blob.SetLightColor(SColor(255, 255, 240, 171));
-			burner.SetAnimation("default");
-		}
-		else if (dir < 0)
+		if (up)
 		{
 			blob.SetLightColor(SColor(255, 255, 240, 200));
 			burner.SetAnimation("up");
 		}
-		else if (dir > 0)
+		else if (down)
 		{
 			blob.SetLightColor(SColor(255, 255, 200, 171));
 			burner.SetAnimation("down");
+		}
+		else
+		{
+			blob.SetLightColor(SColor(255, 255, 240, 171));
+			burner.SetAnimation("default");
 		}
 	}
 }

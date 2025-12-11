@@ -1,5 +1,3 @@
-// Boat logic
-
 const f32 SPEED = 30.0f;
 
 void onInit(CBlob@ this)
@@ -8,7 +6,6 @@ void onInit(CBlob@ this)
 	this.getShape().SetCenterOfMassOffset(Vec2f(0.0f, 0));
 	this.getShape().getConsts().transports = true;
 	// override icon
-	AddIconToken("$" + this.getName() + "$", "VehicleIcons.png", Vec2f(16, 16), 6);
 	this.Tag("heavy weight");
 }
 

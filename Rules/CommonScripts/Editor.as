@@ -4,7 +4,7 @@
 
 void onTick(CRules@ this)
 {
-	if (!sv_test || !getNet().isServer())
+	if (!sv_test || !isServer() || !isClient()) // sv_test localhost only
 	{
 		return;
 	}
@@ -13,9 +13,12 @@ void onTick(CRules@ this)
 	CMap@ map = getMap();
 	if (p !is null && p.isMod())
 	{
-		// delete blob
+		if (!getControls().ActionKeyPressed(AK_BUILD_MODIFIER))
+		{
+			return;
+		}
 
-		if (getControls().isKeyJustPressed(KEY_KEY_X))
+		if (getControls().ActionKeyPressed(AK_ACTION2))
 		{
 			Vec2f pos = getBottomOfCursor(getControls().getMouseWorldPos());
 			CBlob@ behindBlob = getMap().getBlobAtPosition(pos);
@@ -29,7 +32,8 @@ void onTick(CRules@ this)
 				map.server_SetTile(pos, CMap::tile_empty);
 			}
 		}
-		if (getControls().isKeyJustPressed(KEY_KEY_Z))
+
+		if (getControls().ActionKeyPressed(AK_ACTION1))
 		{
 			Vec2f pos = getBottomOfCursor(getControls().getMouseWorldPos());
 			map.server_SetTile(pos, CMap::tile_castle);

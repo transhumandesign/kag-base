@@ -1,3 +1,5 @@
+#define CLIENT_ONLY
+
 #include "ScoreboardCommon.as";
 #include "Accolades.as";
 #include "ColoredNameToggleCommon.as";
@@ -13,9 +15,8 @@ bool draw_tier = false;
 
 float scoreboardMargin = 52.0f;
 float scrollOffset = 0.0f;
-float scrollSpeed = 4.0f;
+float scrollSpeed = 12.0f;
 float maxMenuWidth = 700;
-float screenMidX = getScreenWidth()/2;
 
 bool mouseWasPressed2 = false;
 
@@ -59,9 +60,20 @@ string[] tier_description = {
 //returns the bottom
 float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CTeam@ team, Vec2f emblem)
 {
-	if (players.size() <= 0 || team is null)
+	if (players.size() <= 0/* || team is null*/)
 		return topleft.y;
 
+	const string teamName = (
+		team !is null
+		? getTranslatedString(team.getName())
+		: getTranslatedString("Spectators")
+	);
+
+	const SColor teamColor = (
+		team !is null
+		? team.color
+		: SColor(0xffc0c0c0)
+	);
 
 	CRules@ rules = getRules();
 	Vec2f orig = topleft; //save for later
@@ -69,18 +81,25 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 	f32 lineheight = 16;
 	f32 padheight = 6;
 	f32 stepheight = lineheight + padheight;
-	Vec2f bottomright(Maths::Min(getScreenWidth() - 100, screenMidX+maxMenuWidth), topleft.y + (players.length + 5.5) * stepheight);
-	GUI::DrawPane(topleft, bottomright, team.color);
+	Vec2f bottomright(Maths::Min(getScreenWidth() - 100, getScreenWidth()/2 + maxMenuWidth), topleft.y + (players.length + 5.5) * stepheight);
+	GUI::DrawPane(topleft, bottomright, teamColor);
 
 	//offset border
 	topleft.x += stepheight;
 	bottomright.x -= stepheight;
 	topleft.y += stepheight;
 
-	GUI::SetFont("menu");
-
 	//draw team info
-	GUI::DrawText(getTranslatedString(team.getName()), Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
+	// because averia dont have cyrillic symbols, we need use another font
+	if (g_locale == "ru") {
+		GUI::SetFont("menu");
+	} else {
+		GUI::SetFont("AveriaSerif-Bold_22");
+	}
+
+	GUI::DrawText(teamName, Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
+
+	GUI::SetFont("menu");
 	GUI::DrawText(getTranslatedString("Players: {PLAYERCOUNT}").replace("{PLAYERCOUNT}", "" + players.length), Vec2f(bottomright.x - 400, topleft.y), SColor(0xffffffff));
 
 	topleft.y += stepheight * 2;
@@ -132,6 +151,9 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 	for (u32 i = 0; i < players.length; i++)
 	{
 		CPlayer@ p = players[i];
+		CBlob@ b = p.getBlob(); // REMINDER: this can be null if you're using this down below
+
+		bool dead = (b is null || b.hasTag("dead"));
 
 		topleft.y += stepheight;
 		bottomright.y = topleft.y + lineheight;
@@ -161,8 +183,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 		Vec2f lineoffset = Vec2f(0, -2);
 
-		u32 underlinecolor = 0xff404040;
-		u32 playercolour = (p.getBlob() is null || p.getBlob().hasTag("dead")) ? 0xff505050 : 0xff808080;
+		u32 playercolour = (dead) ? 0xA0505050 : 0x80808080;
 		if (playerHover)
 		{
 			playercolour = 0xffcccccc;
@@ -171,27 +192,44 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 			hoveredPos.x = bottomright.x - 150;
 		}
 
-		GUI::DrawLine2D(Vec2f(topleft.x, bottomright.y + 1) + lineoffset, Vec2f(bottomright.x, bottomright.y + 1) + lineoffset, SColor(underlinecolor));
-		GUI::DrawLine2D(Vec2f(topleft.x, bottomright.y) + lineoffset, bottomright + lineoffset, SColor(playercolour));
+		GUI::DrawLine2D(Vec2f(topleft.x, bottomright.y + 1) + lineoffset, Vec2f(bottomright.x, bottomright.y + 1) + lineoffset, SColor(playercolour));
 
-		string tex = "";
-		u16 frame = 0;
-		Vec2f framesize;
+		// class icon
+
+		string classTexture = "";
+		u16 classIndex = 0;
+		Vec2f classIconSize;
+		Vec2f classIconOffset = Vec2f(0, 0);
 		if (p.isMyPlayer())
 		{
-			tex = "ScoreboardIcons.png";
-			frame = 4;
-			framesize.Set(16, 16);
+			classTexture = "ScoreboardIcons.png";
+			classIndex = 4;
+			classIconSize = Vec2f(16, 16);
 		}
 		else
 		{
-			tex = p.getScoreboardTexture();
-			frame = p.getScoreboardFrame();
-			framesize = p.getScoreboardFrameSize();
+			classTexture = "playercardicons.png";
+			classIndex = 0;
+
+			// why are player-scoreboard functions hardcoded
+			// after looking into it let's not bother moving it to scripts for now
+			classIndex = p.getScoreboardFrame();
+
+			// knight is 3 but should be 0 for this texture
+			// fyi it's pure coincidence builder and archer are already a match
+			classIndex %= 3;
+			
+			classIconSize = Vec2f(16, 16);
+
+			if (dead)
+			{
+				classIndex += 8;
+			}
 		}
-		if (tex != "")
+		// don't draw class for specs
+		if (team !is null && classTexture != "")
 		{
-			GUI::DrawIcon(tex, frame, framesize, topleft, 0.5f, p.getTeamNum());
+			GUI::DrawIcon(classTexture, classIndex, classIconSize, topleft + classIconOffset, 0.5f, p.getTeamNum());
 		}
 
 		string username = p.getUsername();
@@ -215,25 +253,40 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 		}
 
-		//head icon
+		// head icon
 
-		//TODO: consider maybe the skull emoji for dead players?
-		int headIndex = 0;
-		string headTexture = "";
+		string headTexture = "Heads.png";
+		int headIndex = 32*4;
 		int teamIndex = p.getTeamNum();
+		Vec2f headOffset = Vec2f(22, -12);
+		float headScale = 1.0f;
+		SColor headColor(0xFFFFFFFF);
 
-		CBlob@ b = p.getBlob();
+		// show normally colored head for specs, they're never alive
+		if (team !is null && dead)
+		{
+			headColor = 0xFF808080;
+		}
+
 		if (b !is null)
 		{
 			headIndex = b.get_s32("head index");
 			headTexture = b.get_string("head texture");
 			teamIndex = b.get_s32("head team");
 		}
-
-		if (headTexture != "")
+		else if (p.exists("head index"))
 		{
-			GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + Vec2f(22, -12), 1.0f, teamIndex);
+			// HACK: no better infrastructure to know a player's head when
+			// they're dead
+			headIndex = p.get_s32("head index");
+			headTexture = p.get_string("head texture");
 		}
+		else
+		{
+			headColor = 0x00000000;
+		}
+
+		GUI::DrawIcon(headTexture, headIndex, Vec2f(16, 16), topleft + headOffset, headScale, headScale, teamIndex, headColor);
 
 		//have to calc this from ticks
 		s32 ping_in_ms = s32(p.getPing() * 1000.0f / 30.0f);
@@ -273,6 +326,8 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 				int age_icon_start = 32;
 				int icon = 0;
+				bool show_years = false;
+				int age = 0;
 				//less than a month?
 				if (days < 28)
 				{
@@ -355,6 +410,8 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 								{
 									icon -= 1;
 								}
+								show_years = true;
+								age = icon + 1; // icon frames start from 0
 								//ensure sane
 								icon = Maths::Clamp(icon, 0, 9);
 								//shift line
@@ -366,7 +423,15 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 
 				float x = bottomright.x - age_start + 8;
 				float extra = 8;
-				GUI::DrawIcon("AccoladeBadges", age_icon_start + icon, Vec2f(16, 16), Vec2f(x, topleft.y), 0.5f, p.getTeamNum());
+
+				if(show_years)
+				{
+					drawAgeIcon(age, Vec2f(x, topleft.y));
+				}
+				else
+				{
+					GUI::DrawIcon("AccoladeBadges", age_icon_start + icon, Vec2f(16, 16), Vec2f(x, topleft.y), 0.5f, p.getTeamNum());
+				}
 
 				if (playerHover && mousePos.x > x - extra && mousePos.x < x + 16 + extra)
 				{
@@ -430,7 +495,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 				acc.participation,      3,     1,         1,
 
 				//(final dummy)
-				0, 0, 0, 0,
+				0, 0, 0, 0
 			};
 			//encoding per-group
 			int[] group_encode = {
@@ -571,7 +636,7 @@ void onRenderScoreboard(CRules@ this)
 
 	@hoveredPlayer = null;
 
-	Vec2f topleft(Maths::Max( 100, screenMidX-maxMenuWidth), 150);
+	Vec2f topleft(Maths::Max( 100, getScreenWidth()/2 -maxMenuWidth), 150);
 	drawServerInfo(40);
 
 	// start the scoreboard lower or higher.
@@ -598,43 +663,47 @@ void onRenderScoreboard(CRules@ this)
 
 	topleft.y += 52;
 
-	if (spectators.length > 0)
-	{
-		//draw spectators
-		f32 stepheight = 16;
-		Vec2f bottomright(Maths::Min(getScreenWidth() - 100, screenMidX+maxMenuWidth), topleft.y + stepheight * 2);
-		f32 specy = topleft.y + stepheight * 0.5;
-		GUI::DrawPane(topleft, bottomright, SColor(0xffc0c0c0));
+	topleft.y = drawScoreboard(localPlayer, spectators, topleft, null, Vec2f(0, 0));
 
-		Vec2f textdim;
-		string s = getTranslatedString("Spectators:");
-		GUI::GetTextDimensions(s, textdim);
+	topleft.y += 52;
 
-		GUI::DrawText(s, Vec2f(topleft.x + 5, specy), SColor(0xffaaaaaa));
+	// if (spectators.length > 0)
+	// {
+	// 	//draw spectators
+	// 	f32 stepheight = 16;
+	// 	Vec2f bottomright(Maths::Min(getScreenWidth() - 100, getScreenWidth()/2 + maxMenuWidth), topleft.y + stepheight * 2);
+	// 	f32 specy = topleft.y + stepheight * 0.5;
+	// 	GUI::DrawPane(topleft, bottomright, SColor(0xffc0c0c0));
 
-		f32 specx = topleft.x + textdim.x + 15;
-		for (u32 i = 0; i < spectators.length; i++)
-		{
-			CPlayer@ p = spectators[i];
-			if (specx < bottomright.x - 100)
-			{
-				string name = p.getCharacterName();
-				if (i != spectators.length - 1)
-					name += ",";
-				GUI::GetTextDimensions(name, textdim);
-				SColor namecolour = getNameColour(p);
-				GUI::DrawText(name, Vec2f(specx, specy), namecolour);
-				specx += textdim.x + 10;
-			}
-			else
-			{
-				GUI::DrawText(getTranslatedString("and more ..."), Vec2f(specx, specy), SColor(0xffaaaaaa));
-				break;
-			}
-		}
+	// 	Vec2f textdim;
+	// 	string s = getTranslatedString("Spectators:");
+	// 	GUI::GetTextDimensions(s, textdim);
 
-		topleft.y += 52;
-	}
+	// 	GUI::DrawText(s, Vec2f(topleft.x + 5, specy), SColor(0xffaaaaaa));
+
+	// 	f32 specx = topleft.x + textdim.x + 15;
+	// 	for (u32 i = 0; i < spectators.length; i++)
+	// 	{
+	// 		CPlayer@ p = spectators[i];
+	// 		if (specx < bottomright.x - 100)
+	// 		{
+	// 			string name = p.getCharacterName();
+	// 			if (i != spectators.length - 1)
+	// 				name += ",";
+	// 			GUI::GetTextDimensions(name, textdim);
+	// 			SColor namecolour = getNameColour(p);
+	// 			GUI::DrawText(name, Vec2f(specx, specy), namecolour);
+	// 			specx += textdim.x + 10;
+	// 		}
+	// 		else
+	// 		{
+	// 			GUI::DrawText(getTranslatedString("and more ..."), Vec2f(specx, specy), SColor(0xffaaaaaa));
+	// 			break;
+	// 		}
+	// 	}
+
+	// 	topleft.y += 52;
+	// }
 
 	float scoreboardHeight = topleft.y + scrollOffset;
 	float screenHeight = getScreenHeight();
@@ -645,11 +714,13 @@ void onRenderScoreboard(CRules@ this)
 
 		float fullOffset = (scoreboardHeight + scoreboardMargin) - screenHeight;
 
+		float adjustedScrollSpeed = scrollSpeed * getRenderApproximateCorrectionFactor();
+
 		if(scrollOffset < fullOffset && mousePos.y > screenHeight*0.83f) {
-			scrollOffset += scrollSpeed;
+			scrollOffset += adjustedScrollSpeed;
 		}
 		else if(scrollOffset > 0.0f && mousePos.y < screenHeight*0.16f) {
-			scrollOffset -= scrollSpeed;
+			scrollOffset -= adjustedScrollSpeed;
 		}
 
 		scrollOffset = Maths::Clamp(scrollOffset, 0.0f, fullOffset);
@@ -698,42 +769,61 @@ void drawHoverExplanation(int hovered_accolade, int hovered_age, int hovered_tie
 	GUI::DrawText(desc, tl + expand, SColor(0xffffffff));
 }
 
-void onTick(CRules@ this)
-{
-	if(isServer() && this.getCurrentState() == GAME)
-	{
-		this.add_u32("match_time", 1);
-		this.Sync("match_time", true);
-	}
-}
-
 void onInit(CRules@ this)
 {
 	onRestart(this);
+
+	if (!GUI::isFontLoaded("AveriaSerif-Bold_22"))
+	{
+		string AveriaSerif = CFileMatcher("AveriaSerif-Bold.ttf").getFirst();
+		GUI::LoadFont("AveriaSerif-Bold_22", AveriaSerif, 22, true);
+	}
+}
+
+void onTick(CRules@ this)
+{
+	getMatchTime(this);
+
+	// plain stupidity to track player heads even when dead
+	const int playerCount = getPlayersCount();
+	for (int i = 0; i < playerCount; ++i)
+	{
+		CPlayer@ p = getPlayer(i);
+		if (p is null) { continue; }
+
+		CBlob@ b = p.getBlob();
+		if (b is null) { continue; }
+
+		const int headIndex = b.get_s32("head index");
+		const string headTexture = b.get_string("head texture");
+		const int teamIndex = b.get_s32("head team");
+		p.set_s32("head index", headIndex);
+		p.set_string("head texture", headTexture);
+		p.set_s32("head team", teamIndex);
+	}
 }
 
 void onRestart(CRules@ this)
 {
-	if(isServer())
-	{
-		this.set_u32("match_time", 0);
-		this.Sync("match_time", true);
-		getMapName(this);
-	}
+	setMatchTime(this);
+	getMapName(this);
 }
 
-void getMapName(CRules@ this)
+void drawAgeIcon(int age, Vec2f position)
 {
-	CMap@ map = getMap();
-	if(map !is null)
-	{
-		string[] name = map.getMapName().split('/');	 //Official server maps seem to show up as
-		string mapName = name[name.length() - 1];		 //``Maps/CTF/MapNameHere.png`` while using this instead of just the .png
-		mapName = getFilenameWithoutExtension(mapName);  // Remove extension from the filename if it exists
-
-		this.set_string("map_name", mapName);
-		this.Sync("map_name",true);
-	}
+    int number_gap = 8;
+	int years_frame_start = 48;
+    if(age >= 10)
+    {
+        position.x -= number_gap - 4;
+        GUI::DrawIcon("AccoladeBadges", years_frame_start + (age / 10), Vec2f(16, 16), position, 0.5f, 0);
+        age = age % 10;
+        position.x += number_gap;
+    }
+    GUI::DrawIcon("AccoladeBadges", years_frame_start + age, Vec2f(16, 16), position, 0.5f, 0);
+    position.x += 4;
+	if(age == 1) position.x -= 1; // fix y letter offset for number 1
+    GUI::DrawIcon("AccoladeBadges", 58, Vec2f(16, 16), position, 0.5f, 0); // y letter
 }
 
 void DrawFancyCopiedText(string username, Vec2f mousePos, uint duration)

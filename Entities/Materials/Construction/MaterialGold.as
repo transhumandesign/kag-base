@@ -5,6 +5,11 @@ void onInit(CBlob@ this)
   {
 	this.set_u8("decay step", 10);
   }
+
+  if (getRules().gamemode_name == "Sandbox")
+  {
+  	this.Tag("AdminAlertIgnore");
+  }
   
   this.maxQuantity = 50;
 

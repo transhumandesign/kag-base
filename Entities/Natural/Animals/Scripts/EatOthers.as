@@ -69,6 +69,8 @@ bool canEat(CBlob@ this, CBlob@ blob)
 {
 	//TODO: mouth position & radius
 
+	if (blob.hasTag("invincible")) { return false; }
+
 	bool facing_left = this.isFacingLeft();
 	Vec2f pos = this.getPosition();
 	Vec2f point1 = blob.getPosition();

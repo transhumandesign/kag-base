@@ -26,80 +26,71 @@ void CalculateMinimapColour( CMap@ map, u32 offset, TileType tile, SColor &out c
 	bool show_gold = getRules().get_bool("show_gold");
 
 	///Colours
-	const SColor color_minimap_open         (color_sky);
-	const SColor color_minimap_ground       (color_dirt);
-	const SColor color_minimap_back         (color_dirt_backwall);
-	const SColor color_minimap_stone        (color_stone);
-	const SColor color_minimap_thickstone   (color_thickstone);
-	const SColor color_minimap_gold         (color_gold);
-	const SColor color_minimap_bedrock      (color_bedrock);
-	const SColor color_minimap_wood         (color_wood);
-	const SColor color_minimap_castle       (color_castle);
-
-	const SColor color_minimap_castle_back  (color_castle_backwall);
-	const SColor color_minimap_wood_back    (color_wood_backwall);
-
-	const SColor color_minimap_water        (color_water);
-	const SColor color_minimap_fire         (color_fire);
 	
 	if (map.isTileGold(tile))  
 	{ 
-		col = show_gold ? color_minimap_gold : color_minimap_ground;
+		col = show_gold ? color_gold : color_dirt;
 	} 
 	else if (map.isTileGround(tile))
 	{
-		col = color_minimap_ground;
+		col = color_dirt;
 	}
 	else if (map.isTileThickStone(tile))
 	{
-		col = color_minimap_thickstone;
+		col = color_thickstone;
 	}
 	else if (map.isTileStone(tile))
 	{
-		col = color_minimap_stone;
+		col = color_stone;
 	}
 	else if (map.isTileBedrock(tile))
 	{
-		col = color_minimap_bedrock;
+		col = color_bedrock;
 	}
 	else if (map.isTileWood(tile)) 
 	{ 
-		col = color_minimap_wood;
+		col = color_wood;
 	} 
 	else if (map.isTileCastle(tile))      
 	{ 
-		col = color_minimap_castle;
+		col = color_castle;
 	} 
-	else if (map.isTileBackgroundNonEmpty(ctile) && !map.isTileGrass(tile)) {
-		
-		// TODO(hobey): maybe check if there's a door/platform on this backwall and make a custom color for them?
-		if (tile == CMap::tile_castle_back) 
-		{ 
-			col = color_minimap_castle_back;
-		} 
-		else if (tile == CMap::tile_wood_back)   
-		{ 
-			col = color_minimap_wood_back;
-		} 
-		else                                     
-		{ 
-			col = color_minimap_back;
+	else if (tile == CMap::tile_castle_back) 
+	{ 
+		col = color_castle_backwall;
+	} 
+	else if (tile == CMap::tile_wood_back)   
+	{ 
+		col = color_wood_backwall;
+	} 
+	else if (tile == CMap::tile_ground_back)                                    
+	{ 
+		col = color_dirt_backwall;
+	} 
+	else if (tile != CMap::tile_empty && !map.isTileGrass(tile))
+	{
+		if (map.isTileBackground(ctile))
+		{
+			col = col.getInterpolated(color_castle_backwall, 0.5f);
 		}
-		
-	} 
+		else
+		{
+			col = color_castle_backwall;
+		}
+	}
 	else 
 	{
-		col = color_minimap_open;
+		col = color_sky;
 	}
 	
 	///Tint the map based on Fire/Water State
 	if (map.isInWater( pos * ts ))
 	{
-		col = col.getInterpolated(color_minimap_water,0.5f);
+		col = col.getInterpolated(color_water,0.5f);
 	}
 	else if (map.isInFire( pos * ts ))
 	{
-		col = col.getInterpolated(color_minimap_fire,0.5f);
+		col = col.getInterpolated(color_fire,0.5f);
 	}
 }
 
@@ -144,11 +135,14 @@ namespace MiniMap
 		CMap@ map = getMap();
 
 		//add sync script
-		//done here to avoid needing to modify gamemode.cfg
+		//was done here to avoid needing to modify gamemode.cfg
+		//seems to be unnecessary
+
+		/*
 		if (!rules.hasScript("MinimapSync.as"))
 		{
 			rules.AddScript("MinimapSync.as");
-		}
+		}*/
 
 		//init appropriately
 		if (isServer())

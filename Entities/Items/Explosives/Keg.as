@@ -1,5 +1,8 @@
 // Keg logic
 #include "Hitters.as";
+#include "ActivationThrowCommon.as"
+#include "ParticlesCommon.as"
+#include "FireParticle.as"
 
 void onInit(CBlob@ this)
 {
@@ -51,18 +54,27 @@ void onTick(CSprite@ this)
 
 	CSpriteLayer@ fuse = this.getSpriteLayer("fuse");
 
-	if (fuse !is null)
-	{
-		fuse.animation.frame = 1 + (fuse.animation.getFramesCount() - 1) * (1.0f - ((timer + 5) / f32(blob.get_f32("keg_time"))));
-	}
+	if (fuse is null)
+		return;
 
+	fuse.animation.frame = 1 + (fuse.animation.getFramesCount() - 1) * (1.0f - ((timer + 5) / f32(blob.get_f32("keg_time"))));
+
+	if (fuse.animation.frame == 0 || getGameTime() % 3 != 0)
+		return;
+
+	CParticle@ p = MakeEmberParticle(this, fuse);
+#ifdef STAGING
+	if (p !is null) {
+		MakeBasicLightParticle(p.position, p.velocity, this.getBlob().getLightColor(), 0.95, 0.3, 60);
+	}
+#endif
 }
 
 void onTick(CBlob@ this)
 {
-	if (this.isInFlames() && !this.hasTag("exploding"))
+	if (this.isInFlames() && !this.hasTag("exploding") && isServer())
 	{
-		this.SendCommand(this.getCommandID("activate"));
+		server_Activate(this);
 	}
 }
 
@@ -104,20 +116,24 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			damage *= 0.25f; //quarter damage from these
 			break;
 		case Hitters::water:
-			if (hitterBlob.getName() == "bucket" && this.hasTag("exploding"))
+			if (hitterBlob.getName() == "bucket" && this.hasTag("exploding") && isServer())
 			{
-				this.SendCommand(this.getCommandID("deactivate"));
+				server_Deactivate(this);
 			}
 			break;
 		case Hitters::keg:
-			if (!this.hasTag("exploding"))
+			if (isServer())
 			{
-				this.SendCommand(this.getCommandID("activate"));
-			}
-			//set fuse to shortest fuse time - either current time or new random time
-			//so it doesn't explode at the exact same time as hitter keg
-			this.set_s32("explosion_timer", Maths::Min(this.get_s32("explosion_timer"), getGameTime() + XORRandom(this.get_f32("keg_time")) / 3));
+				if (!this.hasTag("exploding"))
+				{
+					server_Activate(this);
+				}
 
+				//set fuse to shortest fuse time - either current time or new random time
+				//so it doesn't explode at the exact same time as hitter keg
+				this.set_s32("explosion_timer", Maths::Min(this.get_s32("explosion_timer"), getGameTime() + XORRandom(this.get_f32("keg_time")) / 3));
+				this.Sync("explosion_timer", true);
+			}
 			damage *= 0.0f; //invincible to allow keg chain reaction
 			break;
 		default:
@@ -125,4 +141,62 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	}
 
 	return damage;
+}
+
+const Vec2f[] FuseOffsets = {
+	Vec2f(4.0, 2.0),
+	Vec2f(1.0, 4.5),
+	Vec2f(0.0, 3.5),
+	Vec2f(-2.5, 3.5),
+	Vec2f(-3.5, 1.0),
+};
+
+const float[] FuseRotations = {
+	45.0,
+	135.0,
+	135.0,
+	135.0,
+	225.0,
+};
+
+Vec2f getFuseWorldPos(CSprite@ &in this, CSpriteLayer@ &in fuse, float angle)
+{
+	Vec2f realPos = this.getBlob().getPosition();
+
+	Vec2f offset = FuseOffsets[fuse.animation.frame - 1];
+	if (this.isFacingLeft())
+		offset.x *= -1.0f;
+
+	Vec2f pos = fuse.getWorldTranslation() - offset;
+	pos.RotateByDegrees(angle, realPos);
+
+	return pos;
+}
+
+CParticle@ MakeEmberParticle(CSprite@ &in this, CSpriteLayer@ &in fuse)
+{
+	Random r(XORRandom(1000));
+
+	float angle = this.getBlob().getShape().getAngleDegrees();
+	Vec2f pos = getFuseWorldPos(this, fuse, angle);
+
+	CParticle@ p = makeFireParticle(pos);
+
+	if (p is null)
+		return null;
+
+	p.gravity = Vec2f(0.0, 0.01 + r.NextFloat() * 0.025);
+	p.lighting = true;
+	p.fastcollision = true;
+	p.Z = r.NextRanged(4) == 0 ? 100 : -100 ;
+
+	float rot = FuseRotations[fuse.animation.frame - 1];
+	Vec2f vel = Vec2f(this.isFacingLeft() ? -1.0 : 1.0, 1.0);
+	vel *= r.NextFloat() * 0.5f;
+
+	vel.RotateByDegrees((this.isFacingLeft() ? -rot : rot) + angle);
+
+	p.velocity = vel;
+	
+	return @p;
 }

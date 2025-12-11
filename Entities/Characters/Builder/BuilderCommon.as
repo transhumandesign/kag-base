@@ -3,7 +3,7 @@
 #include "BuildBlock.as";
 #include "PlacementCommon.as";
 #include "CheckSpam.as";
-#include "GameplayEvents.as";
+#include "GameplayEventsCommon.as";
 
 const f32 allow_overlap = 2.0f;
 
@@ -32,22 +32,20 @@ Vec2f getBuildingOffsetPos(CBlob@ blob, CMap@ map, Vec2f required_tile_space)
 	return alignedWorldPos;
 }
 
-CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
+CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, const u32 &in index)
 {
-	if (index >= blocks.length)
-	{
-		return null;
-	}
+	if (!isServer()) return null;
+	
+	if (index >= blocks.length) return null;
 
 	this.set_u32("cant build time", 0);
+	this.set_TileType("buildtile", 0);
 
 	CInventory@ inv = this.getInventory();
 	BuildBlock@ b = @blocks[index];
 
-	this.set_TileType("buildtile", 0);
-
 	CBlob@ anotherBlob = inv.getItem(b.name);
-	if (getNet().isServer() && anotherBlob !is null)
+	if (anotherBlob !is null)
 	{
 		this.server_Pickup(anotherBlob);
 		this.set_u8("buildblob", 255);
@@ -59,14 +57,11 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 	if (b.buildOnGround)
 	{
 		const bool onground = this.isOnGround();
-
 		bool fail = !onground;
 
 		CMap@ map = getMap();
-
 		Vec2f space = Vec2f(b.size.x / 8, b.size.y / 8);
 		Vec2f offsetPos = getBuildingOffsetPos(this, map, space);
-
 		Vec2f tl = offsetPos;
 		Vec2f br = offsetPos;
 
@@ -132,10 +127,6 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 
 		if (fail)
 		{
-			if (this.isMyPlayer())
-			{
-				this.getSprite().PlaySound("/NoAmmo", 0.5);
-			}
 			this.set_Vec2f("building space", space);
 			this.set_u32("cant build time", getGameTime());
 			return null;
@@ -143,41 +134,38 @@ CBlob@ server_BuildBlob(CBlob@ this, BuildBlock[]@ blocks, uint index)
 
 		pos = offsetPos + space * map.tilesize * 0.5f;
 
-		this.getSprite().PlaySound("/Construct");
 		// take inv here instead of in onDetach
 		server_TakeRequirements(inv, b.reqs);
 		DestroyScenary(tl, br);
-		SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), b.name));
+
+		CPlayer@ p = this.getPlayer();
+		if (p !is null)
+		{
+			GE_BuildBlob(p.getNetworkID(), b.name); // gameplay event for coins
+		}
 	}
 
 	this.set_u8("buildblob", index);
 
-	if (getNet().isServer())
+	CBlob@ blockBlob = server_CreateBlob(b.name, this.getTeamNum(), pos);
+	if (blockBlob !is null)
 	{
-		CBlob@ blockBlob = server_CreateBlob(b.name, this.getTeamNum(), Vec2f(0,0));
-		if (blockBlob !is null)
+		CShape@ shape = blockBlob.getShape();
+		shape.SetStatic(false);
+		shape.server_SetActive(false);
+		blockBlob.setPosition(pos);
+
+		if (!b.buildOnGround)
 		{
-			CShape@ shape = blockBlob.getShape();
-			shape.SetStatic(false);
-			shape.server_SetActive(false);
-			blockBlob.setPosition(pos);
-			//blockBlob.
-
-			if (!b.buildOnGround)
-			{
-				this.server_Pickup(blockBlob);
-			}
-			else
-			{
-				shape.server_SetActive(true); // have it enable if its a shop
-			}
-
-			if (b.temporaryBlob)
-			{
-				blockBlob.Tag("temp blob");
-			}
-			return blockBlob;
+			this.server_Pickup(blockBlob);
+			blockBlob.Tag("temp blob");
 		}
+		else
+		{
+			shape.server_SetActive(true); // have it enable if its a shop
+		}
+
+		return blockBlob;
 	}
 
 	return null;

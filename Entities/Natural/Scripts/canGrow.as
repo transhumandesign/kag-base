@@ -29,7 +29,7 @@ bool canGrowAt(CBlob@ this, Vec2f pos)
 		}
 	}
 
-	CMap@ map = this.getMap();
+	CMap@ map = getMap();
 
 	/*if ( map.isTileGrass( map.getTile( pos ) )) {
 	return false;
@@ -54,5 +54,6 @@ bool canGrowAt(CBlob@ this, Vec2f pos)
 
 	}*/
 
-	return (map.isTileGround(map.getTile(Vec2f(pos.x, pos.y + 8)).type));
+	Vec2f underneath = Vec2f(pos.x, pos.y + (this.getHeight() + map.tilesize) * 0.5f);
+	return (map.isTileGround(map.getTile(underneath).type));
 }

@@ -450,7 +450,7 @@ KING ARTHUR'S GOLD TRANSLATION FILE
 	"Out of stock. Come back later.":"Brak na składzie. Wróć ponownie później.",
 
 //HelpfulDeathTips.cfg
-	"To hide these tips, and other in-game help, hit F1.": "Aby wyłączyć te wskazówki i jakąkolwiek inną pomoc w grze, kliknij F1.",
+	"To hide in-game help and tips, hit F1.": "Aby wyłączyć te wskazówki i jakąkolwiek inną pomoc w grze, kliknij F1.",
 	"Enemies can use your tunnels so protect them well!": "Przeciwnicy mogą używać twoich tuneli, więc lepiej dobrze je zabezpiecz!",
 	"Spikes will stun you for a short time.": "Kolce ogłuszają cię na krótką chwilę.",
 	"Saws will kill you instantly": "Piły zabijają cię od razu",
@@ -479,7 +479,7 @@ KING ARTHUR'S GOLD TRANSLATION FILE
 	"1 bomb can deal up to 3 hearts of damage.": "1 bomba może zabrać maksymalnie 3 serduszka życia.",
 	"Drills are a fast way to dig, but only yield 50%. Don't use them on precious gold or during build time!": "Wiertła są szybkie przy kopaniu, ale dają 50% mniej materiałów. Nie używaj ich podczas rozgrzewki oraz podczas kopania złota.",
 	"Good players can play any class when needed.": "Dobrzy gracze potrafią zagrać każdą klasą, jeśli to potrzebne.",
-	"Make sure you're helping your team advance; don't just hide out in the back!": "Pamiętaj, aby pomagać swojej drużynie, gdy macie przewagę; nie chowaj się z tyłu!",
+	"Make sure you're helping your team advance. Don't just hide out in the back!": "Pamiętaj, aby pomagać swojej drużynie, gdy macie przewagę. Nie chowaj się z tyłu!",
 	"Ride a shark on land and press up to pick him up.": "Usiądź na rekinie na lądzie i wciśnij [W], aby go podnieść.",
 	"A red name indicates a server admin - ask them for help if you need it.": "Czerwony kolor nick'u oznacza, że to admin danego serwera - zapytaj go o pomoc, jeśli jej potrzebujesz.",
 	"A bush plus a mine equals happy fun time.": "Krzak plus mina mogą zdziałać cuda.",

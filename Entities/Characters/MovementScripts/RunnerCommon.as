@@ -38,9 +38,7 @@ shared class RunnerMoveVars
 	// moved from tags...
 	bool walljumped;
 	s32 walljumped_side;
-	s32 wallrun_length;
-	f32 wallrun_start;
-	f32 wallrun_current;
+	int wallrun_count;
 	bool wallclimbing;
 	bool wallsliding;
 };

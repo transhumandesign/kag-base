@@ -8,6 +8,8 @@
 #include "KnockedCommon.as";
 #include "DoorCommon.as";
 #include "FireplaceCommon.as";
+#include "ActivationThrowCommon.as"
+#include "ParticlesCommon.as"
 
 const s32 bomb_fuse = 120;
 const f32 arrowMediumSpeed = 8.0f;
@@ -85,7 +87,7 @@ void onInit(CBlob@ this)
 	{
 		Animation@ anim = sprite.addAnimation("bomb arrow", 0, false);
 		anim.AddFrame(14);
-		anim.AddFrame(15); //TODO flash this frame before exploding
+		anim.AddFrame(15);
 		if (arrowType == ArrowType::bomb)
 			sprite.SetAnimation(anim);
 	}
@@ -93,7 +95,6 @@ void onInit(CBlob@ this)
 
 void turnOffFire(CBlob@ this)
 {
-	this.SetLight(false);
 	this.set_u8("arrow type", ArrowType::normal);
 	this.Untag("fire source");
 	this.getSprite().SetAnimation("arrow");
@@ -102,7 +103,6 @@ void turnOffFire(CBlob@ this)
 
 void turnOnFire(CBlob@ this)
 {
-	this.SetLight(true);
 	this.set_u8("arrow type", ArrowType::fire);
 	this.Tag("fire source");
 	this.getSprite().SetAnimation("fire arrow");
@@ -157,6 +157,18 @@ void onTick(CBlob@ this)
 
 			processSticking = false;
 		}
+		
+		if (arrowType == ArrowType::bomb)
+		{
+			CSprite@ sprite = this.getSprite();
+
+			if (sprite !is null)
+			{
+				sprite.animation.time = 2;
+				sprite.animation.loop = true;
+			}
+		}
+
 
 		// ignite arrow
 		if (arrowType == ArrowType::normal && this.isInFlames())
@@ -218,24 +230,44 @@ void onTick(CBlob@ this)
 	{
 		const s32 gametime = getGameTime();
 
-		if (gametime % 6 == 0)
+		Vec2f offset = Vec2f(this.getWidth(), 0.0f);
+
+		float flame_frequency = this.getVelocity().Length() > 2.0f ? 1 : 6;
+
+		Random r(XORRandom(9999));
+
+		if (gametime % flame_frequency == 0)
 		{
 			this.getSprite().SetAnimation("fire");
 
-			Vec2f offset = Vec2f(this.getWidth(), 0.0f);
 			offset.RotateBy(-angle);
-			makeFireParticle(this.getPosition() + offset, 4);
+			offset += (Vec2f(r.NextFloat(), r.NextFloat()) - Vec2f(0.5, 0.5)) * 6.0f;
 
-			if (!this.isInWater())
+			CParticle@ fire = makeFireParticle(this.getPosition() + offset, 4);
+			if (fire is null) return;
+
+			fire.velocity = -this.getVelocity() * 0.06f - Vec2f(0.0f, 0.8f + r.NextFloat() * 0.4f);
+			fire.gravity = Vec2f(0.0f, 0.0f);
+
+			if (this.getVelocity().Length() > 2.0f)
 			{
-				this.SetLight(true);
-				this.SetLightColor(SColor(255, 250, 215, 178));
-				this.SetLightRadius(20.5f);
+				offset += (Vec2f(r.NextFloat(), r.NextFloat()) - Vec2f(0.5, 0.5)) * 6.0f;
+				CParticle@ fire2 = makeFireParticle(Vec2f_lerp(this.getOldPosition(), this.getPosition(), 0.5f) + offset, 4);
+				if (fire2 is null) return;
+
+				fire2.velocity = -Vec2f_lerp(this.getOldVelocity(), this.getOldVelocity(), 0.5f)  * 0.06f - Vec2f(0.0f, 0.8f + r.NextFloat() * 0.4f);
+				fire2.gravity = Vec2f(0.0f, 0.0f);
 			}
-			else
+
+			if (this.isInWater())
 			{
 				turnOffFire(this);
 			}
+		}
+
+		if (gametime % 1 == 0)
+		{
+			CParticle@ light = MakeBasicLightParticle(this.getPosition() + offset, Vec2f(0.0f, -0.9f), SColor(255, 100, 25, 0), 0.92f, 0.2f, 30);
 		}
 	}
 }
@@ -547,9 +579,9 @@ f32 ArrowHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlo
 
 		if (arrowType == ArrowType::fire)
 		{
-			if (hitBlob.getName() == "keg" && !hitBlob.hasTag("exploding"))
+			if (hitBlob.getName() == "keg" && !hitBlob.hasTag("exploding") && isServer())
 			{
-				hitBlob.SendCommand(hitBlob.getCommandID("activate"));
+				server_Activate(hitBlob);
 			}
 
 			if (hitShield)

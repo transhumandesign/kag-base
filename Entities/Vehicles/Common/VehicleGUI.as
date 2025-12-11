@@ -2,6 +2,9 @@
 
 void onInit(CSprite@ this)
 {
+	AddIconToken("$empty_charge_bar$", "../Mods/VehicleGUI/Entities/Vehicles/Common/ChargeBar.png", Vec2f(24, 8), 0);
+	AddIconToken("$last_charge_slider$", "../Mods/VehicleGUI/Entities/Vehicles/Common/ChargeBar.png", Vec2f(32, 10), 1);
+	AddIconToken("$red_last_charge_slider$", "../Mods/VehicleGUI/Entities/Vehicles/Common/ChargeBar.png", Vec2f(32, 10), 2);
 	this.getCurrentScript().runFlags |= Script::tick_hasattached;
 }
 
@@ -27,8 +30,7 @@ void onRender(CSprite@ this)
 	AttachmentPoint@ gunner = blob.getAttachments().getAttachmentPointByName("GUNNER");
 	if (gunner !is null	&& gunner.getOccupied() is localBlob)
 	{
-		if (!v.getCurrentAmmo().infinite_ammo)
-			drawAmmoCount(blob, v);
+		drawAmmoCount(blob, v);
 
 		if (v.getCurrentAmmo().max_charge_time > 0)
 		{
@@ -51,44 +53,40 @@ void onRender(CSprite@ this)
 void drawAmmoCount(CBlob@ blob, VehicleInfo@ v)
 {
 	// draw ammo count
-	Vec2f pos2d1 = blob.getScreenPos() - Vec2f(0, 10);
-
-	Vec2f pos2d = blob.getScreenPos() - Vec2f(0, 60);
-	Vec2f dim = Vec2f(20, 8);
+	Vec2f screenpos = blob.getScreenPos();
 	const f32 y = blob.getHeight() * 2.4f;
-	f32 charge_percent = 1.0f;
-
-	Vec2f ul = Vec2f(pos2d.x - dim.x, pos2d.y + y);
-	Vec2f lr = Vec2f(pos2d.x - dim.x + charge_percent * 2.0f * dim.x, pos2d.y + y + dim.y);
-
+	
+	GUI::SetFont("menu");
+	
+	string ammoText;
+	if (v.getCurrentAmmo().infinite_ammo)
+	{
+		ammoText = "∞";
+	}
+	else
+	{
+		ammoText = "" + v.getCurrentAmmo().ammo_stocked;
+	}
+	
+	Vec2f textDim;
+	GUI::GetTextDimensions(ammoText, textDim);
+	
+	Vec2f tl(screenpos.x - textDim.x / 2, screenpos.y - textDim.y / 2 + y);
+	Vec2f br(screenpos.x + textDim.x / 2, screenpos.y + textDim.y / 2 + y);
+	Vec2f padding(4,2);
+	
 	if (blob.isFacingLeft())
 	{
-		ul -= Vec2f(8, 0);
-		lr -= Vec2f(8, 0);
+		tl -= Vec2f(16, 0);
+		br -= Vec2f(16, 0);
 
-		f32 max_dist = ul.x - lr.x;
-		ul.x += max_dist + dim.x * 2.0f;
-		lr.x += max_dist + dim.x * 2.0f;
+		const f32 max_dist = tl.x - br.x;
+		tl.x += max_dist + textDim.x * 2.0f;
+		br.x += max_dist + textDim.x * 2.0f;
 	}
-
-	f32 dist = lr.x - ul.x;
-	Vec2f upperleft((ul.x + (dist / 2.0f)) - 5.0f + 4.0f, pos2d1.y + blob.getHeight() + 30);
-	Vec2f lowerright((ul.x + (dist / 2.0f))  + 5.0f + 4.0f, upperleft.y + 20);
-
-	//GUI::DrawRectangle(upperleft - Vec2f(0,20), lowerright , SColor(255,0,0,255));
-
-	u16 ammo = v.getCurrentAmmo().ammo_stocked;
-
-	string reqsText = "" + ammo;
-
-	u8 numDigits = reqsText.length();
-
-	upperleft -= Vec2f((float(numDigits) * 4.0f), 0);
-	lowerright += Vec2f((float(numDigits) * 4.0f), 0);
-
-	GUI::DrawRectangle(upperleft, lowerright);
-	GUI::SetFont("menu");
-	GUI::DrawText(reqsText, upperleft + Vec2f(2, 1), color_white);
+	
+	GUI::DrawRectangle(tl - padding, tl + textDim + padding * 2);
+	GUI::DrawText(ammoText, tl, br, color_white, true, true, false);
 }
 
 void drawName(CBlob@ blob, VehicleInfo@ v)
@@ -106,8 +104,7 @@ void drawChargeBar(CBlob@ blob, VehicleInfo@ v)
 	Vec2f pos2d = blob.getScreenPos() - Vec2f(0, 60);
 	Vec2f dim = Vec2f(20, 8);
 	const f32 y = blob.getHeight() * 2.4f;
-	f32 last_charge_percent = v.last_charge / float(v.getCurrentAmmo().max_charge_time);
-	f32 charge_percent = v.charge / float(v.getCurrentAmmo().max_charge_time);
+	const f32 charge_percent = v.charge / float(v.getCurrentAmmo().max_charge_time);
 
 	Vec2f ul = Vec2f(pos2d.x - dim.x, pos2d.y + y);
 	Vec2f lr = Vec2f(pos2d.x - dim.x + charge_percent * 2.0f * dim.x, pos2d.y + y + dim.y);
@@ -118,12 +115,11 @@ void drawChargeBar(CBlob@ blob, VehicleInfo@ v)
 		lr -= Vec2f(8, 0);
 	}
 
-	AddIconToken("$empty_charge_bar$", "../Mods/VehicleGUI/Entities/Vehicles/Common/ChargeBar.png", Vec2f(24, 8), 0);
 	GUI::DrawIconByName("$empty_charge_bar$", ul);
 
 	if (blob.isFacingLeft())
 	{
-		f32 max_dist = ul.x - lr.x;
+		const f32 max_dist = ul.x - lr.x;
 		ul.x += max_dist + dim.x * 2.0f;
 		lr.x += max_dist + dim.x * 2.0f;
 	}
@@ -143,8 +139,8 @@ void drawCooldownBar(CBlob@ blob, VehicleInfo@ v)
 
 		AmmoInfo@ a = v.ammo_types[v.last_fired_index];
 
-		f32 modified_last_charge_percent = Maths::Min(1.0f, float(v.last_charge) / float(a.max_charge_time));
-		f32 modified_cooldown_time_percent = modified_last_charge_percent * (v.cooldown_time / float(a.fire_delay));
+		const f32 modified_last_charge_percent = Maths::Min(1.0f, float(v.last_charge) / float(a.max_charge_time));
+		const f32 modified_cooldown_time_percent = modified_last_charge_percent * (v.cooldown_time / float(a.fire_delay));
 
 		Vec2f ul = Vec2f(pos2d.x - dim.x, pos2d.y + y);
 		Vec2f lr = Vec2f(pos2d.x - dim.x + (modified_cooldown_time_percent) * 2.0f * dim.x, pos2d.y + y + dim.y);
@@ -173,8 +169,8 @@ void drawLastFireCharge(CBlob@ blob, VehicleInfo@ v)
 
 	AmmoInfo@ a = v.ammo_types[v.last_fired_index];
 
-	f32 last_charge_percent = v.last_charge / float(a.max_charge_time);
-	f32 charge_percent = v.charge / float(a.max_charge_time);
+	const f32 last_charge_percent = v.last_charge / float(a.max_charge_time);
+	const f32 charge_percent = v.charge / float(a.max_charge_time);
 
 	Vec2f ul = Vec2f(pos2d.x - dim.x, pos2d.y + y);
 	Vec2f lr = Vec2f(pos2d.x - dim.x + last_charge_percent * 2.0f * dim.x, pos2d.y + y + dim.y);
@@ -185,9 +181,6 @@ void drawLastFireCharge(CBlob@ blob, VehicleInfo@ v)
 		lr -= Vec2f(8, 0);
 	}
 
-	AddIconToken("$last_charge_slider$", "../Mods/VehicleGUI/Entities/Vehicles/Common/ChargeBar.png", Vec2f(32, 10), 1);
-	AddIconToken("$red_last_charge_slider$", "../Mods/VehicleGUI/Entities/Vehicles/Common/ChargeBar.png", Vec2f(32, 10), 2);
-
 	if (blob.isFacingLeft())
 	{
 		f32 max_dist = ul.x - lr.x;
@@ -197,7 +190,7 @@ void drawLastFireCharge(CBlob@ blob, VehicleInfo@ v)
 
 	GUI::DrawIconByName("$last_charge_slider$", blob.isFacingLeft() ? (ul - Vec2f(0, 2)) : Vec2f(lr.x, ul.y - 2));
 
-	f32 range = (3 / float(a.max_charge_time));
+	const f32 range = (3 / float(a.max_charge_time));
 
 	if (charge_percent > last_charge_percent - range && charge_percent < last_charge_percent + range)
 		GUI::DrawIconByName("$red_last_charge_slider$", blob.isFacingLeft() ? (ul - Vec2f(0, 4)) : Vec2f(lr.x, ul.y - 4));
@@ -210,47 +203,6 @@ void drawAngleCount(CBlob@ blob, VehicleInfo@ v)
 	Vec2f lowerright(pos2d.x + 18, upperleft.y + 20);
 
 	GUI::DrawRectangle(upperleft, lowerright);
-
-	string reqsText = " " + getAngle(blob, v.charge, v);
-	GUI::DrawText(reqsText, upperleft, lowerright, color_white, true, true, false);
+	const string angleText = " " + u16(Maths::Abs(v.wep_angle));
+	GUI::DrawText(angleText, upperleft + Vec2f(2, 1), color_white);
 }
-
-//stolen from ballista.as and slightly modified
-u8 getAngle(CBlob@ this, const u8 charge, VehicleInfo@ v)
-{
-	const f32 high_angle = 20.0f;
-	const f32 low_angle = 60.0f;
-
-	f32 angle = 180.0f; //we'll know if this goes wrong :)
-	bool facing_left = this.isFacingLeft();
-	AttachmentPoint@ gunner = this.getAttachments().getAttachmentPointByName("GUNNER");
-
-	bool not_found = true;
-
-	if (gunner !is null && gunner.getOccupied() !is null)
-	{
-		Vec2f aim_vec = gunner.getPosition() - gunner.getAimPos();
-
-		if ((!facing_left && aim_vec.x < 0) ||
-		        (facing_left && aim_vec.x > 0))
-		{
-			if (aim_vec.x > 0) { aim_vec.x = -aim_vec.x; }
-
-			angle = (-(aim_vec).getAngle() + 270.0f);
-			angle = Maths::Max(high_angle , Maths::Min(angle , low_angle));
-			//printf("angle " + angle );
-			not_found = false;
-		}
-	}
-
-	if (not_found)
-	{
-		angle = Maths::Abs(Vehicle_getWeaponAngle(this, v));
-		return (angle);
-	}
-
-	return Maths::Abs(Maths::Round(angle));
-}
-
-void Vehicle_onFire(CBlob@ this, VehicleInfo@ v, CBlob@ bullet, const u8 charge) {}
-bool Vehicle_canFire(CBlob@ this, VehicleInfo@ v, bool isActionPressed, bool wasActionPressed, u8 &out chargeValue) {return false;}

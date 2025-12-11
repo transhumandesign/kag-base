@@ -5,9 +5,9 @@
 
 void onInit(CBlob@ this)
 {
-	// Activatable.as adds the following
-	// this.Tag("activatable");
-	// this.addCommandID("activate");
+	this.Tag("activatable");
+	this.addCommandID("activate");
+	this.addCommandID("activate client");
 
 	// used by RunnerMovement.as & ActivateHeldObject.as
 	this.Tag("medium weight");
@@ -15,7 +15,7 @@ void onInit(CBlob@ this)
 	AddIconToken("$chest_open$", "InteractionIcons.png", Vec2f(32, 32), 20);
 	AddIconToken("$chest_close$", "InteractionIcons.png", Vec2f(32, 32), 13);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		// todo: loot based on gamemode
 		CRules@ rules = getRules();
@@ -55,16 +55,12 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	const f32 DISTANCE_MAX = this.getRadius() + caller.getRadius() + 8.0f;
 	if (this.getDistanceTo(caller) > DISTANCE_MAX || this.isAttached()) return;
 
-	CBitStream params;
-	params.write_u16(caller.getNetworkID());
-
 	CButton@ button = caller.CreateGenericButton(
 	"$chest_open$",                             // icon token
 	Vec2f_zero,                                 // button offset
 	this,                                       // button attachment
 	this.getCommandID("activate"),              // command id
-	getTranslatedString("Open"),                                     // description
-	params);                                    // cbitstream parameters
+	getTranslatedString("Open"));               // description
 
 	button.radius = 8.0f;
 	button.enableRadius = 20.0f;
@@ -72,38 +68,44 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("activate"))
+	if (cmd == this.getCommandID("activate") && isServer())
 	{
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+					
+		CBlob@ caller = p.getBlob();
+		if (caller is null) return;
+
+		// range check
+		const f32 DISTANCE_MAX = this.getRadius() + caller.getRadius() + 8.0f;
+		if (this.getDistanceTo(caller) > DISTANCE_MAX || this.isAttached()) return;
+
 		this.AddForce(Vec2f(0, -800));
 
-		if (getNet().isServer())
+		// add guaranteed piece of loot from your class index
+		const string NAME = caller.getName();
+		if (NAME == "archer")
 		{
-			u16 id;
-			if (!params.saferead_u16(id)) return;
-
-			CBlob@ caller = getBlobByNetworkID(id);
-			if (caller is null) return;
-
-			// add guaranteed piece of loot from your class index
-			const string NAME = caller.getName();
-			if (NAME == "archer")
-			{
-				addLoot(this, INDEX_ARCHER, 1, 0);
-			}
-			else if (NAME == "builder")
-			{
-				addLoot(this, INDEX_BUILDER, 1, 0);
-			}
-			else if (NAME == "knight")
-			{
-				addLoot(this, INDEX_KNIGHT, 1, 0);
-			}
-
-			server_CreateLoot(this, this.getPosition(), caller.getTeamNum());
+			addLoot(this, INDEX_ARCHER, 1, 0);
 		}
+		else if (NAME == "builder")
+		{
+			addLoot(this, INDEX_BUILDER, 1, 0);
+		}
+		else if (NAME == "knight")
+		{
+			addLoot(this, INDEX_KNIGHT, 1, 0);
+		}
+
+		server_CreateLoot(this, this.getPosition(), caller.getTeamNum());
 
 		this.Tag("_chest_open");
 		this.Sync("_chest_open", true);
+
+		this.SendCommand(this.getCommandID("activate client"));
+	}
+	else if (cmd == this.getCommandID("activate client") && isClient())
+	{
 		CSprite@ sprite = this.getSprite();
 		if (sprite !is null)
 		{
@@ -115,7 +117,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 void onDie(CBlob@ this)
 {
-	if (getNet().isServer() && !this.exists(DROP))
+	if (isServer() && !this.exists(DROP))
 	{
 		addLoot(this, INDEX_TDM, 1, 0);
 	}

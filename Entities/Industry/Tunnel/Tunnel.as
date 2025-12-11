@@ -2,27 +2,9 @@
 
 #include "TunnelCommon.as"
 
-const bool CASUAL_MODE = false;
-
 void onInit(CBlob@ this)
 {
 	this.set_TileType("background tile", CMap::tile_castle_back);
-}
-
-// destroy tunnel after enemly uses it
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
-{
-	//only casuals want this
-	if (!CASUAL_MODE) return;
-
-	if (cmd == this.getCommandID("travel"))
-	{
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		if (caller !is null && caller.getTeamNum() != this.getTeamNum())
-		{
-			this.server_Die();
-		}
-	}
 }
 
 void onInit(CSprite@ this)

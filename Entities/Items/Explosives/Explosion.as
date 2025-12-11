@@ -20,6 +20,7 @@
 #include "Hitters.as";
 #include "ShieldCommon.as";
 #include "SplashWater.as";
+#include "ParticlesCommon.as";
 
 bool isOwnerBlob(CBlob@ this, CBlob@ that)
 {
@@ -34,6 +35,10 @@ bool isOwnerBlob(CBlob@ this, CBlob@ that)
 
 void makeSmallExplosionParticle(Vec2f pos)
 {
+#ifdef STAGING
+	MakeExplosionLightParticle(pos);
+#endif
+
 	ParticleAnimated("Entities/Effects/Sprites/SmallExplosion" + (XORRandom(3) + 1) + ".png",
 	                 pos, Vec2f(0, 0.5f), 0.0f, 1.0f,
 	                 3 + XORRandom(3),
@@ -42,6 +47,10 @@ void makeSmallExplosionParticle(Vec2f pos)
 
 void makeLargeExplosionParticle(Vec2f pos)
 {
+#ifdef STAGING
+	MakeExplosionLightParticle(pos);
+#endif
+
 	ParticleAnimated("Entities/Effects/Sprites/Explosion.png",
 	                 pos, Vec2f(0, 0.5f), 0.0f, 1.0f,
 	                 3 + XORRandom(3),
@@ -304,7 +313,10 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 {
 	if (customData == Hitters::bomb || customData == Hitters::water)
 	{
-		hitBlob.AddForce(velocity);
+		if (!hitBlob.hasTag("player"))
+		{
+			hitBlob.AddForce(velocity);
+		}
 	}
 }
 
@@ -442,7 +454,7 @@ void LinearExplosion(CBlob@ this, Vec2f _direction, f32 length, const f32 width,
 		//widthwise overlap
 		float q = Maths::Abs(v * normal) - rad - tilesize;
 
-		if (p > 0.0f && p < length && q < halfwidth)
+		if (p >= 0.0f && p < length && q < halfwidth)
 		{
 			HitBlob(this, m_pos, hit_blob, length, damage, hitter, false, should_teamkill);
 		}
@@ -568,8 +580,8 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
 	}
 
 	f32 scale;
-	Vec2f bombforce = getBombForce(this, radius, hit_blob_pos, pos, hit_blob.getMass(), scale);
-	f32 dam = damage * scale;
+	Vec2f bombforce = hit_blob.hasTag("invincible") ? Vec2f_zero : getBombForce(this, radius, hit_blob_pos, pos, hit_blob.getMass());
+	f32 dam = damage * getBombDamageScale(this, radius, hit_blob_pos, pos);
 
 	//explosion particle
 	makeSmallExplosionParticle(hit_blob_pos);
@@ -580,7 +592,8 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
 	                hitter, hitter == Hitters::water || //hit with water
 	                isOwnerBlob(this, hit_blob) ||	//allow selfkill with bombs
 	                should_teamkill || hit_blob.hasTag("dead") || //hit all corpses ("dead" tag)
-					hit_blob.hasTag("explosion always teamkill") // check for override with tag
+					hit_blob.hasTag("explosion always teamkill") || // check for override with tag
+					(this.isInInventory() && this.getInventoryBlob() is hit_blob) //is the inventory container
 	               );
 	return true;
 }

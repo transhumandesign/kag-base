@@ -99,7 +99,8 @@ shared class CTFSpawns : RespawnSystem
 			if (info.can_spawn_time > 0)
 			{
 				info.can_spawn_time--;
-				spawn_property = u8(Maths::Min(250, (info.can_spawn_time / 30)));
+				// Round time up (except for final few ticks)
+				spawn_property = u8(Maths::Min(250, ((info.can_spawn_time + getTicksASecond() - 5) / getTicksASecond())));
 			}
 
 			string propname = "ctf spawn time " + info.username;
@@ -196,7 +197,8 @@ shared class CTFSpawns : RespawnSystem
 		{
 			CBlob@ pickSpawn = getBlobByNetworkID(c_info.spawn_point);
 			if (pickSpawn !is null &&
-			        pickSpawn.hasTag("respawn") && !isUnderRaid(pickSpawn) &&
+			        pickSpawn.hasTag("respawn") &&
+			        !pickSpawn.hasTag("under raid") &&
 			        pickSpawn.getTeamNum() == p_info.team)
 			{
 				return pickSpawn.getPosition();
@@ -226,7 +228,8 @@ shared class CTFSpawns : RespawnSystem
 		{
 			CBlob@ pickSpawn = getBlobByNetworkID(c_info.spawn_point);
 			if (pickSpawn !is null &&
-			        pickSpawn.hasTag("respawn") && !isUnderRaid(pickSpawn) &&
+			        pickSpawn.hasTag("respawn") && 
+			        !pickSpawn.hasTag("under raid") &&
 			        pickSpawn.getTeamNum() == p_info.team)
 			{
 				return pickSpawn;
@@ -307,7 +310,7 @@ shared class CTFSpawns : RespawnSystem
 		}
 		else
 		{
-			error("PLAYER TEAM NOT SET CORRECTLY! " + info.team + " / " + CTF_core.teams.length);
+			error("PLAYER TEAM NOT SET CORRECTLY! " + info.team + " / " + CTF_core.teams.length + " for player " + player.getUsername());
 		}
 	}
 
@@ -741,7 +744,9 @@ void onRestart(CRules@ this)
 void onInit(CRules@ this)
 {
 	Reset(this);
-	this.set_s32("restart_rules_after_game_time", 30 * 30);
+
+	const int restart_after = (!this.hasTag("tutorial") ? 30 : 5) * 30;
+	this.set_s32("restart_rules_after_game_time", restart_after);
 }
 
 // had to add it here for tutorial cause something didnt work in the tutorial script

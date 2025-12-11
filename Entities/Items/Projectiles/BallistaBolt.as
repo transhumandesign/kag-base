@@ -28,17 +28,24 @@ void onInit(CBlob@ this)
 	// Offsets of the tiles that have been hit.
 
 	this.Tag("projectile");
-	this.getSprite().SetFrame(0);
 	this.getSprite().getConsts().accurateLighting = true;
 	this.getSprite().SetFacingLeft(!this.getSprite().isFacingLeft());
 
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
 
+	if (this.hasTag("bomb ammo"))
+	{
+		// weird ass workaround
+		this.getSprite().SetFrame(1);
+	}
+	else
+	{
+		this.getSprite().SetFrame(0);
+	}
 }
 
 void onTick(CBlob@ this)
 {
-
 	f32 angle = 0;
 
 	if (!this.get_bool("static"))

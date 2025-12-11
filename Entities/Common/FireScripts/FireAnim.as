@@ -2,6 +2,7 @@
 
 #include "FireParticle.as";
 #include "FireCommon.as";
+#include "ParticlesCommon.as"
 
 void onInit(CSprite@ this)
 {
@@ -30,7 +31,8 @@ void onInit(CSprite@ this)
 
 void onTick(CSprite@ this)
 {
-	this.getCurrentScript().tickFrequency = 24; // opt
+    Random r(XORRandom(9999));
+	this.getCurrentScript().tickFrequency = 8; // opt
 	CBlob@ blob = this.getBlob();
 	CSpriteLayer@ fire = this.getSpriteLayer("fire_animation_large");
 	if (fire !is null)
@@ -38,7 +40,7 @@ void onTick(CSprite@ this)
 		//if we're burning
 		if (blob.hasTag(burning_tag))
 		{
-			this.getCurrentScript().tickFrequency = 12;
+			this.getCurrentScript().tickFrequency = 5;
 
 			fire.SetVisible(true);
 
@@ -51,6 +53,15 @@ void onTick(CSprite@ this)
 			{
 				this.SetAnimation("on_fire");
 			}
+
+			MakeBasicLightParticle(
+				blob.getPosition(),
+				blob.getVelocity() * 0.2f + Vec2f(0.0f, -0.8f - r.NextFloat() * 0.8f),
+				SColor(255, 75, 18, 0),
+				0.94f,
+				0.3f,
+				40
+			);
 		}
 		else
 		{

@@ -17,12 +17,12 @@ void onInit(CRules@ this)
 
 void onRestart(CRules@ this)
 {
-	this.addCommandID("mechanisms_packet");
+	this.addCommandID("mechanisms_packet_client");
 }
 
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
-	if(cmd == this.getCommandID("mechanisms_packet"))
+	if(cmd == this.getCommandID("mechanisms_packet_client") && isClient())
 	{
 		packet_RecvStream(this, params);
 	}

@@ -473,7 +473,7 @@
 	"Out of stock. Come back later.":"Sin stock. Vuelva más tarde.",
 
 //HelpfulDeathTips.cfg
-	"To hide these tips, and other in-game help, hit F1.": "Para esconder estos consejos y otra ayuda sobre el juego presiona F1.",
+	"To hide in-game help and tips, hit F1.": "Para esconder estos consejos y otra ayuda sobre el juego presiona F1.",
 	"Enemies can use your tunnels so protect them well!": "Los enemigos pueden usar tus túneles así que protegelos bien.",
 	"Spikes will stun you for a short time.": "Los pinchos te dejarán aturdido un corto tiempo.",
 	"Saws will kill you instantly": "Las sierras te matan instantáneamente.",
@@ -502,7 +502,7 @@
 	"1 bomb can deal up to 3 hearts of damage.": "1 bomba puede hacer hasta 3 corazones de daño.",
 	"Drills are a fast way to dig, but only yield 50%. Don't use them on precious gold or during build time!": "Los taladros son una manera rápida de excavar pero solo te dan el 50% de los materiales. No lo uses en oro o tiempo de construcción!",
 	"Good players can play any class when needed.": "Los jugadores buenos pueden ocupar cualquier clase cuando sea necesario.",
-	"Make sure you're helping your team advance; don't just hide out in the back!": "Asegúrate de ayudar que tu equipo avance, no te quedes escondido atrás!",
+	"Make sure you're helping your team advance. Don't just hide out in the back!": "Asegúrate de ayudar que tu equipo avance, no te quedes escondido atrás!",
 	"Ride a shark on land and press up to pick him up.": "Puedes montar un tiburón en tierra y presionar arriba para recogerlo.",
 	"A red name indicates a server admin - ask them for help if you need it.": "Los administradores tienen nombres rojo, pideles ayuda si la necesitas.",
 	"A bush plus a mine equals happy fun time.": "Un arbusto y una mina es igual a un buen rato.",

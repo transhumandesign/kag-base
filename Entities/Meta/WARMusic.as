@@ -156,8 +156,7 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 	{
 		if (!wasgame)
 		{
-			//TODO: less obnoxious game start sond
-			Sound::Play("/ResearchComplete.ogg");
+			Sound::Play("/fanfare_start.ogg");
 		}
 
 		wasgame = true;
