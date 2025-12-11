@@ -85,22 +85,69 @@ class CatapultInfo : VehicleInfo
 
 		if (bullet !is null)
 		{
-			const f32 player_launch_modifier = 0.75f;
-			const f32 other_launch_modifier = 1.1f;
+			const f32 launch_modifier_player = 0.75f;
+			const f32 launch_modifier_crate_with_player = 0.925f;
+			const f32 launch_modifier_dinghy_with_player = 0.925f;
+			const f32 launch_modifier_other_ammo = 1.1f;
 
 			const f32 sign = this.isFacingLeft() ? -1.0f : 1.0f;
 			Vec2f vel = Vec2f(sign, -0.5f) * temp_charge * 0.3f;
 			vel += (Vec2f((_r.NextFloat() - 0.5f) * 128, (_r.NextFloat() - 0.5f) * 128) * 0.01f);
 			vel.RotateBy(this.getAngleDegrees());
 
-			if (bullet.hasTag("player"))
+			if (bullet.hasTag("player")) // Launching a PLAYER
 			{
 				delay *= f32(cooldown_time_player) / cooldown_time_ammo;
-				bullet.setVelocity(vel * player_launch_modifier);
+				bullet.setVelocity(vel * launch_modifier_player);
 			}
-			else
+			else if (bullet.getName() == "crate") // Launching a CRATE
 			{
-				bullet.setVelocity(vel * other_launch_modifier);
+				CInventory@ inv = this.getInventory();
+				bool player_found = false;
+
+				for (int i = 0; i < inv.getItemsCount(); i++)
+				{
+					CBlob@ item = inv.getItem(i);
+					if (item !is null && item.hasTag("player"))
+					{
+						player_found = true;
+						break;
+					}
+				}
+
+				if (player_found)
+					bullet.setVelocity(vel * launch_modifier_crate_with_player);
+				else 
+					bullet.setVelocity(vel * launch_modifier_other_ammo);
+			}
+			else if (bullet.getName() == "dinghy") // Launching a DINGHY
+			{
+				AttachmentPoint@[] aps;
+				bool player_found = false;
+
+				if (this.getAttachmentPoints(@aps))
+				{
+					for (uint i = 0; i < aps.length; i++)
+					{
+						AttachmentPoint@ ap = aps[i];
+						CBlob@ rower = ap.getOccupied();
+
+						if (rower !is null && rower.hasTag("player"))
+						{
+							player_found = true;
+							break;
+						}
+					}
+				}
+
+				if (player_found)
+					bullet.setVelocity(vel * launch_modifier_dinghy_with_player);
+				else 
+					bullet.setVelocity(vel * launch_modifier_other_ammo);
+			}
+			else // Launching other things
+			{
+				bullet.setVelocity(vel * launch_modifier_other_ammo);
 			}
 
 			if (isKnockable(bullet)) //causes an error on reload
