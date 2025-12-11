@@ -55,5 +55,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 			//this.Tag( carried.getName() + " done throw" );
 		}
+		
+		this.set_bool("release click", carried is null);
 	}
 }

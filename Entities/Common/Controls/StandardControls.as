@@ -16,7 +16,8 @@ void onInit(CBlob@ this)
 	this.addCommandID("putinheld");
 	this.addCommandID("getout");
 	this.addCommandID("detach");
-	this.addCommandID("switch");
+	this.addCommandID("client pick utility");
+	this.addCommandID("server pick utility");
 
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
@@ -45,7 +46,22 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller.isAttached()) return;
 
 		CBlob@ held = this.getCarriedBlob();
-		if (held is null) return;
+		if (held is null)
+		{
+			bool quickswitch;
+			if (!params.saferead_bool(quickswitch)) return;
+
+			ControlsCycle@ onCycle;
+			if (quickswitch && this.get("onCycle handle", @onCycle))
+			{
+				CBitStream params;
+				params.write_u16(this.getNetworkID());
+				params.ResetBitIndex();
+
+				onCycle(params);
+			}
+			return;
+		}
 
 		putInHeld(caller);
 	}
@@ -60,18 +76,24 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller.isInInventory()) return;
 		if (caller.isAttached()) return;
 
-		u16 pickedup_id;
-		if (!params.saferead_u16(pickedup_id)) return;
+		bool hasBlob;
+		if (!params.saferead_bool(hasBlob)) return;
 
-		CBlob@ pickedup = getBlobByNetworkID(pickedup_id);
-		if (pickedup is null) return;
+		if (hasBlob && this.get_bool("release click"))
+		{
+			u16 pickedup_id;
+			if (!params.saferead_u16(pickedup_id)) return;
 
-		if (!pickedup.canBePickedUp(caller)) return;
+			CBlob@ pickedup = getBlobByNetworkID(pickedup_id);
+			if (pickedup is null) return;
 
-		if (pickedup.isAttached()) return;
+			if (!pickedup.canBePickedUp(caller)) return;
 
-		pickedup.setPosition(caller.getPosition());
-		caller.server_Pickup(pickedup);
+			if (pickedup.isAttached()) return;
+
+			pickedup.setPosition(caller.getPosition());
+			caller.server_Pickup(pickedup);
+		}
 	}
 	else if (cmd == this.getCommandID("detach"))
 	{
@@ -277,23 +299,7 @@ void onTick(CBlob@ this)
 
 			if (isTap(this, minimum_ticks))     // tap - put thing in inventory
 			{
-				CBlob@ held = this.getCarriedBlob();
-
-				ControlsCycle@ onCycle;
-				if (this.get("onCycle handle", @onCycle))
-				{
-					CBitStream params;
-					params.write_u16(this.getNetworkID());
-					params.ResetBitIndex();
-
-					onCycle(params);
-				}
-
-				if (held !is null)
-				{
-					this.SendCommand(this.getCommandID("putinheld"));
-				}
-
+				client_PutInHeld(this, true);
 				this.ClearMenus();
 				return;
 			}
