@@ -59,6 +59,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (caller !is this) return;
 		if (caller.isInInventory()) return;
 		if (caller.isAttached()) return;
+		if (caller.hasAttached()) return;
 
 		u16 pickedup_id;
 		if (!params.saferead_u16(pickedup_id)) return;
