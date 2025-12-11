@@ -126,7 +126,7 @@ void onTick(CBrain@ this)
 					else
 					{
 						blob.setKeyPressed((tpos.x > pos.x) ? key_left : key_right, true);
-						blob.setKeyPressed((tpos.y > pos.y) ? key_up : key_down, true);
+						blob.setKeyPressed((tpos.y > (pos.y - blob.getRadius())) ? key_up : key_down, true);
 					}
 				}
 			}
