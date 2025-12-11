@@ -11,6 +11,7 @@
 
 #include "ClassSelectMenu.as"
 #include "KnockedCommon.as"
+#include "FireCommon.as"
 
 
 bool canChangeClass(CBlob@ this, CBlob@ blob)
@@ -159,6 +160,18 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			if (isKnockable(caller))
 			{
 				setKnocked(newBlob, getKnockedRemaining(caller));
+			}
+			
+			//copy fire
+			if (caller.hasTag(burning_tag))
+			{
+				newBlob.Tag(burning_tag);
+				newBlob.set_s16(burn_duration, caller.get_s16(burn_duration));
+				newBlob.set_s16(burn_timer, caller.get_s16(burn_timer));
+	
+				newBlob.Sync(burning_tag, true);
+				newBlob.Sync(burn_duration, true);
+				newBlob.Sync(burn_timer, true);
 			}
 
 			// plug the soul

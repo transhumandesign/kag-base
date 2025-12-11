@@ -11,14 +11,11 @@ void onInit(CBlob@ this)
 
 	if (!this.exists(burn_duration))
 		this.set_s16(burn_duration , 300);
-	if (!this.exists(burn_hitter))
-		this.set_u8(burn_hitter, Hitters::burn);
 
 	if (!this.exists(burn_timer))
 		this.set_s16(burn_timer , 0);
 
 	this.getCurrentScript().tickFrequency = fire_wait_ticks;
-	this.getCurrentScript().runFlags |= Script::tick_infire;
 }
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
@@ -40,6 +37,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 			this.getSprite().PlaySound("/ExtinguishFire.ogg");
 		}
 		server_setFireOff(this);
+		
 		this.set_netid("burn starter player", 0);
 	}
 
@@ -63,6 +61,11 @@ void onDie(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	if (!this.hasTag(burning_tag) && !this.isInFlames())
+		return;
+
+	//print("burn time: " + this.get_s16(burn_timer) + " burn_count: " + this.get_s16(burn_counter));
+
 	Vec2f pos = this.getPosition();
 	CMap@ map = this.getMap();
 	if (map is null)
@@ -110,7 +113,7 @@ void onTick(CBlob@ this)
 			if (blob is null)
 				@blob = this;
 
-			blob.server_Hit(this, pos, Vec2f(0, 0), 0.25, this.get_u8(burn_hitter), true);
+			blob.server_Hit(this, pos, Vec2f(0, 0), 0.25, Hitters::fire, true);
 		}
 
 		//burninating the burning time
