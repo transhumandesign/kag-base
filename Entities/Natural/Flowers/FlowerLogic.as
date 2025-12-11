@@ -23,6 +23,19 @@ void onTick(CBlob@ this)
 	if (grown)
 	{
 		this.AddScript("Eatable.as");
-		this.getCurrentScript().runFlags |= Script::remove_after_this;
+		this.getCurrentScript().tickFrequency = 0;
+	}
+}
+
+void onDie(CBlob@ this)
+{
+	bool grown = this.hasTag(grown_tag);
+	if (grown)
+	{
+		CSprite@ s = this.getSprite();
+		if (s !is null)
+		{
+			s.Gib();
+		}
 	}
 }
