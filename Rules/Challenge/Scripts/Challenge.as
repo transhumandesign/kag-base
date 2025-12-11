@@ -1021,7 +1021,6 @@ void onBlobCreated(CRules@ this, CBlob@ blob)
 		blob.RemoveScript("DecayInWater.as");
 		blob.RemoveScript("DecayIfLowHealth.as");
 		blob.RemoveScript("DecayIfFlipped.as");
-		blob.RemoveScript("DecayIfLeftAlone.as");
 	}
 
 	if (blob.hasTag("material"))
