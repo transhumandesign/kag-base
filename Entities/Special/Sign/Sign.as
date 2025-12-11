@@ -1,5 +1,8 @@
 // Sign logic
 
+#include "Hitters.as";
+#include "NoSwearsCommon.as";
+
 namespace Sign
 {
 	enum State
@@ -8,6 +11,8 @@ namespace Sign
 		written
 	}
 }
+
+bool swearsReadIntoArray = false;
 
 void onInit(CBlob@ this)
 {
@@ -23,6 +28,15 @@ void onInit(CBlob@ this)
 
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getSprite().SetZ(-10.0f);
+	
+	// swears-related
+	if (!swearsReadIntoArray)
+		swearsReadIntoArray = InitSwearsArray();
+}
+
+f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
+{
+	return customData == Hitters::builder ? this.getInitialHealth() / 2 : damage;
 }
 
 void onRender(CSprite@ this)
@@ -41,13 +55,18 @@ void onRender(CSprite@ this)
 	    ((localBlob.getPosition() - blob.getPosition()).Length() < 0.5f * (localBlob.getRadius() + blob.getRadius())) &&
 	    (!getHUD().hasButtons()))
 	{
-		// draw drop time progress bar
+		// positioning of text
 		int top = pos2d.y - 2.5f * blob.getHeight() + 000.0f;
 		int left = 200.0f;
 		int margin = 4;
 		Vec2f dim;
-		string label = getTranslatedString(blob.get_string("text"));
-		label += "\n";
+		string label = getTranslatedString(blob.get_string("text")).replace("\\n", "\n");;
+		
+		// censoring swears if necessary
+		string textOut;
+		processSwears(label, textOut);
+
+		label = textOut + "\n";
 		GUI::SetFont("menu");
 		GUI::GetTextDimensions(label , dim);
 		dim.x = Maths::Min(dim.x, 200.0f);

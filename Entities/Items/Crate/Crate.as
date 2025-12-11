@@ -8,6 +8,7 @@
 #include "Hitters.as"
 #include "GenericButtonCommon.as"
 #include "KnockedCommon.as"
+#include "NoSwearsCommon.as"
 #include "ActivationThrowCommon.as"
 
 // crate tags and their uses
@@ -24,6 +25,8 @@ const f32 ally_allowed_distance = 2.0f;
 
 //time it takes to unpack the crate
 const u32 unpackSecs = 3;
+
+bool swearsReadIntoArray = false;
 
 Crate@[] base_presets = 
 {
@@ -102,7 +105,10 @@ void onInit(CBlob@ this)
 	{
 		const string name = getTranslatedString(this.get_string("packed name"));
 		if (name.length > 1)
-			this.setInventoryName("Crate with " + name);
+		{
+			this.set_bool("no swears allowed", g_noswears);
+			changeInventoryName(this);
+		}
 	}
 
 	if (!this.exists("required space"))
@@ -116,6 +122,10 @@ void onInit(CBlob@ this)
 	}
 
 	this.getSprite().SetZ(-10.0f);
+	
+	// swears-related
+	if (!swearsReadIntoArray)
+		swearsReadIntoArray = InitSwearsArray();
 }
 
 bool UseCratePreset(CBlob@ this, const string &in packed, Crate@[] presets)
@@ -161,7 +171,17 @@ void onTick(CBlob@ this)
 	else
 	{
 		if (hasSomethingPacked(this))
+		{
 			this.getCurrentScript().tickFrequency = 15;
+		
+			bool no_swears_allowed = this.get_bool("no swears allowed");
+			
+			if (g_noswears != no_swears_allowed) // we need to update the inventory name
+			{
+				changeInventoryName(this);
+				this.set_bool("no swears allowed", g_noswears);
+			}
+		}
 		else
 		{
 			this.getCurrentScript().tickFrequency = 0;
@@ -298,41 +318,48 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	{
 		caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), getTranslatedString("Unpack all"));
 	}
-	else if (hasSomethingPacked(this) && !canUnpackHere(this))
+	else 
 	{
-		const string msg = getTranslatedString("Can't unpack {ITEM} here").replace("{ITEM}", getTranslatedString(this.get_string("packed name")));
-		CButton@ button = caller.CreateGenericButton(12, buttonpos, this, 0, msg);
-		if (button !is null)
+		// censoring swears if necessary
+		string packed_name;
+		processSwears(this.get_string("packed name"), packed_name);
+
+		if (hasSomethingPacked(this) && !canUnpackHere(this))
 		{
-			button.SetEnabled(false);
+			const string msg = getTranslatedString("Can't unpack {ITEM} here").replace("{ITEM}", getTranslatedString(packed_name));
+			CButton@ button = caller.CreateGenericButton(12, buttonpos, this, 0, msg);
+			if (button !is null)
+			{
+				button.SetEnabled(false);
+			}
 		}
-	}
-	else if (isUnpacking(this))
-	{		
-		string text = getTranslatedString("Stop {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name")));
-		CButton@ button = caller.CreateGenericButton("$DISABLED$", buttonpos, this, this.getCommandID("stop unpack"), text);
-		
-		button.enableRadius = 20.0f;
-	}
-	else if (hasSomethingPacked(this))
-	{
-		string text = getTranslatedString("Unpack {ITEM}").replace("{ITEM}", getTranslatedString(this.get_string("packed name")));
-		CButton@ button = caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), text);
-		
-		button.enableRadius = 20.0f;
-	}
-	else if (carried is this)
-	{
-		caller.CreateGenericButton(4, buttonpos, this, this.getCommandID("getin"), getTranslatedString("Get inside"));
-	}
-	else if (this.getTeamNum() != caller.getTeamNum() && !this.isOverlapping(caller))
-	{
-		// We need a fake crate inventory button to hint to players that they need to get closer
-		// And also so they're unable to discern which crates have hidden players
-		if (carried is null || (putting && !canput))
+		else if (isUnpacking(this))
+		{		
+			string text = getTranslatedString("Stop {ITEM}").replace("{ITEM}", getTranslatedString(packed_name));
+			CButton@ button = caller.CreateGenericButton("$DISABLED$", buttonpos, this, this.getCommandID("stop unpack"), text);
+			
+			button.enableRadius = 20.0f;
+		}
+		else if (hasSomethingPacked(this))
 		{
+			string text = getTranslatedString("Unpack {ITEM}").replace("{ITEM}", getTranslatedString(packed_name));
+			CButton@ button = caller.CreateGenericButton(12, buttonpos, this, this.getCommandID("unpack"), text);
+
+			button.enableRadius = 20.0f;
+		}
+		else if (carried is this)
+		{
+		  caller.CreateGenericButton(4, buttonpos, this, this.getCommandID("getin"), getTranslatedString("Get inside"));
+		}
+		else if (this.getTeamNum() != caller.getTeamNum() && !this.isOverlapping(caller))
+		{
+		  // We need a fake crate inventory button to hint to players that they need to get closer
+		  // And also so they're unable to discern which crates have hidden players
+		  if (carried is null || (putting && !canput))
+		  {
 			CButton@ button = caller.CreateGenericButton(13, buttonpos, this, this.getCommandID("getout"), getTranslatedString("Crate"));
 			button.SetEnabled(false); // they shouldn't be able to actually press it tho
+		  }
 		}
 	}
 }
@@ -989,4 +1016,12 @@ bool hasNoBuildBlobs(Vec2f pos)
 	}
 
 	return false;
+}
+
+void changeInventoryName(CBlob@ this)
+{
+	string invName;
+	processSwears(this.get_string("packed name"), invName);
+	
+	this.setInventoryName("Crate with " + invName);
 }
