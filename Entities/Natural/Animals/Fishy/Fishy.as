@@ -78,6 +78,9 @@ void onInit(CBlob@ this)
 		this.set_u8("age", 0);
 
 	this.Tag("pushedByDoor");
+
+	this.set_string("cooked name", "Cooked Fish");
+	this.set_u8("cooked sprite index", 1);
 }
 
 void onTick(CBlob@ this)
