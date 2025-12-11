@@ -28,6 +28,9 @@ void onTick(CSprite@ this)
 
 	if (blob.hasTag("dead")) //check dead
 	{
+		if (!this.isAnimation("dead"))
+			this.PlaySound("/MigrantScream1");
+
 		Vec2f vel = blob.getVelocity();
 		this.SetAnimation("dead");
 		this.SetOffset(Vec2f(0,1));
