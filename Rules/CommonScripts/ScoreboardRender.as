@@ -709,7 +709,7 @@ void onRenderScoreboard(CRules@ this)
 	float screenHeight = getScreenHeight();
 	CControls@ controls = getControls();
 
-	if(scoreboardHeight > screenHeight) {
+	if(scoreboardHeight > screenHeight || scrollOffset > 0) {
 		Vec2f mousePos = controls.getMouseScreenPos();
 
 		float fullOffset = (scoreboardHeight + scoreboardMargin) - screenHeight;
