@@ -14,9 +14,6 @@ class PushButton : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -26,8 +23,8 @@ void onInit(CBlob@ this)
 	// background, let water overlap
 	this.getShape().getConsts().waterPasses = true;
 
-	this.addCommandID("activate");
-	this.addCommandID("activate client");
+	this.addCommandID("server_activate");
+	this.addCommandID("client_activate");
 
 	AddIconToken("$pushbutton_1$", "PushButton.png", Vec2f(16, 16), 2);
 
@@ -38,9 +35,9 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic || this.exists("component")) return;
 
-	const Vec2f position = this.getPosition() / 8;
+	const Vec2f POSITION = this.getPosition() / 8;
 
-	PushButton component(position);
+	PushButton component(POSITION);
 	this.set("component", component);
 
 	this.set_u8("state", 0);
@@ -61,8 +58,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if (sprite is null) return;
-
 	sprite.SetFacingLeft(false);
 	sprite.SetZ(-50);
 }
@@ -73,13 +68,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	if (!this.isOverlapping(caller) || !this.getShape().isStatic() || this.get_u8("state") != 0) return;
 
-	CButton@ button = caller.CreateGenericButton(
-	"$pushbutton_1$",                           // icon token
-	Vec2f_zero,                                 // button offset
-	this,                                       // button attachment
-	this.getCommandID("activate"),              // command id
-	getTranslatedString("Activate"));           // description
-
+	CButton@ button = caller.CreateGenericButton("$pushbutton_1$", Vec2f_zero, this, this.getCommandID("server_activate"), getTranslatedString("Activate"));
 	button.radius = 8.0f;
 	button.enableRadius = 20.0f;
 }
@@ -108,12 +97,12 @@ void onTick(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("activate") && isServer())
+	if (cmd == this.getCommandID("server_activate") && isServer())
 	{
-		CPlayer@ p = getNet().getActiveCommandPlayer();
-		if (p is null) return;
-					
-		CBlob@ caller = p.getBlob();
+		CPlayer@ player = getNet().getActiveCommandPlayer();
+		if (player is null) return;
+
+		CBlob@ caller = player.getBlob();
 		if (caller is null) return;
 
 		// range check
@@ -142,21 +131,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		component.y,                        // y
 		INFO_SOURCE | INFO_ACTIVE);         // information
 
-		this.SendCommand(this.getCommandID("activate client"));
-
+		this.SendCommand(this.getCommandID("client_activate"));
 	}
-	else if (cmd == this.getCommandID("activate client") && isClient())
+	else if (cmd == this.getCommandID("client_activate") && isClient())
 	{
 		CSprite@ sprite = this.getSprite();
-		if (sprite is null) return;
-
 		sprite.SetAnimation("default");
 		sprite.SetAnimation("activate");
 		sprite.PlaySound("PushButton.ogg");
 	}
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

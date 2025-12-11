@@ -33,9 +33,6 @@ const string EMITTER = "emitter";
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("ignore sword");
 
@@ -56,7 +53,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Emitter component(POSITION, this.getNetworkID());
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -79,18 +76,16 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 			CBlob@ blob = getBlobByNetworkID(grid.getID(TARGET.x, TARGET.y));
 			if (blob is null || blob.getName() != "receiver" || !blob.getShape().isStatic()) continue;
 
-			u16 difference = Maths::Abs(ANGLE - blob.getAngleDegrees());
+			const u16 difference = Maths::Abs(ANGLE - blob.getAngleDegrees());
 			if (difference != 180) continue;
 
 			blob.push(EMITTER, component.m_id);
 		}
 	}
 
+	const bool facing = ANGLE >= 180;
+
 	CSprite@ sprite = this.getSprite();
-	if (sprite is null) return;
-
-	const bool facing = ANGLE < 180? false : true;
-
 	sprite.SetZ(-60);
 	sprite.SetFacingLeft(facing);
 
@@ -110,30 +105,28 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 /*
 void onDie(CBlob@ this)
 {
-	if (!getNet().isClient() || !this.exists("component")) return;
+	if (!isClient() || !this.exists("component")) return;
 
 	const string image = this.getSprite().getFilename();
 	const Vec2f position = this.getPosition();
 	const u8 team = this.getTeamNum();
 
-	for(u8 i = 0; i < 3; i++)
+	for (u8 i = 0; i < 3; i++)
 	{
-		makeGibParticle(
-		image,                              // file name
-		position,                           // position
-		getRandomVelocity(90, 2, 360),      // velocity
-		i,                                  // column
-		2,                                  // row
-		Vec2f(8, 8),                        // frame size
-		1.0f,                               // scale?
-		0,                                  // ?
-		"",                                 // sound
-		team);                              // team number
+		makeGibParticle(image, position, getRandomVelocity(90, 2, 360), i, 2, Vec2f(8, 8), 1.0f, 0, "", team);
 	}
 }
 */
 
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+void onSendCreateData(CBlob@ this, CBitStream@ stream)
 {
-	return false;
+	stream.write_u8(this.getSprite().getFrameIndex());
+}
+
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	u8 frame;
+	if (!stream.saferead_u8(frame)) return false;
+	this.getSprite().SetFrameIndex(frame);
+	return true;
 }

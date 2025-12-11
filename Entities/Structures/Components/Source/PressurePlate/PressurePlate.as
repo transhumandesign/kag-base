@@ -13,14 +13,11 @@ class Plate : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("blocks sword");
 
 	// used by TileBackground.as
-	this.set_TileType("background tile", CMap::tile_wood_back);
+	this.set_TileType("background tile", CMap::tile_castle_back);
 
 	this.addCommandID("activate client");
 	this.addCommandID("deactivate client");
@@ -30,9 +27,9 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic || this.exists("component")) return;
 
-	const Vec2f position = this.getPosition() / 8;
+	const Vec2f POSITION = this.getPosition() / 8;
 
-	Plate component(position);
+	Plate component(POSITION);
 	this.set("component", component);
 
 	this.set_u8("state", 0);
@@ -97,16 +94,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	if (cmd == this.getCommandID("activate client") && isClient())
 	{
 		CSprite@ sprite = this.getSprite();
-		if (sprite is null) return;
-
 		sprite.SetFrameIndex(1);
 		sprite.PlaySound("LeverToggle.ogg");
 	}
 	else if (cmd == this.getCommandID("deactivate client") && isClient())
 	{
 		CSprite@ sprite = this.getSprite();
-		if (sprite is null) return;
-
 		sprite.SetFrameIndex(0);
 		sprite.PlaySound("LeverToggle.ogg");
 	}
@@ -153,11 +146,6 @@ void Deactivate(CBlob@ this)
 	INFO_SOURCE);                       // information
 
 	this.SendCommand(this.getCommandID("deactivate client"));
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }
 
 bool canActivatePlate(CBlob@ blob)

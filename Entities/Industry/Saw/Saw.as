@@ -87,7 +87,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		CBitStream params;
 		this.SendCommand(this.getCommandID(toggle_id_client), params);
 	}
-	else if (cmd == this.getCommandID(toggle_id_client) && isClient())
+	else if (cmd == this.getCommandID(toggle_id_client) && isClient() && !isServer())
 	{
 		SetSawOn(this, !getSawOn(this));
 		UpdateSprite(this);

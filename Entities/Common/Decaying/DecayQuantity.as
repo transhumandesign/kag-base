@@ -27,6 +27,7 @@ void onTick(CBlob@ this)
 
 	if (step >= quantity)
 	{
+		this.Tag("AdminAlertIgnore");
 		this.server_Die();
 		return;
 	}

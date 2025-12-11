@@ -1171,7 +1171,38 @@
 				<attributes>
 					<int name="Id" value="10020" />
 					<string name="Caption" value="&quot;warmup&quot;" />
-					<rect name="Rect" value="169, 160, 319, 190" />
+					<rect name="Rect" value="169, 140, 319, 177" />
+					<position name="MinSize" value="1, 1" />
+					<position name="MaxSize" value="0, 0" />
+					<enum name="LeftAlign" value="lowerRight" />
+					<enum name="RightAlign" value="lowerRight" />
+					<enum name="TopAlign" value="lowerRight" />
+					<enum name="BottomAlign" value="lowerRight" />
+					<bool name="Visible" value="true" />
+					<bool name="Enabled" value="true" />
+					<bool name="TabStop" value="false" />
+					<bool name="TabGroup" value="false" />
+					<int name="TabOrder" value="-1" />
+					<bool name="NoClip" value="false" />
+					<bool name="Border" value="false" />
+					<bool name="OverrideColorEnabled" value="false" />
+					<bool name="OverrideBGColorEnabled" value="false" />
+					<bool name="WordWrap" value="true" />
+					<bool name="Background" value="false" />
+					<color name="OverrideColor" value="65ffffff" />
+					<color name="BGColor" value="fad2d2d2" />
+					<enum name="HTextAlign" value="lowerRight" />
+					<enum name="VTextAlign" value="lowerRight" />
+				</attributes>
+
+			</element>
+
+			<element type="staticText">
+
+				<attributes>
+					<int name="Id" value="10041" />
+					<string name="Caption" value="&quot;current players&quot;" />
+					<rect name="Rect" value="10, 350, 320, 450" />
 					<position name="MinSize" value="1, 1" />
 					<position name="MaxSize" value="0, 0" />
 					<enum name="LeftAlign" value="upperLeft" />
@@ -1190,7 +1221,7 @@
 					<bool name="WordWrap" value="true" />
 					<bool name="Background" value="false" />
 					<color name="OverrideColor" value="65ffffff" />
-					<color name="BGColor" value="fad2d2d2" />
+					<color name="BGColor" value="ffd2d2d2" />
 					<enum name="HTextAlign" value="upperLeft" />
 					<enum name="VTextAlign" value="upperLeft" />
 				</attributes>

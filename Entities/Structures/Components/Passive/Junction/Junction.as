@@ -31,9 +31,6 @@ class Junction : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place norotate");
 
@@ -51,12 +48,12 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic || this.exists("component")) return;
 
-	const Vec2f position = this.getPosition() / 8;
+	const Vec2f POSITION = this.getPosition() / 8;
 
-	Junction component(position, this.getNetworkID());
+	Junction component(POSITION, this.getNetworkID());
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -72,8 +69,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if (sprite is null) return;
-
 	sprite.SetZ(-60);
 	sprite.SetFacingLeft(false);
 
@@ -84,7 +79,15 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	layer.SetFacingLeft(false);
 }
 
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
+void onSendCreateData(CBlob@ this, CBitStream@ stream)
 {
-	return false;
+	stream.write_u8(this.getSprite().getFrameIndex());
+}
+
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	u8 frame;
+	if (!stream.saferead_u8(frame)) return false;
+	this.getSprite().SetFrameIndex(frame);
+	return true;
 }

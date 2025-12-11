@@ -20,6 +20,7 @@
 	"h ": "ч ",
 	"m ": "м ",
 	"s ": "с ",
+	"Map name : ": "Имя карты : ",
 
 //ScoreboardRender.as
 	"Players: {PLAYERCOUNT}":"Игроков: {PLAYERCOUNT}",
@@ -35,6 +36,7 @@
 	"KDR"                   :"У/С",
 	"Spectators:"           :"Зрители",
 	"and more ..."          :"и другие...",
+	"Username copied: {NAME}":"Скопировано имя: {NAME}",
 
 //TeamMenu.as
 	"Spectator":"Зритель",
@@ -51,6 +53,11 @@
 //BuilderInventory.as
 	"Stop building\n": "Прекратить строительство\n",
 	"Requires\n": "Требуется\n",
+	"Type":"Тип",
+	"Building":"Постройки",
+	"Component":"Компоненты",
+	"Source":"Источники",
+	"Device":"Устройства",
 
 //CommonBuilderBlocks.as
 	"Stone Block\nBasic building block"                     :"Каменный блок\nОсновной строительный блок",
@@ -65,8 +72,8 @@
 	"Wooden Platform\nOne way platform"                     :"Деревянная платформа\nОдносторонняя платформа",
 	"Spikes\nPlace on Stone Block\nfor Retracting Trap"     :"Шипы\nСтавьте на каменные блоки\nТак они будут выдвигаться\nпри контакте с врагом",
 	"Workshop\nStand in an open space\nand tap this button.":"Мастерская\nВстаньте в незанятое пространство\nи нажмите на эту кнопку",
-	"Workshop"                                              :"Мастерская",
-	"Workbench"                                             :"Верстак",
+        "Factory\nAn item-producing factory\nRequires migrant"  :"Завод\nЗавод по производству предметов\n Требует работника",
+	"Workbench\nCreate trampolines, saws, and more"         :"Верстак\nСоздавайте батуты, пилы и другое",
 	"Wire"          :"Провод",
 	"Elbow"         :"Угловой провод",
 	"Tee"           :"T-образный провод",
@@ -117,6 +124,9 @@
 	"Travel left":"Переместиться влево",
 	"You are here":"Вы находитесь здесь",
 
+//ResearchCommon.as
+	"{NAME} available.":"{NAME} доступно.",
+
 //ResearchGUI.as
 	"Click the items you vote to research!"                           :"Нажимайте на предметы, за исследование которых вы хотите отдать голос!",
 	"Yellow paths show what will be researched when the match starts.":"Жёлтые линии указывают на то, что будет изучено в начале матча.",
@@ -124,6 +134,9 @@
 	"(available)"                                                     :"(изучено)",
 	"(researching - {TIME}s)"                                         :"(Изучается - {TIME} сек.)",
 	"(click to vote)"                                                 :"(нажмите, чтобы отдать голос)",
+
+//Researching.as
+	"Use scroll":"Использовать свиток",
 
 //Sign.as
 	"The big brown fox jumped over the shaggy chocolate.": "Южно-эфиопский грач увёл мышь за хобот на съезд ящериц.",
@@ -133,6 +146,9 @@
 
 //ShowTipOnDeath.as
 	"Tip: {TIP}": "Совет: {TIP}",
+
+//DrawHoverMessages
+	"Coins": "Монеты",
 
 //// SOLO GAME MODES ////
 //Tutorial01.as
@@ -224,14 +240,19 @@
 	"Если вы захватили более двух баз, то вы можете быстро перемещаться между ними.\n\nЗажмите $KEY_E$ и\n\nнажмите на синюю кнопку перемещения.",
 	"Those are the basics you need to know about Take the Halls. The rest can be learned when playing online by observation. This game mode is simple but complexity comes from great strategy. See you on the battlefield!\n\nPress $KEY_ESC$ to get out.":
 	"Это основы, которые вам нужно знать о режиме захвата баз. Всё остальное можно узнать во время игры онлайн. Этот режим прост, но сложность заключается в хорошей стратегии. Увидимся на поле битвы!\n\nНажмите $KEY_ESC$, чтобы выйти.",
-//Challenge_PrincessStart
+//Challenge_PrincessStart.as
 	"   High atop a craggy cliff, guarded by an army of fierce warriors, stands the fortress of the evil warlord Sedgewick. Deep in the darkest dungeon of the castle, Sedgwick gloats over his lovely captive, the princess Geti.\n\n   You are a King's Knight. Alone, with only your sword and shield, you must defeat Sedgwick and rescue the beautiful Geti.\n\n   Put fear and self-concern behind you. Focus your will on your objective, accept death as a possibility, and stay strong. This is the way of the Knight.":
 	"   Высоко на вершине скалистого утёса, охраняемого армией свирепых воинов, стоит крепость великого тёмного лорда Сэджвика. Глубоко в тёмном подземелье замка Сэджвик заточил своего прекрасного пленника, принцессу Гети.\n\n   Вы королевский рыцарь. Один, только со своими мечом и щитом, вы должны одолеть Сэджвика и освободить прекрасную Гети.\n\n   Оставь все свои страхи позади. Собери всю свою волю в кулак, прими смерть как один из исходов, оставайся сильным. Так поступают настоящие рыцари.",
+//Challenge_PrincessEnd.as
 	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti safe in your arms. For the first time in memory, the country basks in the sunlight of peace. But beware: for the King's warrior there is always a next time. . . .":
 	"   На этом ваше приключение заканчивается. Ужасный Сэджвик был повержен, прекрасная Гети в ваших руках. Впервые на вашей памяти страна купается в мирных лучах солнца. Но будьте осторожны: для рыцаря короля всегда наступает следующий раз. . . .",
 	"   And so this adventure ends. The evil Sedgwick lies vanquished, the beautiful Geti dead at your feet. For the first time in memory, the country basks in the sunlight of peace, but mourns the death of their beloved princess. . . .":
 	"   На этом ваше приключение заканчивается. Ужасный Сэджвик был повержен, бездыханная прекрасная Гети лежит у ваших ног. Впервые на вашей памяти страна купается в мирных лучах солнца, но скорбит о смерти своей любимой принцессы. . . .",
-
+//Ending dialog
+//Get garbled characters, fix it plz
+	//"The End.":"Конец.",
+	//"For more adventures there is an entire multiplayer world ready to explore. If you've purchased the game just launch the servers browser in Multiplayer":
+	//"Если вы хотите больше приключений, здесь есть готовый к исследованиям мир мультиплеера. Если вы купили игру, просто откройте список серверов в пункте Мультиплеер",
 //Sandbox.as
 	"Welcome to King Arthur's Gold":"Добро пожаловать в King Arthur's Gold",
 	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"Это режим песочницы.\nЗдесь вы можете расслабиться и насладиться игрой.\n\nНажмите [ESC], чтобы посмотреть управление.\nНаслаждайтесь!",
@@ -252,6 +273,12 @@
 	" seconds"                                     :"сек.",
 	" second"                                      :"сек.",
 
+//ActorHUDStartPos.as
+	"Go to a builder shop or a respawn point to get a resupply of {WOOD} wood and {STONE} stone.":"Идите к магазину строителя или точке респауна для получения дополнительных {WOOD} единиц дерева и {STONE} единиц камня.",
+	"Next resupply of {WOOD} wood and {STONE} stone in {SEC}{TIMESUFFIX}.":"Дополнительные {WOOD} единиц дерева и {STONE} единиц камня вы получите через {SEC}{TIMESUFFIX}",
+	//" seconds"                                     :"секунд",
+	//" second"                                      :"секунду",
+
 //// RESPAWNING ////
 //CTF_Interface.as
 //WAR_Interface.as
@@ -264,6 +291,14 @@
 	"Spawn at {ITEM}"      :"Возродиться на {ITEM}",
 	"respawn is contested" :"точка возрождения занята",
 	"No spawns available!" :"Нет доступной точки возрождения!",
+
+//CTF_Banners.as
+	"Increased build speed and resupplies":"Увеличена скорость строителя и количество доп. материалов",
+	"Build defenses!":"Постройте оборону!",
+	"Capture the flag!":"Захватите флаг!",
+	"{TEAM} team wins":"{TEAM} команда выигрывает!",
+	"Blue":"Синяя",
+	"RED":"Красная",
 
 //WAR_Interface.as
 	"DEFEND THE HALL!"                           :"ЗАЩИЩАЙТЕ БАЗУ!",
@@ -278,18 +313,34 @@
 //Descriptions.as
 	"Bombs for Knight only.":
 	"Бомбы для рыцаря.",
-	"Arrows for Archer and mounted bow.":
-	"Стрелы для лучника и стационарного арбалета.",
+	"Water bomb for Knight. Can extinguish fires and stun enemies.":
+	"Водная бомба для рыцаря. Может тушить огонь и оглушать противников.",
+	"An explosive mine. Triggered by contact with an enemy.":
+	"Мина. Взрывается при контакте с противником.",
 	"Highly explosive powder keg for Knight only.":
 	"Огромная пороховая бочка для рыцаря.",
+	"Fire satchel for Knight only.":
+	"Огненный взрывпакет для рыцаря",
+	"Arrows for Archer and mounted bow.":
+	"Стрелы для лучника и стационарного арбалета.",
+	"Water arrows for Archer. Can extinguish fires and stun enemies.":
+	"Водные стрелы для лучника.Могут тушить огонь и оглушать противников.",
+	"Fire arrows used to set wooden structures on fire.":
+	"Огненные стрелы, используются для поджигания деревянных построек.",
+	"Bomb arrows for Archer.":
+	"Стрелы с бомбой для лучника.",
 	"A stone throwing, ridable siege engine, requiring a crew of two.":
 	"Осадное орудие, используемое для метания камней.",
-	"A bolt-firing pinpoint accurate siege engine, requiring a crew of two. Allows respawn and class change.":
+	"A bolt-firing pinpoint accurate siege engine, requiring a crew of two.":
 	"Высокоточное осадное орудие, стреляющее болтами. Для управления и стрельбы требуются 2 человека. Позволяет менять класс и возрождаться около себя.",
 	"Piercing bolts for ballista.":
 	"Болты для баллисты.",
+	"Explosive bolts for ballista.":
+	"Взрывные болты для баллисты.",
 	"For Ballista\nTurns its piercing bolts into a shaped explosive charge.":
 	"Для баллисты.\nУлучшает обычные болты до взрывающихся.",
+	"A deployable respawn point that allows class change. Has a storage and a tunnel that allows fast travel.":
+	"Развёртываемый аванпост, который позволяет сменить класс. В наличии склад и туннель для быстрых перемещений.",
 	"A small boat with two rowing positions and a large space for cargo.":
 	"Маленькая гребная лодка, вмещающая в себя двух человек. Много места для груза.",
 	"A fast rowing boat used for quickly getting across water.":
@@ -307,15 +358,14 @@
 	"Циркулярная пила. Распиливает брёвна, превращая их в материал для строительства.",
 	//"A trading post. Requires a trader to reside inside.":"Торговый пост. Для работы требуется продавец.",
 	//"Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies."
+	"For healing. Don't think about this too much.":
+	"Для лечения. Не думай об этом так много.",
 	"A simple wooden ladder for climbing over defenses.":
 	"Простая деревянная лестница. С помощью неё можно перебираться через вражеские сооружения.",
 	"A stone boulder useful for crushing enemies.":
 	"Валун, которым можно раздавить врага.",
 	"An empty wooden crate for storing and transporting inventory.":
 	"Пустой деревянный ящик, в котором можно хранить и перемещать вещи.",
-	"An explosive mine. Triggered by contact with an enemy.":
-	"Мина. Взрывается при контакте с врагом.",
-	//"Fire satchel for Knight only.":"Подрывмешок только для Рыцаря.",
 	"A health regenerating heart.":
 	"Восстанавливающее здоровье сердце.",
 	//"A sack for storing more inventory on your back.":"",
@@ -345,10 +395,13 @@
 	"Уже заполненное водой деревянное ведро для тушения пожаров.",
 	"A generic factory. Requires Research Room, technology upgrade and big enough population to produce items.":
 	"Фабрика. Для создания предметов требуются комната для исследований, соответствующая технология и достаточная популяция.",
-	//"Kitchen produces food which heal wounds.":"Кухня производит продукты питания, которые лечат раны.",
+	//"Kitchen produces food which heal wounds.":
+	//"Кухня производит продукты питания, которые лечат раны.",
 	//"A plant nursery with grain, oak and pine tree seeds.":"",
-	//"Barracks allow changing class to Archer or Knight.":"Барраки позволяют изменить класс на лучника или рыцаря.",
-	//"A storage than can hold materials and items and share them with other storages.":"Хранилище,которое может хранить материалы и предметы, а также делить их с другими хранилищами.",
+	//"Barracks allow changing class to Archer or Knight.":
+	//"Барраки позволяют изменить класс на лучника или рыцаря.",
+	//"A storage than can hold materials and items and share them with other storages.":
+	//"Хранилище,которое может хранить материалы и предметы, а также делить их с другими хранилищами.",
 	"A mining drill. Increases speed of digging and gathering resources, but gains only half the possible resources.":
 	"Шахтёрский бур. Быстрее копает, но выдаёт только половину ресурсов.",
 	"Bombs for Knights & arrows for Archers.\nAutomatically distributed on respawn.":
@@ -397,8 +450,8 @@
 	"Этот магический свиток превращает всех видимых врагов в кучу ошмётков.",
 	"This magic scroll will evaporate all water in a large surrounding orb.":
 	"Этот магический свиток превращает весь камень в радиусе в золото.",
-	//"Fire satchel for Knight only.":"Подрывмешок для Рыцаря.",
-
+	"Exchange 100 Gold for 500 Wood":"Обменяйте 100 золота на 500 единиц дерева",//from WAR.as
+	"Exchange 200 Gold for 500 Stone":"Обменяйте 200 золота на 500 единиц камня",//from WAR.as
 
 //// HELPS ////
 //DrawHelp.as
@@ -438,10 +491,12 @@
 
 //Factory.as
 	"$workshop$Convert workshop    $KEY_E$": "$workshop$Преобразовать мастерскую $KEY_E$",
+	"$workshop$Convert factory    $KEY_E$": "$workshop$Преобразовать фабрику $KEY_E$",
 	"Check production    $KEY_E$": "Проверить продукцию $KEY_E$",
 	"Requires a free worker from Hall":"Нужен свободный рабочий с базы",
-	"Convert Workshop":"Преобразовать фабрику",
-	"Convert Workshop\n\n$RED$Requires {TECH_NAME}\n from Hall\n$RED$            $RESEARCH$\n\n":"Преобразовать фабрику\n\n$RED$Требуется технология \"{TECH_NAME}\"\n$RED$                 $RESEARCH$\n\n",
+	"Convert Factory":"Преобразовать фабрику",
+	"Convert Workshop":"Преобразовать мастерскую",
+	"Convert Workshop\n\n$RED$Requires {TECH_NAME}\n from Hall\n$RED$            $RESEARCH$\n\n":"Преобразовать мастерскую\n\n$RED$Требуется технология \"{TECH_NAME}\"\n$RED$                 $RESEARCH$\n\n",
 	"Upgrade to...":"Улучшить до...",
 
 	//"Saw":"Пила", //in blobs
@@ -466,6 +521,9 @@
 	"Unpack {ITEM}":"Распаковать {ITEM}",
 	"Unpack {ITEM}   $KEY_E$": "Распаковать {ITEM}   $KEY_E$",
 	"Can't unpack {ITEM} here": "Невозможно распаковать {ITEM} здесь",
+	"Get out": "Выбраться",
+	"Get inside": "Забраться",
+	"Crate with {ITEM}": "Ящик с {ITEM}",
 
 //Scroll.as
 	"$scroll$Pick up    $KEY_C$": "$scroll$Поднять $KEY_C$",
@@ -501,7 +559,7 @@
 //HelpfulDeathTips.cfg
 	"To hide in-game help and tips, hit F1.":
 	"Чтобы скрыть эти подсказки и другие советы, нажмите F1.",
-	"Enemies can use your tunnels so protect them well!":
+	"Enemies can go through your tunnels so protect them well!":
 	"Противники могут использовать ваши туннели, так что защищайте их!",
 	"Spikes will stun you for a short time.":
 	"Шипы оглушают вас на короткий промежуток времени.",
@@ -513,7 +571,7 @@
 	"Играя за лучника, вы можете передвигаться быстрее, используя крюк-кошку.",
 	"You can put out fires using water bombs or water arrows (as well as a bucket of water)!":
 	"Вы можете тушить огонь с помощью водяных бомб или водяных стрел (а также и ведром с водой)!",
-	"As a knight, jabbing isn't always effective, try charging for a slash!":
+	"As a knight, jabbing stuns you if you hit enemy shield. Try charging for a slash!":
 	"Играя за рыцаря, колющие удары не всегда эффективны, попробуй задержать атаку для рассекающего удара!",
 	"A builder can be more useful on the front lines than in his base. But keep your eyes open over there!":
 	"Строитель может быть гораздо полезнее на фронте. Но будьте готовы к атаке!",
@@ -535,7 +593,7 @@
 	"Не дайте осадным орудиям попасть не в те руки!",
 	"Immobilise siege weapons to prevent them from accidentally falling off a cliff!":
 	"Снимайте колёса с осадных орудий, чтобы они не падали с возвышенностей!",
-	"Press [SPACE] to light and throw a bomb, [C] to pickup.":
+	"Press [SPACE] to light a bomb, [C] or [SPACE] to throw it.":
 	"Нажми [ПРОБЕЛ] для того, чтобы зажечь бомбу, и ещё раз, чтобы кинуть её. Нажмите [C], чтобы поднять её.",
 	"Keep your ballistae safe - if an enemy takes it, they can use it against you!":
 	"Защищайте свою баллисту. Если враг её захватит, то он сможет использовать её против вас!",
@@ -545,16 +603,16 @@
 	"Враги могут использовать ваши мастерские. Не позвольте им купить взрывчатку прямо на вашей базе!",
 	"Teamwork is the key to success!":
 	"Командная работа - это ключ к успеху!",
-	"Try to help your team mates if the situation gets tight.":
-	"Старайтесь помогать своим союзникам, когда ситуация выходит из-под контроля.",
+	"Try to help your team mates.":
+	"Старайтесь помогать своим союзникам.",
 	"As a knight, you can put your shield up in the air to glide.":
 	"Будучи рыцарем, вы можете поднять свой щит над головой, чтобы парить в воздухе.",
 	"Wood blocks are cheaper than stone blocks, but are also weaker and can catch fire.":
 	"Деревянные блоки дешевле, чем каменные, но менее прочны и могут быть подожжены.",
-	"1 bomb can deal up to 3 hearts of damage.":
+	"A bomb can deal up to 3 hearts of damage.":
 	"1 бомба может нанести урон до 3 сердец.",
-	"Drills are a fast way to dig, but only yield 50%. Don't use them on precious gold or during build time!":
-	"Буры позволяют быстро копать, но они извлекают лишь 50% ресурсов. Не используйте их для добычи золота или во время строительной стадии игры.",
+	"Drills only yield 75% of stone, but 100% of gold.":
+	"Буры добывают всего-лишь 75% камня, но золото добывается полностью.",
 	"Good players can play any class when needed.":
 	"Хорошие игроки могут играть любым классом в зависимости от ситуации.",
 	"Make sure you're helping your team advance. Don't just hide out in the back!":
@@ -569,9 +627,9 @@
 	"Противники могут проходить через ваши открытые двери. Будьте осторожны, не открывайте двери прямо перед противником!",
 	"If you see an object/body holding a door open - move it away!":
 	"Если вы видите объект/труп, мешающий закрыть дверь, то уберите его с прохода!",
-	"Visit the KAG forums for more friendly help and advice!":
-	"Нужна помощь или совет? Посетите форум King Arthur's Gold!",
-	"A bomb's timer lasts four seconds before exploding":
+	"Visit the KAG Discord for more friendly help and advice!":
+	"Нужна помощь или совет? Посетите Discord-сервер King Arthur's Gold!",
+	"A lit bomb lasts four seconds before exploding.":
 	"Бомба взрывается спустя 4 секунды после активации.",
 	"When you light a bomb, let the fuse burn down before throwing it so your enemy can't react!":
 	"Перед броском бомбы дождитесь, пока фитиль сгорит почти до конца - так ваш противник не успеет среагировать на неё!",
@@ -613,9 +671,9 @@
 	"Играя за лучника, вы можете взять мину и с помощью крюка-кошки добраться до вражеской базы и установить её там.",
 	"If you put a mine in your inventory, it can pop out when you die, potentially killing enemies and destroying structures.":
 	"Если вы положите мину в инвентарь, то она выпадет при вашей смерти, став потенциальной угрозой для врага или вражеских сооружений.",
-	"Hearts, dead fish, grain, burgers and steaks all heal you.":
-	"Сердца, мёртвая рыба, зерно, бургеры и стейки лечат вас.",
-	"Always try and have a few water buckets ready in case anything catches on fire.":
+	"Hearts heal you for 1 heart, but dead fish, grain, burgers and steaks heal you to full health.":
+	"Сердце вылечит одну единицу здоровья, но рыба, зерно, бургеры и стейки вылечат вас полностью.",
+	"Always have a few water buckets ready in your base in case anything catches on fire.":
 	"Старайтесь всегда держать несколько вёдер воды на случай пожара.",
 	"Archers shouldn't be afraid to get up close and personal when the situation requires it.":
 	"Лучники не должны бояться вступать в ближний бой, если ситуация требует этого.",
@@ -635,7 +693,7 @@
 	"Постарайтесь запечатлеть на видео серьёзные нарушения правил игры, перед тем, как сообщать об этом администратору.",
 	"Press E around dead bodies to check for useful things in enemy (or ally) corpses!":
 	"Press E around dead bodies to check for useful things in enemy (or ally) corpses!", // OUTDATED!
-	"Charged arrows from close range will stun enemies, even if they shield!":
+	"Charged arrows will stun enemies at close range, even if they shield!":
 	"Заряженный выстрел из лука оглушает противника в ближней дистанции, даже через щит!",
 	"Falling blocks can damage you - be careful!":
 	"Падающие блоки наносят урон. Будьте осторожны!",
@@ -685,14 +743,52 @@
 	"Двери и осадные орудия уязвимы к взрывам.",
 	"Bison can be tamed with burgers.":
 	"Бизонов можно приручать с помощью бургеров.",
-	"Resources can be resupplied by changing classes in workshops, not just at the tent!":
-	"Ваш запас ресурсов может быть пополнен в классовых мастерских, не только в палатке!",
+	"You can get resupplies from class workshops, not just at the tent!":
+	"Вы можете получать дополнительные ресурсы из магазинов классов, не только в палатке!",
+	"You can highlight useful items for your class by holding the pickup key.":
+	"Вы можете подсветить полезные предметы для вашего класса, удерживая кнопку подбора предмета.",
+	"As a knight, you can always jab the enemy after successfully slashing them to deal extra heart of damage.":
+	"Как рыцарь, вы всегда можете ткнуть во врага после удачного слэша для нанесения дополнительного урона.",
+	"It is advantageous to have one transport tunnel near your tent and another one at front base for quick transportation.":
+	"Достаточно выгодно построить один туннель возле палатки и другой в башне для быстрого перемещения между ними.",
+	"It's a good idea to protect your transport tunnels from enemies by creating a trap at the entrance of your tunnel.":
+	"Будет хорошей идеей защитить ваши туннели от противника путём создания ловушки у входа в туннель.",
+	"You can throw saws at logs to quickly turn them into usable wood.":
+	"Вы можете бросать пилу в кучку брёвен для быстрого превращения их в доски.",
+	"Knights can cut down trees quicker than builders. If your team has a tree farm, cut down trees as knight to save time for your builders.":
+	"Рыцари могут быстрее срубать деревья чем строители. Если ваша команда имеет ферму дерева, рубите их за рыцаря для экономии времени вашим строителям.",
+	"Double slashing deals damage faster than normal slashing or jabbing.":
+	"Двойной слэш наносит урон быстрее, чем один слэш или тычки.",
+	"A drill will overheat very quickly when drilling doors and platforms.":
+	"Бур перегревается гораздо быстрее, когда вы бурите двери и платформы.",
+	"You can use a water bucket to extinguish lit kegs.":
+	"Вы можете использовать вёдра с водой для тушения зажённых кег.",
+	"Carrying a sponge in your inventory greatly reduces the length of stuns from water bombs or water arrows.":
+	"Нахождение губки в вашем инвентаре очень сильно уменьшает длительность оглушения от водных бомб или водных стрел.",
+	"Shielding water bombs and water arrows halves the stun time.":
+	"Защищаясь щитом от водных бомб и стрел, вы уменьшаете время оглушения в половину.",
+	"Stone doors are durable, but very expensive - dont place too many of them in one doorway.":
+	"Каменные двери прочные, но очень дорогие - не ставьте их слишком много в проходах.",
+	"Placing a mine on your flag will make it difficult for the enemy to take it without dying.":
+	"Установка мины на вашем флаге сделает его захват без смерти. более сложным для противника.",
+	"As an archer, you can shoot enemy mines to blow them up. But be careful, as the explosion can still kill you and your teammates!":
+	"Вы можете подрывать мины противника за лучника, стреляя в них из лука. Но будьте осторожны, взрыв всё ещё может убить вас и ваших сокомандников!",
+	"You can blow up enemy mines by throwing bodies of your teammates at them.":
+	"Вы можете подрывать мины противника путём скидывания тел ваших сокомандников на них.",
+	"Throwing an enemy body into an enemy saw disables it.":
+	"Скидывания тела противника в его же пилу выключает её.",
 
 //Requirements.as
 	//"Wood":"Дерева",
 	//"Stone":"Камня",
 	//"Gold":"Золота",
 	"{COINS_QUANTITY} $COIN$ required\n":"Требуется {COINS_QUANTITY} $COIN$",
+	"{COLOR}{NAME}{COLOR}\n\ntechnology required.\n":"{COLOR}{NAME}{COLOR}\n\nтехнология требуется.\n",
+
+//Workbench.as
+	"Drill Technology":"Технология буров",
+	"Saw Technology":"Технология пил",
+	"Dinghy Technology":"Технология шлюпок",
 
 //// BLOB NAMES ////
 	"Migrant":"Рабочий",
@@ -727,28 +823,37 @@
 	"Bucket":"Ведро",
 	"Filled Bucket":"Ведро с водой",
 	"Crate":"Ящик",
+	"Crate (wood)":"Ящик (за дерево)",//BuilderShop.as
+	"Crate (coins)":"Ящик (за монеты)",//BuilderShop.as
 	"Bomb":"Бомба",
+	"Bombs":"Бомбы",//WAR_Technology.as
 	"Keg":"Пороховая бочка",
 	"Mine":"Мина",
 	"Satchel":"Взрывпакет", //OLD
 	"Water Bomb":"Водяная бомба",
 	"Water Bombs":"Водяная бомба",
 	"Burger":"Бургер",
+	"Food":"Еда",//StandardPickup.as
 	"Heart":"Сердце",
 	"Lantern":"Фонарь",
 	"Wood Log":"Бревно",
+	"Log":"Бревно",//StandardPickup.as
 	//"Powerup":"", //OLD
 	"Arrow":"Стрела",
 	"Arrows":"Стрелы",
 	"Ballista Bolt":"Болт баллисты",
 	"Ballista Bolts":"Болты баллисты",
+	"Ballista Shells":"Взрывные болты баллисты",
 	"Scroll":"Свиток",
 	"Scroll of Drought":"Свиток засухи",
 	"Scroll of Carnage":"Свиток побоища",
+	"Scroll of Midas":"Свиток Мидаса",
 	"Sponge":"Губка",
 	"Bomb Arrow":"Взрывающаяся стрела",
+	"Bomb Arrows":"Взрывающиеся стрелы",//StandardPickup.as
 	"Fire Arrows":"Огненная стрела",
 	"Water Arrows":"Водяная стрела",
+	"Water Arrows":"Водяные стрелы",//StandardPickup.as
 	"Gold":"Золото",
 	"Stone":"Камень",
 	"Wood":"Дерево",
@@ -765,6 +870,9 @@
 	"Seed":"Семя",
 	"Pine Seed":"Семя сосны",
 	"Oak Seed":"Семя дуба",
+	"Grain Seed":"Семя пшеницы",
+	"Bush seed":"Семя куста",
+	"Flower seed":"Семя цветка",
 	"Bushy Tree":"Дуб",
 	"Pine Tree":"Сосна",
 	"Very Important Flag":"Очень важный флаг",
@@ -781,6 +889,7 @@
 	"Spikes":"Шипы",
 	"Trampoline":"Трамплин",
 	"Trap Block":"Блок-ловушка",
+	"Bridge":"Мост",
 	"Airship":"Воздушный корабль", // OLD
 	"Bomber":"Воздушный шар", //OLD
 	"Ballista":"Баллиста",
@@ -791,6 +900,40 @@
 	"Large Door":"Большая дверь", //OLD
 	"Catapult":"Катапульта",
 	"Catapult Rock":"Камень для катапульты",
+	"Outpost":"Аванпост",
+	"greg":"Летучая мышь",
+	"Ballista Factory":"Баллистовый завод",
+	"Bomb Ammo Factory":"Завод взрывчатых боеприпасов",
+	"Catapult Factory":"Катапультовый завод",
+	"Demolition Factory":"Завод разрушений",
+	"Bakery Factory":"Завод-пекарня",
+	"Longboat Factory":"Лодочный завод",
+	"Military Supplies Factory":"Завод военных поставок",
+	"Pyrotechnics Factory":"Завод пиротехники",
+	"War Boat Factory":"Завод военных лодок",
+	"Water Ammo Factory":"Завод водных боеприпасов",
+	"Workshop":"Мастерская",
+	"Workbench":"Верстак",
+
+// Quarters.as
+	"Beer - 1 Heart":"Пиво - одно сердце",
+	"Meal - Full Health":"Обед - полное здоровье",
+	"Egg - Full Health":"Яйцо - полное здоровье",
+	"Burger - Full Health":"Бургер - полное здоровье",
+	"$HEART$ Must be hurt\n":"$HEART$ Должен быть получен урон\n",//Requirements.as
+
+// MakeFood.as
+	"Cooked Fish":"Приготовленная рыба",
+	"Cooked Steak":"Приготовленный стейк",
+	"Bread":"Хлеб",
+	"Cake":"Торт",
+
+// Kitchen.as
+	"Shark steak":"Акулий стейк",
+	"Shark Chop":"Акулья отбивная",
+	"fishy":"рыбка",
+	"   Russian":"   Русский",
+	"Russian Burger":"Русский бургер",
 
 //// INVENTORY NAMES ////
 	"Backpack":"Рюкзак",
@@ -808,9 +951,12 @@
 	"Buy":    "Купить",     //CTF Shops
 	"Construct":  "Построить",    //Building.as
 	"Shop":   "Магазин",    //Shop.as (menu desc) & TradingMenu.as (btn)
-	"Store":  "Выложить все вещи",  //Storage.as (btn)
+	"Storage":  "Склад",  //Storage.as (btn)
 	"Rest":   "Отдохнуть",    //Quarters.as (btn)
+	"Store":    "Выложить все вещи",//Storage.as (btn)
 	"Add fuel": "Добавить топливо", //Quarry.as (btn)
+	"Open":	"Открыть",//Chest.as (btn)
+	"Open your Christmas present":	"Откройте ваш подарок на Рождество",//Present.as (btn)
 	"Research": "Исследования",
 	"Immobilise": "Открепить колёса",   //PopWheelsOff.as (btn)
 	"Detach {ITEM}":"Открепить {ITEM}", //VehicleAttachment.as (btn)
@@ -819,17 +965,19 @@
 	"Swap class": "Сменить класс",  //StandardRespawnCommand.as (menu desc)
 	"Change class": "Сменить класс",  //Hall.as, TDM_Ruins.as, WAR_base.as, Ballista.as, WarBoat.as
 	"Trade":  "Торговля",
+	"Buy weapons":	"Купить оружие", //Challenge.as (menu desc) & TDM_Trading.as (menu desc)
 	"Build":  "Строительство",  //BuilderInventory.as
 	"Current bomb": "Выбранная бомба",  //KnightLogic.as
 //Components
 	"Unload":"Разрядить", //Magazine.as (btn)
 	"Insert 60 coins":"Вставить 60 монет", //CoinSlot.as (btn)
 	"Activate":"Активировать", //PushButton.as (btn)
+	"Deactivate":"Деактивировать", //Lever.as (btn)
 //ArcherLogic.as
 	"Current arrow":"Выбранная стрела",
-	"Regular arrows":"Обычная стрела",
-	"Water arrows":"Водяная стрела",
-	"Fire arrows":"Огненная стрела",
+	"Regular arrows":"Обычные стрелы",
+	"Water arrows":"Водяные стрелы",
+	"Fire arrows":"Огненные стрелы",
 	"Bomb arrow":"Взрывающаяся стрела",
 
 
@@ -857,6 +1005,12 @@
 	"{USERNAME} is now known as {PLAYER}": "{USERNAME} теперь известен как {PLAYER}",
 	"Map: {MAP}": "Карта: \"{MAP}\"",
 
+//Powerup.as
+	"{NAME} picked up '{TAG}'": "{NAME} подобрал {TAG}'",
+	"powerup superjump": "Усиление: суперпрыжки",
+	"powerup slash timestop": "Усиление: остановка времени",
+	"powerup fast arrow": "Усиление: быстрые стрелы",
+
 //// SERVER CONNECTION EVENTS ////
 	"Connecting to {SERVER}...": "Подключение к {SERVER}...",
 	"Connecting to {IP}": "Подключение к {IP}",
@@ -879,6 +1033,13 @@
 	"Stalemate: both teams have no uncaptured flags.\nFlags returning in: {TIME}":"Обе команды потеряли свои флаги.\nФлаги будут возвращены через {TIME}",
 	"Stalemate resolved: Flags returned.":"Флаги были возвращены на исходные позиции.",
 
+//CTF_Flag.as
+	"{TEAM}'s ":"{TEAM}",
+	"{TEAM_S}flag has been picked up by {PLAYER}!":"{TEAM_S} флаг был подобран игроком {PLAYER}!",
+	"{TEAM_S}flag has been captured by {PLAYER}!":"{TEAM_S} был захвачен игроком {PLAYER}!",
+	"{TEAM_S}flag has been returned due to teamwork!":"{TEAM_S} был возвращён благодаря командной работе!",
+	"{TEAM_S}flag has been returned!":"{TEAM_S} был возвращён!",
+
 //TimeToEnd.as
 	"Time is up!\n{WINNING_TEAM} wins the game!":"Время вышло!\n{WINNING_TEAM} побеждает!",
 	"Time is up!\nIt's a tie!"          :"Время вышло!\nНичья!",
@@ -894,13 +1055,17 @@
 	"Find the longboat!":"Найдите баркас!",
 	"Get to the top right of the castle!":"Доберитесь до правой части крыши замка!",
 	"Take the red hall!":"Захватите красную базу!",
+	"Climb the tower!":"Заберитесь на башню!",
 	"Time passed!":"Время истекло!",
 	"Round lost!":"Раунд проигран!",
+	"You made it!":"Ты сделал это!",
+	"You won!":"Ты победил!",
 
 	"Kill'em All!":"Убейте их всех!",
 	"Kill the Necromancer":"Убейте некроманта!",
 	"Parkour":"Паркур",
 	"Save the Princess!":"Спасите принцессу!",
+	"Save the princess!":"Спасите принцессу!",
 	"Save the Princess":"Спасите принцессу",
 	"Take the Hall":"Захватите базу",
 
@@ -914,6 +1079,7 @@
 	"TTH":"Захват баз (TTH)",
 	"Challenge":"Испытания",
 	"Build whatever your heart desires. Respect other folk's creations!":"Стройте всё, что душе угодно. И уважайте труд других людей.",
+	"SmallCTF":"Малый CTF",
 
 //// IRRLICHT GUI ////
 //guiConnect.xml
@@ -935,6 +1101,8 @@
 	"Offline":"Оффлайн",
 	"Forgot?":"Забыли?",
 	"PLAY":"Играть",
+	"Restore":"Восстановить",
+	"Minimize":"Свернуть",
 //guiMain.xml
 	"Solo":"Одиночная игра",
 	"Multiplayer":"Сетевая игра",
@@ -945,15 +1113,19 @@
 	"Server Rules":"Правила\nСервера",
 	"News":"Новости",
 	"Discord":"Discord",
+	"Patreon":"Patreon",
+	"Github":"Github",
 	"IRC":"IRC",
-	"Wiki":"Wiki",
+	"Wiki":"Вики",
 	"Set account e-mail":"Привязать почту",
 	"Quit":"Выйти",
 	"Finish Account Linking":"Завершить Привязку Аккаунта",
 	"Your KAG account e-mail and password":"Ваши e-mail и пароль от аккаунта KAG",
+	"You can use these credentials to login on kag2d.com":"Вы можете использовать эти данные для входа на kag2d.com",
 	"You can use these credentials to login on kag2d.com and kagforums.com":"Вы можете использовать эти данные для входа на kag2d.com и kagforums.com",
 	"E-mail:":"E-mail",
 	"Submit":"Подтвердить",
+	"Open external web browser?":"Открыть сторонний веб-браузер?",
 //guiMulti.xml
 	"Simple Join":"Быстрый вход",
 	"Browse servers":"Обзор серверов",
@@ -986,6 +1158,8 @@
 	"Armour Set:"               :"Снаряжение:",
 	"Golden Tools"              :"Золотые инструменты",
 	"Standard"                  :"Стандартное",
+	"Royal Guard Cape"          :"Плащ королевской гвардии",
+	"UNLOCK {ARMOUR_PACK}"      :"Разблокировать {ARMOUR_PACK}",
 	"Head:"                     :"Голова:",
 	"Set Default Head"          :"По умолчанию",
 	"Head packs:"               :"Паки голов:",
@@ -995,28 +1169,93 @@
 	"High Fantasy"              :"Фэнтези",
 	"Community Pack 1"          :"Набор Сообщества",
 	"Change keys:"              :"Назначить клавиши:",
+	"Left"                      :"Влево",
+	"Right"                     :"Вправо",
+	"Up"                        :"Вверх",
+	"Down"                      :"Вниз",
+	"Action 1"                  :"Действие 1",
+	"Action 2"                  :"Действие 2",
+	"Action 3"                  :"Действие 3",
+	"Inventory"                 :"Инвентарь",
+	"Use"                       :"Использовать",
+	"Pickup"                    :"Подобрать",
+	"Zoom in"                   :"Приблизить",
+	"Zoom out"                  :"Отдалить",
+	"Eat Food"                  :"Съесть еду",
+	"Emoticons"                 :"Эмоции",
+	"Map key"                   :"Открыть карту",
+	"Mark Player"               :"Отметить игрока",
+	"Taunts"                    :"Насмешки",
+	"Misc Menu"                 :"Разное",
+	"Build Modifier"            :"Модификатор (строитель)",
+	"Pickup Modifier"           :"Модификатор (подбор)",
+	"SPACE":"Пробел",
+	"MOUSE LEFT":"Левая кнопка мыши",
+	"MOUSE RIGHT":"Правая кнопка мыши",
+	"MOUSE MIDDLE":"Средняя кнопка мыши",
+	"MOUSE SCROLL UP":"Колёсико вверх",
+	"MOUSE SCROLL DOWN":"Колёсико вниз",
+	"LEFT SHIFT":"Левый SHIFT",
+	"LEFT CTRL":"Левый CTRL",
+	"LEFT ALT":"Левый ALT",
+	"RIGHT SHIFT":"Правый SHIFT",
+	"RIGHT CTRL":"Правый CTRL",
+	"RIGHT ALT":"Правый ALT",
+	"NONCONVERT":"Неконвертируемый",
+	"CONVERT":"Конвертируемый",
+	"LEFT":"←",
+	"RIGHT":"→",
+	"UP":"↑",
+	"DOWN":"↓",
+	"PRIOR":"PageUp",
+	"NEXT":"PageDown",
+	//"NUMPAD /":"",
+	//"NUMPAD *":"",
+	//"NUMPAD -":"",
+	//"NUMPAD +":"",
+	//"NUMPAD .":"",
+	//"NUMPAD 0":"",
+	//"NUMPAD 1":"",
+	//"NUMPAD 2":"",
+	//"NUMPAD 3":"",
+	//"NUMPAD 4":"",
+	//"NUMPAD 5":"",
+	//"NUMPAD 6":"",
+	//"NUMPAD 7":"",
+	//"NUMPAD 8":"",
+	//"NUMPAD 9":"",
 	"(Unused keys, for mods)"   :"(Неиспользуемые клавиши, для модов)",
-	"Smooth shader"             :"Мягкий шейдер",
+	"Smooth shader"             :"Сглаживающий шейдер",
 	"Faster graphics"           :"Быстрая графика",
+	"Check this if the game is choppy or slow":"Включите эту настройку, если ваша игра работает нестабильно или медленно",
 	"Cap framerate"             :"Ограничить FPS",
+	"Check this to sync the framerate with the tickrate (30FPS).\nWhen unchecked, interpolation may induceм an extra 1/30 second frame lag.\nTick this if you experience low performance.":
+	"Включите эту настройку для синхронизации FPS с тикрейтом (30).\nКогда выключено, интерполяция может вызвать дополнительные лаги в 1/30 кадров.\nВключите это, если испытываете медленную работу игры.",
 	"VSync - Requires Restart"  :"VSync - требуется перезапуск",
+	"Sync rendering with monitor refresh rate (prevents tearing)":"Синхронизирует FPS с частотой обновления вашего монитора (убирает тиринг)",
 	"Game music"                :"Игровая музыка",
+	"Turn on\\off the game music.":"Включает\\выключает игровую музыку",
 	"Sound Volume:"             :"Звуковые эффекты:",
 	"Music Volume:"             :"Музыка:",
 	"Volume:"                   :"Громкость:",
 	"Menu music"                :"Музыка в меню",
 	"Swap audio channels"       :"Поменять аудио каналы",
-	"Language (EXPERIMENTAL):"  :"Язык",
+	"Tick this if your sound is backwards.":"Включите это, если звук проигрывается неправильно.",
+	"Language (EXPERIMENTAL):"  :"Язык (экспериментально)",
 //  "Experimental feature warning": "Внимание! Экспериментальная функция",
 //  "Language support is still a work in progress!\nThe translations might be incomplete or inaccurate.\nSome translations will need a restart to apply.": "",
-	"Fixed camera"              :"Фиксированная камера",
-	"Disable screen shake"      :"Убрать тряску камеры",
-	"Kids safe"                 :"Режим для детей",
+	"Fixed Camera"              :"Фиксированная камера",
+	"Fixed camera = platform style; Not fixed camera = Soldat/mouse look style":"Фиксированная камера = камера стиле платформеров; Не фиксированная камера = камера как в Soldat/камера следует за мышью",
+	"Snap Camera to Pixel"      :"Выравнивать камеру по пикселям",
+	"Disable Screen Shake"      :"Выключить тряску экрана",
+	"Disable the screen shaking effect":"Выключает эффект тряски экрана",
+	"Allow Cinematic Camera"    :"Включить кинематографическую камеру",
+	"Kids Safe"                 :"Режим без насилия",
 	"Chat Filter"               :"Фильтр чата",
 	"Show Team-Mates Names"     :"Отображать имена игроков",
 	"Show Minimap"              :"Отображать мини-карту",
+	"Checking this might improve game performance":"Выключение этой настройки может увеличить производительность игры",
 	"Show Chat Bubbles"         :"Отображать облако чата",
-	"Snap Camera To Pixel"      :"Выравнивать камеру по пикселю",
 //guiSocial.xml
 	"KAG World":"KAG World",
 //guiSolo.xml
@@ -1074,6 +1313,7 @@
 	"Players (%):":                                  "Игроков (%):",
 	"Game Mode:":                                    "Игровой режим:",
 	"Instant Search...":                             "Быстрый поиск...",
+	"Waiting...":                                    "Ожидание...",
 	"Players: {CURRENT} / {MAXIMUM}":                "Игроков: {CURRENT} / {MAXIMUM}",
 	"Players: {CURRENT} / {MAXIMUM} (FULL)":         "Игроков: {CURRENT} / {MAXIMUM} (ПЕРЕПОЛНЕНО)",
 	"Spectator Slots: {CURRENT} / {MAXIMUM}":        "Слотов зрителей: {CURRENT} / {MAXIMUM}",
@@ -1115,8 +1355,13 @@
 //// VOTES ////
 
 	//VoteCore.as
+	"IN FAVOUR:":"ЗА:",
+	"AGAINST:":"ПРОТИВ:",
 	"Reason: {REASON}"            :"Причина: {REASON}",
 	"Cast by: {USER}"             :"Инициатор: {USER}",
+	"For:":"Для:",
+	"Against:":"Против:",
+	"Your vote: {OURVOTE}:":"Ваш голос: {OURVOTE}",
 	"[O] - Yes"                   :"[O] - За",
 	"[P] - No"                    :"[P] - Против",
 	"Ctrl+O Pass"                 :"Ctrl+O Завершить",
@@ -1136,6 +1381,8 @@
 	"Teamkiller":"Убийство своих",
 	"Chat Spam":"Спам в чате",
 	"Non-Participation":    "Неучастие в игре",
+	"Voting for kick a player\nis not allowed when playing\nwith a duplicate instance of KAG.\n\nTry rejoining the server\nif this was unintentional.":
+	"Нельзя исключить игрока,\n когда запущен второй экземпляр KAG.\n\n Попробуйте перезайти на сервер,\n если это не так.",
 	"Voting requires a {REQUIRED_MIN} min wait\nafter each started vote to\nprevent spamming/abuse.\n":"После каждого голосования\nнужно ждать {REQUIRED_MIN} мин,\nчтобы избежать спама или\nголосований без причины.",
 	"Vote to kick a player on your team\nout of the game.\n\n- use responsibly\n- report any abuse of this feature.\n\nTo Use:\n\n- select a reason from the\n     list (default is griefing).\n- select a name from the list.\n- everyone votes.\n":"Проголосовать за исключение\nиз игры игрока вашей команды.\n\n- использовать ответственно\n- сообщайте о любом злоупотреблении этой функцией.\n\nКак использовать:\n\n- Выберите причину из списка\n     (гриферство по умолчанию).\n- выберите имя из списка.\n- голосуют все.\n",
 	"Cannot kick {USER}":"Нельзя исключить {USER}",
@@ -1153,6 +1400,8 @@
 	"Stalemate":"Игра слишком затянулась",
 	"Game Bugged":"Игра сломалась",
 	"Skip to next map?":"Перейти к следующей карте?",
+	"Voting for next map\nis not allowed when playing\nwith a duplicate instance of KAG.\n\nTry rejoining the server\nif this was unintentional.":
+	"Нельзя сменить карту,\n когда запущен второй экземпляр KAG.\n\n Попробуйте перезайти на сервер,\n если это не так.",
 	"Voting for next map\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"После каждого голосования\nза смену карты\nнужно ждать {NEXTMAP_MINS} мин,\nчтобы избежать спама.\n",
 	"Vote to change the map\nto the next in cycle.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select a reason from the list.\n- everyone votes.\n":"Голосование за смену карты\nна следующую из списка.\n\n- сообщайте о любом злоупотреблении этой функцией.\n\nКак использовать:\n\n- выберите причину из списка.\n- все голосуют.\n",
 	"Vote Next Map":"Голосование за смену карты",
@@ -1160,6 +1409,8 @@
 	//vote surrender menu
 	"Surrender":"Сдаться",
 	"Surrender to the enemy?":"Сдаться противнику?",
+	"Voting for surrender\nis not allowed when playing\nwith a duplicate instance of KAG.\n\nTry rejoining the server\nif this was unintentional.":
+	"Нельзя сдаваться,\n когда запущен второй экземпляр KAG.\n\n Попробуйте перезайти на сервер,\n если это не так.",
 	"Voting for surrender\nis not allowed before the game starts.\n":"Сдаваться до начала игры запрещено.",
 	"Voting for surrender\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":"После каждого голосования\nнужно ждать {NEXTMAP_MINS} мин,\nчтобы избежать спама.",
 	"Voting for surrender\nis not available as a spectator\n":"Будучи зрителем, нельзя сдаваться.",
@@ -1168,6 +1419,17 @@
 	"We Surrender! (I'm sure)":"Мы сдаёмся! (Я уверен)",
 	//vote scramble
 	"Scramble":"Перемешать",
+	"Scramble the teams?":"Перемешать команды?",
+	"Voting for team scramble\nis not allowed when playing\nwith a duplicate instance of KAG.\n\nTry rejoining the server\nif this was unintentional.":
+	"Нельзя перемешать команды,\n когда запущен второй экземпляр KAG.\n\n Попробуйте перезайти на сервер,\n если это не так.",
+	"Voting for team scramble\nis not available as a spectator\n":"Перемешивание команд\n недоступно для наблюдателей\n",
+	"Voting for team scramble\nis not allowed after the game starts.\n":"Перемешивание команд\n не разрешено после начала игры.\n",
+	"Voting for team scramble\nrequires a {NEXTMAP_MINS} min wait\nafter each started vote\nto prevent spamming.\n":
+	"Перемешивание команд\nтребует подождать {NEXTMAP_MINS} минут\n перед следующим голосованием\n для предотвращения спама.\n",
+	"Vote team scramble":"",
+	"Vote to scramble teams\nto hopefully make them balanced.\n\n- report any abuse of this feature.\n\nTo Use:\n\n- select scramble if you're sure.\n- everyone votes.\n":
+	"Перемешивание команд\nпредназначено для того, чтобы сбалансировать их. \n\n- Сообщайте о любых злоупотреблениях этим.\n\nИспользование:\n\n- выберите перемешивание, если вы уверены,\n- что все проголосуют за.\n",
+	"Rebalance Teams! (I'm sure)":"Сбалансировать команды! (Я уверен)",
 	//vote chat messages
 	"Votekick passed! {USER} will be kicked out.":"Голосование прошло успешно! {USER} будет исключён из игры",
 	"{USER} left early, acting as if they were kicked.":"{USER} рано вышел из игры, сделав вид, что его кикнули.",
@@ -1183,6 +1445,11 @@
 	"--- {USER} Voted {DECISION} ---":"--- {USER} проголосовал {DECISION} ---",
 	"In Favour":"за",
 	"Against":"против",
+
+// MapVotesCommon.as
+	"Map Voting Has Ended.. Loading: {MAP}":"Голосование за карту завершено. Загружаем: {MAP}",
+	"Map Voting Ends In: {TIME}":"Голосование за карту закончится через: {TIME}",
+	//"Please vote for a map!":"Пожалуйста, проголосуйте за карту!",
 
 //// ESC MENUS ////
 	"Back":         "Назад",
@@ -1223,45 +1490,66 @@
 	"Save Map":       "Сохранить карту",
 	"Quit to Main Menu":      "Выйти в главное меню",
 
-// EmoteMenu.as and WheelMenuCommon.as
-	"Select emote":"Выберите эмоцию",
-	"(no selection)":"(ничего не выбрано)",
-	"Point right":"Показать вправо",
-	"Laughing":"Смех",
-	"Smiling":"Улыбка",
+// WheelMenuCommon.as
+	"Select option":"Выберите пункт",// menu default, unused
+	"(no selection)":"(не выбрано)",
+
+// EmotesCommon.as
+	"Show emoticon":"Показывать эмоции",
 	"Skull":"Череп",
-	"Laughing Crying":"Животик надорвёшь", //Истерический смех
-	"Awkward Laughing":"Неловкий смех",
-	"Smug":"Самодовольная ухмылка",
-	"Troll":"Затроллил",
-	"What":"Что?",
-	"Point down":"Показать вниз",
-	"Derp":"Ой, неудачно получилось", //Неудачно получилось
-	"Mad":"Да, похоже, ты в бешенстве", //Злость
-	"Disappointed":"Разочарование",
-	"Frown":"Грустный взгляд",
-	"Crying":"Плач",
-	//"Archer":"",
-	//"Knight":"",
-	//"Builder":"",
-	"Point left":"Показать влево",
-	//"Heart":"",
-	"Love":"Любовь",
-	"Kiss":"Поцелуй",
-	"Flex":"Мамин силач",
-	"Rude Gesture":"Грубый жест",
-	"Thumbs down":"Палец вниз",
-	"Thumbs up":"Палец вверх",
-	//"OK":"",
-	"Point up":"Показать вверх",
-	"Thinking":"Размышление",
-	"Sweat drop":"Пот",
-	//"Ladder":"",
-	"Attention":"Внимание",
-	"Question":"Вопрос",
-	"Fire":"Огонь",
-	"Wall":"Стена",
+	"Blue flag":"Синий флаг",
 	"Musical note":"Музыкальная нота",
+	"Point right":"Показать вправо",
+	"Smile":"Улыбка",
+	"Red flag":"Красный флаг",
+	"Flex":"Поиграть мускулами",
+	"Point down":"Показать вниз",
+	"Frown":"Грустный взгляд",//Disappointed?
+	"Troll":"Затроллил",
+	"Rude gesture":"Грубый жест",
+	"Point left":"Показать влево",
+	"Mad":"В бешенстве",
+	//"Archer":"",
+	"Sweat drop":"Волнуюсь",
+	"Point up":"Показать вверх",
+	"Laugh":"Смех",
+	//"Knight":"",
+	"Question":"Вопрос",
+	"Thumbs up":"Одобряю",
+	"What":"Что?",
+	//"Builder":"",
+	"Disappointed":"Разочарован",//Frown?
+	"Thumbs down":"Не одобряю",
+	"Drool":"Пускаю слюни",
+	//"Ladder":"",
+	"Attention":"Внимание!",
+	//"OK":"",
+	"Cry":"Плачу",
+	"Wall":"Стена",
+	//"Heart":"",
+	"Fire":"Огонь",
+	"Check":"Подмигнуть",//wink
+	"Cross":"Крутой",//cool
+	"Typing":"Печатаю",
+	"Cog":"Шестерня",
+	"Think":"Думаю",
+	"Laughing Crying":"Смеюсь до слёз",
+	"Derp":"Покривляться",
+	"Awkward Laughing":"Неловкий смех",
+	"Smug":"Ухмыльнуться",
+	"Love":"Люблю",
+	"Kiss":"Целую",
+	//"Pickup":"Подобрать",
+	"Raised eyebow":"Удивляюсь",
+	"Clap":"Похлопаю",
+	"Idea":"Идея!",
+	"Mine":"Мина",
+	"Sorry":"Прости",
+	"Rat":"Крыса",
+	"Dismay":"Ужас",
+
+// EmoteMenu.as
+	"Select emote":"Выберите эмоцию",
 
 // EmoteBinderMenu.as
 	"Bindings":"Привязки",
@@ -1274,6 +1562,81 @@
 	"Bind Builder Blocks":"Привязки Блоков Строителя",
 	"Builder Block Hotkey Binder":"Привязка Горячих Клавиш Строителя",
 	"Select a keybind below, then select the block you want":"Выберите привязку клавиш ниже, затем выберите нужный блок",
+
+// TauntsCommon.as
+	"Answer":"Ответ",
+	//"Build":"",//Already exists in Button descriptions
+	"Need":"Необходимо",
+	"Taunt":"Насмешка",
+	"Order":"Приказ",
+	"Alarm":"Предупреждение",
+	/* We shouldn't translate them, because when use the taunts, affects the chat in non english language
+	"Yes":"Да",
+	"Sometimes":"Иногда",
+	"Always":"Всегда",
+	"Maybe":"Возможно",
+	"No":"Нет",
+	"Rarely":"Редко",
+	"Never":"Никогда",
+	"I am unsure":"Я не уверен",
+	"Build a wall here":"Постройте здесь стену",
+	"Build a door here":"Постройте здесь дверь",
+	"Build a bridge here":"Постройте здесь мост",
+	"Build a ladder here":"Постройте здесь лестницу",
+	"Build a tunnel here":"Постройте здесь туннель",
+	"Build a trap here":"Постройте ловушку здесь",
+	"Build a quarters":"Постройте магазин еды",
+	"Build a knight shop":"Постройте магазин рыцаря",
+	"Build an archer shop":"Постройте магазин лучника",
+	"Build a builder shop":"Постройте магазин строителя",
+	"Need knights!":"Нужны рыцари!",
+	"Need archers!":"Нужны лучники!",
+	"Need builders!":"Нужны строители!",
+	"Need bombs!":"Нужны бомбы!",
+	"Need arrows!":"Нужны стрелы!",
+	"Need materials!":"Нужны материалы!",
+	"Need gold!":"Нужно золото!",
+	"Need food!":"Нужна еда!",
+	"For the King!":"За Короля!",
+	"Run for your life!":"Спасайся, пока мжешь!!",
+	"Chicken!":"Курица!",
+	"Your mother was a hamster!":"Твоя мать - хомяк!",
+	"Your father smelt of elderberries!":"Твой отец воняет бузиной!",
+	"I fart in your general direction!":"Я пердел в твоём направлении!",
+	"I am invincible!":"Меня нет!",
+	"None shall pass!":"Ты не пройдёшь!",
+	"Our team always triumphs!":"Наша команда всегда побеждает!",
+	"My sword is bigger than your sword!":"Мой меч больше твоего!",
+	"Go and boil your bottoms!":"Вскипяти свой зад!", // very difficult joke to translate
+	"Bloody peasant!":"Окровавленный крестьянин!", // ???
+	"Cover me":"Прикройте меня",
+	"Hold position":"Держите позицию",
+	"Fall back":"Отступаем",
+	"Move!":"Вперёд!",
+	"Follow me":"Следуй за мной",
+	"Go, go, go!":"Вперёд, вперёд, вперёд!",
+	"Rush!":"Бежим!",
+	"Repair the castle":"Почините замок",
+	"Load the siege":"Зарядить осадные орудия",
+	"Stick together":"Держимся вместе",
+	"Incoming!":"Наступают!",
+	"Under siege fire!":"Под осадой!",
+	"Enemies!":"Враги!",
+	"Trap!":"Ловушка!",
+	"Rats!":"Крысы!",
+	"Flag!":"Флаг!",
+	"Keg!":"Кега!",
+	"Mine!":"Мина!",
+	"Fire!":"Огонь!",
+	"Help!":"Помогите!",
+	*/
+
+// TauntMenu.as
+	"Select category":"Выберите категорию",
+	"Select phrase":"Выберите фразу",
+
+// StandardPickup.as
+	"pickup":"подобрать",
 
 // Accolades
 	"support tier: {SUPPORT_TIER}":"уровень поддержки: {SUPPORT_TIER}",
@@ -1320,6 +1683,8 @@
 	"Разработчик карт - за вклад в официальный цикл карт",
 	"Moderation Contributor - for contributing to moderating the game, forums, or discord":
 	"Вклад в модерацию - за вклад в модерирование игры, форумов или сервера Discord",
+	"Gold Member - for enjoying the game with us since before the F2P launch":
+	"Золотая корона - за наслаждение игрой с нами до того, как она стала бесплатной",
 
 	//sound
 	"MigrantSayHello": "MigrantSayPrivet",

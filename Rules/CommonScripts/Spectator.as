@@ -103,7 +103,7 @@ void Spectator(CRules@ this)
 	//scroll to zoom
 	if (timeToScroll <= 0)
 	{
-		if (controls.mouseScrollUp)
+		if (controls.isKeyJustPressed(controls.getActionKeyKey(AK_ZOOMIN)))
 		{
 			timeToScroll = 7;
 			setCinematicEnabled(false);
@@ -117,7 +117,7 @@ void Spectator(CRules@ this)
 				zoomTarget = 2.0f;
 			}
 		}
-		else if (controls.mouseScrollDown)
+		else if (controls.isKeyJustPressed(controls.getActionKeyKey(AK_ZOOMOUT)))
 		{
 			timeToScroll = 7;
 			setCinematicEnabled(false);

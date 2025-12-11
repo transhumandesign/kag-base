@@ -1,8 +1,7 @@
 // Bomb logic
 
 #include "Hitters.as"
-
-
+#include "HolidayCommon.as"
 
 void SetupBomb(CBlob@ this, const int fuseTicks, const f32 explRadius, const f32 explosive_damage, const f32 map_damage_radius, const f32 map_damage_ratio, const bool map_damage_raycast)
 {
@@ -42,7 +41,14 @@ bool UpdateBomb(CBlob@ this)
 		{
 			this.getSprite().SetEmitSound("WaterSparkle.ogg");
 			this.getSprite().SetEmitSoundPaused(false);
-			lightColor = SColor(255, 44, 175, 222);
+      
+#ifdef STAGING
+			if (getHoliday() == HOLIDAY_HALLOWEEN)
+				lightColor = SColor(255, 100, 113, 96);
+			else 
+#endif
+				lightColor = SColor(255, 44, 175, 222);
+
 			this.SetLight(false);
 		}
 		else
@@ -51,8 +57,7 @@ bool UpdateBomb(CBlob@ this)
 			this.SetLightColor(lightColor);
 		}
 
-		if (XORRandom(2) == 0)
-		{
+		if (XORRandom(2) == 0) {
 			sparks(this.getPosition(), this.getAngleDegrees(), 3.5f + (XORRandom(10) / 5.0f), lightColor);
 		}
 
