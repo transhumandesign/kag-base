@@ -175,6 +175,11 @@ RunnerTextures@ getRunnerTextures(CSprite@ sprite)
 //ensure the right texture is used
 void ensureCorrectRunnerTexture(CSprite@ sprite, string shortname, string texture_prefix)
 {
+	if (!isClient())
+	{
+		return;
+	}
+
 	RunnerTextures@ tex = getRunnerTextures(sprite);
 	if (tex is null || tex.shortname != shortname)
 	{
