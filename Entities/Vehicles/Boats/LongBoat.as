@@ -8,7 +8,7 @@ const int sail_index = 0;
 void onInit(CBlob@ this)
 {
 	Vehicle_Setup(this,
-	              300.0f, // move speed
+	              270.0f, // move speed
 	              0.18f,  // turn speed
 	              Vec2f(0.0f, -2.5f), // jump out velocity
 	              true  // inventory access

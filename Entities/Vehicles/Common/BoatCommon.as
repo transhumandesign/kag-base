@@ -138,8 +138,7 @@ void onTick(CBlob@ this)
 	}
 
 	// rear splash
-
-	if (this.isInWater() && this.getShape().vellen > 2.0f)
+	if (this.isInWater() && this.getShape().vellen > 2.2f)
 	{
 		Vec2f pos = this.getPosition();
 		f32 side = this.isFacingLeft() ? this.getWidth() : -this.getWidth();
