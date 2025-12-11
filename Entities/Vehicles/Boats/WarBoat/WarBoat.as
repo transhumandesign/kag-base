@@ -131,6 +131,8 @@ void onInit(CBlob@ this)
 	map.server_AddMovingSector(Vec2f(-48.0f, 0.0f), Vec2f(-33.0f, 20.0f), "ladder", this.getNetworkID());
 	// add custom capture zone
 	map.server_AddMovingSector(Vec2f(-34.0f, -30.0f), Vec2f(16.0f, 5.0f), "capture zone "+this.getNetworkID(), this.getNetworkID());
+	// add change class zone
+	map.server_AddMovingSector(Vec2f(-32.0f, -16.0f), Vec2f(32.0f, 16.0f), "change class zone "+this.getNetworkID(), this.getNetworkID());
 
 	//set custom minimap icon
 	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
@@ -205,3 +207,32 @@ void onDie(CBlob@ this)
 		}
 	}
 }
+
+// show change class sector
+/*
+void onRender(CSprite@ this)
+{
+	if (g_videorecording)
+		return;
+
+	CBlob@ blob = this.getBlob();
+	CCamera@ camera = getCamera();
+	if (blob is null)
+		return;
+
+	CMap@ map = getMap();
+	CMap::Sector@ change_class_sector = map.getSector("change class zone "+blob.getNetworkID());
+	if (change_class_sector !is null)
+	{
+		Vec2f tl = change_class_sector.upperleft;
+		Vec2f br = change_class_sector.lowerright;
+		Vec2f tr = Vec2f(br.x, tl.y);
+		Vec2f bl = Vec2f(tl.x, br.y);
+		
+		GUI::DrawLine(tl, tr, SColor(0xffffffff));
+		GUI::DrawLine(tr, br, SColor(0xffffffff));
+		GUI::DrawLine(br, bl, SColor(0xffffffff));
+		GUI::DrawLine(bl, tl, SColor(0xffffffff));
+	}
+}
+*/

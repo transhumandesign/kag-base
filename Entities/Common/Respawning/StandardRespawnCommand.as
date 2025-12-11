@@ -102,8 +102,36 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			return;
 		}
 
-		// Caller overlapping?
-		if (!caller.isOverlapping(this)) return;
+		// Caller in range?
+		CMap@ map = getMap();
+		CMap::Sector@ change_class_sector = map.getSector("change class zone "+this.getNetworkID());
+		if (change_class_sector !is null)
+		{
+			//check if player is in sector
+			CBlob@[] blobsInSector;
+			if (map.getBlobsInSector(change_class_sector, @blobsInSector))
+			{
+				bool callerFound = false;
+
+				for (uint i = 0; i < blobsInSector.length; i++)
+				{
+					CBlob@ b = blobsInSector[i];
+					if (b is caller)
+					{
+						callerFound = true;
+						break;
+					}
+				}
+				
+				if (!callerFound)
+					return;
+			}
+		}
+		else
+		{
+			//sector doesn't exist, check if overlapping instead
+			if (!caller.isOverlapping(this)) return;
+		}
 
 		// Don't spam the server with class change
 		if (caller.getTickSinceCreated() < 10) return;
