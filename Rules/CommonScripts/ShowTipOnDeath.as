@@ -118,10 +118,8 @@ void onTick(CRules@ this)
 	{
 		been_alive = false;
 	}
-	else
-	{
-		can_show = been_alive && dead && timer > 0;
-	}
+
+	can_show = been_alive && dead && timer > 0;
 }
 
 void onRender(CRules@ this)
