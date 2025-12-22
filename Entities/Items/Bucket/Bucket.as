@@ -180,7 +180,10 @@ void DoSplash(CBlob@ this)
 	//extinguish fire
 
 	DepleteWaterCount(this);
-	Splash(this, splash_halfwidth, splash_halfheight, splash_offset, false);
+
+	f32 _splash_offset = this.isAttachedToPoint("PICKUP") ? splash_offset : 0.0f;
+	Splash(this, splash_halfwidth, splash_halfheight, _splash_offset, false);
+
 	SetFrame(this, this.get_u8("filled") > 0);
 }
 
