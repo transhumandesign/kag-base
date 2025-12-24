@@ -29,6 +29,8 @@ enum GameMusicTag
 };
 
 string base_blob_name = "hall";
+uint timer = 0;
+bool fanfarePlayed = false;
 
 void onInit(CBlob@ this)
 {
@@ -100,9 +102,6 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 	mixer.AddTrack("Sounds/Music/KAGWorldQuickOut.ogg", world_quick_out);
 }
 
-uint timer = 0;
-bool wasgame = false;
-
 void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 {
 	timer++;
@@ -122,6 +121,12 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 		return;
 
 	Vec2f pos = blob.getPosition();
+
+	// pretend the fanfare played if the match started with muted music
+	if (blob.getTickSinceCreated() > 30)
+	{
+		fanfarePlayed = true;
+	}
 
 	//calc ambience
 	if (timer % 30 == 0)
@@ -148,18 +153,17 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 
 	if (rules.isWarmup())
 	{
-		wasgame = false;
 		changeMusic(mixer, world_home);
 	}
 	//every beat, checks situation for appropriate music
 	else if (rules.isMatchRunning())
 	{
-		if (!wasgame)
+		if (!fanfarePlayed)
 		{
 			Sound::Play("/fanfare_start.ogg");
+			fanfarePlayed = true; // only play this once
 		}
 
-		wasgame = true;
 		if (playingMusic(mixer) == 0)
 		{
 			GameMusicTag chosen = world_calm;
@@ -191,7 +195,6 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 	}
 	else //end of game, fade out music
 	{
-		wasgame = false;
 		if (mixer.getPlayingCount() >= 0)
 		{
 			mixer.FadeOutAll(0.0f, 0.5f);

@@ -22,6 +22,10 @@ enum GameMusicTag
 	world_music_end,
 };
 
+u8 battle_timer = 0;
+u8 battle_delay = 5; // seconds
+bool fanfarePlayed = false;
+
 void onInit(CBlob@ this)
 {
 	CMixer@ mixer = getMixer();
@@ -84,10 +88,6 @@ void AddGameMusic(CBlob@ this, CMixer@ mixer)
 	mixer.AddTrack("Sounds/Music/KAGWorld1-14outro.ogg", world_outro);
 }
 
-u8 battle_timer = 0;
-u8 battle_delay = 5; // seconds
-bool gameStarted = true;
-
 void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 {
 	if (mixer is null)
@@ -111,14 +111,18 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 		return;
 	}
 
+	// pretend the fanfare played if the match started with muted music
+	if (blob !is null && blob.getTickSinceCreated() > 30)
+	{
+		fanfarePlayed = true;
+	}
+
 	CMap@ map = getMap();
 	if (map is null)
 		return;
 
 	if (rules.isWarmup())
 	{
-		gameStarted = false;
-
 		Vec2f pos; 
 		
 		// If the player is a spectating, base their location off of their camera.
@@ -150,12 +154,12 @@ void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 	}
 	else if (rules.isMatchRunning())
 	{
-		if (!gameStarted)
+		if (!fanfarePlayed)
 		{
 			Sound::Play("/fanfare_start.ogg");
+			fanfarePlayed = true; // only play this once
 		}
 
-		gameStarted = true;
 		if (!mixer.isPlaying(world_battle) || battle_timer == getTicksASecond() * 5) // hold onto battle music at least 5 seconds
 		{
 			Vec2f pos;
