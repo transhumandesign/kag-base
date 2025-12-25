@@ -1489,7 +1489,7 @@ bool isSliding(KnightInfo@ knight)
 
 // shieldbash
 
-void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	// return if we collided with map, solid (door/platform), or something non-fleshy (like a boulder)
 	// allow shieldbashing enemy bombs so knights can "deflect" them

@@ -11,7 +11,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("static off");
 }
 
-void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (isServer() && solid && !this.getShape().isStatic() && !this.isAttached())
 	{

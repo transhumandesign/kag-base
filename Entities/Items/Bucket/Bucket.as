@@ -140,7 +140,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	}
 }
 
-void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (solid && isServer() && this.getShape().vellen > 6.8f && this.get_u8("filled") > 0)
 	{
