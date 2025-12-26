@@ -56,6 +56,7 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().net_threshold_multiplier = 0.5f;
 
 	this.addCommandID(grapple_sync_cmd);
+	this.addCommandID(grapple_sound_cmd);
 
 	SetHelp(this, "help self hide", "archer", getTranslatedString("Hide    $KEY_S$"), "", 1);
 	SetHelp(this, "help self action2", "archer", getTranslatedString("$Grapple$ Grappling hook    $RMB$"), "", 3);
@@ -767,7 +768,11 @@ bool checkGrappleStep(CBlob@ this, ArcherInfo@ archer, CMap@ map, const f32 dist
 
 		archer.grapple_pos.y = Maths::Max(0.0, archer.grapple_pos.y);
 
-		if (canSend(this) || isServer()) SyncGrapple(this);
+		if (canSend(this) || isServer())
+		{
+			SyncGrapple(this);
+			GrappleSound(this);
+		}
 
 		return true;
 	}
@@ -1141,6 +1146,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	else if (cmd == this.getCommandID(grapple_sync_cmd) && isClient())
 	{
 		HandleGrapple(this, params, !canSend(this));
+	}
+	else if (cmd == this.getCommandID(grapple_sound_cmd) && isClient())
+	{
+		ArcherInfo@ archer;
+		if (!this.get("archerInfo", @archer))
+		{
+			return;
+		}
+
+		Sound::Play("hit_wood.ogg", archer.grapple_pos, 0.5f);
 	}
 	else if (isServer())
 	{
