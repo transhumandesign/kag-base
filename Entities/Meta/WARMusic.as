@@ -55,7 +55,7 @@ void onTick(CBlob@ this)
 	if (mixer is null)
 		return;
 
-	if (s_soundon != 0 && s_musicvolume > 0.0f)
+	if (s_soundon != 0 && s_gamemusic && s_musicvolume > 0.0f)
 	{
 		if (!this.get_bool("initialized game"))
 		{
@@ -106,7 +106,7 @@ bool wasgame = false;
 void GameMusicLogic(CBlob@ this, CMixer@ mixer)
 {
 	timer++;
-	if (mixer is null || !s_gamemusic)
+	if (mixer is null)
 		return;
 
 	CRules @rules = getRules();
