@@ -361,7 +361,9 @@ class VoteSurrenderFunctor : VoteFunctor
 				CTeam@ teamLost = rules.getTeam(team);
 				CTeam@ teamWon = rules.getTeam(teamWonNum);
 
-				rules.SetTeamWon(teamWonNum);
+				
+				rules.set_s32("surrender reward", teamWonNum);	//give winning team coins in CTF.as and TDM.as
+				rules.SetTeamWon(teamWonNum);					//game over!
 				rules.SetCurrentState(GAME_OVER);
 
 				rules.SetGlobalMessage("{LOSING_TEAM} Surrendered! {WINNING_TEAM} wins the Game!");
