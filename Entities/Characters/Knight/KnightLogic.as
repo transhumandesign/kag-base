@@ -1417,7 +1417,7 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 		if (mapHitTime)
 		{
 			HitInfo@[] aimedRayInfos;
-			map.getHitInfosFromRay(pos, aimangle, radius + attack_distance, this, aimedRayInfos);
+			map.getHitInfosFromRay(pos, -exact_aimangle, radius + attack_distance, this, aimedRayInfos);
 			for (int i = 0; i < aimedRayInfos.size(); i++)
 			{
 				HitInfo@ hi = aimedRayInfos[i];
