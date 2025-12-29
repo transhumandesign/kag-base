@@ -1269,7 +1269,8 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 	f32 radius = this.getRadius();
 	CMap@ map = this.getMap();
 	bool dontHitMore = false;
-	bool dontHitMoreMap = false;
+	bool mapHitTime = deltaInt == DELTA_BEGIN_ATTACK + 1;
+	HitInfo@ block = null;
 	const bool jab = isJab(damage);
 	bool dontHitMoreLogs = false;
 
@@ -1374,7 +1375,7 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 				}
 			}
 			else  // hitmap
-				if (!dontHitMoreMap && (deltaInt == DELTA_BEGIN_ATTACK + 1))
+				if (mapHitTime)
 				{
 					bool ground = map.isTileGround(hi.tile);
 					bool dirt_stone = map.isTileStone(hi.tile);
@@ -1405,58 +1406,123 @@ void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, in
 							        map.isTileSolid(hi.hitpos - Vec2f(0, map.tilesize * check_y)))
 								continue;
 
-							bool canhit = true; //default true if not jab
-							if (jab) //fake damage
-							{
-								info.tileDestructionLimiter++;
-								canhit = ((info.tileDestructionLimiter % ((wood || dirt_stone) ? 3 : 2)) == 0);
-							}
-							else //reset fake dmg for next time
-							{
-								info.tileDestructionLimiter = 0;
-							}
-
-							//dont dig through no build zones
-							canhit = canhit && map.getSectorAtPosition(tpos, "no build") is null;
-
-							dontHitMoreMap = true;
-							if (canhit)
-							{
-								map.server_DestroyTile(hi.hitpos, 0.1f, this);
-								if (gold)
-								{
-									// Note: 0.1f damage doesn't harvest anything I guess
-									// This puts it in inventory - include MaterialCommon
-									//Material::fromTile(this, hi.tile, 1.f);
-									CBlob@ ore = server_CreateBlobNoInit("mat_gold");
-									if (ore !is null)
-									{
-										ore.Tag('custom quantity');
-										ore.Init();
-										ore.setPosition(hi.hitpos);
-										ore.server_SetQuantity(4);
-									}
-								}
-								else if (dirt_stone)
-								{
-									int quantity = 4;
-									if(dirt_thick_stone)
-									{
-										quantity = 6;
-									}
-									CBlob@ ore = server_CreateBlobNoInit("mat_stone");
-									if (ore !is null)
-									{
-										ore.Tag('custom quantity');
-										ore.Init();
-										ore.setPosition(hi.hitpos);
-										ore.server_SetQuantity(quantity);
-									}
-								}
-							}
+							// update nearest hittable block
+							@block = @hi;
 						}
 					}
 				}
+		}
+
+		// try to target aimed block
+		if (mapHitTime)
+		{
+			HitInfo@[] aimedRayInfos;
+			map.getHitInfosFromRay(pos, aimangle, radius + attack_distance, this, aimedRayInfos);
+			for (int i = 0; i < aimedRayInfos.size(); i++)
+			{
+				HitInfo@ hi = aimedRayInfos[i];
+				CBlob@ b = hi.blob;
+				if (b !is null)
+				{
+					bool large = b.hasTag("blocks sword") && !b.isAttached() && b.isCollidable(); // usually doors, but can also be boats/some mechanisms
+					if (large) break;
+				}
+				else
+				{
+					bool ground = map.isTileGround(hi.tile);
+					bool dirt_stone = map.isTileStone(hi.tile);
+					bool dirt_thick_stone = map.isTileThickStone(hi.tile);
+					bool gold = map.isTileGold(hi.tile);
+					bool wood = map.isTileWood(hi.tile);
+					if (ground || wood || dirt_stone || gold)
+					{
+						Vec2f tpos = map.getTileWorldPosition(hi.tileOffset) + Vec2f(4, 4);
+						Vec2f offset = (tpos - blobPos);
+						f32 tileangle = offset.Angle();
+						f32 dif = Maths::Abs(exact_aimangle - tileangle);
+						if (dif > 180)
+							dif -= 360;
+						if (dif < -180)
+							dif += 360;
+
+						dif = Maths::Abs(dif);
+						//print("dif: "+dif);
+
+						if (dif < 20.0f)
+						{
+							//detect corner
+
+							int check_x = -(offset.x > 0 ? -1 : 1);
+							int check_y = -(offset.y > 0 ? -1 : 1);
+							if (map.isTileSolid(hi.hitpos - Vec2f(map.tilesize * check_x, 0)) &&
+							        map.isTileSolid(hi.hitpos - Vec2f(0, map.tilesize * check_y)))
+								continue;
+
+							// update nearest hittable block
+							@block = @hi;
+							break;
+						}
+					}
+				}
+			}
+		}
+
+
+		if (block !is null)
+		{
+			bool dirt_stone = map.isTileStone(block.tile);
+			bool dirt_thick_stone = map.isTileThickStone(block.tile);
+			bool gold = map.isTileGold(block.tile);
+			bool wood = map.isTileWood(block.tile);
+			Vec2f tpos = map.getTileWorldPosition(block.tileOffset) + Vec2f(4, 4);
+			bool canhit = true; //default true if not jab
+			if (jab) //fake damage
+			{
+				info.tileDestructionLimiter++;
+				canhit = ((info.tileDestructionLimiter % ((wood || dirt_stone) ? 3 : 2)) == 0);
+			}
+			else //reset fake dmg for next time
+			{
+				info.tileDestructionLimiter = 0;
+			}
+
+			//dont dig through no build zones
+			canhit = canhit && map.getSectorAtPosition(tpos, "no build") is null;
+
+			if (canhit)
+			{
+				map.server_DestroyTile(block.hitpos, 0.1f, this);
+				if (gold)
+				{
+					// Note: 0.1f damage doesn't harvest anything I guess
+					// This puts it in inventory - include MaterialCommon
+					//Material::fromTile(this, block.tile, 1.f);
+					CBlob@ ore = server_CreateBlobNoInit("mat_gold");
+					if (ore !is null)
+					{
+						ore.Tag('custom quantity');
+						ore.Init();
+						ore.setPosition(block.hitpos);
+						ore.server_SetQuantity(4);
+					}
+				}
+				else if (dirt_stone)
+				{
+					int quantity = 4;
+					if(dirt_thick_stone)
+					{
+						quantity = 6;
+					}
+					CBlob@ ore = server_CreateBlobNoInit("mat_stone");
+					if (ore !is null)
+					{
+						ore.Tag('custom quantity');
+						ore.Init();
+						ore.setPosition(block.hitpos);
+						ore.server_SetQuantity(quantity);
+					}
+				}
+			}
 		}
 	}
 
