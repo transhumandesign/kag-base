@@ -86,8 +86,8 @@ const string[] bombNames = { "Bomb",
                              "Water Bomb"
                            };
 
-const string[] bombIcons = { "$Bomb$",
-                             "$WaterBomb$"
+const string[] bombIcons = { "$BombIcon$",
+                             "$WaterBombIcon$"
                            };
 
 const string[] bombTypeNames = { "mat_bombs",
