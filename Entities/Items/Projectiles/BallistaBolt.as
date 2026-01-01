@@ -11,7 +11,6 @@ const f32 FAST_SPEED = 16.0f;
 
 void onInit(CBlob@ this)
 {
-
 	this.set_u8("blocks_pierced", 0);
 	this.set_bool("static", false);
 
@@ -85,13 +84,8 @@ void onTick(CBlob@ this)
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-
-	CBlob@ carrier = blob.getCarriedBlob();
-
-	if (carrier !is null)
-		if (carrier.hasTag("player")
-		        && (this.getTeamNum() == carrier.getTeamNum() || blob.hasTag("temp blob")))
-			return false;
+	if (isHeldByTeammate(blob, this))
+		return false;
 
 	return (this.getTeamNum() != blob.getTeamNum() || blob.getShape().isStatic())
 	       && blob.isCollidable();
