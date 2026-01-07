@@ -126,15 +126,16 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		return;
 	}
 
-	bool anyone_dead = this.hasTag("dead") || blob.hasTag("dead");
-	if (!anyone_dead)
+	bool my_player_involved = this.isMyPlayer() || blob.isMyPlayer();
+	bool both_are_players = this.hasTag("player") && blob.hasTag("player");
+	if (my_player_involved && both_are_players)
 	{
-		bool anyone_kissing = this.get_string("emote") == "kiss" && is_emote(this); 
-		anyone_kissing = anyone_kissing || (blob.get_string("emote") == "kiss" && is_emote(blob));
-		if (anyone_kissing)
+		bool anyone_dead = this.hasTag("dead") || blob.hasTag("dead");
+		if (!anyone_dead)
 		{
-			bool my_player_involved = this.isMyPlayer() || blob.isMyPlayer();
-			if (my_player_involved)
+			bool anyone_kissing = this.get_string("emote") == "kiss" && is_emote(this); 
+			anyone_kissing = anyone_kissing || (blob.get_string("emote") == "kiss" && is_emote(blob));
+			if (anyone_kissing)
 			{
 				this.getSprite().PlaySound("/Kiss.ogg");
 			}
