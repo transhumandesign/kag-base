@@ -117,3 +117,27 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 	}
 }
+
+// funny kiss feature
+void onCollision(CBlob@ this, CBlob@ blob, bool solid)
+{
+	if (!isClient() || blob is null)
+	{
+		return;
+	}
+
+	bool anyone_dead = this.hasTag("dead") || blob.hasTag("dead");
+	if (!anyone_dead)
+	{
+		bool anyone_kissing = this.get_string("emote") == "kiss" && is_emote(this); 
+		anyone_kissing = anyone_kissing || (blob.get_string("emote") == "kiss" && is_emote(blob));
+		if (anyone_kissing)
+		{
+			bool my_player_involved = this.isMyPlayer() || blob.isMyPlayer();
+			if (my_player_involved)
+			{
+				this.getSprite().PlaySound("/Kiss.ogg");
+			}
+		}
+	}
+}
