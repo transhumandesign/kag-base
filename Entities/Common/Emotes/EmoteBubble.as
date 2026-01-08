@@ -121,24 +121,24 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 // funny kiss feature
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
-	if (!isClient() || blob is null)
+	if (!isClient() 
+	    || blob is null 
+		|| !this.hasTag("player") 
+		|| !blob.hasTag("player")
+		|| this.hasTag("dead")
+		|| blob.hasTag("dead"))
 	{
 		return;
 	}
 
-	bool my_player_involved = this.isMyPlayer() || blob.isMyPlayer();
-	bool both_are_players = this.hasTag("player") && blob.hasTag("player");
-	if (my_player_involved && both_are_players)
+	// my player involved
+	if (this.isMyPlayer() || blob.isMyPlayer())
 	{
-		bool anyone_dead = this.hasTag("dead") || blob.hasTag("dead");
-		if (!anyone_dead)
+		// anyone kissing
+		if ((this.get_string("emote") == "kiss" && is_emote(this))
+			|| (blob.get_string("emote") == "kiss" && is_emote(blob)))
 		{
-			bool anyone_kissing = this.get_string("emote") == "kiss" && is_emote(this); 
-			anyone_kissing = anyone_kissing || (blob.get_string("emote") == "kiss" && is_emote(blob));
-			if (anyone_kissing)
-			{
-				this.getSprite().PlaySound("/Kiss.ogg");
-			}
+			this.getSprite().PlaySound("/Kiss.ogg");
 		}
 	}
 }
