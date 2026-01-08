@@ -9,6 +9,7 @@ namespace FactoryFrame
 
 		longboat = 1,
 		warboat,
+		airship,
 
 		catapult = 4,
 		ballista,

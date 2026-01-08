@@ -32,7 +32,8 @@ Crate@[] base_presets =
 	Crate("catapult",    FactoryFrame::catapult,    Vec2f(5, 3)),
 	Crate("ballista",    FactoryFrame::ballista,    Vec2f(5, 5)),
 	Crate("mounted_bow", FactoryFrame::mounted_bow, Vec2f(3, 3)),
-	Crate("outpost",     FactoryFrame::outpost,     Vec2f(5, 5), 50, "unpack_check_nobuild")
+	Crate("outpost",     FactoryFrame::outpost,     Vec2f(5, 5), 50, "unpack_check_nobuild"),
+	Crate("bomber",      FactoryFrame::airship,     Vec2f(3, 5))
 };
 
 void onInit(CBlob@ this)
