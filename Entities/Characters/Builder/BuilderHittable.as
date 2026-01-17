@@ -68,3 +68,43 @@ bool isUrgent( CBlob@ this, CBlob@ b )
 			//ladder
 			b.getName() == "ladder";
 }
+
+bool isWoodenTile(CMap@ map, u16 type)
+{
+	return map.isTileWood(type) ||
+			map.isTileGrass(type) ||
+			type == CMap::tile_wood_back ||
+			type == 207; // 207 is damaged wood tile back
+}
+
+bool isStructureTile(CMap@ map, u16 type)
+{
+	return map.isTileWood(type) || // wood tile
+			(type >= CMap::tile_wood_back && type <= 207) || // wood backwall
+			map.isTileCastle(type) || // castle block
+			(type >= CMap::tile_castle_back && type <= 79) || // castle backwall
+			type == CMap::tile_castle_back_moss; // castle mossbackwall
+}
+
+// when hit blob in this list, builder uses axe instead of pickaxe
+bool isWooden(CBlob@ attacked)
+{
+	string attacked_name = attacked.getName();
+
+	return (attacked.hasTag("wooden") || attacked_name.toLower().find("tree") != -1 || attacked.hasTag("scenary")) &&
+			attacked_name != "mine" &&
+			attacked_name != "drill";
+}
+
+// when hit blob in this list, builder can hits faster
+bool isStructure(CBlob@ attacked)
+{
+	string attacked_name = attacked.getName();
+
+	return attacked.hasTag("builder fast hit") ||
+			attacked_name == "bridge" ||
+			attacked_name == "wooden_platform" ||
+			attacked.hasTag("door") ||
+			attacked_name == "ladder" ||
+			attacked_name == "spikes";
+}
