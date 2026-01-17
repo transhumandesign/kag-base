@@ -95,7 +95,7 @@ void onTick(CRules@ this)
 //hook after the change has been decided
 void onPlayerChangedTeam(CRules@ this, CPlayer@ player, u8 oldteam, u8 newteam)
 {
-	if (player !is null && player.isMyPlayer() && this.isMatchRunning())
+	if (player !is null && player.isMyPlayer() && this.isMatchRunning() && this.gamemode_name != "Sandbox")
 	{
 		SHOW_MENU = true;
 		RESPAWNS_COUNT = -1;
