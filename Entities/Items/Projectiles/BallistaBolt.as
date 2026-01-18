@@ -4,6 +4,7 @@
 #include "ShieldCommon.as";
 #include "LimitedAttacks.as";
 #include "Explosion.as";
+#include "DoorCommon.as";
 
 const f32 MEDIUM_SPEED = 9.0f;
 const f32 FAST_SPEED = 16.0f;
@@ -11,7 +12,6 @@ const f32 FAST_SPEED = 16.0f;
 
 void onInit(CBlob@ this)
 {
-
 	this.set_u8("blocks_pierced", 0);
 	this.set_bool("static", false);
 
@@ -32,16 +32,9 @@ void onInit(CBlob@ this)
 	this.getSprite().SetFacingLeft(!this.getSprite().isFacingLeft());
 
 	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
-
-	if (this.hasTag("bomb ammo"))
-	{
-		// weird ass workaround
-		this.getSprite().SetFrame(1);
-	}
-	else
-	{
-		this.getSprite().SetFrame(0);
-	}
+ 
+	// weird ass workaround
+	this.getSprite().SetFrame(this.hasTag("bomb ammo") ? 1 : 0);
 }
 
 void onTick(CBlob@ this)
@@ -64,7 +57,6 @@ void onTick(CBlob@ this)
 
 			this.Tag("bomb");
 			this.getSprite().SetFrame(1);
-
 		}
 	}
 	else
@@ -75,17 +67,47 @@ void onTick(CBlob@ this)
 		this.setVelocity(Vec2f_zero);
 		this.setPosition(Vec2f(this.get_f32("lock_x"), this.get_f32("lock_y")));
 		this.getShape().SetStatic(true);
-		this.doTickScripts = false;
+		//this.doTickScripts = false;
 
+		// checking if blob or tile we stick to has disappeared or become non-solid
+		if (this.exists("hitBlob") && this.get_bool("should_check_hitBlob"))
+		{
+			CBlob@ gottenBlob = getBlobByNetworkID(this.get_u32("hitBlob"));
+
+			if (gottenBlob is null) // blob is gone
+			{
+				SetNonStatic(this);
+			}
+			else 
+			{
+				string n = gottenBlob.getName();
+				bool isOpened = (isOpen(gottenBlob) && (n.find("door") != -1 || n == "bridge" || n == "trap_block"));
+				
+				if (gottenBlob.hasTag("fallen") || isOpened) // structure blob is collapsing or is an opening door/bridge/trap
+				{
+					SetNonStatic(this);
+				}
+			}
+		}
+		else if (this.exists("tileWorldPoint") && this.get_bool("should_check_tileWorldPoint"))
+		{
+			CMap@ map = getMap();
+			
+			Vec2f hitpos = this.get_Vec2f("tileWorldPoint");
+			Tile hitTile = map.getTile(hitpos);
+			
+			if (!map.isTileSolid(hitTile))
+			{
+				SetNonStatic(this);
+			}
+		}
 	}
-
+	
 	this.setAngleDegrees(-angle + 180.0f);
-
 }
 
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
-
 	CBlob@ carrier = blob.getCarriedBlob();
 
 	if (carrier !is null)
@@ -95,12 +117,10 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 
 	return (this.getTeamNum() != blob.getTeamNum() || blob.getShape().isStatic())
 	       && blob.isCollidable();
-
 }
 
 void Pierce(CBlob@ this, Vec2f velocity, const f32 angle)
 {
-
 	CMap@ map = this.getMap();
 
 	const f32 speed = velocity.getLength();
@@ -116,17 +136,15 @@ void Pierce(CBlob@ this, Vec2f velocity, const f32 angle)
 
 	Vec2f[] positions =
 	{
-
 		position,
 		tip_position,
 		middle_position,
 		tail_position
-
 	};
 
+	// hitting map
 	for (uint i = 0; i < positions.length; i ++)
 	{
-
 		Vec2f temp_position = positions[i];
 		TileType type = map.getTile(temp_position).type;
 
@@ -142,18 +160,19 @@ void Pierce(CBlob@ this, Vec2f velocity, const f32 angle)
 
 			BallistaHitMap(this, offset, temp_position, velocity, damage, Hitters::ballista);
 			this.server_HitMap(temp_position, velocity, damage, Hitters::ballista);
-
 		}
 	}
 
+	// hitting blob, but only at 1.5f or higher velocity
+	if (this.getShape().vellen < 1.5f)
+		return;
+	
 	HitInfo@[] infos;
 
 	if (speed > 0.1f && map.getHitInfosFromArc(tail_position, -angle, 10, (tip_position - tail_position).getLength(), this, true, @infos))
 	{
-
 		for (uint i = 0; i < infos.length; i ++)
 		{
-
 			CBlob@ blob = infos[i].blob;
 			Vec2f hit_position = infos[i].hitpos;
 
@@ -168,7 +187,6 @@ void Pierce(CBlob@ this, Vec2f velocity, const f32 angle)
 				this.server_Hit(blob, hit_position, velocity, damage, Hitters::ballista, true);
 				BallistaHitBlob(this, hit_position, velocity, damage, blob, Hitters::ballista);
 				LimitedAttack_add_actor(this, blob);
-
 			}
 		}
 	}
@@ -176,10 +194,8 @@ void Pierce(CBlob@ this, Vec2f velocity, const f32 angle)
 
 bool DoExplosion(CBlob@ this, Vec2f velocity)
 {
-
 	if (this.hasTag("bomb"))
 	{
-
 		if (this.hasTag("dead"))
 			return true;
 
@@ -191,16 +207,13 @@ bool DoExplosion(CBlob@ this, Vec2f velocity)
 		this.getSprite().Gib();
 
 		return true;
-
 	}
 
 	return false;
-
 }
 
 void BallistaHitBlob(CBlob@ this, Vec2f hit_position, Vec2f velocity, const f32 damage, CBlob@ blob, u8 customData)
 {
-
 	if (DoExplosion(this, velocity)
 	        || this.get_bool("static"))
 		return;
@@ -214,8 +227,8 @@ void BallistaHitBlob(CBlob@ this, Vec2f hit_position, Vec2f velocity, const f32 
 
 	if (blob.getHealth() > 0.0f)
 	{
-
 		const f32 angle = velocity.Angle();
+		bool isStatic = false;
 
 		if (blob.hasTag("wooden"))
 		{
@@ -225,20 +238,36 @@ void BallistaHitBlob(CBlob@ this, Vec2f hit_position, Vec2f velocity, const f32 
 			const f32 speed = velocity.getLength();
 
 			if (blocks_pierced < 1 && speed > FAST_SPEED)
+			{
 				this.set_u8("blocks_pierced", blocks_pierced + 1);
-			else SetStatic(this, angle);
-
+			}
+			else 
+			{
+				isStatic = true;
+				SetStatic(this, angle);
+			}
 		}
-		else SetStatic(this, angle);
-
+		else 
+		{
+			isStatic = true;
+			SetStatic(this, angle);
+		}
+		
+		// saving information on what was hit to determine when the ballista bolt should collapse
+		if (isServer() && isStatic)
+		{
+			this.set_u32("hitBlob", blob.getNetworkID());
+			this.set_bool("should_check_hitBlob", true);
+		}
 	}
-	else this.setVelocity(velocity * 0.7f);
-
+	else 
+	{
+		this.setVelocity(velocity * 0.7f);
+	}
 }
 
 void BallistaHitMap(CBlob@ this, const u32 offset, Vec2f hit_position, Vec2f velocity, const f32 damage, u8 customData)
 {
-
 	if (DoExplosion(this, velocity)
 	        || this.get_bool("static"))
 		return;
@@ -248,6 +277,7 @@ void BallistaHitMap(CBlob@ this, const u32 offset, Vec2f hit_position, Vec2f vel
 	CMap@ map = getMap();
 	TileType type = map.getTile(offset).type;
 	const f32 angle = velocity.Angle();
+	bool isStatic = false;
 
 	if (type == CMap::tile_bedrock)
 	{
@@ -271,18 +301,31 @@ void BallistaHitMap(CBlob@ this, const u32 offset, Vec2f hit_position, Vec2f vel
 
 		if (blocks_pierced < 1 && speed > FAST_SPEED
 		        && map.isTileWood(type))
+		{
 			this.set_u8("blocks_pierced", blocks_pierced + 1);
-		else SetStatic(this, angle);
-
+		}
+		else 
+		{
+			isStatic = true;
+			SetStatic(this, angle);
+		}
 	}
 	else if (map.isTileSolid(type))
+	{
+		isStatic = true;
 		SetStatic(this, angle);
-
+	}
+	
+	// saving information on what was hit to determine when the ballista bolt should collapse
+	if (isStatic && isServer())
+	{
+		this.set_Vec2f("tileWorldPoint", hit_position);
+		this.set_bool("should_check_tileWorldPoint", true);
+	}
 }
 
 void SetStatic(CBlob@ this, const f32 angle)
 {
-
 	Vec2f position = this.getPosition();
 
 	this.set_u8("angle", Maths::get256DegreesFrom360(angle));
@@ -297,9 +340,31 @@ void SetStatic(CBlob@ this, const f32 angle)
 	this.setVelocity(Vec2f_zero);
 	this.setPosition(position);
 	this.getShape().SetStatic(true);
+	
+	this.getShape().getVars().isladder = true;
 
-	this.getCurrentScript().runFlags |= Script::remove_after_this;
+	//this.getCurrentScript().runFlags |= Script::remove_after_this;
+}
 
+void SetNonStatic(CBlob@ this)
+{
+	//this.set_u8("angle", Maths::get256DegreesFrom360(angle));
+	//this.set_u8("angle", 180);
+	
+	this.set_bool("static", false);
+	this.set_bool("should_check_tileWorldPoint", false);
+	this.set_bool("should_check_hitBlob", false);
+	
+	this.Sync("static", true);
+	this.Sync("should_check_tileWorldPoint", true);
+	this.Sync("should_check_hitBlob", true);
+	
+	this.setVelocity(Vec2f_zero);
+	this.getShape().SetStatic(false);
+	
+	this.getShape().getVars().isladder = false;
+
+	//this.getCurrentScript().runFlags |= Script::remove_after_this;
 }
 
 bool CollidesWithPlatform(CBlob@ this, CBlob@ blob, Vec2f velocity)
