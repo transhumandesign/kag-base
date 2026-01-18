@@ -15,6 +15,7 @@ const string[][] anims =
 
 void onInit(CSprite@ this)
 {
+	this.getVars().gibbed = false;
 	uint col = uint(XORRandom(8));
 	if (this.getBlob().exists("colour"))
 		col = this.getBlob().get_u8("colour");
@@ -61,6 +62,8 @@ void onTick(CSprite@ this)
 
 void onInit(CBlob@ this)
 {
+	this.set_u16("decay time", 65535);
+
 	this.set_u8(personality_property, SCARED_BIT | STILL_IDLE_BIT);
 	this.set_f32(target_searchrad_property, 56.0f);
 
@@ -95,7 +98,7 @@ void onTick(CBlob@ this)
 			this.SetFacingLeft(false);
 	}
 
-	if (getNet().isServer())
+	if (isServer() && !this.hasTag("dead"))
 	{
 		u8 age = this.get_u8("age");
 		if (age < 3)
@@ -126,6 +129,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	this.AddScript("Eatable.as");
 	this.getShape().getConsts().buoyancy = 0.8f;
 	this.getShape().getConsts().collidable = true;
+	this.set_u16("decay time", 40);
 	this.server_SetTimeToDie(40);
 
 	CSprite@ sprite = this.getSprite();
@@ -135,4 +139,18 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	sprite.SetFacingLeft(!sprite.isFacingLeft());
 
 	return damage;
+}
+
+void onHealthChange(CBlob@ this, f32 health_old)
+{
+	if (this.getHealth() < 0 && this.get_u8("age") > 0)
+	{
+		this.getSprite().getVars().gibbed = false;
+		this.getSprite().Gib();
+		this.server_Die();
+	}
+	else
+	{
+		this.getSprite().getVars().gibbed = true;
+	}
 }

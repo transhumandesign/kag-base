@@ -5,15 +5,15 @@ const bool dangerous_logs = false;
 void onInit(CSprite@ this)
 {
 	this.animation.frame = XORRandom(4);
-
+	this.getVars().gibbed = true;
 	this.getCurrentScript().runFlags |= Script::remove_after_this;
 }
 
 void onInit(CBlob@ this)
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
-		this.server_SetTimeToDie(240 + XORRandom(60));
+		this.set_u16("decay time", 240 + XORRandom(60));
 
 		this.server_setTeamNum(-1);
 
@@ -39,8 +39,6 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	return (blob.getShape().isStatic() || (blob.isInWater() && blob.hasTag("vehicle")) ||
 	        (dangerous_logs && this.hasTag("thrown") && blob.hasTag("flesh") && thrown)); // boat
 }
-
-
 
 void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 {
@@ -73,5 +71,15 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 			}
 			this.Untag("thrown");
 		}
+	}
+}
+
+void onHealthChange(CBlob@ this, f32 health_old)
+{
+	if (this.getHealth() <= 0)
+	{
+		this.getSprite().getVars().gibbed = false;
+		this.getSprite().Gib();
+		this.server_Die();
 	}
 }
