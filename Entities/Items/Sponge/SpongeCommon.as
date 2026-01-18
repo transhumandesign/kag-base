@@ -1,6 +1,7 @@
 
 const int ABSORB_COUNT = 100;
 const string ABSORBED_PROP = "absorbed";
+const string ABSORBED_TIME = "last absorbed time";
 
 void spongeUpdateSprite(CSprite@ this, u8 absorbed)
 {
