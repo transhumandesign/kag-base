@@ -138,6 +138,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 			velocity.RotateBy(angle);
 
 			blob.setVelocity(velocity);
+			blob.set_u16("trampoline last bounce time", getGameTime());
 
 			CSprite@ sprite = this.getSprite();
 			if (sprite !is null)
