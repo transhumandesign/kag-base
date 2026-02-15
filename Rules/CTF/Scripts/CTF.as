@@ -13,14 +13,10 @@
 // no scripting required!
 void Config(CTFCore@ this)
 {
-	string configstr = "Rules/CTF/ctf_vars.cfg";
-
-	if (getRules().exists("ctfconfig"))
-	{
-		configstr = getRules().get_string("ctfconfig");
-	}
+	string configstr = "ctf_vars.cfg";
 
 	ConfigFile cfg = ConfigFile(configstr);
+	cfg.loadFile(configstr);
 
 	//how long to wait for everyone to spawn in?
 	s32 warmUpTimeSeconds = cfg.read_s32("warmup_time", 30);
