@@ -831,6 +831,8 @@ bool checkForSolidMapBlob(CMap@ map, Vec2f pos, CBlob@ blob = null)
 				Vec2f runnerPos = blob.getPosition();
 				Vec2f platPos = _tempBlob.getPosition();
 
+				angle = Maths::FMod(Maths::FMod(angle, 360.0f) + 360.0f, 360.0f);
+
 				if (angle == 90.0f && runnerPos.x > platPos.x && (blob.isKeyPressed(key_left) || blob.wasKeyPressed(key_left)))
 				{
 					// platform is facing right
