@@ -34,7 +34,7 @@ void onTick(CRules@ this)
 
 void onRender(CRules@ this)
 {
-	if(g_debug == 1)
+	if (g_debug == 6)
 	{
 		MapPowerGrid@ grid;
 		if(!this.get("power grid", @grid)) return;

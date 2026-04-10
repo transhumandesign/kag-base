@@ -17,6 +17,10 @@ shared class TreeSegment
 
 	Random r;
 
+	TreeSegment(const TreeSegment &in other) {
+		print("BUG, we do not want copy constructor of TreeSegment!");
+	}
+
 };
 
 shared class TreeVars
@@ -34,7 +38,7 @@ shared class TreeVars
 
 TreeSegment@ getLastSegment(CBlob@ this)
 {
-	TreeSegment[]@ segments;
+	TreeSegment@[]@ segments;
 	this.get("TreeSegments", @segments);
 
 	if (segments is null || segments.length < 1)
@@ -47,7 +51,7 @@ TreeSegment@ getLastSegment(CBlob@ this)
 
 void GrowSegments(CBlob@ this, TreeVars@ vars)
 {
-	TreeSegment[]@ segments;
+	TreeSegment@[]@ segments;
 	this.get("TreeSegments", @segments);
 	if (segments is null)
 	{
@@ -84,7 +88,7 @@ bool CollapseToGround(CBlob@ this, f32 angle)
 	CMap@ map = getMap();
 	Vec2f pos = this.getPosition();
 
-	TreeSegment[]@ segments;
+	TreeSegment@[]@ segments;
 	this.get("TreeSegments", @segments);
 	if (segments is null)
 		return false;

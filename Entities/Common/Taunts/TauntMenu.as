@@ -16,7 +16,7 @@ void onInit(CRules@ rules)
 	rules.addCommandID("display taunt");
 	rules.addCommandID("display taunt client");
 
-	if (isServer()) return;
+	if (isServer() && !isClient()) return;
 
 	string filename = "TauntEntries.cfg";
 	string cachefilename = "../Cache/" + filename;
@@ -81,7 +81,7 @@ void onInit(CRules@ rules)
 
 void onTick(CRules@ rules)
 {
-	if (isServer()) return;
+	if (isServer() && !isClient()) return;
 
 	CBlob@ blob = getLocalPlayerBlob();
 

@@ -6,6 +6,11 @@ ChatCommandManager@ manager;
 void onInit(CRules@ this)
 {
 	this.addCommandID("SendChatMessage");
+	onReload(this);
+}
+
+void onReload(CRules@ this)
+{
 	@manager = ChatCommands::getManager();
 	RegisterDefaultChatCommands(manager);
 	manager.ProcessConfigCommands();

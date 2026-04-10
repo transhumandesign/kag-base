@@ -8,6 +8,12 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getCurrentScript().removeIfTag = "dead";
 
+	//Stop if there is no emote menu.
+	if(!getRules().hasScript("EmoteMenu.as"))
+	{
+		return;
+	}
+
 	CPlayer@ me = getLocalPlayer();
 	if (me !is null)
 	{
@@ -24,7 +30,7 @@ void onTick(CBlob@ this)
 		onInit(this);
 	}
 	
-	if (getHUD().hasMenus())
+	if (getHUD().hasMenus() || emoteBinds.size() == 0)
 	{
 		return;
 	}
