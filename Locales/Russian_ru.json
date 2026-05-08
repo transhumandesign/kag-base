@@ -770,7 +770,7 @@
 	"Downward platforms at the top of a tower will help prevent enemies from climbing over.":
 	"Платформы, направленные вниз, помогут вам остановить врагов, пытающихся забраться на башню.",
 	"Stomping enemies is great tactic, but be careful - jump from too high and you'll die if you miss.":
-	"Прыгать на противника с высоты это хорошая тактика, но будьте осторожны - вы умрёте, если спрыгните в большой высоты и промахнётесь.",
+	"Прыгать на противника с высоты это хорошая тактика, но будьте осторожны - вы умрёте, если спрыгните с большой высоты и промахнётесь.",
 	"Buy eggs to replenish your stock of chickens.":
 	"Покупайте яйца, чтобы пополнять запасы куриц.",
 	"Knights can use their swords to destroy wooden blocks and doors, but not stone":
@@ -867,7 +867,7 @@
 	"Mine":"Мина",
 	"Satchel":"Взрывпакет", //OLD
 	"Water Bomb":"Водяная бомба",
-	"Water Bombs":"Водяная бомба",
+	"Water Bombs":"Водяные бомбы",
 	"Burger":"Бургер",
 	"Food":"Еда",//StandardPickup.as
 	"Heart":"Сердце",
@@ -887,8 +887,8 @@
 	"Sponge":"Губка",
 	"Bomb Arrow":"Взрывная стрела",
 	"Bomb Arrows":"Взрывные стрелы",//StandardPickup.as
-	"Fire Arrows":"Огненные стрела",
-	"Water Arrows":"Водяные стрела",
+	"Fire Arrows":"Огненные стрелы",
+	"Water Arrows":"Водяные стрелы",
 	"Gold":"Золото",
 	"Stone":"Камень",
 	"Wood":"Дерево",
@@ -966,7 +966,7 @@
 // Kitchen.as
 	"Shark steak":"Акулий стейк",
 	"Shark Chop":"Акулья отбивная",
-	"Fishy":"рыбка",
+	"Fishy":"Рыбка",
 	"   Russian":"   Русский",
 	"Russian Burger":"Русский бургер",
 
@@ -1019,11 +1019,11 @@
 //// SCROLLS ////
 //ScrollDrought.as
 	"Use this to dry up an orb of water.":
-	"Высушить всю воду в определённом радиусе.",
+	"Используйте этот свиток, чтобы высушить всю воду в определённом радиусе.",
 	"Use this to turn all stone in the area into gold":
-	"Превратить весь камень в золото в определённом радиусе.",
+	"Используйте этот свиток, чтобы превратить весь камень в золото в определённом радиусе.",
 	"Use this to make all visible enemies instantly turn into a pile of gibs.":
-	"Превратить всех видимых врагов в кучу ошмётков.",
+	"Используйте этот свиток, чтобы превратить всех видимых врагов в кучу ошмётков.",
 
 //// TEAMS ////
 	"Blue Team": "Синяя команда",
