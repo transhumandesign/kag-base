@@ -520,11 +520,18 @@ void onRender(CSprite@ this)
 			}
 			else
 			{
+				Driver@ driver = getDriver();
+				CControls@ controls = getControls();
+
 				f32 halfTile = getMap().tilesize / 2.0f;
-				Vec2f aimpos = blob.getMovement().getVars().aimpos;
-				carryBlob.RenderForHUD(Vec2f(aimpos.x - halfTile, aimpos.y - halfTile) - carryBlob.getPosition(), 0.0f,
-				                       SColor(255, 255, 46, 50) ,
-				                       RenderStyle::normal);
+				Vec2f aimpos = driver.getWorldPosFromScreenPos(controls.getInterpMouseScreenPos());
+
+				carryBlob.RenderForHUD(
+					Vec2f(aimpos.x - halfTile, aimpos.y - halfTile) - carryBlob.getPosition(),
+					0.0f,
+				    SColor(255, 255, 46, 50) ,
+				    RenderStyle::normal
+				);
 			}
 		}
 	}

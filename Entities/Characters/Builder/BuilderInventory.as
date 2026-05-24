@@ -437,9 +437,14 @@ void onRender(CSprite@ this)
 		{
 			if (bc.blockActive || bc.blobActive)
 			{
+				Driver@ driver = getDriver();
+				CControls@ controls = getControls();
+
+				Vec2f blobAimPos = driver.getWorldPosFromScreenPos(controls.getInterpMouseScreenPos());
+
 				Vec2f pos = blob.getPosition();
-				Vec2f myPos =  blob.getInterpolatedScreenPos() + Vec2f(0.0f,(pos.y > blob.getAimPos().y) ? -blob.getRadius() : blob.getRadius());
-				Vec2f aimPos2D = getDriver().getScreenPosFromWorldPos(blob.getAimPos() + cam_offset);
+				Vec2f myPos =  blob.getInterpolatedScreenPos() + Vec2f(0.0f,(pos.y > blobAimPos.y) ? -blob.getRadius() : blob.getRadius());
+				Vec2f aimPos2D = getDriver().getScreenPosFromWorldPos( blobAimPos + cam_offset );
 
 				if (!bc.hasReqs)
 				{
