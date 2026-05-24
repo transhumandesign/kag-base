@@ -509,13 +509,13 @@ void onRender(CSprite@ this)
 				if (bc.buildable && bc.supported)
 				{
 					color.set(255, 255, 255, 255);
-					carryBlob.RenderForHUD(getBottomOfCursor(bc.tileAimPos, carryBlob) - carryBlob.getPosition(), 0.0f, color, RenderStyle::normal);
+					carryBlob.RenderForHUD(getBottomOfCursor(bc.tileAimPos, carryBlob) - carryBlob.getInterpolatedPosition(), 0.0f, color, RenderStyle::normal);
 				}
 				else
 				{
 					color.set(255, 255, 46, 50);
 					Vec2f offset(0.0f, -1.0f + 1.0f * ((getGameTime() * 0.8f) % 8));
-					carryBlob.RenderForHUD(getBottomOfCursor(bc.tileAimPos, carryBlob) + offset - carryBlob.getPosition(), 0.0f, color, RenderStyle::normal);
+					carryBlob.RenderForHUD(getBottomOfCursor(bc.tileAimPos, carryBlob) + offset - carryBlob.getInterpolatedPosition(), 0.0f, color, RenderStyle::normal);
 				}
 			}
 			else
