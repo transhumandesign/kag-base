@@ -11,8 +11,12 @@ void onInit(CBlob@ this)
 	this.set_u16("explosive_parent", 0);
 	this.getShape().getConsts().net_threshold_multiplier = 2.0f;
 	SetupBomb(this, bomb_fuse, 48.0f, 3.0f, 24.0f, 0.4f, true);
-	//
-	this.Tag("activated"); // make it lit already and throwable
+
+	//dont collide with top of the map
+	this.SetMapEdgeFlags(CBlob::map_collide_left | CBlob::map_collide_right);
+	
+	// make it lit already and throwable
+	this.Tag("activated");
 }
 
 //start ugly bomb logic :)
