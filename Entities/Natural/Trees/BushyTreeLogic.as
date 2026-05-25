@@ -42,6 +42,8 @@ void onInit(CBlob@ this)
 
 	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", icon_frame, Vec2f(8, 32));
 	this.SetMinimapRenderAlways(true);
+
+	UpdateMinimapIcon(this, vars);
 }
 
 void GrowSprite(CSprite@ this, TreeVars@ vars)
