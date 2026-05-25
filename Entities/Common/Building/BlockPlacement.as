@@ -283,12 +283,19 @@ void onRender(CSprite@ this)
 			}
 			else
 			{
+				Driver@ driver = getDriver();
+				CControls@ controls = getControls();
+
 				f32 halfTile = map.tilesize / 2.0f;
-				Vec2f aimpos = blob.getAimPos() + getCamera().getInterpolationOffset();
 				Vec2f offset(-0.2f + 0.4f * (Maths::Sin(getGameTime() * 0.5f)), 0.0f);
-				map.DrawTile(Vec2f(aimpos.x - halfTile, aimpos.y - halfTile) + offset, buildtile,
-				             SColor(255, 255, 46, 50),
-				             getCamera().targetDistance, false);
+				Vec2f aimpos = driver.getWorldPosFromScreenPos(controls.getInterpMouseScreenPos());
+
+				map.DrawTile(
+					Vec2f(aimpos.x - halfTile, aimpos.y - halfTile) + offset,
+					buildtile,
+				    SColor(255, 255, 46, 50),
+				    getCamera().targetDistance, false
+				);
 			}
 		}
 	}

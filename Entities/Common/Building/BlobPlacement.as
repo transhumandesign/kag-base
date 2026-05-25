@@ -509,22 +509,29 @@ void onRender(CSprite@ this)
 				if (bc.buildable && bc.supported)
 				{
 					color.set(255, 255, 255, 255);
-					carryBlob.RenderForHUD(getBottomOfCursor(bc.tileAimPos, carryBlob) - carryBlob.getPosition(), 0.0f, color, RenderStyle::normal);
+					carryBlob.RenderForHUD(getBottomOfCursor(bc.tileAimPos, carryBlob) - carryBlob.getInterpolatedPosition(), 0.0f, color, RenderStyle::normal);
 				}
 				else
 				{
 					color.set(255, 255, 46, 50);
 					Vec2f offset(0.0f, -1.0f + 1.0f * ((getGameTime() * 0.8f) % 8));
-					carryBlob.RenderForHUD(getBottomOfCursor(bc.tileAimPos, carryBlob) + offset - carryBlob.getPosition(), 0.0f, color, RenderStyle::normal);
+					carryBlob.RenderForHUD(getBottomOfCursor(bc.tileAimPos, carryBlob) + offset - carryBlob.getInterpolatedPosition(), 0.0f, color, RenderStyle::normal);
 				}
 			}
 			else
 			{
-				f32 halfTile = getMap().tilesize / 2.0f;
-				Vec2f aimpos = blob.getMovement().getVars().aimpos;
-				carryBlob.RenderForHUD(Vec2f(aimpos.x - halfTile, aimpos.y - halfTile) - carryBlob.getPosition(), 0.0f,
-				                       SColor(255, 255, 46, 50) ,
-				                       RenderStyle::normal);
+				Driver@ driver = getDriver();
+				CControls@ controls = getControls();
+
+				Vec2f offset(-0.2f + 0.4f * (Maths::Sin(getGameTime() * 0.5f)), 0.0f);
+				Vec2f aimpos = driver.getWorldPosFromScreenPos(controls.getInterpMouseScreenPos());
+				
+				carryBlob.RenderForHUD(
+					aimpos - carryBlob.getInterpolatedPosition() + offset,
+					0.0f,
+				    SColor(255, 255, 46, 50) ,
+				    RenderStyle::normal
+				);
 			}
 		}
 	}
