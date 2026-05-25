@@ -265,7 +265,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	const bool canput = putting && this.getInventory().canPutItem(carried);
 	CBlob@ sneaky_player = getPlayerInside(this);
 	// If there's a player inside and we aren't just dropping in an item
-	if (sneaky_player !is null && !(putting && canput))
+	if (sneaky_player !is null && !canput)
 	{
 		if (sneaky_player.getTeamNum() == caller.getTeamNum())
 		{

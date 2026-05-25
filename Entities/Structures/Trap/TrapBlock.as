@@ -1,6 +1,5 @@
 // TrapBlock.as
 
-#include "Hitters.as";
 #include "MapFlags.as";
 #include "DoorCommon.as";
 

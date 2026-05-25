@@ -39,6 +39,8 @@ void onInit(CBlob@ this)
 
 	this.set_u8(state_prop, normal);
 	this.set_u8(timer_prop, 0);
+	
+	this.Tag("has damage owner");
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)

@@ -1,7 +1,5 @@
 // Bush logic
 
-#include "canGrow.as";
-
 void onInit(CBlob@ this)
 {
 	this.set_bool("grown", true);
@@ -26,4 +24,5 @@ void onInit(CSprite@ this)
 	this.SetFacingLeft(((netID % 13) % 2) == 0);
 	//this.getCurrentScript().runFlags |= Script::remove_after_this;	// wont be sent on network
 	this.SetZ(10.0f);
+	this.getCurrentScript().runFlags |= Script::remove_after_this;
 }

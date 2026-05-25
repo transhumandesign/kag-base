@@ -1,6 +1,5 @@
 // scroll script that builds gold into
 
-#include "Hitters.as";
 #include "GenericButtonCommon.as";
 
 const int radius = 30;

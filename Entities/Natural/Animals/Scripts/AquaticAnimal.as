@@ -7,8 +7,6 @@
 
 #define SERVER_ONLY
 
-#include "Hitters.as";
-
 //blob
 void onInit(CBlob@ this)
 {

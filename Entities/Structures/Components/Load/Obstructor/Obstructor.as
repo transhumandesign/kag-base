@@ -2,7 +2,6 @@
 
 #include "DummyCommon.as";
 #include "MechanismsCommon.as";
-#include "Hitters.as";
 
 class Obstructor : Component
 {

@@ -1,5 +1,4 @@
 #include "VehicleCommon.as"
-#include "Hitters.as"
 
 // Boat logic
 

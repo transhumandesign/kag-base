@@ -4,7 +4,6 @@
 #include "StandardRespawnCommand.as";
 #include "MigrantCommon.as";
 #include "HallCommon.as";
-#include "Requirements.as"
 #include "AddSectorOnTiles.as"
 #include "GenericButtonCommon.as"
 
