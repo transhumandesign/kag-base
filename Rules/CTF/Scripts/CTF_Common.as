@@ -4,9 +4,11 @@ const u32 materials_wait_warmup = 40; //seconds between free mats
 
 const int warmup_wood_amount = 250;
 const int warmup_stone_amount = 80;
+const int warmup_arrows_amount = 30;
 
 const int matchtime_wood_amount = 100;
 const int matchtime_stone_amount = 30;
+const int matchtime_arrows_amount = 30;
 
 //property
 const string SPAWN_ITEMS_TIMER_BUILDER = "CTF SpawnItems Builder:";
