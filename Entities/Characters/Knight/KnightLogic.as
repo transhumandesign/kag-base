@@ -238,6 +238,7 @@ void onTick(CBlob@ this)
 		knight.doubleslash = false;
 		hud.SetCursorFrame(0);
 		this.set_s32("currentKnightState", 0);
+		this.set_s32("serverKnightState", -1);
 		return;
 	}
 
@@ -271,6 +272,7 @@ void onTick(CBlob@ this)
 		knight.slideTime = 0;
 		knight.doubleslash = false;
 		this.set_s32("currentKnightState", 0);
+		this.set_s32("serverKnightState", -1);
 
 		pressed_a1 = false;
 		pressed_a2 = false;
