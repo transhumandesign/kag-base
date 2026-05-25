@@ -79,9 +79,27 @@ void onTick(CRules@ this)
 				break;
 			}
 		}
-		map.SetBorderColourTop(SColor(has_solid_tiles ? 0xff000000 : 0x80000000));
+
+		// Set a flag for other scripts
+		if (isServer() && this !is null)
+		{
+			this.set_bool("collide with ceiling", has_solid_tiles);
+			this.Sync("collide with ceiling", true);
+		}
+
+		map.SetBorderColourTop(SColor(has_solid_tiles ? 0xff000000 : 0x30000000));
 	}
 }
+
+void onBlobCreated(CRules@ this, CBlob@ blob)
+{
+	// Remove collision with the top of the map if it's not a cave map
+	if (blob !is null && this !is null && !this.get_bool("collide with ceiling"))
+	{
+		blob.SetMapEdgeFlags(blob.getMapEdgeFlags() & ~CBlob::map_collide_up);
+	}
+}
+
 
 //chat stuff!
 

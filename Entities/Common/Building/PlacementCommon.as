@@ -16,10 +16,12 @@ shared class BlockCursor
 	bool blobActive;
 	bool sameTileOnBack;
 	CBitStream missing;
+	u16 blockType;
 
 	BlockCursor()
 	{
 		blobActive = blockActive = buildableAtPos = rayBlocked = hasReqs = supported = buildable = cursorClose = sameTileOnBack = false;
+		blockType = 0;
 	}
 };
 
@@ -163,59 +165,65 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 			}
 		}
 
-		if (!isSeed && !isLadder && (buildSolid || isSpikes || isDoor || isPlatform) && map.getSectorAtPosition(middle, "no build") !is null)
+		// Prevent placing in no build, no solids, and no blobs sectors
+		const bool no_build  = !isLadder && (buildSolid || isSpikes || isDoor || isPlatform || y < 3) && map.getSectorAtPosition(middle, "no build") !is null;
+		const bool no_solids = buildSolid && map.getSectorAtPosition(middle, "no solids") !is null;
+		const bool no_blobs  = blob !is null && map.getSectorAtPosition(middle, "no blobs") !is null;
+		const bool has_adjacent = map.isTileSolid(up) || map.isTileSolid(down) || map.isTileSolid(left) || map.isTileSolid(right);
+		if (!isSeed && (no_build || (!isSpikes || has_adjacent) && (no_solids || no_blobs)))
 		{
 			return false;
 		}
 
 		//if (blob is null)
 		//middle += Vec2f(map.tilesize*0.5f, map.tilesize*0.5f);
-
-		const string name = blob !is null ? blob.getName() : "";
-		CBlob@[] blobsInRadius;
-		if (map.getBlobsInRadius(middle, buildSolid ? map.tilesize : 0.0f, @blobsInRadius))
+		if (!isLadder)
 		{
-			for (uint i = 0; i < blobsInRadius.length; i++)
+			const string name = blob !is null ? blob.getName() : "";
+			CBlob@[] blobsInRadius;
+			if (map.getBlobsInRadius(middle, buildSolid ? map.tilesize : 0.0f, @blobsInRadius))
 			{
-				CBlob @b = blobsInRadius[i];
-				if (!b.isAttached() && b !is blob)
+				for (uint i = 0; i < blobsInRadius.length; i++)
 				{
-					if (blob !is null || buildSolid)
+					CBlob @b = blobsInRadius[i];
+					if (!b.isAttached() && b !is blob)
 					{
-						if (b is this && b.getName() == "spikes") continue;
-
-						Vec2f bpos = b.getPosition();
-
-						bool placingSeedOnNonStaticBlob = isSeed && !b.getShape().isStatic();
-						bool replacingSeed = isSeed && b.getName() == "seed";
-						bool cantBuild = isBlocking(b);
-						bool buildingOnTeam = isDoor && (b.getTeamNum() == this.getTeamNum() || b.getTeamNum() == 255) && !b.getShape().isStatic() && this !is b;
-						bool ladderBuild = isLadder && !b.getShape().isStatic();
-
-						// cant place on any other blob
-						if ((!ladderBuild &&
-							!buildingOnTeam &&
-							(cantBuild && !(placingSeedOnNonStaticBlob)) &&
-							!b.hasTag("dead") &&
-							!b.hasTag("material") &&
-							!b.hasTag("projectile"))
-							|| replacingSeed)
+						if (blob !is null || buildSolid)
 						{
-							f32 angle_decomp = Maths::FMod(Maths::Abs(b.getAngleDegrees()), 180.0f);
-							bool rotated = angle_decomp > 45.0f && angle_decomp < 135.0f;
-							f32 width = rotated ? b.getHeight() : b.getWidth();
-							f32 height = rotated ? b.getWidth() : b.getHeight();
-							if ((middle.x > bpos.x - width * 0.5f) && (middle.x < bpos.x + width * 0.5f)
-								&& (middle.y > bpos.y - height * 0.5f) && (middle.y < bpos.y + height * 0.5f))
+							if (b is this && b.getName() == "spikes") continue;
+
+							Vec2f bpos = b.getPosition();
+
+							bool placingSeedOnNonStaticBlob = isSeed && !b.getShape().isStatic();
+							bool replacingSeed = isSeed && b.getName() == "seed";
+							bool cantBuild = isBlocking(b);
+							bool buildingOnTeam = isDoor && (b.getTeamNum() == this.getTeamNum() || b.getTeamNum() == 255) && !b.getShape().isStatic() && this !is b;
+							bool ladderBuild = isLadder && !b.getShape().isStatic();
+
+							// cant place on any other blob
+							if ((!ladderBuild &&
+								!buildingOnTeam &&
+								(cantBuild && !(placingSeedOnNonStaticBlob)) &&
+								!b.hasTag("dead") &&
+								!b.hasTag("material") &&
+								!b.hasTag("projectile"))
+								|| replacingSeed)
 							{
-								return false;
+								f32 angle_decomp = Maths::FMod(Maths::Abs(b.getAngleDegrees()), 180.0f);
+								bool rotated = angle_decomp > 45.0f && angle_decomp < 135.0f;
+								f32 width = rotated ? b.getHeight() : b.getWidth();
+								f32 height = rotated ? b.getWidth() : b.getHeight();
+								if ((middle.x > bpos.x - width * 0.5f) && (middle.x < bpos.x + width * 0.5f)
+									&& (middle.y > bpos.y - height * 0.5f) && (middle.y < bpos.y + height * 0.5f))
+								{
+									return false;
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-
 
 		if (isSeed)
 		{
