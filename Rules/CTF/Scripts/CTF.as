@@ -21,7 +21,6 @@ void Config(CTFCore@ this)
 		configstr = getRules().get_string("ctfconfig");
 
 	ConfigFile cfg = ConfigFile(configstr);
-	cfg.loadFile(configstr);
 
 	//how long to wait for everyone to spawn in?
 	s32 warmUpTimeSeconds = cfg.read_s32("warmup_time", 30);

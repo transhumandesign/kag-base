@@ -26,7 +26,6 @@ void Config(WarCore@ this)
 		configstr = this.rules.get_string("warconfig");
 
 	ConfigFile cfg = ConfigFile(configstr);
-	cfg.loadFile(configstr);
 
 	//how long to wait for everyone to spawn in?
 	s32 warmUpTimeSeconds = cfg.read_s32("warmup_time", 30);
