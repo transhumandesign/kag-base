@@ -1,6 +1,11 @@
+#include "KnockedCommon.as";
+
 bool canSeeButtons(CBlob@ this, CBlob@ caller)
 {
-	if ((this is null || caller is null)) { return false; }
+	if (this is null || caller is null || isKnocked(caller))
+	{ 
+		return false; 
+	}
 
 	CInventory@ inv = this.getInventory();
 	return (
