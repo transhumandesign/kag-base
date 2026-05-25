@@ -2,6 +2,7 @@
 #include "BuildBlock.as"
 #include "Requirements.as"
 #include "GameplayEventsCommon.as";
+#include "RedBarrierCommon.as";
 
 // Called server side
 void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
@@ -95,6 +96,12 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 
 	// Are we trying to place a solid tile on a door/ladder/platform/bridge (usually due to lag)?
 	if (fakeHasTileSolidBlobs(cursorPos) && map.isTileSolid(blockToPlace.tile))
+	{
+		return false;
+	}
+
+	// Prevent building in red barrier during build phase
+	if (inBarrier(cursorPos.x))
 	{
 		return false;
 	}

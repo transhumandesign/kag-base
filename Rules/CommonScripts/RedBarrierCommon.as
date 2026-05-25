@@ -13,3 +13,9 @@ const bool shouldBarrier(CRules@ rules)
 {
 	return rules.isIntermission() || rules.isWarmup() || rules.isBarrier();
 }
+
+bool inBarrier(f32 x)
+{
+	CRules@ rules = getRules();
+	return shouldBarrier(rules) && x >= rules.get_u16("barrier_x1") && x < rules.get_u16("barrier_x2");
+}

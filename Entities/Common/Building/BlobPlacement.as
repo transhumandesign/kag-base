@@ -7,6 +7,7 @@
 #include "GameplayEventsCommon.as";
 #include "Requirements.as"
 #include "RunnerTextures.as"
+#include "RedBarrierCommon.as";
 
 bool PlaceBlob(CBlob@ this, CBlob@ blob, Vec2f cursorPos, bool repairing = false, CBlob@ repairBlob = null)
 {
@@ -140,6 +141,12 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repa
 		{
 			return false;
 		}
+	}
+
+	// Prevent building in red barrier during build phase
+	if (inBarrier(cursorPos.x))
+	{
+		return false;
 	}
 
 	return true;

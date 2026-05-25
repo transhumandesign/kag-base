@@ -1,4 +1,6 @@
 
+#include "RedBarrierCommon.as"
+
 const f32 MAX_BUILD_LENGTH = 4.0f;
 
 shared class BlockCursor
@@ -56,6 +58,12 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 	if (p.y < 2 * map.tilesize ||
 			p.x < 2 * map.tilesize ||
 			p.x > (map.tilemapwidth - 2.0f)*map.tilesize)
+	{
+		return false;
+	}
+
+	// Prevent building in red barrier during build phase
+	if (inBarrier(p.x))
 	{
 		return false;
 	}
