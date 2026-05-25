@@ -3,6 +3,7 @@
 #define CLIENT_ONLY
 
 #include "RulesCore.as";
+#include "MusicCommon.as";
 
 enum GameMusicTag
 {
@@ -33,10 +34,14 @@ string base_blob_name = "hall";
 void onInit(CBlob@ this)
 {
 	CMixer@ mixer = getMixer();
-	if (mixer is null)
-		return;
+	if (mixer is null) { return; } //prevents aids on server
 
-	mixer.ResetMixer();
+	if (musicAlreadyExists(this))
+	{
+		this.server_Die();
+		this.getCurrentScript().runFlags |= Script::remove_after_this;
+	}
+
 	this.set_bool("initialized game", false);
 
 	CRules@ rules = getRules();
