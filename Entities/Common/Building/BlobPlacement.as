@@ -523,11 +523,11 @@ void onRender(CSprite@ this)
 				Driver@ driver = getDriver();
 				CControls@ controls = getControls();
 
-				f32 halfTile = getMap().tilesize / 2.0f;
+				Vec2f offset(-0.2f + 0.4f * (Maths::Sin(getGameTime() * 0.5f)), 0.0f);
 				Vec2f aimpos = driver.getWorldPosFromScreenPos(controls.getInterpMouseScreenPos());
-
+				
 				carryBlob.RenderForHUD(
-					Vec2f(aimpos.x - halfTile, aimpos.y - halfTile) - carryBlob.getPosition(),
+					aimpos - carryBlob.getInterpolatedPosition() + offset,
 					0.0f,
 				    SColor(255, 255, 46, 50) ,
 				    RenderStyle::normal
