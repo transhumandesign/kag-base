@@ -111,71 +111,104 @@ shared class CTFSpawns : RespawnSystem
 
 	}
 
+	void UpdateSoonSpawn(PlayerInfo@ p_info)
+	{
+		CPlayer@ player = getPlayerByUsername(p_info.username); // is still connected?
+		if (getLocalPlayer() !is player)
+		{
+			return;
+		}
+
+		CTFPlayerInfo@ info = cast < CTFPlayerInfo@ > (p_info);
+		if (info is null) { warn("CTF LOGIC: Couldn't get player info ( in UpdateSoonSpawn ) "); return; }
+
+		if (info.can_spawn_time > 15)
+		{
+			getRules().set("spawn soon blob", null);
+			return;
+		}
+
+		CBlob@ spawnBlob = getSpawnBlob(p_info);
+		if (spawnBlob is null)
+		{
+			getRules().set("spawn soon blob", null);
+			return;
+		}
+
+		getRules().set("spawn soon blob", @spawnBlob);
+	}
+
 	void DoSpawnPlayer(PlayerInfo@ p_info)
 	{
-		if (canSpawnPlayer(p_info))
+		if (!canSpawnPlayer(p_info))
 		{
-			//limit how many spawn per second
-			if (limit > 0)
+			if (isClient())
 			{
-				limit--;
-				return;
+				UpdateSoonSpawn(@p_info);
 			}
-			else
+			return;
+		}
+
+		//limit how many spawn per second
+		if (limit > 0)
+		{
+			limit--;
+			return;
+		}
+		else
+		{
+			limit = spawnspam_limit_time;
+		}
+
+		// tutorials hack
+		if (getRules().hasTag("singleplayer"))
+		{
+			p_info.team = 0;
+		}
+
+		// spawn as builder in warmup
+		if (getRules().isWarmup())
+		{
+			p_info.blob_name = "builder";
+		}
+
+		CBlob@ spawnBlob = getSpawnBlob(p_info);
+
+		if (spawnBlob !is null)
+		{
+			if (spawnBlob.exists("custom respawn immunity"))
 			{
-				limit = spawnspam_limit_time;
+				p_info.customImmunityTime = spawnBlob.get_u8("custom respawn immunity");
 			}
+		}
 
-			// tutorials hack
-			if (getRules().hasTag("singleplayer"))
-			{
-				p_info.team = 0;
-			}
+		CPlayer@ player = getPlayerByUsername(p_info.username); // is still connected?
 
-			// spawn as builder in warmup
-			if (getRules().isWarmup())
-			{
-				p_info.blob_name = "builder";
-			}
+		if (player is null)
+		{
+			RemovePlayerFromSpawn(p_info);
+			return;
+		}
+		if (player.getTeamNum() != int(p_info.team))
+		{
+			player.server_setTeamNum(p_info.team);
+		}
 
-			CBlob@ spawnBlob = getSpawnBlob(p_info);
+		// remove previous players blob
+		if (player.getBlob() !is null)
+		{
+			CBlob @blob = player.getBlob();
+			blob.server_SetPlayer(null);
+			blob.server_Die();
+		}
 
-			if (spawnBlob !is null)
-			{
-				if (spawnBlob.exists("custom respawn immunity"))
-				{
-					p_info.customImmunityTime = spawnBlob.get_u8("custom respawn immunity");
-				}
-			}
+		CBlob@ playerBlob = SpawnPlayerIntoWorld(getSpawnLocation(p_info), p_info);
 
-			CPlayer@ player = getPlayerByUsername(p_info.username); // is still connected?
-
-			if (player is null)
-			{
-				RemovePlayerFromSpawn(p_info);
-				return;
-			}
-			if (player.getTeamNum() != int(p_info.team))
-			{
-				player.server_setTeamNum(p_info.team);
-			}
-
-			// remove previous players blob
-			if (player.getBlob() !is null)
-			{
-				CBlob @blob = player.getBlob();
-				blob.server_SetPlayer(null);
-				blob.server_Die();
-			}
-
-			CBlob@ playerBlob = SpawnPlayerIntoWorld(getSpawnLocation(p_info), p_info);
-
-			if (playerBlob !is null)
-			{
-				// spawn resources
-				p_info.spawnsCount++;
-				RemovePlayerFromSpawn(player);
-			}
+		if (playerBlob !is null)
+		{
+			// spawn resources
+			p_info.spawnsCount++;
+			RemovePlayerFromSpawn(player);
 		}
 	}
 
