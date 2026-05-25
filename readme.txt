@@ -7,7 +7,7 @@ FEATURES:
 
 - large multiplayer games
 - 3 classes (knight, archer, builder)
-- build castles and mine resources
+- mine resources and build castles
 - detailed pixel-art graphics
 - old SNES game King Arthur's World inspiration
 
@@ -21,13 +21,15 @@ DEFAULT KEYS:
 	[C] pickup / drop menu
 	[Q] emoticons menu
 	[V] taunts menu
+	[M] expand minimap
 	[SCROLL+] zoom in
 	[SCROLL-] zoom out
 	[BACKSPACE] misc menu (suicide, change team, change head/sex)
 	[T/ENTER] chat
 	[Y] team chat
 	[1...0] emoticon hotkeys
-	[F1] scoreboard
+	[F1] show help
+	[TAB] scoreboard
 	[ESC] main menu
 	[F4] save screenshot to Screenshots folder
 	[F2/F3] unfreeze/freeze player - admin option
@@ -54,7 +56,7 @@ USEFUL LINKS:
 
 AUTHORS:
 
-Transhuman Design 2011-2020
+Transhuman Design 2011-2025
 
 A game by Michal Marcinkowski "MM" & Max Cahill "Geti"
 API by Shadlington & FliesLikeABrick
@@ -79,4 +81,4 @@ norill
 Alain02
 Nananas
 
-All the testers that have helped shape and polish this game!
+Thanks to all the testers that have helped shape and polish this game!
