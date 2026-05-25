@@ -51,3 +51,16 @@ void onDie(CBlob@ this)
 		this.getSprite().Gib();
 	}
 }
+
+void onSendCreateData(CBlob@ this, CBitStream@ stream)
+{
+	stream.write_u8(this.getSprite().getFrameIndex());
+}
+
+bool onReceiveCreateData(CBlob@ this, CBitStream@ stream)
+{
+	u8 frame;
+	if (!stream.saferead_u8(frame)) return false;
+	this.getSprite().SetFrameIndex(frame);
+	return true;
+}

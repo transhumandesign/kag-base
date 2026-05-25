@@ -54,7 +54,7 @@ void onInit( CBlob@ this )
 // leave a pile of wood	after death
 void onDie(CBlob@ this)
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CBlob@ blob = server_CreateBlob( "mat_wood", this.getTeamNum(), this.getPosition() );
 		if (blob !is null)
@@ -66,7 +66,7 @@ void onDie(CBlob@ this)
 
 void onTick( CBlob@ this )
 {
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CBlob@[] blobsInRadius;	   
 		if (this.getMap().getBlobsInRadius( this.getPosition(), this.getRadius() * 1.5f, @blobsInRadius )) 

@@ -1,27 +1,12 @@
 // Sign logic
 
-namespace Sign
-{
-	enum State
-	{
-		blank = 0,
-		written
-	}
-}
-
 void onInit(CBlob@ this)
 {
-	//setup blank state
-	this.set_u8("state", Sign::blank);
-
 	if (!this.exists("text"))
 	{
 		this.set_string("text", "The big brown fox jumped over the shaggy chocolate."); // Should be ok even if the server and the client run it?
 	}
 
-	this.getSprite().SetAnimation("written");
-
-	this.getCurrentScript().runFlags |= Script::tick_myplayer;
 	this.getSprite().SetZ(-10.0f);
 }
 
