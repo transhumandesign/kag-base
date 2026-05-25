@@ -38,7 +38,10 @@ void SelectRandomTip()
 	}
 	else
 	{
-		tip = getTranslatedString("Tip: {TIP}").replace("{TIP}", getTranslatedString(tips[getGameTime() % tips.length]));
+		tip = getTranslatedString("Tip: {TIP}")
+			.replace("{TIP}", getTranslatedString(tips[getGameTime() % tips.length]))
+			.replace("[SPACE]", "[" + getControls().getActionKeyKeyName(AK_ACTION3) + "]")
+			.replace("[C]", "[" + getControls().getActionKeyKeyName(AK_PICKUP) + "]");
 	}
 }
 

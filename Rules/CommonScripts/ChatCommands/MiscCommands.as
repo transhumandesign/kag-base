@@ -150,7 +150,9 @@ class TipCommand : ChatCommand
 
 		string text = getTranslatedString("Tip #{NUMBER}: {TIP}")
 			.replace("{NUMBER}", "" + (index + 1))
-			.replace("{TIP}", getTranslatedString(tips[index]));
+			.replace("{TIP}", getTranslatedString(tips[index]))
+			.replace("[SPACE]", "[" + getControls().getActionKeyKeyName(AK_ACTION3) + "]")
+			.replace("[C]", "[" + getControls().getActionKeyKeyName(AK_PICKUP) + "]");;
 
 		client_AddToChat(text, ConsoleColour::INFO);
 	}
