@@ -6,16 +6,16 @@ const bool moss_stone = false;
 // random_growth is randomly set from 0 to 1.0
 // don't set values lower than 0.0001
 // if you want to prevent a thing from growing at all, set it's chance to -1 rather than 0
-const f32 grass_grow_chance = 0.015f;
-const f32 bush_grow_chance = 0.003f;
-const f32 flower_grow_chance = 0.0005f;
-const f32 grain_grow_chance = flower_grow_chance + 0.0005f; //add flower chance to prevent them from overriding each other
-const f32 chicken_grow_chance = 0.001f; // chickens are plants don't @ me
+const f32 grass_grow_chance = 0.03f;
+const f32 bush_grow_chance = 0.006f;
+const f32 flower_grow_chance = 0.001f;
+const f32 grain_grow_chance = flower_grow_chance + 0.001f; //add flower chance to prevent them from overriding each other
+const f32 chicken_grow_chance = 0.002f; // chickens are plants don't @ me
 const u8 chicken_limit = 10; 
 
-const f32 moss_stone_chance = 0.002f;
+const f32 moss_stone_chance = 0.004f;
 
-// how many ticks has to pass before stone starts becoming mossy, 10 minutes = 30 * 60 * 10
+// how many ticks have to pass before stone starts becoming mossy, 10 minutes = 30 * 60 * 10
 const u32 moss_time = 30 * 60 * 10;
 
 // which tiles should turn into moss
@@ -24,10 +24,17 @@ const u16[] castle_stuff = {CMap::tile_castle, CMap::tile_castle_back};
 const u16[] castle_moss_stuff = {CMap::tile_castle_moss, CMap::tile_castle_back_moss};
 const string[] plants_stuff = {"bush", "flowers", "grain_plant"};
 
-const u16 min_random_time = 200; // minimal time between growth checks
-const u16 max_random_inc = 60; // maximum random increase to time between growth checks
+const u16 min_random_time_dirt = 400; // minimal time between growth checks
+const u16 max_random_inc_dirt = 120; // maximum random increase to time between growth checks
+const u16 min_random_time_castle = 600;
+const u16 max_random_inc_castle = 150;
 
-u32 next_check_time = min_random_time;
+u32 next_check_time_dirt = min_random_time_dirt;
+u32 next_check_time_castle = min_random_time_castle;
+u16 checks_done_dirt = 0;
+u16 checks_done_castle = 0;
+u32 dirt_tiles_check_max = 80; // maximum amount of dirt tiles checked in one tick
+u32 stone_tiles_check_max = 80; // maximum amount of castle tiles checked in one tick
 
 TileInfo@[] dirt_tiles;
 TileInfo@[] castle_tiles;
@@ -159,25 +166,28 @@ void onInit(CRules@ this)
 
 				if (map.isTileGround(tile.type) && valid_back)
 				{
-					dirt_tiles.insertLast(TileInfo(coords, 0, tile));
+					dirt_tiles.insertAt(Maths::XORRandom(dirt_tiles.size()), TileInfo(coords, 0, tile));
 				}
 
 				// add stuff from castle_stuff into its own array
 				if (castle_stuff.find(tile.type) != -1) 
 				{
-					castle_tiles.insertLast(TileInfo(coords, 0, tile));
+					castle_tiles.insertAt(Maths::XORRandom(castle_tiles.size()), TileInfo(coords, 0, tile));
 				}
 			}
 		}
 
 		if (!map.hasScript("RegrowPlants.as")) map.AddScript("RegrowPlants.as"); // adding map scripts from CRules is much more convenient than adding it to every map in mapcycle.cfg
-	}
 
+		//set the first check time
+		u16 factor = getFactorDirt();
+		next_check_time_dirt = getGameTime() + Maths::Floor(min_random_time_dirt / factor);
+		next_check_time_castle = next_check_time_dirt; // will be checked one tick after dirt
+	}
 }
 
 void onRestart(CRules@ this)
 {
-	next_check_time = min_random_time;
 	// refill TileInfo arrays with info for the newly loaded map
 	dirt_tiles.clear();
 	castle_tiles.clear();
@@ -191,7 +201,7 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 	u32 y = index / this.tilemapwidth;
 	Vec2f coords(x * this.tilesize, y * this.tilesize);
 	u32 tindex_dirt = findTileByCoords(dirt_tiles, coords);
-	u32 tindex_stone = findTileByCoords(castle_tiles, coords);
+	u32 tindex_castle = findTileByCoords(castle_tiles, coords);
 
 	// dirt leaves dirt background after it's destroyed, so no need to check for dirt tiles below it
 	// onSetTile runs when a tile is damaged, so check if new tile is just more damaged dirt
@@ -201,14 +211,14 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 	}
 	// castle tile got destroyed/damaged/mossified, remove from array
 	// don't check if new tile is just a damaged castle, because we don't mossify damaged stone (only full hp stone has moss variants)
-	if (castle_stuff.find(oldtile) != -1 && tindex_stone != 0 && castle_tiles.size() > 0)
+	if (castle_stuff.find(oldtile) != -1 && tindex_castle != 0 && castle_tiles.size() > 0)
 	{
-		castle_tiles.removeAt(tindex_stone);
+		castle_tiles.removeAt(tindex_castle);
 	}
 	// castle tile was built, add to array
-	if (castle_stuff.find(newtile) != -1 && tindex_stone == 0)
+	if (castle_stuff.find(newtile) != -1 && tindex_castle == 0)
 	{
-		castle_tiles.insertLast(TileInfo(coords, getGameTime(), this.getTile(coords)));
+		castle_tiles.insertAt(Maths::XORRandom(castle_tiles.size()), TileInfo(coords, getGameTime(), this.getTile(coords)));
 	}
 }
 
@@ -227,7 +237,7 @@ u32 findTileByCoords(const TileInfo@[] &in tiles, Vec2f coords)
 
 void onTick(CRules@ this)
 {	
-	if (getGameTime() >= next_check_time)
+	if (getGameTime() >= next_check_time_dirt)
 	{
 		CMap@ map = getMap();
 		float tilesize = map.tilesize;
@@ -236,11 +246,32 @@ void onTick(CRules@ this)
 		getBlobsByName("chicken", chicken_list);
 		u16 chicken_count = chicken_list.size();
 
-		for (int i = 1; i < dirt_tiles.size(); i++)
+		// determining start and end of loop
+		u16 factor = getFactorDirt();
+		u32 check_start, check_end;
+		
+		if (checks_done_dirt % factor == 0)
+		{	
+			check_start = 0;
+			check_end = Maths::Floor(dirt_tiles.size() / factor);
+		}
+		else if (checks_done_dirt % factor == factor - 1)
+		{
+			check_start = Maths::Floor(dirt_tiles.size() / factor) * (checks_done_dirt % factor) + 1;
+			check_end = dirt_tiles.size();
+		}
+		else 
+		{
+			check_start = Maths::Floor(dirt_tiles.size() / factor) * (checks_done_dirt % factor) + 1;
+			check_end = check_start + Maths::Floor(dirt_tiles.size() / factor);
+		}
+
+		// running loop
+		for (int i = check_start; i < Maths::Min(check_end, dirt_tiles.size()); i++)
 		{
 			TileInfo tinfo = dirt_tiles[i];
 			if (tinfo is null) return;
-			Tile tile_above = map.getTile(tinfo.coords - Vec2f(0,tilesize));
+			Tile tile_above = map.getTile(tinfo.coords - Vec2f(0, tilesize));
 
 			if (tile_above.type == CMap::tile_empty || map.isTileGrass(tile_above.type))
 			{
@@ -297,6 +328,36 @@ void onTick(CRules@ this)
 			}
 		}
 
+		u16 increase = Maths::Floor(max_random_inc_dirt / factor);
+		next_check_time_dirt = getGameTime() + Maths::Floor(min_random_time_dirt / factor) + XORRandom(increase);
+		checks_done_dirt++;
+	}
+	else if (getGameTime() >= next_check_time_castle)
+	{
+		CMap@ map = getMap();
+		float tilesize = map.tilesize;
+
+		// determining start and end of loop
+		u16 factor = getFactorCastle();
+		u32 check_start, check_end;
+
+		if (checks_done_castle % factor == 0)
+		{	
+			check_start = 0;
+			check_end = Maths::Floor(castle_tiles.size() / factor);
+		}
+		else if (checks_done_castle % factor == factor - 1)
+		{
+			check_start = Maths::Floor(castle_tiles.size() / factor) * (checks_done_castle % factor) + 1;
+			check_end = castle_tiles.size();
+		}
+		else 
+		{
+			check_start = Maths::Floor(castle_tiles.size() / factor) * (checks_done_castle % factor) + 1;
+			check_end = check_start + Maths::Floor(castle_tiles.size() / factor);
+		}
+
+		// MOSSIFICATION
 		if (moss_stone)
 		{
 			for (int i = 1; i < castle_tiles.size(); i++)
@@ -308,7 +369,8 @@ void onTick(CRules@ this)
 				
 				if (ttype != -1)
 				{
-					if (luck > 0 && random_grow - luck <= moss_stone_chance && (tinfo.mossTime() || tinfo.hasMossAdjacent())) //  check for luck being non-zero so stone structures get mossified starting from ground level
+					// check for luck being non-zero so stone structures get mossified starting from ground level
+					if (luck > 0 && random_grow - luck <= moss_stone_chance && (tinfo.mossTime() || tinfo.hasMossAdjacent()))
 					{
 						map.server_SetTile(tinfo.coords, castle_moss_stuff[ttype]);
 					}
@@ -316,6 +378,18 @@ void onTick(CRules@ this)
 			}
 		}
 
-		next_check_time = getGameTime() + min_random_time + XORRandom(max_random_inc); // make timing for growth checks semi-random so they're not too monotonous
+		u16 increase = Maths::Floor(max_random_inc_castle / factor);
+		next_check_time_castle = getGameTime() + Maths::Floor(min_random_time_castle / factor) + XORRandom(increase);
+		checks_done_castle++;
 	}
+}
+
+u16 getFactorDirt()
+{
+	return Maths::Floor(dirt_tiles.size() / dirt_tiles_check_max) + 1;
+}
+
+u16 getFactorCastle()
+{
+	return Maths::Floor(castle_tiles.size() / dirt_tiles_check_max) + 1;
 }
