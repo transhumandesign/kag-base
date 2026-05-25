@@ -66,12 +66,7 @@ void onTick(CBlob@ this)
 	{
 		if (isServer)
 		{
-			if (map.getSectorAtPosition(pos, "no build") !is null)
-			{
-				return;
-			}
 			map.server_DestroyTile(pos, 2.0f, this);
-
 			// slightly damage the rock too
 			this.server_Hit(this, this.getPosition(), this.getVelocity(), 0.05f, Hitters::cata_stones, true);
 		}
