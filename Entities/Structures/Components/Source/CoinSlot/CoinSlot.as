@@ -91,6 +91,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	button.radius = 8.0f;
 	button.enableRadius = 20.0f;
+	button.SetEnabled( !this.hasTag("active") );
 }
 
 void onTick(CBlob@ this)
@@ -104,6 +105,7 @@ void onTick(CBlob@ this)
 	if (!getRules().get("power grid", @grid)) return;
 
 	this.Untag("active");
+	this.Sync("active", true);
 
 	grid.setInfo(
 	component.x,                        // x
@@ -115,6 +117,8 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (cmd == this.getCommandID("server_activate") && isServer())
 	{
+		if (this.hasTag("active")) return;
+	
 		CPlayer@ player = getNet().getActiveCommandPlayer();
 		if (player is null) return;
 		
@@ -135,6 +139,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		addCoin(this, COIN_COST / 3);
 
 		this.Tag("active");
+		this.Sync("active", true);
 
 		this.set_u32("duration", getGameTime() + DURATION);
 
