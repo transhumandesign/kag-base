@@ -87,7 +87,7 @@ void onTick(CBlob@ this)
 	Vec2f pos = this.getPosition();
 	const f32 tilesize = map.tilesize;
 
-	if (getNet().isServer() &&
+	if (isServer() &&
 	        (map.isTileSolid(map.getTile(pos)) || map.rayCastSolid(pos - this.getVelocity(), pos)))
 	{
 		this.server_Hit(this, pos, Vec2f(0, -1), 3.0f, Hitters::fall, true);
@@ -145,7 +145,7 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	if (getNet().isClient() && !this.hasTag("_frontlayer"))
+	if (isClient() && !this.hasTag("_frontlayer"))
 	{
 		CSprite@ sprite = this.getSprite();
 		sprite.SetZ(500.0f);
@@ -225,13 +225,11 @@ void onTick(CBlob@ this)
 					for (uint i = 0; i < blobsInRadius.length; i++)
 					{
 						CBlob @b = blobsInRadius[i];
-						if (canStab(b)) //even hurts team when stabbing
+						if 	(canStab(b) 				//even hurts team when stabbing
+							&& this.isOverlapping(b)	// hurt?
+							&& !b.hasTag("invincible"))
 						{
-							// hurt?
-							if (this.isOverlapping(b))
-							{
-								this.server_Hit(b, pos, b.getVelocity() * -1, 0.5f, Hitters::spikes, true);
-							}
+							this.server_Hit(b, pos, b.getVelocity() * -1, 0.5f, Hitters::spikes, true);
 						}
 					}
 				}
@@ -271,25 +269,17 @@ bool canStab(CBlob@ b)
 //physics logic
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point)
 {
-	if (!getNet().isServer() || this.isAttached())
-	{
-		return;
-	}
-
-	//shouldn't be in here! collided with map??
-	if (blob is null)
+	if 	(!isServer() 
+		|| this.isAttached()
+		|| blob is null		//shouldn't be in here! collided with map??
+		|| !blob.hasTag("flesh")	// only hit living things
+		|| blob.hasTag("invincible"))
 	{
 		return;
 	}
 
 	u8 state = this.get_u8(state_prop);
 	if (state == hidden || state == stabbing)
-	{
-		return;
-	}
-
-	// only hit living things
-	if (!blob.hasTag("flesh"))
 	{
 		return;
 	}
