@@ -652,5 +652,5 @@ bool Vehicle_doesCollideWithBlob_boat(CBlob@ this, CBlob@ blob)
 bool isFlipped(CBlob@ this)
 {
 	const f32 angle = this.getAngleDegrees();
-	return (angle > 80 && angle < 290);
+	return (angle > 70 && angle < 290);
 }
