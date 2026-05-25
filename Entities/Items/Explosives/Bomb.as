@@ -13,6 +13,7 @@ void onInit(CBlob@ this)
 	SetupBomb(this, bomb_fuse, 48.0f, 3.0f, 24.0f, 0.4f, true);
 	//
 	this.Tag("activated"); // make it lit already and throwable
+	this.getShape().SetActiveSync(true);
 }
 
 //start ugly bomb logic :)
