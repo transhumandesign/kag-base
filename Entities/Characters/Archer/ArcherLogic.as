@@ -325,10 +325,7 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 	if (isServer() && !ismyplayer)
 	{
 		CPlayer@ p = this.getPlayer();
-		if (p !is null)
-		{
-			responsible = p.isBot();
-		}
+		responsible = p is null || p.isBot();
 	}
 	//
 	CSprite@ sprite = this.getSprite();
@@ -404,7 +401,10 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		          !this.isKeyPressed(key_action1) &&
 		          this.wasKeyPressed(key_action1)))
 		{
-			ClientFire(this, charge_time, charge_state);
+			if (responsible)
+			{
+				ClientFire(this, charge_time, charge_state);
+			}
 
 			charge_state = ArcherParams::legolas_charging;
 			charge_time = ArcherParams::shoot_period - ArcherParams::legolas_charge_time;
@@ -562,7 +562,10 @@ void ManageBow(CBlob@ this, ArcherInfo@ archer, RunnerMoveVars@ moveVars)
 		{
 			if (charge_state < ArcherParams::fired)
 			{
-				ClientFire(this, charge_time, charge_state);
+				if (responsible)
+				{
+					ClientFire(this, charge_time, charge_state);
+				}
 				charge_time = ArcherParams::fired_time;
 				charge_state = ArcherParams::fired;
 			}
@@ -833,13 +836,18 @@ bool canSend(CBlob@ this)
 void ClientFire(CBlob@ this, s8 charge_time, u8 charge_state)
 {
 	//time to fire!
-	if (canSend(this))  // client-logic
+	if (!isServer())  // client-logic
 	{
 		CBitStream params;
 		params.write_s8(charge_time);
 		params.write_u8(charge_state);
 
 		this.SendCommand(this.getCommandID("request shoot"), params);
+	}
+	
+	if (isServer())
+	{
+		ShootArrow(this, charge_time, charge_state);
 	}
 }
 
@@ -961,7 +969,7 @@ void onSwitch(CBitStream@ params)
 	}
 }
 
-void ShootArrow(CBlob@ this)
+void ShootArrow(CBlob@ this, s8 charge_time, u8 charge_state)
 {
 	ArcherInfo@ archer;
 	if (!this.get("archerInfo", @archer))
@@ -969,14 +977,14 @@ void ShootArrow(CBlob@ this)
 		return;
 	}
 
+	archer.charge_time = charge_time;
+	archer.charge_state = charge_state;
+
 	u8 arrow_type = archer.arrow_type;
 
 	if (arrow_type >= arrowTypeNames.length) return;
 
 	if (!hasArrows(this, arrow_type)) return; 
-	
-	s8 charge_time = archer.charge_time;
-	u8 charge_state = archer.charge_state;
 
 	f32 arrowspeed;
 
@@ -1071,13 +1079,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		u8 charge_state;
 		if (!params.saferead_u8(charge_state)) { return; }
 
-		ArcherInfo@ archer;
-		if (!this.get("archerInfo", @archer)) { return; }
-
-		archer.charge_time = charge_time;
-		archer.charge_state = charge_state;
-
-		ShootArrow(this);
+		ShootArrow(this, charge_time, charge_state);
 	}
 	else if (cmd == this.getCommandID("arrow sync") && isServer())
 	{
