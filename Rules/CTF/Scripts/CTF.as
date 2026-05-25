@@ -9,16 +9,16 @@
 
 #include "CTF_PopulateSpawnList.as"
 
+string configstr = "ctf_vars.cfg";
+
 //edit the variables in the config file below to change the basics
 // no scripting required!
 void Config(CTFCore@ this)
 {
-	string configstr = "Rules/CTF/ctf_vars.cfg";
+	CRules@ rules = getRules();
 
-	if (getRules().exists("ctfconfig"))
-	{
+	if (rules.exists("ctfconfig")) 
 		configstr = getRules().get_string("ctfconfig");
-	}
 
 	ConfigFile cfg = ConfigFile(configstr);
 
