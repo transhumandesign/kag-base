@@ -207,7 +207,7 @@ void onTick(CBlob@ this)
 			sprite.PlaySound("DrillOverheat.ogg");
 		}
 
-		if (holder.getName() == required_class || sv_gamemode == "TDM")
+		if (holder.getName() == required_class || getRules().gamemode_name == "Team Deathmatch")
 		{
 			if (!holder.isKeyPressed(key_action1) || isKnocked(holder))
 			{
@@ -505,7 +505,7 @@ void onRender(CSprite@ this)
 	CBlob@ holderBlob = holder.getBlob();
 	if (holderBlob is null){return;}
 
-	if (holderBlob.getName() != required_class && sv_gamemode != "TDM"){return;}
+	if (holderBlob.getName() != required_class && getRules().gamemode_name != "Team Deathmatch"){return;}
 
 	Vec2f mousePos = getControls().getMouseWorldPos();
 	Vec2f blobPos = blob.getPosition();
