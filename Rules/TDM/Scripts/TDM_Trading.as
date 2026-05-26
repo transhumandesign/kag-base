@@ -65,7 +65,8 @@ void MakeTradeMenu(CBlob@ trader)
 	s32 cost_bombarrows = cfg.read_s32("cost_bombarrows", 50);
 
 	s32 cost_boulder = cfg.read_s32("cost_boulder", 50);
-	s32 cost_burger = cfg.read_s32("cost_burger", 40);
+	s32 cost_crate = cfg.read_s32("cost_crate", 50);
+	s32 cost_burger = cfg.read_s32("cost_burger", 50);
 	s32 cost_sponge = cfg.read_s32("cost_sponge", 20);
 
 	s32 cost_mountedbow = cfg.read_s32("cost_mountedbow", -1);
@@ -85,8 +86,8 @@ void MakeTradeMenu(CBlob@ trader)
 	//knighty stuff
 	addItemForCoin(trader, "Bomb", cost_bombs, true, "$mat_bombs$", "mat_bombs", Descriptions::bomb);
 	addItemForCoin(trader, "Water Bomb", cost_waterbombs, true, "$mat_waterbombs$", "mat_waterbombs", Descriptions::waterbomb);
-	addItemForCoin(trader, "Keg", cost_keg, true, "$keg$", "keg", Descriptions::keg);
-	addItemForCoin(trader, "Mine", cost_mine, true, "$mine$", "mine", Descriptions::mine);
+	addItemForCoin(trader, "Keg", cost_keg, true, "$keg_tdm" + trader.getTeamNum() + "$", "keg", Descriptions::keg);
+	addItemForCoin(trader, "Mine", cost_mine, true, "$mine_tdm" + trader.getTeamNum() + "$", "mine", Descriptions::mine);
 	//yummy stuff
 	addItemForCoin(trader, "Burger", cost_burger, true, "$food$", "food", Descriptions::food);
 	//archery stuff
@@ -99,6 +100,7 @@ void MakeTradeMenu(CBlob@ trader)
 	addItemForCoin(trader, "Mounted Bow", cost_mountedbow, true, "$mounted_bow$", "mounted_bow", Descriptions::mounted_bow);
 	addItemForCoin(trader, "Drill", cost_drill, true, "$drill$", "drill", Descriptions::drill);
 	addItemForCoin(trader, "Boulder", cost_boulder, true, "$boulder$", "boulder", Descriptions::boulder);
+	addItemForCoin(trader, "Crate", cost_crate, true, "$crate_tdm" + trader.getTeamNum() + "$", "crate", Descriptions::crate);
 	//vehicles
 	addItemForCoin(trader, "Catapult", cost_catapult, true, "$catapult$", "catapult", Descriptions::catapult);
 	addItemForCoin(trader, "Ballista", cost_ballista, true, "$ballista$", "ballista", Descriptions::ballista);
