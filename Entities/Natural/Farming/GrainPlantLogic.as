@@ -18,6 +18,7 @@ void onInit(CBlob@ this)
 	}
 
 	this.Tag("scenary");
+	this.Tag("dont blend immediately");
 }
 
 
