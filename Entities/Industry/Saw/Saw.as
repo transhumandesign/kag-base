@@ -226,6 +226,16 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 	}
 }
 
+f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
+{
+    if (isExplosionHitter(customData) || customData == Hitters::burn)
+	{
+		return damage * 1.5f;
+	}
+	
+	return damage;
+}
+
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	if (blob.hasTag("ignore_saw"))
