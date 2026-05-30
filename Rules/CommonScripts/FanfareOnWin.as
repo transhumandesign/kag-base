@@ -2,7 +2,7 @@
 
 void onStateChange( CRules@ this, const u8 oldState )
 {
-	if (this.isGameOver() && this.getTeamWon() >= 0)
+	if (!this.hasTag("no auto fanfare") && this.isGameOver() && this.getTeamWon() >= 0)
 	{
 		// only play for winners
 		CPlayer@ localplayer = getLocalPlayer();
