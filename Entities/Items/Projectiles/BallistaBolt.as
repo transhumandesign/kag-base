@@ -13,7 +13,6 @@ void onInit(CBlob@ this)
 {
 
 	this.set_u8("blocks_pierced", 0);
-	this.set_bool("static", false);
 
 	this.server_SetTimeToDie(20);
 
@@ -48,7 +47,7 @@ void onTick(CBlob@ this)
 {
 	f32 angle = 0;
 
-	if (!this.get_bool("static"))
+	if (!this.hasTag("collided"))
 	{
 
 		Vec2f velocity = this.getVelocity();
@@ -202,7 +201,7 @@ void BallistaHitBlob(CBlob@ this, Vec2f hit_position, Vec2f velocity, const f32 
 {
 
 	if (DoExplosion(this, velocity)
-	        || this.get_bool("static"))
+	        || this.hasTag("collided"))
 		return;
 
 	if (blob.hasTag("flesh"))
@@ -240,7 +239,7 @@ void BallistaHitMap(CBlob@ this, const u32 offset, Vec2f hit_position, Vec2f vel
 {
 
 	if (DoExplosion(this, velocity)
-	        || this.get_bool("static"))
+	        || this.hasTag("collided"))
 		return;
 
 	this.getSprite().PlaySound("ArrowHitGroundFast.ogg");
@@ -286,11 +285,11 @@ void SetStatic(CBlob@ this, const f32 angle)
 	Vec2f position = this.getPosition();
 
 	this.set_u8("angle", Maths::get256DegreesFrom360(angle));
-	this.set_bool("static", true);
+	this.Tag("collided");
 	this.set_f32("lock_x", position.x);
 	this.set_f32("lock_y", position.y);
 
-	this.Sync("static", true);
+	this.Sync("collided", true);
 	this.Sync("lock_x", true);
 	this.Sync("lock_y", true);
 
