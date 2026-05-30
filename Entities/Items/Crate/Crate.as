@@ -451,10 +451,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			Vec2f velocity = caller.getVelocity();
 			this.server_PutInInventory(caller);
 			this.setVelocity(velocity);
+			this.set_u32("got inside time", getGameTime());
 		}
 	}
 	else if (cmd == this.getCommandID("getout") && isServer())
 	{
+		if (this.exists("got inside time") && this.get_u32("got inside time") == getGameTime())
+			return;
+
 		CPlayer@ p = getNet().getActiveCommandPlayer();
 		if (p is null) return;
 
