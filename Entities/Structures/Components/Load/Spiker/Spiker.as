@@ -2,6 +2,7 @@
 
 #include "MechanismsCommon.as";
 #include "Hitters.as";
+#include "SpikeCommon.as";
 
 class Spiker : Component
 {
@@ -21,8 +22,8 @@ class Spiker : Component
 	{
 		Vec2f position = this.getPosition();
 		CSprite@ sprite = this.getSprite();
-
 		CMap@ map = getMap();
+
 		if (map.rayCastSolid(position + offset * 5, position + offset * 11))
 		{
 			sprite.PlaySound("dry_hit.ogg", 0.5f);
@@ -32,8 +33,12 @@ class Spiker : Component
 		AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
 		if (mechanism is null) return;
 
+		mechanism.offset = Vec2f(0, -7);
+
 		CBlob@ spike = mechanism.getOccupied();
 		if (spike is null) return;
+
+		spike.set_u8("state", 1);
 
 		// hit flesh at target position
 		if (isServer())
@@ -50,11 +55,10 @@ class Spiker : Component
 				}
 			}
 		}
-		
-		spike.set_u8("state", 1);
-		spike.getSprite().animation.SetFrameIndex(1);
 
 		sprite.PlaySound("SpikerThrust.ogg", 0.5f);
+		
+		UpdateSprite(spike);
 	}
 
 	void Deactivate(CBlob@ this)
@@ -62,14 +66,17 @@ class Spiker : Component
 		AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
 		if (mechanism is null) return;
 
+		mechanism.offset = Vec2f(0, -3);
+
 		CBlob@ spike = mechanism.getOccupied();
 		if (spike is null) return;
 
 		spike.set_u8("state", 0);
-		spike.getSprite().animation.SetFrameIndex(0);
 
 		CSprite@ sprite = this.getSprite();
 		this.getSprite().PlaySound("LoadingTick.ogg", 0.4f);
+		
+		UpdateSprite(spike);
 	}
 }
 
@@ -96,8 +103,13 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	this.set("component", component);
 
 	AttachmentPoint@ mechanism = this.getAttachments().getAttachmentPointByName("MECHANISM");
+	CBlob@ occ = mechanism.getOccupied();
+	if (occ is null)
+		mechanism.offset = Vec2f(0, -3); // no spike attached yet, set to "hidden" offset
+	else
+		mechanism.offset = Vec2f(0, occ.get_u8("state") == Spike::hidden ? -3 : -7); // spike is attached, set offset depending on current state
+
 	mechanism.offsetZ = -5;
-	mechanism.offset = Vec2f(0, -7);
 
 	if (isServer())
 	{
@@ -119,24 +131,21 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		spike.set_u8("state", 0);
 
 		CShape@ shape = spike.getShape();
-		shape.SetStatic(true);
 		ShapeConsts@ consts = shape.getConsts();
 		consts.mapCollisions = false;
 		consts.collideWhenAttached = true;
 
 		this.server_AttachTo(spike, "MECHANISM");
+		
+		UpdateSprite(spike);
 	}
 
 	CSprite@ sprite = this.getSprite();
+	if (sprite is null) return;
+
 	sprite.SetZ(500);
 	sprite.SetFrameIndex(ANGLE / 90);
 	sprite.SetFacingLeft(false);
-
-	CSpriteLayer@ layer = sprite.addSpriteLayer("background", "Spiker.png", 8, 16);
-	layer.addAnimation("default", 0, false);
-	layer.animation.AddFrame(4);
-	layer.SetRelativeZ(-10);
-	layer.SetFacingLeft(false);
 }
 
 void onDie(CBlob@ this)
