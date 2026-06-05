@@ -300,13 +300,12 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 		for (uint i = 0; i < blobs.length; i++)
 		{
 			CBlob@ hit_blob = blobs[i];
-			if (hit_blob is this)
+			if (hit_blob is this || isHeldByTeammate(hit_blob, this))
 				continue;
 
 			HitBlob(this, m_pos, hit_blob, radius, damage, hitter, true, should_teamkill);
 		}
 	}
-
 }
 
 void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitBlob, u8 customData)
@@ -439,7 +438,7 @@ void LinearExplosion(CBlob@ this, Vec2f _direction, f32 length, const f32 width,
 	for (uint i = 0; i < blobs.length; i++)
 	{
 		CBlob@ hit_blob = blobs[i];
-		if (hit_blob is this)
+		if (hit_blob is this || isHeldByTeammate(hit_blob, this))
 			continue;
 
 		float rad = Maths::Max(tilesize, hit_blob.getRadius() * 0.25f);
