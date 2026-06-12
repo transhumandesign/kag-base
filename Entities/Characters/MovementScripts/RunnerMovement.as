@@ -20,10 +20,8 @@ void onTick(CMovement@ this)
 		return;
 	}
 
-	if (//(ultimately in charge of this blob's movement)
-		(blob.isMyPlayer()) ||
-		(blob.isBot() && isServer())
-	) {
+	if (blob.isMyPlayer() || isServer())
+	{
 		HandleStuckAtTop(blob);
 	}
 

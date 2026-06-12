@@ -98,6 +98,12 @@ bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos, bool repa
 
 	// Are we trying to place in a bad pos?
 	CMap@ map = getMap();
+	if (!isWithinBuildMapBounds(map, blob.getPosition()) ||
+	    !isWithinBuildMapBounds(map, cursorPos))
+	{
+		return false;
+	}
+
 	Tile backtile = map.getTile(cursorPos);
 
 	if (map.isTileBedrock(backtile.type) || map.isTileSolid(backtile.type))
