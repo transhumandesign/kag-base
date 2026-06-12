@@ -37,6 +37,19 @@ bool canPlaceNextTo(CMap@ map, const Tile &in tile)
 	return tile.support > 0;
 }
 
+bool isWithinBuildMapBounds(CMap@ map, Vec2f p)
+{
+	if (map is null)
+	{
+		return false;
+	}
+
+	const f32 tilesize = map.tilesize;
+	return p.y >= 2.0f * tilesize &&
+	       p.x >= 2.0f * tilesize &&
+	       p.x <= (map.tilemapwidth - 2.0f) * tilesize;
+}
+
 bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, bool &out sameTile)
 {
 	f32 radius = 0.0f;
@@ -53,9 +66,7 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 	}
 
 	//check height + edge proximity
-	if (p.y < 2 * map.tilesize ||
-			p.x < 2 * map.tilesize ||
-			p.x > (map.tilemapwidth - 2.0f)*map.tilesize)
+	if (!isWithinBuildMapBounds(map, p))
 	{
 		return false;
 	}
