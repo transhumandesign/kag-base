@@ -2,15 +2,21 @@ bool DetectTiles(Vec2f ul, Vec2f lr)
 {
 	CMap@ map = getMap();
 	const f32 tilesize = map.tilesize;
+	const f32 mapWidth = map.tilemapwidth * tilesize;
+	const f32 mapHeight = map.tilemapheight * tilesize;
 	Vec2f tpos = ul;
 	while (tpos.x < lr.x)
 	{
 		while (tpos.y < lr.y)
 		{
-			TileType t = map.getTile(tpos).type;
-			if (t != CMap::tile_empty)
+			if (tpos.x >= 0.0f && tpos.x < mapWidth
+				&& tpos.y >= 0.0f && tpos.y < mapHeight)
 			{
-				return true;
+				TileType t = map.getTile(tpos).type;
+				if (t != CMap::tile_empty)
+				{
+					return true;
+				}
 			}
 			tpos.y += tilesize;
 		}
