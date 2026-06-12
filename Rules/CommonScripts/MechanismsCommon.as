@@ -465,11 +465,15 @@ class MapPowerGrid
 	int chunk_count;
 	int chunk_width;
 	int chunk_height;
+	int map_width;
+	int map_height;
 	int chunk_iter;
 	CBitStream packet;
 
 	MapPowerGrid(CMap@ map)
 	{
+		map_width = map.tilemapwidth;
+		map_height = map.tilemapheight;
 		chunk_width = (map.tilemapwidth + chunk_tiles - 1) / chunk_tiles;
 		chunk_height = (map.tilemapheight + chunk_tiles - 1) / chunk_tiles;
 		chunk_count = chunk_width * chunk_height;
@@ -488,12 +492,16 @@ class MapPowerGrid
 
 	bool _get_indices(int x, int y, int &out index, int &out chunk_index)
 	{
+		if (x < 0 || y < 0 || x >= map_width || y >= map_height)
+		{
+			return false;
+		}
+
 		int chunk_x = x / chunk_tiles;
 		int chunk_y = y / chunk_tiles;
 
 		//outside? nothing to query
-		if (chunk_x < 0 || chunk_y < 0 ||
-			chunk_x >= chunk_width || chunk_y >= chunk_height)
+		if (chunk_x >= chunk_width || chunk_y >= chunk_height)
 		{
 			return false;
 		}
