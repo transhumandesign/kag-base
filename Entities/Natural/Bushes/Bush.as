@@ -5,16 +5,18 @@
 void onInit(CBlob@ this)
 {
 	this.set_bool("grown", true);
-	this.getCurrentScript().runFlags |= Script::remove_after_this;
 	this.Tag("builder always hit");
 	this.Tag("scenary");
 }
 
-//void onDie( CBlob@ this )
-//{
-//	//TODO: make random item
-//}
-
+void onDie(CBlob@ this)
+{
+	CSprite@ s = this.getSprite();
+	if (s !is null)
+	{
+		s.Gib();
+	}
+}
 
 //sprite
 
