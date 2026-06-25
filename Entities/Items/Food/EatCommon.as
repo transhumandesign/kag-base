@@ -1,3 +1,4 @@
+
 bool canEat(CBlob@ blob)
 {
 	return blob.exists("eat sound");
@@ -22,7 +23,9 @@ u8 getHealingAmount(CBlob@ food)
 void Heal(CBlob@ this, CBlob@ food)
 {
 	bool exists = getBlobByNetworkID(food.getNetworkID()) !is null;
-	if (isServer() && this.hasTag("player") && this.getHealth() < this.getInitialHealth() && !food.hasTag("healed") && exists)
+
+	if (isServer() && this.hasTag("player") && this.getHealth() < this.getInitialHealth() 
+		&& !food.hasTag("healed") && !food.hasTag("cooked") && exists)
 	{
 		u8 heal_amount = getHealingAmount(food);
 
@@ -59,6 +62,7 @@ void Heal(CBlob@ this, CBlob@ food)
 		this.Sync("heal amount", true);
 
 		food.Tag("healed");
+		food.Sync("healed", true);
 
 		food.SendCommand(food.getCommandID("heal command client")); // for sound
 
