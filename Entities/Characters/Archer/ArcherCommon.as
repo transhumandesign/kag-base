@@ -85,8 +85,7 @@ shared class ArcherInfo
 
 void ClientSendArrowState(CBlob@ this)
 {
-	if (!isClient()) { return; }
-	if (isServer()) { return; } // no need to sync on localhost
+	if (isClient() && isServer()) { return; } // no need to sync on localhost
 
 	ArcherInfo@ archer;
 	if (!this.get("archerInfo", @archer)) { return; }
@@ -94,30 +93,14 @@ void ClientSendArrowState(CBlob@ this)
 	CBitStream params;
 	params.write_u8(archer.arrow_type);
 
-	this.SendCommand(this.getCommandID("arrow sync"), params);
-}
-
-bool ReceiveArrowState(CBlob@ this, CBitStream@ params)
-{
-	// valid both on client and server
-
-	if (isServer() && isClient()) { return false; }
-
-	ArcherInfo@ archer;
-	if (!this.get("archerInfo", @archer)) { return false; }
-
-	archer.arrow_type = 0;
-	if (!params.saferead_u8(archer.arrow_type)) { return false; }
-
-	if (isServer())
+	if (isClient())
 	{
-		CBitStream reserialized;
-		reserialized.write_u8(archer.arrow_type);
-
-		this.SendCommand(this.getCommandID("arrow sync client"), reserialized);
+		this.SendCommand(this.getCommandID("arrow sync"), params);
 	}
-
-	return true;
+	else
+	{
+		this.SendCommand(this.getCommandID("arrow sync client"), params);
+	}
 }
 
 const string grapple_sync_cmd = "grapple sync";

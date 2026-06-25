@@ -159,21 +159,12 @@ void onTick(CBlob@ this)
 					CBitStream params;
 					params.write_u16(ap.getOccupied().getNetworkID());
 					this.SendCommand(this.getCommandID("detach"), params);
-					this.set_bool("release click", false);
 					break;
 				}
 			}
 		}
-		else if (carryBlob !is null && !carryBlob.hasTag("custom drop") && (!carryBlob.hasTag("temp blob")))
-		{
-			pickup_netids.clear();
-			client_SendThrowCommand(this);
-			this.set_bool("release click", false);
-		}
-		else
-		{
-			this.set_bool("release click", true);
-		}
+		
+		client_SendThrowCommand(this);
 	}
 	else
 	{
@@ -236,7 +227,7 @@ void onTick(CBlob@ this)
 
 		if (this.isKeyJustReleased(key_pickup))
 		{
-			if (this.get_bool("release click") && closest_netids.length > 0)
+			if (closest_netids.length > 0)
 			{
 				CBlob@ closest = getBlobByNetworkID(closest_netids[0]);
 				client_Pickup(this, closest);

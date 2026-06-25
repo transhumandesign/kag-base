@@ -94,10 +94,6 @@ void onInit(CBlob@ this)
 	this.push("names to activate", "keg");
 
 	this.set_u8("bomb type", 255);
-	for (uint i = 0; i < bombTypeNames.length; i++)
-	{
-		this.addCommandID("pick " + bombTypeNames[i]);
-	}
 
 	//centered on bomb select
 	//this.set_Vec2f("inventory offset", Vec2f(0.0f, 122.0f));
@@ -1075,7 +1071,7 @@ void SwordCursorUpdate(CBlob@ this, KnightInfo@ knight)
 		}
 }
 
-// clientside
+// serverside
 void onCycle(CBitStream@ params)
 {
 	u16 this_id;
@@ -1100,7 +1096,7 @@ void onCycle(CBitStream@ params)
 			CycleToBombType(this, type);
 			CBitStream sparams;
 			sparams.write_u8(type);
-			this.SendCommand(this.getCommandID("switch"), sparams);
+			this.SendCommand(this.getCommandID("server pick utility"), sparams);
 			break;
 		}
 	}
@@ -1124,13 +1120,13 @@ void onSwitch(CBitStream@ params)
 		CycleToBombType(this, type);
 		CBitStream sparams;
 		sparams.write_u8(type);
-		this.SendCommand(this.getCommandID("switch"), sparams);
+		this.SendCommand(this.getCommandID("server pick utility"), sparams);
 	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("switch") && isServer())
+	if (cmd == this.getCommandID("client pick utility") && isServer())
 	{
 		CPlayer@ callerp = getNet().getActiveCommandPlayer();
 		if (callerp is null) return;
@@ -1140,6 +1136,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 
 		if (caller !is this) return;
 		// cycle bombs
+		u8 type;
+		if (!params.saferead_u8(type)) return;
+
+		CycleToBombType(this, type);
+	}
+	else if (cmd == this.getCommandID("server pick utility") && isClient())
+	{
 		u8 type;
 		if (!params.saferead_u8(type)) return;
 
@@ -1216,21 +1219,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		}
 		SetFirstAvailableBomb(this);
 	}
-	else if (isServer())
-	{
-		for (uint i = 0; i < bombTypeNames.length; i++)
-		{
-			if (cmd == this.getCommandID("pick " + bombTypeNames[i]))
-			{
-				this.set_u8("bomb type", i);
-				break;
-			}
-		}
-	}
 }
 
 void CycleToBombType(CBlob@ this, u8 bombType)
 {
+	u8 prevBombType = this.get_u8("bomb type");
+	if (bombType == prevBombType) return;
+
 	this.set_u8("bomb type", bombType);
 	if (this.isMyPlayer())
 	{
@@ -1673,10 +1668,10 @@ void Callback_PickBomb(CBitStream@ params)
 	u8 bomb_id;
 	if (!params.saferead_u8(bomb_id)) return;
 
-	string matname = bombTypeNames[bomb_id];
-	blob.set_u8("bomb type", bomb_id);
-
-	blob.SendCommand(blob.getCommandID("pick " + matname));
+	CycleToBombType(blob, bomb_id);
+	CBitStream sparams;
+	sparams.write_u8(bomb_id);
+	blob.SendCommand(blob.getCommandID("client pick utility"), sparams);
 }
 
 // bomb pick menu
