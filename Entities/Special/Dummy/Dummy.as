@@ -1,9 +1,16 @@
+void onInit(CSprite@ this)
+{
+	this.SetZ(-20.0f);
+	this.animation.frame = (this.getBlob().getNetworkID() * 31) % 4;
+	
+	uint col = uint(XORRandom(8));
+	this.ReloadSprites(col, 0); // random colour
+}
+
 void onInit(CBlob@ this)
 {
-	this.getSprite().SetZ(-20.0f);
-	this.getSprite().animation.frame = (this.getNetworkID() * 31) % 4;
-
 	this.SetFacingLeft(((this.getNetworkID() + 27) * 31) % 18 > 9);
+	this.server_setTeamNum(-1);	// force neutral team
 }
 
 void onGib(CSprite@ this)
@@ -31,20 +38,27 @@ void onGib(CSprite@ this)
 		int r = (((blob.getNetworkID() + 1) * 31) % 3);
 		CParticle@ Large1   = makeGibParticle(filename, pos, vel + getRandomVelocity(90, hp - 0.2 , 80), 7 - (r % 2), 1 - (r / 2), Vec2f(16, 16), 2.0f, 20, "/material_drop", team);
 	}
-
 }
+
+bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
+{	
+    return (blob.getName() == "arrow" && this.getTeamNum() != blob.getTeamNum());
+}
+
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	if (damage > 0.0f)
-	{
+	{	
+		CSprite@ sprite = this.getSprite();
+	
 		if (worldPoint.x > this.getPosition().x)
 		{
-			this.setAngleDegrees(this.getAngleDegrees() - 3 - XORRandom(10));
+			sprite.RotateBy(-2 - XORRandom(7), Vec2f(0.0f, 12.0f));
 		}
 		else
 		{
-			this.setAngleDegrees(this.getAngleDegrees() + 3 + XORRandom(10));
+			sprite.RotateBy(2 + XORRandom(7), Vec2f(0.0f, 12.0f));
 		}
 	}
 	return damage;
