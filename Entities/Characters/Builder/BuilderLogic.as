@@ -587,7 +587,7 @@ void HandlePickaxeCommand(CBlob@ this, u16 blobID, Vec2f tilepos)
 		{
 			// 4 blocks range check
 			f32 distance = this.getDistanceTo(b);
-			if (distance > 32.0f) return;
+			if (distance - b.getRadius() > 32.0f) return;
 
 			bool isdead = b.hasTag("dead");
 
