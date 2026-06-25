@@ -550,7 +550,7 @@ void onTick(CMovement@ this)
 		if (up && vel.y > -moveVars.jumpMaxVel)
 		{
 			moveVars.jumpStart = 0.7f;
-			moveVars.jumpMid = 0.2f;
+			moveVars.jumpMid = 0.225f;
 			moveVars.jumpEnd = 0.1f;
 			bool crappyjump = false;
 
