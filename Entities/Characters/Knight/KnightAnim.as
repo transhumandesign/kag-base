@@ -53,8 +53,6 @@ void LoadSprites(CSprite@ this)
 		break;
 	}
 
-	string texname = getRunnerTextureName(this);
-
 	// add blade
 	this.RemoveSpriteLayer("chop");
 	CSpriteLayer@ chop = this.addTexturedSpriteLayer("chop", this.getTextureName(), 32, 32);
@@ -88,7 +86,6 @@ void onTick(CSprite@ this)
 	// store some vars for ease and speed
 	CBlob@ blob = this.getBlob();
 	Vec2f pos = blob.getPosition();
-	Vec2f aimpos;
 
 	KnightInfo@ knight;
 	if (!blob.get("knightInfo", @knight))
@@ -97,20 +94,9 @@ void onTick(CSprite@ this)
 	}
 
 	bool knocked = isKnocked(blob);
-
-	bool shieldState = isShieldState(knight.state);
-	bool specialShieldState = isSpecialShieldState(knight.state);
-	bool swordState = isSwordState(knight.state);
-
-	bool pressed_a1 = blob.isKeyPressed(key_action1);
-	bool pressed_a2 = blob.isKeyPressed(key_action2);
-
 	bool walking = (blob.isKeyPressed(key_left) || blob.isKeyPressed(key_right));
 	bool crouching = isCrouching(blob);
-
-	aimpos = blob.getAimPos();
 	bool inair = (!blob.isOnGround() && !blob.isOnLadder());
-
 	Vec2f vel = blob.getVelocity();
 
 	if (blob.hasTag("dead"))
@@ -153,16 +139,9 @@ void onTick(CSprite@ this)
 	// set facing
 	bool facingLeft = this.isFacingLeft();
 	// animations
-	bool ended = this.isAnimationEnded() || this.isAnimation("shield_raised") || this.isAnimation("shield_crouched");
 	bool wantsChopLayer = false;
 	s32 chopframe = 0;
 	f32 chopAngle = 0.0f;
-
-	const bool left = blob.isKeyPressed(key_left);
-	const bool right = blob.isKeyPressed(key_right);
-	const bool up = blob.isKeyPressed(key_up);
-	const bool down = blob.isKeyPressed(key_down);
-
 	bool shinydot = false;
 
 	if (knocked)
@@ -365,13 +344,13 @@ void onTick(CSprite@ this)
 			chop.animation.frame = chopframe;
 			Vec2f offset = Vec2f(choplength, 0.0f);
 			offset.RotateBy(chopAngle, Vec2f_zero);
-			if (!this.isFacingLeft())
+			if (!facingLeft)
 				offset.x *= -1.0f;
 			offset.y += this.getOffset().y * 0.5f;
 
 			chop.SetOffset(offset);
 			chop.ResetTransform();
-			if (this.isFacingLeft())
+			if (facingLeft)
 				chop.RotateBy(180.0f + chopAngle, Vec2f());
 			else
 				chop.RotateBy(chopAngle, Vec2f());
@@ -461,7 +440,7 @@ void onRender(CSprite@ this)
 
 	if (blob.isKeyPressed(key_action1))
 	{
-		CMap@ map = blob.getMap();
+		CMap@ map = getMap();
 		Vec2f position = blob.getPosition();
 		Vec2f cursor_position = blob.getAimPos();
 		Vec2f surface_position;

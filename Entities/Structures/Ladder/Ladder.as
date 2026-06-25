@@ -7,38 +7,28 @@ void onInit(CBlob@ this)
 	this.Tag("ignore blocking actors");
 
 	CShape@ shape = this.getShape();
-	if (shape is null) return;
-
-	shape.SetRotationsAllowed(false);
-	shape.getVars().waterDragScale = 10.0f;
-
-	ShapeConsts@ consts = shape.getConsts();
-	if (consts is null) return;
-
-	consts.collideWhenAttached = false;
-	consts.waterPasses = true;
-	consts.tileLightSource = true;
-	consts.mapCollisions = false;
-
-	this.SetFacingLeft((this.getNetworkID() * 31) % 2 == 1);  //for ladders on map
-	
-	if (this.getName() == "ladder")
+	if (shape !is null)
 	{
-		
-		if (getNet().isServer())
+		shape.SetRotationsAllowed(false);
+		shape.getVars().waterDragScale = 10.0f;
+
+		ShapeConsts@ consts = shape.getConsts();
+		if (consts !is null)
 		{
-			dictionary harvest;
-			harvest.set('mat_wood', 6);
-			this.set('harvest', harvest);
+			consts.collideWhenAttached = false;
+			consts.waterPasses = true;
+			consts.tileLightSource = true;
+			consts.mapCollisions = false;
 		}
 	}
 
-	if (this.hasTag("cheated")) // spawned in using chat commands
+	this.SetFacingLeft((this.getNetworkID() * 31) % 2 == 1);  //for ladders on map
+	
+	if (isServer())
 	{
-		shape.SetStatic(true); // stop from falling
-		shape.SetGravityScale(0.0f);
-		this.set_u16("timePlaced",0);
-		this.Tag("fallen");
+		dictionary harvest;
+		harvest.set('mat_wood', 6);
+		this.set('harvest', harvest);
 	}
 }
 
@@ -63,4 +53,3 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
 	return false;
 }
-

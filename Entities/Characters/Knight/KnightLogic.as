@@ -130,7 +130,7 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 
 	s32 currentStateIndex = this.get_s32("currentKnightState");
 
-	if (getNet().isClient())
+	if (isClient())
 	{
 		if (this.exists("serverKnightState"))
 		{
@@ -193,7 +193,7 @@ void RunStateMachine(CBlob@ this, KnightInfo@ knight, RunnerMoveVars@ moveVars)
 				nextState.stateEnteredTime = getGameTime();
 				nextState.StateEntered(this, knight, currentState.getStateValue());
 				this.set_s32("currentKnightState", nextStateIndex);
-				if (getNet().isServer() && knight.state >= KnightStates::sword_drawn && knight.state <= KnightStates::sword_power_super)
+				if (isServer() && knight.state >= KnightStates::sword_drawn && knight.state <= KnightStates::sword_power_super)
 				{
 					this.set_s32("serverKnightState", nextStateIndex);
 					this.Sync("serverKnightState", true);
@@ -241,15 +241,9 @@ void onTick(CBlob@ this)
 		return;
 	}
 
-	Vec2f pos = this.getPosition();
-	Vec2f vel = this.getVelocity();
-	Vec2f aimpos = this.getAimPos();
-	const bool inair = (!this.isOnGround() && !this.isOnLadder());
-
 	Vec2f vec;
 
 	const int direction = this.getAimDirection(vec);
-	const f32 side = (this.isFacingLeft() ? 1.0f : -1.0f);
 	bool shieldState = isShieldState(knight.state);
 	bool specialShieldState = isSpecialShieldState(knight.state);
 	bool swordState = isSwordState(knight.state);
@@ -259,7 +253,7 @@ void onTick(CBlob@ this)
 
 	const bool myplayer = this.isMyPlayer();
 
-	if (getNet().isClient() && !this.isInInventory() && myplayer)  //Knight charge cursor
+	if (isClient() && !this.isInInventory() && myplayer)  //Knight charge cursor
 	{
 		SwordCursorUpdate(this, knight);
 	}
@@ -440,8 +434,7 @@ void onTick(CBlob@ this)
 
 bool getInAir(CBlob@ this)
 {
-	bool inair = (!this.isOnGround() && !this.isOnLadder());
-	return inair;
+	return !this.isOnGround() && !this.isOnLadder();
 
 }
 
@@ -568,7 +561,8 @@ class ShieldGlideState : KnightState
 		bool forcedrop = getForceDrop(this, moveVars);
 
 		bool inair = getInAir(this);
-		if (inair && !this.isInWater())
+		bool inwater = this.isInWater();
+		if (inair && !inwater)
 		{
 			Vec2f vec;
 			const int direction = this.getAimDirection(vec);
@@ -592,7 +586,7 @@ class ShieldGlideState : KnightState
 
 		ShieldMovement(moveVars);
 
-		if (this.isInWater() || forcedrop)
+		if (inwater || forcedrop)
 		{
 			knight.state = KnightStates::shielding;
 		}
@@ -612,7 +606,6 @@ class ShieldGlideState : KnightState
 			{
 				knight.state = KnightStates::shielding;
 			}
-
 		}
 
 		return false;
@@ -644,7 +637,8 @@ class ShieldSlideState : KnightState
 		bool forcedrop = getForceDrop(this, moveVars);
 
 		bool inair = getInAir(this);
-		if (inair && !this.isInWater())
+		bool inwater = this.isInWater();
+		if (inair && !inwater)
 		{
 			Vec2f vec;
 			const int direction = this.getAimDirection(vec);
@@ -670,7 +664,7 @@ class ShieldSlideState : KnightState
 
 		Vec2f vel = this.getVelocity();
 
-		if (this.isInWater())
+		if (inwater)
 		{
 			if (vel.y > 1.5f && Maths::Abs(vel.x) * 3 > Maths::Abs(vel.y))
 			{
@@ -780,7 +774,7 @@ class SwordDrawnState : KnightState
 
 		Vec2f pos = this.getPosition();
 
-		if (getNet().isClient())
+		if (isClient())
 		{
 			const bool myplayer = this.isMyPlayer();
 			if (knight.swordTimer == KnightVars::slash_charge_level2)
@@ -931,7 +925,7 @@ class SlashState : KnightState
 
 		}
 
-		if (getNet().isClient())
+		if (isClient())
 		{
 			const bool myplayer = this.isMyPlayer();
 			Vec2f pos = this.getPosition();
@@ -1247,7 +1241,7 @@ bool isJab(f32 damage)
 
 void DoAttack(CBlob@ this, f32 damage, f32 aimangle, f32 arcdegrees, u8 type, int deltaInt, KnightInfo@ info)
 {
-	if (!getNet().isServer())
+	if (!isServer())
 	{
 		return;
 	}
@@ -1495,7 +1489,7 @@ bool isSliding(KnightInfo@ knight)
 
 // shieldbash
 
-void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal)
 {
 	// return if we collided with map, solid (door/platform), or something non-fleshy (like a boulder)
 	// allow shieldbashing enemy bombs so knights can "deflect" them

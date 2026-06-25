@@ -846,7 +846,7 @@ void ClientFire(CBlob@ this, s8 charge_time, u8 charge_state)
 CBlob@ getPickupArrow(CBlob@ this)
 {
 	CBlob@[] blobsInRadius;
-	if (this.getMap().getBlobsInRadius(this.getPosition(), this.getRadius() * 1.5f, @blobsInRadius))
+	if (getMap().getBlobsInRadius(this.getPosition(), this.getRadius() * 1.5f, @blobsInRadius))
 	{
 		for (uint i = 0; i < blobsInRadius.length; i++)
 		{
@@ -863,7 +863,7 @@ CBlob@ getPickupArrow(CBlob@ this)
 bool canPickSpriteArrow(CBlob@ this, bool takeout)
 {
 	CBlob@[] blobsInRadius;
-	if (this.getMap().getBlobsInRadius(this.getPosition(), this.getRadius() * 1.5f, @blobsInRadius))
+	if (getMap().getBlobsInRadius(this.getPosition(), this.getRadius() * 1.5f, @blobsInRadius))
 	{
 		for (uint i = 0; i < blobsInRadius.length; i++)
 		{
@@ -1307,7 +1307,7 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 void fletchArrow(CBlob@ this)
 {
 	// fletch arrow
-	if (getNet().isServer())
+	if (isServer())
 	{
 		CBlob@ mat_arrows = server_CreateBlobNoInit("mat_arrows");
 		if (mat_arrows !is null)

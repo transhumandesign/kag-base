@@ -312,3 +312,11 @@ bool CollidesWithPlatform(CBlob@ this, CBlob@ blob, Vec2f velocity)
 	return !(velocity_angle > -90.0f && velocity_angle < 90.0f);
 }
 
+void onDie(CBlob@ this)
+{
+	CSprite@ sprite = this.getSprite();
+	if (sprite !is null)
+	{
+		ParticlesFromSprite(this.getSprite());
+	}
+}

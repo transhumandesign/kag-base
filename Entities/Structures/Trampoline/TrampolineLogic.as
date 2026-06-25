@@ -65,7 +65,7 @@ void onTick(CBlob@ this)
 	this.set_f32("old angle", this.getAngleDegrees());
 }
 
-void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1, Vec2f point2)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (blob is null || blob.isAttached() || blob.getShape().isStatic()) return;
 

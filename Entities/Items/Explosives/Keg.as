@@ -22,16 +22,17 @@ void onInit(CBlob@ this)
 	this.set_u16("_keg_carrier_id", 0xffff);
 
 	CSprite@ sprite = this.getSprite();
-
-	CSpriteLayer@ fuse = this.getSprite().addSpriteLayer("fuse", "Keg.png" , 16, 16, 0, 0);
-
-	if (fuse !is null)
+	if (sprite !is null)
 	{
-		fuse.addAnimation("default", 0, false);
-		int[] frames = {8, 9, 10, 11, 12, 13};
-		fuse.animation.AddFrames(frames);
-		fuse.SetOffset(Vec2f(3, -4));
-		fuse.SetRelativeZ(1);
+		CSpriteLayer@ fuse = sprite.addSpriteLayer("fuse", "Keg.png" , 16, 16, 0, 0);
+		if (fuse !is null)
+		{
+			fuse.addAnimation("default", 0, false);
+			int[] frames = {8, 9, 10, 11, 12, 13};
+			fuse.animation.AddFrames(frames);
+			fuse.SetOffset(Vec2f(3, -4));
+			fuse.SetRelativeZ(1);
+		}
 	}
 
 	this.set_f32("important-pickup", 30.0f);
