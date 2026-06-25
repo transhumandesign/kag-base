@@ -242,65 +242,52 @@ void onTick(CMovement@ this)
 			moveVars.walljumped_side = Walljump::RIGHT;
 	}
 
-	if (!blob.isOnCeiling() && !isknocked &&
-	        !blob.isOnLadder() && (up || left || right || down))  //key pressed
+	if (!blob.isOnCeiling() && !isknocked && !blob.isOnLadder()) 
 	{
-		//check solid tiles
-		const f32 ts = map.tilesize;
-		const f32 y_ts = ts * 0.2f;
-		const f32 x_ts = ts * 1.4f;
-
-		bool surface_left = map.isTileSolid(pos + Vec2f(-x_ts, y_ts - map.tilesize)) ||
-		                    map.isTileSolid(pos + Vec2f(-x_ts, y_ts));
-		if (!surface_left)
-		{
-			surface_left = checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts - map.tilesize), blob) ||
-			               checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts), blob);
-		}
-
-		bool surface_right = map.isTileSolid(pos + Vec2f(x_ts, y_ts - map.tilesize)) ||
-		                     map.isTileSolid(pos + Vec2f(x_ts, y_ts));
-		if (!surface_right)
-		{
-			surface_right = checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts - map.tilesize), blob) ||
-			                checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts), blob);
-		}
-
-		//not checking blobs for this - perf
-		bool surface_above = map.isTileSolid(pos + Vec2f(y_ts, -x_ts)) || map.isTileSolid(pos + Vec2f(-y_ts, -x_ts));
-		bool surface_below = map.isTileSolid(pos + Vec2f(y_ts, x_ts)) || map.isTileSolid(pos + Vec2f(-y_ts, x_ts));
-
-		bool surface = surface_left || surface_right;
-
 		const f32 slidespeed = 2.45f;
+		bool key_pressed = (up || left || right || down);
 
-		// crouch through platforms and crates
-		if (down && !onground && this.getVars().aircount > 2)
+		if (key_pressed)
 		{
-			blob.set_u8("crouch_through", 3);
-		}
+			//check solid tiles
+			const f32 ts = map.tilesize;
+			const f32 y_ts = ts * 0.2f;
+			const f32 x_ts = ts * 1.4f;
 
-		if (blob.isKeyJustPressed(key_down))
-		{
-			int touching = blob.getTouchingCount();
-			for (int i = 0; i < touching; i++)
+			bool surface_left = map.isTileSolid(pos + Vec2f(-x_ts, y_ts - map.tilesize)) ||
+								map.isTileSolid(pos + Vec2f(-x_ts, y_ts));
+			if (!surface_left)
 			{
-				CBlob@ b = blob.getTouchingByIndex(i);
-				if ((b.isPlatform() && b.getAngleDegrees() == 0.0f) || b.getName() == "crate")
-				{
-					b.getShape().checkCollisionsAgain = true;
-					blob.getShape().checkCollisionsAgain = true;
-					blob.set_u8("crouch_through", 3);
-				}
+				surface_left = checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts - map.tilesize), blob) ||
+							   checkForSolidMapBlob(map, pos + Vec2f(-x_ts, y_ts), blob);
 			}
 
-			Vec2f pos = blob.getPosition() + Vec2f(0, 12);
-			CBlob@[] blobs;
-			if (getMap().getBlobsInRadius(pos, 4, blobs))
+			bool surface_right = map.isTileSolid(pos + Vec2f(x_ts, y_ts - map.tilesize)) ||
+								 map.isTileSolid(pos + Vec2f(x_ts, y_ts));
+			if (!surface_right)
 			{
-				for (int i = 0; i < blobs.size(); i++)
+				surface_right = checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts - map.tilesize), blob) ||
+								checkForSolidMapBlob(map, pos + Vec2f(x_ts, y_ts), blob);
+			}
+
+			//not checking blobs for this - perf
+			bool surface_above = map.isTileSolid(pos + Vec2f(y_ts, -x_ts)) || map.isTileSolid(pos + Vec2f(-y_ts, -x_ts));
+			bool surface_below = map.isTileSolid(pos + Vec2f(y_ts, x_ts)) || map.isTileSolid(pos + Vec2f(-y_ts, x_ts));
+
+			bool surface = surface_left || surface_right;
+
+			// crouch through platforms and crates
+			if (down && !onground && this.getVars().aircount > 2)
+			{
+				blob.set_u8("crouch_through", 3);
+			}
+
+			if (blob.isKeyJustPressed(key_down))
+			{
+				int touching = blob.getTouchingCount();
+				for (int i = 0; i < touching; i++)
 				{
-					CBlob@ b = blobs[i];
+					CBlob@ b = blob.getTouchingByIndex(i);
 					if ((b.isPlatform() && b.getAngleDegrees() == 0.0f) || b.getName() == "crate")
 					{
 						b.getShape().checkCollisionsAgain = true;
@@ -308,182 +295,204 @@ void onTick(CMovement@ this)
 						blob.set_u8("crouch_through", 3);
 					}
 				}
-			}
 
-		}
-
-		// cancel any further walljump if not pressing up
-		if (!up)
-		{
-			moveVars.wallrun_count = 1000;
-		}
-
-		//wall jumping/running
-		if (up && surface && 									//only on surface
-		        moveVars.walljumped_side != Walljump::BOTH &&		//do nothing if jammed
-		        !(left && right) &&									//do nothing if pressing both sides
-		        !onground)
-		{
-			bool wasNONE = (moveVars.walljumped_side == Walljump::NONE);
-
-			bool jumpedLEFT = (moveVars.walljumped_side == Walljump::JUMPED_LEFT);
-			bool jumpedRIGHT = (moveVars.walljumped_side == Walljump::JUMPED_RIGHT);
-
-			bool dust = false;
-
-			if (moveVars.jumpCount > 3) //wait some time to be properly in the air
-			{
-				//set contact point
-				bool set_contact = false;
-				bool set_contact_candidate = false;
-
-				// only initiate a contact IF the player is not going to waste boosting if it was the first walljump attempt
-				// this has the unfortunate side effect that when wanting to climb 2 air gap large towers the walljump
-				// would ideally be initiated earlier.
-
-				// players can avoid this by tapping up shortly to make a small jump, which will make them reach minimal
-				// velocity faster.
-
-				// to mitigate part of this we also ensure this is only done for the first jump.
-				// this should assist with newbies climbing walls, while letting more advanced players begin walljumps as
-				// early as they want
-
-				if (left && surface_left && (moveVars.walljumped_side == Walljump::RIGHT || jumpedRIGHT || wasNONE))
+				Vec2f pos = blob.getPosition() + Vec2f(0, 12);
+				CBlob@[] blobs;
+				if (getMap().getBlobsInRadius(pos, 4, blobs))
 				{
-					set_contact_candidate = true;
-				}
-				if (right && surface_right && (moveVars.walljumped_side == Walljump::LEFT || jumpedLEFT || wasNONE))
-				{
-					set_contact_candidate = true;
-				}
-
-				if (set_contact_candidate)
-				{
-					// print("contact candidate @" + getGameTime() + ": side was " + moveVars.walljumped_side);
-
-					// are we starting to hit the wall?
-					// then we want our first climb to be a contact
-					moveVars.wallrun_count = 1000;
-				}
-
-				// set contact immediately if jumping at the wall from an angle; not immediately if hugging wall
-                if (set_contact_candidate && ((vel.y >= -0.0f && vel.y < slidespeed && Maths::Abs(blob.getOldVelocity().x) == 0) || Maths::Abs(blob.getOldVelocity().x) > 0 || !wasNONE))
-				{
-					// print("candidate passes, & our velocity is " + vel.y);
-
-					// ready to hit the wall, and conditions align?
-					// reset wallclimb counters and let's start
-					moveVars.walljumped_side = left ? Walljump::LEFT : Walljump::RIGHT;
-					moveVars.wallrun_count = 0;
-					set_contact = true;
-				}
-
-				// wallrun: is the player still trying to climb up, and is he not falling too fast to allow it
-				if (vel.y < slidespeed &&
-				        ((left && surface_left && !jumpedLEFT) || (right && surface_right && !jumpedRIGHT) || set_contact))
-				{
-					// allow 1st climb "unconditionally" (there were checks above)
-					// allow next climbs depending on a velocity condition
-					const bool should_trigger_climb = set_contact || (!set_contact_candidate && vel.y >= -2.0f);
-
-					// limit climbs to an arbitrarily choosen number
-					if (should_trigger_climb && moveVars.wallrun_count < 2)
+					for (int i = 0; i < blobs.size(); i++)
 					{
-						vel.Set(0, -moveVars.jumpMaxVel * 1.4f);
-						blob.setVelocity(vel);
-
-						// reduce sound spam, especially when climbing 2 air gap large towers
-						if (!set_contact) { blob.getSprite().PlayRandomSound("/StoneJump"); }
-						dust = true;
-
-						++moveVars.wallrun_count;
-						moveVars.walljumped = true;
-					}
-					else
-					{
-						moveVars.walljumped = false;
-					}
-				}
-				//walljump
-				else if (vel.y < slidespeed &&
-				         ((left && surface_right) || (right && surface_left)) &&
-				         !surface_below && !jumpedLEFT && !jumpedRIGHT)
-				{
-					f32 walljumpforce = 4.0f;
-					vel.Set(surface_right ? -walljumpforce : walljumpforce, -2.0f);
-					blob.setVelocity(vel);
-
-					dust = true;
-
-					moveVars.jumpCount = 0;
-
-					if (right)
-					{
-						moveVars.walljumped_side = Walljump::JUMPED_LEFT;
-					}
-					else
-					{
-						moveVars.walljumped_side = Walljump::JUMPED_RIGHT;
-					}
-				}
-
-				if (surface_above)
-				{
-					// prevent any new walljump on that wall if a wall is blocking us above
-					// but allow one to happen (as the code above will have run)
-					moveVars.wallrun_count = 1000;
-				}
-			}
-
-			if (dust)
-			{
-				Vec2f dust_pos = (Vec2f(right ? 4.0f : -4.0f, 0.0f) + pos);
-				MakeDustParticle(dust_pos, "Smoke.png");
-			}
-		}
-		else
-		{
-			moveVars.walljumped = false;
-		}
-
-		//wall sliding
-		{
-			Vec2f groundNormal = blob.getGroundNormal();
-			if (
-			    (left || right) && // require direction key hold
-			    Maths::Abs(groundNormal.y) <= 0.01f) //sliding on wall
-			{
-				Vec2f force;
-
-				Vec2f vel = blob.getVelocity();
-				if (vel.y >= slidespeed && (blob.isFacingLeft() ? groundNormal.x > 0 : groundNormal.x < 0))
-				{
-					f32 temp = vel.y * 0.9f;
-					Vec2f new_vel(vel.x * 0.9f, temp < slidespeed ? slidespeed : temp);
-					blob.setVelocity(new_vel);
-
-					if (is_client) // effect
-					{
-						if (!moveVars.wallsliding)
+						CBlob@ b = blobs[i];
+						if ((b.isPlatform() && b.getAngleDegrees() == 0.0f) || b.getName() == "crate")
 						{
-							blob.getSprite().PlayRandomSound("/Scrape");
+							b.getShape().checkCollisionsAgain = true;
+							blob.getShape().checkCollisionsAgain = true;
+							blob.set_u8("crouch_through", 3);
 						}
+					}
+				}
 
-						//falling for almost a second so add effects
-						if (moveVars.jumpCount > 20)
+			}
+
+			// cancel any further walljump if not pressing up
+			if (!up)
+			{
+				moveVars.wallrun_count = 1000;
+			}
+
+			//wall jumping/running
+			if (up && surface && 									//only on surface
+					moveVars.walljumped_side != Walljump::BOTH &&		//do nothing if jammed
+					!(left && right) &&									//do nothing if pressing both sides
+					!onground)
+			{
+				bool wasNONE = (moveVars.walljumped_side == Walljump::NONE);
+
+				bool jumpedLEFT = (moveVars.walljumped_side == Walljump::JUMPED_LEFT);
+				bool jumpedRIGHT = (moveVars.walljumped_side == Walljump::JUMPED_RIGHT);
+
+				bool dust = false;
+
+				if (moveVars.jumpCount > 3) //wait some time to be properly in the air
+				{
+					//set contact point
+					bool set_contact = false;
+					bool set_contact_candidate = false;
+
+					// only initiate a contact IF the player is not going to waste boosting if it was the first walljump attempt
+					// this has the unfortunate side effect that when wanting to climb 2 air gap large towers the walljump
+					// would ideally be initiated earlier.
+
+					// players can avoid this by tapping up shortly to make a small jump, which will make them reach minimal
+					// velocity faster.
+
+					// to mitigate part of this we also ensure this is only done for the first jump.
+					// this should assist with newbies climbing walls, while letting more advanced players begin walljumps as
+					// early as they want
+
+					if (left && surface_left && (moveVars.walljumped_side == Walljump::RIGHT || jumpedRIGHT || wasNONE))
+					{
+						set_contact_candidate = true;
+					}
+					if (right && surface_right && (moveVars.walljumped_side == Walljump::LEFT || jumpedLEFT || wasNONE))
+					{
+						set_contact_candidate = true;
+					}
+
+					if (set_contact_candidate)
+					{
+						// print("contact candidate @" + getGameTime() + ": side was " + moveVars.walljumped_side);
+
+						// are we starting to hit the wall?
+						// then we want our first climb to be a contact
+						moveVars.wallrun_count = 1000;
+					}
+
+					// set contact immediately if jumping at the wall from an angle; not immediately if hugging wall
+					if (set_contact_candidate && ((vel.y >= -0.0f && vel.y < slidespeed && Maths::Abs(blob.getOldVelocity().x) == 0) || Maths::Abs(blob.getOldVelocity().x) > 0 || !wasNONE))
+					{
+						// print("candidate passes, & our velocity is " + vel.y);
+
+						// ready to hit the wall, and conditions align?
+						// reset wallclimb counters and let's start
+						moveVars.walljumped_side = left ? Walljump::LEFT : Walljump::RIGHT;
+						moveVars.wallrun_count = 0;
+						set_contact = true;
+					}
+
+					if (vel.y < slidespeed)
+					{
+						// wallrun: is the player still trying to climb up, and is he not falling too fast to allow it
+						if ((left && surface_left && !jumpedLEFT) || (right && surface_right && !jumpedRIGHT) || set_contact)
 						{
-							int gametime = getGameTime();
-							if (gametime % (uint(Maths::Max(0, 7 - int(Maths::Abs(vel.y)))) + 3) == 0)
+							// allow 1st climb "unconditionally" (there were checks above)
+							// allow next climbs depending on a velocity condition
+							const bool should_trigger_climb = set_contact || (!set_contact_candidate && vel.y >= -2.0f);
+
+							// limit climbs to an arbitrarily choosen number
+							if (should_trigger_climb && moveVars.wallrun_count < 2)
+							{						
+								vel.Set(0, -moveVars.jumpMaxVel * 1.4f);
+								blob.setVelocity(vel);
+
+								// reduce sound spam, especially when climbing 2 air gap large towers
+								if (!set_contact) { blob.getSprite().PlayRandomSound("/StoneJump"); }
+								dust = true;
+
+								++moveVars.wallrun_count;
+								moveVars.walljumped = true;
+							}
+							else
 							{
-								MakeDustParticle(pos, "/dust2.png");
-								blob.getSprite().PlayRandomSound("/Scrape");
+								moveVars.walljumped = false;
+							}
+						}
+						//walljump
+						else if (((left && surface_right) || (right && surface_left)) &&
+								 !surface_below && !jumpedLEFT && !jumpedRIGHT)
+						{
+							f32 walljumpforce = 4.0f;
+							vel.Set(surface_right ? -walljumpforce : walljumpforce, -2.0f);
+							blob.setVelocity(vel);
+
+							dust = true;
+
+							moveVars.jumpCount = 0;
+
+							if (right)
+							{
+								moveVars.walljumped_side = Walljump::JUMPED_LEFT;
+							}
+							else
+							{
+								moveVars.walljumped_side = Walljump::JUMPED_RIGHT;
 							}
 						}
 					}
 
-					moveVars.wallsliding = true;
+					if (surface_above)
+					{
+						// prevent any new walljump on that wall if a wall is blocking us above
+						// but allow one to happen (as the code above will have run)
+						moveVars.wallrun_count = 1000;
+					}
+				}
+
+				if (dust)
+				{
+					Vec2f dust_pos = (Vec2f(right ? 4.0f : -4.0f, 0.0f) + pos);
+					MakeDustParticle(dust_pos, "Smoke.png");
 				}
 			}
+			else
+			{
+				moveVars.walljumped = false;
+			}
+
+			//wall sliding
+			{
+				Vec2f groundNormal = blob.getGroundNormal();
+				if (
+					(left || right) && // require direction key hold
+					Maths::Abs(groundNormal.y) <= 0.01f) //sliding on wall
+				{
+					Vec2f force;
+
+					Vec2f vel = blob.getVelocity();
+					if (vel.y >= slidespeed && (blob.isFacingLeft() ? groundNormal.x > 0 : groundNormal.x < 0))
+					{
+						f32 temp = vel.y * 0.9f;
+						Vec2f new_vel(vel.x * 0.9f, temp < slidespeed ? slidespeed : temp);
+						blob.setVelocity(new_vel);
+
+						if (is_client) // effect
+						{
+							if (!moveVars.wallsliding)
+							{
+								blob.getSprite().PlayRandomSound("/Scrape");
+							}
+
+							//falling for almost a second so add effects
+							if (moveVars.jumpCount > 20)
+							{
+								int gametime = getGameTime();
+								if (gametime % (uint(Maths::Max(0, 7 - int(Maths::Abs(vel.y)))) + 3) == 0)
+								{
+									MakeDustParticle(pos, "/dust2.png");
+									blob.getSprite().PlayRandomSound("/Scrape");
+								}
+							}
+						}
+
+						moveVars.wallsliding = true;
+					}
+				}
+			}
+		}
+		else if (vel.y > slidespeed)
+		{
+			moveVars.wallrun_count = 0;
+			moveVars.walljumped_side = Walljump::NONE;
 		}
 	}
 
