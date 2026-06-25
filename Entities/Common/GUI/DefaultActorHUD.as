@@ -3,6 +3,9 @@
 
 #include "ActorHUDStartPos.as";
 
+bool hide_hud_background = false;
+const int HP_segment_width = 32;
+
 void renderBackBar(Vec2f origin, f32 width, f32 scale)
 {
 	for (f32 step = 0.0f; step < width / scale - 64; step += 64.0f * scale)
@@ -32,19 +35,21 @@ void renderFrontStone(Vec2f farside, f32 width, f32 scale)
 void renderHPBar(CBlob@ blob, Vec2f origin)
 {
 	string heartFile = "GUI/HeartNBubble.png";
-	int segmentWidth = 32;
-	GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 0, Vec2f(16, 32), origin + Vec2f(-segmentWidth, 0));
 	int HPs = 0;
 
 	for (f32 step = 0.0f; step < blob.getInitialHealth(); step += 0.5f)
 	{
-		GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 1, Vec2f(16, 32), origin + Vec2f(segmentWidth * HPs, 0));
+		if (!hide_hud_background)
+		{
+			GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 1, Vec2f(16, 32), origin + Vec2f(HP_segment_width * HPs, 0));
+		}
+		
 		f32 thisHP = blob.getHealth() - step;
 
 		if (thisHP > 0)
 		{
 			Vec2f heartoffset = (Vec2f(2, 10) * 2);
-			Vec2f heartpos = origin + Vec2f(segmentWidth * HPs, 0) + heartoffset;
+			Vec2f heartpos = origin + Vec2f(HP_segment_width * HPs, 0) + heartoffset;
 
 			if (thisHP <= 0.125f)
 			{
@@ -67,7 +72,11 @@ void renderHPBar(CBlob@ blob, Vec2f origin)
 		HPs++;
 	}
 
-	GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 3, Vec2f(16, 32), origin + Vec2f(32 * HPs, 0));
+	if (!hide_hud_background)
+	{
+		GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 0, Vec2f(16, 32), origin + Vec2f(-HP_segment_width, 0));
+		GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 3, Vec2f(16, 32), origin + Vec2f(32 * HPs, 0));
+	}
 }
 
 void onInit(CSprite@ this)
@@ -88,17 +97,29 @@ void onRender(CSprite@ this)
 
 	Vec2f dim = Vec2f(402, 64);
 	Vec2f ul(getHUDX() - dim.x / 2.0f, getHUDY() - dim.y + 12);
-	Vec2f lr(ul.x + dim.x, ul.y + dim.y);
-	//GUI::DrawPane(ul, lr);
-	renderBackBar(ul, dim.x, 1.0f);
+	Vec2f br(ul.x + dim.x, ul.y + dim.y);
+		
 	u8 bar_width_in_slots = blob.get_u8("gui_HUD_slots_width");
 	f32 width = bar_width_in_slots * 40.0f;
 
 	// additional space for drawing resupply icon
 	u32 offset = (shouldRenderResupplyIndicator(blob) ? 80 : 40);
 	u32 width_offset = (shouldRenderResupplyIndicator(blob) ? 1 * 40.0f : 0);
-
-	renderFrontStone(ul + Vec2f(dim.x + offset, 0), width + width_offset, 1.0f);
-	renderHPBar(blob, ul);
+	
+	if (!hide_hud_background)
+	{
+		renderBackBar(ul, dim.x, 1.0f);
+		renderFrontStone(ul + Vec2f(dim.x + offset, 0), width + width_offset, 1.0f);
+	}
+	
 	//GUI::DrawIcon("Entities/Common/GUI/BaseGUI.png", 0, Vec2f(128,32), topLeft);
+	//GUI::DrawPane(ul, br);
+	
+	renderHPBar(blob, ul);
+	
+	// determining if mouse is hovering over HUD so we should hide its background
+	Vec2f mousepos = getControls().getMouseScreenPos();
+	hide_hud_background = 	(mousepos.x > ul.x - HP_segment_width 
+							&& mousepos.y > ul.y 
+							&& mousepos.x < ul.x + dim.x + offset + 32) ? true : false;
 }
