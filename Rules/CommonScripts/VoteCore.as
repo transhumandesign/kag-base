@@ -215,6 +215,18 @@ void onRestart(CRules@ this)
 	}
 }
 
+void onStateChange( CRules@ this, const u8 oldState )
+{
+	if (!this.isGameOver()) return;
+
+	if(Rules_AlreadyHasVote(this))
+	{
+		VoteObject@ vote = Rules_getVote(this);
+		if(vote.cancel_on_gameover)
+			CancelVote(vote, null);
+	}
+}
+
 void onPlayerLeave(CRules@ this, CPlayer@ player)
 {
 	if (Rules_AlreadyHasVote(this))
