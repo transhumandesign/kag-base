@@ -1,6 +1,7 @@
 // Builder animations
 
 #include "BuilderCommon.as"
+#include "BuilderHittable.as"
 #include "FireCommon.as"
 #include "Requirements.as"
 #include "RunnerAnimCommon.as"
@@ -141,8 +142,8 @@ void onTick(CSprite@ this)
 				{
 					CMap@ map = getMap();
 					Tile t = map.getTile(hitdata.tilepos);
-					// 207 is damaged wood tile back
-					if (map.isTileWood(t.type) || map.isTileGrass(t.type) || t.type == CMap::tile_wood_back || t.type == 207)
+					u16 type = t.type;
+					if (isWoodenTile(map, type))
 					{
 						hitting_wood = true;
 					}
@@ -151,11 +152,7 @@ void onTick(CSprite@ this)
 						hitting_stone = true;
 					}
 
-					if (map.isTileWood(t.type) || // wood tile
-						(t.type >= CMap::tile_wood_back && t.type <= 207) || // wood backwall
-						map.isTileCastle(t.type) || // castle block
-						(t.type >= CMap::tile_castle_back && t.type <= 79) || // castle backwall
-					 	t.type == CMap::tile_castle_back_moss) // castle mossbackwall
+					if (isStructureTile(map, type))
 					{
 						hitting_structure = true;
 					}
@@ -166,8 +163,7 @@ void onTick(CSprite@ this)
 					if (attacked !is null)
 					{
 						string attacked_name = attacked.getName();
-						if ((attacked.hasTag("wooden") || attacked_name.toLower().find("tree") != -1 || attacked.hasTag("scenary"))
-							&& attacked_name != "mine" && attacked_name != "drill")
+						if (isWooden(attacked))
 						{
 							hitting_wood = true;
 						}
@@ -176,12 +172,7 @@ void onTick(CSprite@ this)
 							hitting_stone = true;
 						}
 
-						if (attacked_name == "bridge" ||
-							attacked_name == "wooden_platform" ||
-							attacked.hasTag("door") ||
-							attacked_name == "ladder" ||
-							attacked_name == "spikes"
-							)
+						if (isStructure(attacked))
 						{
 							hitting_structure = true;
 						}
