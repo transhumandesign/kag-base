@@ -28,7 +28,7 @@ void onTick(CBlob@ this)
 	if (mixer is null)
 		return;
 
-	if (s_gamemusic && s_musicvolume > 0.0f)
+	if (s_soundon != 0 && s_gamemusic && s_musicvolume > 0.0f)
 	{
 		if (!this.get_bool("initialized game"))
 		{
