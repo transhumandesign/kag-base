@@ -370,6 +370,18 @@ shared class CTFCore : RulesCore
 
 	void Update()
 	{
+		// check if we need to give winning team coins after other team surrendered
+		if (rules.exists("surrender reward"))
+		{
+			s32 winTeamIndex = rules.get_s32("surrender reward");
+			
+			if (winTeamIndex > -1)
+			{
+				GiveWinTeamCoins(rules.get_s32("surrender reward"));
+				rules.set_s32("surrender reward", -1);
+			}
+		}
+	
 		if (rules.isGameOver()) { return; }
 
 		s32 ticksToStart = gamestart + warmUpTime - getGameTime();
@@ -612,23 +624,23 @@ shared class CTFCore : RulesCore
 
 		if (winteamIndex >= 0)
 		{
-			// add winning team coins
-			if (rules.isMatchRunning())
-			{
-				CBlob@[] players;
-				getBlobsByTag("player", @players);
-				for (uint i = 0; i < players.length; i++)
-				{
-					CPlayer@ player = players[i].getPlayer();
-					if (player !is null && players[i].getTeamNum() == winteamIndex)
-					{
-						player.server_setCoins(player.getCoins() + 150);
-					}
-				}
-			}
-
-			rules.SetTeamWon(winteamIndex);   //game over!
+			GiveWinTeamCoins(winteamIndex);		// give winning team coins
+			rules.SetTeamWon(winteamIndex);   	// game over!
 			rules.SetCurrentState(GAME_OVER);
+		}
+	}
+	
+	void GiveWinTeamCoins(s32 winning_team)
+	{
+		CBlob@[] players;
+		getBlobsByTag("player", @players);
+		for (uint i = 0; i < players.length; i++)
+		{
+			CPlayer@ player = players[i].getPlayer();
+			if (player !is null && players[i].getTeamNum() == winning_team)
+			{
+				player.server_setCoins(player.getCoins() + 150);
+			}
 		}
 	}
 
