@@ -52,7 +52,7 @@ class TileInfo
 		return (getGameTime() - place_time > moss_time); // has enough time passed since this tile was placed?
 	}
 
-	bool hasMossAdjacent()
+	bool hasMossOrWaterAdjacent()
 	{
 		CMap@ map = getMap();
 
@@ -65,14 +65,21 @@ class TileInfo
 
 		for (u8 i = 0; i < adjacentTilePos.size(); i++)
 		{
-			Tile tile = map.getTile(coords - adjacentTilePos[i]);
-			u32 index = findTileByCoords(castle_tiles, coords - adjacentTilePos[i]);
+			Vec2f offset = coords - adjacentTilePos[i];
+			bool inwater = map.isInWater(offset);
 
+			// ignore min time restriction if tile is close to water or moss, otherwise you can prevent moss from spreading very very easily
+			if (inwater)
+			{
+				return true;
+			}
+
+			Tile tile = map.getTile(offset);
 			bool mossyCastle = castle_moss_stuff.find(tile.type) != -1;
 
-			// to ignore min time restriction if tile is close to moss, otherwise you can prevent moss from spreading very very easily
 			if (mossyCastle)
 			{
+				u32 index = findTileByCoords(castle_tiles, offset);
 				TileInfo tinfo = castle_tiles[index];
 
 				if (tinfo.place_time != 0) // prevent moss that was on the map since the beginning from spreading
@@ -121,15 +128,22 @@ class TileInfo
 
 		for (u8 i = 0; i < adjacentTilePos.size(); i++)
 		{
-			Tile tile = map.getTile(coords - adjacentTilePos[i]);
+			Vec2f offset = coords - adjacentTilePos[i];
+			Tile tile = map.getTile(offset);
 			bool ground = map.isTileGround(tile.type);
 			bool bedrock = map.isTileBedrock(tile.type);
+			bool water = map.isInWater(offset);
 			bool mossyCastle = castle_moss_stuff.find(tile.type) != -1;
 
-			// increase chance that this tile will mossify if there's dirt, bedrock, or other mossy tiles around it
+			// increase chance that this tile will mossify if there's dirt, bedrock, water, or other mossy tiles around it
 			if (ground || bedrock || mossyCastle)
 			{
 				luck += 0.002f;
+			}
+
+			if (water)
+			{
+				luck += 0.005f;
 			}
 		}
 
@@ -308,7 +322,7 @@ void onTick(CRules@ this)
 				
 				if (ttype != -1)
 				{
-					if (luck > 0 && random_grow - luck <= moss_stone_chance && (tinfo.mossTime() || tinfo.hasMossAdjacent())) //  check for luck being non-zero so stone structures get mossified starting from ground level
+					if (luck > 0 && random_grow - luck <= moss_stone_chance && (tinfo.mossTime() || tinfo.hasMossOrWaterAdjacent())) //  check for luck being non-zero so stone structures get mossified starting from ground level
 					{
 						map.server_SetTile(tinfo.coords, castle_moss_stuff[ttype]);
 					}
