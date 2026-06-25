@@ -44,6 +44,23 @@ void onTick(CBlob@ this)
 			}
 		}
 	}
+
+	CBlob@ myblob = getLocalPlayerBlob();
+	if (this.isOverlapping(myblob))
+	{
+		array<EKEY_CODE> numKeys = { KEY_KEY_1, KEY_KEY_2, KEY_KEY_3, KEY_KEY_4, KEY_KEY_5, KEY_KEY_6, KEY_KEY_7, KEY_KEY_8, KEY_KEY_9, KEY_KEY_0 };
+		CControls@ c = myblob.getControls();
+		for (u8 i = 0; i < numKeys.length; i++)
+		{
+			if (c.isKeyJustPressed(numKeys[i]))
+			{
+				CBitStream params;
+				params.write_u8(i);
+				this.SendCommand(this.getCommandID("change class"), params);
+				break;
+			}
+		}
+	}
 }
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
