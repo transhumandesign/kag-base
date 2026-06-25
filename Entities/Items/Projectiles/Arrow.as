@@ -274,7 +274,7 @@ void onTick(CBlob@ this)
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
-	if (blob !is null && doesCollideWithBlob(this, blob) && !this.hasTag("collided"))
+	if (blob !is null && !this.hasTag("collided"))
 	{
 		const u8 arrowType = this.get_u8("arrow type");
 
@@ -375,6 +375,33 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 	}
 }
 
+void ArrowCollideWithBucket(CBlob@ this, CBlob@ bucket, bool fire_arrow = false)
+{
+	if (bucket is null) return;
+
+	// splash particle
+	Vec2f pos = bucket.getPosition() - Vec2f(0, bucket.getHeight());
+	CParticle@ p = ParticleAnimated("Splash.png", pos, Vec2f_zero, 0.0f, 1.0f, 3, 0.0f, true);
+	if (p !is null)
+	{
+		p.Z = 100;
+		p.lighting = true;
+	}
+
+	// sound
+	CSprite@ bucket_sprite = bucket.getSprite();
+	if (bucket_sprite !is null)
+	{
+		bucket_sprite.PlaySound("SplashSmall.ogg");
+	}
+
+	// extinguishing
+	if (fire_arrow)
+	{
+		turnOffFire(this);
+	}
+}
+
 bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 {
 	//don't collide with other projectiles
@@ -393,6 +420,29 @@ bool doesCollideWithBlob(CBlob@ this, CBlob@ blob)
 	if (specialArrowHit(blob))
 	{
 		return true;
+	}
+
+	// if arrow collides with a filled bucket from above, make a splash effect and ignore collision
+	bool filled_bucket = blob.getName() == "bucket" && blob.exists("filled") && blob.get_u8("filled") > 0;
+	if (filled_bucket)
+	{
+		// getting old tip pos
+		Vec2f direction = this.getOldVelocity();
+		direction.Normalize();
+		Vec2f pos = this.getOldPosition();
+		Vec2f tip_pos = pos + direction * 4.0f;
+
+		const u8 arrowType = this.get_u8("arrow type");
+		bool hitting_at_top = tip_pos.y < blob.getPosition().y;
+		bool arrow_from_above = this.getVelocity().y > 2.0f;
+		bool eligible_arrow = arrowType == ArrowType::normal || arrowType == ArrowType::fire;
+		bool collide_with_bucket = arrow_from_above && hitting_at_top && eligible_arrow && !blob.isInWater();
+
+		if (collide_with_bucket)
+		{
+			ArrowCollideWithBucket(this, blob, arrowType == ArrowType::fire);
+			return false;
+		}
 	}
 
 	bool check =	this.getTeamNum() != blob.getTeamNum() || // collide with enemy blobs
