@@ -15,12 +15,23 @@ void TryToAttachVehicle(CBlob@ blob, CBlob@ toBlob = null)
 				for (uint i = 0; i < blobsInRadius.length; i++)
 				{
 					CBlob @b = blobsInRadius[i];
-					if (b.getTeamNum() == blob.getTeamNum() && b.getAttachments() !is null)
+
+					CAttachment@ att = b.getAttachments(); 
+					if (b.getTeamNum() == blob.getTeamNum() && att !is null)
 					{
-						AttachmentPoint@ bap2 = b.getAttachments().getAttachmentPointByName("VEHICLE");
-						if (bap2 !is null && bap2.socket && bap2.getOccupied() is null)
+						// attach mounted bow to blob's BOW attachment point if it exists and is empty
+						AttachmentPoint@ bap2 = att.getAttachmentPointByName("BOW");
+						if (blob.getName() == "mounted_bow" && bap2 !is null && bap2.socket && bap2.getOccupied() is null)
 						{
 							b.server_AttachTo(blob, bap2);
+							break;
+						}
+
+						// attach vehicle to blob's VEHICLE attachment point
+						AttachmentPoint@ bap3 = att.getAttachmentPointByName("VEHICLE");
+						if (bap3 !is null && bap3.socket && bap3.getOccupied() is null)
+						{
+							b.server_AttachTo(blob, bap3);
 							break;
 						}
 					}
