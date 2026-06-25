@@ -168,10 +168,13 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 
 void UpdateFrame(CBlob@ this)
 {
-	CSpriteLayer@ cage = this.getSprite().getSpriteLayer("cage");
-	if (cage !is null)
+	if (isClient())
 	{
-		cage.animation.setFrameFromRatio(1.0f - this.getHealth() / this.getInitialHealth());
+		CSpriteLayer@ cage = this.getSprite().getSpriteLayer("cage");
+		if (cage !is null)
+		{
+			cage.animation.setFrameFromRatio(1.0f - this.getHealth() / this.getInitialHealth());
+		}
 	}
 }
 

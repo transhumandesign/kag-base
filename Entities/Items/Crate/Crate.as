@@ -115,6 +115,7 @@ void onInit(CBlob@ this)
 		this.set_s32("gold building amount", 0);
 	}
 
+	MakeDamageFrame(this);
 	this.getSprite().SetZ(-10.0f);
 }
 
@@ -894,6 +895,27 @@ bool DumpOutItems(CBlob@ this, f32 pop_out_speed = 5.0f, Vec2f init_velocity = V
 		}
 	}
 	return dumped_anything;
+}
+
+void onHealthChange(CBlob@ this, f32 oldHealth)
+{
+	MakeDamageFrame(this);
+}
+
+void MakeDamageFrame(CBlob@ this)
+{
+	if (isClient())
+	{
+		CSprite@ sprite = this.getSprite();
+		f32 hp = this.getHealth();
+		f32 full_hp = this.getInitialHealth();
+		int frame_count = sprite.animation.getFramesCount();
+		int frame = frame_count - frame_count * (hp / full_hp);
+		const string packed = this.exists("packed") ? this.get_string("packed") : "";
+		string animation_string = (this.exists("frame") && !packed.isEmpty()) ? "label" : "destruction";
+		sprite.SetAnimation(animation_string);
+		sprite.animation.frame = frame;
+	}
 }
 
 // SPRITE

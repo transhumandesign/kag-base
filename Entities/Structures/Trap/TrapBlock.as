@@ -58,12 +58,20 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 	}
 }
 
-void MakeDamageFrame(CBlob@ this)
+void MakeDamageFrame(CBlob@ this, bool repaired = false)
 {
-	f32 hp = this.getHealth();
-	f32 full_hp = this.getInitialHealth();
-	int frame = (hp > full_hp * 0.9f) ? 0 : ((hp > full_hp * 0.4f) ? 1 : 2);
-	this.getSprite().animation.frame = frame;
+	if (isClient())
+	{
+		f32 hp = this.getHealth();
+		f32 full_hp = this.getInitialHealth();
+		int frame = (hp > full_hp * 0.9f) ? 0 : ((hp > full_hp * 0.4f) ? 1 : 2);
+		this.getSprite().animation.frame = frame;
+
+		if (repaired)
+		{
+			this.getSprite().PlaySound("/build_door.ogg");
+		}
+	}
 }
 
 void setLightPass(CBlob@ this, u32 offset, bool pass)
