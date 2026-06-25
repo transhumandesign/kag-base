@@ -2,9 +2,7 @@
 
 #include "RunnerCommon.as"
 #include "Help.as";
-
 #include "Hitters.as";
-
 #include "TraderWantedList.as";
 
 //trader methods
@@ -23,25 +21,6 @@ void onInit(CBlob@ this)
 	this.getCurrentScript().runFlags |= Script::tick_moving;
 
 	//EnsureWantedList();
-}
-
-void onReload(CSprite@ this)
-{
-	this.getConsts().filename = this.getBlob().getSexNum() == 0 ?
-	                            "Entities/Special/WAR/Trading/TraderMale.png" :
-	                            "Entities/Special/WAR/Trading/TraderFemale.png";
-}
-
-void onGib(CSprite@ this)
-{
-	CBlob@ blob = this.getBlob();
-	Vec2f pos = blob.getPosition();
-	Vec2f vel = blob.getVelocity();
-	vel.y -= 3.0f;
-	f32 hp = Maths::Min(Maths::Abs(blob.getHealth()), 2.0f) + 1.0;
-	CParticle@ Gib1     = makeGibParticle("Entities/Special/WAR/Trading/TraderGibs.png", pos, vel + getRandomVelocity(90, hp , 80), 0, 0, Vec2f(16, 16), 2.0f, 20, "/BodyGibFall");
-	CParticle@ Gib2     = makeGibParticle("Entities/Special/WAR/Trading/TraderGibs.png", pos, vel + getRandomVelocity(90, hp - 0.2 , 80), 1, 0, Vec2f(16, 16), 2.0f, 20, "/BodyGibFall");
-	CParticle@ Gib3     = makeGibParticle("Entities/Special/WAR/Trading/TraderGibs.png", pos, vel + getRandomVelocity(90, hp , 80), 2, 0, Vec2f(16, 16), 2.0f, 0, "/BodyGibFall");
 }
 
 void onHealthChange(CBlob@ this, f32 oldHealth)
@@ -101,8 +80,18 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 	return damage;
 }
 
-
 //sprite/anim update
+void onInit(CSprite@ this)
+{
+	//gender
+	CBlob@ blob = this.getBlob();
+	if (blob !is null && blob.exists("sex num"))
+	{
+		blob.setSexNum(blob.get_u8("sex num"));
+		SetFilename(this);
+		this.ReloadSprite(this.getConsts().filename);
+	}
+}
 
 void onTick(CSprite@ this)
 {
@@ -145,4 +134,28 @@ void onTick(CSprite@ this)
 	{
 		this.SetAnimation("default");
 	}
+}
+
+void onReload(CSprite@ this)
+{
+	SetFilename(this);
+}
+
+void onGib(CSprite@ this)
+{
+	CBlob@ blob = this.getBlob();
+	Vec2f pos = blob.getPosition();
+	Vec2f vel = blob.getVelocity();
+	vel.y -= 3.0f;
+	f32 hp = Maths::Min(Maths::Abs(blob.getHealth()), 2.0f) + 1.0;
+	CParticle@ Gib1     = makeGibParticle("Entities/Special/WAR/Trading/TraderGibs.png", pos, vel + getRandomVelocity(90, hp , 80), 0, 0, Vec2f(16, 16), 2.0f, 20, "/BodyGibFall");
+	CParticle@ Gib2     = makeGibParticle("Entities/Special/WAR/Trading/TraderGibs.png", pos, vel + getRandomVelocity(90, hp - 0.2 , 80), 1, 0, Vec2f(16, 16), 2.0f, 20, "/BodyGibFall");
+	CParticle@ Gib3     = makeGibParticle("Entities/Special/WAR/Trading/TraderGibs.png", pos, vel + getRandomVelocity(90, hp , 80), 2, 0, Vec2f(16, 16), 2.0f, 0, "/BodyGibFall");
+}
+
+void SetFilename(CSprite@ this)
+{
+		this.getConsts().filename = this.getBlob().getSexNum() == 0 ?
+	                            "Entities/Special/WAR/Trading/TraderMale.png" :
+	                            "Entities/Special/WAR/Trading/TraderFemale.png";
 }
