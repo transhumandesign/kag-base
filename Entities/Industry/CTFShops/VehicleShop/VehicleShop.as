@@ -22,7 +22,7 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(4, 4));
+	this.set_Vec2f("shop menu size", Vec2f(4, 5));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
 
@@ -39,6 +39,12 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Ballista", ballista_icon, "ballista", ballista_icon + "\n\n\n" + Descriptions::ballista, false, true);
 		s.crate_icon = 5;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista);
+	}
+	{
+		string bomber_icon = getTeamIcon("bomber", "BalloonShopIcon.png", team_num, Vec2f(32, 32), 0);
+		ShopItem@ s = addShopItem(this, "Bomber", bomber_icon, "bomber", bomber_icon + "\n\n\n\n" + Descriptions::bomber, false, true);
+		s.crate_icon = 3;
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::bomber);
 	}
 	{
 		string outpost_icon = getTeamIcon("outpost", "VehicleIcons.png", team_num, Vec2f(32, 32), 6);

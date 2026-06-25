@@ -85,7 +85,9 @@ void onTick(CBlob@ this)
 
 			//TODO: move to atmosphere damage script
 			f32 y = this.getPosition().y;
-			if (y < 100)
+			//printf("My height is " + y);
+
+			if (y < -20)
 			{
 				if (getGameTime() % 15 == 0)
 					this.server_Hit(this, this.getPosition(), Vec2f(0, 0), y < 50 ? (y < 0 ? 2.0f : 1.0f) : 0.25f, 0, true);
