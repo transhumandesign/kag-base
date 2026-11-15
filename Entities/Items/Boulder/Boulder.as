@@ -97,10 +97,6 @@ void Slam(CBlob @this, f32 angle, Vec2f vel, f32 vellen)
 	Tile tile = map.getTile(pos);
 	if (map.isTileBackgroundNonEmpty(tile))
 	{
-		if (map.getSectorAtPosition(pos, "no build") !is null)
-		{
-			return;
-		}
 		map.server_DestroyTile(pos + Vec2f(7.0f, 7.0f), 10.0f, this);
 		map.server_DestroyTile(pos - Vec2f(7.0f, 7.0f), 10.0f, this);
 	}
@@ -123,14 +119,8 @@ bool BoulderHitMap(CBlob@ this, Vec2f worldPoint, int tileOffset, Vec2f velocity
 
 	if (map.isTileCastle(t) || map.isTileWood(t))
 	{
-		Vec2f tpos = this.getMap().getTileWorldPosition(tileOffset);
-		if (map.getSectorAtPosition(tpos, "no build") !is null)
-		{
-			return false;
-		}
-
 		//make a shower of gibs here
-
+		Vec2f tpos = this.getMap().getTileWorldPosition(tileOffset);
 		map.server_DestroyTile(tpos, 100.0f, this);
 		Vec2f vel = this.getVelocity();
 		this.setVelocity(vel * 0.8f); //damp
