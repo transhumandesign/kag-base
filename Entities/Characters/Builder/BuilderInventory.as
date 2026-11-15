@@ -5,6 +5,7 @@
 #include "Help.as";
 #include "CommonBuilderBlocks.as";
 #include "KnockedCommon.as";
+#include "RedBarrierCommon.as";
 
 namespace Builder
 {
@@ -407,7 +408,7 @@ void onRender(CSprite@ this)
 				Vec2f temp = (Vec2f( step_x + 0.5, step_y + 0.5) * map.tilesize);
 				Vec2f v = offsetPos + temp;
 				Vec2f pos = aligned + (temp - Vec2f(0.5f,0.5f)* map.tilesize) * 2 * zoom;
-				if (!onground || map.getSectorAtPosition(v, "no build") !is null || map.isTileSolid(v) || blobBlockingBuilding(map, v))
+				if (!onground || map.getSectorAtPosition(v, "no build") !is null || map.isTileSolid(v) || blobBlockingBuilding(map, v) || inBarrier(v.x))
 				{
 					// draw red
 					GUI::DrawIcon("CrateSlots.png", 5, Vec2f(8,8), pos, zoom);
