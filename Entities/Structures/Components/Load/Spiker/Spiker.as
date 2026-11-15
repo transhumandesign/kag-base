@@ -135,7 +135,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	CSpriteLayer@ layer = sprite.addSpriteLayer("background", "Spiker.png", 8, 16);
 	layer.addAnimation("default", 0, false);
 	layer.animation.AddFrame(4);
-	layer.SetRelativeZ(-10);
+	layer.SetRelativeZ(-15);
 	layer.SetFacingLeft(false);
 }
 
