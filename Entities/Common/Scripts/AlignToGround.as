@@ -1,33 +1,21 @@
 #define SERVER_ONLY
 
-void onInit(CBlob@ this)
+void onTick(CBlob@ this)
 {
-	CShape@ shape = this.getShape();
-	
-	// put on ground based on shape's position
-	CMap@ map = getMap();
-	uint ts = map.tilesize;
-	Vec2f pos = shape.getPosition();
-	pos = Vec2f(Maths::Floor(pos.x / ts) * ts, Maths::Floor(pos.y / ts) * ts); // align to tiles
-
-	u8 checked_times = 0;
-
-	while (!map.isTileSolid(pos))
-	{
-		pos += Vec2f(0, ts);
-	
-		// left the map, die
-		if (pos.y >= map.tilemapheight * ts || pos.y < 0)
-		{
-			this.server_Die();
-			return;
-		}
-		
-		// if checked 10 times, leave it be
-		checked_times++;
-		if (checked_times >= 10)
-			break;
+	// without this moving will fail
+	if (getGameTime() < 5) {
+		return;
 	}
 
-	this.setPosition(Vec2f(pos.x, pos.y - shape.getHeight() / 2 - shape.getOffset().y));
+	CMap@ map = getMap();
+	uint ts = map.tilesize;
+	Vec2f init_pos = this.getPosition();
+	Vec2f col_pos;
+	
+	if (map.rayCastSolid(init_pos, Vec2f(init_pos.x, map.tilemapheight * ts), col_pos)) {
+		CShape@ shape = this.getShape();
+		this.setPosition(Vec2f(col_pos.x, col_pos.y - shape.getHeight() / 2 - shape.getOffset().y));
+	}
+
+	this.getCurrentScript().runFlags |= Script::remove_after_this;
 }
