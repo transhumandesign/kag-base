@@ -1,7 +1,7 @@
 // Flag base logic
 
 #include "CTF_FlagCommon.as"
-#include "GameplayEvents.as";
+#include "GameplayEventsCommon.as";
 
 const string flag_name = "ctf_flag";
 
@@ -63,7 +63,7 @@ void onTick(CBlob@ this)
 			//check return conditions
 			if (!flag.isAttached() && flag.get_u16(return_prop) >= return_time)
 			{
-				flag.SendCommand(flag.getCommandID("return"));
+				flag.SendCommand(flag.getCommandID("return flag client"));
 
 				this.server_AttachTo(flag, "FLAG");
 			}
@@ -71,7 +71,7 @@ void onTick(CBlob@ this)
 			if (flag.hasTag("stalemate_return"))
 			{
 				flag.server_DetachAll();
-				flag.SendCommand(flag.getCommandID("return"));
+				flag.SendCommand(flag.getCommandID("return flag client"));
 				flag.Untag("stalemate_return"); //local
 
 				this.server_AttachTo(flag, "FLAG");
@@ -115,7 +115,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 				CBitStream params;
 				params.write_netid(blob.getNetworkID());
-				flag.SendCommand(flag.getCommandID("pickup"), params);
+				flag.SendCommand(flag.getCommandID("pickup flag client"), params);
 			}
 		}
 	}
@@ -125,7 +125,11 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		CBlob@ flag = blob.getCarriedBlob();
 		if (flag !is null && flag.getName() == flag_name && flag.getTeamNum() != this.getTeamNum())
 		{
-			SendGameplayEvent(createFlagCaptureEvent(blob.getPlayer()));
+			CPlayer@ p = blob.getPlayer();
+			if (p !is null)
+			{
+				GE_CaptureFlag(p.getNetworkID()); // gameplay event for coins
+			}
 
 			//smash the flag
 			this.server_Hit(flag, flag.getPosition(), Vec2f(), 5.0f, 0xfa, true);
@@ -137,7 +141,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 
 			CBitStream params;
 			params.write_netid(blob.getNetworkID());
-			flag.SendCommand(flag.getCommandID("capture"), params);
+			flag.SendCommand(flag.getCommandID("capture flag client"), params);
 		}
 	}
 }

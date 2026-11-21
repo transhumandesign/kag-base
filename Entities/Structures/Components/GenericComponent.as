@@ -4,7 +4,7 @@
 
 void onInit(CBlob@ this)
 {
-	this.Tag("no pickup");
+	this.Tag("builder always hit");
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
@@ -14,7 +14,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		Component@ component = null;
 		if (!this.get("component", @component)) return;
 
-		if (getNet().isServer())
+		if (isServer())
 		{
 			MapPowerGrid@ grid;
 			if (!getRules().get("power grid", @grid)) return;
@@ -26,12 +26,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 }
 
-/*
-void onDie(CBlob@ this)
+bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 {
-	if (!this.exists("component")) return;
-
-	Component@ component = null;
-	if (!this.get("component", @component)) return;
+	return false;
 }
-*/

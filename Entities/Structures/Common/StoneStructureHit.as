@@ -1,6 +1,5 @@
 //scale the damage:
-//      knights cant damage
-//      arrows cant damage
+//      knights, arrows and fire doesn't deal damage
 
 #include "Hitters.as";
 
@@ -16,6 +15,7 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 		case Hitters::sword:
 		case Hitters::arrow:
 		case Hitters::stab:
+		case Hitters::fire:
 			dmg = 0.0f;
 			break;
 

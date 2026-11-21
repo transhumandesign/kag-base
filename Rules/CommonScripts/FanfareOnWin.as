@@ -14,7 +14,7 @@ void onStateChange( CRules@ this, const u8 oldState )
 			{
 				Sound::Play("/FanfareWin.ogg");
 			}
-			else
+			else if (teamNum != this.getSpectatorTeamNum())
 			{
 				Sound::Play("/FanfareLose.ogg");
 			}

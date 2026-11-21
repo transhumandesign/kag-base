@@ -30,8 +30,7 @@ void onRender(CSprite@ this)
 	AttachmentPoint@ gunner = blob.getAttachments().getAttachmentPointByName("GUNNER");
 	if (gunner !is null	&& gunner.getOccupied() is localBlob)
 	{
-		if (!v.getCurrentAmmo().infinite_ammo)
-			drawAmmoCount(blob, v);
+		drawAmmoCount(blob, v);
 
 		if (v.getCurrentAmmo().max_charge_time > 0)
 		{
@@ -54,40 +53,40 @@ void onRender(CSprite@ this)
 void drawAmmoCount(CBlob@ blob, VehicleInfo@ v)
 {
 	// draw ammo count
-	Vec2f pos2d1 = blob.getScreenPos() - Vec2f(0, 10);
-	Vec2f pos2d = blob.getScreenPos() - Vec2f(0, 60);
-	Vec2f dim = Vec2f(20, 8);
+	Vec2f screenpos = blob.getScreenPos();
 	const f32 y = blob.getHeight() * 2.4f;
-	const f32 charge_percent = 1.0f;
-
-	Vec2f ul = Vec2f(pos2d.x - dim.x, pos2d.y + y);
-	Vec2f lr = Vec2f(pos2d.x - dim.x + charge_percent * 2.0f * dim.x, pos2d.y + y + dim.y);
-
+	
+	GUI::SetFont("menu");
+	
+	string ammoText;
+	if (v.getCurrentAmmo().infinite_ammo)
+	{
+		ammoText = "∞";
+	}
+	else
+	{
+		ammoText = "" + v.getCurrentAmmo().ammo_stocked;
+	}
+	
+	Vec2f textDim;
+	GUI::GetTextDimensions(ammoText, textDim);
+	
+	Vec2f tl(screenpos.x - textDim.x / 2, screenpos.y - textDim.y / 2 + y);
+	Vec2f br(screenpos.x + textDim.x / 2, screenpos.y + textDim.y / 2 + y);
+	Vec2f padding(4,2);
+	
 	if (blob.isFacingLeft())
 	{
-		ul -= Vec2f(8, 0);
-		lr -= Vec2f(8, 0);
+		tl -= Vec2f(16, 0);
+		br -= Vec2f(16, 0);
 
-		const f32 max_dist = ul.x - lr.x;
-		ul.x += max_dist + dim.x * 2.0f;
-		lr.x += max_dist + dim.x * 2.0f;
+		const f32 max_dist = tl.x - br.x;
+		tl.x += max_dist + textDim.x * 2.0f;
+		br.x += max_dist + textDim.x * 2.0f;
 	}
-
-	const f32 dist = lr.x - ul.x;
-	Vec2f upperleft((ul.x + (dist / 2.0f)) - 5.0f + 4.0f, pos2d1.y + blob.getHeight() + 30);
-	Vec2f lowerright((ul.x + (dist / 2.0f))  + 5.0f + 4.0f, upperleft.y + 20);
-
-	//GUI::DrawRectangle(upperleft - Vec2f(0,20), lowerright , SColor(255,0,0,255));
-
-	const string ammoText = "" + v.getCurrentAmmo().ammo_stocked;
-	const u8 numDigits = ammoText.length();
-
-	upperleft -= Vec2f((float(numDigits) * 4.0f), 0);
-	lowerright += Vec2f((float(numDigits) * 4.0f), 0);
-
-	GUI::DrawRectangle(upperleft, lowerright);
-	GUI::SetFont("menu");
-	GUI::DrawText(ammoText, upperleft + Vec2f(2, 1), color_white);
+	
+	GUI::DrawRectangle(tl - padding, tl + textDim + padding * 2);
+	GUI::DrawText(ammoText, tl, br, color_white, true, true, false);
 }
 
 void drawName(CBlob@ blob, VehicleInfo@ v)

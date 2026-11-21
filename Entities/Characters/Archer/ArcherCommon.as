@@ -83,12 +83,51 @@ shared class ArcherInfo
 	}
 };
 
+void ClientSendArrowState(CBlob@ this)
+{
+	if (!isClient()) { return; }
+	if (isServer()) { return; } // no need to sync on localhost
+
+	ArcherInfo@ archer;
+	if (!this.get("archerInfo", @archer)) { return; }
+
+	CBitStream params;
+	params.write_u8(archer.arrow_type);
+
+	this.SendCommand(this.getCommandID("arrow sync"), params);
+}
+
+bool ReceiveArrowState(CBlob@ this, CBitStream@ params)
+{
+	// valid both on client and server
+
+	if (isServer() && isClient()) { return false; }
+
+	ArcherInfo@ archer;
+	if (!this.get("archerInfo", @archer)) { return false; }
+
+	archer.arrow_type = 0;
+	if (!params.saferead_u8(archer.arrow_type)) { return false; }
+
+	if (isServer())
+	{
+		CBitStream reserialized;
+		reserialized.write_u8(archer.arrow_type);
+
+		this.SendCommand(this.getCommandID("arrow sync client"), reserialized);
+	}
+
+	return true;
+}
+
 const string grapple_sync_cmd = "grapple sync";
 
 void SyncGrapple(CBlob@ this)
 {
 	ArcherInfo@ archer;
 	if (!this.get("archerInfo", @archer)) { return; }
+
+	if (isClient()) return;
 
 	CBitStream bt;
 	bt.write_bool(archer.grappling);
@@ -175,7 +214,9 @@ bool hasArrows(CBlob@ this)
 
 bool hasArrows(CBlob@ this, u8 arrowType)
 {
-	return arrowType < ArrowType::count && this.getBlobCount(arrowTypeNames[arrowType]) > 0;
+	if (this is null) return false;
+	
+	return arrowType < arrowTypeNames.length && this.hasBlob(arrowTypeNames[arrowType], 1);
 }
 
 bool hasAnyArrows(CBlob@ this)

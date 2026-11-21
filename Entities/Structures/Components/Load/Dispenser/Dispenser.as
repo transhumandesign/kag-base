@@ -22,12 +22,13 @@ class Dispenser : Component
 	{
 		Vec2f position = this.getPosition();
 
-		if (getNet().isServer())
+		if (isServer())
 		{
+			CMap@ map = getMap();
 			CBlob@[] blobs;
-			getMap().getBlobsAtPosition((offset * -1) * 8 + position, @blobs);
+			map.getBlobsAtPosition((offset * -1) * 8 + position, @blobs);
 
-			for(uint i = 0; i < blobs.length; i++)
+			for (uint i = 0; i < blobs.length; i++)
 			{
 				CBlob@ blob = blobs[i];
 				if (blob.getName() != "magazine" || !blob.getShape().isStatic()) continue;
@@ -35,9 +36,7 @@ class Dispenser : Component
 				CBlob@ item = blob.getInventory().getItem(0);
 				if (item is null) break;
 
-				// todo: check for spawnable position based on blob radius, offset by radius towards facing
-				// break if output is ray blocked
-				if (getMap().rayCastSolid(position + offset * 5, position + offset * 11)) break;
+				if (map.isTileSolid(map.getTile(position + offset * 8))) break;
 
 				blob.server_PutOutInventory(item);
 
@@ -49,46 +48,32 @@ class Dispenser : Component
 		}
 
 		CSprite@ sprite = this.getSprite();
-		if (sprite is null) return;
-
-		sprite.PlaySound("DispenserFire.ogg", 4.0f);
-
-		ParticleAnimated(
-		"DispenserFire.png",                // file name
-		position + (offset * 8),            // position
-		Vec2f_zero,                         // velocity
-		angle,                              // rotation
-		1.0f,                               // scale
-		3,                                  // ticks per frame
-		0.0f,                               // gravity
-		false);                             // self lit
+		sprite.PlaySound("DispenserFire.ogg", 1.5f);
+		ParticleAnimated("DispenserFire.png", position + (offset * 8), Vec2f_zero, angle, 1.0f, 3, 0.0f, false);
 	}
 }
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("blocks sword");
 
 	// used by TileBackground.as
-	this.set_TileType("background tile", CMap::tile_wood_back);
+	this.set_TileType("background tile", CMap::tile_castle_back);
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic || this.exists("component")) return;
 
-	const Vec2f position = this.getPosition() / 8;
-	const u16 angle = this.getAngleDegrees();
-	const Vec2f offset = Vec2f(0, -1).RotateBy(angle);
+	const Vec2f POSITION = this.getPosition() / 8;
+	const u16 ANGLE = this.getAngleDegrees();
+	const Vec2f OFFSET = Vec2f(0, -1).RotateBy(ANGLE);
 
-	Dispenser component(position, this.getNetworkID(), angle, offset);
+	Dispenser component(POSITION, this.getNetworkID(), ANGLE, OFFSET);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -104,13 +89,6 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	CSprite@ sprite = this.getSprite();
-	if (sprite is null) return;
-
 	sprite.SetFacingLeft(false);
 	sprite.SetZ(500);
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

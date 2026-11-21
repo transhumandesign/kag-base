@@ -14,6 +14,9 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
+	ShopMadeItem@ onMadeItem = @onShopMadeItem;
+	this.set("onShopMadeItem handle", @onMadeItem);
+
 	this.Tag("has window");
 
 	//INIT COSTS
@@ -54,26 +57,33 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	this.set_bool("shop available", this.isOverlapping(caller));
 }
 
+void onShopMadeItem(CBitStream@ params)
+{
+	if (!isServer()) return;
+
+	u16 this_id, caller_id, item_id;
+	string name;
+
+	if (!params.saferead_u16(this_id) || !params.saferead_u16(caller_id) || !params.saferead_u16(item_id) || !params.saferead_string(name))
+	{
+		return;
+	}
+
+	if (name == "warboat")
+	{
+		CBlob@ crate = getBlobByNetworkID(item_id);
+
+		crate.set_Vec2f("required space", Vec2f(10, 6));
+		crate.Sync("required space", true);
+		crate.set_s32("gold building amount", CTFCosts::warboat_gold);
+		crate.Sync("gold building amount", true);
+	}
+}
+
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("shop made item"))
+	if (cmd == this.getCommandID("shop made item client") && isClient())
 	{
 		this.getSprite().PlaySound("/ChaChing.ogg");
-
-		u16 caller, item;
-		string name;
-
-		if (!params.saferead_netid(caller) || !params.saferead_netid(item) || !params.saferead_string(name))
-		{
-			return;
-		}
-
-		if (name == "warboat")
-		{
-			CBlob@ crate = getBlobByNetworkID(item);
-
-			crate.set_Vec2f("required space", Vec2f(10, 6));
-			crate.set_s32("gold building amount", CTFCosts::warboat_gold);
-		}
 	}
 }

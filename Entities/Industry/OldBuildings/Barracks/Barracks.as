@@ -9,14 +9,13 @@
 
 void onInit( CBlob@ this )
 {
-	InitClasses( this );
-	InitRespawnCommand( this );
+	InitClasses(this);
 	this.set_TileType("background tile", CMap::tile_castle_back);					
 	this.Tag("change class store inventory");		
 }
 
  
-// leave a pile of stone	after death
+// leave a pile of stone after death
 void onDie(CBlob@ this)
 {
 	if (getNet().isServer())

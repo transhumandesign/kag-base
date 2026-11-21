@@ -23,9 +23,6 @@ class Wire : Component
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by BlobPlacement.as
 	this.Tag("place ignore facing");
 
@@ -63,7 +60,7 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	Wire component(POSITION);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -92,51 +89,41 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 		0);                                 // id
 	}
 
+	const u8 TYPE = this.get_u8("type");
+
 	CSprite@ sprite = this.getSprite();
-	if (sprite !is null)
+	sprite.SetZ(-60);
+
+	// set default background frame
+	u8 background_frame = 2;
+
+	if (TYPE == COUPLING)
 	{
-		const u8 TYPE = this.get_u8("type");
-
-		sprite.SetZ(-60);
-
-		// set default background frame
-		u8 background_frame = 2;
-
-		if (TYPE == COUPLING)
-		{
-			// change default background frame
-			background_frame = 5;
-			// and set default frame based on frame weight
-			sprite.SetFrameIndex(WEIGHT[XORRandom(WEIGHT.length)]);
-		}
-
-		SpriteConsts@ consts = sprite.getConsts();
-		if (consts is null) return;
-
-		CSpriteLayer@ layer = sprite.addSpriteLayer("background", consts.filename, consts.frameWidth, 16);
-		layer.addAnimation("default", 0, false);
-		layer.animation.AddFrame(background_frame);
-		layer.SetRelativeZ(-1);
-
-		Vec2f offset = Vec2f_zero;
-		switch (ANGLE)
-		{
-			case 90:
-				offset = Vec2f(0, 1);
-				break;
-			case 180:
-				offset = Vec2f(-1, 1);
-				break;
-			case 270:
-				offset = Vec2f(-1, 0);
-				break;
-		}
-		sprite.SetOffset(offset);
-		layer.SetOffset(offset);
+		// change default background frame
+		background_frame = 5;
+		// and set default frame based on frame weight
+		sprite.SetFrameIndex(WEIGHT[XORRandom(WEIGHT.length)]);
 	}
-}
 
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
+	SpriteConsts@ consts = sprite.getConsts();
+	CSpriteLayer@ layer = sprite.addSpriteLayer("background", consts.filename, consts.frameWidth, 16);
+	layer.addAnimation("default", 0, false);
+	layer.animation.AddFrame(background_frame);
+	layer.SetRelativeZ(-1);
+
+	Vec2f offset = Vec2f_zero;
+	switch (ANGLE)
+	{
+		case 90:
+			offset = Vec2f(0, 1);
+			break;
+		case 180:
+			offset = Vec2f(-1, 1);
+			break;
+		case 270:
+			offset = Vec2f(-1, 0);
+			break;
+	}
+	sprite.SetOffset(offset);
+	layer.SetOffset(offset);
 }

@@ -5,6 +5,7 @@
 void onInit(CBlob@ this)
 {
 	this.addCommandID("pop_wheels");
+	this.addCommandID("pop_wheels_client");
 	if (this.hasTag("immobile"))
 	{
 		PopWheels(this, false);
@@ -27,16 +28,36 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("pop_wheels"))
+	if (cmd == this.getCommandID("pop_wheels") && isServer())
 	{
 		if (!this.hasTag("immobile"))
 		{
+			if (isServer())
+			{
+				CPlayer@ caller = getNet().getActiveCommandPlayer();
+				if (caller is null) return;
+
+				CBlob@ blob = caller.getBlob();
+				if (blob is null) return;
+
+				if (this.getDistanceTo(blob) > (this.getRadius() * 2)) return;
+
+				if (this.getTeamNum() != blob.getTeamNum()) return;
+			}
+
 			CBlob@ chauffeur = this.getAttachments().getAttachmentPointByName("DRIVER").getOccupied();
 			if (chauffeur !is null) return;
 
 			this.Tag("immobile");
 			PopWheels(this, true);
+
+			this.SendCommand(this.getCommandID("pop_wheels_client"));
 		}
+	}
+	else if (cmd == this.getCommandID("pop_wheels_client") && isClient())
+	{
+		this.Tag("immobile");
+		PopWheels(this, true);
 	}
 }
 

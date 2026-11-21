@@ -20,6 +20,7 @@
 #include "Hitters.as";
 #include "ShieldCommon.as";
 #include "SplashWater.as";
+#include "ParticlesCommon.as";
 
 bool isOwnerBlob(CBlob@ this, CBlob@ that)
 {
@@ -34,6 +35,10 @@ bool isOwnerBlob(CBlob@ this, CBlob@ that)
 
 void makeSmallExplosionParticle(Vec2f pos)
 {
+#ifdef STAGING
+	MakeExplosionLightParticle(pos);
+#endif
+
 	ParticleAnimated("Entities/Effects/Sprites/SmallExplosion" + (XORRandom(3) + 1) + ".png",
 	                 pos, Vec2f(0, 0.5f), 0.0f, 1.0f,
 	                 3 + XORRandom(3),
@@ -42,6 +47,10 @@ void makeSmallExplosionParticle(Vec2f pos)
 
 void makeLargeExplosionParticle(Vec2f pos)
 {
+#ifdef STAGING
+	MakeExplosionLightParticle(pos);
+#endif
+
 	ParticleAnimated("Entities/Effects/Sprites/Explosion.png",
 	                 pos, Vec2f(0, 0.5f), 0.0f, 1.0f,
 	                 3 + XORRandom(3),
@@ -260,7 +269,7 @@ void Explode(CBlob@ this, f32 radius, f32 damage)
 
 							if (canHit)
 							{
-								if (canExplosionDamage(map, tpos, tile))
+								if (canExplosionDamage(tile))
 								{
 									if (!map.isTileBedrock(tile))
 									{
@@ -304,7 +313,10 @@ void onHitBlob(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@
 {
 	if (customData == Hitters::bomb || customData == Hitters::water)
 	{
-		hitBlob.AddForce(velocity);
+		if (!hitBlob.hasTag("player"))
+		{
+			hitBlob.AddForce(velocity);
+		}
 	}
 }
 
@@ -369,7 +381,7 @@ void LinearExplosion(CBlob@ this, Vec2f _direction, f32 length, const f32 width,
 				}
 				else if (t != CMap::tile_empty && t != CMap::tile_ground_back)
 				{
-					if (canExplosionDamage(map, tpos, t))
+					if (canExplosionDamage(t))
 					{
 						if (!justhurt)
 							damaged = true;
@@ -479,19 +491,9 @@ void BombermanExplosion(CBlob@ this, f32 radius, f32 damage, f32 map_damage_radi
 
 }
 
-bool canExplosionDamage(CMap@ map, Vec2f tpos, TileType t)
+bool canExplosionDamage(TileType t)
 {
-	CBlob@ blob = map.getBlobAtPosition(tpos); // TODO: make platform get detected
-	bool hasValidFrontBlob = false;
-	bool isBackwall = (t == CMap::tile_castle_back || t == CMap::tile_castle_back_moss || t == CMap::tile_wood_back);
-	if (blob !is null)
-	{
-		string name = blob.getName();
-		hasValidFrontBlob = (name == "wooden_door" || name == "stone_door" || name == "trap_block" || name == "wooden_platform" || name == "bridge");
-	}
-	return map.getSectorAtPosition(tpos, "no build") is null &&
-	       (t != CMap::tile_ground_d0 && t != CMap::tile_stone_d0) && //don't _destroy_ ground, hit until its almost dead tho
-		   !(hasValidFrontBlob && isBackwall); // don't destroy backwall if there is a door or trap block
+	return t != CMap::tile_ground_d0 && t != CMap::tile_stone_d0;  //don't _destroy_ ground, hit until its almost dead tho
 }
 
 bool canExplosionDestroy(CMap@ map, Vec2f tpos, TileType t)
@@ -568,8 +570,8 @@ bool HitBlob(CBlob@ this, Vec2f mapPos, CBlob@ hit_blob, f32 radius, f32 damage,
 	}
 
 	f32 scale;
-	Vec2f bombforce = hit_blob.hasTag("invincible") ? Vec2f_zero : getBombForce(this, radius, hit_blob_pos, pos, hit_blob.getMass(), scale);
-	f32 dam = damage * scale;
+	Vec2f bombforce = hit_blob.hasTag("invincible") ? Vec2f_zero : getBombForce(this, radius, hit_blob_pos, pos, hit_blob.getMass());
+	f32 dam = damage * getBombDamageScale(this, radius, hit_blob_pos, pos);
 
 	//explosion particle
 	makeSmallExplosionParticle(hit_blob_pos);

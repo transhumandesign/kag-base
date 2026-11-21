@@ -1,8 +1,8 @@
 #include "PlacementCommon.as"
 #include "BuildBlock.as"
 #include "Requirements.as"
-
-#include "GameplayEvents.as"
+#include "GameplayEventsCommon.as";
+#include "RedBarrierCommon.as";
 
 // Called server side
 void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
@@ -28,18 +28,25 @@ void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
 	bool validTile = bc.tile > 0;
 	bool hasReqs = hasRequirements(inv, bc.reqs, missing);
 	bool passesChecks = serverTileCheck(this, index, cursorPos);
+	bool stillOnDelay = isBuildDelayed(this);
 
-	if (validTile && hasReqs && passesChecks)
+	if (validTile && hasReqs && passesChecks && !stillOnDelay)
 	{
 		CMap@ map = getMap();
 		DestroyScenary(cursorPos, Vec2f(cursorPos.x+map.tilesize, cursorPos.y+map.tilesize));
 		server_TakeRequirements(inv, bc.reqs);
 		map.server_SetTile(cursorPos, bc.tile);
 
-		u32 delay = getCurrentBuildDelay(this);
-		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
+		// one day we will reach an ideal world without latency, dumb edge cases and bad netcode
+		// that day is not today
+		u32 delay = getCurrentBuildDelay(this) - 1;
+		SetBuildDelay(this, delay);
 
-		SendGameplayEvent(createBuiltBlockEvent(this.getPlayer(), bc.tile));
+		// GameplayEvent
+		if (p !is null)
+		{
+			GE_BuildBlock(p.getNetworkID(), bc.tile); // gameplay event for coins
+		}
 	}
 }
 
@@ -71,16 +78,16 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 	if (map.isTileCollapsing(cursorPos))
 		return false;
 
-	// Is our tile solid and are we trying to place it into a no build area
-	if (map.isTileSolid(tileIndex))
+	// Is our tile solid and are we trying to place it into a no build or no solids sectors
+	BuildBlock @blockToPlace = getBlockByIndex(blob, tileIndex);
+	if (map.isTileSolid(blockToPlace.tile) || cursorPos.y < map.tilesize * 3.0f)
 	{
 		pos = cursorPos + Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
 
-		if (map.getSectorAtPosition(pos, "no build") !is null)
+		if (map.getSectorAtPosition(pos, "no build") !is null || map.getSectorAtPosition(pos, "no solids") !is null)
 			return false;
 	}
 
-	BuildBlock @blockToPlace = getBlockByIndex(blob, tileIndex);
 	// Are we trying to place a tile on the same tile (usually due to lag)?
 	if (backtile.type == blockToPlace.tile)
 	{
@@ -89,6 +96,12 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 
 	// Are we trying to place a solid tile on a door/ladder/platform/bridge (usually due to lag)?
 	if (fakeHasTileSolidBlobs(cursorPos) && map.isTileSolid(blockToPlace.tile))
+	{
+		return false;
+	}
+
+	// Prevent building in red barrier during build phase
+	if (inBarrier(cursorPos.x))
 	{
 		return false;
 	}
@@ -147,6 +160,7 @@ void onTick(CBlob@ this)
 
 	if (buildtile > 0)
 	{
+		bc.blockType = buildtile;
 		bc.blockActive = true;
 		bc.blobActive = false;
 		CMap@ map = this.getMap();
@@ -177,7 +191,8 @@ void onTick(CBlob@ this)
 			{
 				CBitStream params;
 				params.write_u8(blockIndex);
-				params.write_Vec2f(bc.tileAimPos);
+				//params.write_Vec2f(bc.tileAimPos);
+				params.write_Vec2f(this.getAimPos()); // we're gonna send the aimpos and double-check range on server for safety
 				this.SendCommand(this.getCommandID("placeBlock"), params);
 				u32 delay = getCurrentBuildDelay(this);
 				SetBuildDelay(this, block.tile < 255 ? delay : delay / 3);
@@ -276,12 +291,19 @@ void onRender(CSprite@ this)
 			}
 			else
 			{
+				Driver@ driver = getDriver();
+				CControls@ controls = getControls();
+
 				f32 halfTile = map.tilesize / 2.0f;
-				Vec2f aimpos = blob.getAimPos() + getCamera().getInterpolationOffset();
 				Vec2f offset(-0.2f + 0.4f * (Maths::Sin(getGameTime() * 0.5f)), 0.0f);
-				map.DrawTile(Vec2f(aimpos.x - halfTile, aimpos.y - halfTile) + offset, buildtile,
-				             SColor(255, 255, 46, 50),
-				             getCamera().targetDistance, false);
+				Vec2f aimpos = driver.getWorldPosFromScreenPos(controls.getInterpMouseScreenPos());
+
+				map.DrawTile(
+					Vec2f(aimpos.x - halfTile, aimpos.y - halfTile) + offset,
+					buildtile,
+				    SColor(255, 255, 46, 50),
+				    getCamera().targetDistance, false
+				);
 			}
 		}
 	}
@@ -289,10 +311,39 @@ void onRender(CSprite@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (getNet().isServer() && cmd == this.getCommandID("placeBlock"))
+	if (cmd == this.getCommandID("placeBlock") && isServer())
 	{
-		u8 index = params.read_u8();
-		Vec2f pos = params.read_Vec2f();
-		PlaceBlock(this, index, pos);
+		u8 index;
+		if (!params.saferead_u8(index)) return;
+
+		Vec2f aimpos;
+		if (!params.saferead_Vec2f(aimpos)) return;
+
+		// convert aimpos to tileaimpos (on server this time);
+		Vec2f pos = this.getPosition();
+		Vec2f mouseNorm = aimpos - pos;
+		f32 mouseLen = mouseNorm.Length();
+		const f32 maxLen = MAX_BUILD_LENGTH;
+		mouseNorm /= mouseLen;
+
+		Vec2f tileaimpos;
+
+		if (mouseLen > maxLen * getMap().tilesize)
+		{
+			f32 d = maxLen * getMap().tilesize;
+			Vec2f p = pos + Vec2f(d * mouseNorm.x, d * mouseNorm.y);
+			tileaimpos = getMap().getTileWorldPosition(getMap().getTileSpacePosition(p));
+		}
+		else
+		{
+			tileaimpos = getMap().getTileWorldPosition(getMap().getTileSpacePosition(aimpos));
+		}
+
+		// out of range
+		if (mouseLen >= getMaxBuildDistance(this))
+		{
+			return;
+		} 
+		PlaceBlock(this, index, tileaimpos);
 	}
 }

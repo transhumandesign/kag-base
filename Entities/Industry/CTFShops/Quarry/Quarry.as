@@ -80,6 +80,8 @@ void onInit(CBlob@ this)
 
 	//commands
 	this.addCommandID("add fuel");
+	this.addCommandID("add fuel client");
+
 	string current_output = "current_quarry_output_" + this.getTeamNum();
 	CRules@ rules = getRules();
 
@@ -154,7 +156,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("add fuel"))
+	if (cmd == this.getCommandID("add fuel") && isServer())
 	{
 		CBlob@ caller = getBlobByNetworkID(params.read_u16());
 		if (caller is null) return;
@@ -175,9 +177,14 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		{
 			caller.TakeBlob(fuel, ammountToStore);
 			this.set_s16(fuel_prop, this.get_s16(fuel_prop) + ammountToStore);
-
-			updateWoodLayer(this.getSprite());
+			this.Sync(fuel_prop, true);
 		}
+		
+		this.SendCommand(this.getCommandID("add fuel client"));
+	}
+	else if (cmd == this.getCommandID("add fuel client") && isClient())
+	{
+		updateWoodLayer(this.getSprite());
 	}
 }
 

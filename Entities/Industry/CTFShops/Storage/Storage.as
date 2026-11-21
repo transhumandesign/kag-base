@@ -135,9 +135,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 		if (inv.getItemsCount() > 0)
 		{
-			CBitStream params;
-			params.write_u16(caller.getNetworkID());
-			caller.CreateGenericButton("$store_inventory$", Vec2f(-6, 0), this, this.getCommandID("store inventory"), getTranslatedString("Store"), params);
+			caller.CreateGenericButton("$store_inventory$", Vec2f(-6, 0), this, this.getCommandID("store inventory"), getTranslatedString("Store"));
 		}
 	}
 }
@@ -146,10 +144,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
 	if (!isServer()) return;
 	
-	if (cmd == this.getCommandID("store inventory"))
+	if (cmd == this.getCommandID("store inventory") && isServer())
 	{
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+					
+		CBlob@ caller = p.getBlob();
 		if (caller is null) return;
+
+		// overlap check
+		if (!caller.isOverlapping(this)) return;
+
+		// team check
+		if (caller.getTeamNum() != this.getTeamNum()) return;
 
 		CBlob@ carried = caller.getCarriedBlob();
 		if (carried !is null && carried.hasTag("temp blob"))

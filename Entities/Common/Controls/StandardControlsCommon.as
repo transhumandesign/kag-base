@@ -1,21 +1,24 @@
+funcdef void ControlsSwitch(CBitStream@);
+funcdef void ControlsCycle(CBitStream@);
 
-void server_Pickup(CBlob@ this, CBlob@ picker, CBlob@ pickBlob)
+void client_Pickup(CBlob@ this, CBlob@ pickBlob)
 {
-	if (pickBlob is null || picker is null || pickBlob.isAttached())
-		return;
+    if (!isClient()) return;
+
+	if (this is null || pickBlob is null || pickBlob.isAttached()) return;
+
 	CBitStream params;
-	params.write_netid(picker.getNetworkID());
 	params.write_netid(pickBlob.getNetworkID());
 	this.SendCommand(this.getCommandID("pickup"), params);
 }
 
-void server_PutInHeld(CBlob@ this, CBlob@ picker)
+void client_PutInHeld(CBlob@ this)
 {
-	if (picker is null)
-		return;
-	CBitStream params;
-	params.write_netid(picker.getNetworkID());
-	this.SendCommand(this.getCommandID("putinheld"), params);
+    if (!isClient()) return;
+
+	if (this is null) return;
+
+	this.SendCommand(this.getCommandID("putinheld"));
 }
 
 void Tap(CBlob@ this)

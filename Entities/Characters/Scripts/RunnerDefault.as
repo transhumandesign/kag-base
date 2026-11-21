@@ -4,6 +4,11 @@
 #include "FireCommon.as"
 #include "Help.as"
 
+void UpdateSyncMode(CBlob@ blob)
+{
+	blob.getShape().SetActiveSync(!blob.hasTag("dead"));
+}
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().removeIfTag = "dead";
@@ -22,6 +27,8 @@ void onInit(CBlob@ this)
 	this.SetChatBubbleFont("hud");
 	this.maxChatBubbleLines = 4;
 
+	UpdateSyncMode(@this);
+
 	InitKnockable(this);
 }
 
@@ -29,6 +36,8 @@ void onTick(CBlob@ this)
 {
 	this.Untag("prevent crouch");
 	DoKnockedUpdate(this);
+
+	UpdateSyncMode(@this);
 }
 
 // pick up efffects
@@ -73,7 +82,7 @@ bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
 // make Suicide ignore invincibility
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if (this.hasTag("invincible") && customData == 11)
+	if (this.hasTag("invincible") && customData == Hitters::suicide)
 		this.Untag("invincible");
 	return damage;
 }

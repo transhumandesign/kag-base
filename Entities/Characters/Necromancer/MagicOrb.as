@@ -1,3 +1,5 @@
+#include "ParticlesCommon.as"
+
 void onInit(CBlob@ this)
 {
 	this.Tag("exploding");
@@ -14,8 +16,8 @@ void onTick(CBlob@ this)
 		this.getShape().SetGravityScale(0.0f);
 		this.server_SetTimeToDie(3);
 		this.SetLight(true);
-		this.SetLightRadius(24.0f);
-		this.SetLightColor(SColor(255, 211, 121, 224));
+		this.SetLightRadius(16.0f);
+		this.SetLightColor(SColor(255, 211, 100, 255));
 		this.set_string("custom_explosion_sound", "OrbExplosion.ogg");
 		this.getSprite().PlaySound("OrbFireSound.ogg");
 		this.getSprite().SetZ(1000.0f);
@@ -24,7 +26,7 @@ void onTick(CBlob@ this)
 		//ParticleZombieLightning( this.getPosition() );
 
 		// done post init
-		this.getCurrentScript().tickFrequency = 10;
+		this.getCurrentScript().tickFrequency = 2;
 	}
 
 	{
@@ -45,6 +47,29 @@ void onTick(CBlob@ this)
 				}
 			}
 		}
+	}
+
+
+	Random r(XORRandom(9999));
+	CParticle@ persist_light = MakeBasicLightParticle(
+		this.getPosition(),
+		Vec2f_zero,
+		SColor(255, 80, 40, 220),
+		0.96f,
+		0.2f,
+		50
+	);
+
+	for (int i = 0; i < 10; ++i)
+	{
+		CParticle@ chaotic_light = MakeBasicLightParticle(
+			this.getPosition(),
+			this.getVelocity() + Vec2f(1.0f, 0.0f).RotateBy(r.NextFloat() * 360.0f) * 8.0f,
+			SColor(255, 80, 40, 220),
+			0.8f,
+			0.2f + r.NextFloat() * 0.2f,
+			20
+		);
 	}
 }
 

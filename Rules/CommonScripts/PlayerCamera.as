@@ -34,6 +34,7 @@ void Reset(CRules@ this)
 	zoomEaseModifier = 1.0f;
 
 	timeToCinematic = 0;
+	deathTime = 0;
 }
 
 void onRestart(CRules@ this)
@@ -174,7 +175,19 @@ void onRender(CRules@ this)
 		SpecCamera(this);
 	}
 
-	if (targetPlayer() !is null && getLocalPlayerBlob() is null)
+	if (g_videorecording)
+	{
+		return;
+	}
+
+	CBlob@ localblob = getLocalPlayerBlob();
+
+	if (localblob !is null)
+	{
+		return;
+	}
+
+	if (targetPlayer() !is null && localblob is null)
 	{
 		GUI::SetFont("menu");
 		GUI::DrawText(
@@ -185,11 +198,6 @@ void onRender(CRules@ this)
 			Vec2f(getScreenWidth() / 2 + 90, getScreenHeight() * (0.2f) + 30),
 			SColor(0xffffffff), true, true
 		);
-	}
-
-	if (getLocalPlayerBlob() !is null)
-	{
-		return;
 	}
 
 	if (!v_camera_cinematic)

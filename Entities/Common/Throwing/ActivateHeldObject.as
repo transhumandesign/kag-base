@@ -1,19 +1,4 @@
-
-// USAGE:
-//  add strings to "names to activate" array
-//  add "activate" commands to those objects
-//  light and throw them with client_SendThrowOrActivateCommand( this ); in ThrowCommon.as
-//  Tag("dont deactivate") to have repeated activation
-
-/**  also...
- * Means this object can throw other objects with client_SendThrowCommand( this ); in ThrowCommon.as
- *
- * for custom throw scales (eg for a super-strong unit) use
- *  the "throw scale" property, default to 1.0f.
- *
- */
-
-#include "ThrowCommon.as";
+#include "ActivationThrowCommon.as"
 
 void onInit(CBlob@ this)
 {
@@ -34,11 +19,11 @@ void onInit(CBlob@ this)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("activate/throw"))
+	if (cmd == this.getCommandID("activate/throw") && isServer())
 	{
-		Vec2f pos = params.read_Vec2f();
-		Vec2f vector = params.read_Vec2f();
-		Vec2f vel = params.read_Vec2f();
+		Vec2f pos = this.getVelocity();
+		Vec2f vector = this.getAimPos() - this.getPosition();
+		Vec2f vel = this.getVelocity();
 		CBlob @carried = this.getCarriedBlob();
 		if (carried !is null)
 		{
@@ -55,16 +40,16 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			}
 		}
 	}
-	else if (cmd == this.getCommandID("throw"))
+	else if (cmd == this.getCommandID("throw") && isServer())
 	{
-		Vec2f pos = params.read_Vec2f();
-		Vec2f vector = params.read_Vec2f();
-		Vec2f vel = params.read_Vec2f();
+		Vec2f pos = this.getVelocity();
+		Vec2f vector = this.getAimPos() - this.getPosition();
+		Vec2f vel = this.getVelocity();
 		CBlob @carried = this.getCarriedBlob();
 
 		if (carried !is null)
 		{
-			if (isServer() && !carried.hasTag("custom throw"))
+			if (!carried.hasTag("custom throw"))
 			{
 				DoThrow(this, carried, pos, vector, vel);
 			}

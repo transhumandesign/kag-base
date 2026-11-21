@@ -23,39 +23,35 @@ class Bolter : Component
 	{
 		Vec2f position = this.getPosition();
 
-		if (getNet().isServer())
+		if (isServer())
 		{
 			CBlob@[] blobs;
 			getMap().getBlobsAtPosition((offset * -1) * 8 + position, @blobs);
 
-			for(uint i = 0; i < blobs.length; i++)
+			for (u16 i = 0; i < blobs.length; i++)
 			{
 				CBlob@ blob = blobs[i];
 				if (blob.getName() != "magazine" || !blob.getShape().isStatic()) continue;
 
+				// get the next blob in inventory
 				CInventory@ inventory = blob.getInventory();
-				if (!inventory.isFull()) break;
+				CBlob@ ammo;
+				for (u16 i = 0; i < inventory.getItemsCount(); i++)
+				{
+					CBlob@ next_ammo = inventory.getItem(i);
+					if (next_ammo.getQuantity() > 0) @ammo = next_ammo;
+				}
 
-				// get the only blob in inventory
-				CBlob@ ammo = inventory.getItem(0);
+				if (ammo is null) break;
 
-				// set the type, if none are found then it's set to -1
-				s8 arrow_type = arrowTypeNames.find(ammo.getName());
-				if (arrow_type < 0) break;
+				const s8 arrow_type = arrowTypeNames.find(ammo.getName());
+				if (arrow_type == -1) break;
 
 				// decrement
-				u8 quantity = ammo.getQuantity() - 1;
-				if (quantity > 0)
-				{
-					ammo.server_SetQuantity(quantity);
-				}
-				else
-				{
-					ammo.server_Die();
-				}
+				ammo.server_SetQuantity(ammo.getQuantity() - 1);
 
 				// calculate deviation
-				f32 deviation = (XORRandom(100) - 50) / 20.0f;
+				const f32 deviation = (XORRandom(100) - 50) / 20.0f;
 
 				// calculate velocity based on deviation
 				Vec2f velocity = offset;
@@ -76,48 +72,36 @@ class Bolter : Component
 				break;
 			}
 		}
-
-		CSprite@ sprite = this.getSprite();
-		if (sprite is null) return;
-
-		sprite.PlaySound("BolterFire.ogg");
-
-		ParticleAnimated(
-		"BolterFire.png",                   // file name
-		position + (offset * 8),            // position
-		Vec2f_zero,                         // velocity
-		angle,                              // rotation
-		1.0f,                               // scale
-		3,                                  // ticks per frame
-		0.0f,                               // gravity
-		false);                             // self lit
+		
+		if (isClient())
+		{
+			this.getSprite().PlaySound("BolterFire.ogg");
+			ParticleAnimated("BolterFire.png", position + (offset * 8), Vec2f_zero, angle, 1.0f, 3, 0.0f, false);
+		}
 	}
 }
 
 void onInit(CBlob@ this)
 {
-	// used by BuilderHittable.as
-	this.Tag("builder always hit");
-
 	// used by KnightLogic.as
 	this.Tag("blocks sword");
 
 	// used by TileBackground.as
-	this.set_TileType("background tile", CMap::tile_wood_back);
+	this.set_TileType("background tile", CMap::tile_castle_back);
 }
 
 void onSetStatic(CBlob@ this, const bool isStatic)
 {
 	if (!isStatic || this.exists("component")) return;
 
-	const Vec2f position = this.getPosition() / 8;
-	const u16 angle = this.getAngleDegrees();
-	const Vec2f offset = Vec2f(0, -1).RotateBy(angle);
+	const Vec2f POSITION = this.getPosition() / 8;
+	const u16 ANGLE = this.getAngleDegrees();
+	const Vec2f OFFSET = Vec2f(0, -1).RotateBy(ANGLE);
 
-	Bolter component(position, this.getNetworkID(), angle, offset);
+	Bolter component(POSITION, this.getNetworkID(), ANGLE, OFFSET);
 	this.set("component", component);
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		MapPowerGrid@ grid;
 		if (!getRules().get("power grid", @grid)) return;
@@ -133,9 +117,4 @@ void onSetStatic(CBlob@ this, const bool isStatic)
 	}
 
 	this.getSprite().SetZ(500);
-}
-
-bool canBePickedUp(CBlob@ this, CBlob@ byBlob)
-{
-	return false;
 }

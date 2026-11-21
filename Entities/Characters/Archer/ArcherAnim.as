@@ -536,7 +536,9 @@ void doRopeUpdate(CSprite@ this, CBlob@ blob, ArcherInfo@ archer)
 		return;
 	}
 
-	Vec2f adjusted_pos = Vec2f(archer.grapple_pos.x, Maths::Max(0.0, archer.grapple_pos.y));
+	// Only limit grapple to top of map if it's a cave map
+	CRules@ rules = getRules();
+	Vec2f adjusted_pos = rules is null || rules.get_bool("collide with ceiling") ? Vec2f(archer.grapple_pos.x, Maths::Max(0.0, archer.grapple_pos.y)) : archer.grapple_pos;
 	Vec2f off = adjusted_pos - blob.getPosition();
 
 	f32 ropelen = Maths::Max(0.1f, off.Length() / 32.0f);

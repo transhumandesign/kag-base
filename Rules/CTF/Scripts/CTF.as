@@ -9,16 +9,16 @@
 
 #include "CTF_PopulateSpawnList.as"
 
+string configstr = "ctf_vars.cfg";
+
 //edit the variables in the config file below to change the basics
 // no scripting required!
 void Config(CTFCore@ this)
 {
-	string configstr = "Rules/CTF/ctf_vars.cfg";
+	CRules@ rules = getRules();
 
-	if (getRules().exists("ctfconfig"))
-	{
+	if (rules.exists("ctfconfig")) 
 		configstr = getRules().get_string("ctfconfig");
-	}
 
 	ConfigFile cfg = ConfigFile(configstr);
 
@@ -197,7 +197,8 @@ shared class CTFSpawns : RespawnSystem
 		{
 			CBlob@ pickSpawn = getBlobByNetworkID(c_info.spawn_point);
 			if (pickSpawn !is null &&
-			        pickSpawn.hasTag("respawn") && !isUnderRaid(pickSpawn) &&
+			        pickSpawn.hasTag("respawn") &&
+			        !pickSpawn.hasTag("under raid") &&
 			        pickSpawn.getTeamNum() == p_info.team)
 			{
 				return pickSpawn.getPosition();
@@ -227,7 +228,8 @@ shared class CTFSpawns : RespawnSystem
 		{
 			CBlob@ pickSpawn = getBlobByNetworkID(c_info.spawn_point);
 			if (pickSpawn !is null &&
-			        pickSpawn.hasTag("respawn") && !isUnderRaid(pickSpawn) &&
+			        pickSpawn.hasTag("respawn") && 
+			        !pickSpawn.hasTag("under raid") &&
 			        pickSpawn.getTeamNum() == p_info.team)
 			{
 				return pickSpawn;
@@ -308,7 +310,7 @@ shared class CTFSpawns : RespawnSystem
 		}
 		else
 		{
-			error("PLAYER TEAM NOT SET CORRECTLY! " + info.team + " / " + CTF_core.teams.length);
+			error("PLAYER TEAM NOT SET CORRECTLY! " + info.team + " / " + CTF_core.teams.length + " for player " + player.getUsername());
 		}
 	}
 

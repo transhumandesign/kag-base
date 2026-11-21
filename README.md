@@ -34,5 +34,3 @@ To submit a public pull request you must be legally able and willing to:
 - Agree to do so free of charge unless otherwise stated
 
 You retain rights to use your contribution for other purposes and projects, we just need to be able to use it without restriction in our game!
-
-We are open to negotiating compensation for large, self-contained contributions; especially from established contributors. However, such negotiations must take place before work begins, and especially before changes are contributed back to the repository.

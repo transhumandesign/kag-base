@@ -92,11 +92,28 @@ void onTick(CBlob@ blob)
 
 void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("emote"))
+	// For now, this is just a command for setting emote for crates
+	if (cmd == this.getCommandID("emote") && isServer())
 	{
-		string token = params.read_string();
-		u32 emotetime = params.read_u32();
-		this.set_string("emote", token);
-		this.set_u32("emotetime", emotetime);
+		CPlayer@ p = getNet().getActiveCommandPlayer();
+		if (p is null) return;
+
+		CBlob@ b = p.getBlob();
+		if (b is null) return;
+
+		if (b !is this) return;
+
+		if (this.isInInventory())
+		{
+			CBlob@ inventoryblob = this.getInventoryBlob();
+			if (inventoryblob !is null && inventoryblob.getName() == "crate"
+				&& inventoryblob.exists("emote"))
+			{
+				inventoryblob.set_string("emote", b.get_string("emote"));
+				inventoryblob.Sync("emote", true);
+				inventoryblob.set_u32("emotetime", b.get_u32("emotetime"));
+				inventoryblob.Sync("emotetime", true);
+			}
+		}
 	}
 }

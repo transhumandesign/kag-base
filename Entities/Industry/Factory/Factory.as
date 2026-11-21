@@ -27,8 +27,8 @@ void onInit(CBlob@ this)
 
 	AddIconToken("$take_scroll$", "/GUI/InteractionIcons.png", Vec2f(32, 32), 19, 1);
 
-	this.addCommandID("upgrade factory menu");
 	this.addCommandID("upgrade factory");
+	this.addCommandID("upgrade factory client");
 	this.addCommandID("kill children");
 	this.addCommandID("pause production");
 	this.addCommandID("unpause production");
@@ -72,13 +72,9 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 
 	// add button for adding scroll if caller has it
 
-	CBitStream params;
-	params.write_u16(caller.getNetworkID());
-
-
 	if (!hasTech(this) && caller.isOverlapping(this))
 	{
-		caller.CreateGenericButton(12, Vec2f(0, 0), this, this.getCommandID("upgrade factory menu"), getTranslatedString("Convert Factory"), params);
+		caller.CreateGenericButton(12, Vec2f(0, 0), this, BuildUpgradeMenu, getTranslatedString("Convert Factory"));
 	}
 	else
 	{
@@ -188,19 +184,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 	bool isServer = getNet().isServer();
 
 	//
-	if (cmd == this.getCommandID("upgrade factory menu"))
-	{
-		CBlob@ caller = getBlobByNetworkID(params.read_u16());
-		BuildUpgradeMenu(this, caller);
-	}
-	else if (cmd == this.getCommandID("upgrade factory"))
+	if (cmd == this.getCommandID("upgrade factory") && isServer)
 	{
 		if (this.get_string("tech name").size() == 0)
 		{
 			const string defname = params.read_string();
 			this.set_string("tech name", defname);
 			AddProductionItemsFromTech(this, defname);
-			this.getSprite().PlaySound("/ConstructShort.ogg");
 
 			if (isServer)
 			{
@@ -212,10 +202,24 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				{
 					this.SendCommand(this.getCommandID("pause production"));
 				}
+
+				CBitStream reserialized;
+				reserialized.write_string(defname);
+				this.SendCommand(this.getCommandID("upgrade factory client"), reserialized);
 			}
 		}
 	}
-	else if (cmd == this.getCommandID("kill children"))
+	else if (cmd == this.getCommandID("upgrade factory client") && isClient())
+	{
+		if (this.get_string("tech name").size() == 0)
+		{
+			const string defname = params.read_string();
+			this.set_string("tech name", defname);
+			AddProductionItemsFromTech(this, defname);
+			this.getSprite().PlaySound("/ConstructShort.ogg");
+		}
+	}
+	else if (cmd == this.getCommandID("kill children") && isServer)
 	{
 		if (isServer)
 		{
@@ -224,13 +228,13 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				getNet().server_SendMsg("Team mates are near the item you want destroyed."); //TODO: make this less spammy
 		}
 	}
-	else if (cmd == this.getCommandID("pause production") || (hasTech(this) && cmd == this.getCommandID(worker_out_cmd)))
+	else if ((cmd == this.getCommandID("pause production") || (hasTech(this) && cmd == this.getCommandID(worker_out_cmd))) && isClient())
 	{
 		this.Tag("production paused");
 		this.getSprite().PlaySound("/PowerDown.ogg");
 
 	}
-	else if (cmd == this.getCommandID("unpause production") || (hasTech(this) && cmd == this.getCommandID(worker_in_cmd)))
+	else if ((cmd == this.getCommandID("unpause production") || (hasTech(this) && cmd == this.getCommandID(worker_in_cmd))) && isClient())
 	{
 		this.Untag("production paused");
 		this.getSprite().PlaySound("/PowerUp.ogg");

@@ -528,13 +528,8 @@ void SetupMap(CMap@ map, int width, int height)
 void SetupBackgrounds(CMap@ map)
 {
 	// sky
-	map.CreateSky(color_black, Vec2f(1.0f, 1.0f), 200, "Sprites/Back/cloud", 0);
+	map.CreateSky(color_black, Vec2f(1.0f, 1.0f), 200, "", 0);
 	map.CreateSkyGradient("Sprites/skygradient.png");   // override sky color with gradient
-
-	// plains
-	map.AddBackground("Sprites/Back/BackgroundPlains.png", Vec2f(0.0f, -50.0f), Vec2f(0.06f, 20.0f), color_white);
-	map.AddBackground("Sprites/Back/BackgroundTrees.png", Vec2f(0.0f,  -220.0f), Vec2f(0.18f, 70.0f), color_white);
-	map.AddBackground("Sprites/Back/BackgroundCastle.png", Vec2f(0.0f, -580.0f), Vec2f(0.3f, 180.0f), color_white);
 
 	// fade in
 	SetScreenFlash(255, 0, 0, 0);

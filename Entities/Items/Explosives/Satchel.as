@@ -2,6 +2,7 @@
 
 #include "Hitters.as";
 #include "TeamStructureNear.as";
+#include "ActivationThrowCommon.as"
 
 //config
 
@@ -13,6 +14,11 @@ void onInit(CBlob@ this)
 {
 	this.getShape().getVars().waterDragScale = 24.0f;
 	this.getCurrentScript().tickIfTag = "exploding";
+
+	this.Tag("activatable");
+
+	Activate@ func = @onActivate;
+	this.set("activate handle", @func);
 }
 
 //start ugly satchel logic :)
@@ -207,11 +213,20 @@ void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 	this.doTickScripts = true;
 }
 
-void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
+// custom callback
+void onActivate(CBitStream@ params)
 {
-	if (cmd == this.getCommandID("activate"))
-	{
-		this.Tag("exploding");
-		this.Tag("activated");
-	}
+	if (!isServer()) return;
+
+	u16 this_id;
+	if (!params.saferead_u16(this_id)) return;
+
+	CBlob@ this = getBlobByNetworkID(this_id);
+	if (this is null) return;
+
+	this.Tag("exploding");
+	this.Tag("activated");
+
+	this.Sync("exploding", true);
+	this.Sync("activated", true);
 }

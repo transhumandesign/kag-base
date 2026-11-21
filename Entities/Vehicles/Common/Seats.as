@@ -67,7 +67,8 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 			detached.setAngleDegrees(0.0f);
 		}
 
-		if (detached.getPlayer() is this.getDamageOwnerPlayer()) {
+		if (detached.hasTag("dead") || detached.getPlayer() is this.getDamageOwnerPlayer()) {
+			
 			this.SetDamageOwnerPlayer(null);
 		}
 	}

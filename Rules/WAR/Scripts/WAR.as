@@ -19,11 +19,12 @@
 //simple config function - edit the variables in the config file
 void Config(WarCore@ this)
 {
-	string configstr = sv_test ? "Rules/WAR/war_vars_test.cfg" : "Rules/WAR/war_vars.cfg";
-	if (this.rules.exists("warconfig"))
-	{
+	CRules@ rules = getRules();
+
+	string configstr = sv_test ? "war_vars_test.cfg" : "war_vars.cfg";
+	if (rules.exists("warconfig"))
 		configstr = this.rules.get_string("warconfig");
-	}
+
 	ConfigFile cfg = ConfigFile(configstr);
 
 	//how long to wait for everyone to spawn in?
@@ -1006,6 +1007,8 @@ void onInit(CRules@ this)
 	Reset(this);
 	const int restart_after = (!this.hasTag("tutorial") ? 30 : 5) * 30;
 	this.set_s32("restart_rules_after_game_time", restart_after);
+
+	getNet().legacy_cmd = true;
 }
 
 void DoUpdateTeamsLost()
