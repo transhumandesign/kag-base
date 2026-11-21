@@ -10,7 +10,6 @@ Vec2f hoveredPos;
 int hovered_accolade = -1;
 int hovered_age = -1;
 int hovered_tier = -1;
-bool is_cakeday = false;
 bool draw_age = false;
 bool draw_tier = false;
 
@@ -328,6 +327,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 				int age_icon_start = 32;
 				int icon = 0;
 				bool show_years = false;
+				bool is_cakeday = false;
 				int age = 0;
 				//less than a month?
 				if (days < 28)
