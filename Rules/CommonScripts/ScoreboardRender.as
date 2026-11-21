@@ -10,6 +10,7 @@ Vec2f hoveredPos;
 int hovered_accolade = -1;
 int hovered_age = -1;
 int hovered_tier = -1;
+bool is_cakeday = false;
 bool draw_age = false;
 bool draw_tier = false;
 
@@ -392,6 +393,9 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 						if (birthday_delta == 0)
 						{
 							icon = 9;
+							age = Time_Year() - reg_year;
+							is_cakeday = true;
+							show_years = true;
 						}
 						else
 						{
@@ -421,19 +425,27 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 					}
 				}
 
-				float x = bottomright.x - age_start + 8;
+				float age_x = bottomright.x - age_start + 8;
+				float cakeday_x = age_x + 16;
 				float extra = 8;
 
-				if(show_years)
+				if (is_cakeday)
 				{
-					drawAgeIcon(age, Vec2f(x, topleft.y));
-				}
-				else
-				{
-					GUI::DrawIcon("AccoladeBadges", age_icon_start + icon, Vec2f(16, 16), Vec2f(x, topleft.y), 0.5f, p.getTeamNum());
+					GUI::DrawIcon("AccoladeBadges", age_icon_start + icon, Vec2f(16, 16), Vec2f(cakeday_x, topleft.y), 0.5f, p.getTeamNum());
+					age_x -= 8;
 				}
 
-				if (playerHover && mousePos.x > x - extra && mousePos.x < x + 16 + extra)
+				if (show_years)
+				{
+					drawAgeIcon(age, Vec2f(age_x, topleft.y));
+				}
+
+				if (playerHover && mousePos.x > age_x - extra && mousePos.x < age_x + 16 + extra)
+				{
+					hovered_age = icon;
+				}
+
+				if (playerHover && mousePos.x > cakeday_x && mousePos.x < cakeday_x + 16 + extra)
 				{
 					hovered_age = icon;
 				}
