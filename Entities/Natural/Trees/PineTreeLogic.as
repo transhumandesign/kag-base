@@ -40,9 +40,7 @@ void onInit(CBlob@ this)
 	u8 icon_frame = 9;
 	if (this.hasTag("startbig")) icon_frame = 13;
 
-	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", icon_frame, Vec2f(8, 32));
 	this.SetMinimapRenderAlways(true);
-
 	UpdateMinimapIcon(this, vars);
 }
 
