@@ -2,7 +2,7 @@
 
 void onTick(CBlob@ this)
 {
-	// without this moving will fail
+	// HACK: without this moving will fail
 	if (getGameTime() < 5) {
 		return;
 	}
