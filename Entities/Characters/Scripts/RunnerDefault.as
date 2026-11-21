@@ -4,6 +4,11 @@
 #include "FireCommon.as"
 #include "Help.as"
 
+void UpdateSyncMode(CBlob@ blob)
+{
+	blob.getShape().SetActiveSync(!blob.hasTag("dead"));
+}
+
 void onInit(CBlob@ this)
 {
 	this.getCurrentScript().removeIfTag = "dead";
@@ -22,7 +27,7 @@ void onInit(CBlob@ this)
 	this.SetChatBubbleFont("hud");
 	this.maxChatBubbleLines = 4;
 
-	this.getShape().SetActiveSync(true);
+	UpdateSyncMode(@this);
 
 	InitKnockable(this);
 }
@@ -31,6 +36,8 @@ void onTick(CBlob@ this)
 {
 	this.Untag("prevent crouch");
 	DoKnockedUpdate(this);
+
+	UpdateSyncMode(@this);
 }
 
 // pick up efffects
