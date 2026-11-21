@@ -61,6 +61,10 @@ string getButtonRequirementsText(CBitStream& inout bs, bool missing)
 		{
 			text += getTranslatedString("$HEART$ Must be hurt\n");
 		}
+		else if (requiredType == "match not ended" && missing)
+		{
+			text += getTranslatedString("Match has ended.\n");
+		}
 		else if (requiredType == "no more" && missing)
 		{
 			text += quantityColor;
@@ -112,6 +116,11 @@ void AddHurtRequirement(CBitStream &inout bs)
 	bs.write_string("hurt");
 }
 
+void AddMatchNotEndedRequirement(CBitStream &inout bs)
+{
+	bs.write_string("match not ended");
+}
+
 bool ReadRequirement(CBitStream &inout bs, string &out req, string &out blobName, string &out friendlyName, u16 &out quantity)
 {
 	if (!bs.saferead_string(req))
@@ -119,7 +128,7 @@ bool ReadRequirement(CBitStream &inout bs, string &out req, string &out blobName
 		return false;
 	}
 
-	if (req == "hurt")
+	if (req == "hurt" || "match not ended")
 	{
 		return true;
 	}
@@ -192,6 +201,15 @@ bool hasRequirements(CInventory@ inv1, CInventory@ inv2, CBitStream &inout bs, C
 			if (blob is null || blob.getHealth() >= blob.getInitialHealth())
 			{
 				AddHurtRequirement(missingBs);
+				has = false;
+			}
+		}
+		else if (req == "match not ended")
+		{
+			CRules@ rules = getRules();
+			if (rules !is null && rules.exists("no purchase post match") && rules.get_bool("no purchase post match") && rules.isGameOver())
+			{
+				AddMatchNotEndedRequirement(missingBs);
 				has = false;
 			}
 		}
