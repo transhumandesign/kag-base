@@ -251,8 +251,8 @@
 //Ending dialog
 //Get garbled characters, fix it plz
 	//"The End.":"おしまい。",
-	//"For more adventures there is an entire multiplayer world ready to explore. If you've purchased the game just launch the servers browser in Multiplayer":
-	//"さらなる冒険のために探険可能な全てのマルチプレイヤーの世界がある。もしゲームを購入したならマルチプレイヤーにてサーバーブラウザを起動しよう",
+	//"For more adventures there is an entire multiplayer world ready to explore. Just launch the servers browser in Multiplayer":
+	//"さらなる冒険のために探険可能な全てのマルチプレイヤーの世界がある。マルチプレイヤーにてサーバーブラウザを起動しよう",
 //Sandbox.as
 	"Welcome to King Arthur's Gold":"King Arthur's Goldへようこそ",
 	"This is a sandbox mode in which\n you are free to relax.\n\nPress ESC to see controls.\nHave Fun!":"これはサンドボックスモード。\nリラックスし放題だ。\n\nESC を押して操作を確認できる。\nごゆっくりどうぞ!",
