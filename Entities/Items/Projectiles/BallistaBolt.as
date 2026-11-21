@@ -20,6 +20,7 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().mapCollisions = false;
 	this.getShape().getConsts().bullet = true;
 	this.getShape().getConsts().net_threshold_multiplier = 4.0f;
+	this.getShape().SetActiveSync(true);
 
 	LimitedAttack_setup(this);
 

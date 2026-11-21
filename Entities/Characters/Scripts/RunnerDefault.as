@@ -22,6 +22,8 @@ void onInit(CBlob@ this)
 	this.SetChatBubbleFont("hud");
 	this.maxChatBubbleLines = 4;
 
+	this.getShape().SetActiveSync(true);
+
 	InitKnockable(this);
 }
 

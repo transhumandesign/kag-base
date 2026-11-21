@@ -31,6 +31,7 @@ void onInit(CBlob@ this)
 
 	this.getShape().getConsts().mapCollisions = false;
 	this.getShape().getConsts().bullet = false;
+	this.getShape().SetActiveSync(true);
 
 	if (isClient())
 	{
