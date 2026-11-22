@@ -128,7 +128,7 @@ bool ReadRequirement(CBitStream &inout bs, string &out req, string &out blobName
 		return false;
 	}
 
-	if (req == "hurt" || "match not ended")
+	if (req == "hurt" || req == "match not ended")
 	{
 		return true;
 	}
