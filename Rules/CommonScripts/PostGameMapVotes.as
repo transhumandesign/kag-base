@@ -25,6 +25,12 @@ void onInit(CRules@ rules)
 	}
 
 	shouldCallOnRestart = true;
+
+	// set restart delay
+	if (!rules.hasTag("tutorial")) {
+		const int restart_after = 30 * 30;
+		rules.set_s32("restart_rules_after_game_time", restart_after);
+	}
 }
 
 // HACK: if we call this directly within onInit we get a command error because initialization
