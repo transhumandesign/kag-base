@@ -100,6 +100,10 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			sprite.SetAnimation("open");
 			sprite.PlaySound("ChestOpen.ogg", 3.0f);
 		}
+		
+		// water splash if underwater
+		if (this.isInWater())
+			ParticleAnimated("Splash.png", this.getPosition(), Vec2f_zero, 0.0f, 1.0f, 3, 0.0f, true);
 	}
 }
 
