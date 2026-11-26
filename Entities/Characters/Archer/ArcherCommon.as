@@ -121,6 +121,7 @@ bool ReceiveArrowState(CBlob@ this, CBitStream@ params)
 }
 
 const string grapple_sync_cmd = "grapple sync";
+const string grapple_sound_cmd = "grapple sound";
 
 void SyncGrapple(CBlob@ this)
 {
@@ -141,6 +142,14 @@ void SyncGrapple(CBlob@ this)
 	}
 
 	this.SendCommand(this.getCommandID(grapple_sync_cmd), bt);
+}
+
+void GrappleSound(CBlob@ this)
+{
+	ArcherInfo@ archer;
+	if (!this.get("archerInfo", @archer)) { return; }
+
+	this.SendCommand(this.getCommandID(grapple_sound_cmd));
 }
 
 //TODO: saferead
