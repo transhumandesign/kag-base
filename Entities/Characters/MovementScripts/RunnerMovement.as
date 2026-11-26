@@ -31,6 +31,7 @@ void onTick(CMovement@ this)
 	const bool right	= blob.isKeyPressed(key_right);
 	const bool up		= blob.isKeyPressed(key_up);
 	const bool down		= blob.isKeyPressed(key_down);
+	const bool action3	= blob.isKeyPressed(key_action3);
 
 	const bool isknocked = isKnocked(blob);
 
@@ -137,6 +138,8 @@ void onTick(CMovement@ this)
 
 		moveVars.jumpCount = -1;
 		moveVars.fallCount = -1;
+
+		blob.set_u8("crouch_through", 3); // allows passing down through team bridges when going down a ladder
 
 		CleanUp(this, blob, moveVars);
 		return;
@@ -275,12 +278,12 @@ void onTick(CMovement@ this)
 		const f32 slidespeed = 2.45f;
 
 		// crouch through platforms and crates
-		if (down && !onground && this.getVars().aircount > 2)
+		if (down && !action3 && !onground && this.getVars().aircount > 2)
 		{
 			blob.set_u8("crouch_through", 3);
 		}
 
-		if (blob.isKeyJustPressed(key_down))
+		if (blob.isKeyJustPressed(key_down) && !action3)
 		{
 			int touching = blob.getTouchingCount();
 			for (int i = 0; i < touching; i++)
@@ -309,7 +312,6 @@ void onTick(CMovement@ this)
 					}
 				}
 			}
-
 		}
 
 		// cancel any further walljump if not pressing up
