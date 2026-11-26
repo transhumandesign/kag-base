@@ -57,4 +57,10 @@ void onRender(CSprite@ this)
 
 	// class weapon icon
 	GUI::DrawIcon(iconsFilename, arrow_frame, Vec2f(16, 32), tl + Vec2f(8 + (slotsSize - 1) * 40, -16), 1.0f, blob.getTeamNum());
+
+	// draw resupply icon
+	if (shouldRenderResupplyIndicator(blob))
+	{	
+		DrawResupplyOnHUD(blob, tl + Vec2f(8 + (slotsSize) * 40, -4));
+	}
 }
