@@ -27,7 +27,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		return;
 	}
 
-	if (getNet().isServer() && !blob.hasTag("dead"))
+	if (isServer() && !blob.hasTag("dead"))
 	{
 		Heal(blob, this);
 	}
