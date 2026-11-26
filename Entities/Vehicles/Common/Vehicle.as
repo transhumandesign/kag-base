@@ -233,7 +233,9 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			this.getShape().SetStatic(false);
 			this.getShape().doTickScripts = true;
 			this.AddTorque(this.getAngleDegrees() < 180 ? -1000 : 1000);
-			this.AddForce(Vec2f(0, -1000));
+
+			if (this.isOnGround())
+				this.AddForce(Vec2f(0, -1000));
 		}
 	}
 	/// SYNC AMMUNITION
