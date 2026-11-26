@@ -20,6 +20,7 @@ void onInit(CRules@ this)
 	_actualEndTime = introEndTime;
 	introDone = false;
 	this.set_bool("drop coins", true);
+	this.Tag("no auto fanfare");
 }
 
 void onRender(CMap@ this)
