@@ -4,6 +4,8 @@ void AddTilesBySector(Vec2f ul, Vec2f lr, string sectorName, TileType tile, Tile
 	{
 		CMap@ map = getMap();
 		const f32 tilesize = map.tilesize;
+		const f32 mapWidth = map.tilemapwidth * tilesize;
+		const f32 mapHeight = map.tilemapheight * tilesize;
 		Vec2f tpos = ul;
 		Vec2f tsize(map.tilesize, map.tilesize);
 		Vec2f center = ul + (lr - ul - tsize) * 0.5f;
@@ -11,7 +13,9 @@ void AddTilesBySector(Vec2f ul, Vec2f lr, string sectorName, TileType tile, Tile
 		{
 			while (tpos.y < lr.y)
 			{
-				if (map.getSectorAtPosition(tpos, sectorName) !is null 
+				if (tpos.x >= 0.0f && tpos.x < mapWidth
+					&& tpos.y >= 0.0f && tpos.y < mapHeight
+					&& map.getSectorAtPosition(tpos, sectorName) !is null 
 					&& map.getTile(tpos).type != omitTile
 					&& !(tpos == center && hasWindow))
 				{
