@@ -256,7 +256,7 @@ bool isInventoryAccessible(CBlob@ this, CBlob@ forBlob)
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
-	if (!canSeeButtons(this, caller)) return;
+	if (!canSeeButtons(this, caller) || caller.isAttached()) return;
 
 	Vec2f buttonpos(0, 0);
 
@@ -425,7 +425,7 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (helditem !is this) return;
 
 		CInventory@ inv = this.getInventory();
-		if (caller !is null && inv !is null) 
+		if (caller !is null && inv !is null && !caller.isAttached()) 
 		{
 			u8 itemcount = inv.getItemsCount();
 			// Boobytrap if crate has enemy mine
