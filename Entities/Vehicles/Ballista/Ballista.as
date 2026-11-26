@@ -125,7 +125,7 @@ void onInit(CBlob@ this)
 	string[] autograb_blobs = {"mat_bolts", "mat_bomb_bolts"};
 	this.set("autograb blobs", autograb_blobs);
 
-	this.set_bool("facing", true);
+	this.set_bool("facing", false);
 
 	// auto-load on creation
 	if (isServer())
