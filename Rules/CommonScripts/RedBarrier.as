@@ -90,7 +90,7 @@ void onTick(CRules@ this)
 				(b.getTeamNum() < 100 || b.hasTag("no barrier pass") || 
 				 b.hasTag("material") || b.getName() == "spikes"))
 			{
-				PushBlob(b, (tl.x + br.x) * 0.5, tl.x, br.x);
+				PushBlob(b, tl.x, br.x);
 			}
 		}
 	}
@@ -135,11 +135,41 @@ void onCommand(CRules@ this, u8 cmd, CBitStream@ params)
 
 ////  FUNCTIONS  ////
 
-void PushBlob(CBlob@ blob, const u16 &in middle, const u16 &in x1, const u16 &in x2)
+void PushBlob(CBlob@ blob, const u16 &in x1, const u16 &in x2)
 {
 	Vec2f vel = blob.getVelocity();
 	Vec2f pos = blob.getPosition();
 	
+	//we push towards the spawn point that matches the blob's team
+	bool push_left = false;
+	bool found_spawn_point = false;
+	
+	CBlob@[] spawn_points;
+	getBlobsByName("tent", @spawn_points);
+	getBlobsByName("hall", @spawn_points);
+	
+	u16 middle = (x1 + x2) * 0.5;
+	bool left_from_middle = pos.x < middle;
+	
+	for (int i = 0; i < spawn_points.size(); i++)
+	{
+		CBlob@ spawn_point = spawn_points[i];
+		
+		if (spawn_point is null)
+			continue;
+			
+		if (spawn_point.getTeamNum() == blob.getTeamNum())
+		{
+			found_spawn_point = true;
+			push_left = spawn_point.getPosition().x < middle ? true : false;
+			break;
+		}
+	}
+	
+	// either a spawn point exists and we push toward it
+	// or we use the old way, pushing from the center of the barrier
+	push_left = found_spawn_point ? push_left : left_from_middle;
+		
 	//players clamped to edge
 	if (blob.getPlayer() !is null)
 	{
@@ -147,7 +177,8 @@ void PushBlob(CBlob@ blob, const u16 &in middle, const u16 &in x1, const u16 &in
 		{
 			const f32 margin = 0.01f;
 			const f32 vel_base = 0.01f;
-			if (pos.x < middle)
+			
+			if (push_left)
 			{
 				pos.x = Maths::Min(x1 - margin, pos.x) - margin;
 				vel.x = Maths::Min(-vel_base, -Maths::Abs(vel.x));
@@ -162,7 +193,7 @@ void PushBlob(CBlob@ blob, const u16 &in middle, const u16 &in x1, const u16 &in
 	}
 	else
 	{
-		vel.x += pos.x < middle ? -VEL_PUSHBACK : VEL_PUSHBACK;
+		vel.x += push_left ? -VEL_PUSHBACK : VEL_PUSHBACK;
 	}
 
 	blob.setVelocity(vel);
