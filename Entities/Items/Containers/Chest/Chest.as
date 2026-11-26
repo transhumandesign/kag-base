@@ -34,11 +34,14 @@ void onInit(CBlob@ this)
 	CSprite@ sprite = this.getSprite();
 	if (sprite !is null)
 	{
-		u8 team_color = XORRandom(5);
-		this.set_u8("team_color", team_color);
+		u8 col = XORRandom(5);
+		if (this.exists("color"))
+			col = this.get_u8("color");
+		else
+			this.set_u8("color", col);
+		sprite.ReloadSprites(col, 0);
 
 		sprite.SetZ(-10.0f);
-		sprite.ReloadSprites(team_color, 0);
 
 		if (this.hasTag("_chest_open"))
 		{
@@ -137,7 +140,7 @@ void onDie(CBlob@ this)
 		1.0f,                               // scale?
 		0,                                  // ?
 		"",                                 // sound
-		this.get_u8("team_color"));         // team number
+		this.get_u8("color"));              // team number
 	}
 }
 
