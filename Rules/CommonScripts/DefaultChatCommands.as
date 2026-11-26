@@ -45,5 +45,7 @@ void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 	manager.RegisterCommand(ScrollCommand());
 	manager.RegisterCommand(BotCommand());
 	manager.RegisterCommand(SpawnCommand());
+	manager.RegisterCommand(KnightCommand());
+	manager.RegisterCommand(ArcherCommand());
 	manager.RegisterCommand(TimeCommand());
 }
