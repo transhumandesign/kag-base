@@ -99,6 +99,12 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (tunnel is null) return;
 
 		client_Travel(this, caller, tunnel);
+
+		CGridMenu@ menu = getGridMenuByName(getTranslatedString("Pick tunnel to travel"));
+		if (menu !is null)
+		{
+			menu.kill = true;
+		}
 	}
 }
 
@@ -187,7 +193,6 @@ void Callback_TravelTo(CBitStream@ params)
 		CBitStream params;
 		params.write_u16(to_id);
 		this.SendCommand(this.getCommandID("travel to"), params);
-
 	}
 	else
 	{
@@ -310,6 +315,9 @@ void BuildTunnelsMenu(CBlob@ this)
 		menu.AddKeyCallback(KEY_ESCAPE, "TunnelTravel.as", "Callback_TravelNone", params);
 		menu.SetDefaultCallback("TunnelTravel.as", "Callback_TravelNone", params);
 
+		array<EKEY_CODE> numKeys = { KEY_KEY_1, KEY_KEY_2, KEY_KEY_3, KEY_KEY_4, KEY_KEY_5, KEY_KEY_6, KEY_KEY_7, KEY_KEY_8, KEY_KEY_9, KEY_KEY_0 };
+		uint keybindCount = numKeys.length();
+
 		for (uint i = 0; i < tunnels.length; i++)
 		{
 			CBlob@ tunnel = tunnels[i];
@@ -324,6 +332,12 @@ void BuildTunnelsMenu(CBlob@ this)
 				params.write_u16(tunnel.getNetworkID());
 				int direction_index = getTravelDirectionIndex(this, tunnel);
 				menu.AddButton(getTravelIcon(this, tunnel, direction_index), getTranslatedString(getTravelDescription(this, tunnel, direction_index)), "TunnelTravel.as", "Callback_TravelTo", Vec2f(BUTTON_SIZE, BUTTON_SIZE), params);
+
+				// add keybind
+				if (i < keybindCount)
+				{
+					menu.AddKeyCallback(numKeys[i], "TunnelTravel.as", "Callback_TravelTo", params);
+				}
 			}
 		}
 	}
