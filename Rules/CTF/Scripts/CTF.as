@@ -40,8 +40,10 @@ void Config(CTFCore@ this)
 	{
 		this.gameDuration = (getTicksASecond() * 60 * gameDurationMinutes);
 	}
+
 	//how many players have to be in for the game to start
 	this.minimum_players_in_team = cfg.read_s32("minimum_players_in_team", 2);
+
 	//whether to scramble each game or not
 	this.scramble_teams = cfg.read_bool("scramble_teams", true);
 
@@ -578,8 +580,18 @@ shared class CTFCore : RulesCore
 		if (!rules.isMatchRunning()) { return; }
 
 		// get all the flags
-		CBlob@[] flags;
+		CBlob@[] flags;        // Total flags
+		CBlob@[] flags_red;    // Red flags
+		CBlob@[] flags_blue;   // Blue flags
 		getBlobsByName(flag_name(), @flags);
+
+		for (uint i = 0; i < flags.length; i++) {
+			if (flags[i].getTeamNum() == 0) {
+				flags_blue.push_back(flags[i]);
+			} else if (flags[i].getTeamNum() == 1) {
+				flags_red.push_back(flags[i]);
+			}
+		}
 
 		int winteamIndex = -1;
 		CTFTeamInfo@ winteam = null;
@@ -598,6 +610,20 @@ shared class CTFCore : RulesCore
 					win = false;
 					break;
 				}
+			}
+
+			// if enabled game timer and some team stolen one flag from enemy
+			if (team_num == 0 && flags_red.length < flags_blue.length)          // BLUE WIN
+			{
+				team_wins_on_end = 0;
+			}
+			else if (team_num == 1 && flags_blue.length < flags_red.length)     // RED WIN
+			{
+				team_wins_on_end = 1;
+			}
+			else if (flags_blue.length == flags_red.length)                     // TIE
+			{
+				team_wins_on_end = -1;
 			}
 
 			if (win)
