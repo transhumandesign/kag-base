@@ -25,8 +25,7 @@ void client_SendThrowOrActivateCommandBomb(CBlob@ this, u8 bombtype)
 
 void client_SendThrowCommand(CBlob@ this)
 {
-	CBlob @carried = this.getCarriedBlob();
-	if (carried !is null && this.isMyPlayer())
+	if (this.isMyPlayer())
 	{
 		CBitStream params;
 		params.write_Vec2f(this.getPosition());
