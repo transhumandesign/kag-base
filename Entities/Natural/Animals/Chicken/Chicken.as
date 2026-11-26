@@ -89,8 +89,6 @@ void onInit(CBlob@ this)
 	this.set_f32("gib health", -0.0f);
 	this.Tag("flesh");
 
-	this.getShape().SetOffset(Vec2f(0, 6));
-
 	this.getCurrentScript().runFlags |= Script::tick_blob_in_proximity;
 	this.getCurrentScript().runProximityTag = "player";
 	this.getCurrentScript().runProximityRadius = 320.0f;
