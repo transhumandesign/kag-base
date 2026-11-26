@@ -136,6 +136,7 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 
 			Vec2f velocity = Vec2f(0, -Trampoline::SCALAR);
 			velocity.RotateBy(angle);
+			velocity = Vec2f(Maths::Round(velocity.x), Maths::Round(velocity.y));
 
 			blob.setVelocity(velocity);
 
