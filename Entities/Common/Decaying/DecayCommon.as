@@ -1,10 +1,12 @@
 const bool DECAY_DEBUG = false;
 
-bool dissalowDecaying(CBlob@ this)
+bool disallowDecaying(CBlob@ this)
 {
 	return (
 	           this.getControls() !is null ||
-	           this.isInInventory()
+	           this.isInInventory() ||
+			   this.isAttached() ||
+			   this.hasTag("invincible")
 	       );
 }
 

@@ -12,7 +12,7 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
-	if (dissalowDecaying(this))
+	if (disallowDecaying(this))
 		return;
 
 	if (!this.getMap().isInWater(this.getPosition() + Vec2f(0.0f, this.getHeight() / 2.0f)))
