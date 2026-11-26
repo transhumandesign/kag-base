@@ -2,6 +2,15 @@
 
 #include "VoteCommon.as"
 
+enum vote_type
+{
+	vote_type_kick = 0,
+	vote_type_nextmap,
+	vote_type_surrender,
+	vote_type_scramble,
+	vote_type_count
+};
+
 bool g_haveStartedVote = false;
 
 const float required_minutes = 10; //time you have to wait after joining w/o skip_votewait.
@@ -34,28 +43,10 @@ enum nextmap_reason
 
 string[] nextmap_reason_string = { "Map Ruined", "Stalemate", "Game Bugged" };
 
-//votekick and vote nextmap
-
-const string votekick_id = "vote: kick";
-const string votekick_id_client = "vote: kick client";
-const string votenextmap_id = "vote: nextmap";
-const string votenextmap_id_client = "vote: nextmap client";
-const string votesurrender_id = "vote: surrender";
-const string votesurrender_id_client = "vote: surrender client";
-const string votescramble_id = "vote: scramble";
-const string votescramble_id_client = "vote: scramble client";
-
-//set up the ids
 void onInit(CRules@ this)
 {
-	this.addCommandID(votekick_id);
-	this.addCommandID(votekick_id_client);
-	this.addCommandID(votenextmap_id);
-	this.addCommandID(votenextmap_id_client);
-	this.addCommandID(votesurrender_id);
-	this.addCommandID(votesurrender_id_client);
-	this.addCommandID(votescramble_id);
-	this.addCommandID(votescramble_id_client);
+	this.addCommandID("vote_start");
+	this.addCommandID("vote_start_client");
 }
 
 void onRestart(CRules@ this)
@@ -906,11 +897,11 @@ void Callback_Kick(CBitStream@ params)
 		return;
 
 	CBitStream params2;
-
+	params2.write_u8(vote_type_kick);
 	params2.write_u16(other_player.getNetworkID());
 	params2.write_u8(g_kick_reason_id);
 
-	getRules().SendCommand(getRules().getCommandID(votekick_id), params2);
+	getRules().SendCommand(getRules().getCommandID("vote_start"), params2);
 }
 
 void Callback_NextMap(CBitStream@ params)
@@ -924,11 +915,11 @@ void Callback_NextMap(CBitStream@ params)
 	if (!params.saferead_u8(id)) return;
 
 	CBitStream params2;
-
+	params2.write_u8(vote_type_nextmap);
 	params2.write_u16(me.getNetworkID());
 	params2.write_u8(id);
 
-	getRules().SendCommand(getRules().getCommandID(votenextmap_id), params2);
+	getRules().SendCommand(getRules().getCommandID("vote_start"), params2);
 }
 
 void Callback_Surrender(CBitStream@ params)
@@ -939,10 +930,10 @@ void Callback_Surrender(CBitStream@ params)
 	if (me is null) return;
 
 	CBitStream params2;
-
+	params2.write_u8(vote_type_surrender);
 	params2.write_u16(me.getNetworkID());
 
-	getRules().SendCommand(getRules().getCommandID(votesurrender_id), params2);
+	getRules().SendCommand(getRules().getCommandID("vote_start"), params2);
 }
 
 void Callback_Scramble(CBitStream@ params)
@@ -953,54 +944,36 @@ void Callback_Scramble(CBitStream@ params)
 	if (me is null) return;
 
 	CBitStream params2;
-
+	params2.write_u8(vote_type_scramble);
 	params2.write_u16(me.getNetworkID());
 
-	getRules().SendCommand(getRules().getCommandID(votescramble_id), params2);
+	getRules().SendCommand(getRules().getCommandID("vote_start"), params2);
 }
 
 
-bool server_canPlayerStartVote(CRules@ this, CPlayer@ player, CPlayer@ other_player, u8 cmdid)
+bool server_canPlayerStartVote(CRules@ this, CPlayer@ player, CPlayer@ other_player, u8 vote_type)
 {
 	if (player is null) return false;
 
 	bool can_skip_wait = getSecurity().checkAccess_Feature(player, "skip_votewait");
 
-	if (cmdid == this.getCommandID(votekick_id))
+	if (vote_type == vote_type_kick)
 	{
-		if (other_player is null) return false;
-
-		// other player has kick immunity?
-		if (getSecurity().checkAccess_Feature(other_player, "kick_immunity"))
-		{
-			return false;
-		}
-
-		// already tried to votekick other player before this?
-		if (this.get_string("last username voted " + player.getUsername()) == other_player.getUsername())
-		{
-			return false;
-		}
-
-		if (!can_skip_wait)
-		{
-			// didnt wait required_minutes yet?
-			if (this.get_s32("last vote counter player " + player.getUsername()) < 60 * getTicksASecond()*required_minutes)
-			{
-				return false;
-			}
-		}
+		if (other_player is null || getSecurity().checkAccess_Feature(other_player, "kick_immunity")) return false;
+		if (this.get_string("last username voted " + player.getUsername()) == other_player.getUsername()) return false;
+		if (!can_skip_wait && this.get_s32("last vote counter player " + player.getUsername()) < 60 * getTicksASecond()*required_minutes) return false;
 	}
-	else if (cmdid == this.getCommandID(votenextmap_id))
+	else if (vote_type == vote_type_nextmap)
 	{
-		if (!can_skip_wait)
-		{
-			// didnt wait required_minutes_nextmap yet?
-			if (this.get_s32("last nextmap counter player " + player.getUsername()) < 60 * getTicksASecond()*required_minutes_nextmap)
-			{
-				return false;
-			}
-		}
+		if (!can_skip_wait && this.get_s32("last nextmap counter player " + player.getUsername()) < 60 * getTicksASecond()*required_minutes_nextmap) return false;
+	}
+	else if (vote_type == vote_type_surrender)
+	{
+		if (!can_skip_wait && this.get_s32("last nextmap counter player " + player.getUsername()) < 60 * getTicksASecond()*required_minutes_nextmap) return false;
+	}
+	else if (vote_type == vote_type_scramble)
+	{
+		if (!can_skip_wait && this.get_s32("last nextmap counter player " + player.getUsername()) < 60 * getTicksASecond()*required_minutes_nextmap) return false;
 	}
 
 	return true;
@@ -1009,154 +982,142 @@ bool server_canPlayerStartVote(CRules@ this, CPlayer@ player, CPlayer@ other_pla
 //actually setting up the votes
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
-	if (Rules_AlreadyHasVote(this))
-		return;
+	if (Rules_AlreadyHasVote(this)) return;
 
-	if (cmd == this.getCommandID(votekick_id) && isServer())
+	// Server voting
+	if (cmd == this.getCommandID("vote_start") && isServer())
 	{
-		u16 playerid;
-		if (!params.saferead_u16(playerid)) return;
-
-		u8 reasonid;
-		if (!params.saferead_u8(reasonid)) return;
-
-		if (reasonid >= kick_reason_count) return;
+		u8 vote_type_value;
+		if (!params.saferead_u8(vote_type_value)) return;
+		if (vote_type_value >= vote_type_count) return;
 
 		CPlayer@ byplayer = getNet().getActiveCommandPlayer();
 		if (byplayer is null) return;
 
-		CPlayer@ player = getPlayerByNetworkId(playerid);
-		if (player is null) return;
+		CBitStream client_params;
+		client_params.write_u8(vote_type_value);
 
-		if (!server_canPlayerStartVote(this, byplayer, player, cmd)) return;
+		if (vote_type_value == vote_type_kick)
+		{
+			u16 playerid;
+			if (!params.saferead_u16(playerid)) return;
+			u8 reasonid;
+			if (!params.saferead_u8(reasonid)) return;
+			if (reasonid >= kick_reason_count) return;
 
-		this.set_s32("last vote counter player " + byplayer.getUsername(), 0);
-		this.SyncToPlayer("last vote counter player " + byplayer.getUsername(), byplayer);
+			CPlayer@ player = getPlayerByNetworkId(playerid);
+			if (player is null) return;
 
-		this.set_string("last username voted " + byplayer.getUsername(), player.getUsername());
-		this.SyncToPlayer("last username voted " + byplayer.getUsername(), byplayer);
+			if (!server_canPlayerStartVote(this, byplayer, player, vote_type_kick)) return;
 
-		Rules_SetVote(this, Create_Votekick(player, byplayer, reasonid));
+			this.set_s32("last vote counter player " + byplayer.getUsername(), 0);
+			this.SyncToPlayer("last vote counter player " + byplayer.getUsername(), byplayer);
 
-		CBitStream bt;
-		bt.write_u16(playerid);
-		bt.write_u8(reasonid);
-		bt.write_u16(byplayer.getNetworkID());
+			this.set_string("last username voted " + byplayer.getUsername(), player.getUsername());
+			this.SyncToPlayer("last username voted " + byplayer.getUsername(), byplayer);
 
-		this.SendCommand(this.getCommandID(votekick_id_client), bt);
+			Rules_SetVote(this, Create_Votekick(player, byplayer, reasonid));
+
+			client_params.write_u16(playerid);
+			client_params.write_u8(reasonid);
+			client_params.write_u16(byplayer.getNetworkID());
+		}
+		else if (vote_type_value == vote_type_nextmap)
+		{
+			u8 reasonid;
+			if (!params.saferead_u8(reasonid)) return;
+			if (reasonid >= nextmap_reason_count) return;
+
+			if (!server_canPlayerStartVote(this, byplayer, null, vote_type_nextmap)) return;
+
+			this.set_s32("last nextmap counter player " + byplayer.getUsername(), 0);
+			this.SyncToPlayer("last nextmap counter player " + byplayer.getUsername(), byplayer);
+
+			Rules_SetVote(this, Create_VoteNextmap(byplayer, reasonid));
+
+			client_params.write_u8(reasonid);
+			client_params.write_u16(byplayer.getNetworkID());
+		}
+		else if (vote_type_value == vote_type_surrender)
+		{
+			if (!server_canPlayerStartVote(this, byplayer, null, vote_type_surrender)) return;
+
+			this.set_s32("last nextmap counter player " + byplayer.getUsername(), 0);
+			this.SyncToPlayer("last nextmap counter player " + byplayer.getUsername(), byplayer);
+
+			Rules_SetVote(this, Create_VoteSurrender(byplayer));
+
+			client_params.write_u16(byplayer.getNetworkID());
+		}
+		else if (vote_type_value == vote_type_scramble) 
+		{
+			if (!server_canPlayerStartVote(this, byplayer, null, vote_type_scramble)) return;
+
+			this.set_s32("last nextmap counter player " + byplayer.getUsername(), 0);
+			this.SyncToPlayer("last nextmap counter player " + byplayer.getUsername(), byplayer);
+
+			Rules_SetVote(this, Create_VoteScramble(byplayer));
+
+			client_params.write_u16(byplayer.getNetworkID());
+		}
+
+		this.SendCommand(this.getCommandID("vote_start_client"), client_params);
 	}
-	else if (cmd == this.getCommandID(votekick_id_client) && isClient())
+	// Client voting
+	else if (cmd == this.getCommandID("vote_start_client") && isClient())
 	{
-		u16 playerid;
-		if (!params.saferead_u16(playerid)) return;
+		u8 vote_type_value;
+		if (!params.saferead_u8(vote_type_value)) return;
+		if (vote_type_value >= vote_type_count) return;
 
-		u8 reasonid;
-		if (!params.saferead_u8(reasonid)) return;
+		if (vote_type_value == vote_type_kick)
+		{
+			u16 playerid;
+			if (!params.saferead_u16(playerid)) return;
+			u8 reasonid;
+			if (!params.saferead_u8(reasonid)) return;
+			if (reasonid >= kick_reason_count) return;
+			u16 byplayerid;
+			if (!params.saferead_u16(byplayerid)) return;
 
-		if (reasonid >= kick_reason_count) return;
+			CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
+			CPlayer@ player = getPlayerByNetworkId(playerid);
+			if (byplayer is null || player is null) return;
 
-		u16 byplayerid;
-		if (!params.saferead_u16(byplayerid)) return;
+			Rules_SetVote(this, Create_Votekick(player, byplayer, reasonid));
+		}
+		else if (vote_type_value == vote_type_nextmap)
+		{
+			u8 reasonid;
+			if (!params.saferead_u8(reasonid)) return;
+			if (reasonid >= nextmap_reason_count) return;
+			u16 byplayerid;
+			if (!params.saferead_u16(byplayerid)) return;
 
-		CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
-		if (byplayer is null) return;
+			CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
+			if (byplayer is null) return;
 
-		CPlayer@ player = getPlayerByNetworkId(playerid);
-		if (player is null) return;
+			Rules_SetVote(this, Create_VoteNextmap(byplayer, reasonid));
+		}
+		else if (vote_type_value == vote_type_surrender)
+		{
+			u16 byplayerid;
+			if (!params.saferead_u16(byplayerid)) return;
 
-		Rules_SetVote(this, Create_Votekick(player, byplayer, reasonid));
-	}
-	else if (cmd == this.getCommandID(votenextmap_id) && isServer())
-	{
-		u8 reasonid;
-		if (!params.saferead_u8(reasonid)) return;
+			CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
+			if (byplayer is null) return;
 
-		if (reasonid >= nextmap_reason_count) return;
+			Rules_SetVote(this, Create_VoteSurrender(byplayer));
+		}
+		else if (vote_type_value == vote_type_scramble)
+		{
+			u16 byplayerid;
+			if (!params.saferead_u16(byplayerid)) return;
 
-		CPlayer@ byplayer = getNet().getActiveCommandPlayer();
-		if (byplayer is null) return;
+			CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
+			if (byplayer is null) return;
 
-		if (!server_canPlayerStartVote(this, byplayer, null, cmd)) return;
-
-		printf("gv " + byplayer.getUsername());
-		this.set_s32("last nextmap counter player " + byplayer.getUsername(), 0);
-		this.SyncToPlayer("last nextmap counter player " + byplayer.getUsername(), byplayer);
-
-		Rules_SetVote(this, Create_VoteNextmap(byplayer, reasonid));
-
-		CBitStream bt;
-		bt.write_u8(reasonid);
-		bt.write_u16(byplayer.getNetworkID());
-
-		this.SendCommand(this.getCommandID(votenextmap_id_client), bt);
-	}
-	else if (cmd == this.getCommandID(votenextmap_id_client) && isClient())
-	{
-		u8 reasonid;
-		if (!params.saferead_u8(reasonid)) return;
-
-		if (reasonid >= nextmap_reason_count) return;
-
-		u16 byplayerid;
-		if (!params.saferead_u16(byplayerid)) return;
-
-		CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
-		if (byplayer is null) return;
-
-		Rules_SetVote(this, Create_VoteNextmap(byplayer, reasonid));
-	}
-	else if (cmd == this.getCommandID(votesurrender_id) && isServer())
-	{
-		CPlayer@ byplayer = getNet().getActiveCommandPlayer();
-		if (byplayer is null) return;
-
-		if (!server_canPlayerStartVote(this, byplayer, null, cmd)) return;
-
-		this.set_s32("last nextmap counter player " + byplayer.getUsername(), 0);
-		this.SyncToPlayer("last nextmap counter player " + byplayer.getUsername(), byplayer);
-
-		Rules_SetVote(this, Create_VoteSurrender(byplayer));
-
-		CBitStream bt;
-		bt.write_u16(byplayer.getNetworkID());
-
-		this.SendCommand(this.getCommandID(votesurrender_id_client), bt);
-	}
-	else if (cmd == this.getCommandID(votesurrender_id_client) && isClient())
-	{
-		u16 byplayerid;
-		if (!params.saferead_u16(byplayerid)) return;
-
-		CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
-		if (byplayer is null) return;
-
-		Rules_SetVote(this, Create_VoteSurrender(byplayer));
-	}
-	else if (cmd == this.getCommandID(votescramble_id) && isServer())
-	{
-		CPlayer@ byplayer = getNet().getActiveCommandPlayer();
-		if (byplayer is null) return;
-
-		if (!server_canPlayerStartVote(this, byplayer, null, cmd)) return;
-
-		this.set_s32("last nextmap counter player " + byplayer.getUsername(), 0);
-		this.SyncToPlayer("last nextmap counter player " + byplayer.getUsername(), byplayer);
-
-		Rules_SetVote(this, Create_VoteScramble(byplayer));
-
-		CBitStream bt;
-		bt.write_u16(byplayer.getNetworkID());
-
-		this.SendCommand(this.getCommandID(votescramble_id_client), bt);
-	}
-	else if (cmd == this.getCommandID(votescramble_id_client) && isClient())
-	{
-		u16 byplayerid;
-		if (!params.saferead_u16(byplayerid)) return;
-
-		CPlayer@ byplayer = getPlayerByNetworkId(byplayerid);
-		if (byplayer is null) return;
-
-		Rules_SetVote(this, Create_VoteScramble(byplayer));
+			Rules_SetVote(this, Create_VoteScramble(byplayer));
+		}
 	}
 }
