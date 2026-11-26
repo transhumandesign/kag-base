@@ -154,6 +154,43 @@ void Boom(CBlob@ this)
 	}
 }
 
+bool isFloorUnderTrampoline(CBlob@ this, Vec2f point)
+{
+	CMap@ map = this.getMap();
+	if (map is null)
+	{
+		return false;
+	}
+
+	CBlob@[] blobs;
+	if (!map.getBlobsInRadius(point, this.getRadius() + 16.0f, blobs))
+	{
+		return false;
+	}
+
+	for (uint i = 0; i < blobs.length; i++)
+	{
+		CBlob@ b = blobs[i];
+		if (b is null || b.getName() != "trampoline")
+		{
+			continue;
+		}
+
+		const Vec2f trampolinePos = b.getPosition();
+		const f32 maxX = b.getWidth() * 0.5f + this.getRadius();
+		const f32 maxY = b.getHeight() + this.getRadius();
+
+		if (Maths::Abs(trampolinePos.x - point.x) <= maxX &&
+		    trampolinePos.y < point.y &&
+		    point.y - trampolinePos.y <= maxY)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
 	Vec2f dir = velocity;
@@ -204,7 +241,7 @@ void onDie(CBlob@ this)
 	}
 }
 
-void onCollision(CBlob@ this, CBlob@ blob, bool solid)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
 {
 	if (!solid || this.isAttached())
 	{
@@ -220,7 +257,15 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 		//printf("vellen " + vellen );
 		if (this.hasTag("exploding") && vellen > 8.0f)
 		{
-			Boom(this);
+			const bool wallHit = Maths::Abs(normal.x) > Maths::Abs(normal.y);
+			const bool trampolineVerticalHit = !wallHit &&
+			                                   ((blob !is null && blob.getName() == "trampoline") ||
+			                                    (blob is null && isFloorUnderTrampoline(this, point1)));
+
+			if (!trampolineVerticalHit)
+			{
+				Boom(this);
+			}
 		}
 	}
 }
