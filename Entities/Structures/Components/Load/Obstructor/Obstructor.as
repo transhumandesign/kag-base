@@ -120,19 +120,22 @@ void onHealthChange(CBlob@ this, f32 oldHealth)
 
 void MakeDamageFrame(CBlob@ this)
 {
-	CSprite@ sprite = this.getSprite();
-	const f32 hp = this.getHealth();
-	const f32 full_hp = this.getInitialHealth();
-	if (hp < full_hp)
+	if (isClient())
 	{
-		const f32 ratio = hp / full_hp;
-		if (ratio <= 0.0f)
+		CSprite@ sprite = this.getSprite();
+		const f32 hp = this.getHealth();
+		const f32 full_hp = this.getInitialHealth();
+		if (hp < full_hp)
 		{
-			sprite.animation.frame = sprite.animation.getFramesCount() - 1;
-		}
-		else
-		{
-			sprite.animation.frame = (1.0f - ratio) * (sprite.animation.getFramesCount());
+			const f32 ratio = hp / full_hp;
+			if (ratio <= 0.0f)
+			{
+				sprite.animation.frame = sprite.animation.getFramesCount() - 1;
+			}
+			else
+			{
+				sprite.animation.frame = (1.0f - ratio) * (sprite.animation.getFramesCount());
+			}
 		}
 	}
 }
