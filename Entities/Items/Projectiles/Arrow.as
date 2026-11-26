@@ -158,7 +158,7 @@ void onTick(CBlob@ this)
 
 			processSticking = false;
 		}
-		
+
 		if (arrowType == ArrowType::bomb)
 		{
 			CSprite@ sprite = this.getSprite();
@@ -217,8 +217,8 @@ void onTick(CBlob@ this)
 					this.server_Die();	
 			}
 		}
-		
-		shape.getConsts().collidable = false;	//no collision
+
+		shape.getConsts().collidable = false; //no collision
 		
 		angle = Maths::get360DegreesFrom256(this.get_u8("angle"));
 		this.setVelocity(Vec2f(0, 0));
@@ -835,7 +835,7 @@ void onDie(CBlob@ this)
 
 void onThisAddToInventory(CBlob@ this, CBlob@ inventoryBlob)
 {
-	if (!getNet().isServer())
+	if (!isServer())
 	{
 		return;
 	}

@@ -217,8 +217,7 @@ void Pickaxe(CBlob@ this)
 	f32 aimangle = aimDir.Angle();
 	Vec2f pos = blobPos - Vec2f(2, 0).RotateBy(-aimangle);
 	f32 attack_distance = this.getRadius() + pickaxe_distance;
-	f32 radius = this.getRadius();
-	CMap@ map = this.getMap();
+	CMap@ map = getMap();
 	bool dontHitMore = false;
 
 	bool hasHit = false;
@@ -229,7 +228,6 @@ void Pickaxe(CBlob@ this)
 	map.rayCastSolid(blobPos, tilepos, surfacepos);
 
 	Vec2f surfaceoff = (tilepos - surfacepos);
-	f32 surfacedist = surfaceoff.Normalize();
 	tilepos = (surfacepos + (surfaceoff * (map.tilesize * 0.5f)));
 
 	// this gathers HitInfo objects which contain blob or tile hit information

@@ -1,7 +1,5 @@
 ﻿// Bed
 
-#include "Help.as"
-
 void onInit( CBlob@ this )
 {		 	
 	this.getShape().getConsts().mapCollisions = false;	

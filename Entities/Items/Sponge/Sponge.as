@@ -1,5 +1,4 @@
-#include "Hitters.as";
-#include "SplashWater.as";
+
 #include "SpongeCommon.as";
 
 const u8 DRY_COOLDOWN = 8;

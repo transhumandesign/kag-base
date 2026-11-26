@@ -226,7 +226,7 @@ void onTick(CBlob@ this)
 	}
 }
 
-void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point1)
+void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {
 	if (blob is null)
 		return;
