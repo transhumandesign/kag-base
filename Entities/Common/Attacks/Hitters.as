@@ -78,3 +78,29 @@ bool isWaterHitter(u8 type)
 {
 	return type == Hitters::water || type == Hitters::water_stun_force || type == Hitters::water_stun;
 }
+
+bool isHeldByTeammate(CBlob@ held_blob, CBlob@ hitter_blob)
+{
+	if (held_blob !is null && hitter_blob !is null && held_blob.isAttached())
+	{
+		AttachmentPoint@[] aps;
+		if (held_blob.getAttachmentPoints(@aps))
+		{
+			for (uint i = 0; i < aps.length; i++)
+			{
+				AttachmentPoint@ ap = aps[i];
+
+				CBlob@ occ = ap.getOccupied();
+
+				//if (occ !is null)	print(ap.name + " " + occ.getName());
+
+				if (occ !is null && occ.getTeamNum() == hitter_blob.getTeamNum()) 
+				{
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
