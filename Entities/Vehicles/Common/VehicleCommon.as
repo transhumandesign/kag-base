@@ -127,7 +127,6 @@ void Vehicle_SetupAirship(CBlob@ this, VehicleInfo@ v, const f32 &in flySpeed)
 {
 	v.fly_speed = flySpeed;
 	v.fly_amount = 0.25f;
-	this.Tag("airship");
 }
 
 void Vehicle_SetupGroundSound(CBlob@ this, VehicleInfo@ v, const string &in movementSound, const f32 &in movementVolumeMod, const f32 &in movementPitchMod)
@@ -352,11 +351,6 @@ void Vehicle_StandardControls(CBlob@ this, VehicleInfo@ v)
 			Vehicle_RowerControls(this, blob, ap, v);
 		}
 	}
-
-	if (this.hasTag("airship"))
-	{
-		this.AddForce(Vec2f(0, v.fly_speed * v.fly_amount));
-	}
 }
 
 void Vehicle_DriverControls(CBlob@ this, CBlob@ blob, AttachmentPoint@ ap, VehicleInfo@ v)
@@ -534,6 +528,9 @@ void Vehicle_FlyerControls(CBlob@ this, CBlob@ blob, AttachmentPoint@ ap, Vehicl
 	{
 		this.AddForce(force);
 	}
+
+	// apply force
+	this.AddForce(Vec2f(0, v.fly_speed * v.fly_amount));
 }
 
 void Vehicle_RowerControls(CBlob@ this, CBlob@ blob, AttachmentPoint@ ap, VehicleInfo@ v)
