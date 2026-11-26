@@ -240,6 +240,7 @@ VoteObject@ Create_Votekick(CPlayer@ player, CPlayer@ byplayer, u8 reasonid)
 	vote.user_to_kick = player.getUsername();
 	vote.forcePassFeature = "ban";
 	vote.cancel_on_restart = false;
+	vote.cancel_on_gameover = false;
 
 	CalculateVoteThresholds(vote);
 
@@ -316,6 +317,7 @@ VoteObject@ Create_VoteNextmap(CPlayer@ byplayer, u8 reasonid)
 	vote.byuser = byplayer.getUsername();
 	vote.forcePassFeature = "nextmap";
 	vote.cancel_on_restart = true;
+	vote.cancel_on_gameover = true;
 
 	CalculateVoteThresholds(vote);
 
@@ -409,6 +411,7 @@ VoteObject@ Create_VoteSurrender(CPlayer@ byplayer)
 	vote.byuser = byplayer.getUsername();
 	vote.forcePassFeature = "surrender";
 	vote.cancel_on_restart = true;
+	vote.cancel_on_gameover = true;
 
 	CalculateVoteThresholds(vote);
 
@@ -485,6 +488,7 @@ VoteObject@ Create_VoteScramble(CPlayer@ byplayer)
 	vote.byuser = byplayer.getUsername();
 	vote.forcePassFeature = "scramble";
 	vote.cancel_on_restart = true;
+	vote.cancel_on_gameover = true;
 
 	CalculateVoteThresholds(vote);
 
