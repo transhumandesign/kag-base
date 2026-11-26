@@ -160,6 +160,15 @@ void onRespawnCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			{
 				setKnocked(newBlob, getKnockedRemaining(caller));
 			}
+			
+			//copy emote
+			if (caller.exists("emote"))
+			{
+				newBlob.set_string("emote", caller.get_string("emote"));
+				newBlob.set_u32("emotetime", caller.get_u32("emotetime"));
+				newBlob.Sync("emote", true);
+				newBlob.Sync("emotetime", true);
+			}
 
 			// plug the soul
 			newBlob.server_SetPlayer(caller.getPlayer());
