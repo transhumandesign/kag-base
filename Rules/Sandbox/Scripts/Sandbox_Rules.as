@@ -163,10 +163,12 @@ shared class SandboxSpawns : RespawnSystem
 				blob.server_Die();
 			}
 
-			if (p_info.blob_name == "") // if user is new
+			// for newly joined player, hard-set blob to builder
+			if (p_info.blob_name == "")
 			{
-				p_info.blob_name = "builder"; //hard-set the respawn blob
+				p_info.blob_name = "builder";
 			}
+
 			CBlob@ playerBlob = SpawnPlayerIntoWorld(getSpawnLocation(p_info), p_info);
 
 			if (playerBlob !is null)
@@ -175,8 +177,15 @@ shared class SandboxSpawns : RespawnSystem
 				RemovePlayerFromSpawn(player);
 
 				// spawn resources
-				SetMaterials(playerBlob, "mat_wood", 500);
-				SetMaterials(playerBlob, "mat_stone", 250);
+				if (p_info.blob_name == "builder")
+				{
+					SetMaterials(playerBlob, "mat_wood", 500);
+					SetMaterials(playerBlob, "mat_stone", 250);
+				}
+				else if (p_info.blob_name == "archer")
+				{
+					SetMaterials(playerBlob, "mat_arrows", 30);
+				}
 			}
 		}
 	}
