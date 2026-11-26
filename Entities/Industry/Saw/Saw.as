@@ -188,8 +188,8 @@ bool canSaw(CBlob@ this, CBlob@ blob)
 		return false;
 	}
 
-	//flesh blobs & mines have to be fed into the saw part
-	if (blob.hasTag("flesh") || (name == "mine"))
+	//flesh blobs, mines, trampolines and arrows have to be fed into the saw part
+	if (blob.hasTag("flesh") || (name == "mine") || (name == "trampoline") || (name == "arrow"))
 	{
 		Vec2f pos = this.getPosition();
 		Vec2f bpos = blob.getPosition();
