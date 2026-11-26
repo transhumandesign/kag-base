@@ -360,11 +360,16 @@ class VoteSurrenderFunctor : VoteFunctor
 				s32 teamWonNum = (team + 1) % rules.getTeamsCount();
 				CTeam@ teamLost = rules.getTeam(team);
 				CTeam@ teamWon = rules.getTeam(teamWonNum);
+				bool no_winner = team == teamWonNum; // this can happen if there is only one team
 
-				rules.SetTeamWon(teamWonNum);
+				if (!no_winner)
+				{
+					rules.SetTeamWon(teamWonNum);
+				}
+				
 				rules.SetCurrentState(GAME_OVER);
-
-				rules.SetGlobalMessage("{LOSING_TEAM} Surrendered! {WINNING_TEAM} wins the Game!");
+				string win_team_text = !no_winner ? " {WINNING_TEAM} wins the Game!" : "";
+				rules.SetGlobalMessage("{LOSING_TEAM} Surrendered!" + win_team_text);
 				rules.AddGlobalMessageReplacement("LOSING_TEAM", teamLost.getName());
 				rules.AddGlobalMessageReplacement("WINNING_TEAM", teamWon.getName());
 			}
