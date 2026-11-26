@@ -749,6 +749,17 @@ void onMainMenuCreated(CRules@ this, CContextMenu@ menu)
 			)
 		);
 	}
+	else if (this.isGameOver() && !can_skip_wait)
+	{
+		Menu::addInfoBox(
+			surrendermenu,
+			getTranslatedString("Can't Start Vote"),
+			getTranslatedString(
+				"Voting for surrender\n" +
+				"is not allowed after the game is over.\n"
+			)
+		);
+	}
 	else if (!this.isMatchRunning() && !can_skip_wait)
 	{
 		Menu::addInfoBox(
