@@ -286,24 +286,18 @@ shared class CTFSpawns : RespawnSystem
 
 	void AddPlayerToSpawn(CPlayer@ player)
 	{
-		s32 tickspawndelay = s32(CTF_core.spawnTime);
-
 		CTFPlayerInfo@ info = cast < CTFPlayerInfo@ > (core.getInfoFromPlayer(player));
 
 		if (info is null) { warn("CTF LOGIC: Couldn't get player info  ( in void AddPlayerToSpawn(CPlayer@ player) )"); return; }
 
-		//clamp it so old bad values don't get propagated
-		s32 old_spawn_time = Maths::Max(0, Maths::Min(info.can_spawn_time, tickspawndelay));
-
 		RemovePlayerFromSpawn(player);
 		if (player.getTeamNum() == core.rules.getSpectatorTeamNum())
 			return;
-
 		if (info.team < CTF_core.teams.length)
 		{
 			CTFTeamInfo@ team = cast < CTFTeamInfo@ > (CTF_core.teams[info.team]);
 
-			info.can_spawn_time = ((old_spawn_time > 30) ? old_spawn_time : tickspawndelay);
+			info.can_spawn_time = s32(CTF_core.spawnTime);
 
 			info.spawn_point = player.getSpawnPoint();
 			team.spawns.push_back(info);
