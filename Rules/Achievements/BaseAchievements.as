@@ -24,7 +24,6 @@ void onTick(CRules@ this)
 }
 
 
-/// Handles the following achievements
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
 {
     CSteamAchievements@ ach = getSteamAchievements();
@@ -124,7 +123,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
                 break;
 
             case Hitters::drown:
-                // TODO: DROWN_WARBOAT
+                HandleDrowning(ach, victim);
                 break;
         }
     }
@@ -200,4 +199,43 @@ void HandleMyKills(CSteamAchievements@ ach, CBlob@ myBlob)
 
     if (myBlob.hasTag("burning"))
         ach.Unlock(Steam::KILL_WHILE_ON_FIRE);
+}
+
+void HandleDrowning(CSteamAchievements@ ach, CPlayer@ myPlayer)
+{
+    CBlob@ blob = myPlayer.getBlob();
+
+    if (blob is null)
+        return;
+
+    // Are we inside a drowning boat and stayed till the end?
+    AttachmentPoint@[] aps;
+	if (blob.getAttachmentPoints(@aps))
+    {
+        for (uint i = 0; i < aps.length; i++)
+        {
+            AttachmentPoint@ ap = aps[i];
+            CBlob@ occupied = ap.getOccupied();
+            if (occupied !is null && occupied.getName() == "warboat")
+            {
+                ach.Unlock(Steam::DROWN_WARBOAT);
+                return;
+            }
+        }
+    }
+
+    // Are we overlapping with a boat and drowned
+    CBlob@[] overlaps;
+    if (blob.getOverlapping(@overlaps))
+    {
+        for (uint i = 0; i < overlaps.length; i++)
+        {
+            CBlob@ overlap = overlaps[i];
+            if (overlap !is null && overlap.getName() == "warboat") {
+                ach.Unlock(Steam::DROWN_WARBOAT);
+                return;
+            }
+        }
+    }
+
 }
