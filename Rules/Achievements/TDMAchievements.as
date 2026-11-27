@@ -1,33 +1,59 @@
 #define CLIENT_ONLY
 
+#include "AchievementsCommon.as";
+
 void onInit(CRules@ this) {
     onRestart(this);
 }
 
 // TODO: nextmap?
 void onRestart(CRules@ this) {
-    this.set_bool("oneManArmy", true);
+    SetStat(TDM_OMA, true);
 }
 
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
 {
     CSteamAchievements@ ach = getSteamAchievements();
     CPlayer@ player = getLocalPlayer();
-    s32 blueCount = getTeamSize(0);
-    s32 redCount = getTeamSize(1);
+    s32 blueCount   = getTeamSize(0);
+    s32 redCount    = getTeamSize(1);
 
     if (blueCount < 3 || redCount < 3 ||
          player is null || victim is null ||
          attacker is null || ach is null)
         return;
 
+    HandleOneManArmy(ach, player, victim, attacker);
+    HandleLastManStanding(ach, player, victim);
+}
 
+
+
+s32 getTeamSize(s16 team) {
+    s32 size = 0;
+
+    for (int i = 0; i < getPlayerCount(); i++)
+    {
+        CPlayer@ p = getPlayer(i);
+		if (p is null)
+            continue;
+
+        if (p.getTeamNum() == team)
+            size++;
+    }
+
+    return size;
+}
+
+
+void HandleOneManArmy(CSteamAchievements@ ach, CPlayer@ player, CPlayer@ victim, CPlayer@ attacker)
+{
     bool diffTeam = victim.getTeamNum() != player.getTeamNum();
 
     if (diffTeam && !attacker.isMyPlayer())
-        this.set_bool("oneManArmy", false);
+        SetStat(TDM_OMA, false);
 
-    if (this.get_bool("oneManArmy") && diffTeam && attacker.isMyPlayer())
+    if (GetStat(TDM_OMA) && diffTeam && attacker.isMyPlayer())
     {
         bool allEnemiesDead = false;
 
@@ -46,7 +72,10 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
         if (allEnemiesDead)
             ach.Unlock(Steam::KILL_WHOLE_TEAM_TDM);
     }
+}
 
+void HandleLastManStanding(CSteamAchievements@ ach, CPlayer@ player, CPlayer@ victim)
+{
     if (player.getBlob() !is null)
     {
         bool allDead = false;
@@ -66,22 +95,4 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
         if (allDead)
             ach.Unlock(Steam::LAST_MAN_TDM);
     }
-}
-
-
-
-s32 getTeamSize(s16 team) {
-    s32 size = 0;
-
-    for (int i = 0; i < getPlayerCount(); i++)
-    {
-        CPlayer@ p = getPlayer(i);
-		if (p is null)
-            continue;
-
-        if (p.getTeamNum() == team)
-            size++;
-    }
-
-    return size;
 }

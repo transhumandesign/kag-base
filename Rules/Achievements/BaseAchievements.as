@@ -4,6 +4,7 @@
 #define CLIENT_ONLY
 
 #include "Hitter.as";
+#include "AchievementsCommon.as"
 
 void onInit(CRules@ this)
 {
@@ -12,15 +13,16 @@ void onInit(CRules@ this)
 
 void onRestart(CRules@ this)
 {
-    this.set_bool("killedAsBuilder", false);
-    this.set_bool("killedAsKnight", false);
-    this.set_bool("killedAsArcher", false);
+    SetStat(KilledAs_Builder, false);
+    SetStat(KilledAs_Archer,  false);
+    SetStat(KilledAs_Knight,  false);
 }
 
 void onTick(CRules@ this)
 {
 
 }
+
 
 /// Handles the following achievements
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
@@ -72,74 +74,22 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
                     ach.Unlock(Steam::KILL_RUN_OVER);
                     break;
 
-                // TODO: Shrink?
+                // TODO: Shrink code?
                 // Bomb and keg are similar with amount killed per tick
                 case Hitters::bomb:
-                {
-                    if (myBlob !is null && (myBlob.getName() == "archer" || myBlob.getName() == "builder"))
-                        ach.Unlock(Steam::KILL_BOMB_NOT_KNIGHT);
-
-                    if (this.get_u32("bombKillTime") == getGameTime())
-                        this.set_u32("BombKillCount", this.get_u32("BombKillCount") + 1);
-                    else
-                    {
-                        this.set_u32("bombKillTime", getGameTime());
-                        this.set_u32("bombKillCount", 1);
-                        this.set_bool("bombSuicide", false);
-                    }
-
-                    int bombKills = this.get_u32("bombKillCount");
-                    if (bombKills == 3)
-                        ach.Unlock(Steam::KILL_BOMB_COMBO_3);
-
-                    if (bombKills >= 1 && this.get_bool("bombSuicide") == true)
-                        ach.Unlock(Steam::KILL_BOMB_SUICIDE);
-
+                    HandleBombDeath(ach, myBlob);
                     break;
-                }
 
                 case Hitters::keg:
-                {
-                    if (this.get_u32("kegKillTime") == getGameTime())
-                    {
-                        this.set_u32("kegKillCount", this.get_u32("kegKillCount") + 1);
-
-                        if (this.get_u32("kegKillCount") == 5)
-                            ach.Unlock(Steam::KILL_KEG_COMBO_5);
-                    }
-                    else
-                    {
-                        this.set_u32("kegKillTime", getGameTime());
-                        this.set_u32("kegKillCount", 1);
-                    }
+                    HandleKegDeath(ach);
                     break;
-                }
             }
 
-            if (victim.getBlob() !is null
-                && victim.getBlob().getCarriedBlob() !is null
-                && victim.getBlob().getCarriedBlob().getName() == "ctf_flag")
-			    ach.IncrementStat(Steam::killsEFC);
+
+            HandleEnemyFlagPrevention(ach, victim);
 
             if (myBlob !is null)
-            {
-                string name = myBlob.getName();
-
-                if (name == "archer")
-                    this.set_bool("killedAsArcher", true);
-                else if (name == "builder")
-                    this.set_bool("killedAsBuilder", true);
-                else if (name == "knight")
-                    this.set_bool("killedAsKnight", true);
-
-                if (this.get_bool("killedAsArcher")
-                    && this.get_bool("killedAsKnight")
-                    && this.get_bool("killedAsBuilder"))
-                    ach.Unlock(Steam::KILL_AS_EVERY_CLASS);
-
-                if (myBlob.hasTag("burning"))
-                    ach.Unlock(Steam::KILL_WHILE_ON_FIRE);
-            }
+                HandleMyKills(ach, myBlob);
             else if (getGameTime() > this.get_u32("deathTime") + 4)
                 ach.Unlock(Steam::KILL_WHILE_DEAD);
         }
@@ -148,9 +98,9 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
             // Did we just bomb ourselves?
             if (customData == Hitters::bomb)
             {
-                this.set_bool("bombSuicide", true);
+                SetStat(Bomb_S, true);
 
-                if (this.get_u32("bombKillCount") >= 1)
+                if (GetStat(Bomb_KC) >= 1)
                     ach.Unlock(Steam::KILL_BOMB_SUICIDE);
             }
         }
@@ -180,3 +130,74 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
     }
 }
 
+void HandleBombDeath(CSteamAchievements@ ach, CBlob@ myBlob)
+{
+    if (myBlob !is null && (myBlob.getName() != "knight"))
+        ach.Unlock(Steam::KILL_BOMB_NOT_KNIGHT);
+
+    if (GetStat(Bomb_KT) == getGameTime())
+        IncrementStat(Bomb_KC);
+    else
+    {
+        SetStat(Bomb_KT, getGameTime());
+        SetStat(Bomb_KC, 1);
+        SetStat(Bomb_KS, false);
+    }
+
+    int bombKills = GetStat(Bomb_KC);
+
+    if (bombKills == 3)
+        ach.Unlock(Steam::KILL_BOMB_COMBO_3);
+
+    if (bombKills >= 1 && GetStat(Bomb_KS) == true)
+        ach.Unlock(Steam::KILL_BOMB_SUICIDE);
+}
+
+
+void HandleKegDeath(CSteamAchievements@ ach)
+{
+    if (GetStat(Keg_KT) == getGameTime())
+    {
+        IncrementStat(Keg_KC);
+
+        if (GetStat(Keg_KC) == 5)
+            ach.Unlock(Steam::KILL_KEG_COMBO_5);
+    }
+    else
+    {
+        SetStat(Keg_KT, getGameTime());
+        SetStat(Keg_KC, 1);
+    }
+}
+
+
+void HandleEnemyFlagPrevention(CSteamAchievements@ ach, CPlayer@ victim)
+{
+    CBlob@ victimBlob = victim.getBlob();
+    if (victimBlob !is null)
+    {
+        CBlob@ heldBlob = victimBlob.getCarriedBlob();
+        if (heldBlob !is null && heldBlob.getName() == "ctf_flag")
+            ach.IncrementStat(Steam::killsEFC);
+    }
+}
+
+void HandleMyKills(CSteamAchievements@ ach, CBlob@ myBlob)
+{
+    string name = myBlob.getName();
+
+    if (name == "archer")
+        SetStat(KilledAs_Archer, true);
+    else if (name == "builder")
+        SetStat(KilledAs_Builder, true);
+    else if (name == "knight")
+        SetStat(KilledAs_Knight, true);
+
+    if (GetStat(KilledAs_Archer)
+        && GetStat(KilledAs_Builder)
+        && GetStat(KilledAs_Knight))
+        ach.Unlock(Steam::KILL_AS_EVERY_CLASS);
+
+    if (myBlob.hasTag("burning"))
+        ach.Unlock(Steam::KILL_WHILE_ON_FIRE);
+}
