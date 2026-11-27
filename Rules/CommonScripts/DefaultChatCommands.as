@@ -1,5 +1,4 @@
 #include "ChatCommandManager.as"
-#include "AnimalCommands.as"
 #include "BlobCommands.as"
 #include "GameStateCommands.as"
 #include "MaterialCommands.as"
@@ -25,6 +24,7 @@ void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 	manager.RegisterCommand(TeamCommand());
 	manager.RegisterCommand(CoinsCommand());
 	manager.RegisterCommand(HealCommand());
+	manager.RegisterCommand(SuicideCommand());
 
 	//materials
 	manager.RegisterCommand(WoodCommand());
@@ -37,12 +37,6 @@ void RegisterDefaultChatCommands(ChatCommandManager@ manager)
 	manager.RegisterCommand(AllBombsCommand());
 	manager.RegisterCommand(ArrowsCommand());
 	manager.RegisterCommand(AllArrowsCommand());
-
-	//animals
-	manager.RegisterCommand(FishiesCommand());
-	manager.RegisterCommand(ChickensCommand());
-	manager.RegisterCommand(SharksCommand());
-	manager.RegisterCommand(BisonCommand());
 
 	//other
 	manager.RegisterCommand(SeedCommand());

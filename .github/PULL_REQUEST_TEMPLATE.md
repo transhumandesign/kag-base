@@ -1,10 +1,6 @@
-## Status
-
-(pick one)
-
-- **READY**: this PR is (to the best of your knowledge) ready to be incorporated into the game.
-- **IN DEVELOPMENT**: this PR is still in development, but you would like your changes reviewed.
-- **HOLD**: you are aware of some serious issues with your PR. It should not be merged and you will follow up when they are fixed.
+<!--
+If your PR is a Work-In-Progress, please open it via the "Create draft pull request" button.
+-->
 
 ## Description
 

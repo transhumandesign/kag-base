@@ -40,8 +40,8 @@ void onInit(CBlob@ this)
 	u8 icon_frame = 8;
 	if (this.hasTag("startbig")) icon_frame = 12;
 
-	this.SetMinimapVars("GUI/Minimap/MinimapIcons.png", icon_frame, Vec2f(8, 32));
 	this.SetMinimapRenderAlways(true);
+	UpdateMinimapIcon(this, vars);
 }
 
 void GrowSprite(CSprite@ this, TreeVars@ vars)

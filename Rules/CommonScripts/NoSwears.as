@@ -42,7 +42,7 @@ string KidSafeText(const string &in textIn)
 			}
 
 			const string replacement = word_replacements[i + 1];
-			const uint endpos = pos + replacement.length;
+			const uint endpos = Maths::Min(pos + replacement.length, text.length);
 
 			if (isVital || // if !isVital check for the whole word
 			    ((pos == 0                    || text[pos - 1]    == charSpace) && // first part of the word?

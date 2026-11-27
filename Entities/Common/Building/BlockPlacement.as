@@ -2,6 +2,7 @@
 #include "BuildBlock.as"
 #include "Requirements.as"
 #include "GameplayEventsCommon.as";
+#include "RedBarrierCommon.as";
 
 // Called server side
 void PlaceBlock(CBlob@ this, u8 index, Vec2f cursorPos)
@@ -77,16 +78,16 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 	if (map.isTileCollapsing(cursorPos))
 		return false;
 
-	// Is our tile solid and are we trying to place it into a no build area
-	if (map.isTileSolid(tileIndex))
+	// Is our tile solid and are we trying to place it into a no build or no solids sectors
+	BuildBlock @blockToPlace = getBlockByIndex(blob, tileIndex);
+	if (map.isTileSolid(blockToPlace.tile) || cursorPos.y < map.tilesize * 3.0f)
 	{
 		pos = cursorPos + Vec2f(map.tilesize * 0.5f, map.tilesize * 0.5f);
 
-		if (map.getSectorAtPosition(pos, "no build") !is null)
+		if (map.getSectorAtPosition(pos, "no build") !is null || map.getSectorAtPosition(pos, "no solids") !is null)
 			return false;
 	}
 
-	BuildBlock @blockToPlace = getBlockByIndex(blob, tileIndex);
 	// Are we trying to place a tile on the same tile (usually due to lag)?
 	if (backtile.type == blockToPlace.tile)
 	{
@@ -95,6 +96,12 @@ bool serverTileCheck(CBlob@ blob, u8 tileIndex, Vec2f cursorPos)
 
 	// Are we trying to place a solid tile on a door/ladder/platform/bridge (usually due to lag)?
 	if (fakeHasTileSolidBlobs(cursorPos) && map.isTileSolid(blockToPlace.tile))
+	{
+		return false;
+	}
+
+	// Prevent building in red barrier during build phase
+	if (inBarrier(cursorPos.x))
 	{
 		return false;
 	}
@@ -153,6 +160,7 @@ void onTick(CBlob@ this)
 
 	if (buildtile > 0)
 	{
+		bc.blockType = buildtile;
 		bc.blockActive = true;
 		bc.blobActive = false;
 		CMap@ map = this.getMap();
@@ -283,12 +291,19 @@ void onRender(CSprite@ this)
 			}
 			else
 			{
+				Driver@ driver = getDriver();
+				CControls@ controls = getControls();
+
 				f32 halfTile = map.tilesize / 2.0f;
-				Vec2f aimpos = blob.getAimPos() + getCamera().getInterpolationOffset();
 				Vec2f offset(-0.2f + 0.4f * (Maths::Sin(getGameTime() * 0.5f)), 0.0f);
-				map.DrawTile(Vec2f(aimpos.x - halfTile, aimpos.y - halfTile) + offset, buildtile,
-				             SColor(255, 255, 46, 50),
-				             getCamera().targetDistance, false);
+				Vec2f aimpos = driver.getWorldPosFromScreenPos(controls.getInterpMouseScreenPos());
+
+				map.DrawTile(
+					Vec2f(aimpos.x - halfTile, aimpos.y - halfTile) + offset,
+					buildtile,
+				    SColor(255, 255, 46, 50),
+				    getCamera().targetDistance, false
+				);
 			}
 		}
 	}

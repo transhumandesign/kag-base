@@ -33,25 +33,25 @@ class Bolter : Component
 				CBlob@ blob = blobs[i];
 				if (blob.getName() != "magazine" || !blob.getShape().isStatic()) continue;
 
-				CBlob@ ammo = blob.getInventory().getItem(0);
+				// get the next blob in inventory
+				CInventory@ inventory = blob.getInventory();
+				CBlob@ ammo;
+				for (u16 i = 0; i < inventory.getItemsCount(); i++)
+				{
+					CBlob@ next_ammo = inventory.getItem(i);
+					if (next_ammo.getQuantity() > 0) @ammo = next_ammo;
+				}
+
 				if (ammo is null) break;
 
 				const s8 arrow_type = arrowTypeNames.find(ammo.getName());
 				if (arrow_type == -1) break;
 
 				// decrement
-				const u8 quantity = ammo.getQuantity() - 1;
-				if (quantity > 0)
-				{
-					ammo.server_SetQuantity(quantity);
-				}
-				else
-				{
-					ammo.server_Die();
-				}
+				ammo.server_SetQuantity(ammo.getQuantity() - 1);
 
 				// calculate deviation
-				f32 deviation = (XORRandom(100) - 50) / 20.0f;
+				const f32 deviation = (XORRandom(100) - 50) / 20.0f;
 
 				// calculate velocity based on deviation
 				Vec2f velocity = offset;

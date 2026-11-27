@@ -102,7 +102,7 @@ void onRender(CMap@ this)
 		{
 			PrincessSaved(princessAlive);
 			ExitToMenu();
-			MessageBox(getTranslatedString("The End."), getTranslatedString("For more adventures there is an entire multiplayer world ready to explore. If you've purchased the game just launch the servers browser in Multiplayer"), true);
+			MessageBox(getTranslatedString("The End."), getTranslatedString("For more adventures there is an entire multiplayer world ready to explore. Just launch the servers browser in Multiplayer"), true);
 		}
 	}
 }

@@ -5,7 +5,7 @@
 
 //sprite
 
-const array<array<string>> anims =
+const string[][] anims =
 {
 	{"speck_default", "speck_idle", "speck_dead"},
 	{"baby_default", "baby_idle", "baby_dead"},
@@ -39,15 +39,18 @@ void onTick(CSprite@ this)
 		        blob.isKeyPressed(key_down))
 		{
 			this.SetAnimation(anims[age][0]);
-			blob.SetInventoryIcon("Fishy.png", age_frame_index+1, Vec2f(16, 16)); // default anim frames are age_frame_index+0, age_frame_index+1, age_frame_index+2.
 		}
 		else
 		{
 			this.SetAnimation(anims[age][1]);
-			blob.SetInventoryIcon("Fishy.png", age_frame_index+0, Vec2f(16, 16)); // idle anim frames are age_frame_index+0.
+		}
+
+		if (age_frame_index != blob.inventoryIconFrame)
+		{
+			blob.SetInventoryIcon("Fishy.png", age_frame_index, Vec2f(16, 16)); // idle anim frames are age_frame_index.
 		}
 	}
-	else
+	else if (!this.isAnimation(anims[age][2]))
 	{
 		this.SetAnimation(anims[age][2]);
 		blob.SetInventoryIcon("Fishy.png", age_frame_index+3, Vec2f(16, 16)); // dead anim frames are age_frame_index+3.
@@ -79,6 +82,12 @@ void onInit(CBlob@ this)
 
 void onTick(CBlob@ this)
 {
+	if (this.hasTag("dead"))
+	{
+		this.getCurrentScript().runFlags |= Script::remove_after_this;
+		return;
+	}
+
 	f32 x = this.getVelocity().x;
 	if (Maths::Abs(x) > 1.0f)
 	{
@@ -92,7 +101,7 @@ void onTick(CBlob@ this)
 			this.SetFacingLeft(false);
 	}
 
-	if (getNet().isServer())
+	if (isServer())
 	{
 		u8 age = this.get_u8("age");
 		if (age < 3)

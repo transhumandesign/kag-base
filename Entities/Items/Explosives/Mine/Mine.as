@@ -56,6 +56,8 @@ void onInit(CBlob@ this)
 	this.addCommandID("mine_primed_client");
 
 	this.getCurrentScript().tickIfTag = MINE_PRIMING;
+
+	this.getShape().SetActiveSync(true);
 }
 
 void onInit(CSprite@ this)

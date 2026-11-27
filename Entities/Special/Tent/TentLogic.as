@@ -3,9 +3,15 @@
 #include "StandardRespawnCommand.as"
 #include "StandardControlsCommon.as"
 #include "GenericButtonCommon.as"
+#include "HolidayCommon.as"
 
 void onInit(CBlob@ this)
 {
+#ifdef STAGING
+	if (getHoliday() == HOLIDAY_CHRISTMAS)
+		this.getSprite().ReloadSprite("Tent", 48, 40);
+#endif
+
 	this.getSprite().SetZ(-50.0f);
 
 	this.CreateRespawnPoint("tent", Vec2f(0.0f, -4.0f));
@@ -13,13 +19,6 @@ void onInit(CBlob@ this)
 	this.Tag("change class drop inventory");
 
 	this.Tag("respawn");
-	
-	CShape@ shape = this.getShape();
-	if (shape !is null)
-	{
-		shape.SetStatic(true);
-		shape.getConsts().mapCollisions = false;
-	}
 
 	// minimap
 	this.SetMinimapOutsideBehaviour(CBlob::minimap_snap);
@@ -28,6 +27,12 @@ void onInit(CBlob@ this)
 
 	// defaultnobuild
 	this.set_Vec2f("nobuild extend", Vec2f(0.0f, 8.0f));
+
+	CShape@ shape = this.getShape();
+	if (shape !is null)
+	{
+		shape.PutOnGround();
+	}
 }
 
 void onTick(CBlob@ this)

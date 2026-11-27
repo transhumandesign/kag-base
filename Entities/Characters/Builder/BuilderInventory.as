@@ -5,6 +5,7 @@
 #include "Help.as";
 #include "CommonBuilderBlocks.as";
 #include "KnockedCommon.as";
+#include "RedBarrierCommon.as";
 
 namespace Builder
 {
@@ -407,7 +408,7 @@ void onRender(CSprite@ this)
 				Vec2f temp = (Vec2f( step_x + 0.5, step_y + 0.5) * map.tilesize);
 				Vec2f v = offsetPos + temp;
 				Vec2f pos = aligned + (temp - Vec2f(0.5f,0.5f)* map.tilesize) * 2 * zoom;
-				if (!onground || map.getSectorAtPosition(v, "no build") !is null || map.isTileSolid(v) || blobBlockingBuilding(map, v))
+				if (!onground || map.getSectorAtPosition(v, "no build") !is null || map.isTileSolid(v) || blobBlockingBuilding(map, v) || inBarrier(v.x))
 				{
 					// draw red
 					GUI::DrawIcon("CrateSlots.png", 5, Vec2f(8,8), pos, zoom);
@@ -437,9 +438,14 @@ void onRender(CSprite@ this)
 		{
 			if (bc.blockActive || bc.blobActive)
 			{
+				Driver@ driver = getDriver();
+				CControls@ controls = getControls();
+
+				Vec2f blobAimPos = driver.getWorldPosFromScreenPos(controls.getInterpMouseScreenPos());
+
 				Vec2f pos = blob.getPosition();
-				Vec2f myPos =  blob.getInterpolatedScreenPos() + Vec2f(0.0f,(pos.y > blob.getAimPos().y) ? -blob.getRadius() : blob.getRadius());
-				Vec2f aimPos2D = getDriver().getScreenPosFromWorldPos(blob.getAimPos() + cam_offset);
+				Vec2f myPos =  blob.getInterpolatedScreenPos() + Vec2f(0.0f,(pos.y > blobAimPos.y) ? -blob.getRadius() : blob.getRadius());
+				Vec2f aimPos2D = getDriver().getScreenPosFromWorldPos( blobAimPos + cam_offset );
 
 				if (!bc.hasReqs)
 				{
@@ -466,28 +472,50 @@ void onRender(CSprite@ this)
 						}
 						else
 						{
-							CBlob@[] blobsInRadius;
-							if (map.getBlobsInRadius(middle, map.tilesize, @blobsInRadius))
+							CMap@ map = getMap();
+							Vec2f middle = map.getAlignedWorldPos(blob.getAimPos());
+							CMap::Sector@ sector;
+							if (bc.blobActive)
 							{
-								for (uint i = 0; i < blobsInRadius.length; i++)
+								@sector = map.getSectorAtPosition(middle, "no blobs");
+							}
+							if (sector is null && bc.blockActive && map.isTileSolid(bc.blockType))
+							{
+								@sector = map.getSectorAtPosition(middle, "no solids");  
+							}
+							if (sector is null)
+							{
+								@sector = map.getSectorAtPosition( middle, "no build");
+							}
+							if (sector !is null)
+							{
+								GUI::DrawRectangle( getDriver().getScreenPosFromWorldPos(sector.upperleft), getDriver().getScreenPosFromWorldPos(sector.lowerright), SColor(0x65ed1202) );
+							}
+							else
+							{
+								CBlob@[] blobsInRadius;
+								if (map.getBlobsInRadius( middle, map.tilesize, @blobsInRadius ))
 								{
-									CBlob @b = blobsInRadius[i];
-									if (!b.isAttached())
+									for (uint i = 0; i < blobsInRadius.length; i++)
 									{
-										Vec2f bpos = b.getInterpolatedPosition();
-										float w = b.getWidth();
-										float h = b.getHeight();
-
-										if (b.getAngleDegrees() % 180 != 0) //swap dimentions
+										CBlob @b = blobsInRadius[i];
+										if (!b.isAttached())
 										{
-											float t = w;
-											w = h;
-											h = t;
-										}
+											Vec2f bpos = b.getInterpolatedPosition();
+											float w = b.getWidth();
+											float h = b.getHeight();
 
-										GUI::DrawRectangle(getDriver().getScreenPosFromWorldPos(bpos + Vec2f(w/-2.0f, h/-2.0f)),
-										                   getDriver().getScreenPosFromWorldPos(bpos + Vec2f(w/2.0f, h/2.0f)),
-										                   SColor(0x65ed1202));
+											if (b.getAngleDegrees() % 180 != 0) //swap dimentions
+											{
+												float t = w;
+												w = h;
+												h = t;
+											}
+
+											GUI::DrawRectangle(getDriver().getScreenPosFromWorldPos(bpos + Vec2f(w/-2.0f, h/-2.0f)),
+															getDriver().getScreenPosFromWorldPos(bpos + Vec2f(w/2.0f, h/2.0f)),
+															SColor(0x65ed1202));
+										}
 									}
 								}
 							}
