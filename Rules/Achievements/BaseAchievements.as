@@ -4,6 +4,7 @@
 #define CLIENT_ONLY
 
 #include "Hitter.as";
+#include "ArcherCommon.as";
 #include "AchievementsCommon.as"
 
 void onInit(CRules@ this)
@@ -31,14 +32,49 @@ void onRestart(CRules@ this)
 void onStateChange(CRules@ this, const u8 oldState)
 {
     CSteamAchievements@ ach = getSteamAchievements();
-    CPlayer@ player = getLocalPlayer();
-    if (ach is null || player is null
+    CPlayer@ localPlayer = getLocalPlayer();
+    if (ach is null || localPlayer is null
         || !this.isGameOver() || isServer() && isClient())
         return;
 
 
-    if (this.getTeamWon() == player.getTeamNum())
+    if (this.getTeamWon() == localPlayer.getTeamNum())
         ach.IncrementStat(Steam::wins);
+}
+
+void onBlobDie(CRules@ this, CBlob@ blob)
+{
+	CSteamAchievements@ ach = getSteamAchievements();
+	CPlayer@ localPlayer = getLocalPlayer();
+
+	if (blob.getPlayerOfRecentDamage() is localPlayer && ach !is null)
+	{
+		if (blob.getName() == "mine" && blob.getTeamNum() != localPlayer.getTeamNum())
+			ach.Unlock(Steam::DEFUSE_MINE);
+	}
+}
+
+void onBlobCreated(CBlob@ blob)
+{
+	CSteamAchievements@ ach = getSteamAchievements();
+	CPlayer@ localPlayer = getLocalPlayer();
+	if (ach is null)
+		return;
+
+	if (blob.getName() == "arrow" && blob.getDamageOwnerPlayer() is localPlayer)
+	{
+		const u8 arrowType = blob.get_u8("arrow type");
+
+		switch (arrowType)
+		{
+			case ArrowType::water:
+				ach.IncrementStat(Steam::usedWaterAmmo);
+				break;
+			
+			case ArrowType::fire:
+				ach.IncrementStat(Steam::usedFireAmmo);
+		}
+	}
 }
 
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
@@ -100,9 +136,6 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData
                     HandleKegDeath(ach);
                     break;
             }
-
-
-            HandleEnemyFlagPrevention(ach, victim);
 
             if (myBlob !is null)
                 HandleMyKills(ach, myBlob);
@@ -186,17 +219,6 @@ void HandleKegDeath(CSteamAchievements@ ach)
     }
 }
 
-
-void HandleEnemyFlagPrevention(CSteamAchievements@ ach, CPlayer@ victim)
-{
-    CBlob@ victimBlob = victim.getBlob();
-    if (victimBlob !is null)
-    {
-        CBlob@ heldBlob = victimBlob.getCarriedBlob();
-        if (heldBlob !is null && heldBlob.getName() == "ctf_flag")
-            ach.IncrementStat(Steam::killsEFC);
-    }
-}
 
 void HandleMyKills(CSteamAchievements@ ach, CBlob@ myBlob)
 {
