@@ -9,6 +9,16 @@
 void onInit(CRules@ this)
 {
     onRestart(this);
+
+    CSteamAchievements@ ach = getSteamAchievements();
+
+    if (ach !is null && !isServer())
+    {
+        ach.Unlock(Steam::JOIN_MULTI);
+
+        if (getNet().isUsingMods())
+            ach.Unlock(Steam::JOIN_MODDED);
+    }
 }
 
 void onRestart(CRules@ this)
@@ -18,11 +28,18 @@ void onRestart(CRules@ this)
     SetStat(KilledAs_Knight,  false);
 }
 
-void onTick(CRules@ this)
+void onStateChange(CRules@ this, const u8 oldState)
 {
+    CSteamAchievements@ ach = getSteamAchievements();
+    CPlayer@ player = getLocalPlayer();
+    if (ach is null || player is null
+        || !this.isGameOver() || isServer() && isClient())
+        return;
 
+
+    if (this.getTeamWon() == player.getTeamNum())
+        ach.IncrementStat(Steam::wins);
 }
-
 
 void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ attacker, u8 customData)
 {
